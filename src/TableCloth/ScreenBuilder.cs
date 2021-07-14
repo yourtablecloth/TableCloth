@@ -121,7 +121,6 @@ namespace TableCloth
 				var psi = new ProcessStartInfo(wsbExecPath, wsbFilePath) { UseShellExecute = false, };
 				Process.Start(psi);
 			});
-			launchButton.Width += 50;
 
 			form.AcceptButton = launchButton;
 
@@ -161,6 +160,7 @@ namespace TableCloth
 			{
 				Parent = parentControl,
 				Text = text,
+				AutoSize = true
 			};
 
 			if (handler != null)
