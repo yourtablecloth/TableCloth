@@ -1,0 +1,16 @@
+# 식탁보 카탈로그: 등록하려는 웹 사이트에 대한 정보를 INI 파일 문법에 맞게 넣어주세요.
+
+[WooriBank]
+SiteName=우리은행
+WebSiteUrl=https://www.wooribank.com/
+App_Veraport=https://www.wooribank.com/download/veraportG3/veraport-g3-x64.exe
+App_AnySign=https://www.wooribank.com/download/AnySign_Installer/AnySign_Installer.exe
+App_AhnLabSafeTx=https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
+App_NOS=https://www.wooribank.com/download/NOS/nos_setup.exe
+App_IPInsider=https://www.wooribank.com/download/IPinside/I3GSvcManager_3.0.0.7.exe
+
+[KookminBank]
+SiteName=KB국민은행
+WebSiteUrl=https://www.kbstar.com/
+App_WizInDelfino=https://download.kbstar.com/security/wizvera/delfino/g3/delfino-g3.exe
+#App_AhnLabSafeTx=https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
