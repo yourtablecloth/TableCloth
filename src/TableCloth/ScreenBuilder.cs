@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Windows.Forms;
 using TableCloth.Models;
 
 namespace TableCloth
 {
-	internal static class ScreenBuilder
+    internal static class ScreenBuilder
     {
 		public static Form CreateMainForm()
 		{
@@ -17,9 +17,13 @@ namespace TableCloth
 				Environment.GetFolderPath(Environment.SpecialFolder.System),
 				"WindowsSandbox.exe");
 
+			using var webClient = new WebClient();
 			var catalogFilePath = Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+				Path.GetTempPath(),
 				"Catalog.txt");
+
+			try { webClient.DownloadFile("https://dotnetdev-kr.github.io/TableCloth/Catalog.txt", catalogFilePath); }
+			catch { }
 
 			var catalog = CatalogBuilder.ParseCatalog(catalogFilePath);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TableCloth.Helpers;
@@ -11,6 +12,9 @@ namespace TableCloth
     {
 		internal static IEnumerable<InternetService> ParseCatalog(string iniFilePath, bool addDefaultItem = true)
 		{
+			if (!File.Exists(iniFilePath))
+				return new InternetService[] { };
+
 			var parser = new IniFileParser(iniFilePath);
 			var items = new List<InternetService>();
 
