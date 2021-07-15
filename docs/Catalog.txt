@@ -21,6 +21,7 @@ App_Veraport=https://www.kebhana.com/wizvera/veraport/down/veraport-g3-x64-sha2.
 App_TouchEnNxKey=https://www.kebhana.com/TouchEn/nxKey/module/TouchEn_nxKey_Installer_32bit.exe
 App_DelfinoG3=https://www.kebhana.com/wizvera/delfino/down/g3/delfino-g3.exe
 App_SCWSSP=https://www.kebhana.com/softcamp/WebSecurityStandard/SCWSSPSetup.exe
+App_IPInsider=https://www.kebhana.com/interezen/agent/np_v6/I3GSvcManager.exe
 
 [ShinhanBank]
 SiteName=신한은행
