@@ -86,21 +86,40 @@ namespace TableCloth
 					}
 					mappedFoldersElem.AppendChild(mappedFolderElem);
 
-					if (config.MapNPKICert)
+					if (config.CertPair != null)
 					{
 						var mappedNpkiFolderElem = doc.CreateElement("MappedFolder");
 						{
+							var certAssetsDirectoryPath = Path.Combine(assetsDirectoryPath, "certs");
+							if (!Directory.Exists(certAssetsDirectoryPath))
+								Directory.CreateDirectory(certAssetsDirectoryPath);
+
+							var destDerFilePath = Path.Combine(
+								certAssetsDirectoryPath,
+								Path.GetFileName(config.CertPair.DerFilePath));
+							File.Copy(config.CertPair.DerFilePath, destDerFilePath, true);
+
+							var destKeyFileName = Path.Combine(
+								certAssetsDirectoryPath,
+								Path.GetFileName(config.CertPair.KeyFilePath));
+							File.Copy(config.CertPair.KeyFilePath, destKeyFileName, true);
+
 							var hostFolderElem = doc.CreateElement("HostFolder");
-							var npkiFolderPath = Environment.ExpandEnvironmentVariables(@"%userprofile%\AppData\LocalLow\NPKI");
-							hostFolderElem.InnerText = npkiFolderPath;
+							hostFolderElem.InnerText = certAssetsDirectoryPath;
 							mappedNpkiFolderElem.AppendChild(hostFolderElem);
 
+							var candidatePath = Path.Join("AppData", "LocalLow", "NPKI", config.CertPair.SubjectOrganization);
+							if (config.CertPair.IsPersonalCert)
+								candidatePath = Path.Join(candidatePath, "USER", config.CertPair.SubjectNameForNpkiApp);
+							candidatePath = Path.Join(@"C:\Users\WDAGUtilityAccount", candidatePath);
+
 							var sandboxFolderElem = doc.CreateElement("SandboxFolder");
-							sandboxFolderElem.InnerText = @"C:\Users\WDAGUtilityAccount\AppData\LocalLow\NPKI";
+							sandboxFolderElem.InnerText = candidatePath;
+
 							mappedNpkiFolderElem.AppendChild(sandboxFolderElem);
 
 							var readOnlyElem = doc.CreateElement("ReadOnly");
-							readOnlyElem.InnerText = Boolean.TrueString.ToString();
+							readOnlyElem.InnerText = Boolean.FalseString.ToString();
 							mappedNpkiFolderElem.AppendChild(readOnlyElem);
 						}
 						mappedFoldersElem.AppendChild(mappedNpkiFolderElem);

@@ -2,7 +2,7 @@
 {
     public sealed class SandboxConfiguration
 	{
-		public bool MapNPKICert { get; set; }
+		public X509CertPair CertPair { get; set; }
 		public InternetService SelectedService { get; set; }
 	}
 }
