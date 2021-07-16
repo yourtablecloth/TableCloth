@@ -44,12 +44,17 @@ namespace TableCloth
 				foreach (var eachPackage in service.Packages)
                 {
 					string localFileName;
-					try { localFileName = Path.GetFileName(new Uri(eachPackage.Value, UriKind.Absolute).LocalPath); }
+					try { localFileName = Path.GetFileName(eachPackage.PackageDownloadUrl.LocalPath); }
 					catch { localFileName = Guid.NewGuid().ToString("n") + ".exe"; }
 
-					buffer.AppendLine($@"REM Run {eachPackage.Key} Setup");
-					buffer.AppendLine($@"curl -L ""{eachPackage.Value}"" --output ""%temp%\{localFileName}""");
-					buffer.AppendLine($@"start %temp%\{localFileName}");
+					buffer.AppendLine($@"REM Run {eachPackage.Name} Setup");
+					buffer.AppendLine($@"curl -L ""{eachPackage.PackageDownloadUrl}"" --output ""%temp%\{localFileName}""");
+
+					if (!string.IsNullOrWhiteSpace(eachPackage.Arguments))
+						buffer.AppendLine($@"start %temp%\{localFileName} {eachPackage.Arguments}");
+					else
+						buffer.AppendLine($@"start %temp%\{localFileName}");
+
 					buffer.AppendLine();
 				}
 

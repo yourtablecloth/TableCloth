@@ -8,7 +8,7 @@ namespace TableCloth.Models
 	[Serializable]
     public sealed class InternetService
 	{
-		public InternetService(string siteName, InternetServiceCategory category, Uri homepageUrl, IEnumerable<KeyValuePair<string, string>> packages)
+		public InternetService(string siteName, InternetServiceCategory category, Uri homepageUrl, IEnumerable<PackageInformation> packages)
 		{
 			SiteName = siteName;
 			Category = category;
@@ -19,7 +19,7 @@ namespace TableCloth.Models
 		public string SiteName { get; init; }
 		public InternetServiceCategory Category { get; init; }
 		public Uri HomepageUrl { get; init; }
-		public IEnumerable<KeyValuePair<string, string>> Packages { get; init; }
+		public IEnumerable<PackageInformation> Packages { get; init; }
 
 		public override string ToString()
         {

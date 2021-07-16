@@ -37,12 +37,43 @@ namespace TableCloth
                     continue;
                 }
 
-                var regex = new Regex("App_", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
-				var packageList = pairs
-					.Where(x => x.Key.StartsWith("App_", StringComparison.OrdinalIgnoreCase))
-					.Select(x => new KeyValuePair<string, string>(regex.Replace(x.Key, string.Empty), x.Value))
-					.ToArray();
-				items.Add(new InternetService(siteName, category, homePageUrl, packageList));
+				var packages = new PackageCollection();
+				var appPrefixRegex = new Regex("App_", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+				var argPrefixRegex = new Regex("Arg_", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+
+				foreach (var eachPair in pairs)
+                {
+					if (appPrefixRegex.IsMatch(eachPair.Key))
+                    {
+						var packageName = appPrefixRegex.Replace(eachPair.Key, string.Empty);
+						var package = default(PackageInformation);
+
+						if (!packages.Contains(packageName))
+							packages.Add(package = new PackageInformation() { Name = packageName });
+						else
+							package = packages[packageName];
+
+						if (!Uri.TryCreate(eachPair.Value, UriKind.Absolute, out Uri packageUri))
+							continue;
+
+						package.PackageDownloadUrl = packageUri;
+                    }
+					else if (argPrefixRegex.IsMatch(eachPair.Key))
+					{
+						var packageName = argPrefixRegex.Replace(eachPair.Key, string.Empty);
+						var package = default(PackageInformation);
+
+						if (!packages.Contains(packageName))
+							packages.Add(package = new PackageInformation() { Name = packageName });
+						else
+							package = packages[packageName];
+
+						package.Arguments = (eachPair.Value ?? string.Empty).Trim();
+					}
+                }
+
+				items.Add(new InternetService(siteName, category, homePageUrl,
+					packages.Where(x => x.PackageDownloadUrl != null).ToArray()));
 			}
 
 			if (addDefaultItem)
@@ -51,7 +82,7 @@ namespace TableCloth
 					"그냥 실행해주세요.",
 					default,
 					new Uri("https://www.naver.com/"),
-                    Array.Empty<KeyValuePair<string, string>>()));
+                    Array.Empty<PackageInformation>()));
 			}
 
 			return items.ToArray();
