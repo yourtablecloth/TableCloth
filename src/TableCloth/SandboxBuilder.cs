@@ -68,6 +68,27 @@ namespace TableCloth
 			doc.AppendChild(doc.CreateXmlDeclaration("1.0", "utf-8", null));
 			var configurationElem = doc.CreateElement("Configuration");
 			{
+				var audioInputElem = doc.CreateElement("AudioInput");
+				if (config.EnableMicrophone)
+					audioInputElem.InnerText = "Enable";
+				else
+					audioInputElem.InnerText = "Disable";
+				configurationElem.AppendChild(audioInputElem);
+				
+				var videoInputElem = doc.CreateElement("VideoInput");
+				if (config.EnablePrinters)
+					videoInputElem.InnerText = "Enable";
+				else
+					videoInputElem.InnerText = "Disable";
+				configurationElem.AppendChild(videoInputElem);
+
+				var printerRedirectionElem = doc.CreateElement("PrinterRedirection");
+				if (config.EnablePrinters)
+					printerRedirectionElem.InnerText = "Enable";
+				else
+					printerRedirectionElem.InnerText = "Disable";
+				configurationElem.AppendChild(printerRedirectionElem);
+
 				var mappedFoldersElem = doc.CreateElement("MappedFolders");
 				{
 					var mappedFolderElem = doc.CreateElement("MappedFolder");

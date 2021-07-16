@@ -17,8 +17,8 @@ namespace TableCloth
 			var form = new Form()
 			{
 				Text = "식탁보 - 컴퓨터를 깨끗하게 사용하세요!",
-				Size = new Size(640, 360),
-				MinimumSize = new Size(640, 360),
+				Size = new Size(640, 400),
+				MinimumSize = new Size(640, 400),
 			};
 
 			var dialogLayout = new FlowLayoutPanel()
@@ -75,6 +75,13 @@ namespace TableCloth
 
 			importButton.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
 			npkiFileListBox.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
+
+			var enableMicrophone = CreateCheckBox(dialogLayout, "오디오 입력 사용하기(&A) - 개인 정보 노출에 주의하세요!", false);
+			var enableWebCam = CreateCheckBox(dialogLayout, "비디오 입력 사용하기(&V) - 개인 정보 노출에 주의하세요!", false);
+			var enablePrinters = CreateCheckBox(dialogLayout, "프린터 같이 사용하기(&P)", true);
+
+			enableMicrophone.Font = new Font(enableMicrophone.Font, FontStyle.Bold);
+			enableWebCam.Font = new Font(enableWebCam.Font, FontStyle.Bold);
 
 			CreateLabel(dialogLayout);
 			var siteInstructionLabel = CreateLabel(dialogLayout, "식탁보 위에서 접속할 사이트를 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요.");
@@ -172,6 +179,9 @@ namespace TableCloth
 				var config = new SandboxConfiguration()
 				{
 					CertPair = pair,
+					EnableMicrophone = enableMicrophone.Checked,
+					EnableWebCam = enableWebCam.Checked,
+					EnablePrinters = enablePrinters.Checked,
 					SelectedService = selectedSiteComboBox.SelectedItem as InternetService,
 				};
 
