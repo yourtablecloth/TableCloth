@@ -35,7 +35,6 @@ namespace TableCloth
 
 		public static string GenerateSandboxStartupScript(SandboxConfiguration config)
 		{
-			Debugger.Launch();
 			if (config == null)
 				throw new ArgumentNullException(nameof(config));
 
