@@ -25,3 +25,5 @@
 ## 라이선스
 
 본 프로젝트는 MIT 라이선스를 따릅니다.
+
+Project emblem made by [Eucalyp](https://www.flaticon.com/authors/eucalyp) from [Flaticon](https://www.flaticon.com/).

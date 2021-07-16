@@ -19,6 +19,9 @@ namespace TableCloth
 				Text = "식탁보 - 컴퓨터를 깨끗하게 사용하세요!",
 				Size = new Size(640, 400),
 				MinimumSize = new Size(640, 400),
+				Icon = new Icon(
+					new MemoryStream(Convert.FromBase64String(GraphicResources.AppIcon)),
+					64, 64),
 			};
 
 			var dialogLayout = new FlowLayoutPanel()
@@ -203,6 +206,11 @@ namespace TableCloth
 				Text = "검색된 공인 인증서 선택",
 				Size = new Size(640, 360),
 				MinimumSize = new Size(320, 200),
+				FormBorderStyle = FormBorderStyle.FixedDialog,
+				ShowInTaskbar = false,
+				MinimizeBox = false,
+				MaximizeBox = false,
+				StartPosition = FormStartPosition.CenterParent,
 			};
 
 			var dialogLayout = new FlowLayoutPanel()
