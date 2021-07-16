@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using TableCloth.Models;
@@ -20,6 +21,10 @@ namespace TableCloth
 			if (!Directory.Exists(assetsDirectory))
 				Directory.CreateDirectory(assetsDirectory);
 
+			var sandboxWallpaperContent = Convert.FromBase64String(GraphicResources.SandboxWallpaperImage);
+			var sandboxWallpaperPath = Path.Combine(assetsDirectory, "WallpaperImage.jpg");
+			File.WriteAllBytes(sandboxWallpaperPath, sandboxWallpaperContent);
+
 			var batchFileContent = GenerateSandboxStartupScript(config);
 			var batchFilePath = Path.Combine(assetsDirectory, "StartupScript.cmd");
 			File.WriteAllText(batchFilePath, batchFileContent, Encoding.Default);
@@ -39,6 +44,16 @@ namespace TableCloth
 			var buffer = new StringBuilder();
 			var service = config.SelectedService;
 
+			_ = buffer.AppendLine($@"%windir%\system32\reg.exe add ""HKCU\control panel\desktop"" /v wallpaper /t REG_SZ /d """" /f");
+			_ = buffer.AppendLine($@"%windir%\system32\reg.exe add ""HKCU\control panel\desktop"" /v wallpaper /t REG_SZ /d ""C:\assets\WallpaperImage.jpg"" /f ");
+			_ = buffer.AppendLine($@"%windir%\system32\reg.exe delete ""HKCU\Software\Microsoft\Internet Explorer\Desktop\General"" /v WallpaperStyle /f");
+			_ = buffer.AppendLine($@"%windir%\system32\reg.exe add ""HKCU\control panel\desktop"" /v WallpaperStyle /t REG_SZ /d 2 /f");
+			_ = buffer.AppendLine($@"%windir%\system32\rundll32.exe %windir%\system32\user32.dll,UpdatePerUserSystemParameters");
+
+			var infoMessage = $"지금부터 {service.Packages.Count()}개 프로그램의 설치 과정이 시작됩니다. 모든 프로그램의 설치가 끝나면 자동으로 {service.SiteName} 홈페이지가 열립니다.";
+			string value = $@"PowerShell -Command ""Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.MessageBox]::Show('{infoMessage}', '안내', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)""";
+			_ = buffer.AppendLine(value);
+
 			if (service != null)
             {
 				foreach (var eachPackage in service.Packages)
@@ -47,18 +62,18 @@ namespace TableCloth
 					try { localFileName = Path.GetFileName(eachPackage.PackageDownloadUrl.LocalPath); }
 					catch { localFileName = Guid.NewGuid().ToString("n") + ".exe"; }
 
-					buffer.AppendLine($@"REM Run {eachPackage.Name} Setup");
-					buffer.AppendLine($@"curl -L ""{eachPackage.PackageDownloadUrl}"" --output ""%temp%\{localFileName}""");
+                    _ = buffer.AppendLine($@"REM Run {eachPackage.Name} Setup");
+                    _ = buffer.AppendLine($@"curl -L ""{eachPackage.PackageDownloadUrl}"" --output ""%temp%\{localFileName}""");
 
 					if (!string.IsNullOrWhiteSpace(eachPackage.Arguments))
-						buffer.AppendLine($@"start %temp%\{localFileName} {eachPackage.Arguments}");
+						_ = buffer.AppendLine($@"start /abovenormal /wait %temp%\{localFileName} {eachPackage.Arguments}");
 					else
-						buffer.AppendLine($@"start %temp%\{localFileName}");
+						_ = buffer.AppendLine($@"start /abovenormal /wait %temp%\{localFileName}");
 
-					buffer.AppendLine();
+					_ = buffer.AppendLine();
 				}
 
-				buffer.AppendLine($@"start {service.HomepageUrl}");
+				_ = buffer.AppendLine($@"start {service.HomepageUrl}");
 			}
 
 			return buffer.ToString();

@@ -27,6 +27,9 @@ namespace TableCloth.Models
 			var memberInfos = categoryType.GetMember(Category.ToString());
 			var defaultString = $"{SiteName} - {HomepageUrl}";
 
+			if (Packages != null && Packages.Count() > 0)
+				defaultString = $"{defaultString} (총 {Packages.Count()}개 프로그램 설치)";
+
             if (memberInfos
                 ?.FirstOrDefault()
                 ?.GetCustomAttributes(typeof(DescriptionAttribute), false)
