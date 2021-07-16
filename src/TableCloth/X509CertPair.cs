@@ -11,13 +11,12 @@ namespace TableCloth
 		public static IEnumerable<X509CertPair> ScanX509CertPairs()
 		{
 			var list = new List<X509CertPair>();
-			var directoryCandidates = new List<string>();
+            var directoryCandidates = new List<string>
+            {
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "NPKI"),
+            };
 
-			directoryCandidates.Add(Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-				"AppData", "LocalLow", "NPKI"));
-
-			foreach (var eachDrive in DriveInfo.GetDrives())
+            foreach (var eachDrive in DriveInfo.GetDrives())
 			{
 				if (eachDrive.DriveType != DriveType.Removable)
 					continue;
@@ -71,40 +70,39 @@ namespace TableCloth
             if (!File.Exists(keyFilePath))
                 throw new FileNotFoundException("Private key file (.key) does not exists.", keyFilePath);
 
-			using (var cert = new X509Certificate2(derFilePath))
-			{
-				var issuerName = cert.Issuer;
-				var subjectNamePairs = cert.Subject
-					.Split(',', StringSplitOptions.RemoveEmptyEntries)
-					.Select(x =>
-					{
-						var parts = x.Trim().Split('=', StringSplitOptions.None);
-						var unitName = parts.ElementAtOrDefault(0)?.Trim() ?? string.Empty;
-						var value = parts.ElementAtOrDefault(1)?.Trim() ?? string.Empty;
-						return new KeyValuePair<string, string>(unitName, value);
-					});
-				var organizationName = subjectNamePairs
-					.Where(x => string.Equals(x.Key, "o", StringComparison.InvariantCultureIgnoreCase))
-					.Select(x => x.Value)
-					.FirstOrDefault();
-				var usageExtension = cert.Extensions
-					.Cast<X509Extension>()
-					.Where(x => x is X509KeyUsageExtension)
-					.Select(x => x as X509KeyUsageExtension)
-					.FirstOrDefault();
-				var isPersonalCert = usageExtension != null &&
-					usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.NonRepudiation) &&
-					usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.DigitalSignature);
+            using var cert = new X509Certificate2(derFilePath);
 
-				return new X509CertPair()
-				{
-					Subject = subjectNamePairs.ToArray(),
-					IsPersonalCert = isPersonalCert,
-					DerFilePath = derFilePath,
-					KeyFilePath = keyFilePath,
-				};
-			}
-		}
+            var issuerName = cert.Issuer;
+            var subjectNamePairs = cert.Subject
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(x =>
+                {
+                    var parts = x.Trim().Split('=', StringSplitOptions.None);
+                    var unitName = parts.ElementAtOrDefault(0)?.Trim() ?? string.Empty;
+                    var value = parts.ElementAtOrDefault(1)?.Trim() ?? string.Empty;
+                    return new KeyValuePair<string, string>(unitName, value);
+                });
+            var organizationName = subjectNamePairs
+                .Where(x => string.Equals(x.Key, "o", StringComparison.InvariantCultureIgnoreCase))
+                .Select(x => x.Value)
+                .FirstOrDefault();
+            var usageExtension = cert.Extensions
+                .Cast<X509Extension>()
+                .Where(x => x is X509KeyUsageExtension)
+                .Select(x => x as X509KeyUsageExtension)
+                .FirstOrDefault();
+            var isPersonalCert = usageExtension != null &&
+                usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.NonRepudiation) &&
+                usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.DigitalSignature);
+
+            return new X509CertPair()
+            {
+                Subject = subjectNamePairs.ToArray(),
+                IsPersonalCert = isPersonalCert,
+                DerFilePath = derFilePath,
+                KeyFilePath = keyFilePath,
+            };
+        }
 
 		private X509CertPair() { }
 

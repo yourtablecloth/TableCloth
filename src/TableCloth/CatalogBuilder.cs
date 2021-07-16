@@ -13,7 +13,7 @@ namespace TableCloth
 		internal static IEnumerable<InternetService> ParseCatalog(string iniFilePath, bool addDefaultItem = true)
 		{
 			if (!File.Exists(iniFilePath))
-				return new InternetService[] { };
+				return Array.Empty<InternetService>();
 
 			var parser = new IniFileParser(iniFilePath);
 			var items = new List<InternetService>();
@@ -30,14 +30,13 @@ namespace TableCloth
 					continue;
 				}
 
-				Uri homePageUrl;
-				if (!Uri.TryCreate(webSiteUrl, UriKind.Absolute, out homePageUrl) ||
-					(!homePageUrl.Scheme.Equals(Uri.UriSchemeHttps) && !homePageUrl.Scheme.Equals(Uri.UriSchemeHttp)))
-				{
-					continue;
-				}
+                if (!Uri.TryCreate(webSiteUrl, UriKind.Absolute, out Uri homePageUrl) ||
+                    (!homePageUrl.Scheme.Equals(Uri.UriSchemeHttps) && !homePageUrl.Scheme.Equals(Uri.UriSchemeHttp)))
+                {
+                    continue;
+                }
 
-				var regex = new Regex("App_", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
+                var regex = new Regex("App_", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
 				var packageList = pairs
 					.Where(x => x.Key.StartsWith("App_", StringComparison.OrdinalIgnoreCase))
 					.Select(x => new KeyValuePair<string, string>(regex.Replace(x.Key, string.Empty), x.Value))
@@ -50,7 +49,7 @@ namespace TableCloth
 				items.Add(new InternetService(
 					"그냥 실행해주세요.",
 					new Uri("https://www.naver.com/"),
-					new KeyValuePair<string, string>[] { }));
+                    Array.Empty<KeyValuePair<string, string>>()));
 			}
 
 			return items.ToArray();

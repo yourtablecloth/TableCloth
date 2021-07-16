@@ -22,23 +22,23 @@ namespace TableCloth.Helpers
 		public string GetString(string sectionName, string keyName, string defaultValue)
 		{
 			if (sectionName == null)
-				throw new ArgumentNullException("sectionName");
+				throw new ArgumentNullException(nameof(sectionName));
 
 			if (keyName == null)
-				throw new ArgumentNullException("keyName");
+				throw new ArgumentNullException(nameof(keyName));
 
-			StringBuilder retval = new StringBuilder(IniFileParser.MaxSectionSize);
-			NativeMethods.GetPrivateProfileStringW(sectionName, keyName, defaultValue, retval, IniFileParser.MaxSectionSize, IniFilePath);
+			var retval = new StringBuilder(IniFileParser.MaxSectionSize);
+            _ = NativeMethods.GetPrivateProfileStringW(sectionName, keyName, defaultValue, retval, IniFileParser.MaxSectionSize, IniFilePath);
 			return retval.ToString();
 		}
 
 		public int GetInt32(string sectionName, string keyName, int defaultValue)
 		{
 			if (sectionName == null)
-				throw new ArgumentNullException("sectionName");
+				throw new ArgumentNullException(nameof(sectionName));
 
 			if (keyName == null)
-				throw new ArgumentNullException("keyName");
+				throw new ArgumentNullException(nameof(keyName));
 
 			return NativeMethods.GetPrivateProfileIntW(sectionName, keyName, defaultValue, IniFilePath);
 		}
@@ -51,10 +51,10 @@ namespace TableCloth.Helpers
 			int equalSignPos;
 
 			if (sectionName == null)
-				throw new ArgumentNullException("sectionName");
+				throw new ArgumentNullException(nameof(sectionName));
 
 			//Allocate a buffer for the returned section names.
-			IntPtr ptr = Marshal.AllocCoTaskMem(IniFileParser.MaxSectionSize);
+			var ptr = Marshal.AllocCoTaskMem(IniFileParser.MaxSectionSize);
 
 			try
 			{
@@ -89,10 +89,10 @@ namespace TableCloth.Helpers
 			string[] retval;
 
 			if (sectionName == null)
-				throw new ArgumentNullException("sectionName");
+				throw new ArgumentNullException(nameof(sectionName));
 
 			//Allocate a buffer for the returned section names.
-			IntPtr ptr = Marshal.AllocCoTaskMem(IniFileParser.MaxSectionSize);
+			var ptr = Marshal.AllocCoTaskMem(IniFileParser.MaxSectionSize);
 
 			try
 			{
@@ -115,7 +115,7 @@ namespace TableCloth.Helpers
 			int len;
 
 			//Allocate a buffer for the returned section names.
-			IntPtr ptr = Marshal.AllocCoTaskMem(IniFileParser.MaxSectionSize);
+			var ptr = Marshal.AllocCoTaskMem(IniFileParser.MaxSectionSize);
 
 			try
 			{
@@ -139,13 +139,13 @@ namespace TableCloth.Helpers
 			if (valLength == 0)
 			{
 				//Return an empty array.
-				retval = new string[0];
+				retval = Array.Empty<string>();
 			}
 			else
 			{
 				//Convert the buffer into a string.  Decrease the length 
 				//by 1 so that we remove the second null off the end.
-				string buff = Marshal.PtrToStringAuto(ptr, valLength - 1);
+				var buff = Marshal.PtrToStringAuto(ptr, valLength - 1);
 
 				//Parse the buffer into an array of strings by searching for nulls.
 				retval = buff.Split('\0');

@@ -15,14 +15,13 @@ namespace TableCloth
 			if ((Environment.OSVersion.Version.Major == 5 && Environment.OSVersion.Version.Minor >= 1) ||
 				Environment.OSVersion.Version.Major >= 6)
 			{
-				using (var p = Process.GetCurrentProcess())
-				{
-					if (!IsWow64Process(p.Handle, out bool retVal))
-						return false;
+                using var p = Process.GetCurrentProcess();
 
-					return retVal;
-				}
-			}
+                if (!IsWow64Process(p.Handle, out bool retVal))
+                    return false;
+
+                return retVal;
+            }
 			else
 			{
 				return false;

@@ -11,7 +11,7 @@ namespace TableCloth
 		public static string GenerateSandboxConfiguration(string outputDirectory, SandboxConfiguration config)
 		{
 			if (config == null)
-				throw new ArgumentNullException("config");
+				throw new ArgumentNullException(nameof(config));
 
 			if (!Directory.Exists(outputDirectory))
 				Directory.CreateDirectory(outputDirectory);
@@ -34,7 +34,7 @@ namespace TableCloth
 		public static string GenerateSandboxStartupScript(SandboxConfiguration config)
 		{
 			if (config == null)
-				throw new ArgumentNullException("config");
+				throw new ArgumentNullException(nameof(config));
 
 			var buffer = new StringBuilder();
 			var service = config.SelectedService;
@@ -62,7 +62,7 @@ namespace TableCloth
 		public static XmlDocument GenerateSandboxSpecDocument(SandboxConfiguration config, string assetsDirectoryPath)
 		{
 			if (config == null)
-				throw new ArgumentNullException("config");
+				throw new ArgumentNullException(nameof(config));
 
 			var doc = new XmlDocument();
 			doc.AppendChild(doc.CreateXmlDeclaration("1.0", "utf-8", null));
