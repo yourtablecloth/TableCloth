@@ -37,6 +37,7 @@ namespace TableCloth
 				Parent = form,
 				Dock = DockStyle.Bottom,
 				FlowDirection = FlowDirection.RightToLeft,
+				Padding = new Padding(0, 0, 10, 0),
 			};
 
 			CreateLabel(dialogLayout, "원하는 옵션을 선택해주세요.");
@@ -221,16 +222,35 @@ namespace TableCloth
 				Parent = form,
 				Dock = DockStyle.Bottom,
 				FlowDirection = FlowDirection.RightToLeft,
+				Padding = new Padding(0, 0, 10, 0),
 			};
 
 			CreateLabel(dialogLayout, "검색된 공인 인증서가 다음과 같습니다. 다음 중 하나를 선택해주세요.");
 			CreateLabel(dialogLayout);
 
-			var listView = new ListView()
+			var largeListViewImageList = new ImageList()
+			{
+				ImageSize = new Size(48, 48),
+				ColorDepth = ColorDepth.Depth32Bit,
+				TransparentColor = Color.Transparent,
+			};
+			largeListViewImageList.Images.Add(Image.FromStream(new MemoryStream(Convert.FromBase64String(GraphicResources.CertIcon))));
+
+			var smallListViewImageList = new ImageList()
+			{
+				ImageSize = new Size(16, 16),
+				ColorDepth = ColorDepth.Depth32Bit,
+				TransparentColor = Color.Transparent,
+			};
+			smallListViewImageList.Images.Add(Image.FromStream(new MemoryStream(Convert.FromBase64String(GraphicResources.CertIcon))));
+
+			var certListView = new ListView()
 			{
 				Parent = dialogLayout,
 				View = View.Tile,
 				Width = form.ClientSize.Width - 100,
+				LargeImageList = largeListViewImageList,
+				SmallImageList = smallListViewImageList,
 			};
 
 			var refreshButton = CreateButton(dialogLayout, "새로 고침(&R)");
@@ -247,20 +267,20 @@ namespace TableCloth
 			form.AcceptButton = okayButton;
 			actionLayout.Height = (int)(okayButton.Height * 1.6f);
 
-			listView.ItemSelectionChanged += (_sender, _e) =>
+			certListView.ItemSelectionChanged += (_sender, _e) =>
 			{
 				form.Tag = _e.Item.Tag as X509CertPair;
 			};
 
-			listView.MouseDoubleClick += (_sender, _e) =>
+			certListView.MouseDoubleClick += (_sender, _e) =>
 			{
-				ListViewHitTestInfo info = listView.HitTest(_e.X, _e.Y);
+				ListViewHitTestInfo info = certListView.HitTest(_e.X, _e.Y);
 				ListViewItem item = info.Item;
 
 				if (item != null)
 					okayButton.PerformClick();
 				else
-					listView.SelectedItems.Clear();
+					certListView.SelectedItems.Clear();
 			};
 
             _ = refreshButton.AddClickEvent(x =>
@@ -270,18 +290,19 @@ namespace TableCloth
                   if (!scannedPairs.Any())
                       return;
 
-                  listView.Items.Clear();
+                  certListView.Items.Clear();
 
                   foreach (var eachPair in scannedPairs)
                   {
-                      _ = listView.Items.Add(new ListViewItem(eachPair.ToString())
+                      _ = certListView.Items.Add(new ListViewItem(eachPair.ToString())
                       {
                           Tag = eachPair,
+						  ImageIndex = 0,
                       });
                   }
 
-                  if (listView.Items.Count > 0)
-                      listView.Items[0].Selected = true;
+                  if (certListView.Items.Count > 0)
+                      certListView.Items[0].Selected = true;
               });
 
             _ = browseCertPairButton.AddClickEvent(x =>
