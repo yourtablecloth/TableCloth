@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Windows.Forms;
 using TableCloth.Models;
 
@@ -188,8 +189,73 @@ namespace TableCloth
                   var tempPath = Path.Combine(Path.GetTempPath(), tempDirectoryName);
                   var wsbFilePath = SandboxBuilder.GenerateSandboxConfiguration(tempPath, config);
 
-                  var psi = new ProcessStartInfo(wsbExecPath, wsbFilePath) { UseShellExecute = false, };
-                  _ = Process.Start(psi);
+				  var process = new Process()
+				  {
+					  EnableRaisingEvents = true,
+					  StartInfo = new ProcessStartInfo(wsbExecPath, wsbFilePath) { UseShellExecute = false, },
+				  };
+
+				  process.Exited += (__sender, __e) =>
+				  {
+					  try
+					  {
+						  for (var i = 0; i < 5; i++)
+                          {
+							  try
+                              {
+								  if (Directory.Exists(tempPath))
+									  Directory.Delete(tempPath, true);
+								  else
+									  break;
+							  }
+							  catch { Thread.Sleep(TimeSpan.FromSeconds(0.5d)); }
+						  }
+					  }
+					  catch (Exception ex)
+					  {
+						  form.Invoke(new Action<Exception>((ex) =>
+						  {
+							  var response = MessageBox.Show(form, $"임시 폴더를 비우지 못했습니다. 해당 폴더를 열어 직접 지우실 수 있게 도와드릴까요?\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}",
+								  form.Text, MessageBoxButtons.YesNo,
+								  MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+
+							  if (response != DialogResult.Yes)
+								  return;
+
+							  var explorerFilePath = Path.Combine(
+								  Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+								  "explorer.exe");
+							  if (!File.Exists(explorerFilePath))
+							  {
+								  MessageBox.Show(form, "Windows 탐색기 프로그램을 찾을 수 없습니다.",
+									  form.Text, MessageBoxButtons.OK,
+									  MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+								  return;
+							  }
+
+							  using var explorerProcess = new Process()
+							  {
+								  StartInfo = new ProcessStartInfo(explorerFilePath, tempPath),
+							  };
+
+							  if (!explorerProcess.Start())
+							  {
+								  MessageBox.Show(form, "Windows 탐색기 프로그램을 찾을 수 없습니다.",
+									  form.Text, MessageBoxButtons.OK,
+									  MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+								  return;
+							  }
+						  }), ex);
+					  }
+				  };
+
+				  if (!process.Start())
+                  {
+					  MessageBox.Show(form, "샌드박스 프로그램을 실행하지 못했습니다.",
+						  form.Text, MessageBoxButtons.OK,
+						  MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+					  return;
+                  }
               });
 
 			return form;
