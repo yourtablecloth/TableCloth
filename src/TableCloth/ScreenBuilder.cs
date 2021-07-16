@@ -241,20 +241,31 @@ namespace TableCloth
 			var refreshButton = CreateButton(dialogLayout, "새로 고침(&R)");
 			
 			CreateLabel(dialogLayout);
-			CreateLabel(dialogLayout, "원하는 인증서가 없다면, 찾아보기 버튼을 눌러서 직접 DER 파일과 KEY 파일을 찾아주세요.");
+			CreateLabel(dialogLayout, "원하는 인증서가 없다면, 직접 인증서 찾기 버튼을 눌러서 직접 DER 파일과 KEY 파일을 찾아주세요.");
 			CreateLabel(dialogLayout);
 			var browseCertPairButton = CreateButton(dialogLayout, "직접 인증서 찾기(&B)...");
 
 			var cancelButton = CreateButton(actionLayout, "취소", dialogResult: DialogResult.Cancel);
-			var launchButton = CreateButton(actionLayout, "확인", dialogResult: DialogResult.OK);
+			var okayButton = CreateButton(actionLayout, "확인", dialogResult: DialogResult.OK);
 
 			form.CancelButton = cancelButton;
-			form.AcceptButton = launchButton;
-			actionLayout.Height = (int)(launchButton.Height * 1.6f);
+			form.AcceptButton = okayButton;
+			actionLayout.Height = (int)(okayButton.Height * 1.6f);
 
 			listView.ItemSelectionChanged += (_sender, _e) =>
 			{
 				form.Tag = _e.Item.Tag as X509CertPair;
+			};
+
+			listView.MouseDoubleClick += (_sender, _e) =>
+			{
+				ListViewHitTestInfo info = listView.HitTest(_e.X, _e.Y);
+				ListViewItem item = info.Item;
+
+				if (item != null)
+					okayButton.PerformClick();
+				else
+					listView.SelectedItems.Clear();
 			};
 
 			refreshButton.AddClickEvent(x =>
