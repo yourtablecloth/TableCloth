@@ -1,11 +1,14 @@
-﻿namespace TableCloth.Models
+﻿using System;
+
+namespace TableCloth.Models
 {
+	[Serializable]
     public sealed class SandboxConfiguration
 	{
-		public X509CertPair CertPair { get; set; }
-		public bool EnableMicrophone { get; set; }
-		public bool EnableWebCam { get; set; }
-		public bool EnablePrinters { get; set; }
-		public InternetService SelectedService { get; set; }
+		public X509CertPair CertPair { get; init; }
+		public bool EnableMicrophone { get; init; }
+		public bool EnableWebCam { get; init; }
+		public bool EnablePrinters { get; init; }
+		public InternetService SelectedService { get; init; }
     }
 }

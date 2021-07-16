@@ -22,6 +22,7 @@ namespace TableCloth
 			{
 				var pairs = parser.GetSectionValues(eachSiteSection);
 				var siteName = pairs.Where(x => string.Equals(x.Key, "SiteName", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).FirstOrDefault();
+				_ = Enum.TryParse(pairs.Where(x => string.Equals(x.Key, "Category", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).FirstOrDefault(), out InternetServiceCategory category);
 				var webSiteUrl = pairs.Where(x => string.Equals(x.Key, "WebSiteUrl", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).FirstOrDefault();
 				
 				if (string.IsNullOrWhiteSpace(siteName) ||
@@ -41,13 +42,14 @@ namespace TableCloth
 					.Where(x => x.Key.StartsWith("App_", StringComparison.OrdinalIgnoreCase))
 					.Select(x => new KeyValuePair<string, string>(regex.Replace(x.Key, string.Empty), x.Value))
 					.ToArray();
-				items.Add(new InternetService(siteName, homePageUrl, packageList));
+				items.Add(new InternetService(siteName, category, homePageUrl, packageList));
 			}
 
 			if (addDefaultItem)
 			{
 				items.Add(new InternetService(
 					"그냥 실행해주세요.",
+					default,
 					new Uri("https://www.naver.com/"),
                     Array.Empty<KeyValuePair<string, string>>()));
 			}

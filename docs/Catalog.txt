@@ -1,7 +1,9 @@
 # 식탁보 카탈로그: 등록하려는 웹 사이트에 대한 정보를 INI 파일 문법에 맞게 넣어주세요.
+# Category 속성에는 Other, Banking, Financing, CreditCard, Government 등의 값을 넣을 수 있어요. 자세한 속성은 InternetServiceCategory.cs 파일을 참고하세요.
 
 [WooriBank]
 SiteName=우리은행
+Category=Banking
 WebSiteUrl=https://www.wooribank.com/
 App_Veraport=https://www.wooribank.com/download/veraportG3/veraport-g3-x64.exe
 App_AnySign=https://www.wooribank.com/download/AnySign_Installer/AnySign_Installer.exe
@@ -11,11 +13,13 @@ App_IPInsider=https://www.wooribank.com/download/IPinside/I3GSvcManager_3.0.0.7.
 
 [KookminBank]
 SiteName=KB국민은행
+Category=Banking
 WebSiteUrl=https://www.kbstar.com/
 App_WizInDelfino=https://download.kbstar.com/security/wizvera/delfino/g3/delfino-g3.exe
 
 [KEBHanaBank]
 SiteName=KEB하나은행
+Category=Banking
 WebSiteUrl=https://www.kebhana.com/
 App_Veraport=https://www.kebhana.com/wizvera/veraport/down/veraport-g3-x64-sha2.exe
 App_TouchEnNxKey=https://www.kebhana.com/TouchEn/nxKey/module/TouchEn_nxKey_Installer_32bit.exe
@@ -25,6 +29,7 @@ App_IPInsider=https://www.kebhana.com/interezen/agent/np_v6/I3GSvcManager.exe
 
 [ShinhanBank]
 SiteName=신한은행
+Category=Banking
 WebSiteUrl=https://www.shinhan.com/
 App_AnhLabSafeTx=https://bank.shinhan.com/sw/astx/astxdn.exe
 App_INISAFECrossWebEx=https://bank.shinhan.com/sw/initech/extension/down/INIS_EX.exe?ver=1.0.1.961
@@ -33,6 +38,7 @@ App_Printmade3=https://bank.shinhan.com/sw/printmade/download_files/Windows/Prin
 
 [NHInternetBank]
 SiteName=농협인터넷뱅킹
+Category=Banking
 WebSiteUrl=https://banking.nonghyup.com/
 App_Veraport=https://veraport.nonghyup.com/download/20210707/veraport-g3-x64.exe
 App_AhnLabSafeTx=https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
