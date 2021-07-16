@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,10 +22,6 @@ namespace TableCloth
 			if (!Directory.Exists(assetsDirectory))
 				Directory.CreateDirectory(assetsDirectory);
 
-			var sandboxWallpaperContent = Convert.FromBase64String(GraphicResources.SandboxWallpaperImage);
-			var sandboxWallpaperPath = Path.Combine(assetsDirectory, "WallpaperImage.jpg");
-			File.WriteAllBytes(sandboxWallpaperPath, sandboxWallpaperContent);
-
 			var batchFileContent = GenerateSandboxStartupScript(config);
 			var batchFilePath = Path.Combine(assetsDirectory, "StartupScript.cmd");
 			File.WriteAllText(batchFilePath, batchFileContent, Encoding.Default);
@@ -38,17 +35,12 @@ namespace TableCloth
 
 		public static string GenerateSandboxStartupScript(SandboxConfiguration config)
 		{
+			Debugger.Launch();
 			if (config == null)
 				throw new ArgumentNullException(nameof(config));
 
 			var buffer = new StringBuilder();
 			var service = config.SelectedService;
-
-			_ = buffer.AppendLine($@"%windir%\system32\reg.exe add ""HKCU\control panel\desktop"" /v wallpaper /t REG_SZ /d """" /f");
-			_ = buffer.AppendLine($@"%windir%\system32\reg.exe add ""HKCU\control panel\desktop"" /v wallpaper /t REG_SZ /d ""C:\assets\WallpaperImage.jpg"" /f ");
-			_ = buffer.AppendLine($@"%windir%\system32\reg.exe delete ""HKCU\Software\Microsoft\Internet Explorer\Desktop\General"" /v WallpaperStyle /f");
-			_ = buffer.AppendLine($@"%windir%\system32\reg.exe add ""HKCU\control panel\desktop"" /v WallpaperStyle /t REG_SZ /d 2 /f");
-			_ = buffer.AppendLine($@"%windir%\system32\rundll32.exe %windir%\system32\user32.dll,UpdatePerUserSystemParameters");
 
 			var infoMessage = $"지금부터 {service.Packages.Count()}개 프로그램의 설치 과정이 시작됩니다. 모든 프로그램의 설치가 끝나면 자동으로 {service.SiteName} 홈페이지가 열립니다.";
 			string value = $@"PowerShell -Command ""Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.MessageBox]::Show('{infoMessage}', '안내', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)""";
