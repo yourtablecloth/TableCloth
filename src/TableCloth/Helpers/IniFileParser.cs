@@ -75,6 +75,8 @@ namespace TableCloth.Helpers
 			{
 				//Parse the "key=value" string into its constituent parts
 				equalSignPos = keyValuePairs[i].IndexOf('=');
+				if (equalSignPos < 0)
+					continue;
 				key = keyValuePairs[i].Substring(0, equalSignPos);
 				value = keyValuePairs[i].Substring(equalSignPos + 1, keyValuePairs[i].Length - equalSignPos - 1);
 				retval.Add(new KeyValuePair<string, string>(key, value));
