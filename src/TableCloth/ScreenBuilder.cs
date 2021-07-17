@@ -35,12 +35,27 @@ namespace TableCloth
 				Padding = new Padding(16),
 			};
 
-			var actionLayout = new FlowLayoutPanel()
+			var actionLayout = new Panel()
 			{
 				Parent = form,
 				Dock = DockStyle.Bottom,
+				Padding = new Padding(10, 0, 10, 0),
+			};
+
+			var actionLeftLayout = new FlowLayoutPanel()
+			{
+				Parent = actionLayout,
+				Dock = DockStyle.Left,
+				FlowDirection = FlowDirection.LeftToRight,
+				Width = form.Width / 2 - 50,
+			};
+
+			var actionRightLayout = new FlowLayoutPanel()
+			{
+				Parent = actionLayout,
+				Dock = DockStyle.Right,
 				FlowDirection = FlowDirection.RightToLeft,
-				Padding = new Padding(0, 0, 10, 0),
+				Width = form.Width / 2 - 50,
 			};
 
 			CreateLabel(dialogLayout, "원하는 옵션을 선택해주세요.");
@@ -121,12 +136,19 @@ namespace TableCloth
 				};
 			}
 
-			var cancelButton = CreateButton(actionLayout, "닫기", handler: x =>
+			var aboutButton = CreateButton(actionLeftLayout, "정보", handler: x =>
+			{
+				MessageBox.Show(form,
+					$"식탁보 프로그램 (#{ThisAssembly.Git.Commit})\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n(c) 2021 남정현",
+					$"식탁보 프로그램 정보", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+			});
+
+			var cancelButton = CreateButton(actionRightLayout, "닫기", handler: x =>
 			{
 				form.Close();
 			});
 
-			var launchButton = CreateButton(actionLayout, "샌드박스 실행");
+			var launchButton = CreateButton(actionRightLayout, "샌드박스 실행");
 
 			form.CancelButton = cancelButton;
 			form.AcceptButton = launchButton;
