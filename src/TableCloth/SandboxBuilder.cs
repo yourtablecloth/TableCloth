@@ -39,22 +39,26 @@ namespace TableCloth
 				throw new ArgumentNullException(nameof(config));
 
 			var buffer = new StringBuilder();
-			var service = config.SelectedService;
+			var services = config.SelectedServices;
+			var packageTotalCount = services.Sum(x => x.Packages.Count());
+			var siteNameList = string.Join(", ", services.Select(x => x.SiteName));
 
-			var infoMessage = $"지금부터 {service.Packages.Count()}개 프로그램의 설치 과정이 시작됩니다. 모든 프로그램의 설치가 끝나면 자동으로 {service.SiteName} 홈페이지가 열립니다.";
+			var infoMessage = $"지금부터 {packageTotalCount}개 프로그램의 설치 과정이 시작됩니다. 모든 프로그램의 설치가 끝나면 자동으로 {siteNameList} 홈페이지가 열립니다.";
 			string value = $@"PowerShell -Command ""Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.MessageBox]::Show('{infoMessage}', '안내', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)""";
 			_ = buffer.AppendLine(value);
 
-			if (service != null)
+			string[] homepageUrls = services.Select(x => x.HomepageUrl.AbsoluteUri).ToArray();
+
+			foreach (var eachService in services)
             {
-				foreach (var eachPackage in service.Packages)
-                {
+				foreach (var eachPackage in eachService.Packages)
+				{
 					string localFileName;
 					try { localFileName = Path.GetFileName(eachPackage.PackageDownloadUrl.LocalPath); }
 					catch { localFileName = Guid.NewGuid().ToString("n") + ".exe"; }
 
-                    _ = buffer.AppendLine($@"REM Run {eachPackage.Name} Setup");
-                    _ = buffer.AppendLine($@"curl -L ""{eachPackage.PackageDownloadUrl}"" --output ""%temp%\{localFileName}""");
+					_ = buffer.AppendLine($@"REM Run {eachPackage.Name} Setup");
+					_ = buffer.AppendLine($@"curl -L ""{eachPackage.PackageDownloadUrl}"" --output ""%temp%\{localFileName}""");
 
 					if (!string.IsNullOrWhiteSpace(eachPackage.Arguments))
 						_ = buffer.AppendLine($@"start /abovenormal /wait %temp%\{localFileName} {eachPackage.Arguments}");
@@ -63,9 +67,10 @@ namespace TableCloth
 
 					_ = buffer.AppendLine();
 				}
-
-				_ = buffer.AppendLine($@"start {service.HomepageUrl}");
 			}
+
+			foreach (var eachHomePageUrl in homepageUrls)
+				_ = buffer.AppendLine($@"start {eachHomePageUrl}");
 
 			return buffer.ToString();
 		}

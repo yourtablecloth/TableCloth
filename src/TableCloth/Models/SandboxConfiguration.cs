@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TableCloth.Models
 {
@@ -9,6 +10,6 @@ namespace TableCloth.Models
 		public bool EnableMicrophone { get; init; }
 		public bool EnableWebCam { get; init; }
 		public bool EnablePrinters { get; init; }
-		public InternetService SelectedService { get; init; }
+		public IEnumerable<InternetService> SelectedServices { get; init; }
     }
 }

@@ -18,7 +18,7 @@ namespace TableCloth.Models
         [Description("신용 카드")]
         CreditCard,
 
-        [Description("전자 정부")]
+        [Description("공공")]
         Government,
     }
 }

@@ -18,8 +18,8 @@ namespace TableCloth
 			var form = new Form()
 			{
 				Text = "식탁보 - 컴퓨터를 깨끗하게 사용하세요!",
-				Size = new Size(640, 400),
-				MinimumSize = new Size(640, 400),
+				Size = new Size(640, 480),
+				MinimumSize = new Size(640, 480),
 				Icon = new Icon(
 					new MemoryStream(Convert.FromBase64String(GraphicResources.AppIcon)),
 					64, 64),
@@ -63,16 +63,16 @@ namespace TableCloth
 			};
 
             _ = importButton.AddClickEvent(x =>
-              {
-                  using var selectForm = CreateCertSelectForm();
-                  if (selectForm.ShowDialog(form) != DialogResult.OK)
-                      return;
+            {
+                using var selectForm = CreateCertSelectForm();
+                if (selectForm.ShowDialog(form) != DialogResult.OK)
+                    return;
 
-                  if (selectForm.Tag is not X509CertPair certPair)
-                      return;
+                if (selectForm.Tag is not X509CertPair certPair)
+                    return;
 
-                  npkiFileListBox.DataSource = new string[] { certPair.DerFilePath, certPair.KeyFilePath, };
-              });
+                npkiFileListBox.DataSource = new string[] { certPair.DerFilePath, certPair.KeyFilePath, };
+            });
 
             _ = importButton.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
             _ = npkiFileListBox.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
@@ -85,15 +85,39 @@ namespace TableCloth
 			enableWebCam.Font = new Font(enableWebCam.Font, FontStyle.Bold);
 
 			CreateLabel(dialogLayout);
-			var siteInstructionLabel = CreateLabel(dialogLayout, "식탁보 위에서 접속할 사이트를 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요.");
+			var siteInstructionLabel = CreateLabel(dialogLayout, "식탁보 위에서 접속할 사이트들을 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요.");
 			CreateLabel(dialogLayout);
 
-			var selectedSiteComboBox = new ComboBox()
+			var siteCatalogTabControl = new TabControl
 			{
 				Parent = dialogLayout,
-				DropDownStyle = ComboBoxStyle.DropDownList,
 				Width = form.ClientSize.Width - 100,
+				Height = 100,
+				Visible = true,
 			};
+
+			var categoryValues = Enum.GetValues<InternetServiceCategory>().ToList();
+			categoryValues.Remove(InternetServiceCategory.Other);
+			categoryValues.Add(InternetServiceCategory.Other);
+
+			foreach (var eachCategoryType in categoryValues)
+            {
+				var eachTabPage = new TabPage
+				{
+					Parent = siteCatalogTabControl,
+					Text = InternetService.GetCategoryDisplayName(eachCategoryType),
+					Tag = eachCategoryType,
+				};
+
+				var eachSiteComboBox = new ListBox()
+				{
+					Name = "SiteList",
+					Parent = eachTabPage,
+					Dock = DockStyle.Fill,
+					SelectionMode = SelectionMode.MultiExtended,
+					IntegralHeight = false,
+				};
+			}
 
 			var cancelButton = CreateButton(actionLayout, "닫기", handler: x =>
 			{
@@ -140,11 +164,20 @@ namespace TableCloth
 				catch { }
 
 				var catalog = CatalogBuilder.ParseCatalog(catalogFilePath);
+				var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
+					x => (InternetServiceCategory)x.Tag,
+					x => x.Controls["SiteList"] as ListBox);
 
 				if (catalog != null && catalog.Any())
-					selectedSiteComboBox.DataSource = catalog;
+                {
+					foreach (var eachType in catalog.GroupBy(x => x.Category))
+						siteListControls[eachType.Key].DataSource = eachType.ToList();
+				}
 				else
+				{
+					siteCatalogTabControl.Visible = false;
 					siteInstructionLabel.Text = "카탈로그 파일을 가져오지 못했어요! 그래도 샌드박스는 대신 실행해드려요.";
+				}
 
 				try
 				{
@@ -159,104 +192,108 @@ namespace TableCloth
 			};
 
             _ = launchButton.AddClickEvent(x =>
-              {
-                  var wsbExecPath = Path.Combine(
-                      Environment.GetFolderPath(Environment.SpecialFolder.System),
-                      "WindowsSandbox.exe");
+            {
+                var wsbExecPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.System),
+                    "WindowsSandbox.exe");
 
-                  var pair = default(X509CertPair);
-                  var fileList = (npkiFileListBox.DataSource as IEnumerable<string>)?.ToArray();
+                var pair = default(X509CertPair);
+                var fileList = (npkiFileListBox.DataSource as IEnumerable<string>)?.ToArray();
 
-                  if (mapNPKICert.Checked && fileList != null)
-                  {
-                      var derFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".der", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                      var keyFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".key", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                if (mapNPKICert.Checked && fileList != null)
+                {
+                    var derFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".der", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                    var keyFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".key", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-                      if (File.Exists(derFilePath) && File.Exists(keyFilePath))
-                          pair = X509CertPair.CreateX509CertPair(derFilePath, keyFilePath);
-                  }
+                    if (File.Exists(derFilePath) && File.Exists(keyFilePath))
+                        pair = X509CertPair.CreateX509CertPair(derFilePath, keyFilePath);
+                }
 
-                  SandboxConfiguration config = new()
-                  {
-                      CertPair = pair,
-                      EnableMicrophone = enableMicrophone.Checked,
-                      EnableWebCam = enableWebCam.Checked,
-                      EnablePrinters = enablePrinters.Checked,
-                      SelectedService = selectedSiteComboBox.SelectedItem as InternetService,
-                  };
+				var activeTabPage = siteCatalogTabControl.SelectedTab;
+				var activeListBox = activeTabPage.Controls["SiteList"] as ListBox;
+				var activeItems = activeListBox.SelectedItems.Cast<InternetService>().ToArray();
 
-                  var tempDirectoryName = "bwsb_" + Guid.NewGuid().ToString("n");
-                  var tempPath = Path.Combine(Path.GetTempPath(), tempDirectoryName);
-                  var wsbFilePath = SandboxBuilder.GenerateSandboxConfiguration(tempPath, config);
+				SandboxConfiguration config = new()
+                {
+                    CertPair = pair,
+                    EnableMicrophone = enableMicrophone.Checked,
+                    EnableWebCam = enableWebCam.Checked,
+                    EnablePrinters = enablePrinters.Checked,
+                    SelectedServices = activeItems,
+                };
 
-				  var process = new Process()
-				  {
-					  EnableRaisingEvents = true,
-					  StartInfo = new ProcessStartInfo(wsbExecPath, wsbFilePath) { UseShellExecute = false, },
-				  };
+                var tempDirectoryName = "bwsb_" + Guid.NewGuid().ToString("n");
+                var tempPath = Path.Combine(Path.GetTempPath(), tempDirectoryName);
+                var wsbFilePath = SandboxBuilder.GenerateSandboxConfiguration(tempPath, config);
 
-				  process.Exited += (__sender, __e) =>
-				  {
-					  try
-					  {
-						  for (var i = 0; i < 5; i++)
-                          {
-							  try
-                              {
-								  if (Directory.Exists(tempPath))
-									  Directory.Delete(tempPath, true);
-								  else
-									  break;
-							  }
-							  catch { Thread.Sleep(TimeSpan.FromSeconds(0.5d)); }
-						  }
-					  }
-					  catch (Exception ex)
-					  {
-						  form.Invoke(new Action<Exception>((ex) =>
-						  {
-							  var response = MessageBox.Show(form, $"임시 폴더를 비우지 못했습니다. 해당 폴더를 열어 직접 지우실 수 있게 도와드릴까요?\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}",
-								  form.Text, MessageBoxButtons.YesNo,
-								  MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+				var process = new Process()
+				{
+					EnableRaisingEvents = true,
+					StartInfo = new ProcessStartInfo(wsbExecPath, wsbFilePath) { UseShellExecute = false, },
+				};
 
-							  if (response != DialogResult.Yes)
-								  return;
+				process.Exited += (__sender, __e) =>
+				{
+					try
+					{
+						for (var i = 0; i < 5; i++)
+                        {
+							try
+                            {
+								if (Directory.Exists(tempPath))
+									Directory.Delete(tempPath, true);
+								else
+									break;
+							}
+							catch { Thread.Sleep(TimeSpan.FromSeconds(0.5d)); }
+						}
+					}
+					catch (Exception ex)
+					{
+						form.Invoke(new Action<Exception>((ex) =>
+						{
+							var response = MessageBox.Show(form, $"임시 폴더를 비우지 못했습니다. 해당 폴더를 열어 직접 지우실 수 있게 도와드릴까요?\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}",
+								form.Text, MessageBoxButtons.YesNo,
+								MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
 
-							  var explorerFilePath = Path.Combine(
-								  Environment.GetFolderPath(Environment.SpecialFolder.Windows),
-								  "explorer.exe");
-							  if (!File.Exists(explorerFilePath))
-							  {
-								  MessageBox.Show(form, "Windows 탐색기 프로그램을 찾을 수 없습니다.",
-									  form.Text, MessageBoxButtons.OK,
-									  MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-								  return;
-							  }
+							if (response != DialogResult.Yes)
+								return;
 
-							  using var explorerProcess = new Process()
-							  {
-								  StartInfo = new ProcessStartInfo(explorerFilePath, tempPath),
-							  };
+							var explorerFilePath = Path.Combine(
+								Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+								"explorer.exe");
+							if (!File.Exists(explorerFilePath))
+							{
+								MessageBox.Show(form, "Windows 탐색기 프로그램을 찾을 수 없습니다.",
+									form.Text, MessageBoxButtons.OK,
+									MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+								return;
+							}
 
-							  if (!explorerProcess.Start())
-							  {
-								  MessageBox.Show(form, "Windows 탐색기 프로그램을 찾을 수 없습니다.",
-									  form.Text, MessageBoxButtons.OK,
-									  MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-								  return;
-							  }
-						  }), ex);
-					  }
-				  };
+							using var explorerProcess = new Process()
+							{
+								StartInfo = new ProcessStartInfo(explorerFilePath, tempPath),
+							};
 
-				  if (!process.Start())
-                  {
-					  MessageBox.Show(form, "샌드박스 프로그램을 실행하지 못했습니다.",
-						  form.Text, MessageBoxButtons.OK,
-						  MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-					  return;
-                  }
-              });
+							if (!explorerProcess.Start())
+							{
+								MessageBox.Show(form, "Windows 탐색기 프로그램을 찾을 수 없습니다.",
+									form.Text, MessageBoxButtons.OK,
+									MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+								return;
+							}
+						}), ex);
+					}
+				};
+
+				if (!process.Start())
+                {
+					MessageBox.Show(form, "샌드박스 프로그램을 실행하지 못했습니다.",
+						form.Text, MessageBoxButtons.OK,
+						MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+					return;
+                }
+            });
 
 			return form;
 		}
