@@ -20,6 +20,8 @@ namespace TableCloth
 				Text = "식탁보 - 컴퓨터를 깨끗하게 사용하세요!",
 				Size = new Size(640, 480),
 				MinimumSize = new Size(640, 480),
+				FormBorderStyle = FormBorderStyle.FixedDialog,
+				MaximizeBox = false,
 				Icon = new Icon(
 					new MemoryStream(Convert.FromBase64String(GraphicResources.AppIcon)),
 					64, 64),
