@@ -45,6 +45,11 @@ namespace TableCloth.Resources
             var defaultString = $"{svc.DisplayName} - {svc.Url}";
             var pkgs = svc.Packages;
 
+            var hasCompatNotes = !string.IsNullOrWhiteSpace(svc.CompatibilityNotes);
+
+            if (hasCompatNotes)
+                defaultString = $"*{defaultString}";
+
             if (pkgs != null && pkgs.Count() > 0)
                 defaultString = $"{defaultString} (총 {pkgs.Count()}개 프로그램 설치)";
 
