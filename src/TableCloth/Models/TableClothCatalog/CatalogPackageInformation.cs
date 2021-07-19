@@ -10,7 +10,7 @@ namespace TableCloth.Models.TableClothCatalog
         public string Name { get; set; }
 
         [XmlAttribute("Url")]
-        public Uri Url { get; set; }
+        public string Url { get; set; }
 
         [XmlAttribute("Arguments")]
         public string Arguments { get; set; }

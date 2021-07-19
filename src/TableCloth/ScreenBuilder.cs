@@ -8,8 +8,8 @@ using System.Net;
 using System.Net.Cache;
 using System.Threading;
 using System.Windows.Forms;
+using TableCloth.Helpers;
 using TableCloth.Internals;
-using TableCloth.Models;
 using TableCloth.Models.TableClothCatalog;
 using TableCloth.Resources;
 
@@ -200,7 +200,8 @@ namespace TableCloth
 				catch { }
 
 				var catalog = CatalogBuilder.ParseCatalog(catalogFilePath);
-				var rootElem = new CatalogDocument() { InternetServices = new(catalog), };
+				var rootElem = new CatalogDocument() { Services = new(catalog), };
+				var xmlContent = XmlHelpers.SerializeToXml(rootElem);
 
 				var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
 					x => (CatalogInternetServiceCategory)x.Tag,

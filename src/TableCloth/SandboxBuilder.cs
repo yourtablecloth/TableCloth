@@ -112,7 +112,7 @@ namespace TableCloth
 
             foreach (var eachPackage in services.SelectMany(service => service.Packages))
             {
-                var localFileName = GetLocalFileName(eachPackage.Url.LocalPath);
+                var localFileName = GetLocalFileName(new Uri(eachPackage.Url, UriKind.Absolute).LocalPath);
 
                 buffer
                     .AppendLine($@"REM Run {eachPackage.Name} Setup")
@@ -123,7 +123,7 @@ namespace TableCloth
                     .AppendLine();
             }
 
-            foreach (var eachHomePageUrl in services.Select(x => x.Url.AbsoluteUri))
+            foreach (var eachHomePageUrl in services.Select(x => x.Url))
                 buffer.AppendLine($@"start /max {eachHomePageUrl}");
 
             return buffer.ToString();

@@ -57,7 +57,7 @@ namespace TableCloth.Internals
 						if (!Uri.TryCreate(eachPair.Value, UriKind.Absolute, out Uri packageUri))
 							continue;
 
-						package.Url = packageUri;
+						package.Url = packageUri.ToString();
                     }
 					else if (argPrefixRegex.IsMatch(eachPair.Key))
 					{
@@ -73,18 +73,26 @@ namespace TableCloth.Internals
 					}
                 }
 
-				items.Add(new CatalogInternetService(eachSiteSection, siteName, category, homePageUrl,
-					packages.Where(x => x.Url != null).ToArray()));
+				items.Add(new CatalogInternetService()
+				{
+					Id = eachSiteSection,
+					DisplayName = siteName,
+					Category = category,
+					Url = homePageUrl.ToString(),
+					Packages = packages.Where(x => x.Url != null).ToList(),
+				});
 			}
 
 			if (addDefaultItem)
 			{
-				items.Add(new CatalogInternetService(
-					Guid.Empty.ToString(),
-					StringResources.MainForm_JustRunItemText,
-					default,
-					new Uri("https://www.naver.com/"),
-                    Array.Empty<CatalogPackageInformation>()));
+				items.Add(new CatalogInternetService()
+                {
+					Id = string.Empty,
+					DisplayName = StringResources.MainForm_JustRunItemText,
+					Category = default,
+					Url = "https://www.naver.com/",
+					Packages = new(),
+				});
 			}
 
 			return items.ToArray();

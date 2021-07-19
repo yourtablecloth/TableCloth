@@ -5,18 +5,9 @@ using TableCloth.Resources;
 
 namespace TableCloth.Models.TableClothCatalog
 {
-    [Serializable, XmlType("InternetService")]
+    [Serializable, XmlType]
     public sealed class CatalogInternetService
     {
-        public CatalogInternetService(string id, string displayName, CatalogInternetServiceCategory category, Uri homepageUrl, IEnumerable<CatalogPackageInformation> packages)
-        {
-            Id = id;
-            DisplayName = displayName;
-            Category = category;
-            Url = homepageUrl;
-            Packages = new(packages);
-        }
-
         [XmlAttribute("Id")]
         public string Id { get; set; }
 
@@ -27,7 +18,7 @@ namespace TableCloth.Models.TableClothCatalog
         public CatalogInternetServiceCategory Category { get; set; }
 
         [XmlAttribute("Url")]
-        public Uri Url { get; set; }
+        public string Url { get; set; }
 
         [XmlArray, XmlArrayItem(typeof(CatalogPackageInformation), ElementName = "Packages")]
         public List<CatalogPackageInformation> Packages { get; set; } = new();
