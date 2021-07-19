@@ -21,7 +21,7 @@ Arg_AhnLabSafeTx=/silent
 App_NOS=https://www.wooribank.com/download/NOS/nos_setup.exe
 Arg_NOS=/silent
 
-App_IPInsider=https://www.wooribank.com/download/IPinside/I3GSvcManager_3.0.0.7.exe
+App_IPInside=https://www.wooribank.com/download/IPinside/I3GSvcManager_3.0.0.7.exe
 
 [KookminBank]
 SiteName=KB국민은행
@@ -39,29 +39,29 @@ WebSiteUrl=https://www.kebhana.com/
 App_Veraport=https://www.kebhana.com/wizvera/veraport/down/veraport-g3-x64-sha2.exe
 Arg_Veraport=/silent
 
-App_TouchEnNxKey=https://www.kebhana.com/TouchEn/nxKey/module/TouchEn_nxKey_Installer_32bit.exe
-Arg_TouchEnNxKey=/silent
+App_TouchEnKey=https://www.kebhana.com/TouchEn/nxKey/module/TouchEn_nxKey_Installer_32bit.exe
+Arg_TouchEnKey=/silent
 
-App_DelfinoG3=https://www.kebhana.com/wizvera/delfino/down/g3/delfino-g3.exe
-Arg_DelfinoG3=/silent
+App_Delfino=https://www.kebhana.com/wizvera/delfino/down/g3/delfino-g3.exe
+Arg_Delfino=/silent
 
 App_SCWSSP=https://www.kebhana.com/softcamp/WebSecurityStandard/SCWSSPSetup.exe
 
-App_IPInsider=https://www.kebhana.com/interezen/agent/np_v6/I3GSvcManager.exe
+App_IPInside=https://www.kebhana.com/interezen/agent/np_v6/I3GSvcManager.exe
 
 [ShinhanBank]
 SiteName=신한은행
 Category=Banking
 WebSiteUrl=https://www.shinhan.com/
 
-App_AnhLabSafeTx=https://bank.shinhan.com/sw/astx/astxdn.exe
-Arg_AnhLabSafeTx=/silent
+App_ASTX=https://bank.shinhan.com/sw/astx/astxdn.exe
+Arg_ASTX=/silent
 
-App_INISAFECrossWebEx=https://bank.shinhan.com/sw/initech/extension/down/INIS_EX.exe?ver=1.0.1.961
-Arg_INISAFECrossWebEx=/silent
+App_INISAFECrossWeb=https://bank.shinhan.com/sw/initech/extension/down/INIS_EX.exe?ver=1.0.1.961
+Arg_INISAFECrossWeb=/silent
 
-App_TouchEnNxKey=https://bank.shinhan.com/sw/raon/TouchEn/nxKey/module/TouchEn_nxKey_32bit.exe?ver=1.0.0.50
-Arg_TouchEnNxKey=/silent
+App_TouchEnKey=https://bank.shinhan.com/sw/raon/TouchEn/nxKey/module/TouchEn_nxKey_32bit.exe?ver=1.0.0.50
+Arg_TouchEnKey=/silent
 
 App_Printmade3=https://bank.shinhan.com/sw/printmade/download_files/Windows/Printmade3_setup.exe
 App_Printmade3=/silent
@@ -80,8 +80,184 @@ Arg_AnhLabSafeTx=/silent
 App_INISAFECrossWebEx=https://veraport.nonghyup.com/download/20210707/INIS_EX_SHA2.exe?ver=1.0.1.1021
 Arg_INISAFECrossWebEx=/silent
 
-App_TouchEnNxKey=https://img.nonghyup.com/install/so/raon/TouchEnNxKey/TouchEn_nxKey_Installer_64bit_new.exe
-Arg_TouchEnNxKey=/silent
+App_TouchEnKey=https://img.nonghyup.com/install/so/raon/TouchEnNxKey/TouchEn_nxKey_Installer_64bit_new.exe
+Arg_TouchEnKey=/silent
+
+[SHInternetBank]
+SiteName=SH수협은행
+Category=Banking
+WebSiteUrl=https://www.suhyup-bank.com/
+
+App_Veraport=https://www.suhyup-bank.com/wizvera/veraport/down/veraport-g3-x64.exe
+
+App_IniSafeCrossWeb=https://www.suhyup-bank.com/initech/crossweb/extension/down/INIS_EX.exe
+Arg_IniSafeCrossWeb=/silent
+
+App_TouchEnKey=https://www.suhyup-bank.com/TouchEn_new/nxKey/module/TouchEn_nxKey_Installer_32bit.exe
+Arg_TouchEnKey=/silent
+
+App_IPInside=https://www.suhyup-bank.com/ipinside/Windows/I3GSvcManager.exe
+
+App_ASTX=http://safetx.ahnlab.com/master/win/default/common/astxdn.exe
+App_ASTX=/silent
+
+Arg_AlphaSecure=https://www.suhyup-bank.com/ZeroKeeper/down/ASSetup.exe
+
+[IBKBank]
+SiteName=IBK 기업은행
+Category=Banking
+WebSiteUrl=https://www.ibk.co.kr/
+
+App_Veraport=https://mybank.ibk.co.kr/IBK/uib/sw/wizvera/veraport/down/veraport-g3-x64-sha2.exe
+Arg_Veraport=/silent
+
+App_WizInDelfino=https://mybank.ibk.co.kr/IBK/uib/sw/wizvera/delfino/down/delfino-g3-sha2.exe
+Arg_WizInDelfino=/silent
+
+App_IPInside=https://mybank.ibk.co.kr/IBK/uib/sw/interezen/agent/I3GSvcManager.exe
+
+App_NOS=https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe
+Arg_NOS=/silent
+
+App_TouchEnKey=https://download.raonsecure.com/TouchEnnxKey/ibk/TouchEn_nxKey_32bit.exe
+Arg_TouchEnKey=/silent
+
+App_APSEngine=https://mybank.ibk.co.kr/IBK/uib/sw/yettiesoft/APS/APS_Engine.exe
+
+[KDBBank]
+SiteName=KDB 산업은행
+Category=Banking
+WebSiteUrl=https://www.kdb.co.kr/
+
+App_AhnLabSafeTx=https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
+Arg_AnhLabSafeTx=/silent
+
+App_AnySign=https://banking.kdb.co.kr//bp/3rd-party-web/hsecure/anysign/AnySign_Installer.exe
+Arg_AnySign=/silent
+
+[StandardCharteredBank]
+SiteName=한국스탠다드차타드은행
+Category=Banking
+WebSiteUrl=https://www.standardchartered.co.kr/
+
+App_Veraport=https://open.standardchartered.co.kr/wizvera/veraport20/down/veraport-g3-x64-sha2.exe
+Arg_Veraport=/silent
+
+App_IniSafeCrossWeb=https://open.standardchartered.co.kr/initech/extension/down/INIS_EX.exe
+Arg_IniSafeCrossWeb=/silent
+
+App_AhnLabSafeTx=https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
+Arg_AnhLabSafeTx=/silent
+
+App_IPInside=https://open.standardchartered.co.kr/interezen/install/Non/I3GSvcManager.exe
+
+[CitiBankKorea]
+SiteName=한국씨티은행
+Category=Banking
+WebSiteUrl=https://www.citibank.co.kr/
+
+App_Veraport=https://www.citibank.co.kr/3rdParty/wizvera/veraport/down/veraport-g3-x64-sha2.exe
+Arg_Veraport=/silent
+
+App_WizInDelfino=https://www.citibank.co.kr/3rdParty/wizvera/delfino/down/delfino-g3.exe
+Arg_WizInDelfino=/silent
+
+App_TouchEnKey=https://www.citibank.co.kr/3rdParty/raon/TouchEn/nxKey/nxKey/module/TouchEn_nxKey_Installer_32bit_MLWS.exe
+Arg_TouchEnKey=/silent
+
+App_AhnLabSafeTx=https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
+Arg_AnhLabSafeTx=/silent
+
+App_IPInside=https://www.citibank.co.kr/3rdParty/interezen/ipinside/agent/I3GSvcManager.exe
+
+[KBank]
+SiteName=케이뱅크
+Category=Banking
+WebSiteUrl=https://www.kbanknow.com/
+
+App_SmartManagerEx=https://www.kbanknow.com/product/initech/smartmanagerex/extension/down/SmartManagerEX.exe?ver=1.0.1.1392
+
+App_VCPP2008_Redist_x86=https://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x86.exe
+Arg_VCPP2008_Redist_x86=/q
+
+App_MoaSignEx=https://download.kbanknow.com/product/initech/moasign/down/MoaSignEXSetup.exe
+Arg_MoaSignEx=/silent
+
+App_AhnLabSafeTx=https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
+Arg_AnhLabSafeTx=/silent
+
+App_IPInside=https://download.kbanknow.com/product/interezen/I3GSvcManager.exe
+
+App_KSCertRelay=https://download.kbanknow.com/product/qrcertrelay/nxCR/module/KSCertRelay_nx_Installer_32bit.exe?ver=2.1.0.5
+Arg_KSCertRelay=/silent
+
+App_MarkAny=https://download.kbanknow.com/product/markany/exe/Setup_ePageSaferRT.exe
+Arg_MarkAny=/silent
+
+App_KISSCAP=https://download.kbanknow.com/product/scraping/KISSCAP.exe
+Arg_KISSCAP=/s /v/qn
+
+[KakaoBank]
+SiteName=카카오뱅크
+Category=Banking
+WebSiteUrl=https://www.kakaobank.com/
+
+App_AhnLabSafeTx=https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
+Arg_AnhLabSafeTx=/silent
+
+App_CertTool=https://og.kakaobank.io/download/517591e5-9040-4393-b946-4de3ce14c886
+
+[DGBDaeguBank]
+SiteName=DGB 대구은행
+Category=Banking
+WebSiteUrl=https://www.dgb.co.kr/
+
+App_Veraport=http://varaportg3.dl.cdn.cloudn.co.kr/veraport-g3-x64-sha2.exe
+Arg_Veraport=/silent
+
+App_TouchEnKey=http://touchennxkey.dl.cdn.cloudn.co.kr/ebz_TouchEn_nxKey_Installer_32bit.exe
+Arg_TouchEnKey=/silent
+
+App_AhnLabSafeTx=https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
+Arg_AnhLabSafeTx=/silent
+
+App_WizInDelfino=http://delfinog3.dl.cdn.cloudn.co.kr/delfino-g3-sha2.exe
+Arg_WizInDelfino=/silent
+
+App_ePageSafer=http://epagesaferrt.dl.cdn.cloudn.co.kr/ebz_MAWS_DaeguBankRex_Setup.exe
+Arg_ePageSafer=/silent
+
+[BusanBank]
+SiteName=BNK 부산은행
+Category=Banking
+WebSiteUrl=https://www.busanbank.co.kr/
+
+App_Veraport=https://ibank.busanbank.co.kr/product/install/veraport/down/veraport-g3-x64.exe
+Arg_Veraport=/silent
+
+App_IniSafeCrossWeb=https://ibank.busanbank.co.kr/product/install/INISAFE/extension/down/INIS_EX_SHA2.exe
+Arg_IniSafeCrossWeb=/silent
+
+App_ASTX=http://safetx.ahnlab.com/master/win/default/common/astxdn.exe
+Arg_ASTX=/silent
+
+App_TouchEnKey=https://ibank.busanbank.co.kr/product/install/TouchEn_NX/nxKey/module/TouchEn_nxKey_Installer_64bit.exe
+Arg_TouchEnKey=/silent
+
+App_IPInside=https://ibank.busanbank.co.kr/product/install/IPinside/Windows/I3GSvcManager.exe
+
+App_KSCertRelay=https://ibank.busanbank.co.kr/product/install/TouchEn_NX/nxCR/module/KSCertRelay_nx_Installer_64bit.exe
+Arg_KSCertRelay=/silent
+
+App_BusanPFMS=https://ibank.busanbank.co.kr/product/install/pfms/Windows/2.0.2.2/BusanPFMS_Setup.exe
+
+# TODO - 경남은행
+
+# TODO - 광주은행
+
+# TODO - 전북은행
+
+# TODO - 제주은행
 
 # 인터넷 뱅킹 끝 - Banking
 
@@ -106,14 +282,13 @@ SiteName=우리카드
 Category=CreditCard
 WebSiteUrl=https://www.wooricard.com/
 
-App_VeraportG3=https://pc.wooricard.com/dcpc/veraport/down/veraport-g3-x64.exe
-Arg_VeraportG3=/silent
+App_Veraport=https://pc.wooricard.com/dcpc/veraport/down/veraport-g3-x64.exe
+Arg_Veraport=/silent
 
 App_NOS=https://pc.wooricard.com/dcpc/pluginfree/setup/nos_setup.exe
 Arg_NOS=/silent
 
-App_IPInsideLWS=https://pc.wooricard.com/dcpc/eFDS/binary/windows/I3GSvcManager.exe
-Arg_IPInsideLWS=/silent
+App_IPInside=https://pc.wooricard.com/dcpc/eFDS/binary/windows/I3GSvcManager.exe
 
 App_KeySharpBiz=https://pc.wooricard.com/dcpc/raonx/ksbiz/module/KSbiz_Installer_32bit.exe
 
@@ -122,8 +297,8 @@ SiteName=KB국민카드
 Category=CreditCard
 WebSiteUrl=https://www.kbcard.com/
 
-App_VeraportG3=https://download.kbcard.com/security/wizvera/veraport-g3/veraport-g3-x64.exe
-Arg_VeraportG3=/silent
+App_Veraport=https://download.kbcard.com/security/wizvera/veraport-g3/veraport-g3-x64.exe
+Arg_Veraport=/silent
 
 App_WizInDelfino=https://download.kbcard.com/security/wizvera/delfino-g3/delfino-g3.exe
 Arg_WizInDelfino=/silent
@@ -136,8 +311,8 @@ SiteName=하나카드
 Category=CreditCard
 WebSiteUrl=https://www.hanacard.co.kr/
 
-App_VeraportG3=https://www.hanacard.co.kr/wizvera/veraport/down/veraport-g3-x64-sha2.exe
-Arg_VeraportG3=/silent
+App_Veraport=https://www.hanacard.co.kr/wizvera/veraport/down/veraport-g3-x64-sha2.exe
+Arg_Veraport=/silent
 
 App_WizInDelfino=http://dn.wizvera.com/svc/hanacard/delfino/delfino-g3.exe
 Arg_WizInDelfino=/silent
@@ -145,16 +320,15 @@ Arg_WizInDelfino=/silent
 App_AhnLabSafeTx=http://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
 Arg_AhnLabSafeTx=/silent
 
-App_IPInsideLWS=http://ak01-tz5130.ktics.co.kr/I3GSvcManager.exe
-App_IPInsideLWS=/silent
+App_IPInside=http://ak01-tz5130.ktics.co.kr/I3GSvcManager.exe
 
 [ShinhanCard]
 SiteName=신한카드
 Category=CreditCard
 WebSiteUrl=https://www.shinhancard.com/
 
-App_VeraportG3=https://www.shinhancard.com/psolution/wizvera/veraport/down/veraport-g3-x64.exe
-Arg_VeraportG3=/silent
+App_Veraport=https://www.shinhancard.com/psolution/wizvera/veraport/down/veraport-g3-x64.exe
+Arg_Veraport=/silent
 
 App_WizInDelfino=https://www.shinhancard.com/psolution/wizvera/delfino/down/delfino-g3.exe
 Arg_WizInDelfino=/silent
@@ -167,8 +341,8 @@ SiteName=BC카드
 Category=CreditCard
 WebSiteUrl=https://www.bccard.com/
 
-App_IniSafeCrossWebEx=https://www.bccard.com/initech/crossweb/extension/down/INIS_EX.exe
-Arg_IniSafeCrossWebEx=/silent
+App_IniSafeCrossWeb=https://www.bccard.com/initech/crossweb/extension/down/INIS_EX.exe
+Arg_IniSafeCrossWeb=/silent
 
 App_NOS=https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe
 Arg_NOS=/silent
@@ -178,8 +352,8 @@ SiteName=NH농협카드
 Category=CreditCard
 WebSiteUrl=https://card.nonghyup.com/
 
-App_VeraportG3=https://card.nonghyup.com/wizvera/veraport/down/veraport-g3-x64.exe
-Arg_VeraportG3=/silent
+App_Veraport=https://card.nonghyup.com/wizvera/veraport/down/veraport-g3-x64.exe
+Arg_Veraport=/silent
 
 App_WizInDelfino=https://card.nonghyup.com/thirdparty/wizvera/delfino/down/delfino-g3.exe
 Arg_WizInDelfino=/silent
@@ -195,8 +369,8 @@ SiteName=현대카드
 Category=CreditCard
 WebSiteUrl=https://www.hyundaicard.com/
 
-App_VeraportG3=https://img.hyundaicard.com/wizvera/veraport/down/veraport-g3s-x64-sha2.exe
-Arg_VeraportG3=/silent
+App_Veraport=https://img.hyundaicard.com/wizvera/veraport/down/veraport-g3s-x64-sha2.exe
+Arg_Veraport=/silent
 
 App_WizInDelfino=https://img.hyundaicard.com/wizvera/delfino/down/delfino-g3.exe
 Arg_WizInDelfino=/silent
@@ -215,8 +389,7 @@ Arg_NOS=/silent
 App_MagicLine4NX=https://www.samsungcard.com/MagicLine4Web/ML4Web/install_bin/magicline4nx_setup.exe
 Arg_MagicLine4NX=/silent
 
-App_IPInsideLWS=https://static12.samsungcard.com/stinstall/ipinsideLWS/I3GSvcManager.exe
-Arg_IPInsideLWS=/silent
+App_IPInside=https://static12.samsungcard.com/stinstall/ipinsideLWS/I3GSvcManager.exe
 
 [LotteCard]
 SiteName=롯데카드
@@ -244,6 +417,9 @@ WebSiteUrl=https://www.gov.kr/
 App_AnySign4PC=https://download.softforum.com/Published/AnySign/v1.1.0.7/AnySign_Installer.exe
 Arg_AnySign4PC=/silent
 
+App_TouchEnKey=https://download.raonsecure.com/TouchEnnxKey/minwon/TouchEn_nxKey_Installer_32bit_1.0.0.47.exe?ver=1.0.0.47
+Arg_TouchEnKey=/silent
+
 [Scourt]
 SiteName=대한민국 법원 대국민서비스
 Category=Government
@@ -257,8 +433,8 @@ SiteName=대한민국 법원 전자가족관계등록시스템
 Category=Government
 WebSiteUrl=https://efamily.scourt.go.kr/
 
-App_TouchEnNxKey=https://efamily.scourt.go.kr/TouchEn/raonnx/nxKey/module/TouchEn_nxKey_32bit.exe
-Arg_TouchEnNxKey=/silent
+App_TouchEnKey=https://efamily.scourt.go.kr/TouchEn/raonnx/nxKey/module/TouchEn_nxKey_32bit.exe
+Arg_TouchEnKey=/silent
 
 App_AnySign=https://efamily.scourt.go.kr/AnySign/AnySign_Installer.exe
 Arg_AnySign=/silent
@@ -276,8 +452,8 @@ Arg_EnableTrustedSite=/silent
 App_AnySign=http://download.softforum.com/Published/AnySign/v1.1.2.0/AnySign_Installer.exe
 Arg_AnySign=/silent
 
-App_TouchEnNxKey=http://www.iros.go.kr/XecureObject/raonsecure/TouchEn/nxKey/module/10047/TouchEn_nxKey_Installer_32bit.exe?ver=1.0.0.48
-Arg_AnySign=/silent
+App_TouchEnKey=http://www.iros.go.kr/XecureObject/raonsecure/TouchEn/nxKey/module/10047/TouchEn_nxKey_Installer_32bit.exe?ver=1.0.0.48
+Arg_TouchEnKey=/silent
 
 App_EveryonesPrinter=https://k.kakaocdn.net/dn/cEqior/btqCGQ8rVbX/KU5Kj1RmtQEmrpSyk256d0/MopInstaller.exe?attach=1&knm=tfile.exe
 
