@@ -60,7 +60,7 @@ namespace TableCloth
             }
 
             foreach (var eachHomePageUrl in services.Select(x => x.HomepageUrl.AbsoluteUri))
-                buffer.AppendLine($@"start {eachHomePageUrl}");
+                buffer.AppendLine($@"start /max {eachHomePageUrl}");
 
             return buffer.ToString();
 
