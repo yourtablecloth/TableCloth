@@ -16,7 +16,7 @@ namespace TableCloth.Resources
         internal static readonly string CancelButtonText = "취소";
 
         internal static readonly string CatalogUrl =
-            "https://dotnetdev-kr.github.io/TableCloth/Catalog.txt";
+            "https://dotnetdev-kr.github.io/TableCloth/Catalog.xml";
 
         internal static readonly string UserAgentText =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36";
@@ -187,6 +187,19 @@ namespace TableCloth.Resources
 
         internal static readonly string Error_Cannot_Find_KeyFile
             = "개인 키 파일 (.key) 파일을 찾을 수 없습니다.";
+
+        internal static string Error_Cannot_Download_Catalog(Exception ex)
+        {
+            if (ex is AggregateException ae)
+                return Error_Cannot_Remove_TempDirectory(ae.InnerException);
+
+            var message = $"카탈로그 파일을 내려받지 못했습니다.";
+
+            if (ex != null)
+                message = string.Concat(message, $"\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");
+
+            return message;
+        }
     }
 
     // 스크립트 내에서 사용되는 문자열들

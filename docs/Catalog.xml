@@ -6,6 +6,8 @@
 	자세한 속성은 Models/TableClothCatalog 디렉터리 안의 소스 파일들을 참고하세요.
 	-->
 	<InternetServices>
+		
+		<!-- 인터넷 뱅킹 시작 -->
 		<Service Id="WooriBank" DisplayName="우리은행" Category="Banking" Url="https://www.wooribank.com/">
 			<Packages>
 				<Packages Name="Veraport" Url="https://www.wooribank.com/download/veraportG3/veraport-g3-x64.exe" Arguments="/silent" />
@@ -125,12 +127,18 @@
 				<Packages Name="BusanPFMS" Url="https://ibank.busanbank.co.kr/product/install/pfms/Windows/2.0.2.2/BusanPFMS_Setup.exe" />
 			</Packages>
 		</Service>
+		<!-- 인터넷 뱅킹 끝 -->
+
+		<!-- 증권사 시작 -->
 		<Service Id="KiwoomSecurity" DisplayName="키움증권" Category="Financing" Url="https://www.kiwoom.com/">
 			<Packages>
 				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default_nonstop/all/astx_setup_nonstop.exe" Arguments="/silent" />
 				<Packages Name="SignKoreaCert" Url="https://www.kiwoom.com/h/kws/assets/down/SKCertServiceSetup_v2.5.20_156.exe" />
 			</Packages>
 		</Service>
+		<!-- 증권사 끝 -->
+
+		<!-- 신용 카드 회사 시작 -->
 		<Service Id="Wooricard" DisplayName="우리카드" Category="CreditCard" Url="https://www.wooricard.com/">
 			<Packages>
 				<Packages Name="Veraport" Url="https://pc.wooricard.com/dcpc/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
@@ -196,6 +204,9 @@
 				<Packages Name="AnySign" Url="https://download.softforum.com/Published/AnySign/v1.1.2.0/AnySign_Installer.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
+		<!-- 신용 카드 회사 끝 -->
+
+		<!-- 공공기관 시작 -->
 		<Service Id="Gov24" DisplayName="정부24" Category="Government" Url="https://www.gov.kr/">
 			<Packages>
 				<Packages Name="AnySign4PC" Url="https://download.softforum.com/Published/AnySign/v1.1.0.7/AnySign_Installer.exe" Arguments="/silent" />
@@ -227,8 +238,7 @@
 				<Packages Name="MagicLine4NX" Url="https://sesw.hometax.go.kr/dn_dir/veraport/magic-pki/magicline4nx_setup.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
-		<Service Id="" DisplayName="그냥 실행해주세요." Category="Other" Url="https://www.naver.com/">
-			<Packages />
-		</Service>
+		<!-- 공공기관 끝 -->
+		
 	</InternetServices>
 </TableClothCatalog>

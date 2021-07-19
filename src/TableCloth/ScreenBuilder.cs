@@ -191,31 +191,37 @@ namespace TableCloth
 				};
 				webClient.Headers.Add("User-Agent", StringResources.UserAgentText);
 				webClient.QueryString.Add("ts", DateTime.Now.Ticks.ToString());
-				var catalogFilePath = Path.Combine(Path.GetTempPath(), "Catalog.txt");
-
-				if (File.Exists(catalogFilePath))
-					File.Delete(catalogFilePath);
-
-				try { webClient.DownloadFile(StringResources.CatalogUrl, catalogFilePath); }
-				catch { }
-
-				var catalog = CatalogBuilder.ParseCatalog(catalogFilePath);
-				var rootElem = new CatalogDocument() { Services = new(catalog), };
-				var xmlContent = XmlHelpers.SerializeToXml(rootElem);
-
-				var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
-					x => (CatalogInternetServiceCategory)x.Tag,
-					x => x.Controls["SiteList"] as ListBox);
-
-				if (catalog != null && catalog.Any())
+				
+				try
                 {
-					foreach (var eachType in catalog.GroupBy(x => x.Category))
-						siteListControls[eachType.Key].DataSource = eachType.ToList();
+					using (var catalogStream = webClient.OpenRead(StringResources.CatalogUrl))
+                    {
+						var catalog = XmlHelpers.DeserializeFromXml<CatalogDocument>(catalogStream);
+
+						var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
+							x => (CatalogInternetServiceCategory)x.Tag,
+							x => x.Controls["SiteList"] as ListBox);
+
+						if (catalog != null && catalog.Services.Any())
+						{
+							foreach (var eachType in catalog.Services.GroupBy(x => x.Category))
+								siteListControls[eachType.Key].DataSource = eachType.ToList();
+						}
+						else
+						{
+							siteCatalogTabControl.Visible = false;
+							siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
+						}
+					}
 				}
-				else
-				{
+				catch (Exception e)
+                {
 					siteCatalogTabControl.Visible = false;
 					siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
+
+					MessageBox.Show(form,
+						StringResources.Error_Cannot_Download_Catalog(e), StringResources.TitleText_Error,
+						MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
 				}
 
 				try
