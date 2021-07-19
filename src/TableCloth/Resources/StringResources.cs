@@ -30,6 +30,9 @@ namespace TableCloth.Resources
 
         internal static readonly string TitleText_Error
             = $"{AppName} 오류";
+
+        internal static readonly string TitleText_Warning
+            = $"{AppName} 경고";
     }
 
     // 비 사용자 인터페이스 문자열들

@@ -9,6 +9,7 @@
 		
 		<!-- 인터넷 뱅킹 시작 -->
 		<Service Id="WooriBank" DisplayName="우리은행" Category="Banking" Url="https://www.wooribank.com/">
+			<CompatNotes>우리은행의 경우 키보드보안프로그램을 설치했어도 원격 데스크톱, Hyper-V 고급 세션, 그리고 윈도우 샌드박스 환경에서는 키 입력을 제대로 처리하지 못합니다. 마우스 입력기를 이용하여 비밀 번호를 입력해주셔야 합니다.</CompatNotes>
 			<Packages>
 				<Packages Name="Veraport" Url="https://www.wooribank.com/download/veraportG3/veraport-g3-x64.exe" Arguments="/silent" />
 				<Packages Name="AnySign" Url="https://www.wooribank.com/download/AnySign_Installer/AnySign_Installer.exe" Arguments="/silent" />
@@ -18,6 +19,7 @@
 			</Packages>
 		</Service>
 		<Service Id="KookminBank" DisplayName="KB국민은행" Category="Banking" Url="https://www.kbstar.com/">
+			<CompatNotes>KB국민은행의 경우 해당 기관의 보안 정책에 따라 AhnLab Safe Transaction이 설치된 상태에서 원격 데스크톱, Hyper-V 고급 세션, 그리고 윈도우 샌드박스를 이용하여 웹 사이트를 방문하면 자동으로 종료되는 문제가 발생합니다.</CompatNotes>
 			<Packages>
 				<Packages Name="WizInDelfino" Url="https://download.kbstar.com/security/wizvera/delfino/g3/delfino-g3.exe" Arguments="/silent" />
 			</Packages>

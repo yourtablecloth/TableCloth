@@ -20,6 +20,9 @@ namespace TableCloth.Models.TableClothCatalog
         [XmlAttribute("Url")]
         public string Url { get; set; }
 
+        [XmlElement("CompatNotes")]
+        public string CompatibilityNotes { get; set; }
+
         [XmlArray, XmlArrayItem(typeof(CatalogPackageInformation), ElementName = "Packages")]
         public List<CatalogPackageInformation> Packages { get; set; } = new();
 
