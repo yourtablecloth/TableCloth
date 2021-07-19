@@ -83,6 +83,14 @@ namespace TableCloth
             if (!Directory.Exists(assetsDirectory))
                 Directory.CreateDirectory(assetsDirectory);
 
+            var signatureImageContent = GraphicResources.SignatureJpegImage;
+            var signatureFilePath = Path.Combine(assetsDirectory, "Signature.jpg");
+            File.WriteAllBytes(signatureFilePath, Convert.FromBase64String(signatureImageContent));
+
+            var bootstrapFileContent = GenerateSandboxBootstrapPowerShellScript(tableClothConfiguration);
+            var bootstrapFilePath = Path.Combine(assetsDirectory, "Bootstrap.ps1");
+            File.WriteAllText(bootstrapFilePath, bootstrapFileContent, Encoding.Unicode);
+
             var batchFileContent = GenerateSandboxStartupScript(tableClothConfiguration);
             var batchFilePath = Path.Combine(assetsDirectory, "StartupScript.cmd");
             File.WriteAllText(batchFilePath, batchFileContent, Encoding.Default);
@@ -96,7 +104,7 @@ namespace TableCloth
             return wsbFilePath;
         }
 
-        public static string GenerateSandboxStartupScript(TableClothConfiguration tableClothConfiguration)
+        public static string GenerateSandboxBootstrapPowerShellScript(TableClothConfiguration tableClothConfiguration)
         {
             if (tableClothConfiguration == null)
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
@@ -107,8 +115,50 @@ namespace TableCloth
             var infoMessage = StringResources.Script_InstructionMessage(
                 services.Sum(x => x.Packages.Count()),
                 string.Join(", ", services.Select(x => x.DisplayName)));
-            var value = $@"PowerShell -Command ""Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.MessageBox]::Show('{infoMessage}', '{StringResources.Script_InstructionTitleText}', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)""";
-            buffer.AppendLine(value);
+
+            var powershellContent = $@"
+Add-Type -AssemblyName System.Windows.Forms
+
+$SetWallpaperSource = @""
+using System.Runtime.InteropServices;
+using System.Threading;
+
+public static class Wallpaper {{
+  public const int SetDesktopWallpaper = 0x0014;
+  public const int UpdateIniFile = 0x01;
+  public const int SendWinIniChange = 0x02;
+
+  [DllImport(""user32.dll"", SetLastError = true, CharSet = CharSet.Auto)]
+  private static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
+
+  public static void SetWallpaper(string path) {{
+    SystemParametersInfo(SetDesktopWallpaper, 0, path, UpdateIniFile | SendWinIniChange);
+  }}
+}}
+""@
+Add-Type -TypeDefinition $SetWallpaperSource
+
+$WallpaperPath = ""C:\assets\Signature.jpg""
+[Wallpaper]::SetWallpaper($WallpaperPath)
+rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
+
+
+[System.Windows.Forms.MessageBox]::Show('{infoMessage}', '{StringResources.Script_InstructionTitleText}', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+";
+
+            return powershellContent;
+        }
+
+        public static string GenerateSandboxStartupScript(TableClothConfiguration tableClothConfiguration)
+        {
+            if (tableClothConfiguration == null)
+                throw new ArgumentNullException(nameof(tableClothConfiguration));
+
+            var buffer = new StringBuilder();
+            buffer.AppendLine(@"powershell.exe -Command ""&{{Set-ExecutionPolicy RemoteSigned -Force}}""");
+            buffer.AppendLine(@"powershell.exe -ExecutionPolicy Bypass -File ""C:\assets\Bootstrap.ps1""");
+
+            var services = tableClothConfiguration.Packages;
 
             foreach (var eachPackage in services.SelectMany(service => service.Packages))
             {
@@ -127,12 +177,12 @@ namespace TableCloth
                 buffer.AppendLine($@"start /max {eachHomePageUrl}");
 
             return buffer.ToString();
+        }
 
-            static string GetLocalFileName(string localPath)
-            {
-                try { return Path.GetFileName(localPath); }
-                catch { return $"{Guid.NewGuid():N}.exe"; }
-            }
+        static string GetLocalFileName(string localPath)
+        {
+            try { return Path.GetFileName(localPath); }
+            catch { return $"{Guid.NewGuid():N}.exe"; }
         }
     }
 }
