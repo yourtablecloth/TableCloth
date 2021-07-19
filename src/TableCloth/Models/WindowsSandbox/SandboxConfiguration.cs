@@ -2,10 +2,10 @@
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace TableCloth.Models
+namespace TableCloth.Models.WindowsSandbox
 {
     [XmlRoot("Configuration")]
-    public sealed partial class WindowsSandboxConfiguration
+    public sealed partial class SandboxConfiguration
     {
         [XmlElement("AudioInput")]
         public string AudioInput { get; set; }
@@ -19,7 +19,7 @@ namespace TableCloth.Models
         [XmlArray, XmlArrayItem(typeof(string), ElementName = "Command")]
         public List<string> LogonCommand { get; set; } = new();
 
-        [XmlArray, XmlArrayItem(typeof(WindowsSandboxMappedFolder), ElementName = "MappedFolder")]
-        public List<WindowsSandboxMappedFolder> MappedFolders { get; } = new();
+        [XmlArray, XmlArrayItem(typeof(SandboxMappedFolder), ElementName = "MappedFolder")]
+        public List<SandboxMappedFolder> MappedFolders { get; } = new();
     }
 }

@@ -2,10 +2,10 @@
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace TableCloth.Models
+namespace TableCloth.Models.WindowsSandbox
 {
     [Serializable, XmlType("MappedFolder")]
-    public sealed class WindowsSandboxMappedFolder
+    public sealed class SandboxMappedFolder
     {
         public const string DefaultAssetPath = @"C:\assets";
 

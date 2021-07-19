@@ -10,6 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using TableCloth.Internals;
 using TableCloth.Models;
+using TableCloth.Models.TableClothCatalog;
 using TableCloth.Resources;
 
 namespace TableCloth
@@ -116,9 +117,9 @@ namespace TableCloth
 				Visible = true,
 			};
 
-			var categoryValues = Enum.GetValues<InternetServiceCategory>().ToList();
-			categoryValues.Remove(InternetServiceCategory.Other);
-			categoryValues.Add(InternetServiceCategory.Other);
+			var categoryValues = Enum.GetValues<CatalogInternetServiceCategory>().ToList();
+			categoryValues.Remove(CatalogInternetServiceCategory.Other);
+			categoryValues.Add(CatalogInternetServiceCategory.Other);
 
 			foreach (var eachCategoryType in categoryValues)
             {
@@ -199,10 +200,10 @@ namespace TableCloth
 				catch { }
 
 				var catalog = CatalogBuilder.ParseCatalog(catalogFilePath);
-				var rootElem = new TableClothCatalog() { InternetServices = new(catalog), };
+				var rootElem = new CatalogDocument() { InternetServices = new(catalog), };
 
 				var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
-					x => (InternetServiceCategory)x.Tag,
+					x => (CatalogInternetServiceCategory)x.Tag,
 					x => x.Controls["SiteList"] as ListBox);
 
 				if (catalog != null && catalog.Any())
@@ -248,7 +249,7 @@ namespace TableCloth
 
 				var activeTabPage = siteCatalogTabControl.SelectedTab;
 				var activeListBox = activeTabPage.Controls["SiteList"] as ListBox;
-				var activeItems = activeListBox.SelectedItems.Cast<InternetService>().ToArray();
+				var activeItems = activeListBox.SelectedItems.Cast<CatalogInternetService>().ToArray();
 
 				var config = new TableClothConfiguration()
                 {

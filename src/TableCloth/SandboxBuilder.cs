@@ -4,19 +4,19 @@ using System.Linq;
 using System.Text;
 using TableCloth.Helpers;
 using TableCloth.Internals;
-using TableCloth.Models;
+using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 
 namespace TableCloth
 {
     public static class SandboxBuilder
     {
-        public static WindowsSandboxConfiguration BootstrapSandboxConfiguration(TableClothConfiguration tableClothConfig)
+        public static SandboxConfiguration BootstrapSandboxConfiguration(TableClothConfiguration tableClothConfig)
         {
             const string Enable = "Enable";
             const string Disable = "Disable";
 
-            var sandboxConfig = new WindowsSandboxConfiguration
+            var sandboxConfig = new SandboxConfiguration
             {
                 AudioInput = tableClothConfig.EnableMicrophone ? Enable : Disable,
                 VideoInput = tableClothConfig.EnableWebCam ? Enable : Disable,
@@ -28,10 +28,10 @@ namespace TableCloth
 
             sandboxConfig.MappedFolders.Clear();
 
-            sandboxConfig.MappedFolders.Add(new WindowsSandboxMappedFolder
+            sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
             {
                 HostFolder = tableClothConfig.AssetsDirectoryPath,
-                SandboxFolder = WindowsSandboxMappedFolder.DefaultAssetPath,
+                SandboxFolder = SandboxMappedFolder.DefaultAssetPath,
                 ReadOnly = bool.TrueString,
             });
 
@@ -60,7 +60,7 @@ namespace TableCloth
 
             candidatePath = Path.Join(@"C:\Users\WDAGUtilityAccount", candidatePath);
 
-            sandboxConfig.MappedFolders.Add(new WindowsSandboxMappedFolder
+            sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
             {
                 HostFolder = certAssetsDirectoryPath,
                 SandboxFolder = candidatePath,

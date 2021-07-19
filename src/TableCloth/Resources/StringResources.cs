@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using TableCloth.Models;
+using TableCloth.Models.TableClothCatalog;
 
 namespace TableCloth.Resources
 {
@@ -37,7 +37,7 @@ namespace TableCloth.Resources
     {
         internal static readonly string InternetService_UnknownText = "알 수 없음";
 
-        internal static string InternetService_DisplayText(InternetService svc)
+        internal static string InternetService_DisplayText(CatalogInternetService svc)
         {
             var defaultString = $"{svc.DisplayName} - {svc.Url}";
             var pkgs = svc.Packages;
@@ -48,23 +48,23 @@ namespace TableCloth.Resources
             return defaultString;
         }
 
-        internal static string InternetServiceCategory_DisplayText(InternetServiceCategory value)
+        internal static string InternetServiceCategory_DisplayText(CatalogInternetServiceCategory value)
         {
             switch (value)
             {
-                case InternetServiceCategory.Banking:
+                case CatalogInternetServiceCategory.Banking:
                     return "뱅킹";
 
-                case InternetServiceCategory.CreditCard:
+                case CatalogInternetServiceCategory.CreditCard:
                     return "신용 카드";
 
-                case InternetServiceCategory.Education:
+                case CatalogInternetServiceCategory.Education:
                     return "교육";
 
-                case InternetServiceCategory.Financing:
+                case CatalogInternetServiceCategory.Financing:
                     return "금융";
 
-                case InternetServiceCategory.Government:
+                case CatalogInternetServiceCategory.Government:
                     return "공공";
 
                 default:

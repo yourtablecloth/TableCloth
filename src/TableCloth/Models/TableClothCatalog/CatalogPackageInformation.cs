@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace TableCloth.Models
+namespace TableCloth.Models.TableClothCatalog
 {
     [Serializable, XmlType]
-    public sealed class PackageInformation
+    public sealed class CatalogPackageInformation
     {
         [XmlAttribute("Name")]
         public string Name { get; set; }

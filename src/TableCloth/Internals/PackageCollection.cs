@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using TableCloth.Models;
+using TableCloth.Models.TableClothCatalog;
 
 namespace TableCloth.Internals
 {
     [Serializable]
-    public sealed class PackageCollection : KeyedCollection<string, PackageInformation>
+    public sealed class PackageCollection : KeyedCollection<string, CatalogPackageInformation>
     {
-        protected override string GetKeyForItem(PackageInformation item)
+        protected override string GetKeyForItem(CatalogPackageInformation item)
             => item.Name;
     }
 }

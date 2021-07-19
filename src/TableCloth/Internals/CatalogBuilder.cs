@@ -4,26 +4,26 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TableCloth.Helpers;
-using TableCloth.Models;
+using TableCloth.Models.TableClothCatalog;
 using TableCloth.Resources;
 
 namespace TableCloth.Internals
 {
     static class CatalogBuilder
     {
-		internal static IEnumerable<InternetService> ParseCatalog(string iniFilePath, bool addDefaultItem = true)
+		internal static IEnumerable<CatalogInternetService> ParseCatalog(string iniFilePath, bool addDefaultItem = true)
 		{
 			if (!File.Exists(iniFilePath))
-				return Array.Empty<InternetService>();
+				return Array.Empty<CatalogInternetService>();
 
 			var parser = new IniFileParser(iniFilePath);
-			var items = new List<InternetService>();
+			var items = new List<CatalogInternetService>();
 
 			foreach (var eachSiteSection in parser.GetSectionNames())
 			{
 				var pairs = parser.GetSectionValues(eachSiteSection);
 				var siteName = pairs.Where(x => string.Equals(x.Key, "SiteName", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).FirstOrDefault();
-				_ = Enum.TryParse(pairs.Where(x => string.Equals(x.Key, "Category", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).FirstOrDefault(), out InternetServiceCategory category);
+				_ = Enum.TryParse(pairs.Where(x => string.Equals(x.Key, "Category", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).FirstOrDefault(), out CatalogInternetServiceCategory category);
 				var webSiteUrl = pairs.Where(x => string.Equals(x.Key, "WebSiteUrl", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).FirstOrDefault();
 				
 				if (string.IsNullOrWhiteSpace(siteName) ||
@@ -47,10 +47,10 @@ namespace TableCloth.Internals
 					if (appPrefixRegex.IsMatch(eachPair.Key))
                     {
 						var packageName = appPrefixRegex.Replace(eachPair.Key, string.Empty);
-						var package = default(PackageInformation);
+						var package = default(CatalogPackageInformation);
 
 						if (!packages.Contains(packageName))
-							packages.Add(package = new PackageInformation() { Name = packageName });
+							packages.Add(package = new CatalogPackageInformation() { Name = packageName });
 						else
 							package = packages[packageName];
 
@@ -62,10 +62,10 @@ namespace TableCloth.Internals
 					else if (argPrefixRegex.IsMatch(eachPair.Key))
 					{
 						var packageName = argPrefixRegex.Replace(eachPair.Key, string.Empty);
-						var package = default(PackageInformation);
+						var package = default(CatalogPackageInformation);
 
 						if (!packages.Contains(packageName))
-							packages.Add(package = new PackageInformation() { Name = packageName });
+							packages.Add(package = new CatalogPackageInformation() { Name = packageName });
 						else
 							package = packages[packageName];
 
@@ -73,18 +73,18 @@ namespace TableCloth.Internals
 					}
                 }
 
-				items.Add(new InternetService(eachSiteSection, siteName, category, homePageUrl,
+				items.Add(new CatalogInternetService(eachSiteSection, siteName, category, homePageUrl,
 					packages.Where(x => x.Url != null).ToArray()));
 			}
 
 			if (addDefaultItem)
 			{
-				items.Add(new InternetService(
+				items.Add(new CatalogInternetService(
 					Guid.Empty.ToString(),
 					StringResources.MainForm_JustRunItemText,
 					default,
 					new Uri("https://www.naver.com/"),
-                    Array.Empty<PackageInformation>()));
+                    Array.Empty<CatalogPackageInformation>()));
 			}
 
 			return items.ToArray();

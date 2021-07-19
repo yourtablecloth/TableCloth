@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace TableCloth.Models
+namespace TableCloth.Models.TableClothCatalog
 {
     [Serializable]
-    public enum InternetServiceCategory : short
+    public enum CatalogInternetServiceCategory : short
     {
         Other = 0,
         Banking,
