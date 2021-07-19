@@ -107,7 +107,7 @@ namespace TableCloth
             var infoMessage = StringResources.Script_InstructionMessage(
                 services.Sum(x => x.Packages.Count()),
                 string.Join(", ", services.Select(x => x.DisplayName)));
-            var value = $@"PowerShell -Command ""Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.MessageBox]::Show('{infoMessage}', '안내', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)""";
+            var value = $@"PowerShell -Command ""Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.MessageBox]::Show('{infoMessage}', '{StringResources.Script_InstructionTitleText}', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)""";
             buffer.AppendLine(value);
 
             foreach (var eachPackage in services.SelectMany(service => service.Packages))

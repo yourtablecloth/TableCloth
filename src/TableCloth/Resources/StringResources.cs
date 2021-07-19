@@ -192,6 +192,9 @@ namespace TableCloth.Resources
     // 스크립트 내에서 사용되는 문자열들
     partial class StringResources
     {
+        internal static readonly string Script_InstructionTitleText
+            = "안내";
+
         internal static string Script_InstructionMessage(int packageTotalCount, string siteNameList)
             => $"지금부터 {packageTotalCount}개 프로그램의 설치 과정이 시작됩니다. 모든 프로그램의 설치가 끝나면 자동으로 {siteNameList} 홈페이지가 열립니다.";
     }
