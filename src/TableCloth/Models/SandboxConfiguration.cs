@@ -37,14 +37,14 @@ namespace TableCloth.Models
         [XmlElement]
         public string PrinterRedirection { get; set; }
 
-        [XmlElement]
-        public string LogonCommand { get; set; } = DefaultLogonCommand;
+        [XmlArray, XmlArrayItem(typeof(string), ElementName = "Command")]
+        public List<string> LogonCommand { get; set; } = new() { DefaultLogonCommand };
 
-        [XmlArray, XmlArrayItem(typeof(MappedFolder))]
-        public List<MappedFolder> MappedFolders { get; } = new();
+        [XmlArray, XmlArrayItem(typeof(MappedFolderType), ElementName = "MappedFolder")]
+        public List<MappedFolderType> MappedFolders { get; } = new();
 
         [Serializable, XmlType]
-        public sealed class MappedFolder
+        public sealed class MappedFolderType
         {
             public const string DefaultAssetPath = @"C:\assets";
 
@@ -98,10 +98,10 @@ namespace TableCloth.Models
 
             MappedFolders.Clear();
 
-            MappedFolders.Add(new MappedFolder
+            MappedFolders.Add(new MappedFolderType
             {
                 HostFolder = config.AssetsDirectoryPath,
-                SandboxFolder = MappedFolder.DefaultAssetPath,
+                SandboxFolder = MappedFolderType.DefaultAssetPath,
                 ReadOnly = bool.TrueString,
             });
 
@@ -129,7 +129,7 @@ namespace TableCloth.Models
                 candidatePath = Path.Join(candidatePath, "USER", config.CertPair.SubjectNameForNpkiApp);
             candidatePath = Path.Join(@"C:\Users\WDAGUtilityAccount", candidatePath);
 
-            MappedFolders.Add(new MappedFolder
+            MappedFolders.Add(new MappedFolderType
             {
                 HostFolder = certAssetsDirectoryPath,
                 SandboxFolder = candidatePath,
