@@ -2,7 +2,7 @@
 # Category 속성에는 Other, Banking, Financing, CreditCard, Government 등의 값을 넣을 수 있어요. 자세한 속성은 InternetServiceCategory.cs 파일을 참고하세요.
 # App_ 으로 시작하는 속성에는 설치할 프로그램의 이름, Arg_ 로 시작하는 속성에는 무인 설치 등을 위한 인자를 넣어주세요.
 
-# 인터넷 뱅킹 시작
+# 인터넷 뱅킹 시작 - Banking
 
 [WooriBank]
 SiteName=우리은행
@@ -83,9 +83,9 @@ Arg_INISAFECrossWebEx=/silent
 App_TouchEnNxKey=https://img.nonghyup.com/install/so/raon/TouchEnNxKey/TouchEn_nxKey_Installer_64bit_new.exe
 Arg_TouchEnNxKey=/silent
 
-# 인터넷 뱅킹 끝
+# 인터넷 뱅킹 끝 - Banking
 
-# 금융 서비스 (증권, 종금 등) 시작
+# 금융 서비스 (증권, 종금 등) 시작 - Financing
 
 [KiwoomSecurity]
 SiteName=키움증권
@@ -97,12 +97,201 @@ Arg_AhnLabSafeTx=/silent
 
 App_SignKoreaCert=https://www.kiwoom.com/h/kws/assets/down/SKCertServiceSetup_v2.5.20_156.exe
 
-# 금융 서비스 (증권, 종금 등) 끝
+# 금융 서비스 (증권, 종금 등) 끝 - Financing
 
-# 신용카드 시작
+# 신용카드 시작 - CreditCard
 
-# 신용카드 끝
+[Wooricard]
+SiteName=우리카드
+Category=CreditCard
+WebSiteUrl=https://www.wooricard.com/
 
-# 공공기관 시작
+App_VeraportG3=https://pc.wooricard.com/dcpc/veraport/down/veraport-g3-x64.exe
+Arg_VeraportG3=/silent
 
-# 공공기관 끝
+App_NOS=https://pc.wooricard.com/dcpc/pluginfree/setup/nos_setup.exe
+Arg_NOS=/silent
+
+App_IPInsideLWS=https://pc.wooricard.com/dcpc/eFDS/binary/windows/I3GSvcManager.exe
+Arg_IPInsideLWS=/silent
+
+App_KeySharpBiz=https://pc.wooricard.com/dcpc/raonx/ksbiz/module/KSbiz_Installer_32bit.exe
+
+[KBKookminCard]
+SiteName=KB국민카드
+Category=CreditCard
+WebSiteUrl=https://www.kbcard.com/
+
+App_VeraportG3=https://download.kbcard.com/security/wizvera/veraport-g3/veraport-g3-x64.exe
+Arg_VeraportG3=/silent
+
+App_WizInDelfino=https://download.kbcard.com/security/wizvera/delfino-g3/delfino-g3.exe
+Arg_WizInDelfino=/silent
+
+App_AhnLabSafeTx=https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
+Arg_AhnLabSafeTx=/silent
+
+[Hanacard]
+SiteName=하나카드
+Category=CreditCard
+WebSiteUrl=https://www.hanacard.co.kr/
+
+App_VeraportG3=https://www.hanacard.co.kr/wizvera/veraport/down/veraport-g3-x64-sha2.exe
+Arg_VeraportG3=/silent
+
+App_WizInDelfino=http://dn.wizvera.com/svc/hanacard/delfino/delfino-g3.exe
+Arg_WizInDelfino=/silent
+
+App_AhnLabSafeTx=http://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
+Arg_AhnLabSafeTx=/silent
+
+App_IPInsideLWS=http://ak01-tz5130.ktics.co.kr/I3GSvcManager.exe
+App_IPInsideLWS=/silent
+
+[ShinhanCard]
+SiteName=신한카드
+Category=CreditCard
+WebSiteUrl=https://www.shinhancard.com/
+
+App_VeraportG3=https://www.shinhancard.com/psolution/wizvera/veraport/down/veraport-g3-x64.exe
+Arg_VeraportG3=/silent
+
+App_WizInDelfino=https://www.shinhancard.com/psolution/wizvera/delfino/down/delfino-g3.exe
+Arg_WizInDelfino=/silent
+
+App_NOS=https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe
+Arg_NOS=/silent
+
+[BCCard]
+SiteName=BC카드
+Category=CreditCard
+WebSiteUrl=https://www.bccard.com/
+
+App_IniSafeCrossWebEx=https://www.bccard.com/initech/crossweb/extension/down/INIS_EX.exe
+Arg_IniSafeCrossWebEx=/silent
+
+App_NOS=https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe
+Arg_NOS=/silent
+
+[NHCard]
+SiteName=NH농협카드
+Category=CreditCard
+WebSiteUrl=https://card.nonghyup.com/
+
+App_VeraportG3=https://card.nonghyup.com/wizvera/veraport/down/veraport-g3-x64.exe
+Arg_VeraportG3=/silent
+
+App_WizInDelfino=https://card.nonghyup.com/thirdparty/wizvera/delfino/down/delfino-g3.exe
+Arg_WizInDelfino=/silent
+
+App_NOS=https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe
+Arg_NOS=/silent
+
+App_AhnLabSafeTx=https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe
+Arg_AhnLabSafeTx=/silent
+
+[HyundaiCard]
+SiteName=현대카드
+Category=CreditCard
+WebSiteUrl=https://www.hyundaicard.com/
+
+App_VeraportG3=https://img.hyundaicard.com/wizvera/veraport/down/veraport-g3s-x64-sha2.exe
+Arg_VeraportG3=/silent
+
+App_WizInDelfino=https://img.hyundaicard.com/wizvera/delfino/down/delfino-g3.exe
+Arg_WizInDelfino=/silent
+
+App_NOS=https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe
+Arg_NOS=/silent
+
+[SamsungCard]
+SiteName=삼성카드
+Category=CreditCard
+WebSiteUrl=https://www.samsungcard.com/
+
+App_NOS=https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe
+Arg_NOS=/silent
+
+App_MagicLine4NX=https://www.samsungcard.com/MagicLine4Web/ML4Web/install_bin/magicline4nx_setup.exe
+Arg_MagicLine4NX=/silent
+
+App_IPInsideLWS=https://static12.samsungcard.com/stinstall/ipinsideLWS/I3GSvcManager.exe
+Arg_IPInsideLWS=/silent
+
+[LotteCard]
+SiteName=롯데카드
+Category=CreditCard
+WebSiteUrl=https://www.lottecard.co.kr/
+
+App_NOSAll=https://image.lottecard.co.kr/webapp/pluginfree/nos_down.exe
+Arg_NOSAll=/silent
+
+App_NOS=https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe
+Arg_NOS=/silent
+
+App_AnySign=https://download.softforum.com/Published/AnySign/v1.1.2.0/AnySign_Installer.exe
+Arg_AnySign=/silent
+
+# 신용카드 끝 - CreditCard
+
+# 공공기관 시작 - Government
+
+[Gov24]
+SiteName=정부24
+Category=Government
+WebSiteUrl=https://www.gov.kr/
+
+App_AnySign4PC=https://download.softforum.com/Published/AnySign/v1.1.0.7/AnySign_Installer.exe
+Arg_AnySign4PC=/silent
+
+[Scourt]
+SiteName=대한민국 법원 대국민서비스
+Category=Government
+WebSiteUrl=https://www.scourt.go.kr/
+
+App_AnySign=https://safind.scourt.go.kr/AnySign/AnySign4PC/install/AnySign_Installer.exe
+Arg_AnySign=/silent
+
+[eFamily]
+SiteName=대한민국 법원 전자가족관계등록시스템
+Category=Government
+WebSiteUrl=https://efamily.scourt.go.kr/
+
+App_TouchEnNxKey=https://efamily.scourt.go.kr/TouchEn/raonnx/nxKey/module/TouchEn_nxKey_32bit.exe
+Arg_TouchEnNxKey=/silent
+
+App_AnySign=https://efamily.scourt.go.kr/AnySign/AnySign_Installer.exe
+Arg_AnySign=/silent
+
+App_EveryonesPrinter=https://k.kakaocdn.net/dn/cEqior/btqCGQ8rVbX/KU5Kj1RmtQEmrpSyk256d0/MopInstaller.exe?attach=1&knm=tfile.exe
+
+[Iros]
+SiteName=대한민국 법원 인터넷등기소
+Category=Government
+WebSiteUrl=http://www.iros.go.kr/
+
+App_EnableTrustedSite=http://www.iros.go.kr/iris/TrustedSiteSetup.exe
+Arg_EnableTrustedSite=/silent
+
+App_AnySign=http://download.softforum.com/Published/AnySign/v1.1.2.0/AnySign_Installer.exe
+Arg_AnySign=/silent
+
+App_TouchEnNxKey=http://www.iros.go.kr/XecureObject/raonsecure/TouchEn/nxKey/module/10047/TouchEn_nxKey_Installer_32bit.exe?ver=1.0.0.48
+Arg_AnySign=/silent
+
+App_EveryonesPrinter=https://k.kakaocdn.net/dn/cEqior/btqCGQ8rVbX/KU5Kj1RmtQEmrpSyk256d0/MopInstaller.exe?attach=1&knm=tfile.exe
+
+[Hometax]
+SiteName=국세청 홈택스
+Category=Government
+WebSiteUrl=https://hometax.go.kr/
+
+App_MagicLine4NX=https://sesw.hometax.go.kr/dn_dir/veraport/magic-pki/magicline4nx_setup.exe
+Arg_MagicLine4NX=/silent
+
+# 공공기관 끝 - Government
+
+# 기타 시작 - Other
+
+# 기타 끝 - Other
+
