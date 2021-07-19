@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Cache;
 using System.Threading;
 using System.Windows.Forms;
 using TableCloth.Models;
@@ -156,15 +158,15 @@ namespace TableCloth
 
 			form.Load += (_sender, _e) =>
 			{
-                if (_sender is not Form realSender)
-                    return;
+				if (_sender is not Form realSender)
+					return;
 
-                bool is64BitOperatingSystem = (IntPtr.Size == 8) || NativeMethods.InternalCheckIsWow64();
+				bool is64BitOperatingSystem = (IntPtr.Size == 8) || NativeMethods.InternalCheckIsWow64();
 
 				if (!is64BitOperatingSystem)
 				{
-                    _ = MessageBox.Show("실행하고 있는 운영 체제는 윈도우 샌드박스 기능을 지원하지 않는 오래된 버전의 운영 체제 같습니다. 윈도우 10 이상으로 업그레이드 해주세요.",
-                        "프로그램을 실행할 수 없습니다.", MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
+					_ = MessageBox.Show("실행하고 있는 운영 체제는 윈도우 샌드박스 기능을 지원하지 않는 오래된 버전의 운영 체제 같습니다. 윈도우 10 이상으로 업그레이드 해주세요.",
+						"프로그램을 실행할 수 없습니다.", MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
 					realSender.Close();
 					return;
 				}
@@ -175,14 +177,22 @@ namespace TableCloth
 
 				if (!File.Exists(wsbExecPath))
 				{
-                    _ = MessageBox.Show("윈도우 샌드박스가 설치되어있지 않은 것 같습니다! 프로그램 추가/제거 - Windows 기능 켜기/끄기에서 설정해주세요.",
-                        "프로그램을 실행할 수 없습니다.", MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
+					_ = MessageBox.Show("윈도우 샌드박스가 설치되어있지 않은 것 같습니다! 프로그램 추가/제거 - Windows 기능 켜기/끄기에서 설정해주세요.",
+						"프로그램을 실행할 수 없습니다.", MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
 					realSender.Close();
 					return;
 				}
 
-				using var webClient = new WebClient();
+				using var webClient = new WebClient()
+				{
+					CachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore),
+				};
+				webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36");
+				webClient.QueryString.Add("ts", DateTime.Now.Ticks.ToString());
 				var catalogFilePath = Path.Combine(Path.GetTempPath(), "Catalog.txt");
+
+				if (File.Exists(catalogFilePath))
+					File.Delete(catalogFilePath);
 
 				try { webClient.DownloadFile("https://dotnetdev-kr.github.io/TableCloth/Catalog.txt", catalogFilePath); }
 				catch { }
