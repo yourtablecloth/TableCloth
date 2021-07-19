@@ -1,4 +1,4 @@
-﻿namespace TableCloth
+﻿namespace TableCloth.Resources
 {
     static class GraphicResources
     {

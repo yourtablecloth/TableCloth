@@ -1,15 +1,21 @@
 ﻿using System;
+using System.Xml.Serialization;
 
 namespace TableCloth.Models
 {
-    [Serializable]
+    [Serializable, XmlType]
     public sealed class PackageInformation
     {
+        [XmlAttribute("Name")]
         public string Name { get; set; }
-        public Uri PackageDownloadUrl { get; set; }
+
+        [XmlAttribute("Url")]
+        public Uri Url { get; set; }
+
+        [XmlAttribute("Arguments")]
         public string Arguments { get; set; }
 
         public override string ToString()
-            => $"{Name} - {PackageDownloadUrl}";
+            => $"{Name} - {Url}";
     }
 }

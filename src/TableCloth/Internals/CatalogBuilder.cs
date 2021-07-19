@@ -5,8 +5,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using TableCloth.Helpers;
 using TableCloth.Models;
+using TableCloth.Resources;
 
-namespace TableCloth
+namespace TableCloth.Internals
 {
     static class CatalogBuilder
     {
@@ -56,7 +57,7 @@ namespace TableCloth
 						if (!Uri.TryCreate(eachPair.Value, UriKind.Absolute, out Uri packageUri))
 							continue;
 
-						package.PackageDownloadUrl = packageUri;
+						package.Url = packageUri;
                     }
 					else if (argPrefixRegex.IsMatch(eachPair.Key))
 					{
@@ -72,14 +73,15 @@ namespace TableCloth
 					}
                 }
 
-				items.Add(new InternetService(siteName, category, homePageUrl,
-					packages.Where(x => x.PackageDownloadUrl != null).ToArray()));
+				items.Add(new InternetService(eachSiteSection, siteName, category, homePageUrl,
+					packages.Where(x => x.Url != null).ToArray()));
 			}
 
 			if (addDefaultItem)
 			{
 				items.Add(new InternetService(
-					"그냥 실행해주세요.",
+					Guid.Empty.ToString(),
+					StringResources.MainForm_JustRunItemText,
 					default,
 					new Uri("https://www.naver.com/"),
                     Array.Empty<PackageInformation>()));

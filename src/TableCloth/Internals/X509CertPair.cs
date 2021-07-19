@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using TableCloth.Resources;
 
-namespace TableCloth
+namespace TableCloth.Internals
 {
     public sealed partial class X509CertPair
     {
@@ -64,10 +65,10 @@ namespace TableCloth
         public static X509CertPair CreateX509CertPair(string derFilePath, string keyFilePath)
         {
             if (!File.Exists(derFilePath))
-                throw new FileNotFoundException("Certification file (.der) does not exists.", derFilePath);
+                throw new FileNotFoundException(StringResources.Error_Cannot_Find_CertFile, derFilePath);
 
             if (!File.Exists(keyFilePath))
-                throw new FileNotFoundException("Private key file (.key) does not exists.", keyFilePath);
+                throw new FileNotFoundException(StringResources.Error_Cannot_Find_KeyFile, keyFilePath);
 
             using var cert = new X509Certificate2(derFilePath);
 
