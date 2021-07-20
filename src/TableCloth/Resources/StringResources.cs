@@ -50,40 +50,25 @@ namespace TableCloth.Resources
             if (hasCompatNotes)
                 defaultString = $"*{defaultString}";
 
-            if (pkgs != null && pkgs.Count() > 0)
-                defaultString = $"{defaultString} (총 {pkgs.Count()}개 프로그램 설치)";
+            if (pkgs != null && pkgs.Count > 0)
+                defaultString = $"{defaultString} (총 {pkgs.Count}개 프로그램 설치)";
 
             return defaultString;
         }
 
         internal static string InternetServiceCategory_DisplayText(CatalogInternetServiceCategory value)
         {
-            switch (value)
+            return value switch
             {
-                case CatalogInternetServiceCategory.Banking:
-                    return "뱅킹";
-
-                case CatalogInternetServiceCategory.CreditCard:
-                    return "신용 카드";
-
-                case CatalogInternetServiceCategory.Education:
-                    return "교육";
-
-                case CatalogInternetServiceCategory.Financing:
-                    return "대출/금융";
-
-                case CatalogInternetServiceCategory.Government:
-                    return "공공";
-
-                case CatalogInternetServiceCategory.Security:
-                    return "증권/투자";
-
-                case CatalogInternetServiceCategory.Insurance:
-                    return "보험";
-
-                default:
-                    return "기타";
-            }
+                CatalogInternetServiceCategory.Banking => "뱅킹",
+                CatalogInternetServiceCategory.CreditCard => "신용 카드",
+                CatalogInternetServiceCategory.Education => "교육",
+                CatalogInternetServiceCategory.Financing => "대출/금융",
+                CatalogInternetServiceCategory.Government => "공공",
+                CatalogInternetServiceCategory.Security => "증권/투자",
+                CatalogInternetServiceCategory.Insurance => "보험",
+                _ => "기타",
+            };
         }
     }
 

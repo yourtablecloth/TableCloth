@@ -113,7 +113,7 @@ namespace TableCloth
             var services = tableClothConfiguration.Packages;
 
             var infoMessage = StringResources.Script_InstructionMessage(
-                services.Sum(x => x.Packages.Count()),
+                services.Sum(x => x.Packages.Count),
                 string.Join(", ", services.Select(x => x.DisplayName)));
 
             var powershellContent = $@"

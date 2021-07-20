@@ -170,7 +170,7 @@ namespace TableCloth
 					Tag = eachCategoryType,
 				};
 
-				var eachSiteComboBox = new ListBox()
+				var eachSiteCatalog = new ListBox()
 				{
 					Name = "SiteList",
 					Parent = eachTabPage,
@@ -233,26 +233,24 @@ namespace TableCloth
 				
 				try
                 {
-					using (var catalogStream = webClient.OpenRead(StringResources.CatalogUrl))
+                    using var catalogStream = webClient.OpenRead(StringResources.CatalogUrl);
+                    var catalog = XmlHelpers.DeserializeFromXml<CatalogDocument>(catalogStream);
+
+                    var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
+                        x => (CatalogInternetServiceCategory)x.Tag,
+                        x => x.Controls["SiteList"] as ListBox);
+
+                    if (catalog != null && catalog.Services.Any())
                     {
-						var catalog = XmlHelpers.DeserializeFromXml<CatalogDocument>(catalogStream);
-
-						var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
-							x => (CatalogInternetServiceCategory)x.Tag,
-							x => x.Controls["SiteList"] as ListBox);
-
-						if (catalog != null && catalog.Services.Any())
-						{
-							foreach (var eachType in catalog.Services.GroupBy(x => x.Category))
-								siteListControls[eachType.Key].DataSource = eachType.ToList();
-						}
-						else
-						{
-							siteCatalogTabControl.Visible = false;
-							siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
-						}
-					}
-				}
+                        foreach (var eachType in catalog.Services.GroupBy(x => x.Category))
+                            siteListControls[eachType.Key].DataSource = eachType.ToList();
+                    }
+                    else
+                    {
+                        siteCatalogTabControl.Visible = false;
+                        siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
+                    }
+                }
 				catch (Exception e)
                 {
 					siteCatalogTabControl.Visible = false;
