@@ -20,7 +20,7 @@
 
 이 때 프로그램을 직접 다운로드받을 수 있는 URL이 바뀌거나, 구 버전으로 다운로드되는 경우가 있을 수 있는데, 이 부분에 대한 컨트리뷰터 여러분의 기여가 필요합니다.
 
-만약 주소가 바뀌었다면 `web` 폴더의 `Catalog.txt` 파일에 정확한 URL을 기재하여 풀 리퀘스트를 보내주세요.
+만약 주소가 바뀌었다면 [docs](docs) 폴더의 [Catalog.xml](docs/Catalog.xml) 파일에 정확한 URL을 기재하여 풀 리퀘스트를 보내주세요.
 
 ## 스크린 샷
 
@@ -31,3 +31,5 @@
 본 프로젝트는 MIT 라이선스를 따릅니다.
 
 Project emblem made by [Eucalyp](https://www.flaticon.com/authors/eucalyp) from [Flaticon](https://www.flaticon.com/).
+
+Photo by [Brooke Lark](https://unsplash.com/@brookelark?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/s/photos/tablecloth?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText).

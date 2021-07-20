@@ -5,9 +5,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Cache;
 using System.Threading;
 using System.Windows.Forms;
-using TableCloth.Models;
+using TableCloth.Helpers;
+using TableCloth.Internals;
+using TableCloth.Models.TableClothCatalog;
+using TableCloth.Resources;
 
 namespace TableCloth
 {
@@ -17,7 +21,7 @@ namespace TableCloth
 		{
 			var form = new Form()
 			{
-				Text = "식탁보 - 컴퓨터를 깨끗하게 사용하세요!",
+				Text = StringResources.MainForm_Title,
 				Size = new Size(640, 480),
 				MinimumSize = new Size(640, 480),
 				FormBorderStyle = FormBorderStyle.FixedDialog,
@@ -58,7 +62,7 @@ namespace TableCloth
 				Width = form.Width / 2 - 50,
 			};
 
-			CreateLabel(dialogLayout, "원하는 옵션을 선택해주세요.");
+			CreateLabel(dialogLayout, StringResources.MainForm_SelectOptionsLabelText);
 			CreateLabel(dialogLayout);
 
 			var certListPanel = new FlowLayoutPanel()
@@ -67,8 +71,8 @@ namespace TableCloth
 				FlowDirection = FlowDirection.LeftToRight,
 				Width = form.ClientSize.Width - 100,
 			};
-			var mapNPKICert = CreateCheckBox(certListPanel, "기존 공인인증서 파일 가져오기(&C)", true);
-			var importButton = CreateButton(certListPanel, "찾아보기(&B)...");
+			var mapNPKICert = CreateCheckBox(certListPanel, StringResources.MainForm_MapNpkiCertButtonText, true);
+			var importButton = CreateButton(certListPanel, StringResources.MainForm_BrowseButtonText);
 			certListPanel.Height = (int)(mapNPKICert.Height * 1.6f);
 
 			var npkiFileListBox = new ListBox()
@@ -94,15 +98,15 @@ namespace TableCloth
             _ = importButton.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
             _ = npkiFileListBox.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
 
-			var enableMicrophone = CreateCheckBox(dialogLayout, "오디오 입력 사용하기(&A) - 개인 정보 노출에 주의하세요!", false);
-			var enableWebCam = CreateCheckBox(dialogLayout, "비디오 입력 사용하기(&V) - 개인 정보 노출에 주의하세요!", false);
-			var enablePrinters = CreateCheckBox(dialogLayout, "프린터 같이 사용하기(&P)", true);
+			var enableMicrophone = CreateCheckBox(dialogLayout, StringResources.MainForm_UseMicrophoneCheckboxText, false);
+			var enableWebCam = CreateCheckBox(dialogLayout, StringResources.MainForm_UseWebCameraCheckboxText, false);
+			var enablePrinters = CreateCheckBox(dialogLayout, StringResources.MainForm_UsePrinterCheckboxText, true);
 
 			enableMicrophone.Font = new Font(enableMicrophone.Font, FontStyle.Bold);
 			enableWebCam.Font = new Font(enableWebCam.Font, FontStyle.Bold);
 
 			CreateLabel(dialogLayout);
-			var siteInstructionLabel = CreateLabel(dialogLayout, "식탁보 위에서 접속할 사이트들을 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요.");
+			var siteInstructionLabel = CreateLabel(dialogLayout, StringResources.MainForm_SelectSiteLabelText);
 			CreateLabel(dialogLayout);
 
 			var siteCatalogTabControl = new TabControl
@@ -113,16 +117,16 @@ namespace TableCloth
 				Visible = true,
 			};
 
-			var categoryValues = Enum.GetValues<InternetServiceCategory>().ToList();
-			categoryValues.Remove(InternetServiceCategory.Other);
-			categoryValues.Add(InternetServiceCategory.Other);
+			var categoryValues = Enum.GetValues<CatalogInternetServiceCategory>().ToList();
+			categoryValues.Remove(CatalogInternetServiceCategory.Other);
+			categoryValues.Add(CatalogInternetServiceCategory.Other);
 
 			foreach (var eachCategoryType in categoryValues)
             {
 				var eachTabPage = new TabPage
 				{
 					Parent = siteCatalogTabControl,
-					Text = InternetService.GetCategoryDisplayName(eachCategoryType),
+					Text = StringResources.InternetServiceCategory_DisplayText(eachCategoryType),
 					Tag = eachCategoryType,
 				};
 
@@ -136,19 +140,19 @@ namespace TableCloth
 				};
 			}
 
-			var aboutButton = CreateButton(actionLeftLayout, "정보", handler: x =>
+			var aboutButton = CreateButton(actionLeftLayout, StringResources.MainForm_AboutButtonText, handler: x =>
 			{
 				MessageBox.Show(form,
-					$"식탁보 프로그램 (#{ThisAssembly.Git.Commit})\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n(c) 2021 남정현",
-					$"식탁보 프로그램 정보", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+					StringResources.AboutDialog_BodyText, StringResources.TitleText_Info,
+					MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
 			});
 
-			var cancelButton = CreateButton(actionRightLayout, "닫기", handler: x =>
+			var cancelButton = CreateButton(actionRightLayout, StringResources.MainForm_CloseButtonText, handler: x =>
 			{
 				form.Close();
 			});
 
-			var launchButton = CreateButton(actionRightLayout, "샌드박스 실행");
+			var launchButton = CreateButton(actionRightLayout, StringResources.MainForm_LaunchSandboxButtonText);
 
 			form.CancelButton = cancelButton;
 			form.AcceptButton = launchButton;
@@ -156,15 +160,15 @@ namespace TableCloth
 
 			form.Load += (_sender, _e) =>
 			{
-                if (_sender is not Form realSender)
-                    return;
+				if (_sender is not Form realSender)
+					return;
 
-                bool is64BitOperatingSystem = (IntPtr.Size == 8) || NativeMethods.InternalCheckIsWow64();
+				bool is64BitOperatingSystem = (IntPtr.Size == 8) || NativeMethods.InternalCheckIsWow64();
 
 				if (!is64BitOperatingSystem)
 				{
-                    _ = MessageBox.Show("실행하고 있는 운영 체제는 윈도우 샌드박스 기능을 지원하지 않는 오래된 버전의 운영 체제 같습니다. 윈도우 10 이상으로 업그레이드 해주세요.",
-                        "프로그램을 실행할 수 없습니다.", MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
+					_ = MessageBox.Show(StringResources.Error_Windows_OS_Too_Old, StringResources.TitleText_Error,
+						MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
 					realSender.Close();
 					return;
 				}
@@ -175,32 +179,49 @@ namespace TableCloth
 
 				if (!File.Exists(wsbExecPath))
 				{
-                    _ = MessageBox.Show("윈도우 샌드박스가 설치되어있지 않은 것 같습니다! 프로그램 추가/제거 - Windows 기능 켜기/끄기에서 설정해주세요.",
-                        "프로그램을 실행할 수 없습니다.", MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
+					_ = MessageBox.Show(StringResources.Error_Windows_Sandbox_Missing, StringResources.TitleText_Error,
+						MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
 					realSender.Close();
 					return;
 				}
 
-				using var webClient = new WebClient();
-				var catalogFilePath = Path.Combine(Path.GetTempPath(), "Catalog.txt");
-
-				try { webClient.DownloadFile("https://dotnetdev-kr.github.io/TableCloth/Catalog.txt", catalogFilePath); }
-				catch { }
-
-				var catalog = CatalogBuilder.ParseCatalog(catalogFilePath);
-				var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
-					x => (InternetServiceCategory)x.Tag,
-					x => x.Controls["SiteList"] as ListBox);
-
-				if (catalog != null && catalog.Any())
-                {
-					foreach (var eachType in catalog.GroupBy(x => x.Category))
-						siteListControls[eachType.Key].DataSource = eachType.ToList();
-				}
-				else
+				using var webClient = new WebClient()
 				{
+					CachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore),
+				};
+				webClient.Headers.Add("User-Agent", StringResources.UserAgentText);
+				webClient.QueryString.Add("ts", DateTime.Now.Ticks.ToString());
+				
+				try
+                {
+					using (var catalogStream = webClient.OpenRead(StringResources.CatalogUrl))
+                    {
+						var catalog = XmlHelpers.DeserializeFromXml<CatalogDocument>(catalogStream);
+
+						var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
+							x => (CatalogInternetServiceCategory)x.Tag,
+							x => x.Controls["SiteList"] as ListBox);
+
+						if (catalog != null && catalog.Services.Any())
+						{
+							foreach (var eachType in catalog.Services.GroupBy(x => x.Category))
+								siteListControls[eachType.Key].DataSource = eachType.ToList();
+						}
+						else
+						{
+							siteCatalogTabControl.Visible = false;
+							siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
+						}
+					}
+				}
+				catch (Exception e)
+                {
 					siteCatalogTabControl.Visible = false;
-					siteInstructionLabel.Text = "카탈로그 파일을 가져오지 못했어요! 그래도 샌드박스는 대신 실행해드려요.";
+					siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
+
+					MessageBox.Show(form,
+						StringResources.Error_Cannot_Download_Catalog(e), StringResources.TitleText_Error,
+						MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
 				}
 
 				try
@@ -235,15 +256,26 @@ namespace TableCloth
 
 				var activeTabPage = siteCatalogTabControl.SelectedTab;
 				var activeListBox = activeTabPage.Controls["SiteList"] as ListBox;
-				var activeItems = activeListBox.SelectedItems.Cast<InternetService>().ToArray();
+				var activeItems = activeListBox.SelectedItems.Cast<CatalogInternetService>().ToArray();
 
-				SandboxConfiguration config = new()
+				var compatNotes = string.Join("\r\n\r\n", activeItems
+					.Where(z => !string.IsNullOrWhiteSpace(z.CompatibilityNotes))
+					.Select(z => string.Concat($"[{z.DisplayName} 이용 시 주의 사항]", "\r\n", z.CompatibilityNotes))).Trim();
+
+				if (!string.IsNullOrWhiteSpace(compatNotes))
+                {
+					MessageBox.Show(form,
+						compatNotes, StringResources.TitleText_Warning,
+						MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+				}
+
+				var config = new TableClothConfiguration()
                 {
                     CertPair = pair,
                     EnableMicrophone = enableMicrophone.Checked,
                     EnableWebCam = enableWebCam.Checked,
                     EnablePrinters = enablePrinters.Checked,
-                    SelectedServices = activeItems,
+                    Packages = activeItems,
                 };
 
                 var tempDirectoryName = "bwsb_" + Guid.NewGuid().ToString("n");
@@ -276,9 +308,9 @@ namespace TableCloth
 					{
 						form.Invoke(new Action<Exception>((ex) =>
 						{
-							var response = MessageBox.Show(form, $"임시 폴더를 비우지 못했습니다. 해당 폴더를 열어 직접 지우실 수 있게 도와드릴까요?\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}",
-								form.Text, MessageBoxButtons.YesNo,
-								MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+							var response = MessageBox.Show(form,
+								StringResources.Error_Cannot_Remove_TempDirectory(ex), StringResources.TitleText_Error,
+								MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
 
 							if (response != DialogResult.Yes)
 								return;
@@ -288,8 +320,8 @@ namespace TableCloth
 								"explorer.exe");
 							if (!File.Exists(explorerFilePath))
 							{
-								MessageBox.Show(form, "Windows 탐색기 프로그램을 찾을 수 없습니다.",
-									form.Text, MessageBoxButtons.OK,
+								MessageBox.Show(form, StringResources.Error_Windows_Explorer_Missing,
+									StringResources.TitleText_Error, MessageBoxButtons.OK,
 									MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
 								return;
 							}
@@ -301,8 +333,8 @@ namespace TableCloth
 
 							if (!explorerProcess.Start())
 							{
-								MessageBox.Show(form, "Windows 탐색기 프로그램을 찾을 수 없습니다.",
-									form.Text, MessageBoxButtons.OK,
+								MessageBox.Show(form, StringResources.Error_Windows_Explorer_CanNotStart,
+									StringResources.TitleText_Error, MessageBoxButtons.OK,
 									MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
 								return;
 							}
@@ -312,8 +344,8 @@ namespace TableCloth
 
 				if (!process.Start())
                 {
-					MessageBox.Show(form, "샌드박스 프로그램을 실행하지 못했습니다.",
-						form.Text, MessageBoxButtons.OK,
+					MessageBox.Show(form, StringResources.Error_Windows_Sandbox_CanNotStart,
+						StringResources.TitleText_Error, MessageBoxButtons.OK,
 						MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
 					return;
                 }
@@ -326,7 +358,7 @@ namespace TableCloth
         {
 			var form = new Form()
 			{
-				Text = "검색된 공인 인증서 선택",
+				Text = StringResources.CertSelectForm_Title,
 				Size = new Size(640, 360),
 				MinimumSize = new Size(320, 200),
 				FormBorderStyle = FormBorderStyle.FixedDialog,
@@ -352,7 +384,7 @@ namespace TableCloth
 				Padding = new Padding(0, 0, 10, 0),
 			};
 
-			CreateLabel(dialogLayout, "검색된 공인 인증서가 다음과 같습니다. 다음 중 하나를 선택해주세요.");
+			CreateLabel(dialogLayout, StringResources.CertSelectForm_InstructionLabel);
 			CreateLabel(dialogLayout);
 
 			var largeListViewImageList = new ImageList()
@@ -380,15 +412,15 @@ namespace TableCloth
 				SmallImageList = smallListViewImageList,
 			};
 
-			var refreshButton = CreateButton(dialogLayout, "새로 고침(&R)");
+			var refreshButton = CreateButton(dialogLayout, StringResources.CertSelectForm_RefreshButtonText);
 			
 			CreateLabel(dialogLayout);
-			CreateLabel(dialogLayout, "원하는 인증서가 없다면, 직접 인증서 찾기 버튼을 눌러서 직접 DER 파일과 KEY 파일을 찾아주세요.");
+			CreateLabel(dialogLayout, StringResources.CertSelectForm_ManualInstructionLabelText);
 			CreateLabel(dialogLayout);
-			var browseCertPairButton = CreateButton(dialogLayout, "직접 인증서 찾기(&B)...");
+			var browseCertPairButton = CreateButton(dialogLayout, StringResources.CertSelectForm_OpenNpkiCertButton);
 
-			var cancelButton = CreateButton(actionLayout, "취소", dialogResult: DialogResult.Cancel);
-			var okayButton = CreateButton(actionLayout, "확인", dialogResult: DialogResult.OK);
+			var cancelButton = CreateButton(actionLayout, StringResources.CancelButtonText, dialogResult: DialogResult.Cancel);
+			var okayButton = CreateButton(actionLayout, StringResources.OkayButtonText, dialogResult: DialogResult.OK);
 
 			form.CancelButton = cancelButton;
 			form.AcceptButton = okayButton;
@@ -433,42 +465,43 @@ namespace TableCloth
               });
 
             _ = browseCertPairButton.AddClickEvent(x =>
-              {
-                  var npkiDirectoryPath = Path.Combine(
-                          Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                          "AppData", "LocalLow", "NPKI");
-                  if (!Directory.Exists(npkiDirectoryPath))
-                      npkiDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
+            {
+                var npkiDirectoryPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    "AppData", "LocalLow", "NPKI");
+                if (!Directory.Exists(npkiDirectoryPath))
+                    npkiDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
 
-                  var certFileBrowserDialog = new OpenFileDialog()
-                  {
-                      Title = "인증서 파일 (signCert.der, signPri.key) 열기",
-                      Filter = "인증서 파일 (*.der;*.key)|*.der;*.key|모든 파일|*.*",
-                      ReadOnlyChecked = true,
-                      SupportMultiDottedExtensions = true,
-                      DereferenceLinks = true,
-                      Multiselect = true,
-                      InitialDirectory = npkiDirectoryPath,
-                  };
+                var certFileBrowserDialog = new OpenFileDialog()
+                {
+                    Title = StringResources.CertSelectForm_FileOpenDialog_Text,
+                    Filter = StringResources.CertSelectForm_FileOpenDialog_FilterText,
+                    ReadOnlyChecked = true,
+                    SupportMultiDottedExtensions = true,
+                    DereferenceLinks = true,
+                    Multiselect = true,
+                    InitialDirectory = npkiDirectoryPath,
+                };
 
-                  if (certFileBrowserDialog.ShowDialog(form) != DialogResult.OK)
-                      return;
+                if (certFileBrowserDialog.ShowDialog(form) != DialogResult.OK)
+                    return;
 
-                  var selectedFiles = certFileBrowserDialog.FileNames;
-                  var derFilePath = selectedFiles.Where(x => string.Equals(Path.GetExtension(x), ".der", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                  var keyFilePath = selectedFiles.Where(x => string.Equals(Path.GetExtension(x), ".key", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                var selectedFiles = certFileBrowserDialog.FileNames;
+                var derFilePath = selectedFiles.Where(x => string.Equals(Path.GetExtension(x), ".der", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                var keyFilePath = selectedFiles.Where(x => string.Equals(Path.GetExtension(x), ".key", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-                  if (!File.Exists(derFilePath) || !File.Exists(keyFilePath))
-                  {
-                      _ = MessageBox.Show(form, "인증서 정보 파일 (der)과 개인 키 파일 (key)을 각각 하나씩 선택해주세요.\r\n\r\nCtrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 빈 공간을 드래그하면 여러 파일을 선택할 수 있어요.",
-                          "오류", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-                      return;
-                  }
+                if (!File.Exists(derFilePath) || !File.Exists(keyFilePath))
+                {
+                    _ = MessageBox.Show(form,
+						StringResources.Error_OpenDerAndKey_Simultaneously, StringResources.TitleText_Error,
+						MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                    return;
+                }
 
-                  form.Tag = X509CertPair.CreateX509CertPair(derFilePath, keyFilePath);
-                  form.DialogResult = DialogResult.OK;
-                  form.Close();
-              });
+                form.Tag = X509CertPair.CreateX509CertPair(derFilePath, keyFilePath);
+                form.DialogResult = DialogResult.OK;
+                form.Close();
+            });
 
 			form.Load += (_sender, _e) =>
 			{
