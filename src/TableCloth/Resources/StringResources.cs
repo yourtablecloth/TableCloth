@@ -70,10 +70,16 @@ namespace TableCloth.Resources
                     return "교육";
 
                 case CatalogInternetServiceCategory.Financing:
-                    return "금융";
+                    return "대출/금융";
 
                 case CatalogInternetServiceCategory.Government:
                     return "공공";
+
+                case CatalogInternetServiceCategory.Security:
+                    return "증권/투자";
+
+                case CatalogInternetServiceCategory.Insurance:
+                    return "보험";
 
                 default:
                     return "기타";

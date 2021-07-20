@@ -15,6 +15,12 @@ namespace TableCloth.Models.TableClothCatalog
         [XmlEnum("Financing")]
         Financing,
 
+        [XmlEnum("Security")]
+        Security,
+
+        [XmlEnum("Insurance")]
+        Insurance,
+
         [XmlEnum("CreditCard")]
         CreditCard,
 
