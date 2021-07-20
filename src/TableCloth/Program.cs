@@ -10,7 +10,7 @@ namespace TableCloth
         {
             Application.OleRequired();
             Application.EnableVisualStyles();
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.SetCompatibleTextRenderingDefault(false);
 
             var context = CreateAppContext();
