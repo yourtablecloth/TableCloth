@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using TableCloth.Models.TableClothCatalog;
 
-namespace TableCloth.Internals
+namespace TableCloth.Models.Catalog
 {
     [Serializable]
     public sealed class PackageCollection : KeyedCollection<string, CatalogPackageInformation>

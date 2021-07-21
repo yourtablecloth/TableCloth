@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using TableCloth.Models.TableClothCatalog;
+using TableCloth.Models.Catalog;
 
 namespace TableCloth.Resources
 {

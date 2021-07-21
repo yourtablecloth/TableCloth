@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using TableCloth.Helpers;
-using TableCloth.Internals;
+using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 

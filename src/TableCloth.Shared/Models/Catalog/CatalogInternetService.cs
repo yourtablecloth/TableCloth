@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using TableCloth.Resources;
 
-namespace TableCloth.Models.TableClothCatalog
+namespace TableCloth.Models.Catalog
 {
     [Serializable, XmlType]
     public sealed class CatalogInternetService

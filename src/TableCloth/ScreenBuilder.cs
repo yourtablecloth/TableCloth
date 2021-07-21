@@ -9,8 +9,8 @@ using System.Net.Cache;
 using System.Threading;
 using System.Windows.Forms;
 using TableCloth.Helpers;
-using TableCloth.Internals;
-using TableCloth.Models.TableClothCatalog;
+using TableCloth.Models.Catalog;
+using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 
 namespace TableCloth
