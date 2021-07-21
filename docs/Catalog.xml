@@ -11,122 +11,122 @@
 		<Service Id="WooriBank" DisplayName="우리은행" Category="Banking" Url="https://www.wooribank.com/">
 			<CompatNotes>우리은행의 경우 키보드보안프로그램을 설치했어도 원격 데스크톱, Hyper-V 고급 세션, 그리고 윈도우 샌드박스 환경에서는 키 입력을 제대로 처리하지 못합니다. 마우스 입력기를 이용하여 비밀 번호를 입력해주셔야 합니다.</CompatNotes>
 			<Packages>
-				<Packages Name="Veraport" Url="https://www.wooribank.com/download/veraportG3/veraport-g3-x64.exe" Arguments="/silent" />
-				<Packages Name="AnySign" Url="https://www.wooribank.com/download/AnySign_Installer/AnySign_Installer.exe" Arguments="/silent" />
-				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
-				<Packages Name="NOS" Url="https://www.wooribank.com/download/NOS/nos_setup.exe" Arguments="/silent" />
-				<Packages Name="IPInside" Url="https://www.wooribank.com/download/IPinside/I3GSvcManager_3.0.0.7.exe" />
+				<Package Name="Veraport" Url="https://www.wooribank.com/download/veraportG3/veraport-g3-x64.exe" Arguments="/silent" />
+				<Package Name="AnySign" Url="https://www.wooribank.com/download/AnySign_Installer/AnySign_Installer.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
+				<Package Name="NOS" Url="https://www.wooribank.com/download/NOS/nos_setup.exe" Arguments="/silent" />
+				<Package Name="IPInside" Url="https://www.wooribank.com/download/IPinside/I3GSvcManager_3.0.0.7.exe" />
 			</Packages>
 		</Service>
 		<Service Id="KookminBank" DisplayName="KB국민은행" Category="Banking" Url="https://www.kbstar.com/">
 			<CompatNotes>KB국민은행의 경우 해당 기관의 보안 정책에 따라 AhnLab Safe Transaction이 설치된 상태에서 원격 데스크톱, Hyper-V 고급 세션, 그리고 윈도우 샌드박스를 이용하여 웹 사이트를 방문하면 자동으로 종료되는 문제가 발생합니다.</CompatNotes>
 			<Packages>
-				<Packages Name="WizInDelfino" Url="https://download.kbstar.com/security/wizvera/delfino/g3/delfino-g3.exe" Arguments="/silent" />
+				<Package Name="WizInDelfino" Url="https://download.kbstar.com/security/wizvera/delfino/g3/delfino-g3.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="KEBHanaBank" DisplayName="KEB하나은행" Category="Banking" Url="https://www.kebhana.com/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://www.kebhana.com/wizvera/veraport/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
-				<Packages Name="TouchEnKey" Url="https://www.kebhana.com/TouchEn/nxKey/module/TouchEn_nxKey_Installer_32bit.exe" Arguments="/silent" />
-				<Packages Name="Delfino" Url="https://www.kebhana.com/wizvera/delfino/down/g3/delfino-g3.exe" Arguments="/silent" />
-				<Packages Name="SCWSSP" Url="https://www.kebhana.com/softcamp/WebSecurityStandard/SCWSSPSetup.exe" />
-				<Packages Name="IPInside" Url="https://www.kebhana.com/interezen/agent/np_v6/I3GSvcManager.exe" />
+				<Package Name="Veraport" Url="https://www.kebhana.com/wizvera/veraport/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="https://www.kebhana.com/TouchEn/nxKey/module/TouchEn_nxKey_Installer_32bit.exe" Arguments="/silent" />
+				<Package Name="Delfino" Url="https://www.kebhana.com/wizvera/delfino/down/g3/delfino-g3.exe" Arguments="/silent" />
+				<Package Name="SCWSSP" Url="https://www.kebhana.com/softcamp/WebSecurityStandard/SCWSSPSetup.exe" />
+				<Package Name="IPInside" Url="https://www.kebhana.com/interezen/agent/np_v6/I3GSvcManager.exe" />
 			</Packages>
 		</Service>
 		<Service Id="ShinhanBank" DisplayName="신한은행" Category="Banking" Url="https://www.shinhan.com/">
 			<Packages>
-				<Packages Name="ASTX" Url="https://bank.shinhan.com/sw/astx/astxdn.exe" Arguments="/silent" />
-				<Packages Name="INISAFECrossWeb" Url="https://bank.shinhan.com/sw/initech/extension/down/INIS_EX.exe?ver=1.0.1.961" Arguments="/silent" />
-				<Packages Name="TouchEnKey" Url="https://bank.shinhan.com/sw/raon/TouchEn/nxKey/module/TouchEn_nxKey_32bit.exe?ver=1.0.0.50" Arguments="/silent" />
-				<Packages Name="Printmade3" Url="https://bank.shinhan.com/sw/printmade/download_files/Windows/Printmade3_setup.exe" />
+				<Package Name="ASTX" Url="https://bank.shinhan.com/sw/astx/astxdn.exe" Arguments="/silent" />
+				<Package Name="INISAFECrossWeb" Url="https://bank.shinhan.com/sw/initech/extension/down/INIS_EX.exe?ver=1.0.1.961" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="https://bank.shinhan.com/sw/raon/TouchEn/nxKey/module/TouchEn_nxKey_32bit.exe?ver=1.0.0.50" Arguments="/silent" />
+				<Package Name="Printmade3" Url="https://bank.shinhan.com/sw/printmade/download_files/Windows/Printmade3_setup.exe" />
 			</Packages>
 		</Service>
 		<Service Id="NHInternetBank" DisplayName="농협인터넷뱅킹" Category="Banking" Url="https://banking.nonghyup.com/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://veraport.nonghyup.com/download/20210707/veraport-g3-x64.exe" Arguments="/silent" />
-				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
-				<Packages Name="INISAFECrossWebEx" Url="https://veraport.nonghyup.com/download/20210707/INIS_EX_SHA2.exe?ver=1.0.1.1021" Arguments="/silent" />
-				<Packages Name="TouchEnKey" Url="https://img.nonghyup.com/install/so/raon/TouchEnNxKey/TouchEn_nxKey_Installer_64bit_new.exe" Arguments="/silent" />
+				<Package Name="Veraport" Url="https://veraport.nonghyup.com/download/20210707/veraport-g3-x64.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
+				<Package Name="INISAFECrossWebEx" Url="https://veraport.nonghyup.com/download/20210707/INIS_EX_SHA2.exe?ver=1.0.1.1021" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="https://img.nonghyup.com/install/so/raon/TouchEnNxKey/TouchEn_nxKey_Installer_64bit_new.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="SHInternetBank" DisplayName="SH수협은행" Category="Banking" Url="https://www.suhyup-bank.com/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://www.suhyup-bank.com/wizvera/veraport/down/veraport-g3-x64.exe" />
-				<Packages Name="IniSafeCrossWeb" Url="https://www.suhyup-bank.com/initech/crossweb/extension/down/INIS_EX.exe" Arguments="/silent" />
-				<Packages Name="TouchEnKey" Url="https://www.suhyup-bank.com/TouchEn_new/nxKey/module/TouchEn_nxKey_Installer_32bit.exe" Arguments="/silent" />
-				<Packages Name="IPInside" Url="https://www.suhyup-bank.com/ipinside/Windows/I3GSvcManager.exe" />
-				<Packages Name="ASTX" Url="http://safetx.ahnlab.com/master/win/default/common/astxdn.exe" />
+				<Package Name="Veraport" Url="https://www.suhyup-bank.com/wizvera/veraport/down/veraport-g3-x64.exe" />
+				<Package Name="IniSafeCrossWeb" Url="https://www.suhyup-bank.com/initech/crossweb/extension/down/INIS_EX.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="https://www.suhyup-bank.com/TouchEn_new/nxKey/module/TouchEn_nxKey_Installer_32bit.exe" Arguments="/silent" />
+				<Package Name="IPInside" Url="https://www.suhyup-bank.com/ipinside/Windows/I3GSvcManager.exe" />
+				<Package Name="ASTX" Url="http://safetx.ahnlab.com/master/win/default/common/astxdn.exe" />
 			</Packages>
 		</Service>
 		<Service Id="IBKBank" DisplayName="IBK 기업은행" Category="Banking" Url="https://www.ibk.co.kr/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://mybank.ibk.co.kr/IBK/uib/sw/wizvera/veraport/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
-				<Packages Name="WizInDelfino" Url="https://mybank.ibk.co.kr/IBK/uib/sw/wizvera/delfino/down/delfino-g3-sha2.exe" Arguments="/silent" />
-				<Packages Name="IPInside" Url="https://mybank.ibk.co.kr/IBK/uib/sw/interezen/agent/I3GSvcManager.exe" />
-				<Packages Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
-				<Packages Name="TouchEnKey" Url="https://download.raonsecure.com/TouchEnnxKey/ibk/TouchEn_nxKey_32bit.exe" Arguments="/silent" />
-				<Packages Name="APSEngine" Url="https://mybank.ibk.co.kr/IBK/uib/sw/yettiesoft/APS/APS_Engine.exe" />
+				<Package Name="Veraport" Url="https://mybank.ibk.co.kr/IBK/uib/sw/wizvera/veraport/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
+				<Package Name="WizInDelfino" Url="https://mybank.ibk.co.kr/IBK/uib/sw/wizvera/delfino/down/delfino-g3-sha2.exe" Arguments="/silent" />
+				<Package Name="IPInside" Url="https://mybank.ibk.co.kr/IBK/uib/sw/interezen/agent/I3GSvcManager.exe" />
+				<Package Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="https://download.raonsecure.com/TouchEnnxKey/ibk/TouchEn_nxKey_32bit.exe" Arguments="/silent" />
+				<Package Name="APSEngine" Url="https://mybank.ibk.co.kr/IBK/uib/sw/yettiesoft/APS/APS_Engine.exe" />
 			</Packages>
 		</Service>
 		<Service Id="KDBBank" DisplayName="KDB 산업은행" Category="Banking" Url="https://www.kdb.co.kr/">
 			<Packages>
-				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
-				<Packages Name="AnySign" Url="https://banking.kdb.co.kr//bp/3rd-party-web/hsecure/anysign/AnySign_Installer.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
+				<Package Name="AnySign" Url="https://banking.kdb.co.kr//bp/3rd-party-web/hsecure/anysign/AnySign_Installer.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="StandardCharteredBank" DisplayName="한국스탠다드차타드은행" Category="Banking" Url="https://www.standardchartered.co.kr/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://open.standardchartered.co.kr/wizvera/veraport20/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
-				<Packages Name="IniSafeCrossWeb" Url="https://open.standardchartered.co.kr/initech/extension/down/INIS_EX.exe" Arguments="/silent" />
-				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
-				<Packages Name="IPInside" Url="https://open.standardchartered.co.kr/interezen/install/Non/I3GSvcManager.exe" />
+				<Package Name="Veraport" Url="https://open.standardchartered.co.kr/wizvera/veraport20/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
+				<Package Name="IniSafeCrossWeb" Url="https://open.standardchartered.co.kr/initech/extension/down/INIS_EX.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
+				<Package Name="IPInside" Url="https://open.standardchartered.co.kr/interezen/install/Non/I3GSvcManager.exe" />
 			</Packages>
 		</Service>
 		<Service Id="CitiBankKorea" DisplayName="한국씨티은행" Category="Banking" Url="https://www.citibank.co.kr/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://www.citibank.co.kr/3rdParty/wizvera/veraport/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
-				<Packages Name="WizInDelfino" Url="https://www.citibank.co.kr/3rdParty/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
-				<Packages Name="TouchEnKey" Url="https://www.citibank.co.kr/3rdParty/raon/TouchEn/nxKey/nxKey/module/TouchEn_nxKey_Installer_32bit_MLWS.exe" Arguments="/silent" />
-				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
-				<Packages Name="IPInside" Url="https://www.citibank.co.kr/3rdParty/interezen/ipinside/agent/I3GSvcManager.exe" />
+				<Package Name="Veraport" Url="https://www.citibank.co.kr/3rdParty/wizvera/veraport/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
+				<Package Name="WizInDelfino" Url="https://www.citibank.co.kr/3rdParty/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="https://www.citibank.co.kr/3rdParty/raon/TouchEn/nxKey/nxKey/module/TouchEn_nxKey_Installer_32bit_MLWS.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
+				<Package Name="IPInside" Url="https://www.citibank.co.kr/3rdParty/interezen/ipinside/agent/I3GSvcManager.exe" />
 			</Packages>
 		</Service>
 		<Service Id="KBank" DisplayName="케이뱅크" Category="Banking" Url="https://www.kbanknow.com/">
 			<Packages>
-				<Packages Name="SmartManagerEx" Url="https://www.kbanknow.com/product/initech/smartmanagerex/extension/down/SmartManagerEX.exe?ver=1.0.1.1392" />
-				<Packages Name="VCPP2008_Redist_x86" Url="https://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x86.exe" Arguments="/q" />
-				<Packages Name="MoaSignEx" Url="https://download.kbanknow.com/product/initech/moasign/down/MoaSignEXSetup.exe" Arguments="/silent" />
-				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
-				<Packages Name="IPInside" Url="https://download.kbanknow.com/product/interezen/I3GSvcManager.exe" />
-				<Packages Name="KSCertRelay" Url="https://download.kbanknow.com/product/qrcertrelay/nxCR/module/KSCertRelay_nx_Installer_32bit.exe?ver=2.1.0.5" Arguments="/silent" />
-				<Packages Name="MarkAny" Url="https://download.kbanknow.com/product/markany/exe/Setup_ePageSaferRT.exe" Arguments="/silent" />
-				<Packages Name="KISSCAP" Url="https://download.kbanknow.com/product/scraping/KISSCAP.exe" Arguments="/s /v/qn" />
+				<Package Name="SmartManagerEx" Url="https://www.kbanknow.com/product/initech/smartmanagerex/extension/down/SmartManagerEX.exe?ver=1.0.1.1392" />
+				<Package Name="VCPP2008_Redist_x86" Url="https://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x86.exe" Arguments="/q" />
+				<Package Name="MoaSignEx" Url="https://download.kbanknow.com/product/initech/moasign/down/MoaSignEXSetup.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
+				<Package Name="IPInside" Url="https://download.kbanknow.com/product/interezen/I3GSvcManager.exe" />
+				<Package Name="KSCertRelay" Url="https://download.kbanknow.com/product/qrcertrelay/nxCR/module/KSCertRelay_nx_Installer_32bit.exe?ver=2.1.0.5" Arguments="/silent" />
+				<Package Name="MarkAny" Url="https://download.kbanknow.com/product/markany/exe/Setup_ePageSaferRT.exe" Arguments="/silent" />
+				<Package Name="KISSCAP" Url="https://download.kbanknow.com/product/scraping/KISSCAP.exe" Arguments="/s /v/qn" />
 			</Packages>
 		</Service>
 		<Service Id="KakaoBank" DisplayName="카카오뱅크" Category="Banking" Url="https://www.kakaobank.com/">
 			<Packages>
-				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
-				<Packages Name="CertTool" Url="https://og.kakaobank.io/download/517591e5-9040-4393-b946-4de3ce14c886" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
+				<Package Name="CertTool" Url="https://og.kakaobank.io/download/517591e5-9040-4393-b946-4de3ce14c886" />
 			</Packages>
 		</Service>
 		<Service Id="DGBDaeguBank" DisplayName="DGB 대구은행" Category="Banking" Url="https://www.dgb.co.kr/">
 			<Packages>
-				<Packages Name="Veraport" Url="http://varaportg3.dl.cdn.cloudn.co.kr/veraport-g3-x64-sha2.exe" Arguments="/silent" />
-				<Packages Name="TouchEnKey" Url="http://touchennxkey.dl.cdn.cloudn.co.kr/ebz_TouchEn_nxKey_Installer_32bit.exe" Arguments="/silent" />
-				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
-				<Packages Name="WizInDelfino" Url="http://delfinog3.dl.cdn.cloudn.co.kr/delfino-g3-sha2.exe" Arguments="/silent" />
-				<Packages Name="ePageSafer" Url="http://epagesaferrt.dl.cdn.cloudn.co.kr/ebz_MAWS_DaeguBankRex_Setup.exe" Arguments="/silent" />
+				<Package Name="Veraport" Url="http://varaportg3.dl.cdn.cloudn.co.kr/veraport-g3-x64-sha2.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="http://touchennxkey.dl.cdn.cloudn.co.kr/ebz_TouchEn_nxKey_Installer_32bit.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" />
+				<Package Name="WizInDelfino" Url="http://delfinog3.dl.cdn.cloudn.co.kr/delfino-g3-sha2.exe" Arguments="/silent" />
+				<Package Name="ePageSafer" Url="http://epagesaferrt.dl.cdn.cloudn.co.kr/ebz_MAWS_DaeguBankRex_Setup.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="BusanBank" DisplayName="BNK 부산은행" Category="Banking" Url="https://www.busanbank.co.kr/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://ibank.busanbank.co.kr/product/install/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
-				<Packages Name="IniSafeCrossWeb" Url="https://ibank.busanbank.co.kr/product/install/INISAFE/extension/down/INIS_EX_SHA2.exe" Arguments="/silent" />
-				<Packages Name="ASTX" Url="http://safetx.ahnlab.com/master/win/default/common/astxdn.exe" Arguments="/silent" />
-				<Packages Name="TouchEnKey" Url="https://ibank.busanbank.co.kr/product/install/TouchEn_NX/nxKey/module/TouchEn_nxKey_Installer_64bit.exe" Arguments="/silent" />
-				<Packages Name="IPInside" Url="https://ibank.busanbank.co.kr/product/install/IPinside/Windows/I3GSvcManager.exe" />
-				<Packages Name="KSCertRelay" Url="https://ibank.busanbank.co.kr/product/install/TouchEn_NX/nxCR/module/KSCertRelay_nx_Installer_64bit.exe" Arguments="/silent" />
-				<Packages Name="BusanPFMS" Url="https://ibank.busanbank.co.kr/product/install/pfms/Windows/2.0.2.2/BusanPFMS_Setup.exe" />
+				<Package Name="Veraport" Url="https://ibank.busanbank.co.kr/product/install/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
+				<Package Name="IniSafeCrossWeb" Url="https://ibank.busanbank.co.kr/product/install/INISAFE/extension/down/INIS_EX_SHA2.exe" Arguments="/silent" />
+				<Package Name="ASTX" Url="http://safetx.ahnlab.com/master/win/default/common/astxdn.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="https://ibank.busanbank.co.kr/product/install/TouchEn_NX/nxKey/module/TouchEn_nxKey_Installer_64bit.exe" Arguments="/silent" />
+				<Package Name="IPInside" Url="https://ibank.busanbank.co.kr/product/install/IPinside/Windows/I3GSvcManager.exe" />
+				<Package Name="KSCertRelay" Url="https://ibank.busanbank.co.kr/product/install/TouchEn_NX/nxCR/module/KSCertRelay_nx_Installer_64bit.exe" Arguments="/silent" />
+				<Package Name="BusanPFMS" Url="https://ibank.busanbank.co.kr/product/install/pfms/Windows/2.0.2.2/BusanPFMS_Setup.exe" />
 			</Packages>
 		</Service>
 		<!-- 인터넷 뱅킹 끝 -->
@@ -134,8 +134,8 @@
 		<!-- 증권사 시작 -->
 		<Service Id="KiwoomSecurity" DisplayName="키움증권" Category="Financing" Url="https://www.kiwoom.com/">
 			<Packages>
-				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default_nonstop/all/astx_setup_nonstop.exe" Arguments="/silent" />
-				<Packages Name="SignKoreaCert" Url="https://www.kiwoom.com/h/kws/assets/down/SKCertServiceSetup_v2.5.20_156.exe" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default_nonstop/all/astx_setup_nonstop.exe" Arguments="/silent" />
+				<Package Name="SignKoreaCert" Url="https://www.kiwoom.com/h/kws/assets/down/SKCertServiceSetup_v2.5.20_156.exe" />
 			</Packages>
 		</Service>
 		<!-- 증권사 끝 -->
@@ -143,67 +143,67 @@
 		<!-- 신용 카드 회사 시작 -->
 		<Service Id="Wooricard" DisplayName="우리카드" Category="CreditCard" Url="https://www.wooricard.com/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://pc.wooricard.com/dcpc/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
-				<Packages Name="NOS" Url="https://pc.wooricard.com/dcpc/pluginfree/setup/nos_setup.exe" Arguments="/silent" />
-				<Packages Name="IPInside" Url="https://pc.wooricard.com/dcpc/eFDS/binary/windows/I3GSvcManager.exe" />
-				<Packages Name="KeySharpBiz" Url="https://pc.wooricard.com/dcpc/raonx/ksbiz/module/KSbiz_Installer_32bit.exe" />
+				<Package Name="Veraport" Url="https://pc.wooricard.com/dcpc/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
+				<Package Name="NOS" Url="https://pc.wooricard.com/dcpc/pluginfree/setup/nos_setup.exe" Arguments="/silent" />
+				<Package Name="IPInside" Url="https://pc.wooricard.com/dcpc/eFDS/binary/windows/I3GSvcManager.exe" />
+				<Package Name="KeySharpBiz" Url="https://pc.wooricard.com/dcpc/raonx/ksbiz/module/KSbiz_Installer_32bit.exe" />
 			</Packages>
 		</Service>
 		<Service Id="KBKookminCard" DisplayName="KB국민카드" Category="CreditCard" Url="https://www.kbcard.com/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://download.kbcard.com/security/wizvera/veraport-g3/veraport-g3-x64.exe" Arguments="/silent" />
-				<Packages Name="WizInDelfino" Url="https://download.kbcard.com/security/wizvera/delfino-g3/delfino-g3.exe" Arguments="/silent" />
-				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
+				<Package Name="Veraport" Url="https://download.kbcard.com/security/wizvera/veraport-g3/veraport-g3-x64.exe" Arguments="/silent" />
+				<Package Name="WizInDelfino" Url="https://download.kbcard.com/security/wizvera/delfino-g3/delfino-g3.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="Hanacard" DisplayName="하나카드" Category="CreditCard" Url="https://www.hanacard.co.kr/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://www.hanacard.co.kr/wizvera/veraport/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
-				<Packages Name="WizInDelfino" Url="http://dn.wizvera.com/svc/hanacard/delfino/delfino-g3.exe" Arguments="/silent" />
-				<Packages Name="AhnLabSafeTx" Url="http://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
-				<Packages Name="IPInside" Url="http://ak01-tz5130.ktics.co.kr/I3GSvcManager.exe" />
+				<Package Name="Veraport" Url="https://www.hanacard.co.kr/wizvera/veraport/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
+				<Package Name="WizInDelfino" Url="http://dn.wizvera.com/svc/hanacard/delfino/delfino-g3.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="http://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
+				<Package Name="IPInside" Url="http://ak01-tz5130.ktics.co.kr/I3GSvcManager.exe" />
 			</Packages>
 		</Service>
 		<Service Id="ShinhanCard" DisplayName="신한카드" Category="CreditCard" Url="https://www.shinhancard.com/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://www.shinhancard.com/psolution/wizvera/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
-				<Packages Name="WizInDelfino" Url="https://www.shinhancard.com/psolution/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
-				<Packages Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
+				<Package Name="Veraport" Url="https://www.shinhancard.com/psolution/wizvera/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
+				<Package Name="WizInDelfino" Url="https://www.shinhancard.com/psolution/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
+				<Package Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="BCCard" DisplayName="BC카드" Category="CreditCard" Url="https://www.bccard.com/">
 			<Packages>
-				<Packages Name="IniSafeCrossWeb" Url="https://www.bccard.com/initech/crossweb/extension/down/INIS_EX.exe" Arguments="/silent" />
-				<Packages Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
+				<Package Name="IniSafeCrossWeb" Url="https://www.bccard.com/initech/crossweb/extension/down/INIS_EX.exe" Arguments="/silent" />
+				<Package Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="NHCard" DisplayName="NH농협카드" Category="CreditCard" Url="https://card.nonghyup.com/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://card.nonghyup.com/wizvera/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
-				<Packages Name="WizInDelfino" Url="https://card.nonghyup.com/thirdparty/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
-				<Packages Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
-				<Packages Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
+				<Package Name="Veraport" Url="https://card.nonghyup.com/wizvera/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
+				<Package Name="WizInDelfino" Url="https://card.nonghyup.com/thirdparty/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
+				<Package Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="HyundaiCard" DisplayName="현대카드" Category="CreditCard" Url="https://www.hyundaicard.com/">
 			<Packages>
-				<Packages Name="Veraport" Url="https://img.hyundaicard.com/wizvera/veraport/down/veraport-g3s-x64-sha2.exe" Arguments="/silent" />
-				<Packages Name="WizInDelfino" Url="https://img.hyundaicard.com/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
-				<Packages Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
+				<Package Name="Veraport" Url="https://img.hyundaicard.com/wizvera/veraport/down/veraport-g3s-x64-sha2.exe" Arguments="/silent" />
+				<Package Name="WizInDelfino" Url="https://img.hyundaicard.com/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
+				<Package Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="SamsungCard" DisplayName="삼성카드" Category="CreditCard" Url="https://www.samsungcard.com/">
 			<Packages>
-				<Packages Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
-				<Packages Name="MagicLine4NX" Url="https://www.samsungcard.com/MagicLine4Web/ML4Web/install_bin/magicline4nx_setup.exe" Arguments="/silent" />
-				<Packages Name="IPInside" Url="https://static12.samsungcard.com/stinstall/ipinsideLWS/I3GSvcManager.exe" />
+				<Package Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
+				<Package Name="MagicLine4NX" Url="https://www.samsungcard.com/MagicLine4Web/ML4Web/install_bin/magicline4nx_setup.exe" Arguments="/silent" />
+				<Package Name="IPInside" Url="https://static12.samsungcard.com/stinstall/ipinsideLWS/I3GSvcManager.exe" />
 			</Packages>
 		</Service>
 		<Service Id="LotteCard" DisplayName="롯데카드" Category="CreditCard" Url="https://www.lottecard.co.kr/">
 			<Packages>
-				<Packages Name="NOSAll" Url="https://image.lottecard.co.kr/webapp/pluginfree/nos_down.exe" Arguments="/silent" />
-				<Packages Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
-				<Packages Name="AnySign" Url="https://download.softforum.com/Published/AnySign/v1.1.2.0/AnySign_Installer.exe" Arguments="/silent" />
+				<Package Name="NOSAll" Url="https://image.lottecard.co.kr/webapp/pluginfree/nos_down.exe" Arguments="/silent" />
+				<Package Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
+				<Package Name="AnySign" Url="https://download.softforum.com/Published/AnySign/v1.1.2.0/AnySign_Installer.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<!-- 신용 카드 회사 끝 -->
@@ -211,33 +211,33 @@
 		<!-- 공공기관 시작 -->
 		<Service Id="Gov24" DisplayName="정부24" Category="Government" Url="https://www.gov.kr/">
 			<Packages>
-				<Packages Name="AnySign4PC" Url="https://download.softforum.com/Published/AnySign/v1.1.0.7/AnySign_Installer.exe" Arguments="/silent" />
-				<Packages Name="TouchEnKey" Url="https://download.raonsecure.com/TouchEnnxKey/minwon/TouchEn_nxKey_Installer_32bit_1.0.0.47.exe?ver=1.0.0.47" Arguments="/silent" />
+				<Package Name="AnySign4PC" Url="https://download.softforum.com/Published/AnySign/v1.1.0.7/AnySign_Installer.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="https://download.raonsecure.com/TouchEnnxKey/minwon/TouchEn_nxKey_Installer_32bit_1.0.0.47.exe?ver=1.0.0.47" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="Scourt" DisplayName="대한민국 법원 대국민서비스" Category="Government" Url="https://www.scourt.go.kr/">
 			<Packages>
-				<Packages Name="AnySign" Url="https://safind.scourt.go.kr/AnySign/AnySign4PC/install/AnySign_Installer.exe" Arguments="/silent" />
+				<Package Name="AnySign" Url="https://safind.scourt.go.kr/AnySign/AnySign4PC/install/AnySign_Installer.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="eFamily" DisplayName="대한민국 법원 전자가족관계등록시스템" Category="Government" Url="https://efamily.scourt.go.kr/">
 			<Packages>
-				<Packages Name="TouchEnKey" Url="https://efamily.scourt.go.kr/TouchEn/raonnx/nxKey/module/TouchEn_nxKey_32bit.exe" Arguments="/silent" />
-				<Packages Name="AnySign" Url="https://efamily.scourt.go.kr/AnySign/AnySign_Installer.exe" Arguments="/silent" />
-				<Packages Name="EveryonesPrinter" Url="https://k.kakaocdn.net/dn/cEqior/btqCGQ8rVbX/KU5Kj1RmtQEmrpSyk256d0/MopInstaller.exe?attach=1&amp;knm=tfile.exe" />
+				<Package Name="TouchEnKey" Url="https://efamily.scourt.go.kr/TouchEn/raonnx/nxKey/module/TouchEn_nxKey_32bit.exe" Arguments="/silent" />
+				<Package Name="AnySign" Url="https://efamily.scourt.go.kr/AnySign/AnySign_Installer.exe" Arguments="/silent" />
+				<Package Name="EveryonesPrinter" Url="https://k.kakaocdn.net/dn/cEqior/btqCGQ8rVbX/KU5Kj1RmtQEmrpSyk256d0/MopInstaller.exe?attach=1&amp;knm=tfile.exe" />
 			</Packages>
 		</Service>
 		<Service Id="Iros" DisplayName="대한민국 법원 인터넷등기소" Category="Government" Url="http://www.iros.go.kr/">
 			<Packages>
-				<Packages Name="EnableTrustedSite" Url="http://www.iros.go.kr/iris/TrustedSiteSetup.exe" Arguments="/silent" />
-				<Packages Name="AnySign" Url="http://download.softforum.com/Published/AnySign/v1.1.2.0/AnySign_Installer.exe" Arguments="/silent" />
-				<Packages Name="TouchEnKey" Url="http://www.iros.go.kr/XecureObject/raonsecure/TouchEn/nxKey/module/10047/TouchEn_nxKey_Installer_32bit.exe?ver=1.0.0.48" Arguments="/silent" />
-				<Packages Name="EveryonesPrinter" Url="https://k.kakaocdn.net/dn/cEqior/btqCGQ8rVbX/KU5Kj1RmtQEmrpSyk256d0/MopInstaller.exe?attach=1&amp;knm=tfile.exe" />
+				<Package Name="EnableTrustedSite" Url="http://www.iros.go.kr/iris/TrustedSiteSetup.exe" Arguments="/silent" />
+				<Package Name="AnySign" Url="http://download.softforum.com/Published/AnySign/v1.1.2.0/AnySign_Installer.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="http://www.iros.go.kr/XecureObject/raonsecure/TouchEn/nxKey/module/10047/TouchEn_nxKey_Installer_32bit.exe?ver=1.0.0.48" Arguments="/silent" />
+				<Package Name="EveryonesPrinter" Url="https://k.kakaocdn.net/dn/cEqior/btqCGQ8rVbX/KU5Kj1RmtQEmrpSyk256d0/MopInstaller.exe?attach=1&amp;knm=tfile.exe" />
 			</Packages>
 		</Service>
 		<Service Id="Hometax" DisplayName="국세청 홈택스" Category="Government" Url="https://hometax.go.kr/">
 			<Packages>
-				<Packages Name="MagicLine4NX" Url="https://sesw.hometax.go.kr/dn_dir/veraport/magic-pki/magicline4nx_setup.exe" Arguments="/silent" />
+				<Package Name="MagicLine4NX" Url="https://sesw.hometax.go.kr/dn_dir/veraport/magic-pki/magicline4nx_setup.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<!-- 공공기관 끝 -->
