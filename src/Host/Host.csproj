@@ -5,6 +5,8 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <Nullable>disable</Nullable>
     <UseWPF>true</UseWPF>
+    <MinimumPlatformVersion>10.0.17763.0</MinimumPlatformVersion>
+    <StartupObject>Host.App</StartupObject>
   </PropertyGroup>
 
   <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
