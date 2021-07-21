@@ -210,4 +210,18 @@ namespace TableCloth.Resources
         internal static string Script_InstructionMessage(int packageTotalCount, string siteNameList)
             => $"지금부터 {packageTotalCount}개 프로그램의 설치 과정이 시작됩니다. 모든 프로그램의 설치가 끝나면 자동으로 {siteNameList} 홈페이지가 열립니다.";
     }
+
+    // 호스트 프로그램의 일반 메시지 문자열들
+    partial class StringResources
+    {
+        internal static readonly string Host_No_Targets
+            = "설치할 프로그램이 지정되지 않았습니다. 샌드박스는 지금부터 사용하실 수 있어요.";
+    }
+
+    // 호스트 프로그램의 오류 메시지 문자열들
+    partial class StringResources
+    {
+        internal static readonly string HostError_Cannot_Load_Local_Catalog
+            = "로컬에 저장된 Catalog.xml 파일을 불러올 수 없어 설치를 계속 진행할 수 없습니다.";
+    }
 }
