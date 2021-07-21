@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace TableCloth.Models.TableClothCatalog
+namespace TableCloth.Models.Catalog
 {
     [Serializable, XmlType]
     public enum CatalogInternetServiceCategory : short
@@ -14,6 +14,12 @@ namespace TableCloth.Models.TableClothCatalog
 
         [XmlEnum("Financing")]
         Financing,
+
+        [XmlEnum("Security")]
+        Security,
+
+        [XmlEnum("Insurance")]
+        Insurance,
 
         [XmlEnum("CreditCard")]
         CreditCard,

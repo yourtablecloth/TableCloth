@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace TableCloth.Models.TableClothCatalog
+namespace TableCloth.Models.Catalog
 {
     [Serializable, XmlType]
     public sealed class CatalogPackageInformation

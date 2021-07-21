@@ -9,8 +9,8 @@ using System.Net.Cache;
 using System.Threading;
 using System.Windows.Forms;
 using TableCloth.Helpers;
-using TableCloth.Internals;
-using TableCloth.Models.TableClothCatalog;
+using TableCloth.Models.Catalog;
+using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 
 namespace TableCloth
@@ -22,45 +22,83 @@ namespace TableCloth
 			var form = new Form()
 			{
 				Text = StringResources.MainForm_Title,
-				Size = new Size(640, 480),
-				MinimumSize = new Size(640, 480),
 				FormBorderStyle = FormBorderStyle.FixedDialog,
 				MaximizeBox = false,
 				Icon = new Icon(
 					new MemoryStream(Convert.FromBase64String(GraphicResources.AppIcon)),
 					64, 64),
+				Size = new Size(640, 480),
+				AutoScaleDimensions = new SizeF(96f, 96f),
+				AutoScaleMode = AutoScaleMode.Dpi,
 			};
 
-			var dialogLayout = new FlowLayoutPanel()
+			var tableLayout = new TableLayoutPanel()
 			{
 				Parent = form,
 				Dock = DockStyle.Fill,
-				FlowDirection = FlowDirection.TopDown,
-				Padding = new Padding(16),
+				Padding = new Padding(10),
+				AutoSize = true,
+				AutoSizeMode = AutoSizeMode.GrowAndShrink,
 			};
 
-			var actionLayout = new Panel()
+			/*
+			 * +--------------------+
+			 * |                    |
+			 * |         A          |
+			 * |                    |
+			 * +---------+----------+
+			 * |    B0   |    B1    |
+			 * +---------+----------+
+			 * 
+			 * */
+
+			// Row A, 90%
+			tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 0.9f));
+
+			// Row B, 10%
+			tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 0.1f));
+
+			// Column 0, 50%
+			tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 0.5f));
+
+			// Column 1, 50%
+			tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 0.5f));
+
+			// Row A, Column 0 + 1
+			var dialogLayout = new FlowLayoutPanel()
 			{
-				Parent = form,
-				Dock = DockStyle.Bottom,
-				Padding = new Padding(10, 0, 10, 0),
+				Parent = tableLayout,
+				Dock = DockStyle.Fill,
+				FlowDirection = FlowDirection.TopDown,
+				AutoSize = true,
+				AutoSizeMode = AutoSizeMode.GrowAndShrink,
+				WrapContents = false,
+				AutoScroll = true,
 			};
+			tableLayout.SetCellPosition(dialogLayout, new TableLayoutPanelCellPosition(column: 0, row: 0));
+			tableLayout.SetColumnSpan(dialogLayout, 2);
 
+			// Row B, Column 0
 			var actionLeftLayout = new FlowLayoutPanel()
 			{
-				Parent = actionLayout,
-				Dock = DockStyle.Left,
+				Parent = tableLayout,
+				Dock = DockStyle.Fill,
 				FlowDirection = FlowDirection.LeftToRight,
-				Width = form.Width / 2 - 50,
+				AutoSize = true,
+				AutoSizeMode = AutoSizeMode.GrowAndShrink,
 			};
+			tableLayout.SetCellPosition(actionLeftLayout, new TableLayoutPanelCellPosition(column: 0, row: 1));
 
+			// Row B, Column 1
 			var actionRightLayout = new FlowLayoutPanel()
 			{
-				Parent = actionLayout,
-				Dock = DockStyle.Right,
+				Parent = tableLayout,
+				Dock = DockStyle.Fill,
 				FlowDirection = FlowDirection.RightToLeft,
-				Width = form.Width / 2 - 50,
+				AutoSize = true,
+				AutoSizeMode = AutoSizeMode.GrowAndShrink,
 			};
+			tableLayout.SetCellPosition(actionRightLayout, new TableLayoutPanelCellPosition(column: 1, row: 1));
 
 			CreateLabel(dialogLayout, StringResources.MainForm_SelectOptionsLabelText);
 			CreateLabel(dialogLayout);
@@ -70,6 +108,8 @@ namespace TableCloth
 				Parent = dialogLayout,
 				FlowDirection = FlowDirection.LeftToRight,
 				Width = form.ClientSize.Width - 100,
+				AutoSize = true,
+				AutoSizeMode = AutoSizeMode.GrowAndShrink,
 			};
 			var mapNPKICert = CreateCheckBox(certListPanel, StringResources.MainForm_MapNpkiCertButtonText, true);
 			var importButton = CreateButton(certListPanel, StringResources.MainForm_BrowseButtonText);
@@ -130,7 +170,7 @@ namespace TableCloth
 					Tag = eachCategoryType,
 				};
 
-				var eachSiteComboBox = new ListBox()
+				var eachSiteCatalog = new ListBox()
 				{
 					Name = "SiteList",
 					Parent = eachTabPage,
@@ -156,7 +196,6 @@ namespace TableCloth
 
 			form.CancelButton = cancelButton;
 			form.AcceptButton = launchButton;
-			actionLayout.Height = (int)(launchButton.Height * 1.6f);
 
 			form.Load += (_sender, _e) =>
 			{
@@ -194,26 +233,24 @@ namespace TableCloth
 				
 				try
                 {
-					using (var catalogStream = webClient.OpenRead(StringResources.CatalogUrl))
+                    using var catalogStream = webClient.OpenRead(StringResources.CatalogUrl);
+                    var catalog = XmlHelpers.DeserializeFromXml<CatalogDocument>(catalogStream);
+
+                    var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
+                        x => (CatalogInternetServiceCategory)x.Tag,
+                        x => x.Controls["SiteList"] as ListBox);
+
+                    if (catalog != null && catalog.Services.Any())
                     {
-						var catalog = XmlHelpers.DeserializeFromXml<CatalogDocument>(catalogStream);
-
-						var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
-							x => (CatalogInternetServiceCategory)x.Tag,
-							x => x.Controls["SiteList"] as ListBox);
-
-						if (catalog != null && catalog.Services.Any())
-						{
-							foreach (var eachType in catalog.Services.GroupBy(x => x.Category))
-								siteListControls[eachType.Key].DataSource = eachType.ToList();
-						}
-						else
-						{
-							siteCatalogTabControl.Visible = false;
-							siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
-						}
-					}
-				}
+                        foreach (var eachType in catalog.Services.GroupBy(x => x.Category))
+                            siteListControls[eachType.Key].DataSource = eachType.ToList();
+                    }
+                    else
+                    {
+                        siteCatalogTabControl.Visible = false;
+                        siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
+                    }
+                }
 				catch (Exception e)
                 {
 					siteCatalogTabControl.Visible = false;
@@ -359,30 +396,69 @@ namespace TableCloth
 			var form = new Form()
 			{
 				Text = StringResources.CertSelectForm_Title,
-				Size = new Size(640, 360),
-				MinimumSize = new Size(320, 200),
 				FormBorderStyle = FormBorderStyle.FixedDialog,
 				ShowInTaskbar = false,
 				MinimizeBox = false,
 				MaximizeBox = false,
 				StartPosition = FormStartPosition.CenterParent,
+				Size = new Size(480, 400),
+				AutoScaleDimensions = new SizeF(96f, 96f),
+				AutoScaleMode = AutoScaleMode.Dpi,
 			};
 
-			var dialogLayout = new FlowLayoutPanel()
+			var tableLayout = new TableLayoutPanel()
 			{
 				Parent = form,
 				Dock = DockStyle.Fill,
-				FlowDirection = FlowDirection.TopDown,
-				Padding = new Padding(16),
+				Padding = new Padding(10),
+				AutoSize = true,
+				AutoSizeMode = AutoSizeMode.GrowAndShrink,
 			};
 
+			/*
+			 * +--------------------+
+			 * |                    |
+			 * |         A          |
+			 * |                    |
+			 * +--------------------+
+			 * |         B          |
+			 * +--------------------+
+			 * 
+			 * */
+
+			// Row A, Auto
+			tableLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+			// Row B, 20%
+			tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 0.2f));
+
+			// Column 0, 100%
+			tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f));
+
+			// Row A
+			var dialogLayout = new FlowLayoutPanel()
+			{
+				Parent = tableLayout,
+				Dock = DockStyle.Fill,
+				FlowDirection = FlowDirection.TopDown,
+				AutoSize = true,
+				AutoSizeMode = AutoSizeMode.GrowAndShrink,
+				WrapContents = false,
+				AutoScroll = true,
+			};
+			tableLayout.SetCellPosition(dialogLayout, new TableLayoutPanelCellPosition(column: 0, row: 0));
+
+			// Row B
 			var actionLayout = new FlowLayoutPanel()
 			{
-				Parent = form,
+				Parent = tableLayout,
 				Dock = DockStyle.Bottom,
 				FlowDirection = FlowDirection.RightToLeft,
 				Padding = new Padding(0, 0, 10, 0),
+				AutoSize = true,
+				AutoSizeMode = AutoSizeMode.GrowAndShrink,
 			};
+			tableLayout.SetCellPosition(actionLayout, new TableLayoutPanelCellPosition(column: 0, row: 1));
 
 			CreateLabel(dialogLayout, StringResources.CertSelectForm_InstructionLabel);
 			CreateLabel(dialogLayout);

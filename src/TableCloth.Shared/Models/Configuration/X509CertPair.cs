@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using TableCloth.Resources;
 
-namespace TableCloth.Internals
+namespace TableCloth.Models.Configuration
 {
     public sealed partial class X509CertPair
     {

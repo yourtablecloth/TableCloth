@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace TableCloth.Models.TableClothCatalog
+namespace TableCloth.Models.Catalog
 {
     [Serializable, XmlRoot("TableClothCatalog")]
     public class CatalogDocument

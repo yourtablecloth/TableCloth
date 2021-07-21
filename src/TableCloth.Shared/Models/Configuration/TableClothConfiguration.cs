@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using TableCloth.Models.TableClothCatalog;
+using TableCloth.Models.Catalog;
 
-namespace TableCloth.Internals
+namespace TableCloth.Models.Configuration
 {
     [Serializable]
     public sealed class TableClothConfiguration

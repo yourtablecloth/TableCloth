@@ -17,4 +17,6 @@
     </PackageReference>
   </ItemGroup>
 
+  <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
+
 </Project>
