@@ -3,9 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31423.177
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Host", "Host\Host.csproj", "{AEA89415-693F-407F-871D-09FBF65D0FA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host", "Host\Host.csproj", "{AEA89415-693F-407F-871D-09FBF65D0FA7}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TableCloth.Shared", "TableCloth.Shared\TableCloth.Shared.shproj", "{0F58B6A7-CCA8-471A-B767-01C7B8F6E839}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		TableCloth.Shared\TableCloth.Shared.projitems*{0f58b6a7-cca8-471a-b767-01c7b8f6e839}*SharedItemsImports = 13
+		TableCloth.Shared\TableCloth.Shared.projitems*{aea89415-693f-407f-871d-09fbf65d0fa7}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
