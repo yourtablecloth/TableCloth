@@ -140,7 +140,7 @@ namespace TableCloth
 
 			var enableMicrophone = CreateCheckBox(dialogLayout, StringResources.MainForm_UseMicrophoneCheckboxText, false);
 			var enableWebCam = CreateCheckBox(dialogLayout, StringResources.MainForm_UseWebCameraCheckboxText, false);
-			var enablePrinters = CreateCheckBox(dialogLayout, StringResources.MainForm_UsePrinterCheckboxText, true);
+			var enablePrinters = CreateCheckBox(dialogLayout, StringResources.MainForm_UsePrinterCheckboxText, false);
 
 			enableMicrophone.Font = new Font(enableMicrophone.Font, FontStyle.Bold);
 			enableWebCam.Font = new Font(enableWebCam.Font, FontStyle.Bold);
