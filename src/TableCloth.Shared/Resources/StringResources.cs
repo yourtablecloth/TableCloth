@@ -172,6 +172,9 @@ namespace TableCloth.Resources
             return message;
         }
 
+        internal static string Error_Sandbox_ErrorCode_NonZero(int errorCode)
+            => $"Windows Sandbox 프로그램의 종료 코드가 0이 아닙니다. (종료 코드: {errorCode:X8})\r\n\r\n이상 증상이 의심되며, 샌드 박스를 제거한 후 다시 설치하는 것을 추천합니다.\r\n\r\n만약 다시 설치한 후에도 문제가 반복되면 피드백 허브 앱을 통해 마이크로소프트에 이상 상황을 제보해주세요.";
+
         internal static readonly string Error_Windows_Explorer_Missing
             = "Windows 탐색기 프로그램을 찾을 수 없습니다.";
 

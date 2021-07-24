@@ -329,6 +329,19 @@ namespace TableCloth
 				{
 					try
 					{
+						var realSender = __sender as Process;
+
+						if (realSender != null && realSender.ExitCode != 0)
+                        {
+							form.Invoke(new Action<int>((exitCode) =>
+							{
+								MessageBox.Show(form,
+									StringResources.Error_Sandbox_ErrorCode_NonZero(exitCode), StringResources.TitleText_Error,
+									MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+
+							}), realSender.ExitCode);
+                        }
+
 						for (var i = 0; i < 5; i++)
                         {
 							try
