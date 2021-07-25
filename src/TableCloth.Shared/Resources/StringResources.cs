@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Serialization;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.Resources
@@ -172,8 +173,8 @@ namespace TableCloth.Resources
             return message;
         }
 
-        internal static string Error_Sandbox_ErrorCode_NonZero(int errorCode)
-            => $"Windows Sandbox 프로그램의 종료 코드가 0이 아닙니다. (종료 코드: {errorCode:X8})\r\n\r\n이상 증상이 의심되며, 샌드 박스를 제거한 후 다시 설치하는 것을 추천합니다.\r\n\r\n만약 다시 설치한 후에도 문제가 반복되면 피드백 허브 앱을 통해 마이크로소프트에 이상 상황을 제보해주세요.";
+        internal static string Error_Sandbox_ErrorCode_NonZero(int exitCode)
+            => $"Windows Sandbox 프로그램의 종료 코드가 0이 아닙니다. (종료 코드: {exitCode:X8})\r\n\r\n이상 증상이 의심되며, 샌드 박스를 제거한 후 다시 설치하는 것을 추천합니다.\r\n\r\n만약 다시 설치한 후에도 문제가 반복되면 피드백 허브 앱을 통해 마이크로소프트에 이상 상황을 제보해주세요.";
 
         internal static readonly string Error_Windows_Explorer_Missing
             = "Windows 탐색기 프로그램을 찾을 수 없습니다.";
@@ -218,13 +219,44 @@ namespace TableCloth.Resources
     partial class StringResources
     {
         internal static readonly string Host_No_Targets
-            = "설치할 프로그램이 지정되지 않았습니다. 샌드박스는 지금부터 사용하실 수 있어요.";
+            = "이용하려는 웹 사이트 아이디가 지정되지 않았습니다. 샌드박스는 지금부터 사용하실 수 있어요.";
+
+        internal static readonly string Host_Download_InProgress
+            = "다운로드 중...";
+
+        internal static readonly string Host_Install_InProgress
+            = "설치하는 중...";
+
+        internal static readonly string Host_Install_Succeed
+            = "설치 완료";
+
+        internal static readonly string Host_Install_Failed
+            = "설치 실패";
     }
 
     // 호스트 프로그램의 오류 메시지 문자열들
     partial class StringResources
     {
-        internal static readonly string HostError_Cannot_Load_Local_Catalog
-            = "로컬에 저장된 Catalog.xml 파일을 불러올 수 없어 설치를 계속 진행할 수 없습니다.";
+        internal static readonly string HostError_CatalogDeserilizationFailure
+            = "Catalog.xml 파일의 형식이 프로그램이 이해하는 것과 다른 것 같습니다.";
+
+        internal static string HostError_CatalogLoadFailure(Exception ex)
+        {
+            if (ex is AggregateException ae)
+                return Error_Cannot_Remove_TempDirectory(ae.InnerException);
+
+            var message = $"원격 웹 사이트로부터 Catalog.xml 파일을 불러올 수 없어 설치를 계속 진행할 수 없습니다.";
+
+            if (ex != null)
+                message = string.Concat(message, $"\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");
+
+            return message;
+        }
+
+        internal static string HostError_PackageInstallFailure(string errorMessage)
+            => $"패키지를 설치하는 도중 오류가 발생했습니다. {(string.IsNullOrWhiteSpace(errorMessage) ? "그러나 원인을 파악하지 못했습니다." : errorMessage)}";
+
+        internal static string HostError_Package_CanNotStart
+            = "패키지 설치 프로그램을 시작하지 못했습니다.";
     }
 }

@@ -39,19 +39,19 @@ namespace Host
         public static void InitCatalogDocument<TApplication>(this TApplication app, CatalogDocument value)
             where TApplication : Application
         {
-            InitAppProperty(app, "InstallTargets", value);
+            InitAppProperty(app, "Catalog", value);
         }
 
-        public static IEnumerable<string> GetInstallTargets<TApplication>(this TApplication app)
+        public static IEnumerable<string> GetInstallSites<TApplication>(this TApplication app)
             where TApplication : Application
         {
-            return GetAppProperty<TApplication, IEnumerable<string>>(app, "InstallTargets");
+            return GetAppProperty<TApplication, IEnumerable<string>>(app, "InstallSites");
         }
 
-        public static void InitInstallTargets<TApplication>(this TApplication app, IEnumerable<string> value)
+        public static void InitInstallSites<TApplication>(this TApplication app, IEnumerable<string> value)
             where TApplication : Application
         {
-            InitAppProperty(app, "InstallTargets", value);
+            InitAppProperty(app, "InstallSites", value);
         }
     }
 }

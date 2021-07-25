@@ -149,6 +149,22 @@ Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.MessageBox]::Show('{infoMessage}', '{StringResources.Script_InstructionTitleText}', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
 ");
 
+            buffer.AppendLine("$Configurations = @{");
+            foreach (var eachPackage in services.SelectMany(service => service.Packages))
+            {
+                var localFileName = GetLocalFileName(new Uri(eachPackage.Url, UriKind.Absolute).LocalPath);
+
+                buffer.AppendLine($@"  ""{eachPackage.Name}""=@{{");
+                {
+                    buffer.AppendLine($@"    ""PackageName""=""{eachPackage.Name}"";");
+                    buffer.AppendLine($@"    ""PackageUrl""=""{eachPackage.Url}"";");
+                    buffer.AppendLine($@"    ""DownloadPath""=""$env:temp\{localFileName}"";");
+                    buffer.AppendLine($@"    ""InstallArgs""=""{eachPackage.Arguments}"";");
+                }
+                buffer.AppendLine($@"  }};");
+            }
+            buffer.AppendLine("}");
+
             foreach (var eachPackage in services.SelectMany(service => service.Packages))
             {
                 var localFileName = GetLocalFileName(new Uri(eachPackage.Url, UriKind.Absolute).LocalPath);
