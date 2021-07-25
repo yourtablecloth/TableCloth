@@ -1,7 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Helpers;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
@@ -71,6 +75,22 @@ namespace TableCloth
             return sandboxConfig;
         }
 
+        public static void ExpandCompanionFiles(string outputDirectory)
+        {
+            if (!Directory.Exists(outputDirectory))
+                Directory.CreateDirectory(outputDirectory);
+
+            var assetsDirectory = Path.Combine(outputDirectory, "assets");
+            if (!Directory.Exists(assetsDirectory))
+                Directory.CreateDirectory(assetsDirectory);
+
+            var assembly = typeof(SandboxBuilder).Assembly;
+            var hostZipFileKey = assembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith("Host.zip", StringComparison.OrdinalIgnoreCase));
+            using var hostZipFileStream = assembly.GetManifestResourceStream(hostZipFileKey);
+            using var hostZipArchive = new ZipArchive(hostZipFileStream, ZipArchiveMode.Read);
+            hostZipArchive.ExtractToDirectory(assetsDirectory, true);
+        }
+
         public static string GenerateSandboxConfiguration(string outputDirectory, TableClothConfiguration tableClothConfiguration)
         {
             if (tableClothConfiguration == null)
@@ -110,11 +130,6 @@ namespace TableCloth
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
 
             var buffer = new StringBuilder();
-            var services = tableClothConfiguration.Packages;
-
-            var infoMessage = StringResources.Script_InstructionMessage(
-                services.Sum(x => x.Packages.Count),
-                string.Join(", ", services.Select(x => x.DisplayName)));
 
             buffer.AppendLine($@"
 # Change Wallpaper
@@ -142,44 +157,7 @@ $WallpaperPath = ""C:\assets\Signature.jpg""
 rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
 ");
 
-            buffer.AppendLine($@"
-# Show User Interface
-Add-Type -AssemblyName System.Windows.Forms
-
-[System.Windows.Forms.MessageBox]::Show('{infoMessage}', '{StringResources.Script_InstructionTitleText}', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
-");
-
-            buffer.AppendLine("$Configurations = @{");
-            foreach (var eachPackage in services.SelectMany(service => service.Packages))
-            {
-                var localFileName = GetLocalFileName(new Uri(eachPackage.Url, UriKind.Absolute).LocalPath);
-
-                buffer.AppendLine($@"  ""{eachPackage.Name}""=@{{");
-                {
-                    buffer.AppendLine($@"    ""PackageName""=""{eachPackage.Name}"";");
-                    buffer.AppendLine($@"    ""PackageUrl""=""{eachPackage.Url}"";");
-                    buffer.AppendLine($@"    ""DownloadPath""=""$env:temp\{localFileName}"";");
-                    buffer.AppendLine($@"    ""InstallArgs""=""{eachPackage.Arguments}"";");
-                }
-                buffer.AppendLine($@"  }};");
-            }
-            buffer.AppendLine("}");
-
-            foreach (var eachPackage in services.SelectMany(service => service.Packages))
-            {
-                var localFileName = GetLocalFileName(new Uri(eachPackage.Url, UriKind.Absolute).LocalPath);
-
-                buffer
-                    .AppendLine($@"# Run {eachPackage.Name} Setup")
-                    .AppendLine($@"curl.exe -L ""{eachPackage.Url}"" --output ""$env:temp\{localFileName}""")
-                    .AppendLine(!string.IsNullOrWhiteSpace(eachPackage.Arguments)
-                        ? $@"cmd.exe /s /c start /abovenormal /wait ""$env:temp\{localFileName}"" {eachPackage.Arguments}"
-                        : $@"cmd.exe /s /c start /abovenormal /wait ""$env:temp\{localFileName}""")
-                    .AppendLine();
-            }
-
-            foreach (var eachHomePageUrl in services.Select(x => x.Url))
-                buffer.AppendLine($@"cmd.exe /s /c start /max {eachHomePageUrl}");
+            buffer.AppendLine($@"C:\assets\Host.exe {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}");
 
             return buffer.ToString();
         }
@@ -193,12 +171,6 @@ Add-Type -AssemblyName System.Windows.Forms
             buffer.AppendLine(@"powershell.exe -Command ""&{{Set-ExecutionPolicy RemoteSigned -Force}}""");
             buffer.AppendLine(@"powershell.exe -ExecutionPolicy Bypass -File ""C:\assets\Bootstrap.ps1""");
             return buffer.ToString();
-        }
-
-        static string GetLocalFileName(string localPath)
-        {
-            try { return Path.GetFileName(localPath); }
-            catch { return $"{Guid.NewGuid():N}.exe"; }
         }
     }
 }

@@ -12,6 +12,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Companions\**" />
+	  <EmbeddedResource Remove="Companions\**" />
+	  <None Remove="Companions\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Host.exe" />
+	  <None Remove="Host.zip" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Host.zip" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="GitInfo" Version="2.1.2">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -19,5 +34,9 @@
 	</ItemGroup>
 
 	<Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	  <Exec Command="call &quot;$(SolutionDir)\Host\GenerateHostPack.cmd&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)\Host\bin\Release\Host.zip&quot; &quot;$(ProjectDir)\Host.zip&quot;" />
+	</Target>
 
 </Project>

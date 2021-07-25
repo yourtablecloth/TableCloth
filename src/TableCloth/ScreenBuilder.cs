@@ -317,7 +317,9 @@ namespace TableCloth
 
                 var tempDirectoryName = "bwsb_" + Guid.NewGuid().ToString("n");
                 var tempPath = Path.Combine(Path.GetTempPath(), tempDirectoryName);
-                var wsbFilePath = SandboxBuilder.GenerateSandboxConfiguration(tempPath, config);
+				SandboxBuilder.ExpandCompanionFiles(tempPath);
+
+				var wsbFilePath = SandboxBuilder.GenerateSandboxConfiguration(tempPath, config);
 
 				var process = new Process()
 				{
@@ -332,7 +334,7 @@ namespace TableCloth
 						var realSender = __sender as Process;
 
 						if (realSender != null && realSender.ExitCode != 0)
-                        {
+						{
 							form.Invoke(new Action<int>((exitCode) =>
 							{
 								MessageBox.Show(form,
@@ -340,12 +342,12 @@ namespace TableCloth
 									MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
 
 							}), realSender.ExitCode);
-                        }
+						}
 
 						for (var i = 0; i < 5; i++)
-                        {
+						{
 							try
-                            {
+							{
 								if (Directory.Exists(tempPath))
 									Directory.Delete(tempPath, true);
 								else
@@ -393,12 +395,16 @@ namespace TableCloth
 				};
 
 				if (!process.Start())
-                {
-					MessageBox.Show(form, StringResources.Error_Windows_Sandbox_CanNotStart,
-						StringResources.TitleText_Error, MessageBoxButtons.OK,
-						MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+				{
+					form.Invoke(new Action(() =>
+					{
+						_ = MessageBox.Show(form, StringResources.Error_Windows_Sandbox_CanNotStart,
+							StringResources.TitleText_Error, MessageBoxButtons.OK,
+							MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+					}));
+
 					return;
-                }
+				}
             });
 
 			return form;
