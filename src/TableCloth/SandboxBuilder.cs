@@ -116,9 +116,8 @@ namespace TableCloth
                 services.Sum(x => x.Packages.Count),
                 string.Join(", ", services.Select(x => x.DisplayName)));
 
-            var powershellContent = $@"
-Add-Type -AssemblyName System.Windows.Forms
-
+            buffer.AppendLine($@"
+# Change Wallpaper
 $SetWallpaperSource = @""
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -141,12 +140,32 @@ Add-Type -TypeDefinition $SetWallpaperSource
 $WallpaperPath = ""C:\assets\Signature.jpg""
 [Wallpaper]::SetWallpaper($WallpaperPath)
 rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
+");
 
+            buffer.AppendLine($@"
+# Show User Interface
+Add-Type -AssemblyName System.Windows.Forms
 
 [System.Windows.Forms.MessageBox]::Show('{infoMessage}', '{StringResources.Script_InstructionTitleText}', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
-";
+");
 
-            return powershellContent;
+            foreach (var eachPackage in services.SelectMany(service => service.Packages))
+            {
+                var localFileName = GetLocalFileName(new Uri(eachPackage.Url, UriKind.Absolute).LocalPath);
+
+                buffer
+                    .AppendLine($@"# Run {eachPackage.Name} Setup")
+                    .AppendLine($@"curl.exe -L ""{eachPackage.Url}"" --output ""$env:temp\{localFileName}""")
+                    .AppendLine(!string.IsNullOrWhiteSpace(eachPackage.Arguments)
+                        ? $@"cmd.exe /s /c start /abovenormal /wait ""$env:temp\{localFileName}"" {eachPackage.Arguments}"
+                        : $@"cmd.exe /s /c start /abovenormal /wait ""$env:temp\{localFileName}""")
+                    .AppendLine();
+            }
+
+            foreach (var eachHomePageUrl in services.Select(x => x.Url))
+                buffer.AppendLine($@"cmd.exe /s /c start /max {eachHomePageUrl}");
+
+            return buffer.ToString();
         }
 
         public static string GenerateSandboxStartupScript(TableClothConfiguration tableClothConfiguration)
@@ -157,25 +176,6 @@ rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
             var buffer = new StringBuilder();
             buffer.AppendLine(@"powershell.exe -Command ""&{{Set-ExecutionPolicy RemoteSigned -Force}}""");
             buffer.AppendLine(@"powershell.exe -ExecutionPolicy Bypass -File ""C:\assets\Bootstrap.ps1""");
-
-            var services = tableClothConfiguration.Packages;
-
-            foreach (var eachPackage in services.SelectMany(service => service.Packages))
-            {
-                var localFileName = GetLocalFileName(new Uri(eachPackage.Url, UriKind.Absolute).LocalPath);
-
-                buffer
-                    .AppendLine($@"REM Run {eachPackage.Name} Setup")
-                    .AppendLine($@"curl -L ""{eachPackage.Url}"" --output ""%temp%\{localFileName}""")
-                    .AppendLine(!string.IsNullOrWhiteSpace(eachPackage.Arguments)
-                        ? $@"start /abovenormal /wait %temp%\{localFileName} {eachPackage.Arguments}"
-                        : $@"start /abovenormal /wait %temp%\{localFileName}")
-                    .AppendLine();
-            }
-
-            foreach (var eachHomePageUrl in services.Select(x => x.Url))
-                buffer.AppendLine($@"start /max {eachHomePageUrl}");
-
             return buffer.ToString();
         }
 
