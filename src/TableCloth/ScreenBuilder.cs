@@ -295,17 +295,6 @@ namespace TableCloth
 				var activeListBox = activeTabPage.Controls["SiteList"] as ListBox;
 				var activeItems = activeListBox.SelectedItems.Cast<CatalogInternetService>().ToArray();
 
-				var compatNotes = string.Join("\r\n\r\n", activeItems
-					.Where(z => !string.IsNullOrWhiteSpace(z.CompatibilityNotes))
-					.Select(z => string.Concat($"[{z.DisplayName} 이용 시 주의 사항]", "\r\n", z.CompatibilityNotes))).Trim();
-
-				if (!string.IsNullOrWhiteSpace(compatNotes))
-                {
-					MessageBox.Show(form,
-						compatNotes, StringResources.TitleText_Warning,
-						MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
-				}
-
 				var config = new TableClothConfiguration()
                 {
                     CertPair = pair,
