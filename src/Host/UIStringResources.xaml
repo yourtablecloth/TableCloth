@@ -23,4 +23,12 @@
         설치하기
     </system:String>
 
+    <system:String x:Key="PrecautionWindowText">
+        주의 사항
+    </system:String>
+
+    <system:String x:Key="CloseButtonText">
+        닫기
+    </system:String>
+
 </ResourceDictionary>

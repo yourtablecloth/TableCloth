@@ -52,6 +52,12 @@ namespace Host
             }
 
             InstallList.ItemsSource = new ObservableCollection<InstallItemViewModel>(packages);
+
+            if (catalog.Services.Any(x => targets.Contains(x.Id)))
+            {
+                PrecautionsWindow window = new PrecautionsWindow();
+                window.ShowDialog();
+            }
         }
 
         private void AboutButton_Click(object sender, RoutedEventArgs e)
