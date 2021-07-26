@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Host": {
-      "commandName": "Project",
-      "commandLineArgs": "WooriBank"
-    }
-  }
-}

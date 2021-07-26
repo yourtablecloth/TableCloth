@@ -70,40 +70,41 @@ namespace TableCloth.Models.Configuration
             if (!File.Exists(keyFilePath))
                 throw new FileNotFoundException(StringResources.Error_Cannot_Find_KeyFile, keyFilePath);
 
-            using var cert = new X509Certificate2(derFilePath);
-
-            var issuerName = cert.Issuer;
-            var subjectNamePairs = cert.Subject
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Select(x =>
-                {
-                    var parts = x.Trim().Split('=');
-                    var unitName = parts.ElementAtOrDefault(0)?.Trim() ?? string.Empty;
-                    var value = parts.ElementAtOrDefault(1)?.Trim() ?? string.Empty;
-                    return new KeyValuePair<string, string>(unitName, value);
-                })
-                .ToArray();
-
-            var organizationName = subjectNamePairs
-                .Where(x => string.Equals(x.Key, "o", StringComparison.InvariantCultureIgnoreCase))
-                .Select(x => x.Value)
-                .FirstOrDefault();
-
-            var usageExtension = cert.Extensions
-                .OfType<X509KeyUsageExtension>()
-                .FirstOrDefault();
-
-            var isPersonalCert = usageExtension != null &&
-                                 usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.NonRepudiation) &&
-                                 usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.DigitalSignature);
-
-            return new X509CertPair
+            using (var cert = new X509Certificate2(derFilePath))
             {
-                Subject = subjectNamePairs.ToArray(),
-                IsPersonalCert = isPersonalCert,
-                DerFilePath = derFilePath,
-                KeyFilePath = keyFilePath,
-            };
+                var issuerName = cert.Issuer;
+                var subjectNamePairs = cert.Subject
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x =>
+                    {
+                        var parts = x.Trim().Split('=');
+                        var unitName = parts.ElementAtOrDefault(0)?.Trim() ?? string.Empty;
+                        var value = parts.ElementAtOrDefault(1)?.Trim() ?? string.Empty;
+                        return new KeyValuePair<string, string>(unitName, value);
+                    })
+                    .ToArray();
+
+                var organizationName = subjectNamePairs
+                    .Where(x => string.Equals(x.Key, "o", StringComparison.InvariantCultureIgnoreCase))
+                    .Select(x => x.Value)
+                    .FirstOrDefault();
+
+                var usageExtension = cert.Extensions
+                    .OfType<X509KeyUsageExtension>()
+                    .FirstOrDefault();
+
+                var isPersonalCert = usageExtension != null &&
+                                     usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.NonRepudiation) &&
+                                     usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.DigitalSignature);
+
+                return new X509CertPair
+                {
+                    Subject = subjectNamePairs.ToArray(),
+                    IsPersonalCert = isPersonalCert,
+                    DerFilePath = derFilePath,
+                    KeyFilePath = keyFilePath,
+                };
+            }
         }
     }
 
@@ -111,11 +112,11 @@ namespace TableCloth.Models.Configuration
     {
         private X509CertPair() { }
 
-        public string DerFilePath { get; init; }
-        public string KeyFilePath { get; init; }
+        public string DerFilePath { get; set; }
+        public string KeyFilePath { get; set; }
 
-        public KeyValuePair<string, string>[] Subject { get; init; }
-        public bool IsPersonalCert { get; init; }
+        public KeyValuePair<string, string>[] Subject { get; set; }
+        public bool IsPersonalCert { get; set; }
 
 		public string SubjectOrganization
         {
@@ -129,9 +130,9 @@ namespace TableCloth.Models.Configuration
 		}
 
 		public string SubjectNameForNpkiApp
-			=> string.Join(',', Subject.Select(x => $"{x.Key.ToLowerInvariant()}={x.Value}"));
+			=> string.Join(",", Subject.Select(x => $"{x.Key.ToLowerInvariant()}={x.Value}"));
 
         public override string ToString()
-			=> string.Join(',', Subject.Select(x => $"{x.Key}={x.Value}"));
+			=> string.Join(",", Subject.Select(x => $"{x.Key}={x.Value}"));
 	}
 }

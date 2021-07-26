@@ -30,7 +30,7 @@ namespace Host
 
             CatalogDocument catalog = Application.Current.GetCatalogDocument();
             IEnumerable<string> targets = Application.Current.GetInstallSites();
-            List<InstallItemViewModel> packages = new();
+            var packages = new List<InstallItemViewModel>();
 
             foreach (string eachTargetName in targets)
             {
@@ -69,61 +69,72 @@ namespace Host
 
         private async void PerformInstallButton_Click(object sender, RoutedEventArgs e)
         {
-            using WebClient webClient = new();
-
-            try
+            using (var webClient = new WebClient())
             {
-                PerformInstallButton.IsEnabled = false;
-                var hasAnyFailure = false;
-
-                foreach (InstallItemViewModel eachItem in InstallList.ItemsSource)
+                try
                 {
-                    try
+                    PerformInstallButton.IsEnabled = false;
+                    var hasAnyFailure = false;
+
+                    foreach (InstallItemViewModel eachItem in InstallList.ItemsSource)
                     {
-                        eachItem.Installed = null;
-                        eachItem.StatusMessage = StringResources.Host_Download_InProgress;
-
-                        var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
-                        var tempFilePath = Path.Combine(Path.GetTempPath(), tempFileName);
-
-                        if (File.Exists(tempFilePath))
-                            File.Delete(tempFilePath);
-                        await webClient.DownloadFileTaskAsync(eachItem.PackageUrl, tempFilePath);
-
-                        eachItem.StatusMessage = StringResources.Host_Install_InProgress;
-                        var psi = new ProcessStartInfo(tempFilePath, eachItem.Arguments)
+                        try
                         {
-                            UseShellExecute = false,
-                        };
+                            eachItem.Installed = null;
+                            eachItem.StatusMessage = StringResources.Host_Download_InProgress;
 
-                        using var process = new Process() { StartInfo = psi, };
-                        if (!process.Start())
-                            throw new ApplicationException(StringResources.HostError_Package_CanNotStart);
+                            var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
+                            var tempFilePath = Path.Combine(Path.GetTempPath(), tempFileName);
 
-                        await process.WaitForExitAsync();
-                        eachItem.StatusMessage = StringResources.Host_Install_Succeed;
-                        eachItem.Installed = true;
-                        eachItem.ErrorMessage = null;
+                            if (File.Exists(tempFilePath))
+                                File.Delete(tempFilePath);
+                            await webClient.DownloadFileTaskAsync(eachItem.PackageUrl, tempFilePath);
+
+                            eachItem.StatusMessage = StringResources.Host_Install_InProgress;
+                            var psi = new ProcessStartInfo(tempFilePath, eachItem.Arguments)
+                            {
+                                UseShellExecute = false,
+                            };
+
+                            var cpSource = new TaskCompletionSource<int>();
+                            using (var process = new Process() { StartInfo = psi, })
+                            {
+                                process.EnableRaisingEvents = true;
+                                process.Exited += (_sender, _e) =>
+                                {
+                                    var realSender = _sender as Process;
+                                    cpSource.SetResult(realSender.ExitCode);
+                                };
+
+                                if (!process.Start())
+                                    throw new ApplicationException(StringResources.HostError_Package_CanNotStart);
+
+                                _ = await cpSource.Task;
+                                eachItem.StatusMessage = StringResources.Host_Install_Succeed;
+                                eachItem.Installed = true;
+                                eachItem.ErrorMessage = null;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            hasAnyFailure = true;
+                            eachItem.StatusMessage = StringResources.Host_Install_Failed;
+                            eachItem.Installed = false;
+                            eachItem.ErrorMessage = ex is AggregateException exception ? exception.InnerException.Message : ex.Message;
+                            await Task.Delay(100);
+                        }
                     }
-                    catch (Exception ex)
+
+                    if (!hasAnyFailure)
                     {
-                        hasAnyFailure = true;
-                        eachItem.StatusMessage = StringResources.Host_Install_Failed;
-                        eachItem.Installed = false;
-                        eachItem.ErrorMessage = ex is AggregateException exception ? exception.InnerException.Message : ex.Message;
-                        await Task.Delay(100);
+                        Close();
+                        return;
                     }
                 }
-
-                if (!hasAnyFailure)
+                finally
                 {
-                    Close();
-                    return;
+                    PerformInstallButton.IsEnabled = true;
                 }
-            }
-            finally
-            {
-                PerformInstallButton.IsEnabled = true;
             }
         }
 

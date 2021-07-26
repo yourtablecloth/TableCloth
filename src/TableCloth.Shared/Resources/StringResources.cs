@@ -59,17 +59,25 @@ namespace TableCloth.Resources
 
         internal static string InternetServiceCategory_DisplayText(CatalogInternetServiceCategory value)
         {
-            return value switch
+            switch (value)
             {
-                CatalogInternetServiceCategory.Banking => "뱅킹",
-                CatalogInternetServiceCategory.CreditCard => "신용 카드",
-                CatalogInternetServiceCategory.Education => "교육",
-                CatalogInternetServiceCategory.Financing => "대출/금융",
-                CatalogInternetServiceCategory.Government => "공공",
-                CatalogInternetServiceCategory.Security => "증권/투자",
-                CatalogInternetServiceCategory.Insurance => "보험",
-                _ => "기타",
-            };
+                case CatalogInternetServiceCategory.Banking:
+                    return "뱅킹";
+                case CatalogInternetServiceCategory.CreditCard:
+                    return "신용 카드";
+                case CatalogInternetServiceCategory.Education:
+                    return "교육";
+                case CatalogInternetServiceCategory.Financing:
+                    return "대출/금융";
+                case CatalogInternetServiceCategory.Government:
+                    return "공공";
+                case CatalogInternetServiceCategory.Security:
+                    return "증권/투자";
+                case CatalogInternetServiceCategory.Insurance:
+                    return "보험";
+                default:
+                    return "기타";
+            }
         }
     }
 
@@ -77,7 +85,7 @@ namespace TableCloth.Resources
     partial class StringResources
     {
         internal static readonly string MainForm_Title
-            = @$"{AppName} - 컴퓨터를 깨끗하게 사용하세요!";
+            = $"{AppName} - 컴퓨터를 깨끗하게 사용하세요!";
 
         internal static readonly string MainForm_SelectOptionsLabelText
             = @"원하는 옵션을 선택해주세요.";
@@ -98,7 +106,7 @@ namespace TableCloth.Resources
             = @"프린터 같이 사용하기(&P)";
 
         internal static readonly string MainForm_SelectSiteLabelText
-            = @$"{AppName} 위에서 접속할 사이트들을 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요.";
+            = $"{AppName} 위에서 접속할 사이트들을 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요.";
 
         internal static readonly string MainForm_SelectSiteLabelText_Alt
             = @"카탈로그 파일을 가져오지 못했어요! 그래도 샌드박스는 대신 실행해드려요.";
@@ -119,8 +127,14 @@ namespace TableCloth.Resources
     // 정보 대화 상자에 표시될 문자열들
     partial class StringResources
     {
+#if NETFX
+        internal static readonly string AboutDialog_BodyText
+            = $"{AppName}\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n{AppCopyright}";
+
+#else
         internal static readonly string AboutDialog_BodyText
             = $"{AppName} (빌드 번호: {ThisAssembly.Git.Commit})\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n{AppCopyright}";
+#endif
     }
 
     // 인증서 검색 창에 표시될 문자열들

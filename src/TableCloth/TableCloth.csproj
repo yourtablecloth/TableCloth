@@ -18,7 +18,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Host.exe" />
 	  <None Remove="Host.zip" />
 	</ItemGroup>
 
@@ -36,7 +35,7 @@
 	<Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-	  <Exec Command="call &quot;$(SolutionDir)\Host\GenerateHostPack.cmd&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)\Host\bin\Release\Host.zip&quot; &quot;$(ProjectDir)\Host.zip&quot;" />
+	  <Exec Command="copy /y &quot;$(SolutionDir)Host\bin\$(PlatformName)\$(ConfigurationName)\Host.zip&quot; &quot;$(ProjectDir)Host.zip&quot;" />
 	</Target>
 
 </Project>

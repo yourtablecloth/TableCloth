@@ -8,6 +8,6 @@ namespace TableCloth.Models.Catalog
     public class CatalogDocument
     {
         [XmlArray(ElementName = "InternetServices"), XmlArrayItem(typeof(CatalogInternetService), ElementName = "Service")]
-        public List<CatalogInternetService> Services { get; set; } = new();
+        public List<CatalogInternetService> Services { get; set; } = new List<CatalogInternetService>();
     }
 }

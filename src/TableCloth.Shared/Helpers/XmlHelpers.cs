@@ -14,10 +14,12 @@ namespace TableCloth.Helpers
             var @namespace = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty) });
             var targetEncoding = new UTF8Encoding(false);
 
-            using var memStream = new MemoryStream();
-            var contentStream = new StreamWriter(memStream);
-            serializer.Serialize(contentStream, objectToSerialize, @namespace);
-            return targetEncoding.GetString(memStream.ToArray());
+            using (var memStream = new MemoryStream())
+            {
+                var contentStream = new StreamWriter(memStream);
+                serializer.Serialize(contentStream, objectToSerialize, @namespace);
+                return targetEncoding.GetString(memStream.ToArray());
+            }
         }
 
         public static T DeserializeFromXml<T>(Stream readableStream)
@@ -26,8 +28,10 @@ namespace TableCloth.Helpers
             var serializer = new XmlSerializer(typeof(T));
             var targetEncoding = new UTF8Encoding(false);
 
-            using var contentStream = new StreamReader(readableStream, targetEncoding);
-            return serializer.Deserialize(contentStream) as T;
+            using (var contentStream = new StreamReader(readableStream, targetEncoding))
+            {
+                return serializer.Deserialize(contentStream) as T;
+            }
         }
     }
 }

@@ -14,40 +14,44 @@ namespace Host
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            using WebClient webClient = new();
-            CatalogDocument catalog = null;
-
-            try
+            using (var webClient = new WebClient())
             {
-                using Stream catalogStream = webClient.OpenRead(StringResources.CatalogUrl);
-                catalog = XmlHelpers.DeserializeFromXml<CatalogDocument>(catalogStream);
+                CatalogDocument catalog = null;
 
-                if (catalog == null)
+                try
                 {
-                    throw new XmlException(StringResources.HostError_CatalogDeserilizationFailure);
+                    using (var catalogStream = webClient.OpenRead(StringResources.CatalogUrl))
+                    {
+                        catalog = XmlHelpers.DeserializeFromXml<CatalogDocument>(catalogStream);
+
+                        if (catalog == null)
+                        {
+                            throw new XmlException(StringResources.HostError_CatalogDeserilizationFailure);
+                        }
+
+                        Current.InitCatalogDocument(catalog);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _ = MessageBox.Show(StringResources.HostError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
+                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                    Current.Shutdown(0);
+                    return;
                 }
 
-                Current.InitCatalogDocument(catalog);
-            }
-            catch (Exception ex)
-            {
-                _ = MessageBox.Show(StringResources.HostError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                Current.Shutdown(0);
-                return;
-            }
+                string[] targetSites = e.Args.ToArray();
 
-            string[] targetSites = e.Args.ToArray();
+                if (!targetSites.Any())
+                {
+                    _ = MessageBox.Show(StringResources.Host_No_Targets, StringResources.TitleText_Error,
+                        MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    Current.Shutdown(0);
+                    return;
+                }
 
-            if (!targetSites.Any())
-            {
-                _ = MessageBox.Show(StringResources.Host_No_Targets, StringResources.TitleText_Error,
-                    MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
-                Current.Shutdown(0);
-                return;
+                Current.InitInstallSites(targetSites);
             }
-
-            Current.InitInstallSites(targetSites);
         }
     }
 }

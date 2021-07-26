@@ -11,11 +11,13 @@ namespace Host
             where TApplication : Application
             where TObject : class
         {
-            return string.IsNullOrWhiteSpace(key)
-                ? throw new ArgumentException("Invalid key specified.", nameof(key))
-                : !app.Properties.Contains(key) || app.Properties[key] is not TObject value
-                ? throw new InvalidOperationException("Catalog does not initialized.")
-                : value;
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentException("Invalid key specified.", nameof(key));
+
+            if (!app.Properties.Contains(key) || !(app.Properties[key] is TObject))
+                throw new InvalidOperationException("Catalog does not initialized.");
+
+            return (TObject)app.Properties[key];
         }
 
         private static void InitAppProperty<TApplication, TObject>(this TApplication app, string key, TObject value)

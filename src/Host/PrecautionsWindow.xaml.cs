@@ -18,7 +18,7 @@ namespace Host
         {
             CatalogDocument catalog = Application.Current.GetCatalogDocument();
             IEnumerable<string> targets = Application.Current.GetInstallSites();
-            StringBuilder buffer = new();
+            var buffer = new StringBuilder();
 
             foreach (CatalogInternetService eachItem in catalog.Services.Where(x => targets.Contains(x.Id)))
             {

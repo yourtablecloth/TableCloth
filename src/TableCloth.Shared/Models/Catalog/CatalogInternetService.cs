@@ -24,7 +24,7 @@ namespace TableCloth.Models.Catalog
         public string CompatibilityNotes { get; set; }
 
         [XmlArray, XmlArrayItem(typeof(CatalogPackageInformation), ElementName = "Package")]
-        public List<CatalogPackageInformation> Packages { get; set; } = new();
+        public List<CatalogPackageInformation> Packages { get; set; } = new List<CatalogPackageInformation>();
 
         [XmlIgnore]
         public string CategoryDisplayName
