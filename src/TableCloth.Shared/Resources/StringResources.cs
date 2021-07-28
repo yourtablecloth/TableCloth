@@ -155,7 +155,7 @@ namespace TableCloth.Resources
             = "실행하고 있는 운영 체제는 윈도우 샌드박스 기능을 지원하지 않는 오래된 버전의 운영 체제 같습니다. 윈도우 10 이상으로 업그레이드 해주세요.";
 
         internal static readonly string Error_Windows_Sandbox_Missing
-            = "윈도우 샌드박스가 설치되어있지 않은 것 같습니다! 프로그램 추가/제거 - Windows 기능 켜기/끄기에서 설정해주세요.";
+            = "윈도우 샌드박스가 설치되어있지 않은 것 같습니다! Windows 기능 켜기/끄기에서 Windows 샌드박스를 설정해주세요.";
 
         internal static readonly string Error_OpenDerAndKey_Simultaneously
             = "인증서 정보 파일 (der)과 개인 키 파일 (key)을 각각 하나씩 선택해주세요.\r\n\r\nCtrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 빈 공간을 드래그하면 여러 파일을 선택할 수 있어요.";
