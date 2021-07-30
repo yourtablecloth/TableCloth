@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Input;
 
-namespace Host
+namespace Hostess
 {
     [Serializable]
     public sealed class InstallItemViewModel : INotifyPropertyChanged

@@ -85,10 +85,10 @@ namespace TableCloth
                 Directory.CreateDirectory(assetsDirectory);
 
             var assembly = typeof(SandboxBuilder).Assembly;
-            var hostZipFileKey = assembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith("Host.zip", StringComparison.OrdinalIgnoreCase));
-            using var hostZipFileStream = assembly.GetManifestResourceStream(hostZipFileKey);
-            using var hostZipArchive = new ZipArchive(hostZipFileStream, ZipArchiveMode.Read);
-            hostZipArchive.ExtractToDirectory(assetsDirectory, true);
+            var hostessZipFileKey = assembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith("Hostess.zip", StringComparison.OrdinalIgnoreCase));
+            using var hostessZipFileStream = assembly.GetManifestResourceStream(hostessZipFileKey);
+            using var hostessZipArchive = new ZipArchive(hostessZipFileStream, ZipArchiveMode.Read);
+            hostessZipArchive.ExtractToDirectory(assetsDirectory, true);
         }
 
         public static string GenerateSandboxConfiguration(string outputDirectory, TableClothConfiguration tableClothConfiguration)
@@ -157,7 +157,7 @@ $WallpaperPath = ""C:\assets\Signature.jpg""
 rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
 ");
 
-            buffer.AppendLine($@"C:\assets\Host.exe {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}");
+            buffer.AppendLine($@"C:\assets\Hostess.exe {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}");
 
             return buffer.ToString();
         }

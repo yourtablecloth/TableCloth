@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
 
-namespace Host
+namespace Hostess
 {
-    public sealed class StateToBrushConverter : IValueConverter
+    public sealed class BooleanToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool? flag = (value is bool?) ? (bool?)value : null;
-            return flag.HasValue ? flag.Value ? Brushes.DarkGreen : Brushes.DarkRed : Brushes.DarkOrange;
+            bool flag = (value is bool) ? (bool)value : false;
+            return flag ? Visibility.Visible : Visibility.Hidden;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

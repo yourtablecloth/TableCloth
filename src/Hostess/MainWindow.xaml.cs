@@ -11,7 +11,7 @@ using System.Windows.Interop;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
-namespace Host
+namespace Hostess
 {
     public partial class MainWindow : Window
     {
@@ -81,7 +81,7 @@ namespace Host
                         try
                         {
                             eachItem.Installed = null;
-                            eachItem.StatusMessage = StringResources.Host_Download_InProgress;
+                            eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
 
                             var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
                             var tempFilePath = Path.Combine(Path.GetTempPath(), tempFileName);
@@ -90,7 +90,7 @@ namespace Host
                                 File.Delete(tempFilePath);
                             await webClient.DownloadFileTaskAsync(eachItem.PackageUrl, tempFilePath);
 
-                            eachItem.StatusMessage = StringResources.Host_Install_InProgress;
+                            eachItem.StatusMessage = StringResources.Hostess_Install_InProgress;
                             var psi = new ProcessStartInfo(tempFilePath, eachItem.Arguments)
                             {
                                 UseShellExecute = false,
@@ -107,10 +107,10 @@ namespace Host
                                 };
 
                                 if (!process.Start())
-                                    throw new ApplicationException(StringResources.HostError_Package_CanNotStart);
+                                    throw new ApplicationException(StringResources.HostessError_Package_CanNotStart);
 
                                 _ = await cpSource.Task;
-                                eachItem.StatusMessage = StringResources.Host_Install_Succeed;
+                                eachItem.StatusMessage = StringResources.Hostess_Install_Succeed;
                                 eachItem.Installed = true;
                                 eachItem.ErrorMessage = null;
                             }
@@ -118,7 +118,7 @@ namespace Host
                         catch (Exception ex)
                         {
                             hasAnyFailure = true;
-                            eachItem.StatusMessage = StringResources.Host_Install_Failed;
+                            eachItem.StatusMessage = StringResources.Hostess_Install_Failed;
                             eachItem.Installed = false;
                             eachItem.ErrorMessage = ex is AggregateException exception ? exception.InnerException.Message : ex.Message;
                             await Task.Delay(100);

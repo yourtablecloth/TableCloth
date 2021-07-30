@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using TableCloth.Models.Catalog;
 
-namespace Host
+namespace Hostess
 {
     internal static class SharedProperties
     {

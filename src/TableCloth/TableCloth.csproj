@@ -18,11 +18,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Host.zip" />
+	  <None Remove="Hostess.zip" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Host.zip" />
+	  <EmbeddedResource Include="Hostess.zip" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -35,7 +35,7 @@
 	<Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-	  <Exec Command="copy /y &quot;$(SolutionDir)Host\bin\$(PlatformName)\$(ConfigurationName)\Host.zip&quot; &quot;$(ProjectDir)Host.zip&quot;" />
+	  <Exec Command="copy /y &quot;$(SolutionDir)Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;" />
 	</Target>
 
 </Project>

@@ -12,7 +12,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TableCloth.Shared", "TableC
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "TableCloth.Packaging", "TableCloth.Packaging\TableCloth.Packaging.wapproj", "{47150545-37C6-430F-92B4-48EDB9CE2C1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Host", "Host\Host.csproj", "{369BB263-3C8D-4B56-9301-2C47DE7746E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hostess", "Hostess\Hostess.csproj", "{369BB263-3C8D-4B56-9301-2C47DE7746E8}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

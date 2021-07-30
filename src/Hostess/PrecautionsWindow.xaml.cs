@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows;
 using TableCloth.Models.Catalog;
 
-namespace Host
+namespace Hostess
 {
     public partial class PrecautionsWindow : Window
     {

@@ -8,7 +8,7 @@ using TableCloth.Helpers;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
-namespace Host
+namespace Hostess
 {
     public partial class App : Application
     {
@@ -26,7 +26,7 @@ namespace Host
 
                         if (catalog == null)
                         {
-                            throw new XmlException(StringResources.HostError_CatalogDeserilizationFailure);
+                            throw new XmlException(StringResources.HostessError_CatalogDeserilizationFailure);
                         }
 
                         Current.InitCatalogDocument(catalog);
@@ -34,7 +34,7 @@ namespace Host
                 }
                 catch (Exception ex)
                 {
-                    _ = MessageBox.Show(StringResources.HostError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
+                    _ = MessageBox.Show(StringResources.HostessError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
                         MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                     Current.Shutdown(0);
                     return;
@@ -44,7 +44,7 @@ namespace Host
 
                 if (!targetSites.Any())
                 {
-                    _ = MessageBox.Show(StringResources.Host_No_Targets, StringResources.TitleText_Error,
+                    _ = MessageBox.Show(StringResources.Hostess_No_Targets, StringResources.TitleText_Error,
                         MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
                     Current.Shutdown(0);
                     return;

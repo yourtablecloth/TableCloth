@@ -232,29 +232,29 @@ namespace TableCloth.Resources
     // 호스트 프로그램의 일반 메시지 문자열들
     partial class StringResources
     {
-        internal static readonly string Host_No_Targets
+        internal static readonly string Hostess_No_Targets
             = "이용하려는 웹 사이트 아이디가 지정되지 않았습니다. 샌드박스는 지금부터 사용하실 수 있어요.";
 
-        internal static readonly string Host_Download_InProgress
+        internal static readonly string Hostess_Download_InProgress
             = "다운로드 중...";
 
-        internal static readonly string Host_Install_InProgress
+        internal static readonly string Hostess_Install_InProgress
             = "설치하는 중...";
 
-        internal static readonly string Host_Install_Succeed
+        internal static readonly string Hostess_Install_Succeed
             = "설치 완료";
 
-        internal static readonly string Host_Install_Failed
+        internal static readonly string Hostess_Install_Failed
             = "설치 실패";
     }
 
     // 호스트 프로그램의 오류 메시지 문자열들
     partial class StringResources
     {
-        internal static readonly string HostError_CatalogDeserilizationFailure
+        internal static readonly string HostessError_CatalogDeserilizationFailure
             = "Catalog.xml 파일의 형식이 프로그램이 이해하는 것과 다른 것 같습니다.";
 
-        internal static string HostError_CatalogLoadFailure(Exception ex)
+        internal static string HostessError_CatalogLoadFailure(Exception ex)
         {
             if (ex is AggregateException ae)
                 return Error_Cannot_Remove_TempDirectory(ae.InnerException);
@@ -267,10 +267,10 @@ namespace TableCloth.Resources
             return message;
         }
 
-        internal static string HostError_PackageInstallFailure(string errorMessage)
+        internal static string HostessError_PackageInstallFailure(string errorMessage)
             => $"패키지를 설치하는 도중 오류가 발생했습니다. {(string.IsNullOrWhiteSpace(errorMessage) ? "그러나 원인을 파악하지 못했습니다." : errorMessage)}";
 
-        internal static string HostError_Package_CanNotStart
+        internal static string HostessError_Package_CanNotStart
             = "패키지 설치 프로그램을 시작하지 못했습니다.";
     }
 }
