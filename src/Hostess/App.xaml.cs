@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Windows;
@@ -40,7 +39,7 @@ namespace Hostess
                     return;
                 }
 
-                string[] targetSites = e.Args.ToArray();
+                var targetSites = e.Args.ToArray();
 
                 if (!targetSites.Any())
                 {

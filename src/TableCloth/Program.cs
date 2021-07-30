@@ -6,11 +6,11 @@ namespace TableCloth
     internal static class Program
     {
         [STAThread]
-        public static void Main(string[] args)
+        public static void Main()
         {
-            Application.OleRequired();
+            _ = Application.OleRequired();
             Application.EnableVisualStyles();
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+            _ = Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.SetCompatibleTextRenderingDefault(false);
 
             var context = CreateAppContext();

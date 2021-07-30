@@ -14,11 +14,9 @@ namespace Hostess
         public bool CanExecute(object parameter)
             => true;
 
-        public void Execute(object parameter)
-        {
+        public void Execute(object parameter) =>
             _ = MessageBox.Show(
                 StringResources.HostessError_PackageInstallFailure(parameter as string), StringResources.AppName,
                 MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
-        }
     }
 }

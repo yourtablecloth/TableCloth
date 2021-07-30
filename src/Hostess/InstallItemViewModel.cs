@@ -140,21 +140,7 @@ namespace Hostess
             => _showErrorMessageCommand;
 
         public bool ShowErrorMessageLink
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_errorMessage))
-                    return false;
-
-                if (!_installed.HasValue)
-                    return false;
-
-                if (_installed.Value)
-                    return false;
-
-                return true;
-            }
-        }
+            => !string.IsNullOrWhiteSpace(_errorMessage) && _installed.HasValue && !_installed.Value;
 
         public string InstallFlags
             => $"{(_installed.HasValue ? _installed.Value ? "\u2714\uFE0F" : "\u274C\uFE0F" : "\u23F3\uFE0F")}";

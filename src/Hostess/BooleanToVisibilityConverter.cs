@@ -8,14 +8,9 @@ namespace Hostess
     public sealed class BooleanToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            bool flag = (value is bool) ? (bool)value : false;
-            return flag ? Visibility.Visible : Visibility.Hidden;
-        }
+            => (value is bool v) && v ? Visibility.Visible : Visibility.Hidden;
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
     }
 }

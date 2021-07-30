@@ -3,9 +3,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using TableCloth.Helpers;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
@@ -44,7 +41,7 @@ namespace TableCloth
 
             var certAssetsDirectoryPath = Path.Combine(tableClothConfig.AssetsDirectoryPath, "certs");
             if (!Directory.Exists(certAssetsDirectoryPath))
-                Directory.CreateDirectory(certAssetsDirectoryPath);
+                _ = Directory.CreateDirectory(certAssetsDirectoryPath);
 
             var destDerFilePath = Path.Combine(
                 certAssetsDirectoryPath,
@@ -78,11 +75,11 @@ namespace TableCloth
         public static void ExpandCompanionFiles(string outputDirectory)
         {
             if (!Directory.Exists(outputDirectory))
-                Directory.CreateDirectory(outputDirectory);
+                _ = Directory.CreateDirectory(outputDirectory);
 
             var assetsDirectory = Path.Combine(outputDirectory, "assets");
             if (!Directory.Exists(assetsDirectory))
-                Directory.CreateDirectory(assetsDirectory);
+                _ = Directory.CreateDirectory(assetsDirectory);
 
             var assembly = typeof(SandboxBuilder).Assembly;
             var hostessZipFileKey = assembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith("Hostess.zip", StringComparison.OrdinalIgnoreCase));
@@ -97,11 +94,11 @@ namespace TableCloth
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
 
             if (!Directory.Exists(outputDirectory))
-                Directory.CreateDirectory(outputDirectory);
+                _ = Directory.CreateDirectory(outputDirectory);
 
             var assetsDirectory = Path.Combine(outputDirectory, "assets");
             if (!Directory.Exists(assetsDirectory))
-                Directory.CreateDirectory(assetsDirectory);
+                _ = Directory.CreateDirectory(assetsDirectory);
 
             var signatureImageContent = GraphicResources.SignatureJpegImage;
             var signatureFilePath = Path.Combine(assetsDirectory, "Signature.jpg");
@@ -131,7 +128,7 @@ namespace TableCloth
 
             var buffer = new StringBuilder();
 
-            buffer.AppendLine($@"
+            buffer = buffer.AppendLine(@"
 # Change Wallpaper
 $SetWallpaperSource = @""
 using System.Runtime.InteropServices;
@@ -157,7 +154,7 @@ $WallpaperPath = ""C:\assets\Signature.jpg""
 rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
 ");
 
-            buffer.AppendLine($@"C:\assets\Hostess.exe {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}");
+            buffer = buffer.AppendLine($@"C:\assets\Hostess.exe {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}");
 
             return buffer.ToString();
         }
@@ -168,8 +165,8 @@ rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
 
             var buffer = new StringBuilder();
-            buffer.AppendLine(@"powershell.exe -Command ""&{{Set-ExecutionPolicy RemoteSigned -Force}}""");
-            buffer.AppendLine(@"powershell.exe -ExecutionPolicy Bypass -File ""C:\assets\Bootstrap.ps1""");
+            buffer = buffer.AppendLine(@"powershell.exe -Command ""&{{Set-ExecutionPolicy RemoteSigned -Force}}""");
+            buffer = buffer.AppendLine(@"powershell.exe -ExecutionPolicy Bypass -File ""C:\assets\Bootstrap.ps1""");
             return buffer.ToString();
         }
     }

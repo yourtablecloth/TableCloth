@@ -4,7 +4,7 @@ using TableCloth.Models.Catalog;
 namespace TableCloth.Resources
 {
     // 공통 문자열들
-    static partial class StringResources
+    internal static partial class StringResources
     {
         internal static readonly string AppName = "식탁보";
 
@@ -20,6 +20,7 @@ namespace TableCloth.Resources
         internal static readonly string UserAgentText =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36";
     }
+#pragma warning disable IDE0040, IDE0066
 
     // 공통 대화 상자 제목들
     partial class StringResources
@@ -73,6 +74,7 @@ namespace TableCloth.Resources
                     return "증권/투자";
                 case CatalogInternetServiceCategory.Insurance:
                     return "보험";
+                case CatalogInternetServiceCategory.Other:
                 default:
                     return "기타";
             }
@@ -265,4 +267,6 @@ namespace TableCloth.Resources
         internal static string HostessError_Package_CanNotStart
             = "패키지 설치 프로그램을 시작하지 못했습니다.";
     }
+
+#pragma warning restore IDE0040, IDE0066
 }

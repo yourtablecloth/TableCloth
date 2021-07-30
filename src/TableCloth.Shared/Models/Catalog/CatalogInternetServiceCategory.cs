@@ -6,28 +6,28 @@ namespace TableCloth.Models.Catalog
     [Serializable, XmlType]
     public enum CatalogInternetServiceCategory : short
     {
-        [XmlEnum("Other")]
+        [XmlEnum(nameof(Other))]
         Other = 0,
 
-        [XmlEnum("Banking")]
+        [XmlEnum(nameof(Banking))]
         Banking,
 
-        [XmlEnum("Financing")]
+        [XmlEnum(nameof(Financing))]
         Financing,
 
-        [XmlEnum("Security")]
+        [XmlEnum(nameof(Security))]
         Security,
 
-        [XmlEnum("Insurance")]
+        [XmlEnum(nameof(Insurance))]
         Insurance,
 
-        [XmlEnum("CreditCard")]
+        [XmlEnum(nameof(CreditCard))]
         CreditCard,
 
-        [XmlEnum("Government")]
+        [XmlEnum(nameof(Government))]
         Government,
 
-        [XmlEnum("Education")]
+        [XmlEnum(nameof(Education))]
         Education,
     }
 }
