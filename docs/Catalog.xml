@@ -191,7 +191,7 @@
 				<Package Name="SignKoreaCert" Url="https://www.hi-ib.com/SKCertService/SKCertServiceSetup.exe" />
 				<Package Name="TouchEnKey" Url="https://www.hi-ib.com/raon/e2e/TouchEn/nxKey/module/TouchEn_nxKey_Installer_64bit.exe" Arguments="/silent" />
 				<Package Name="TouchEnFirewall" Url="https://www.hi-ib.com/raon/e2e/TouchEnfw/nxFw/module/TEFW_Installer64.exe" Arguments="/silent" />
-				<Package Name="TouchEnWeb" Url="https://www.hi-ib.com/raon/e2e/TouchEnfw/nxWeb/module/TouchEn_nxWeb_Installer.exe Arguments="/silent" />
+				<Package Name="TouchEnWeb" Url="https://www.hi-ib.com/raon/e2e/TouchEnfw/nxWeb/module/TouchEn_nxWeb_Installer.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="HyundaiCarSecurity" DisplayName="현대차증권" Category="Financing" Url="https://www.hmsec.com/">
