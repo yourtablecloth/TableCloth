@@ -159,6 +159,9 @@ namespace TableCloth.Resources
     // 오류 메시지에 표시될 문자열들
     partial class StringResources
     {
+        internal static readonly string Error_Already_TableCloth_Running
+            = "이미 식탁보 프로그램이 실행되고 있어요.";
+
         internal static readonly string Error_Windows_OS_Too_Old
             = "실행하고 있는 운영 체제는 윈도우 샌드박스 기능을 지원하지 않는 오래된 버전의 운영 체제 같습니다. 윈도우 10 이상으로 업그레이드 해주세요.";
 
