@@ -138,6 +138,11 @@
 		<Service Id="Shinhyub" DisplayName="신협 개인뱅킹" Category="Banking" Url="https://openbank.cu.co.kr/">
 			<Packages>
 				<Package Name="Veraport" Url="https://openbank.cu.co.kr/nonsw/wizvera/veraport/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
+				<Package Name="WizInDelfino" Url="https://openbank.cu.co.kr/nonsw/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="https://download.raonsecure.com/TouchEnnxkey/shinhyup/nxkey_x86_v1.0.0.64.exe" Arguments="/silent" />
+				<Package Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
+				<Package Name="MaWebDRM" Url="https://openbank.cu.co.kr/nonsw/markany/webdrm/bin/Inst_MaWebDRM.exe" Arguments="/silent" />
+				<Package Name="ePageSafer" Url="https://openbank.cu.co.kr/nonsw/markany/eps/exe/Setup_ePageSaferRT.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="ePostBank" DisplayName="우체국인터넷뱅킹" Category="Banking" Url="https://www.epostbank.go.kr/">
@@ -158,6 +163,16 @@
 			</Packages>
 		</Service>
 		<!-- 인터넷 뱅킹 끝 -->
+
+		<!-- 저축은행 시작 (https://ko.wikipedia.org/wiki/%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD%EC%9D%98_%EA%B8%88%EC%9C%B5%EA%B8%B0%EA%B4%80_%EB%AA%A9%EB%A1%9D#%EC%83%81%ED%98%B8%EC%A0%80%EC%B6%95%EC%9D%80%ED%96%89(050) 참고함) -->
+		<Service Id="BNKSavingsBank" DisplayName="BNK저축은행" Category="Financing" Url="https://www.bnksb.com/">
+			<Packages>
+				<Package Name="SignKoreaCert" Url="https://www.bnksb.com/SKCertServiceSetup_v2.5.18_152.exe" />
+				<Package Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
+				<Package Name="RealIp" Url="https://www.bnksb.com/BNKKTBRealipInst.exe" Arguments="/silent" />
+			</Packages>
+		</Service>
+		<!-- 저축은행 끝 -->
 
 		<!-- 증권사 시작 (https://ko.wikipedia.org/wiki/%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD%EC%9D%98_%EA%B8%88%EC%9C%B5%EA%B8%B0%EA%B4%80_%EB%AA%A9%EB%A1%9D 참고함) -->
 		<Service Id="IBKSecurity" DisplayName="IBK투자증권" Category="Security" Url="https://www.ibks.com/">
