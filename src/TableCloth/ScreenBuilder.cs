@@ -321,7 +321,7 @@ namespace TableCloth
                 {
                     try
                     {
-                        if (__sender is Process realSender && realSender.ExitCode != 0)
+                        if (__sender is Process realSender && IsAbnormalSandboxExitCode(realSender.ExitCode))
                         {
                             _ = form.Invoke(new Action<int>((exitCode) =>
                             {
@@ -640,5 +640,12 @@ namespace TableCloth
 
             return targetControl;
         }
+
+        public static bool IsAbnormalSandboxExitCode(int exitCode) =>
+            exitCode switch
+            {
+                0x0 or unchecked((int)0x800700b7u) => false,
+                _ => true,
+            };
     }
 }
