@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Runtime.Serialization;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.Resources
@@ -127,14 +125,8 @@ namespace TableCloth.Resources
     // 정보 대화 상자에 표시될 문자열들
     partial class StringResources
     {
-#if NETFX
-        internal static readonly string AboutDialog_BodyText
-            = $"{AppName}\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n{AppCopyright}";
-
-#else
         internal static readonly string AboutDialog_BodyText
             = $"{AppName} (빌드 번호: {ThisAssembly.Git.Commit})\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n{AppCopyright}";
-#endif
     }
 
     // 인증서 검색 창에 표시될 문자열들
