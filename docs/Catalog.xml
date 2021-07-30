@@ -132,13 +132,13 @@
 		<!-- 인터넷 뱅킹 끝 -->
 
 		<!-- 증권사 시작 -->
-		<Service Id="IBKSecurity" DisplayName="IBK투자증권" Category="Financing" Url="https://www.ibks.com/">
+		<Service Id="IBKSecurity" DisplayName="IBK투자증권" Category="Security" Url="https://www.ibks.com/">
 			<Packages>
 				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
 				<Package Name="SignKoreaCert" Url="https://download.ibks.com/install/SKCertServiceSetup_v2.5.18_152.exe" />
 			</Packages>
 		</Service>
-		<Service Id="MyAssetSecurity" DisplayName="유안타증권" Category="Financing" Url="https://www.myasset.com/">
+		<Service Id="MyAssetSecurity" DisplayName="유안타증권" Category="Security" Url="https://www.myasset.com/">
 			<Packages>
 				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/myasset/all/astx_setup_myasset.exe" Arguments="/silent" />
 				<Package Name="SignKoreaCert" Url="https://www.myasset.com/common/security/KOSInstaller/SKCertService/SKCertServiceSetup.exe" />
@@ -146,7 +146,7 @@
 				<Package Name="KOS" Url="https://www.myasset.com/common/security/KOSInstaller/KOS/KOS_Setup.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
-		<Service Id="KBSecurity" DisplayName="KB증권" Category="Financing" Url="https://www.kbsec.com/">
+		<Service Id="KBSecurity" DisplayName="KB증권" Category="Security" Url="https://www.kbsec.com/">
 			<Packages>
 				<Package Name="Veraport" Url="https://www.kbsec.com/ndataweb/exe/prod/veraport-g3-x64.exe" Arguments="/silent" />
 				<Package Name="SignKoreaCert" Url="https://www.kbsec.com/ndataweb/exe/prod/skcert_setup.exe" />
@@ -154,24 +154,24 @@
 				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
-		<Service Id="MiraeAssetSecurity" DisplayName="미래에셋증권" Category="Financing" Url="https://securities.miraeasset.com/">
+		<Service Id="MiraeAssetSecurity" DisplayName="미래에셋증권" Category="Security" Url="https://securities.miraeasset.com/">
 			<Packages>
 				<Package Name="Veraport" Url="https://download.securities.miraeasset.com/w/veraport/veraport-g3-x64.exe?v=3.8.5.1" Arguments="/silent" />
 			</Packages>
 		</Service>
-		<Service Id="SamsungSecurity" DisplayName="삼성증권" Category="Financing" Url="https://www.samsungpop.com/">
+		<Service Id="SamsungSecurity" DisplayName="삼성증권" Category="Security" Url="https://www.samsungpop.com/">
 			<Packages>
 				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/samsungpop/all/astx_setup_samsungpop.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
-		<Service Id="TrueFriendSecurity" DisplayName="한국투자증권" Category="Financing" Url="https://www.truefriend.com/">
+		<Service Id="TrueFriendSecurity" DisplayName="한국투자증권" Category="Security" Url="https://www.truefriend.com/">
 			<Packages>
 				<Package Name="KOS" Url="https://new.real.download.dws.co.kr/download/hpage/KOS_Setup_3.exe" Arguments="/silent" />
 				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
 				<Package Name="IPInside" Url="https://file.truefriend.com/Storage/Download/I3GSvcManager.exe" />
 			</Packages>
 		</Service>
-		<Service Id="NHSecurity" DisplayName="NH투자증권" Category="Financing" Url="https://www.nhqv.com/">
+		<Service Id="NHSecurity" DisplayName="NH투자증권" Category="Security" Url="https://www.nhqv.com/">
 			<Packages>
 				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
 				<Package Name="SignKoreaCert" Url="https://www.nhqv.com/security/download/SKCertServiceSetup_v2.5.18_152.exe" />
@@ -179,13 +179,13 @@
 				<Package Name="ePageSafer" Url="https://www.nhqv.com/rptshop/Setup_ePageSaferH2O.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
-		<Service Id="KyoboSecurity" DisplayName="교보증권" Category="Financing" Url="https://iprovest.com/">
+		<Service Id="KyoboSecurity" DisplayName="교보증권" Category="Security" Url="https://iprovest.com/">
 			<Packages>
 				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
 				<Package Name="SignKoreaCert" Url="https://www.iprovest.com/upload/customhelp/download/SKCertServiceSetup_v2.5.18_152.exe" />
 			</Packages>
 		</Service>
-		<Service Id="HiSecurity" DisplayName="하이투자증권" Category="Financing" Url="https://www.hi-ib.com/">
+		<Service Id="HiSecurity" DisplayName="하이투자증권" Category="Security" Url="https://www.hi-ib.com/">
 			<Packages>
 				<Package Name="SetupNx" Url="https://www.hi-ib.com/program/HI_setupNx.exe" Arguments="/silent" />
 				<Package Name="SignKoreaCert" Url="https://www.hi-ib.com/SKCertService/SKCertServiceSetup.exe" />
@@ -194,7 +194,7 @@
 				<Package Name="TouchEnWeb" Url="https://www.hi-ib.com/raon/e2e/TouchEnfw/nxWeb/module/TouchEn_nxWeb_Installer.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
-		<Service Id="HyundaiCarSecurity" DisplayName="현대차증권" Category="Financing" Url="https://www.hmsec.com/">
+		<Service Id="HyundaiCarSecurity" DisplayName="현대차증권" Category="Security" Url="https://www.hmsec.com/">
 			<Packages>
 				<Package Name="SignKoreaCert" Url="https://www.hmsec.com/cabs/SKCertServiceSetup_v2.5.18_152.exe" />
 				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
@@ -202,7 +202,7 @@
 				<Package Name="MarkAny" Url="https://www.hmsec.com/cabs/ReportShop520_Web_withMarkAny.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
-		<Service Id="KiwoomSecurity" DisplayName="키움증권" Category="Financing" Url="https://www.kiwoom.com/">
+		<Service Id="KiwoomSecurity" DisplayName="키움증권" Category="Security" Url="https://www.kiwoom.com/">
 			<Packages>
 				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default_nonstop/all/astx_setup_nonstop.exe" Arguments="/silent" />
 				<Package Name="SignKoreaCert" Url="https://www.kiwoom.com/h/kws/assets/down/SKCertServiceSetup_v2.5.20_156.exe" />
