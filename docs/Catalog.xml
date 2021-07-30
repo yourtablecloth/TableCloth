@@ -7,7 +7,7 @@
 	-->
 	<InternetServices>
 		
-		<!-- 인터넷 뱅킹 시작 -->
+		<!-- 인터넷 뱅킹 시작 (https://ko.wikipedia.org/wiki/%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD%EC%9D%98_%EA%B8%88%EC%9C%B5%EA%B8%B0%EA%B4%80_%EB%AA%A9%EB%A1%9D#%EC%9D%80%ED%96%89 참고함) -->
 		<Service Id="WooriBank" DisplayName="우리은행" Category="Banking" Url="https://www.wooribank.com/">
 			<CompatNotes>우리은행의 경우 키보드보안프로그램을 설치했어도 원격 데스크톱, Hyper-V 고급 세션, 그리고 윈도우 샌드박스 환경에서는 키 입력을 제대로 처리하지 못합니다. 마우스 입력기를 이용하여 비밀 번호를 입력해주셔야 합니다.</CompatNotes>
 			<Packages>
@@ -129,9 +129,37 @@
 				<Package Name="BusanPFMS" Url="https://ibank.busanbank.co.kr/product/install/pfms/Windows/2.0.2.2/BusanPFMS_Setup.exe" />
 			</Packages>
 		</Service>
+		<Service Id="MGSaemaeul" DisplayName="MG새마을금고 개인인터넷뱅킹" Category="Banking" Url="https://ibs.kfcc.co.kr/">
+			<Packages>
+				<Package Name="WizInDelfino" Url="https://ibs.kfcc.co.kr/common/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
+			</Packages>
+		</Service>
+		<Service Id="Shinhyub" DisplayName="신협 개인뱅킹" Category="Banking" Url="https://openbank.cu.co.kr/">
+			<Packages>
+				<Package Name="Veraport" Url="https://openbank.cu.co.kr/nonsw/wizvera/veraport/down/veraport-g3-x64-sha2.exe" Arguments="/silent" />
+			</Packages>
+		</Service>
+		<Service Id="ePostBank" DisplayName="우체국인터넷뱅킹" Category="Banking" Url="https://www.epostbank.go.kr/">
+			<Packages>
+				<Package Name="Veraport" Url="https://www.epostbank.go.kr/wizvera/veraportG3/down/veraport-g3-x64.exe" Arguments="/silent" />
+				<Package Name="AnySign" Url="https://www.epostbank.go.kr/Published/AnySign/AnySign_Installer.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="https://www.epostbank.go.kr/TouchEn/nxKey/module/TouchEn_nxKey_Installer_64bit.exe" Arguments="/silent" />
+				<Package Name="NOS" Url="https://www.epostbank.go.kr/nonActiveX/inca/pluginfree/setup/nos_setup.exe" Arguments="/silent" />
+			</Packages>
+		</Service>
+		<Service Id="SanrimJohab" DisplayName="SJ산림조합" Category="Banking" Url="https://banking.nfcf.or.kr/">
+			<Packages>
+				<Package Name="Veraport" Url="https://banking.nfcf.or.kr/3rdParty/pib/wizvera/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
+				<Package Name="IniSafeCrossWeb" Url="https://banking.nfcf.or.kr/3rdParty/pib/initech/SW/initech/extension/down/INIS_EX_SHA2.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey" Url="https://banking.nfcf.or.kr/3rdParty/pib/raonnx/nxKey/module/TouchEn_nxKey_32bit.exe" Arguments="/silent" />
+				<Package Name="TouchEnFirewall" Url="https://banking.nfcf.or.kr/3rdParty/pib/raonnx/nxFw/module/TEFW_Installer.exe" Arguments="/silent" />
+				<Package Name="IPInside" Url="https://banking.nfcf.or.kr/3rdParty/pib/interezen/install/I3GSvcManager.exe" />
+			</Packages>
+		</Service>
 		<!-- 인터넷 뱅킹 끝 -->
 
-		<!-- 증권사 시작 -->
+		<!-- 증권사 시작 (https://ko.wikipedia.org/wiki/%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD%EC%9D%98_%EA%B8%88%EC%9C%B5%EA%B8%B0%EA%B4%80_%EB%AA%A9%EB%A1%9D 참고함) -->
 		<Service Id="IBKSecurity" DisplayName="IBK투자증권" Category="Security" Url="https://www.ibks.com/">
 			<Packages>
 				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
@@ -162,6 +190,8 @@
 		<Service Id="SamsungSecurity" DisplayName="삼성증권" Category="Security" Url="https://www.samsungpop.com/">
 			<Packages>
 				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/samsungpop/all/astx_setup_samsungpop.exe" Arguments="/silent" />
+				<Package Name="SignKoreaCert" Url="https://www.samsungpop.com/modules/koscom/file/SKCertServiceSetup_v2.5.18_152.exe" />
+				<Package Name="ePageSafer" Url="https://www.samsungpop.com/modules/report/file/MAWS_SamsungPopOz_Total_Setup.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<Service Id="TrueFriendSecurity" DisplayName="한국투자증권" Category="Security" Url="https://www.truefriend.com/">
@@ -210,7 +240,7 @@
 		</Service>
 		<!-- 증권사 끝 -->
 
-		<!-- 신용 카드 회사 시작 -->
+		<!-- 신용 카드 회사 시작 (https://ko.wikipedia.org/wiki/%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD%EC%9D%98_%EA%B8%88%EC%9C%B5%EA%B8%B0%EA%B4%80_%EB%AA%A9%EB%A1%9D#%EC%B9%B4%EB%93%9C%EC%82%AC 참고함) -->
 		<Service Id="Wooricard" DisplayName="우리카드" Category="CreditCard" Url="https://www.wooricard.com/">
 			<Packages>
 				<Package Name="Veraport" Url="https://pc.wooricard.com/dcpc/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
