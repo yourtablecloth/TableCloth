@@ -7,7 +7,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Interop;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
@@ -53,10 +54,16 @@ namespace Hostess
 
             InstallList.ItemsSource = new ObservableCollection<InstallItemViewModel>(packages);
 
-            if (catalog.Services.Any(x => targets.Contains(x.Id)))
+            if (catalog.Services.Where(x => targets.Contains(x.Id)).Any(x => !string.IsNullOrWhiteSpace(x.CompatibilityNotes)))
             {
                 PrecautionsWindow window = new PrecautionsWindow();
                 window.ShowDialog();
+            }
+            else
+            {
+                var peer = new ButtonAutomationPeer(PerformInstallButton);
+                var invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+                invokeProv.Invoke();
             }
         }
 
