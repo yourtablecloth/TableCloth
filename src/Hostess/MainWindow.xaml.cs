@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
-using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
 namespace Hostess
@@ -17,25 +16,22 @@ namespace Hostess
     public partial class MainWindow : Window
     {
         public MainWindow()
-            : base()
-        {
-            InitializeComponent();
-        }
+            => InitializeComponent();
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Width = MinWidth;
             Height = SystemParameters.PrimaryScreenHeight * 0.5;
-            Top = SystemParameters.PrimaryScreenHeight / 2 - Height / 2;
+            Top = (SystemParameters.PrimaryScreenHeight / 2) - (Height / 2);
             Left = SystemParameters.PrimaryScreenWidth - Width;
 
-            CatalogDocument catalog = Application.Current.GetCatalogDocument();
-            IEnumerable<string> targets = Application.Current.GetInstallSites();
+            var catalog = Application.Current.GetCatalogDocument();
+            var targets = Application.Current.GetInstallSites();
             var packages = new List<InstallItemViewModel>();
 
-            foreach (string eachTargetName in targets)
+            foreach (var eachTargetName in targets)
             {
-                CatalogInternetService targetService = catalog.Services.FirstOrDefault(x => string.Equals(eachTargetName, x.Id, StringComparison.Ordinal));
+                var targetService = catalog.Services.FirstOrDefault(x => string.Equals(eachTargetName, x.Id, StringComparison.Ordinal));
 
                 if (targetService == null)
                 {
@@ -54,10 +50,10 @@ namespace Hostess
 
             InstallList.ItemsSource = new ObservableCollection<InstallItemViewModel>(packages);
 
-            if (catalog.Services.Where(x => targets.Contains(x.Id)).Any(x => !string.IsNullOrWhiteSpace(x.CompatibilityNotes)))
+            if (catalog.Services.Where(x => targets.Contains(x.Id)).Any(x => !string.IsNullOrWhiteSpace(x.CompatibilityNotes.Trim())))
             {
-                PrecautionsWindow window = new PrecautionsWindow();
-                window.ShowDialog();
+                var window = new PrecautionsWindow();
+                _ = window.ShowDialog();
             }
             else
             {
@@ -67,12 +63,10 @@ namespace Hostess
             }
         }
 
-        private void AboutButton_Click(object sender, RoutedEventArgs e)
-        {
+        private void AboutButton_Click(object sender, RoutedEventArgs e) =>
             _ = MessageBox.Show(this,
                 StringResources.AboutDialog_BodyText, StringResources.AppName,
                 MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
-        }
 
         private async void PerformInstallButton_Click(object sender, RoutedEventArgs e)
         {
@@ -147,13 +141,16 @@ namespace Hostess
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            CatalogDocument catalog = Application.Current.GetCatalogDocument();
-            IEnumerable<string> targets = Application.Current.GetInstallSites();
+            var catalog = Application.Current.GetCatalogDocument();
+            var targets = Application.Current.GetInstallSites();
 
             foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
             {
-                var psi = new ProcessStartInfo(eachUrl) { UseShellExecute = true, WindowStyle = ProcessWindowStyle.Maximized, };
-                Process.Start(psi);
+                _ = Process.Start(new ProcessStartInfo(eachUrl)
+                {
+                    UseShellExecute = true,
+                    WindowStyle = ProcessWindowStyle.Maximized,
+                });
             }
         }
     }
