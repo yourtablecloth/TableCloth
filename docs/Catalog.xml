@@ -938,6 +938,10 @@
 		<Service Id="WooriInvest" DisplayName="우리종합금융" Category="Security" Url="https://www.wooriib.com/">
 			<Packages>
 				<Package Name="Veraport" Url="https://www.wooriib.com/wizvera/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
+				<Package Name="INISAFECrossWeb" Url="https://www.wooriib.com/SW/initech/extension/down/INIS_EX_SHA2_3.3.2.23.exe" Arguments="/silent" />
+				<Package Name="NOS" Url="https://www.wooriib.com/pluginfree/install/nos_setup.exe" Arguments="/silent" />
+				<Package Name="IPInside" Url="https://www.wooriib.com/ipinside/install/I3GSvcManager.3.0.0.10.exe" />
+				<Package Name="ePageSafer" Url="https://www.wooriib.com/ClipReport4/markany/bin/Setup_ePageSaferRT.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
 		<!-- 증권사 끝 -->
