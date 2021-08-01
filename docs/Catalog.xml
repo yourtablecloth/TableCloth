@@ -804,6 +804,9 @@
 		<Service Id="MiraeAssetSecurity" DisplayName="미래에셋증권" Category="Security" Url="https://securities.miraeasset.com/">
 			<Packages>
 				<Package Name="Veraport" Url="https://download.securities.miraeasset.com/w/veraport/veraport-g3-x64.exe?v=3.8.5.1" Arguments="/silent" />
+				<Package Name="NOS" Url="https://supdate.nprotect.net/nprotect/nos_service/windows/install/nos_setup.exe" Arguments="/silent" />
+				<Package Name="ASTX" Url="https://download.securities.miraeasset.com/w//astx/astxdn.exe" Arguments="/silent" />
+				<Package Name="SignKoreaCert" Url="https://download.securities.miraeasset.com/w//sign/SKCertServiceSetup.exe" />
 			</Packages>
 		</Service>
 		<Service Id="SamsungSecurity" DisplayName="삼성증권" Category="Security" Url="https://www.samsungpop.com/">
