@@ -618,6 +618,12 @@
 		<Service Id="WelcomeSavingsBank" DisplayName="웰컴저축은행" Category="Financing" Url="https://www.welcomebank.co.kr/">
 			<Packages>
 				<Package Name="SmartManagerEx" Url="https://www.welcomebank.co.kr/3rdparty/initech/smartmanagerex/extension/down/SmartManagerEX.exe?ver=1.0.1.1378" />
+				<Package Name="KeySharpBiz" Url="https://www.welcomebank.co.kr/3rdparty/raon/nxbiz/download/keysharpnxbiz.exe" />
+				<Package Name="SignKoreaCert" Url="https://www.welcomebank.co.kr/3rdparty/signkorea/SKCertServiceSetup.exe" />
+				<Package Name="KSCertRelay32" Url="https://www.welcomebank.co.kr/3rdparty/raon/TouchEn/nxCR/module/KSCertRelay_nx_Installer_32bit.exe" Arguments="/silent" />
+				<Package Name="TouchEnKey32" Url="https://www.welcomebank.co.kr/3rdparty/raon/TouchEn/nxKey/module/TouchEn_nxKey_32bit.exe" Arguments="/silent" />
+				<Package Name="TouchEnFirewall" Url="https://www.welcomebank.co.kr/3rdparty/raon/TouchEn/nxFw/module/TEFW_Installer.exe" Arguments="/silent" />
+				<Package Name="IPInside" Url="https://www.welcomebank.co.kr/3rdparty/ipinside/module/I3GSvcManager.exe" />
 			</Packages>
 		</Service>
 		<Service Id="UnionSavingsBank" DisplayName="유니온저축은행" Category="Financing" Url="https://unionsb.ibs.fsb.or.kr/">
