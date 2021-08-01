@@ -40,6 +40,7 @@ namespace Hostess
                 }
 
                 var targetSites = e.Args.ToArray();
+                Current.InitInstallSites(targetSites);
 
                 if (!targetSites.Any())
                 {
@@ -48,8 +49,6 @@ namespace Hostess
                     Current.Shutdown(0);
                     return;
                 }
-
-                Current.InitInstallSites(targetSites);
             }
         }
     }
