@@ -1076,7 +1076,7 @@
 				<Package Name="WizInDelfino" Url="https://www.samsunglife.com/lib/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
 			</Packages>
 		</Service>
-		<Service Id="ShinhanLife" DisplayName="신한라이프, 신한생명, 오렌지라이프" Category="Insurance" Url="https://www.shinhanlife.co.kr/">
+		<Service Id="ShinhanLife" DisplayName="신한라이프" Category="Insurance" Url="https://www.shinhanlife.co.kr/">
 			<Packages>
 				<Package Name="Veraport" Url="https://cyber.shinhanlife.co.kr/third/wizvera/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
 				<Package Name="WizInDelfino" Url="https://cyber.shinhanlife.co.kr/third/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
