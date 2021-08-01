@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+using System.Windows.Shapes;
 using TableCloth.Resources;
 
 namespace Hostess
@@ -70,25 +71,28 @@ namespace Hostess
 
         private async void PerformInstallButton_Click(object sender, RoutedEventArgs e)
         {
-            using (var webClient = new WebClient())
+            try
             {
-                try
+                PerformInstallButton.IsEnabled = false;
+                var hasAnyFailure = false;
+
+                foreach (InstallItemViewModel eachItem in InstallList.ItemsSource)
                 {
-                    PerformInstallButton.IsEnabled = false;
-                    var hasAnyFailure = false;
-
-                    foreach (InstallItemViewModel eachItem in InstallList.ItemsSource)
+                    try
                     {
-                        try
+                        eachItem.Installed = null;
+                        eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
+
+                        var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
+                        var tempFilePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), tempFileName);
+
+                        if (File.Exists(tempFilePath))
+                            File.Delete(tempFilePath);
+
+                        using (var webClient = new WebClient())
                         {
-                            eachItem.Installed = null;
-                            eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
-
-                            var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
-                            var tempFilePath = Path.Combine(Path.GetTempPath(), tempFileName);
-
-                            if (File.Exists(tempFilePath))
-                                File.Delete(tempFilePath);
+                            webClient.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml");
+                            webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko");
                             await webClient.DownloadFileTaskAsync(eachItem.PackageUrl, tempFilePath);
 
                             eachItem.StatusMessage = StringResources.Hostess_Install_InProgress;
@@ -116,26 +120,26 @@ namespace Hostess
                                 eachItem.ErrorMessage = null;
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            hasAnyFailure = true;
-                            eachItem.StatusMessage = StringResources.Hostess_Install_Failed;
-                            eachItem.Installed = false;
-                            eachItem.ErrorMessage = ex is AggregateException exception ? exception.InnerException.Message : ex.Message;
-                            await Task.Delay(100);
-                        }
                     }
-
-                    if (!hasAnyFailure)
+                    catch (Exception ex)
                     {
-                        Close();
-                        return;
+                        hasAnyFailure = true;
+                        eachItem.StatusMessage = StringResources.Hostess_Install_Failed;
+                        eachItem.Installed = false;
+                        eachItem.ErrorMessage = ex is AggregateException exception ? exception.InnerException.Message : ex.Message;
+                        await Task.Delay(100);
                     }
                 }
-                finally
+
+                if (!hasAnyFailure)
                 {
-                    PerformInstallButton.IsEnabled = true;
+                    Close();
+                    return;
                 }
+            }
+            finally
+            {
+                PerformInstallButton.IsEnabled = true;
             }
         }
 

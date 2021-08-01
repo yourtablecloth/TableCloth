@@ -1077,7 +1077,6 @@
 			</Packages>
 		</Service>
 		<Service Id="ShinhanLife" DisplayName="신한라이프" Category="Insurance" Url="https://www.shinhanlife.co.kr/">
-			<CompatNotes>구 신한생명 사이버창구용 플러그인 설치는 신한라이프측 보안 시스템 측의 차단으로 인하여 제대로 다운로드되지 않을 수 있습니다.</CompatNotes>
 			<Packages>
 				<Package Name="Veraport" Url="https://cyber.shinhanlife.co.kr/third/wizvera/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
 				<Package Name="WizInDelfino" Url="https://cyber.shinhanlife.co.kr/third/wizvera/delfino/down/delfino-g3.exe" Arguments="/silent" />
