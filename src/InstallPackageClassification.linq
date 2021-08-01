@@ -84,7 +84,7 @@ URL로 인식되는 주소만 처리되고 나머지는 무시됩니다.
 			if (fileName.Contains("RealIP", StringComparison.OrdinalIgnoreCase))
 				return $@"<Package Name=""RealIp"" Url=""{urlAttrValue}"" Arguments=""/silent"" />";
 			if (fileName.Contains("Delfino", StringComparison.OrdinalIgnoreCase))
-				return $@"<Package Name=""WizInDelfino"" Url=""${urlAttrValue}"" Arguments=""/silent"" />";
+				return $@"<Package Name=""WizInDelfino"" Url=""{urlAttrValue}"" Arguments=""/silent"" />";
 			if (fileName.Contains("INIS_EX", StringComparison.OrdinalIgnoreCase))
 				return $@"<Package Name=""INISAFECrossWeb"" Url=""{urlAttrValue}"" Arguments=""/silent"" />";
 			if (fileName.Contains("INISafeMail", StringComparison.OrdinalIgnoreCase))
