@@ -50,7 +50,7 @@ namespace Hostess
 
             InstallList.ItemsSource = new ObservableCollection<InstallItemViewModel>(packages);
 
-            if (catalog.Services.Where(x => targets.Contains(x.Id)).Any(x => !string.IsNullOrWhiteSpace(x.CompatibilityNotes.Trim())))
+            if (catalog.Services.Where(x => targets.Contains(x.Id)).Any(x => !string.IsNullOrWhiteSpace(x.CompatibilityNotes?.Trim())))
             {
                 var window = new PrecautionsWindow();
                 _ = window.ShowDialog();
