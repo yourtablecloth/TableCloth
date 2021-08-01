@@ -573,8 +573,9 @@
 		<Service Id="AccuonSavingsBank" DisplayName="애큐온저축은행" Category="Financing" Url="https://www.acuonsb.co.kr/">
 			<Packages>
 				<Package Name="Veraport" Url="https://www.acuonsb.co.kr/wizvera/web/veraport/down/veraport-g3-x64.exe" Arguments="/silent" />
-				<Package Name="WizInDelfino" Url="$https://www.acuonsb.co.kr/wizvera/web/delfino/down/delfino-g3.exe" Arguments="/silent" />
+				<Package Name="WizInDelfino" Url="https://www.acuonsb.co.kr/wizvera/web/delfino/down/delfino-g3.exe" Arguments="/silent" />
 				<Package Name="TouchEnKey32" Url="https://www.acuonsb.co.kr/raon/TouchEn/nxKey/module/TouchEn_nxKey_Installer_32bit.exe" Arguments="/silent" />
+				<Package Name="AhnLabSafeTx" Url="https://safetx.ahnlab.com/master/win/default/all/astx_setup.exe" Arguments="/silent" />
 				<Package Name="IPInside" Url="https://www.acuonsb.co.kr/ipinside/agent/I3GSvcManager.exe" />
 				<Package Name="TDClientAgent" Url="https://www.acuonsb.co.kr/sga/down/TDClientforWindowsAgentNX_4.9.0.6.exe" />
 				<Package Name="SignKoreaCert" Url="https://www.acuonsb.co.kr/signkorea/web/SKCertServiceSetup_v2.0.11_r2325.exe" />
