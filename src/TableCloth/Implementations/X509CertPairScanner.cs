@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,13 @@ namespace TableCloth.Implementations
 {
     public sealed class X509CertPairScanner : IX509CertPairScanner
     {
+        public X509CertPairScanner(ILogger<X509CertPairScanner> logger)
+        {
+            Logger = logger;
+        }
+
+        public ILogger Logger { get; init; }
+
         public IEnumerable<string> GetCandidateDirectories()
         {
             var defaultNpkiPath = Path.Combine(
@@ -45,11 +53,21 @@ namespace TableCloth.Implementations
                         foundFiles.AddRange(ScanX509Pairs(new string[] { dir }));
                     }
                 }
-                catch (UnauthorizedAccessException)
+                catch (UnauthorizedAccessException uae)
                 {
+                    Logger.LogWarning(uae, $"Directory enumeration failed - {eachRootPath}");
                 }
-                catch (PathTooLongException)
+                catch (PathTooLongException ptle)
                 {
+                    Logger.LogWarning(ptle, $"Directory enumeration failed - {eachRootPath}");
+                }
+                catch (AggregateException ae)
+                {
+                    Logger.LogWarning(ae.InnerException ?? ae, $"Directory enumeration failed - {eachRootPath}");
+                }
+                catch (Exception e)
+                {
+                    Logger.LogWarning(e, $"Directory enumeration failed - {eachRootPath}");
                 }
 
                 try
@@ -61,8 +79,21 @@ namespace TableCloth.Implementations
                     if (File.Exists(singleDerFile) && File.Exists(singleKeyFile))
                         foundFiles.Add(CreateX509CertPair(singleDerFile, singleKeyFile));
                 }
-                catch (UnauthorizedAccessException)
+                catch (UnauthorizedAccessException uae)
                 {
+                    Logger.LogWarning(uae, $"Cannot load X509 cert pair - {eachRootPath}");
+                }
+                catch (PathTooLongException ptle)
+                {
+                    Logger.LogWarning(ptle, $"Cannot load X509 cert pair - {eachRootPath}");
+                }
+                catch (AggregateException ae)
+                {
+                    Logger.LogWarning(ae.InnerException ?? ae, $"Cannot load X509 cert pair - {eachRootPath}");
+                }
+                catch (Exception e)
+                {
+                    Logger.LogWarning(e, $"Cannot load X509 cert pair - {eachRootPath}");
                 }
             }
 
