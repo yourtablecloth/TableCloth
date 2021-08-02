@@ -1,42 +1,40 @@
-using System;
-using System.Threading;
-using System.Windows.Forms;
-using TableCloth.Resources;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using TableCloth.Contracts;
+using TableCloth.Implementations;
+using TableCloth.Implementations.WinForms;
 
 namespace TableCloth
 {
     internal static class Program
     {
-        [STAThread]
-        public static void Main()
+        public static void Main(string[] args)
         {
-            _ = Application.OleRequired();
-            Application.EnableVisualStyles();
-            _ = Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-            Application.SetCompatibleTextRenderingDefault(false);
+            var services = new ServiceCollection();
+            ConfigureServices(services);
 
-            var context = CreateAppContext();
-
-            if (context == null)
-                return;
-
-            Application.Run(context);
+            using var serviceProvider = services.BuildServiceProvider();
+            var startup = serviceProvider.GetService<IAppStartup>();
+            startup.InitializeEnvironment(args);
+            startup.StartApplication(args);
         }
 
-        public static ApplicationContext CreateAppContext()
+        public static void ConfigureServices(ServiceCollection services)
         {
-            _ = new Mutex(true, typeof(Program).FullName, out var isFirstInstance);
-
-            if (!isFirstInstance)
+            // Add Logging
+            services.AddLogging(c =>
             {
-                _ = MessageBox.Show(StringResources.Error_Already_TableCloth_Running, StringResources.TitleText_Warning,
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
-                return null;
-            }
+                c.AddSerilog(dispose: true);
+            });
 
-            var form = ScreenBuilder.CreateMainForm();
-            var appContext = new ApplicationContext(form);
-            return appContext;
+            // Add Services
+            services.AddTransient<IX509CertPairScanner, X509CertPairScanner>();
+            services.AddTransient<ICatalogDeserializer, CatalogDeserializer>();
+            services.AddTransient<ISandboxSpecSerializer, SandboxSpecSerializer>();
+            services.AddTransient<ISandboxBuilder, SandboxBuilder>();
+
+            // Windows Forms UI
+            services.AddSingleton<IAppStartup, WinFormAppStartup>();
         }
     }
 }

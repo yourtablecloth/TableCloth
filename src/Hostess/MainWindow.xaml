@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Hostess"
+        xmlns:converters="clr-namespace:Hostess.Converters"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
         Closed="Window_Closed"
@@ -11,8 +11,8 @@
         WindowStartupLocation="Manual" Top="0" Left="0"
         Title="{StaticResource AppTitle}" Width="320" Height="480" MinWidth="320" MinHeight="480">
     <Window.Resources>
-        <local:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
-        <local:StateToBrushConverter x:Key="stateToBrushConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+        <converters:StateToBrushConverter x:Key="stateToBrushConverter" />
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>

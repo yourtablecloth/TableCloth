@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using TableCloth.Resources;
 
-namespace Hostess
+namespace Hostess.Commands
 {
     internal sealed class ShowErrorMessageCommand : ICommand
     {

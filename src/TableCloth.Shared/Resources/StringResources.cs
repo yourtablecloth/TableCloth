@@ -214,6 +214,19 @@ namespace TableCloth.Resources
 
             return message;
         }
+
+        internal static string Error_Cannot_Create_AppDataDirectory(Exception ex)
+        {
+            if (ex is AggregateException ae)
+                return Error_Cannot_Remove_TempDirectory(ae.InnerException);
+
+            var message = $"애플리케이션 데이터 저장을 위한 디렉터리를 만들지 못했습니다.";
+
+            if (ex != null)
+                message = string.Concat(message, $"\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");
+
+            return message;
+        }
     }
 
     // 스크립트 내에서 사용되는 문자열들

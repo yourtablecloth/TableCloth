@@ -2,7 +2,7 @@
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace TableCloth.Models.WindowsSandbox
+namespace TableCloth.Implementations.WindowsSandbox
 {
     [Serializable, XmlType("MappedFolder")]
     public sealed class SandboxMappedFolder

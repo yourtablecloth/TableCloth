@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Windows;
 using System.Xml;
-using TableCloth.Helpers;
+using System.Xml.Serialization;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
@@ -21,7 +22,7 @@ namespace Hostess
                 {
                     using (var catalogStream = webClient.OpenRead(StringResources.CatalogUrl))
                     {
-                        catalog = XmlHelpers.DeserializeFromXml<CatalogDocument>(catalogStream);
+                        catalog = DeserializeFromXml<CatalogDocument>(catalogStream);
 
                         if (catalog == null)
                         {
@@ -49,6 +50,22 @@ namespace Hostess
                     Current.Shutdown(0);
                     return;
                 }
+            }
+        }
+
+        private static T DeserializeFromXml<T>(Stream readableStream)
+            where T : class
+        {
+            var serializer = new XmlSerializer(typeof(T));
+            var xmlReaderSetting = new XmlReaderSettings()
+            {
+                XmlResolver = null,
+                DtdProcessing = DtdProcessing.Prohibit,
+            };
+
+            using (var contentStream = XmlReader.Create(readableStream, xmlReaderSetting))
+            {
+                return (T)serializer.Deserialize(contentStream);
             }
         }
     }

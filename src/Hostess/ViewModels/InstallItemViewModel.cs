@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Hostess.Commands;
+using System;
 using System.ComponentModel;
 using System.Windows.Input;
 
-namespace Hostess
+namespace Hostess.ViewModels
 {
     [Serializable]
     public sealed class InstallItemViewModel : INotifyPropertyChanged

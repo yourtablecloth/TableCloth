@@ -1,24 +1,22 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Cache;
 using System.Threading;
 using System.Windows.Forms;
-using TableCloth.Helpers;
+using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 
-namespace TableCloth
+namespace TableCloth.Implementations.WinForms
 {
     internal static class ScreenBuilder
     {
-        public static Form CreateMainForm()
+        internal static Form CreateMainForm(IServiceProvider serviceProvider)
         {
             var form = new Form()
             {
@@ -31,6 +29,7 @@ namespace TableCloth
                 Size = new Size(640, 480),
                 AutoScaleDimensions = new SizeF(96f, 96f),
                 AutoScaleMode = AutoScaleMode.Dpi,
+                Tag = serviceProvider,
             };
 
             var tableLayout = new TableLayoutPanel()
@@ -126,7 +125,7 @@ namespace TableCloth
 
             _ = importButton.AddClickEvent(x =>
             {
-                using var selectForm = CreateCertSelectForm();
+                using var selectForm = CreateCertSelectForm(serviceProvider);
                 if (selectForm.ShowDialog(form) != DialogResult.OK)
                     return;
 
@@ -203,39 +202,10 @@ namespace TableCloth
                 if (_sender is not Form realSender)
                     return;
 
-                var is64BitOperatingSystem = (IntPtr.Size == 8) || NativeMethods.InternalCheckIsWow64();
-
-                if (!is64BitOperatingSystem)
-                {
-                    _ = MessageBox.Show(StringResources.Error_Windows_OS_Too_Old, StringResources.TitleText_Error,
-                        MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
-                    realSender.Close();
-                    return;
-                }
-
-                var wsbExecPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.System),
-                    "WindowsSandbox.exe");
-
-                if (!File.Exists(wsbExecPath))
-                {
-                    _ = MessageBox.Show(StringResources.Error_Windows_Sandbox_Missing, StringResources.TitleText_Error,
-                        MessageBoxButtons.OK, MessageBoxIcon.Stop, MessageBoxDefaultButton.Button1);
-                    realSender.Close();
-                    return;
-                }
-
-                using var webClient = new WebClient()
-                {
-                    CachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore),
-                };
-                webClient.Headers.Add("User-Agent", StringResources.UserAgentText);
-                webClient.QueryString.Add("ts", DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture));
-
                 try
                 {
-                    using var catalogStream = webClient.OpenRead(StringResources.CatalogUrl);
-                    var catalog = XmlHelpers.DeserializeFromXml<CatalogDocument>(catalogStream);
+                    var catalogDeserializer = serviceProvider.GetService<ICatalogDeserializer>();
+                    var catalog = catalogDeserializer.DeserializeCatalog(new Uri(StringResources.CatalogUrl));
 
                     var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
                         x => (CatalogInternetServiceCategory)x.Tag,
@@ -264,7 +234,8 @@ namespace TableCloth
 
                 try
                 {
-                    var pairs = X509CertPair.ScanX509CertPairs();
+                    var scanner = serviceProvider.GetService<IX509CertPairScanner>();
+                    var pairs = scanner.ScanX509Pairs(scanner.GetCandidateDirectories());
                     if (pairs != null && pairs.Count() == 1)
                     {
                         var pair = pairs.First();
@@ -280,6 +251,7 @@ namespace TableCloth
                     Environment.GetFolderPath(Environment.SpecialFolder.System),
                     "WindowsSandbox.exe");
 
+                var scanner = serviceProvider.GetService<IX509CertPairScanner>();
                 var pair = default(X509CertPair);
                 var fileList = (npkiFileListBox.DataSource as IEnumerable<string>)?.ToArray();
 
@@ -289,7 +261,7 @@ namespace TableCloth
                     var keyFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".key", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
                     if (File.Exists(derFilePath) && File.Exists(keyFilePath))
-                        pair = X509CertPair.CreateX509CertPair(derFilePath, keyFilePath);
+                        pair = scanner.CreateX509CertPair(derFilePath, keyFilePath);
                 }
 
                 var activeTabPage = siteCatalogTabControl.SelectedTab;
@@ -305,11 +277,9 @@ namespace TableCloth
                     Packages = activeItems,
                 };
 
-                var tempDirectoryName = "bwsb_" + Guid.NewGuid().ToString("n");
-                var tempPath = Path.Combine(Path.GetTempPath(), tempDirectoryName);
-                SandboxBuilder.ExpandCompanionFiles(tempPath);
-
-                var wsbFilePath = SandboxBuilder.GenerateSandboxConfiguration(tempPath, config);
+                var sandboxBuilder = serviceProvider.GetService<ISandboxBuilder>();
+                var tempPath = sandboxBuilder.GenerateTemporaryDirectoryPath();
+                var wsbFilePath = sandboxBuilder.GenerateSandboxConfiguration(tempPath, config);
 
                 var process = new Process()
                 {
@@ -396,7 +366,7 @@ namespace TableCloth
             return form;
         }
 
-        internal static Form CreateCertSelectForm()
+        internal static Form CreateCertSelectForm(IServiceProvider serviceProvider)
         {
             var form = new Form()
             {
@@ -409,6 +379,7 @@ namespace TableCloth
                 Size = new Size(480, 400),
                 AutoScaleDimensions = new SizeF(96f, 96f),
                 AutoScaleMode = AutoScaleMode.Dpi,
+                Tag = serviceProvider,
             };
 
             var tableLayout = new TableLayoutPanel()
@@ -525,7 +496,8 @@ namespace TableCloth
 
             _ = refreshButton.AddClickEvent(x =>
               {
-                  var scannedPairs = X509CertPair.ScanX509CertPairs();
+                  var scanner = serviceProvider.GetService<IX509CertPairScanner>();
+                  var scannedPairs = scanner.ScanX509Pairs(scanner.GetCandidateDirectories());
 
                   if (!scannedPairs.Any())
                       return;
@@ -547,6 +519,7 @@ namespace TableCloth
 
             _ = browseCertPairButton.AddClickEvent(x =>
             {
+                var scanner = serviceProvider.GetService<IX509CertPairScanner>();
                 var npkiDirectoryPath = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                     "AppData", "LocalLow", "NPKI");
@@ -579,7 +552,7 @@ namespace TableCloth
                     return;
                 }
 
-                form.Tag = X509CertPair.CreateX509CertPair(derFilePath, keyFilePath);
+                form.Tag = scanner.CreateX509CertPair(derFilePath, keyFilePath);
                 form.DialogResult = DialogResult.OK;
                 form.Close();
             });
