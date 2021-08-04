@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.Resources
@@ -171,12 +173,18 @@ namespace TableCloth.Resources
         internal static readonly string Error_OpenDerAndKey_Simultaneously
             = "인증서 정보 파일 (der)과 개인 키 파일 (key)을 각각 하나씩 선택해주세요.\r\n\r\nCtrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 빈 공간을 드래그하면 여러 파일을 선택할 수 있어요.";
 
+        internal static string Error_HostFolder_Unavailable(IEnumerable<string> unavailableDirectories)
+        {
+            var directoryList = string.Join("\r\n", unavailableDirectories.Select(x => $"- {x}"));
+            return $"다음의 디렉터리를 이 컴퓨터에서 찾을 수 없어 샌드박스에서 연결할 때 제외합니다.\r\n\r\n{directoryList}";
+        }
+
         internal static string Error_Cannot_Remove_TempDirectory(Exception ex)
         {
             if (ex is AggregateException ae)
                 return Error_Cannot_Remove_TempDirectory(ae.InnerException);
 
-            var message = $"임시 폴더를 비우지 못했습니다. 해당 폴더를 열어 직접 지우실 수 있게 도와드릴까요?";
+            var message = $"임시 폴더를 비우지 못했습니다. 해당 폴더를 열어 직접 지우실 수 있게 열겠습니다.";
 
             if (ex != null)
                 message = string.Concat(message, $"\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");

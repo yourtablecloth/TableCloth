@@ -22,27 +22,21 @@ namespace TableCloth.Implementations.WinForms
             IAppStartup appStartup,
             ICatalogDeserializer catalogDeserializer,
             IX509CertPairScanner certPairScanner,
-            ISandboxBuilder sandboxBuilder)
+            ISandboxBuilder sandboxBuilder,
+            IAppMessageBox appMessageBox)
         {
             _appStartup = appStartup;
             _catalogDeserializer = catalogDeserializer;
             _certPairScanner = certPairScanner;
             _sandboxBuilder = sandboxBuilder;
+            _appMessageBox = appMessageBox;
         }
 
         private readonly IAppStartup _appStartup;
         private readonly ICatalogDeserializer _catalogDeserializer;
         private readonly IX509CertPairScanner _certPairScanner;
         private readonly ISandboxBuilder _sandboxBuilder;
-
-        public void DisplayError(IEnumerable<string> _, Exception failureReason, bool isCritical)
-        {
-            MessageBox.Show(
-                failureReason.Message, StringResources.TitleText_Error,
-                MessageBoxButtons.OK,
-                (isCritical ? MessageBoxIcon.Stop : MessageBoxIcon.Warning),
-                MessageBoxDefaultButton.Button1);
-        }
+        private readonly IAppMessageBox _appMessageBox;
 
         public void StartApplication(IEnumerable<string> args)
         {
@@ -232,9 +226,7 @@ namespace TableCloth.Implementations.WinForms
 
             var aboutButton = actionLeftLayout.CreateButton(StringResources.MainForm_AboutButtonText, handler: x =>
             {
-                _ = MessageBox.Show(form,
-                    StringResources.AboutDialog_BodyText, StringResources.TitleText_Info,
-                    MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                _appMessageBox.DisplayInfo(StringResources.AboutDialog_BodyText);
             });
 
             var cancelButton = actionRightLayout.CreateButton(StringResources.MainForm_CloseButtonText, handler: x =>
@@ -275,10 +267,7 @@ namespace TableCloth.Implementations.WinForms
                 {
                     siteCatalogTabControl.Visible = false;
                     siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
-
-                    _ = MessageBox.Show(form,
-                        StringResources.Error_Cannot_Download_Catalog(e), StringResources.TitleText_Error,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                    _appMessageBox.DisplayError(StringResources.Error_Cannot_Download_Catalog(e), false);
                 }
 
                 try
@@ -345,9 +334,7 @@ namespace TableCloth.Implementations.WinForms
                             {
                                 _ = form.Invoke(new Action<int>((exitCode) =>
                                 {
-                                    _ = MessageBox.Show(form,
-                                        StringResources.Error_Sandbox_ErrorCode_NonZero(exitCode), StringResources.TitleText_Error,
-                                        MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                                    _appMessageBox.DisplayError(StringResources.Error_Sandbox_ErrorCode_NonZero(exitCode), false);
 
                                 }), realSender.ExitCode);
                             }
@@ -369,21 +356,14 @@ namespace TableCloth.Implementations.WinForms
                     {
                         _ = form.Invoke(new Action<Exception>((ex) =>
                         {
-                            var response = MessageBox.Show(form,
-                                StringResources.Error_Cannot_Remove_TempDirectory(ex), StringResources.TitleText_Error,
-                                MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-
-                            if (response != DialogResult.Yes)
-                                return;
+                            _appMessageBox.DisplayError(StringResources.Error_Cannot_Remove_TempDirectory(ex), false);
 
                             var explorerFilePath = Path.Combine(
                                 Environment.GetFolderPath(Environment.SpecialFolder.Windows),
                                 "explorer.exe");
                             if (!File.Exists(explorerFilePath))
                             {
-                                _ = MessageBox.Show(form, StringResources.Error_Windows_Explorer_Missing,
-                                    StringResources.TitleText_Error, MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                                _appMessageBox.DisplayError(StringResources.Error_Windows_Explorer_Missing, false);
                                 return;
                             }
 
@@ -394,9 +374,7 @@ namespace TableCloth.Implementations.WinForms
 
                             if (!explorerProcess.Start())
                             {
-                                _ = MessageBox.Show(form, StringResources.Error_Windows_Explorer_CanNotStart,
-                                    StringResources.TitleText_Error, MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                                _appMessageBox.DisplayError(StringResources.Error_Windows_Explorer_CanNotStart, false);
                                 return;
                             }
                         }), ex);
@@ -408,9 +386,7 @@ namespace TableCloth.Implementations.WinForms
 
                 _ = form.Invoke(new Action(() =>
                 {
-                    _ = MessageBox.Show(form, StringResources.Error_Windows_Sandbox_CanNotStart,
-                        StringResources.TitleText_Error, MessageBoxButtons.OK,
-                        MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                    _appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_CanNotStart, true);
                 }));
             });
 
@@ -594,9 +570,7 @@ namespace TableCloth.Implementations.WinForms
 
                 if (!File.Exists(derFilePath) || !File.Exists(keyFilePath))
                 {
-                    _ = MessageBox.Show(form,
-                        StringResources.Error_OpenDerAndKey_Simultaneously, StringResources.TitleText_Error,
-                        MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                    _appMessageBox.DisplayError(StringResources.Error_OpenDerAndKey_Simultaneously, true);
                     return;
                 }
 

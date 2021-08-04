@@ -17,12 +17,14 @@ namespace TableCloth
             using var serviceProvider = services.BuildServiceProvider();
             var startup = serviceProvider.GetService<IAppStartup>();
             var userInterface = serviceProvider.GetService<IAppUserInterface>();
+            var messageBox = serviceProvider.GetService<IAppMessageBox>();
 
             startup.Arguments = args;
 
             if (!startup.HasRequirementsMet(out Exception failedReason, out bool isCritical))
             {
-                userInterface.DisplayError(args, failedReason, isCritical);
+                messageBox.DisplayError(failedReason, isCritical);
+
                 if (isCritical)
                 {
                     Environment.Exit(1);
@@ -32,7 +34,8 @@ namespace TableCloth
 
             if (!startup.Initialize(out failedReason, out isCritical))
             {
-                userInterface.DisplayError(args, failedReason, isCritical);
+                messageBox.DisplayError(failedReason, isCritical);
+
                 if (isCritical)
                 {
                     Environment.Exit(2);
@@ -59,6 +62,7 @@ namespace TableCloth
             services.AddTransient<IAppStartup, AppStartup>();
 
             // Windows Forms UI
+            services.AddTransient<IAppMessageBox, WinFormMessageBox>();
             services.AddSingleton<IAppUserInterface, WinFormUserInterface>();
         }
     }
