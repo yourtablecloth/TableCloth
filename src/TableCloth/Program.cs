@@ -15,7 +15,6 @@ namespace TableCloth
 
             using var serviceProvider = services.BuildServiceProvider();
             var startup = serviceProvider.GetService<IAppStartup>();
-            startup.InitializeEnvironment(args);
             startup.StartApplication(args);
         }
 

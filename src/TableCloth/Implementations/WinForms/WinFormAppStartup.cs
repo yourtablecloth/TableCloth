@@ -19,19 +19,16 @@ namespace TableCloth.Implementations.WinForms
 
         private readonly IServiceProvider _serviceProvider;
 
-        public void InitializeEnvironment(IEnumerable<string> _)
-        {
-            InitializeWindowsFormsEnvironment();
-            CheckWindowsSandboxPrerequisites();
-            CheckPreLaunchedAppInstance();
-            InitializeAppDataDirectory();
-            ConfigureLowLevelLogging();
-        }
-
         public void StartApplication(IEnumerable<string> args)
         {
             var appThread = new Thread(new ParameterizedThreadStart(_ =>
             {
+                InitializeWindowsFormsEnvironment();
+                CheckWindowsSandboxPrerequisites();
+                CheckPreLaunchedAppInstance();
+                InitializeAppDataDirectory();
+                ConfigureLowLevelLogging();
+
                 using var form = ScreenBuilder.CreateMainForm(_serviceProvider);
                 Application.Run(new ApplicationContext(form));
             }));
