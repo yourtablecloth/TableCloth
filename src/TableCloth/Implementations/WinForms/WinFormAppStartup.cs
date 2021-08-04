@@ -28,11 +28,17 @@ namespace TableCloth.Implementations.WinForms
             ConfigureLowLevelLogging();
         }
 
-        [STAThread]
-        public void StartApplication(IEnumerable<string> _)
+        public void StartApplication(IEnumerable<string> args)
         {
-            using var form = ScreenBuilder.CreateMainForm(_serviceProvider);
-            Application.Run(new ApplicationContext(form));
+            var appThread = new Thread(new ParameterizedThreadStart(_ =>
+            {
+                using var form = ScreenBuilder.CreateMainForm(_serviceProvider);
+                Application.Run(new ApplicationContext(form));
+            }));
+
+            appThread.SetApartmentState(ApartmentState.STA);
+            appThread.Start(args);
+            appThread.Join();
         }
 
         private static string AppDataDirectoryPath
