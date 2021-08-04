@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -47,6 +48,13 @@ namespace Hostess
                 {
                     MessageBox.Show(StringResources.Hostess_No_Targets, StringResources.TitleText_Error,
                         MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+
+                    Process.Start(new ProcessStartInfo("https://www.naver.com/")
+                    {
+                        UseShellExecute = true,
+                        WindowStyle = ProcessWindowStyle.Maximized,
+                    });
+
                     Current.Shutdown(0);
                     return;
                 }
