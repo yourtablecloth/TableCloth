@@ -100,8 +100,8 @@ namespace TableCloth.Implementations.WinForms
             };
             tableLayout.SetCellPosition(actionRightLayout, new TableLayoutPanelCellPosition(column: 1, row: 1));
 
-            _ = CreateLabel(dialogLayout, StringResources.MainForm_SelectOptionsLabelText);
-            _ = CreateLabel(dialogLayout);
+            _ = dialogLayout.CreateLabel(StringResources.MainForm_SelectOptionsLabelText);
+            _ = dialogLayout.CreateLabel();
 
             var certListPanel = new FlowLayoutPanel()
             {
@@ -111,8 +111,8 @@ namespace TableCloth.Implementations.WinForms
                 AutoSize = true,
                 AutoSizeMode = AutoSizeMode.GrowAndShrink,
             };
-            var mapNPKICert = CreateCheckBox(certListPanel, StringResources.MainForm_MapNpkiCertButtonText, true);
-            var importButton = CreateButton(certListPanel, StringResources.MainForm_BrowseButtonText);
+            var mapNPKICert = certListPanel.CreateCheckBox(StringResources.MainForm_MapNpkiCertButtonText, true);
+            var importButton = certListPanel.CreateButton(StringResources.MainForm_BrowseButtonText);
             certListPanel.Height = (int)(mapNPKICert.Height * 1.6f);
 
             var npkiFileListBox = new ListBox()
@@ -138,16 +138,16 @@ namespace TableCloth.Implementations.WinForms
             _ = importButton.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
             _ = npkiFileListBox.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
 
-            var enableMicrophone = CreateCheckBox(dialogLayout, StringResources.MainForm_UseMicrophoneCheckboxText, false);
-            var enableWebCam = CreateCheckBox(dialogLayout, StringResources.MainForm_UseWebCameraCheckboxText, false);
-            var enablePrinters = CreateCheckBox(dialogLayout, StringResources.MainForm_UsePrinterCheckboxText, false);
+            var enableMicrophone = dialogLayout.CreateCheckBox(StringResources.MainForm_UseMicrophoneCheckboxText, false);
+            var enableWebCam = dialogLayout.CreateCheckBox(StringResources.MainForm_UseWebCameraCheckboxText, false);
+            var enablePrinters = dialogLayout.CreateCheckBox(StringResources.MainForm_UsePrinterCheckboxText, false);
 
             enableMicrophone.Font = new Font(enableMicrophone.Font, FontStyle.Bold);
             enableWebCam.Font = new Font(enableWebCam.Font, FontStyle.Bold);
 
-            _ = CreateLabel(dialogLayout);
-            var siteInstructionLabel = CreateLabel(dialogLayout, StringResources.MainForm_SelectSiteLabelText);
-            _ = CreateLabel(dialogLayout);
+            _ = dialogLayout.CreateLabel();
+            var siteInstructionLabel = dialogLayout.CreateLabel(StringResources.MainForm_SelectSiteLabelText);
+            _ = dialogLayout.CreateLabel();
 
             var siteCatalogTabControl = new TabControl
             {
@@ -180,19 +180,19 @@ namespace TableCloth.Implementations.WinForms
                 };
             }
 
-            var aboutButton = CreateButton(actionLeftLayout, StringResources.MainForm_AboutButtonText, handler: x =>
+            var aboutButton = actionLeftLayout.CreateButton(StringResources.MainForm_AboutButtonText, handler: x =>
             {
                 _ = MessageBox.Show(form,
                     StringResources.AboutDialog_BodyText, StringResources.TitleText_Info,
                     MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
             });
 
-            var cancelButton = CreateButton(actionRightLayout, StringResources.MainForm_CloseButtonText, handler: x =>
+            var cancelButton = actionRightLayout.CreateButton(StringResources.MainForm_CloseButtonText, handler: x =>
             {
                 form.Close();
             });
 
-            var launchButton = CreateButton(actionRightLayout, StringResources.MainForm_LaunchSandboxButtonText);
+            var launchButton = actionRightLayout.CreateButton(StringResources.MainForm_LaunchSandboxButtonText);
 
             form.CancelButton = cancelButton;
             form.AcceptButton = launchButton;
@@ -291,15 +291,20 @@ namespace TableCloth.Implementations.WinForms
                 {
                     try
                     {
-                        if (__sender is Process realSender && IsAbnormalSandboxExitCode(realSender.ExitCode))
+                        if (__sender is Process realSender)
                         {
-                            _ = form.Invoke(new Action<int>((exitCode) =>
-                            {
-                                _ = MessageBox.Show(form,
-                                    StringResources.Error_Sandbox_ErrorCode_NonZero(exitCode), StringResources.TitleText_Error,
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                            var exitCode = realSender.ExitCode;
 
-                            }), realSender.ExitCode);
+                            if (exitCode != 0x0 && exitCode != unchecked((int)0x800700b7u))
+                            {
+                                _ = form.Invoke(new Action<int>((exitCode) =>
+                                {
+                                    _ = MessageBox.Show(form,
+                                        StringResources.Error_Sandbox_ErrorCode_NonZero(exitCode), StringResources.TitleText_Error,
+                                        MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+
+                                }), realSender.ExitCode);
+                            }
                         }
 
                         for (var i = 0; i < 5; i++)
@@ -436,8 +441,8 @@ namespace TableCloth.Implementations.WinForms
             };
             tableLayout.SetCellPosition(actionLayout, new TableLayoutPanelCellPosition(column: 0, row: 1));
 
-            _ = CreateLabel(dialogLayout, StringResources.CertSelectForm_InstructionLabel);
-            _ = CreateLabel(dialogLayout);
+            _ = dialogLayout.CreateLabel(StringResources.CertSelectForm_InstructionLabel);
+            _ = dialogLayout.CreateLabel();
 
             var largeListViewImageList = new ImageList()
             {
@@ -464,15 +469,15 @@ namespace TableCloth.Implementations.WinForms
                 SmallImageList = smallListViewImageList,
             };
 
-            var refreshButton = CreateButton(dialogLayout, StringResources.CertSelectForm_RefreshButtonText);
+            var refreshButton = dialogLayout.CreateButton(StringResources.CertSelectForm_RefreshButtonText);
 
-            _ = CreateLabel(dialogLayout);
-            _ = CreateLabel(dialogLayout, StringResources.CertSelectForm_ManualInstructionLabelText);
-            _ = CreateLabel(dialogLayout);
-            var browseCertPairButton = CreateButton(dialogLayout, StringResources.CertSelectForm_OpenNpkiCertButton);
+            _ = dialogLayout.CreateLabel();
+            _ = dialogLayout.CreateLabel(StringResources.CertSelectForm_ManualInstructionLabelText);
+            _ = dialogLayout.CreateLabel();
+            var browseCertPairButton = dialogLayout.CreateButton(StringResources.CertSelectForm_OpenNpkiCertButton);
 
-            var cancelButton = CreateButton(actionLayout, StringResources.CancelButtonText, dialogResult: DialogResult.Cancel);
-            var okayButton = CreateButton(actionLayout, StringResources.OkayButtonText, dialogResult: DialogResult.OK);
+            var cancelButton = actionLayout.CreateButton(StringResources.CancelButtonText, dialogResult: DialogResult.Cancel);
+            var okayButton = actionLayout.CreateButton(StringResources.OkayButtonText, dialogResult: DialogResult.OK);
 
             form.CancelButton = cancelButton;
             form.AcceptButton = okayButton;
@@ -564,61 +569,5 @@ namespace TableCloth.Implementations.WinForms
 
             return form;
         }
-
-        public static Label CreateLabel(Control parentControl, string text = default)
-            => new()
-            {
-                Parent = parentControl,
-                Text = text ?? string.Empty,
-                AutoSize = true,
-            };
-
-        public static CheckBox CreateCheckBox(Control parentControl, string text, bool @checked = false)
-            => new()
-            {
-                Parent = parentControl,
-                Text = text,
-                Checked = @checked,
-                AutoSize = true,
-                TextAlign = ContentAlignment.MiddleLeft,
-            };
-
-        public static Button CreateButton(Control parentControl, string text, DialogResult dialogResult = default, Action<Button> handler = null)
-        {
-            var button = new Button()
-            {
-                Parent = parentControl,
-                Text = text,
-                AutoSize = true,
-                DialogResult = dialogResult,
-            };
-
-            if (handler != null)
-                button = button.AddClickEvent(handler);
-
-            return button;
-        }
-
-        public static TButtonBase AddClickEvent<TButtonBase>(this TButtonBase targetControl, Action<TButtonBase> handler)
-            where TButtonBase : ButtonBase
-        {
-            if (handler == null)
-                throw new ArgumentNullException(nameof(handler));
-
-            targetControl.Click += new EventHandler((_sender, _e) =>
-            {
-                if (_sender is TButtonBase realSender && handler != null)
-                    handler.Invoke(realSender);
-            });
-
-            return targetControl;
-        }
-
-        public static bool IsAbnormalSandboxExitCode(int exitCode) =>
-            exitCode switch
-            {
-                0x0 or unchecked((int)0x800700b7u) => false,
-                _ => true,
-            };
     }
 }
