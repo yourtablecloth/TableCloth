@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using System;
 using TableCloth.Contracts;
 using TableCloth.Implementations;
 using TableCloth.Implementations.WinForms;
@@ -15,7 +16,31 @@ namespace TableCloth
 
             using var serviceProvider = services.BuildServiceProvider();
             var startup = serviceProvider.GetService<IAppStartup>();
-            startup.StartApplication(args);
+            var userInterface = serviceProvider.GetService<IAppUserInterface>();
+
+            startup.Arguments = args;
+
+            if (!startup.HasRequirementsMet(out Exception failedReason, out bool isCritical))
+            {
+                userInterface.DisplayError(args, failedReason, isCritical);
+                if (isCritical)
+                {
+                    Environment.Exit(1);
+                    return;
+                }
+            }
+
+            if (!startup.Initialize(out failedReason, out isCritical))
+            {
+                userInterface.DisplayError(args, failedReason, isCritical);
+                if (isCritical)
+                {
+                    Environment.Exit(2);
+                    return;
+                }
+            }
+
+            userInterface.StartApplication(args);
         }
 
         public static void ConfigureServices(ServiceCollection services)
@@ -31,9 +56,10 @@ namespace TableCloth
             services.AddTransient<ICatalogDeserializer, CatalogDeserializer>();
             services.AddTransient<ISandboxSpecSerializer, SandboxSpecSerializer>();
             services.AddTransient<ISandboxBuilder, SandboxBuilder>();
+            services.AddTransient<IAppStartup, AppStartup>();
 
             // Windows Forms UI
-            services.AddSingleton<IAppStartup, WinFormAppStartup>();
+            services.AddSingleton<IAppUserInterface, WinFormUserInterface>();
         }
     }
 }

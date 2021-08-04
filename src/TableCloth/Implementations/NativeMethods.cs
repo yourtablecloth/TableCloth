@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace TableCloth
+namespace TableCloth.Implementations
 {
     [SuppressUnmanagedCodeSecurity]
     internal static class NativeMethods
     {
-        // https://stackoverflow.com/questions/336633/how-to-detect-windows-64-bit-platform-with-net
-        public static bool InternalCheckIsWow64()
-            => ((Environment.OSVersion.Version.Major == 5 && Environment.OSVersion.Version.Minor >= 1) || Environment.OSVersion.Version.Major >= 6) && IsWow64Process(Process.GetCurrentProcess().Handle, out var retVal) && retVal;
-
         [DllImport("kernel32.dll",
             SetLastError = true,
             CharSet = CharSet.None,
