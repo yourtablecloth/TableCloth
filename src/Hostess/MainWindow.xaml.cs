@@ -76,6 +76,11 @@ namespace Hostess
                 PerformInstallButton.IsEnabled = false;
                 var hasAnyFailure = false;
 
+                var downloadFolderPath = NativeMethods.GetKnownFolderPath(NativeMethods.DownloadFolderGuid);
+
+                if (!Directory.Exists(downloadFolderPath))
+                    Directory.CreateDirectory(downloadFolderPath);
+
                 foreach (InstallItemViewModel eachItem in InstallList.ItemsSource)
                 {
                     try
@@ -84,8 +89,8 @@ namespace Hostess
                         eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
 
                         var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
-                        var tempFilePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), tempFileName);
-
+                        var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
+                        
                         if (File.Exists(tempFilePath))
                             File.Delete(tempFilePath);
 
