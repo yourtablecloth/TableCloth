@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using System.Net;
 using System.Net.Cache;
 using System.Xml;
@@ -23,22 +22,15 @@ namespace TableCloth.Implementations
             webClient.QueryString.Add("ts", DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture));
 
             using var catalogStream = webClient.OpenRead(StringResources.CatalogUrl);
-            var catalog = DeserializeFromXml<CatalogDocument>(catalogStream);
-            return catalog;
-        }
-
-        private static T DeserializeFromXml<T>(Stream readableStream)
-            where T : class
-        {
-            var serializer = new XmlSerializer(typeof(T));
+            var serializer = new XmlSerializer(typeof(CatalogDocument));
             var xmlReaderSetting = new XmlReaderSettings()
             {
                 XmlResolver = null,
                 DtdProcessing = DtdProcessing.Prohibit,
             };
 
-            using var contentStream = XmlReader.Create(readableStream, xmlReaderSetting);
-            return (T)serializer.Deserialize(contentStream);
+            using var contentStream = XmlReader.Create(catalogStream, xmlReaderSetting);
+            return (CatalogDocument)serializer.Deserialize(contentStream);
         }
     }
 }

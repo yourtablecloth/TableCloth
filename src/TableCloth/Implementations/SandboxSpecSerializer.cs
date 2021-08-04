@@ -10,18 +10,14 @@ namespace TableCloth.Implementations
     public sealed class SandboxSpecSerializer : ISandboxSpecSerializer
     {
         public string SerializeSandboxSpec(SandboxConfiguration configuration)
-            => SerializeToXml(configuration);
-
-        public static string SerializeToXml<T>(T objectToSerialize)
-            where T : class
         {
-            var serializer = new XmlSerializer(typeof(T));
+            var serializer = new XmlSerializer(typeof(SandboxConfiguration));
             var @namespace = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty) });
             var targetEncoding = new UTF8Encoding(false);
 
             using var memStream = new MemoryStream();
             var contentStream = new StreamWriter(memStream);
-            serializer.Serialize(contentStream, objectToSerialize, @namespace);
+            serializer.Serialize(contentStream, configuration, @namespace);
             return targetEncoding.GetString(memStream.ToArray());
         }
     }
