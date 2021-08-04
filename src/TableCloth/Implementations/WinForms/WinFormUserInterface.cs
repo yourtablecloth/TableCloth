@@ -325,7 +325,7 @@ namespace TableCloth.Implementations.WinForms
                     Packages = activeItems,
                 };
 
-                var tempPath = Path.Combine(Path.GetTempPath(), "bwsb_" + Guid.NewGuid().ToString("n"));
+                var tempPath = Path.Combine(_appStartup.AppDataDirectoryPath, $"bwsb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}");
                 var excludedFolderList = new List<SandboxMappedFolder>();
                 var wsbFilePath = _sandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
 
