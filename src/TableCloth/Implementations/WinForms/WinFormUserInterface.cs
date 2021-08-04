@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using TableCloth.Contracts;
+using TableCloth.Implementations.WindowsSandbox;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
@@ -37,6 +38,11 @@ namespace TableCloth.Implementations.WinForms
         private readonly ISandboxBuilder _sandboxBuilder;
         private readonly IAppMessageBox _appMessageBox;
 
+        private IWin32Window _mainWindow;
+
+        public object MainWindowHandle
+            => _mainWindow;
+
         public void StartApplication(IEnumerable<string> args)
         {
             var appThread = new Thread(new ParameterizedThreadStart(_ =>
@@ -52,6 +58,7 @@ namespace TableCloth.Implementations.WinForms
                     .CreateLogger();
 
                 using var form = CreateMainForm();
+                _mainWindow = form;
                 Application.Run(new ApplicationContext(form));
             }));
 
@@ -225,7 +232,7 @@ namespace TableCloth.Implementations.WinForms
 
             var aboutButton = actionLeftLayout.CreateButton(StringResources.MainForm_AboutButtonText, handler: x =>
             {
-                _appMessageBox.DisplayInfo(StringResources.AboutDialog_BodyText);
+                _appMessageBox.DisplayInfo(this, StringResources.AboutDialog_BodyText);
             });
 
             var cancelButton = actionRightLayout.CreateButton(StringResources.MainForm_CloseButtonText, handler: x =>
@@ -266,7 +273,7 @@ namespace TableCloth.Implementations.WinForms
                 {
                     siteCatalogTabControl.Visible = false;
                     siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
-                    _appMessageBox.DisplayError(StringResources.Error_Cannot_Download_Catalog(e), false);
+                    _appMessageBox.DisplayError(this, StringResources.Error_Cannot_Download_Catalog(e), false);
                 }
 
                 try
@@ -312,8 +319,12 @@ namespace TableCloth.Implementations.WinForms
                     Packages = activeItems,
                 };
 
-                var tempPath = _sandboxBuilder.GenerateTemporaryDirectoryPath();
-                var wsbFilePath = _sandboxBuilder.GenerateSandboxConfiguration(tempPath, config);
+                var tempPath = Path.Combine(Path.GetTempPath(), "bwsb_" + Guid.NewGuid().ToString("n"));
+                var excludedFolderList = new List<SandboxMappedFolder>();
+                var wsbFilePath = _sandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
+
+                if (excludedFolderList.Any())
+                    _appMessageBox.DisplayError(this, StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
 
                 var process = new Process()
                 {
@@ -333,7 +344,7 @@ namespace TableCloth.Implementations.WinForms
                             {
                                 form.Invoke(new Action<int>((exitCode) =>
                                 {
-                                    _appMessageBox.DisplayError(StringResources.Error_Sandbox_ErrorCode_NonZero(exitCode), false);
+                                    _appMessageBox.DisplayError(this, StringResources.Error_Sandbox_ErrorCode_NonZero(exitCode), false);
 
                                 }), realSender.ExitCode);
                             }
@@ -355,14 +366,14 @@ namespace TableCloth.Implementations.WinForms
                     {
                         form.Invoke(new Action<Exception>((ex) =>
                         {
-                            _appMessageBox.DisplayError(StringResources.Error_Cannot_Remove_TempDirectory(ex), false);
+                            _appMessageBox.DisplayError(this, StringResources.Error_Cannot_Remove_TempDirectory(ex), false);
 
                             var explorerFilePath = Path.Combine(
                                 Environment.GetFolderPath(Environment.SpecialFolder.Windows),
                                 "explorer.exe");
                             if (!File.Exists(explorerFilePath))
                             {
-                                _appMessageBox.DisplayError(StringResources.Error_Windows_Explorer_Missing, false);
+                                _appMessageBox.DisplayError(this, StringResources.Error_Windows_Explorer_Missing, false);
                                 return;
                             }
 
@@ -373,7 +384,7 @@ namespace TableCloth.Implementations.WinForms
 
                             if (!explorerProcess.Start())
                             {
-                                _appMessageBox.DisplayError(StringResources.Error_Windows_Explorer_CanNotStart, false);
+                                _appMessageBox.DisplayError(this, StringResources.Error_Windows_Explorer_CanNotStart, false);
                                 return;
                             }
                         }), ex);
@@ -385,7 +396,7 @@ namespace TableCloth.Implementations.WinForms
 
                 form.Invoke(new Action(() =>
                 {
-                    _appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_CanNotStart, true);
+                    _appMessageBox.DisplayError(this, StringResources.Error_Windows_Sandbox_CanNotStart, true);
                 }));
             });
 
@@ -569,7 +580,7 @@ namespace TableCloth.Implementations.WinForms
 
                 if (!File.Exists(derFilePath) || !File.Exists(keyFilePath))
                 {
-                    _appMessageBox.DisplayError(StringResources.Error_OpenDerAndKey_Simultaneously, true);
+                    _appMessageBox.DisplayError(this, StringResources.Error_OpenDerAndKey_Simultaneously, true);
                     return;
                 }
 

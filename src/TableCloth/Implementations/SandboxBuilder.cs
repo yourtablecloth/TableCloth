@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 using TableCloth.Contracts;
 using TableCloth.Implementations.WindowsSandbox;
 using TableCloth.Models.Configuration;
@@ -12,17 +15,7 @@ namespace TableCloth.Implementations
 {
     public sealed class SandboxBuilder : ISandboxBuilder
     {
-        public SandboxBuilder(ISandboxSpecSerializer sandboxSpecSerializer)
-        {
-            SandboxSpecSerializer = sandboxSpecSerializer;
-        }
-
-        public ISandboxSpecSerializer SandboxSpecSerializer { get; init; }
-
-        public string GenerateTemporaryDirectoryPath()
-            => Path.Combine(Path.GetTempPath(), "bwsb_" + Guid.NewGuid().ToString("n"));
-
-        public string GenerateSandboxConfiguration(string outputDirectory, TableClothConfiguration tableClothConfiguration)
+        public string GenerateSandboxConfiguration(string outputDirectory, TableClothConfiguration tableClothConfiguration, IList<SandboxMappedFolder> excludedDirectories)
         {
             if (tableClothConfiguration == null)
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
@@ -54,7 +47,7 @@ namespace TableCloth.Implementations
             tableClothConfiguration.AssetsDirectoryPath = assetsDirectory;
 
             var wsbFilePath = Path.Combine(outputDirectory, "InternetBankingSandbox.wsb");
-            var serializedXml = SandboxSpecSerializer.SerializeSandboxSpec(BootstrapSandboxConfiguration(tableClothConfiguration));
+            var serializedXml = SerializeSandboxSpec(BootstrapSandboxConfiguration(tableClothConfiguration), excludedDirectories);
             File.WriteAllText(wsbFilePath, serializedXml);
 
             return wsbFilePath;
@@ -180,6 +173,30 @@ rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
 
             using var hostessZipArchive = new ZipArchive(hostessZipFileStream, ZipArchiveMode.Read);
             hostessZipArchive.ExtractToDirectory(assetsDirectory, true);
+        }
+
+        private string SerializeSandboxSpec(SandboxConfiguration configuration, IList<SandboxMappedFolder> excludedFolders)
+        {
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+
+            var unavailableDirectories = configuration.MappedFolders
+                .Where(x => !Directory.Exists(x.HostFolder));
+
+            configuration.MappedFolders.RemoveAll(x => unavailableDirectories.Contains(x));
+
+            if (excludedFolders != null)
+                foreach (var eachDirectory in unavailableDirectories)
+                    excludedFolders.Add(eachDirectory);
+
+            var serializer = new XmlSerializer(typeof(SandboxConfiguration));
+            var @namespace = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty) });
+            var targetEncoding = new UTF8Encoding(false);
+
+            using var memStream = new MemoryStream();
+            var contentStream = new StreamWriter(memStream);
+            serializer.Serialize(contentStream, configuration, @namespace);
+            return targetEncoding.GetString(memStream.ToArray());
         }
     }
 }

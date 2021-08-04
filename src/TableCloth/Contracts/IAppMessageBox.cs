@@ -4,10 +4,10 @@ namespace TableCloth.Contracts
 {
     public interface IAppMessageBox
     {
-        void DisplayInfo(string message);
+        void DisplayInfo(object parentWindowHandle, string message);
 
-        void DisplayError(Exception failureReason, bool isCritical);
+        void DisplayError(object parentWindowHandle, Exception failureReason, bool isCritical);
 
-        void DisplayError(string message, bool isCritical);
+        void DisplayError(object parentWindowHandle, string message, bool isCritical);
     }
 }

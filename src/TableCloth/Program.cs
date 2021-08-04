@@ -23,7 +23,7 @@ namespace TableCloth
 
             if (!startup.HasRequirementsMet(out Exception failedReason, out bool isCritical))
             {
-                messageBox.DisplayError(failedReason, isCritical);
+                messageBox.DisplayError(default, failedReason, isCritical);
 
                 if (isCritical)
                 {
@@ -34,7 +34,7 @@ namespace TableCloth
 
             if (!startup.Initialize(out failedReason, out isCritical))
             {
-                messageBox.DisplayError(failedReason, isCritical);
+                messageBox.DisplayError(default, failedReason, isCritical);
 
                 if (isCritical)
                 {
@@ -55,14 +55,13 @@ namespace TableCloth
             });
 
             // Add Services
-            services.AddTransient<IX509CertPairScanner, X509CertPairScanner>();
-            services.AddTransient<ICatalogDeserializer, CatalogDeserializer>();
-            services.AddTransient<ISandboxSpecSerializer, SandboxSpecSerializer>();
-            services.AddTransient<ISandboxBuilder, SandboxBuilder>();
-            services.AddTransient<IAppStartup, AppStartup>();
+            services.AddSingleton<IX509CertPairScanner, X509CertPairScanner>();
+            services.AddSingleton<ICatalogDeserializer, CatalogDeserializer>();
+            services.AddSingleton<ISandboxBuilder, SandboxBuilder>();
+            services.AddSingleton<IAppStartup, AppStartup>();
 
             // Windows Forms UI
-            services.AddTransient<IAppMessageBox, WinFormMessageBox>();
+            services.AddSingleton<IAppMessageBox, WinFormMessageBox>();
             services.AddSingleton<IAppUserInterface, WinFormUserInterface>();
         }
     }
