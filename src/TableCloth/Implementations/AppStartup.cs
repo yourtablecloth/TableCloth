@@ -41,7 +41,7 @@ namespace TableCloth.Implementations
                 return false;
             }
 
-            _ = new Mutex(true, GetType().FullName, out var isFirstInstance);
+            new Mutex(true, GetType().FullName, out var isFirstInstance);
 
             if (!isFirstInstance)
             {

@@ -55,7 +55,7 @@ namespace Hostess
             if (catalog.Services.Where(x => targets.Contains(x.Id)).Any(x => !string.IsNullOrWhiteSpace(x.CompatibilityNotes?.Trim())))
             {
                 var window = new PrecautionsWindow();
-                _ = window.ShowDialog();
+                window.ShowDialog();
             }
             else
             {
@@ -66,7 +66,7 @@ namespace Hostess
         }
 
         private void AboutButton_Click(object sender, RoutedEventArgs e) =>
-            _ = MessageBox.Show(this,
+            MessageBox.Show(this,
                 StringResources.AboutDialog_BodyText, StringResources.AppName,
                 MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
 
@@ -115,7 +115,7 @@ namespace Hostess
                                 if (!process.Start())
                                     throw new ApplicationException(StringResources.HostessError_Package_CanNotStart);
 
-                                _ = await cpSource.Task;
+                                await cpSource.Task;
                                 eachItem.StatusMessage = StringResources.Hostess_Install_Succeed;
                                 eachItem.Installed = true;
                                 eachItem.ErrorMessage = null;
@@ -151,7 +151,7 @@ namespace Hostess
 
             foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
             {
-                _ = Process.Start(new ProcessStartInfo(eachUrl)
+                Process.Start(new ProcessStartInfo(eachUrl)
                 {
                     UseShellExecute = true,
                     WindowStyle = ProcessWindowStyle.Maximized,

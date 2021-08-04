@@ -33,11 +33,11 @@ namespace TableCloth.Implementations
             ExpandHostessFiles(hostessZipFileStream, outputDirectory);
 
             if (!Directory.Exists(outputDirectory))
-                _ = Directory.CreateDirectory(outputDirectory);
+                Directory.CreateDirectory(outputDirectory);
 
             var assetsDirectory = Path.Combine(outputDirectory, "assets");
             if (!Directory.Exists(assetsDirectory))
-                _ = Directory.CreateDirectory(assetsDirectory);
+                Directory.CreateDirectory(assetsDirectory);
 
             var signatureImageContent = GraphicResources.SignatureJpegImage;
             var signatureFilePath = Path.Combine(assetsDirectory, "Signature.jpg");
@@ -127,7 +127,7 @@ rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
 
             var certAssetsDirectoryPath = Path.Combine(tableClothConfig.AssetsDirectoryPath, "certs");
             if (!Directory.Exists(certAssetsDirectoryPath))
-                _ = Directory.CreateDirectory(certAssetsDirectoryPath);
+                Directory.CreateDirectory(certAssetsDirectoryPath);
 
             var destDerFilePath = Path.Combine(
                 certAssetsDirectoryPath,
@@ -172,11 +172,11 @@ rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
         private void ExpandHostessFiles(Stream hostessZipFileStream, string outputDirectory)
         {
             if (!Directory.Exists(outputDirectory))
-                _ = Directory.CreateDirectory(outputDirectory);
+                Directory.CreateDirectory(outputDirectory);
 
             var assetsDirectory = Path.Combine(outputDirectory, "assets");
             if (!Directory.Exists(assetsDirectory))
-                _ = Directory.CreateDirectory(assetsDirectory);
+                Directory.CreateDirectory(assetsDirectory);
 
             using var hostessZipArchive = new ZipArchive(hostessZipFileStream, ZipArchiveMode.Read);
             hostessZipArchive.ExtractToDirectory(assetsDirectory, true);

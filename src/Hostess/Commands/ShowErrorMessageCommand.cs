@@ -15,7 +15,7 @@ namespace Hostess.Commands
             => true;
 
         public void Execute(object parameter) =>
-            _ = MessageBox.Show(
+            MessageBox.Show(
                 StringResources.HostessError_PackageInstallFailure(parameter as string), StringResources.AppName,
                 MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
     }

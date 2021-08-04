@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Serilog;
+﻿using Serilog;
 using Serilog.Formatting.Json;
 using System;
 using System.Collections.Generic;
@@ -42,9 +41,9 @@ namespace TableCloth.Implementations.WinForms
         {
             var appThread = new Thread(new ParameterizedThreadStart(_ =>
             {
-                _ = Application.OleRequired();
+                Application.OleRequired();
                 Application.EnableVisualStyles();
-                _ = Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
                 Application.SetCompatibleTextRenderingDefault(false);
 
                 Log.Logger = new LoggerConfiguration()
@@ -97,16 +96,16 @@ namespace TableCloth.Implementations.WinForms
              * */
 
             // Row A, 90%
-            _ = tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 0.9f));
+            tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 0.9f));
 
             // Row B, 10%
-            _ = tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 0.1f));
+            tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 0.1f));
 
             // Column 0, 50%
-            _ = tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 0.5f));
+            tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 0.5f));
 
             // Column 1, 50%
-            _ = tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 0.5f));
+            tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 0.5f));
 
             // Row A, Column 0 + 1
             var dialogLayout = new FlowLayoutPanel()
@@ -144,8 +143,8 @@ namespace TableCloth.Implementations.WinForms
             };
             tableLayout.SetCellPosition(actionRightLayout, new TableLayoutPanelCellPosition(column: 1, row: 1));
 
-            _ = dialogLayout.CreateLabel(StringResources.MainForm_SelectOptionsLabelText);
-            _ = dialogLayout.CreateLabel();
+            dialogLayout.CreateLabel(StringResources.MainForm_SelectOptionsLabelText);
+            dialogLayout.CreateLabel();
 
             var certListPanel = new FlowLayoutPanel()
             {
@@ -167,7 +166,7 @@ namespace TableCloth.Implementations.WinForms
                 Width = form.ClientSize.Width - 100,
             };
 
-            _ = importButton.AddClickEvent(x =>
+            importButton.AddClickEvent(x =>
             {
                 using var selectForm = CreateCertSelectForm();
                 if (selectForm.ShowDialog(form) != DialogResult.OK)
@@ -179,8 +178,8 @@ namespace TableCloth.Implementations.WinForms
                 npkiFileListBox.DataSource = new string[] { certPair.DerFilePath, certPair.KeyFilePath, };
             });
 
-            _ = importButton.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
-            _ = npkiFileListBox.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
+            importButton.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
+            npkiFileListBox.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
 
             var enableMicrophone = dialogLayout.CreateCheckBox(StringResources.MainForm_UseMicrophoneCheckboxText, false);
             var enableWebCam = dialogLayout.CreateCheckBox(StringResources.MainForm_UseWebCameraCheckboxText, false);
@@ -189,9 +188,9 @@ namespace TableCloth.Implementations.WinForms
             enableMicrophone.Font = new Font(enableMicrophone.Font, FontStyle.Bold);
             enableWebCam.Font = new Font(enableWebCam.Font, FontStyle.Bold);
 
-            _ = dialogLayout.CreateLabel();
+            dialogLayout.CreateLabel();
             var siteInstructionLabel = dialogLayout.CreateLabel(StringResources.MainForm_SelectSiteLabelText);
-            _ = dialogLayout.CreateLabel();
+            dialogLayout.CreateLabel();
 
             var siteCatalogTabControl = new TabControl
             {
@@ -202,7 +201,7 @@ namespace TableCloth.Implementations.WinForms
             };
 
             var categoryValues = Enum.GetValues<CatalogInternetServiceCategory>().ToList();
-            _ = categoryValues.Remove(CatalogInternetServiceCategory.Other);
+            categoryValues.Remove(CatalogInternetServiceCategory.Other);
             categoryValues.Add(CatalogInternetServiceCategory.Other);
 
             foreach (var eachCategoryType in categoryValues)
@@ -282,7 +281,7 @@ namespace TableCloth.Implementations.WinForms
                 catch { }
             };
 
-            _ = launchButton.AddClickEvent(x =>
+            launchButton.AddClickEvent(x =>
             {
                 var wsbExecPath = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.System),
@@ -332,7 +331,7 @@ namespace TableCloth.Implementations.WinForms
 
                             if (exitCode != 0x0 && exitCode != unchecked((int)0x800700b7u))
                             {
-                                _ = form.Invoke(new Action<int>((exitCode) =>
+                                form.Invoke(new Action<int>((exitCode) =>
                                 {
                                     _appMessageBox.DisplayError(StringResources.Error_Sandbox_ErrorCode_NonZero(exitCode), false);
 
@@ -354,7 +353,7 @@ namespace TableCloth.Implementations.WinForms
                     }
                     catch (Exception ex)
                     {
-                        _ = form.Invoke(new Action<Exception>((ex) =>
+                        form.Invoke(new Action<Exception>((ex) =>
                         {
                             _appMessageBox.DisplayError(StringResources.Error_Cannot_Remove_TempDirectory(ex), false);
 
@@ -384,7 +383,7 @@ namespace TableCloth.Implementations.WinForms
                 if (process.Start())
                     return;
 
-                _ = form.Invoke(new Action(() =>
+                form.Invoke(new Action(() =>
                 {
                     _appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_CanNotStart, true);
                 }));
@@ -429,13 +428,13 @@ namespace TableCloth.Implementations.WinForms
              * */
 
             // Row A, Auto
-            _ = tableLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            tableLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
             // Row B, 20%
-            _ = tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 0.2f));
+            tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 0.2f));
 
             // Column 0, 100%
-            _ = tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f));
+            tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1f));
 
             // Row A
             var dialogLayout = new FlowLayoutPanel()
@@ -462,8 +461,8 @@ namespace TableCloth.Implementations.WinForms
             };
             tableLayout.SetCellPosition(actionLayout, new TableLayoutPanelCellPosition(column: 0, row: 1));
 
-            _ = dialogLayout.CreateLabel(StringResources.CertSelectForm_InstructionLabel);
-            _ = dialogLayout.CreateLabel();
+            dialogLayout.CreateLabel(StringResources.CertSelectForm_InstructionLabel);
+            dialogLayout.CreateLabel();
 
             var largeListViewImageList = new ImageList()
             {
@@ -492,9 +491,9 @@ namespace TableCloth.Implementations.WinForms
 
             var refreshButton = dialogLayout.CreateButton(StringResources.CertSelectForm_RefreshButtonText);
 
-            _ = dialogLayout.CreateLabel();
-            _ = dialogLayout.CreateLabel(StringResources.CertSelectForm_ManualInstructionLabelText);
-            _ = dialogLayout.CreateLabel();
+            dialogLayout.CreateLabel();
+            dialogLayout.CreateLabel(StringResources.CertSelectForm_ManualInstructionLabelText);
+            dialogLayout.CreateLabel();
             var browseCertPairButton = dialogLayout.CreateButton(StringResources.CertSelectForm_OpenNpkiCertButton);
 
             var cancelButton = actionLayout.CreateButton(StringResources.CancelButtonText, dialogResult: DialogResult.Cancel);
@@ -520,7 +519,7 @@ namespace TableCloth.Implementations.WinForms
                     certListView.SelectedItems.Clear();
             };
 
-            _ = refreshButton.AddClickEvent(x =>
+            refreshButton.AddClickEvent(x =>
             {
                 var scannedPairs = _certPairScanner.ScanX509Pairs(_certPairScanner.GetCandidateDirectories());
 
@@ -531,7 +530,7 @@ namespace TableCloth.Implementations.WinForms
 
                 foreach (var eachPair in scannedPairs)
                 {
-                    _ = certListView.Items.Add(new ListViewItem(eachPair.ToString())
+                    certListView.Items.Add(new ListViewItem(eachPair.ToString())
                     {
                         Tag = eachPair,
                         ImageIndex = 0,
@@ -542,7 +541,7 @@ namespace TableCloth.Implementations.WinForms
                     certListView.Items[0].Selected = true;
             });
 
-            _ = browseCertPairButton.AddClickEvent(x =>
+            browseCertPairButton.AddClickEvent(x =>
             {
                 var npkiDirectoryPath = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),

@@ -34,7 +34,7 @@ namespace Hostess
                 }
                 catch (Exception ex)
                 {
-                    _ = MessageBox.Show(StringResources.HostessError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
+                    MessageBox.Show(StringResources.HostessError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
                         MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                     Current.Shutdown(0);
                     return;
@@ -45,7 +45,7 @@ namespace Hostess
 
                 if (!targetSites.Any())
                 {
-                    _ = MessageBox.Show(StringResources.Hostess_No_Targets, StringResources.TitleText_Error,
+                    MessageBox.Show(StringResources.Hostess_No_Targets, StringResources.TitleText_Error,
                         MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
                     Current.Shutdown(0);
                     return;
