@@ -58,6 +58,7 @@ namespace TableCloth
             services.AddSingleton<IX509CertPairScanner, X509CertPairScanner>();
             services.AddSingleton<ICatalogDeserializer, CatalogDeserializer>();
             services.AddSingleton<ISandboxBuilder, SandboxBuilder>();
+            services.AddSingleton<ISandboxLauncher, SandboxLauncher>();
             services.AddSingleton<IAppStartup, AppStartup>();
 
             // Windows Forms UI

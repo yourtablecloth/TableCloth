@@ -23,13 +23,15 @@ namespace TableCloth.Implementations.WinForms
             ICatalogDeserializer catalogDeserializer,
             IX509CertPairScanner certPairScanner,
             ISandboxBuilder sandboxBuilder,
-            IAppMessageBox appMessageBox)
+            IAppMessageBox appMessageBox,
+            ISandboxLauncher sandboxLauncher)
         {
             _appStartup = appStartup;
             _catalogDeserializer = catalogDeserializer;
             _certPairScanner = certPairScanner;
             _sandboxBuilder = sandboxBuilder;
             _appMessageBox = appMessageBox;
+            _sandboxLauncher = sandboxLauncher;
         }
 
         private readonly IAppStartup _appStartup;
@@ -37,8 +39,10 @@ namespace TableCloth.Implementations.WinForms
         private readonly IX509CertPairScanner _certPairScanner;
         private readonly ISandboxBuilder _sandboxBuilder;
         private readonly IAppMessageBox _appMessageBox;
+        private readonly ISandboxLauncher _sandboxLauncher;
 
         private IWin32Window _mainWindow;
+        private Process _previousSandboxProcess;
 
         public object MainWindowHandle
             => _mainWindow;
@@ -290,9 +294,11 @@ namespace TableCloth.Implementations.WinForms
 
             launchButton.AddClickEvent(x =>
             {
-                var wsbExecPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.System),
-                    "WindowsSandbox.exe");
+                if (_previousSandboxProcess != null && !_previousSandboxProcess.HasExited)
+                {
+                    _appMessageBox.DisplayError(this, StringResources.Error_Windows_Sandbox_Already_Running, false);
+                    return;
+                }
 
                 var pair = default(X509CertPair);
                 var fileList = (npkiFileListBox.DataSource as IEnumerable<string>)?.ToArray();
@@ -326,78 +332,7 @@ namespace TableCloth.Implementations.WinForms
                 if (excludedFolderList.Any())
                     _appMessageBox.DisplayError(this, StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
 
-                var process = new Process()
-                {
-                    EnableRaisingEvents = true,
-                    StartInfo = new ProcessStartInfo(wsbExecPath, wsbFilePath) { UseShellExecute = false, },
-                };
-
-                process.Exited += (__sender, __e) =>
-                {
-                    try
-                    {
-                        if (__sender is Process realSender)
-                        {
-                            var exitCode = realSender.ExitCode;
-
-                            if (exitCode != 0x0 && exitCode != unchecked((int)0x800700b7u))
-                            {
-                                form.Invoke(new Action<int>((exitCode) =>
-                                {
-                                    _appMessageBox.DisplayError(this, StringResources.Error_Sandbox_ErrorCode_NonZero(exitCode), false);
-
-                                }), realSender.ExitCode);
-                            }
-                        }
-
-                        for (var i = 0; i < 5; i++)
-                        {
-                            try
-                            {
-                                if (Directory.Exists(tempPath))
-                                    Directory.Delete(tempPath, true);
-                                else
-                                    break;
-                            }
-                            catch { Thread.Sleep(TimeSpan.FromSeconds(0.5d)); }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        form.Invoke(new Action<Exception>((ex) =>
-                        {
-                            _appMessageBox.DisplayError(this, StringResources.Error_Cannot_Remove_TempDirectory(ex), false);
-
-                            var explorerFilePath = Path.Combine(
-                                Environment.GetFolderPath(Environment.SpecialFolder.Windows),
-                                "explorer.exe");
-                            if (!File.Exists(explorerFilePath))
-                            {
-                                _appMessageBox.DisplayError(this, StringResources.Error_Windows_Explorer_Missing, false);
-                                return;
-                            }
-
-                            using var explorerProcess = new Process()
-                            {
-                                StartInfo = new ProcessStartInfo(explorerFilePath, tempPath),
-                            };
-
-                            if (!explorerProcess.Start())
-                            {
-                                _appMessageBox.DisplayError(this, StringResources.Error_Windows_Explorer_CanNotStart, false);
-                                return;
-                            }
-                        }), ex);
-                    }
-                };
-
-                if (process.Start())
-                    return;
-
-                form.Invoke(new Action(() =>
-                {
-                    _appMessageBox.DisplayError(this, StringResources.Error_Windows_Sandbox_CanNotStart, true);
-                }));
+                _previousSandboxProcess = _sandboxLauncher.RunSandbox(this, tempPath, wsbFilePath, true);
             });
 
             return form;

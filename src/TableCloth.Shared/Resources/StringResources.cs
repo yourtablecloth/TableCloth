@@ -173,6 +173,9 @@ namespace TableCloth.Resources
         internal static readonly string Error_OpenDerAndKey_Simultaneously
             = "인증서 정보 파일 (der)과 개인 키 파일 (key)을 각각 하나씩 선택해주세요.\r\n\r\nCtrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 빈 공간을 드래그하면 여러 파일을 선택할 수 있어요.";
 
+        internal static readonly string Error_Windows_Sandbox_Already_Running
+            = "식탁보를 통해서 윈도우 샌드박스를 실행하고 있는 것 같습니다. 사용을 마친 후 윈도우 샌드박스를 먼저 종료해주세요.";
+
         internal static string Error_HostFolder_Unavailable(IEnumerable<string> unavailableDirectories)
         {
             var directoryList = string.Join("\r\n", unavailableDirectories.Select(x => $"- {x}"));
