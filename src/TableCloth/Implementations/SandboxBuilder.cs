@@ -108,13 +108,17 @@ rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
                 buffer = buffer.AppendLine($@"{Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe")} {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}");
             else
             {
-                var candidatePath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
+                if (tableClothConfiguration.CertPair != null)
+                {
+                    var candidatePath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
+
+                    buffer = buffer.AppendLine($@"
+# Copy certs directory to AppData/LocalLow/NPKI path
+if (-Not (Test-Path -Path ""{candidatePath}"" -Type Container)) {{ mkdir ""{candidatePath}"" | Out-Null }}
+copy -Path ""{Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*")}"" -Destination ""{candidatePath}"" -Force");
+                }
 
                 buffer = buffer.AppendLine($@"
-# Copy certs directory to AppData/LocalLow/NPKI path
-if (-Not (Test-Path -Path ""{candidatePath}"" -Type Container)) {{ mkdir ""{candidatePath}"" }}
-copy -Path ""{Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*")}"" -Destination ""{candidatePath}"" -Force
-
 # Run Hostess
 . '{Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe")}' {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}
 ");
@@ -177,7 +181,7 @@ copy -Path ""{Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*")}"" -Destin
                 });
             }
 
-            sandboxConfig.LogonCommand.Add(Path.Combine(GetAssetsPathForSandbox(), "StartupScript.cmd"));
+            sandboxConfig.LogonCommand.Add("C:\\Windows\\System32\\cmd.exe /c " + Path.Combine(GetAssetsPathForSandbox(), "StartupScript.cmd"));
             return sandboxConfig;
         }
 
@@ -187,8 +191,13 @@ copy -Path ""{Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*")}"" -Destin
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
 
             var buffer = new StringBuilder();
+            buffer = buffer.AppendLine("@echo off");
+            buffer = buffer.AppendLine(@"pushd ""%~dp0""");
             buffer = buffer.AppendLine(@"powershell.exe -Command ""&{{Set-ExecutionPolicy RemoteSigned -Force}}""");
             buffer = buffer.AppendLine($@"powershell.exe -ExecutionPolicy Bypass -File ""{Path.Combine(GetAssetsPathForSandbox(), "Bootstrap.ps1")}""");
+            buffer = buffer.AppendLine(@":exit");
+            buffer = buffer.AppendLine(@"@popd");
+            buffer = buffer.AppendLine("@echo on");
             return buffer.ToString();
         }
 
