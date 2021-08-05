@@ -1,9 +1,7 @@
-﻿using System.Diagnostics;
-
-namespace TableCloth.Contracts
+﻿namespace TableCloth.Contracts
 {
     public interface ISandboxLauncher
     {
-        Process RunSandbox(IAppUserInterface appUserInterface, string sandboxOutputDirectory, string wsbFilePath, bool cleanup);
+        void RunSandbox(IAppUserInterface appUserInterface, string sandboxOutputDirectory, string wsbFilePath);
     }
 }

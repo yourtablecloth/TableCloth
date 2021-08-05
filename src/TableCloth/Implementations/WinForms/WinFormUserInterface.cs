@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using TableCloth.Contracts;
@@ -42,7 +43,6 @@ namespace TableCloth.Implementations.WinForms
         private readonly ISandboxLauncher _sandboxLauncher;
 
         private IWin32Window _mainWindow;
-        private Process _previousSandboxProcess;
 
         public object MainWindowHandle
             => _mainWindow;
@@ -71,8 +71,15 @@ namespace TableCloth.Implementations.WinForms
             appThread.Join();
         }
 
+        internal sealed class MainFormContext
+        {
+            public List<string> TemporaryDirectories { get; } = new List<string>();
+        }
+
         private Form CreateMainForm()
         {
+            var context = new MainFormContext();
+
             var form = new Form()
             {
                 Text = StringResources.MainForm_Title,
@@ -84,6 +91,7 @@ namespace TableCloth.Implementations.WinForms
                 Size = new Size(640, 480),
                 AutoScaleDimensions = new SizeF(96f, 96f),
                 AutoScaleMode = AutoScaleMode.Dpi,
+                Tag = context,
             };
 
             var tableLayout = new TableLayoutPanel()
@@ -256,6 +264,15 @@ namespace TableCloth.Implementations.WinForms
 
                 try
                 {
+                    File.WriteAllText(
+                        Path.Combine(_appStartup.AppDataDirectoryPath, "Readme.txt"),
+                        StringResources.SandboxWorkingDir_ReadmeText,
+                        new UTF8Encoding(false));
+                }
+                catch { }
+
+                try
+                {
                     var catalog = _catalogDeserializer.DeserializeCatalog(new Uri(StringResources.CatalogUrl));
 
                     var siteListControls = siteCatalogTabControl.TabPages.Cast<TabPage>().ToDictionary(
@@ -292,9 +309,39 @@ namespace TableCloth.Implementations.WinForms
                 catch { }
             };
 
+            form.FormClosed += (_sender, _e) =>
+            {
+                if (context.TemporaryDirectories.Any())
+                {
+                    var explorerFilePath = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+                        "explorer.exe");
+                    if (!File.Exists(explorerFilePath))
+                    {
+                        _appMessageBox.DisplayError(this, StringResources.Error_Windows_Explorer_Missing, false);
+                        return;
+                    }
+
+                    using var explorerProcess = new Process()
+                    {
+                        StartInfo = new ProcessStartInfo(explorerFilePath, _appStartup.AppDataDirectoryPath),
+                    };
+
+                    if (!explorerProcess.Start())
+                    {
+                        _appMessageBox.DisplayError(this, StringResources.Error_Windows_Explorer_CanNotStart, false);
+                        return;
+                    }
+                }
+            };
+
             launchButton.AddClickEvent(x =>
             {
-                if (_previousSandboxProcess != null && !_previousSandboxProcess.HasExited)
+                var isSandboxRunning = Process.GetProcesses()
+                    .Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase))
+                    .Any();
+
+                if (isSandboxRunning)
                 {
                     _appMessageBox.DisplayError(this, StringResources.Error_Windows_Sandbox_Already_Running, false);
                     return;
@@ -332,7 +379,8 @@ namespace TableCloth.Implementations.WinForms
                 if (excludedFolderList.Any())
                     _appMessageBox.DisplayError(this, StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
 
-                _previousSandboxProcess = _sandboxLauncher.RunSandbox(this, tempPath, wsbFilePath, true);
+                context.TemporaryDirectories.Add(tempPath);
+                _sandboxLauncher.RunSandbox(this, tempPath, wsbFilePath);
             });
 
             return form;

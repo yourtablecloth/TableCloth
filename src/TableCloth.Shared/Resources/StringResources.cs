@@ -42,6 +42,13 @@ namespace TableCloth.Resources
     {
         internal static readonly string InternetService_UnknownText = "알 수 없음";
 
+        internal static readonly string SandboxWorkingDir_ReadmeText = @"식탁보 사용 완료 후 정보 보호를 위한 권장 사항
+
+식탁보는 편의를 위하여 사용자의 인증서 파일을 샌드박스에 전송할 수 있도록 별도의 작업 디렉터리에 파일을 복사합니다.
+하지만 샌드박스 프로그램이 언제 종료될지 식탁보 프로그램에서는 파악이 불가능합니다.
+
+따라서 샌드박스 사용을 마친 후에는 bwsb 폴더를 모두 지우시는 것을 권장합니다.";
+
         internal static string InternetService_DisplayText(CatalogInternetService svc)
         {
             var defaultString = $"{svc.DisplayName} - {svc.Url}";
@@ -182,22 +189,6 @@ namespace TableCloth.Resources
             return $"다음의 디렉터리를 이 컴퓨터에서 찾을 수 없어 샌드박스에서 연결할 때 제외합니다.\r\n\r\n{directoryList}";
         }
 
-        internal static string Error_Cannot_Remove_TempDirectory(Exception ex)
-        {
-            if (ex is AggregateException ae)
-                return Error_Cannot_Remove_TempDirectory(ae.InnerException);
-
-            var message = $"임시 폴더를 비우지 못했습니다. 해당 폴더를 열어 직접 지우실 수 있게 열겠습니다.";
-
-            if (ex != null)
-                message = string.Concat(message, $"\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");
-
-            return message;
-        }
-
-        internal static string Error_Sandbox_ErrorCode_NonZero(int exitCode)
-            => $"Windows Sandbox 프로그램의 종료 코드가 0이 아닙니다. (종료 코드: {exitCode:X8})\r\n\r\n이상 증상이 의심되며, 샌드 박스를 제거한 후 다시 설치하는 것을 추천합니다.\r\n\r\n만약 다시 설치한 후에도 문제가 반복되면 피드백 허브 앱을 통해 마이크로소프트에 이상 상황을 제보해주세요.";
-
         internal static readonly string Error_Windows_Explorer_Missing
             = "Windows 탐색기 프로그램을 찾을 수 없습니다.";
 
@@ -216,7 +207,7 @@ namespace TableCloth.Resources
         internal static string Error_Cannot_Download_Catalog(Exception ex)
         {
             if (ex is AggregateException ae)
-                return Error_Cannot_Remove_TempDirectory(ae.InnerException);
+                return Error_Cannot_Download_Catalog(ae.InnerException);
 
             var message = $"카탈로그 파일을 내려받지 못했습니다.";
 
@@ -229,7 +220,7 @@ namespace TableCloth.Resources
         internal static string Error_Cannot_Create_AppDataDirectory(Exception ex)
         {
             if (ex is AggregateException ae)
-                return Error_Cannot_Remove_TempDirectory(ae.InnerException);
+                return Error_Cannot_Create_AppDataDirectory(ae.InnerException);
 
             var message = $"애플리케이션 데이터 저장을 위한 디렉터리를 만들지 못했습니다.";
 
@@ -278,7 +269,7 @@ namespace TableCloth.Resources
         internal static string HostessError_CatalogLoadFailure(Exception ex)
         {
             if (ex is AggregateException ae)
-                return Error_Cannot_Remove_TempDirectory(ae.InnerException);
+                return HostessError_CatalogLoadFailure(ae.InnerException);
 
             var message = $"원격 웹 사이트로부터 Catalog.xml 파일을 불러올 수 없어 설치를 계속 진행할 수 없습니다.";
 
