@@ -15,6 +15,24 @@ namespace TableCloth.Implementations
 {
     public sealed class SandboxBuilder : ISandboxBuilder
     {
+        private readonly bool _isSandboxLocalPathSupported =
+            Environment.OSVersion.Version >= new Version(10, 0, 19041);
+
+        private readonly string _wdagUtilityAccountPath = @"C:\Users\WDAGUtilityAccount";
+
+        private string GetAssetsPathForSandbox()
+            => _isSandboxLocalPathSupported ? @"C:\Assets" : Path.Combine(_wdagUtilityAccountPath, "Desktop", "Assets");
+
+        private string GetNPKIPathForSandbox(X509CertPair certPair)
+        {
+            var candidatePath = Path.Join("AppData", "LocalLow", "NPKI", certPair.SubjectOrganization);
+
+            if (certPair.IsPersonalCert)
+                candidatePath = Path.Join(candidatePath, "USER", certPair.SubjectNameForNpkiApp);
+
+            return Path.Join(_wdagUtilityAccountPath, candidatePath);
+        }
+
         public string GenerateSandboxConfiguration(string outputDirectory, TableClothConfiguration tableClothConfiguration, IList<SandboxMappedFolder> excludedDirectories)
         {
             if (tableClothConfiguration == null)
@@ -60,7 +78,7 @@ namespace TableCloth.Implementations
 
             var buffer = new StringBuilder();
 
-            buffer = buffer.AppendLine(@"
+            buffer = buffer.AppendLine($@"
 # Change Wallpaper
 $SetWallpaperSource = @""
 using System.Runtime.InteropServices;
@@ -81,12 +99,26 @@ public static class Wallpaper {{
 ""@
 Add-Type -TypeDefinition $SetWallpaperSource
 
-$WallpaperPath = ""C:\assets\Signature.jpg""
+$WallpaperPath = ""{Path.Combine(GetAssetsPathForSandbox(), "Signature.jpg")}""
 [Wallpaper]::SetWallpaper($WallpaperPath)
 rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
 ");
 
-            buffer = buffer.AppendLine($@"C:\assets\Hostess.exe {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}");
+            if (_isSandboxLocalPathSupported)
+                buffer = buffer.AppendLine($@"{Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe")} {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}");
+            else
+            {
+                var candidatePath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
+
+                buffer = buffer.AppendLine($@"
+# Copy certs directory to AppData/LocalLow/NPKI path
+if (-Not (Test-Path -Path ""{candidatePath}"" -Type Container)) {{ mkdir ""{candidatePath}"" }}
+copy -Path ""{Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*")}"" -Destination ""{candidatePath}"" -Force
+
+# Run Hostess
+. '{Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe")}' {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}
+");
+            }
 
             return buffer.ToString();
         }
@@ -111,8 +143,8 @@ rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
             sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
             {
                 HostFolder = tableClothConfig.AssetsDirectoryPath,
-                SandboxFolder = SandboxMappedFolder.DefaultAssetPath,
-                ReadOnly = bool.TrueString,
+                SandboxFolder = _isSandboxLocalPathSupported ? SandboxMappedFolder.DefaultAssetPath : null,
+                ReadOnly = bool.FalseString,
             });
 
             if (tableClothConfig.CertPair == null)
@@ -133,21 +165,19 @@ rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
             File.Copy(tableClothConfig.CertPair.DerFilePath, destDerFilePath, true);
             File.Copy(tableClothConfig.CertPair.KeyFilePath, destKeyFileName, true);
 
-            var candidatePath = Path.Join("AppData", "LocalLow", "NPKI", tableClothConfig.CertPair.SubjectOrganization);
+            var candidatePath = GetNPKIPathForSandbox(tableClothConfig.CertPair);
 
-            if (tableClothConfig.CertPair.IsPersonalCert)
-                candidatePath = Path.Join(candidatePath, "USER", tableClothConfig.CertPair.SubjectNameForNpkiApp);
-
-            candidatePath = Path.Join(@"C:\Users\WDAGUtilityAccount", candidatePath);
-
-            sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
+            if (_isSandboxLocalPathSupported)
             {
-                HostFolder = certAssetsDirectoryPath,
-                SandboxFolder = candidatePath,
-                ReadOnly = bool.FalseString,
-            });
+                sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
+                {
+                    HostFolder = certAssetsDirectoryPath,
+                    SandboxFolder = _isSandboxLocalPathSupported ? candidatePath : null,
+                    ReadOnly = bool.TrueString,
+                });
+            }
 
-            sandboxConfig.LogonCommand.Add(@"C:\assets\StartupScript.cmd");
+            sandboxConfig.LogonCommand.Add(Path.Combine(GetAssetsPathForSandbox(), "StartupScript.cmd"));
             return sandboxConfig;
         }
 
@@ -158,7 +188,7 @@ rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
 
             var buffer = new StringBuilder();
             buffer = buffer.AppendLine(@"powershell.exe -Command ""&{{Set-ExecutionPolicy RemoteSigned -Force}}""");
-            buffer = buffer.AppendLine(@"powershell.exe -ExecutionPolicy Bypass -File ""C:\assets\Bootstrap.ps1""");
+            buffer = buffer.AppendLine($@"powershell.exe -ExecutionPolicy Bypass -File ""{Path.Combine(GetAssetsPathForSandbox(), "Bootstrap.ps1")}""");
             return buffer.ToString();
         }
 
