@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.Resources
@@ -137,7 +138,7 @@ namespace TableCloth.Resources
     partial class StringResources
     {
         internal static readonly string AboutDialog_BodyText
-            = $"{AppName} (빌드 번호: {ThisAssembly.Git.Commit})\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n{AppCopyright}";
+            = $"{AppName} (빌드 번호: {Assembly.GetExecutingAssembly().GetName().Version})\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n{AppCopyright}";
     }
 
     // 인증서 검색 창에 표시될 문자열들
