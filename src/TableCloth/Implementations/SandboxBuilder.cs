@@ -151,34 +151,34 @@ copy -Path ""{Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*")}"" -Destin
                 ReadOnly = bool.FalseString,
             });
 
-            if (tableClothConfig.CertPair == null)
-                return sandboxConfig;
-
-            var certAssetsDirectoryPath = Path.Combine(tableClothConfig.AssetsDirectoryPath, "certs");
-            if (!Directory.Exists(certAssetsDirectoryPath))
-                Directory.CreateDirectory(certAssetsDirectoryPath);
-
-            var destDerFilePath = Path.Combine(
-                certAssetsDirectoryPath,
-                Path.GetFileName(tableClothConfig.CertPair.DerFilePath));
-
-            var destKeyFileName = Path.Combine(
-                certAssetsDirectoryPath,
-                Path.GetFileName(tableClothConfig.CertPair.KeyFilePath));
-
-            File.Copy(tableClothConfig.CertPair.DerFilePath, destDerFilePath, true);
-            File.Copy(tableClothConfig.CertPair.KeyFilePath, destKeyFileName, true);
-
-            var candidatePath = GetNPKIPathForSandbox(tableClothConfig.CertPair);
-
-            if (_isSandboxLocalPathSupported)
+            if (tableClothConfig.CertPair != null)
             {
-                sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
+                var certAssetsDirectoryPath = Path.Combine(tableClothConfig.AssetsDirectoryPath, "certs");
+                if (!Directory.Exists(certAssetsDirectoryPath))
+                    Directory.CreateDirectory(certAssetsDirectoryPath);
+
+                var destDerFilePath = Path.Combine(
+                    certAssetsDirectoryPath,
+                    Path.GetFileName(tableClothConfig.CertPair.DerFilePath));
+
+                var destKeyFileName = Path.Combine(
+                    certAssetsDirectoryPath,
+                    Path.GetFileName(tableClothConfig.CertPair.KeyFilePath));
+
+                File.Copy(tableClothConfig.CertPair.DerFilePath, destDerFilePath, true);
+                File.Copy(tableClothConfig.CertPair.KeyFilePath, destKeyFileName, true);
+
+                var candidatePath = GetNPKIPathForSandbox(tableClothConfig.CertPair);
+
+                if (_isSandboxLocalPathSupported)
                 {
-                    HostFolder = certAssetsDirectoryPath,
-                    SandboxFolder = _isSandboxLocalPathSupported ? candidatePath : null,
-                    ReadOnly = bool.TrueString,
-                });
+                    sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
+                    {
+                        HostFolder = certAssetsDirectoryPath,
+                        SandboxFolder = _isSandboxLocalPathSupported ? candidatePath : null,
+                        ReadOnly = bool.TrueString,
+                    });
+                }
             }
 
             sandboxConfig.LogonCommand.Add("C:\\Windows\\System32\\cmd.exe /c " + Path.Combine(GetAssetsPathForSandbox(), "StartupScript.cmd"));
