@@ -9,6 +9,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
 		<Platforms>x64</Platforms>
+		<UseWPF>True</UseWPF>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,6 +27,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="MaterialDesignThemes" Version="4.1.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
 		<PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />

@@ -1,0 +1,79 @@
+﻿<Window x:Class="TableCloth.Implementations.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TableCloth.Implementations.WPF"
+        mc:Ignorable="d"
+        MinWidth="800" MinHeight="600"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        Title="식탁보 - 컴퓨터를 깨끗하게 사용하세요!" Width="800" Height="600">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="9*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <Grid Margin="10 0 10 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="80" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="80*" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" VerticalAlignment="Center">원하는 옵션을 선택해주세요.</Label>
+            <WrapPanel Grid.Row="1" VerticalAlignment="Center" Orientation="Horizontal">
+                <CheckBox VerticalAlignment="Center">기존 공인인증서 파일 가져오기</CheckBox>
+                <Button VerticalAlignment="Center" Margin="10 0 0 0">찾아보기...</Button>
+            </WrapPanel>
+            <ListBox Grid.Row="2" VerticalAlignment="Stretch" Margin="0 5 0 0">
+                <ListBoxItem>Test</ListBoxItem>
+                <ListBoxItem>Test</ListBoxItem>
+            </ListBox>
+            <CheckBox Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold">오디오 입력 사용하기 - 개인 정보 노출에 주의하세요!</CheckBox>
+            <CheckBox Grid.Row="4" VerticalAlignment="Center" FontWeight="Bold">비디오 입력 사용하기 - 개인 정보 노출에 주의하세요!</CheckBox>
+            <CheckBox Grid.Row="5" VerticalAlignment="Center">프린터 같이 사용하기</CheckBox>
+            <Label Grid.Row="6" VerticalAlignment="Top" Margin="0 5 0 0">식탁보 위에서 접속할 사이트들을 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요.</Label>
+            <TabControl Grid.Row="7" VerticalAlignment="Stretch">
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Test</Label>
+                        </StackPanel>
+                    </TabItem.Header>
+                    <ListBox Width="Auto">
+                        <ListBoxItem>TTT</ListBoxItem>
+                        <ListBoxItem>TTT</ListBoxItem>
+                    </ListBox>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="5*" />
+            </Grid.ColumnDefinitions>
+
+            <WrapPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left" Margin="10">
+                <Button Content="정보" Padding="5" Margin="0 0 0 0" />
+            </WrapPanel>
+
+            <WrapPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
+                <Button Content="샌드박스 실행" Padding="5" Margin="0 0 10 0"></Button>
+                <Button Content="닫기" Padding="5" Margin="0 0 0 0"></Button>
+            </WrapPanel>
+        </Grid>
+    </Grid>
+</Window>
