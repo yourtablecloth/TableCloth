@@ -9,6 +9,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
 		<Platforms>x64</Platforms>
+		<UseWPF>True</UseWPF>
 	</PropertyGroup>
 
 	<ItemGroup>

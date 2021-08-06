@@ -3,7 +3,7 @@ using Serilog;
 using System;
 using TableCloth.Contracts;
 using TableCloth.Implementations;
-using TableCloth.Implementations.WinForms;
+using TableCloth.Implementations.WPF;
 
 namespace TableCloth
 {
@@ -62,8 +62,8 @@ namespace TableCloth
             services.AddSingleton<IAppStartup, AppStartup>();
 
             // Windows Forms UI
-            services.AddSingleton<IAppMessageBox, WinFormMessageBox>();
-            services.AddSingleton<IAppUserInterface, WinFormUserInterface>();
+            services.AddSingleton<IAppMessageBox, WPFMessageBox>();
+            services.AddSingleton<IAppUserInterface, WPFUserInterface>();
         }
     }
 }
