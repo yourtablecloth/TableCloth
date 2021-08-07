@@ -27,7 +27,7 @@
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
-
+        
             <TextBlock Grid.Row="0" TextWrapping="Wrap">검색된 공인 인증서가 다음과 같습니다. 다음 중 하나를 선택해주세요.</TextBlock>
             <ListView Grid.Row="1">
                 <ListViewItem>Test</ListViewItem>

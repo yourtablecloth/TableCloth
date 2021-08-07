@@ -46,8 +46,6 @@ namespace TableCloth.Implementations.WPF
                     .WriteTo.File(new JsonFormatter(), Path.Combine(_appStartup.AppDataDirectoryPath, "ApplicationLog.jsonl"))
                     .CreateLogger();
 
-                _appInstance = new TableClothApp();
-                _appInstance.Run();
             }));
 
             appThread.SetApartmentState(ApartmentState.STA);
