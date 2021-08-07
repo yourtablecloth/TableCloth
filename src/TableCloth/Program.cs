@@ -9,15 +9,17 @@ namespace TableCloth
 {
     internal static class Program
     {
+        public static IServiceProvider ServiceProvider { get; private set; }
+
         public static void Main(string[] args)
         {
             var services = new ServiceCollection();
             ConfigureServices(services);
 
-            using var serviceProvider = services.BuildServiceProvider();
-            var startup = serviceProvider.GetService<IAppStartup>();
-            var userInterface = serviceProvider.GetService<IAppUserInterface>();
-            var messageBox = serviceProvider.GetService<IAppMessageBox>();
+            ServiceProvider = services.BuildServiceProvider();
+            var startup = ServiceProvider.GetService<IAppStartup>();
+            var userInterface = ServiceProvider.GetService<IAppUserInterface>();
+            var messageBox = ServiceProvider.GetService<IAppMessageBox>();
 
             startup.Arguments = args;
 
@@ -61,7 +63,11 @@ namespace TableCloth
             services.AddSingleton<ISandboxLauncher, SandboxLauncher>();
             services.AddSingleton<IAppStartup, AppStartup>();
 
-            // Windows Forms UI
+            // ViewModel
+            services.AddSingleton<MainWindowViewModel>();
+            services.AddTransient<CertSelectWindowViewModel>();
+
+            // UI
             services.AddSingleton<IAppMessageBox, WPFMessageBox>();
             services.AddSingleton<IAppUserInterface, WPFUserInterface>();
         }

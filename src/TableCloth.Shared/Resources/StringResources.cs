@@ -13,10 +13,6 @@ namespace TableCloth.Resources
 
         internal static readonly string AppCopyright = "(c) 2021 남정현";
 
-        internal static readonly string OkayButtonText = "확인";
-
-        internal static readonly string CancelButtonText = "취소";
-
         internal static readonly string CatalogUrl =
             "https://dotnetdev-kr.github.io/TableCloth/Catalog.xml";
 
@@ -36,6 +32,9 @@ namespace TableCloth.Resources
 
         internal static readonly string TitleText_Warning
             = $"{AppName} 경고";
+
+        internal static readonly string AboutDialog_BodyText
+            = $"{AppName} (빌드 번호: {Assembly.GetExecutingAssembly().GetName().Version})\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n{AppCopyright}";
     }
 
     // 비 사용자 인터페이스 문자열들
@@ -89,81 +88,6 @@ namespace TableCloth.Resources
                     return "기타";
             }
         }
-    }
-
-    // 메인 화면에 표시될 문자열들
-    partial class StringResources
-    {
-        internal static readonly string MainForm_Title
-            = $"{AppName} - 컴퓨터를 깨끗하게 사용하세요!";
-
-        internal static readonly string MainForm_SelectOptionsLabelText
-            = @"원하는 옵션을 선택해주세요.";
-
-        internal static readonly string MainForm_MapNpkiCertButtonText
-            = @"기존 공인인증서 파일 가져오기(&C)";
-
-        internal static readonly string MainForm_BrowseButtonText
-            = @"찾아보기(&B)...";
-
-        internal static readonly string MainForm_UseMicrophoneCheckboxText
-            = @"오디오 입력 사용하기(&A) - 개인 정보 노출에 주의하세요!";
-
-        internal static readonly string MainForm_UseWebCameraCheckboxText
-            = @"비디오 입력 사용하기(&V) - 개인 정보 노출에 주의하세요!";
-
-        internal static readonly string MainForm_UsePrinterCheckboxText
-            = @"프린터 같이 사용하기(&P)";
-
-        internal static readonly string MainForm_SelectSiteLabelText
-            = $"{AppName} 위에서 접속할 사이트들을 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요.";
-
-        internal static readonly string MainForm_SelectSiteLabelText_Alt
-            = @"카탈로그 파일을 가져오지 못했어요! 그래도 샌드박스는 대신 실행해드려요.";
-
-        internal static readonly string MainForm_JustRunItemText
-            = @"그냥 실행해주세요.";
-
-        internal static readonly string MainForm_AboutButtonText
-            = @"정보";
-
-        internal static readonly string MainForm_CloseButtonText
-            = @"닫기";
-
-        internal static readonly string MainForm_LaunchSandboxButtonText
-            = @"샌드박스 실행";
-    }
-
-    // 정보 대화 상자에 표시될 문자열들
-    partial class StringResources
-    {
-        internal static readonly string AboutDialog_BodyText
-            = $"{AppName} (빌드 번호: {Assembly.GetExecutingAssembly().GetName().Version})\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n{AppCopyright}";
-    }
-
-    // 인증서 검색 창에 표시될 문자열들
-    partial class StringResources
-    {
-        internal static readonly string CertSelectForm_Title
-            = @"검색된 공인 인증서 선택";
-
-        internal static readonly string CertSelectForm_InstructionLabel
-            = @"검색된 공인 인증서가 다음과 같습니다. 다음 중 하나를 선택해주세요.";
-
-        internal static readonly string CertSelectForm_RefreshButtonText
-            = @"새로 고침(&R)";
-
-        internal static readonly string CertSelectForm_ManualInstructionLabelText
-            = @"원하는 인증서가 없다면, 직접 인증서 찾기 버튼을 눌러서 직접 DER 파일과 KEY 파일을 찾아주세요.";
-
-        internal static readonly string CertSelectForm_OpenNpkiCertButton
-            = @"직접 인증서 찾기(&B)...";
-
-        internal static readonly string CertSelectForm_FileOpenDialog_Text
-            = @"인증서 파일 (signCert.der, signPri.key) 열기";
-
-        internal static readonly string CertSelectForm_FileOpenDialog_FilterText
-            = @"인증서 파일 (*.der;*.key)|*.der;*.key|모든 파일|*.*";
     }
 
     // 오류 메시지에 표시될 문자열들
