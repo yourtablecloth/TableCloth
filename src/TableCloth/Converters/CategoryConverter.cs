@@ -4,7 +4,7 @@ using System.Windows.Data;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
-namespace TableCloth.Implementations.WPF
+namespace TableCloth.Converters
 {
     public class CategoryConverter : IValueConverter
     {

@@ -7,7 +7,7 @@ using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
-namespace TableCloth.Implementations.WPF
+namespace TableCloth.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {

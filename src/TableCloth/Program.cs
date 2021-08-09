@@ -4,6 +4,7 @@ using System;
 using TableCloth.Contracts;
 using TableCloth.Implementations;
 using TableCloth.Implementations.WPF;
+using TableCloth.ViewModels;
 
 namespace TableCloth
 {

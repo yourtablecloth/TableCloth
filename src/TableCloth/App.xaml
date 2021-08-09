@@ -1,13 +1,15 @@
 ﻿<Application x:Class="TableCloth.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:wpfSupport="clr-namespace:TableCloth.Implementations.WPF"
+             xmlns:converters="clr-namespace:TableCloth.Converters"
+             xmlns:di="clr-namespace:TableCloth.Implementations.WPF"
              StartupUri="MainWindow.xaml">
 
     <Application.Resources>
         <ResourceDictionary>
-            <wpfSupport:CategoryConverter x:Key="CategoryConverter" />
-            <wpfSupport:ViewModelLocator x:Key="ViewModelLocator" />
+            <converters:CategoryConverter x:Key="CategoryConverter" />
+ 
+            <di:ViewModelLocator x:Key="ViewModelLocator" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="UIStringResources.xaml" />

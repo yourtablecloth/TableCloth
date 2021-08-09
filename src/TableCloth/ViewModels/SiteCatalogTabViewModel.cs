@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using TableCloth.Models.Catalog;
 
-namespace TableCloth.Implementations.WPF
+namespace TableCloth.ViewModels
 {
     public class SiteCatalogTabViewModel : INotifyPropertyChanged
     {

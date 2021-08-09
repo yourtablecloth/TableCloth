@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using TableCloth.Contracts;
 using TableCloth.Models.Configuration;
 
-namespace TableCloth.Implementations.WPF
+namespace TableCloth.ViewModels
 {
     public class CertSelectWindowViewModel : INotifyPropertyChanged
     {

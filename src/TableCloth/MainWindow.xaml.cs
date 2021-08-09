@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using TableCloth.Contracts;
 using TableCloth.Implementations.WindowsSandbox;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
+using TableCloth.ViewModels;
 
 namespace TableCloth.Implementations.WPF
 {
