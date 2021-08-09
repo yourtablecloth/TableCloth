@@ -108,6 +108,7 @@ namespace TableCloth.Implementations.WPF
             if (excludedFolderList.Any())
                 ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
 
+            ViewModel.CurrentDirectory = tempPath;
             ViewModel.TemporaryDirectories.Add(tempPath);
             ViewModel.SandboxLauncher.RunSandbox(ViewModel.AppUserInterface, tempPath, wsbFilePath);
         }
@@ -117,17 +118,42 @@ namespace TableCloth.Implementations.WPF
             Close();
         }
 
+        private void OpenExplorer(string targetDirectoryPath)
+        {
+            if (!Directory.Exists(targetDirectoryPath))
+                return;
+
+            var psi = new ProcessStartInfo(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"),
+                targetDirectoryPath)
+            {
+                UseShellExecute = false,
+            };
+
+            Process.Start(psi);
+        }
+
         private void Window_Closed(object sender, EventArgs e)
         {
-            if (!ViewModel.SandboxLauncher.IsSandboxRunning())
+            foreach (var eachDirectory in ViewModel.TemporaryDirectories)
             {
-                // To Do: 마지막으로 샌드박스를 띄웠던 폴더와 일치하지 않으면 모두 삭제하도록 로직 보완 필요
-                // To Do: 디렉터리 삭제 실패 시 사용자에게 안내하도록 하는 로직 보완 필요
-                foreach (var eachDirectory in ViewModel.TemporaryDirectories)
+                if (!string.IsNullOrWhiteSpace(ViewModel.CurrentDirectory))
                 {
-                    try { Directory.Delete(eachDirectory, true); }
-                    catch { }
+                    if (string.Equals(Path.GetFullPath(eachDirectory), Path.GetFullPath(ViewModel.CurrentDirectory), StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (ViewModel.SandboxLauncher.IsSandboxRunning())
+                        {
+                            OpenExplorer(eachDirectory);
+                            continue;
+                        }
+                    }
                 }
+
+                if (!Directory.Exists(eachDirectory))
+                    continue;
+
+                try { Directory.Delete(eachDirectory, true); }
+                catch { OpenExplorer(eachDirectory); }
             }
         }
     }

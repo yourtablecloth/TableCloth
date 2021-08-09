@@ -189,5 +189,7 @@ namespace TableCloth.ViewModels
         }
 
         public List<string> TemporaryDirectories { get; } = new();
+
+        public string CurrentDirectory { get; set; }
     }
 }
