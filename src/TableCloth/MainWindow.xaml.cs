@@ -23,7 +23,7 @@ namespace TableCloth.Implementations.WPF
             InitializeComponent();
         }
 
-        private List<CatalogInternetService> _selectedSites;
+        private List<CatalogInternetService> _selectedSites = new ();
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {

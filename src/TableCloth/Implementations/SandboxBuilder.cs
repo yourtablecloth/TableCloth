@@ -105,7 +105,7 @@ rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
 ");
 
             if (_isSandboxLocalPathSupported)
-                buffer = buffer.AppendLine($@"{Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe")} {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}");
+                buffer = buffer.AppendLine($@"{Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe")} {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}".Trim());
             else
             {
                 if (tableClothConfiguration.CertPair != null)
