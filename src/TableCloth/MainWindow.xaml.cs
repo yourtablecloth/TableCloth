@@ -74,11 +74,7 @@ namespace TableCloth.Implementations.WPF
 
         private void LaunchSandboxButton_Click(object sender, RoutedEventArgs e)
         {
-            var isSandboxRunning = Process.GetProcesses()
-                .Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase))
-                .Any();
-
-            if (isSandboxRunning)
+            if (ViewModel.SandboxLauncher.IsSandboxRunning())
             {
                 ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_Windows_Sandbox_Already_Running, false);
                 return;
@@ -123,15 +119,10 @@ namespace TableCloth.Implementations.WPF
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            var isSandboxRunning = Process.GetProcesses()
-                .Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase))
-                .Any();
-
-            if (!isSandboxRunning)
+            if (!ViewModel.SandboxLauncher.IsSandboxRunning())
             {
                 // To Do: 마지막으로 샌드박스를 띄웠던 폴더와 일치하지 않으면 모두 삭제하도록 로직 보완 필요
                 // To Do: 디렉터리 삭제 실패 시 사용자에게 안내하도록 하는 로직 보완 필요
-                // To Do: 샌드박스 실행 여부를 검사하는 기능을 별도 DI 요소로 분리 필요
                 foreach (var eachDirectory in ViewModel.TemporaryDirectories)
                 {
                     try { Directory.Delete(eachDirectory, true); }

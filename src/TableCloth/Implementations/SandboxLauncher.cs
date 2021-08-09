@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using TableCloth.Contracts;
 using TableCloth.Resources;
 
@@ -34,5 +35,8 @@ namespace TableCloth.Implementations
                 _appMessageBox.DisplayError(appUserInteface, StringResources.Error_Windows_Sandbox_CanNotStart, true);
             }
         }
+
+        public bool IsSandboxRunning()
+            => Process.GetProcesses().Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase)).Any();
     }
 }
