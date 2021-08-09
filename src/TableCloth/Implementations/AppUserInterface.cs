@@ -3,13 +3,13 @@ using Serilog.Formatting.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Windows;
 using TableCloth.Contracts;
-namespace TableCloth.Implementations.WPF
+
+namespace TableCloth.Implementations
 {
-    public sealed class WPFUserInterface : IAppUserInterface
+    public sealed class AppUserInterface : IAppUserInterface
     {
-        public WPFUserInterface(
+        public AppUserInterface(
             IAppStartup appStartup,
             IX509CertPairScanner certPairScanner,
             ISandboxBuilder sandboxBuilder,

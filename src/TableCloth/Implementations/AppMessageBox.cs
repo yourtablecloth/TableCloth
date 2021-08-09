@@ -4,15 +4,15 @@ using System.Windows.Threading;
 using TableCloth.Contracts;
 using TableCloth.Resources;
 
-namespace TableCloth.Implementations.WPF
+namespace TableCloth.Implementations
 {
-    public sealed class WPFMessageBox : IAppMessageBox
+    public sealed class AppMessageBox : IAppMessageBox
     {
         public void DisplayInfo(object parentWindowHandle, string message)
             => InvokeViaUIThread(
                 parentWindowHandle is Window window ? window.Dispatcher : Dispatcher.CurrentDispatcher,
                 () => MessageBox.Show(
-                    (parentWindowHandle is Window window ? window : null),
+                    parentWindowHandle is Window window ? window : null,
                     message, StringResources.TitleText_Info,
                     MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK)
                 );
@@ -24,12 +24,12 @@ namespace TableCloth.Implementations.WPF
             => InvokeViaUIThread(
                 parentWindowHandle is Window window ? window.Dispatcher : Dispatcher.CurrentDispatcher,
                 () => MessageBox.Show(
-                    (parentWindowHandle is Window window ? window : null),
-                    message, (isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning),
-                    MessageBoxButton.OK, (isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning), MessageBoxResult.OK)
+                    parentWindowHandle is Window window ? window : null,
+                    message, isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning,
+                    MessageBoxButton.OK, isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning, MessageBoxResult.OK)
                 );
 
-        private MessageBoxResult InvokeViaUIThread(Dispatcher dispatcher, Func<MessageBoxResult> func)
+        private static MessageBoxResult InvokeViaUIThread(Dispatcher dispatcher, Func<MessageBoxResult> func)
             => (MessageBoxResult)dispatcher.Invoke(func, Array.Empty<object>());
     }
 }

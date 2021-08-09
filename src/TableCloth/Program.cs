@@ -69,8 +69,8 @@ namespace TableCloth
             services.AddTransient<CertSelectWindowViewModel>();
 
             // UI
-            services.AddSingleton<IAppMessageBox, WPFMessageBox>();
-            services.AddSingleton<IAppUserInterface, WPFUserInterface>();
+            services.AddSingleton<IAppMessageBox, AppMessageBox>();
+            services.AddSingleton<IAppUserInterface, AppUserInterface>();
         }
     }
 }
