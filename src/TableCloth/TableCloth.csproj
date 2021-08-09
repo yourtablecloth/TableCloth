@@ -3,7 +3,6 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net5.0-windows</TargetFramework>
-		<UseWindowsForms>true</UseWindowsForms>
 		<StartupObject>TableCloth.Program</StartupObject>
 		<ApplicationIcon>App.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -14,8 +13,12 @@
 
 	<ItemGroup>
 	  <Compile Remove="Companions\**" />
+	  <Compile Remove="Implementations\WinForms\**" />
 	  <EmbeddedResource Remove="Companions\**" />
+	  <EmbeddedResource Remove="Implementations\WinForms\**" />
 	  <None Remove="Companions\**" />
+	  <None Remove="Implementations\WinForms\**" />
+	  <Page Remove="Implementations\WinForms\**" />
 	</ItemGroup>
 
 	<ItemGroup>
