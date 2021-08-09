@@ -13,9 +13,6 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Implementations.WPF
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -23,24 +20,24 @@ namespace TableCloth.Implementations.WPF
             InitializeComponent();
         }
 
+        public MainWindowViewModel ViewModel
+            => (MainWindowViewModel)DataContext;
+
         private List<CatalogInternetService> _selectedSites = new ();
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (DataContext is not MainWindowViewModel vm)
-                return;
-
-            var foundCandidate = vm.CertPairScanner.ScanX509Pairs(vm.CertPairScanner.GetCandidateDirectories()).SingleOrDefault();
+            var foundCandidate = ViewModel.CertPairScanner.ScanX509Pairs(ViewModel.CertPairScanner.GetCandidateDirectories()).SingleOrDefault();
 
             if (foundCandidate != null)
             {
-                vm.SelectedCertFiles = new string[]
+                ViewModel.SelectedCertFiles = new string[]
                 {
                     foundCandidate.DerFilePath,
                     foundCandidate.KeyFilePath,
                 }.ToList();
 
-                vm.MapNpkiCert = true;
+                ViewModel.MapNpkiCert = true;
             }
         }
 
@@ -52,19 +49,15 @@ namespace TableCloth.Implementations.WPF
             if (!response.HasValue || !response.Value)
                 return;
 
-            if (certSelectWindow.DataContext is CertSelectWindowViewModel cvm &&
-                cvm.SelectedCertPair != null &&
-                File.Exists(cvm.SelectedCertPair.DerFilePath) &&
-                File.Exists(cvm.SelectedCertPair.KeyFilePath))
+            if (certSelectWindow.ViewModel.SelectedCertPair != null &&
+                File.Exists(certSelectWindow.ViewModel.SelectedCertPair.DerFilePath) &&
+                File.Exists(certSelectWindow.ViewModel.SelectedCertPair.KeyFilePath))
             {
-                if (DataContext is MainWindowViewModel vm)
+                ViewModel.SelectedCertFiles = new string[]
                 {
-                    vm.SelectedCertFiles = new string[]
-                    {
-                        cvm.SelectedCertPair.DerFilePath,
-                        cvm.SelectedCertPair.KeyFilePath,
-                    }.ToList();
-                }
+                    certSelectWindow.ViewModel.SelectedCertPair.DerFilePath,
+                    certSelectWindow.ViewModel.SelectedCertPair.KeyFilePath,
+                }.ToList();
             }
         }
 
@@ -76,55 +69,51 @@ namespace TableCloth.Implementations.WPF
 
         private void AboutButton_Click(object sender, RoutedEventArgs e)
         {
-            if (DataContext is MainWindowViewModel vm)
-                vm.AppMessageBox.DisplayInfo(this, StringResources.AboutDialog_BodyText);
+            ViewModel.AppMessageBox.DisplayInfo(this, StringResources.AboutDialog_BodyText);
         }
 
         private void LaunchSandboxButton_Click(object sender, RoutedEventArgs e)
         {
-            if (DataContext is not MainWindowViewModel vm)
-                return;
-
             var isSandboxRunning = Process.GetProcesses()
                 .Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase))
                 .Any();
 
             if (isSandboxRunning)
             {
-                vm.AppMessageBox.DisplayError(this, StringResources.Error_Windows_Sandbox_Already_Running, false);
+                ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_Windows_Sandbox_Already_Running, false);
                 return;
             }
 
             var pair = default(X509CertPair);
-            var fileList = vm.SelectedCertFiles;
+            var fileList = ViewModel.SelectedCertFiles;
 
-            if (vm.MapNpkiCert && fileList != null)
+            if (ViewModel.MapNpkiCert && fileList != null)
             {
                 var derFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".der", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                 var keyFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".key", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
                 if (File.Exists(derFilePath) && File.Exists(keyFilePath))
-                    pair = vm.CertPairScanner.CreateX509CertPair(derFilePath, keyFilePath);
+                    pair = ViewModel.CertPairScanner.CreateX509CertPair(derFilePath, keyFilePath);
             }
 
             var config = new TableClothConfiguration()
             {
                 CertPair = pair,
-                EnableMicrophone = vm.EnableMicrophone,
-                EnableWebCam = vm.EnableWebCam,
-                EnablePrinters = vm.EnablePrinters,
+                EnableMicrophone = ViewModel.EnableMicrophone,
+                EnableWebCam = ViewModel.EnableWebCam,
+                EnablePrinters = ViewModel.EnablePrinters,
                 Packages = _selectedSites,
             };
 
-            var tempPath = Path.Combine(vm.AppStartup.AppDataDirectoryPath, $"bwsb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}");
+            var tempPath = Path.Combine(ViewModel.AppStartup.AppDataDirectoryPath, $"bwsb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}");
             var excludedFolderList = new List<SandboxMappedFolder>();
-            var wsbFilePath = vm.SandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
+            var wsbFilePath = ViewModel.SandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
 
             if (excludedFolderList.Any())
-                vm.AppMessageBox.DisplayError(this, StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
+                ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
 
-            vm.TemporaryDirectories.Add(tempPath);
-            vm.SandboxLauncher.RunSandbox(vm.AppUserInterface, tempPath, wsbFilePath);
+            ViewModel.TemporaryDirectories.Add(tempPath);
+            ViewModel.SandboxLauncher.RunSandbox(ViewModel.AppUserInterface, tempPath, wsbFilePath);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -134,9 +123,6 @@ namespace TableCloth.Implementations.WPF
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            if (DataContext is not MainWindowViewModel vm)
-                return;
-
             var isSandboxRunning = Process.GetProcesses()
                 .Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase))
                 .Any();
@@ -146,7 +132,7 @@ namespace TableCloth.Implementations.WPF
                 // To Do: 마지막으로 샌드박스를 띄웠던 폴더와 일치하지 않으면 모두 삭제하도록 로직 보완 필요
                 // To Do: 디렉터리 삭제 실패 시 사용자에게 안내하도록 하는 로직 보완 필요
                 // To Do: 샌드박스 실행 여부를 검사하는 기능을 별도 DI 요소로 분리 필요
-                foreach (var eachDirectory in vm.TemporaryDirectories)
+                foreach (var eachDirectory in ViewModel.TemporaryDirectories)
                 {
                     try { Directory.Delete(eachDirectory, true); }
                     catch { }

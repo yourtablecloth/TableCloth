@@ -1,27 +1,12 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using TableCloth.Models.Configuration;
-using TableCloth.Resources;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Implementations.WPF
 {
-    /// <summary>
-    /// Interaction logic for CertSelectWindow.xaml
-    /// </summary>
     public partial class CertSelectWindow : Window
     {
         public CertSelectWindow()
@@ -29,17 +14,16 @@ namespace TableCloth.Implementations.WPF
             InitializeComponent();
         }
 
+        public CertSelectWindowViewModel ViewModel
+            => (CertSelectWindowViewModel)DataContext;
+
         private void RefreshCertPairsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (DataContext is CertSelectWindowViewModel vm)
-                vm.RefreshCertPairs();
+            ViewModel.RefreshCertPairs();
         }
 
         private void OpenCertPairManuallyButton_Click(object sender, RoutedEventArgs e)
         {
-            if (DataContext is not CertSelectWindowViewModel vm)
-                return;
-
             var ofd = new OpenFileDialog()
             {
                 AddExtension = true,
@@ -71,7 +55,7 @@ namespace TableCloth.Implementations.WPF
 
             if (response.HasValue && response.Value)
             {
-                vm.SelectedCertPair = vm.CertPairScanner.CreateX509CertPair(
+                ViewModel.SelectedCertPair = ViewModel.CertPairScanner.CreateX509CertPair(
                     ofd.FileNames.Where(x => string.Equals(".der", System.IO.Path.GetExtension(x), StringComparison.OrdinalIgnoreCase)).First(),
                     ofd.FileNames.Where(x => string.Equals(".key", System.IO.Path.GetExtension(x), StringComparison.OrdinalIgnoreCase)).First()
                 );
@@ -83,7 +67,7 @@ namespace TableCloth.Implementations.WPF
 
         private void OkayButton_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = DataContext is CertSelectWindowViewModel vm && vm.SelectedCertPair != null;
+            DialogResult = ViewModel.SelectedCertPair != null;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
