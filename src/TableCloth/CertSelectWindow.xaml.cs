@@ -40,16 +40,16 @@ namespace TableCloth.Implementations.WPF
                 ValidateNames = true,
             };
 
-            // To Do: NPKI 폴더 외에 이동식 드라이브, 사용자 인증서 폴더 등을 미리 추가할 수 있을지 검토 필요
             var npkiPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "NPKI");
+            var userDirectories = Directory.GetDirectories(npkiPath, "USER", SearchOption.AllDirectories);
+            var removableDrives = DriveInfo.GetDrives().Where(x => x.DriveType == DriveType.Removable).Select(x => x.RootDirectory.FullName);
 
-            if (Directory.Exists(npkiPath))
-            {
-                ofd.CustomPlaces = new FileDialogCustomPlace[]
-                {
-                new FileDialogCustomPlace(npkiPath),
-                };
-            }
+            ofd.CustomPlaces = new string[] { npkiPath, }
+                .Concat(userDirectories)
+                .Concat(removableDrives)
+                .Where(x => Directory.Exists(x))
+                .Select(x => new FileDialogCustomPlace(x))
+                .ToList();
 
             var response = ofd.ShowDialog();
 
