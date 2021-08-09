@@ -25,6 +25,25 @@ namespace TableCloth.Implementations.WPF
 
         private List<CatalogInternetService> _selectedSites = new ();
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is not MainWindowViewModel vm)
+                return;
+
+            var foundCandidate = vm.CertPairScanner.ScanX509Pairs(vm.CertPairScanner.GetCandidateDirectories()).SingleOrDefault();
+
+            if (foundCandidate != null)
+            {
+                vm.SelectedCertFiles = new string[]
+                {
+                    foundCandidate.DerFilePath,
+                    foundCandidate.KeyFilePath,
+                }.ToList();
+
+                vm.MapNpkiCert = true;
+            }
+        }
+
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
             var certSelectWindow = new CertSelectWindow();

@@ -59,6 +59,9 @@ namespace TableCloth.ViewModels
         {
             SelectedCertPair = null;
             CertPairs = _certPairScanner.ScanX509Pairs(_certPairScanner.GetCandidateDirectories()).ToList();
+
+            if (CertPairs.Count == 1)
+                SelectedCertPair = CertPairs.Single();
         }
     }
 }

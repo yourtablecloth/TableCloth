@@ -13,7 +13,8 @@
         TextOptions.TextRenderingMode="Auto"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        DataContext="{Binding MainWindowViewModel, Source={StaticResource ViewModelLocator}}">
+        DataContext="{Binding MainWindowViewModel, Source={StaticResource ViewModelLocator}}"
+        Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="9*"/>
