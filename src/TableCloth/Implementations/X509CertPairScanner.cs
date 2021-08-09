@@ -73,8 +73,8 @@ namespace TableCloth.Implementations
                 try
                 {
                     // Add files from the current directory
-                    var singleDerFile = Directory.EnumerateFiles(eachRootPath, "*.der").FirstOrDefault();
-                    var singleKeyFile = Directory.EnumerateFiles(eachRootPath, "*.key").FirstOrDefault();
+                    var singleDerFile = Directory.EnumerateFiles(eachRootPath, "*.der").SingleOrDefault();
+                    var singleKeyFile = Directory.EnumerateFiles(eachRootPath, "*.key").SingleOrDefault();
 
                     if (File.Exists(singleDerFile) && File.Exists(singleKeyFile))
                         foundFiles.Add(CreateX509CertPair(singleDerFile, singleKeyFile));

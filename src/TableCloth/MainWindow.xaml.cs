@@ -85,8 +85,8 @@ namespace TableCloth.Implementations.WPF
 
             if (ViewModel.MapNpkiCert && fileList != null)
             {
-                var derFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".der", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                var keyFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".key", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                var derFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".der", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
+                var keyFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".key", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
 
                 if (File.Exists(derFilePath) && File.Exists(keyFilePath))
                     pair = ViewModel.CertPairScanner.CreateX509CertPair(derFilePath, keyFilePath);
