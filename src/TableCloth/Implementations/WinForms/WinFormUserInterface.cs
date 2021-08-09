@@ -82,7 +82,7 @@ namespace TableCloth.Implementations.WinForms
 
             var form = new Form()
             {
-                Text = StringResources.MainForm_Title,
+                Text = LocalStringResources.MainForm_Title,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 MaximizeBox = false,
                 Icon = new Icon(
@@ -162,7 +162,7 @@ namespace TableCloth.Implementations.WinForms
             };
             tableLayout.SetCellPosition(actionRightLayout, new TableLayoutPanelCellPosition(column: 1, row: 1));
 
-            dialogLayout.CreateLabel(StringResources.MainForm_SelectOptionsLabelText);
+            dialogLayout.CreateLabel(LocalStringResources.MainForm_SelectOptionsLabelText);
             dialogLayout.CreateLabel();
 
             var certListPanel = new FlowLayoutPanel()
@@ -173,8 +173,8 @@ namespace TableCloth.Implementations.WinForms
                 AutoSize = true,
                 AutoSizeMode = AutoSizeMode.GrowAndShrink,
             };
-            var mapNPKICert = certListPanel.CreateCheckBox(StringResources.MainForm_MapNpkiCertButtonText, true);
-            var importButton = certListPanel.CreateButton(StringResources.MainForm_BrowseButtonText);
+            var mapNPKICert = certListPanel.CreateCheckBox(LocalStringResources.MainForm_MapNpkiCertButtonText, true);
+            var importButton = certListPanel.CreateButton(LocalStringResources.MainForm_BrowseButtonText);
             certListPanel.Height = (int)(mapNPKICert.Height * 1.6f);
 
             var npkiFileListBox = new ListBox()
@@ -200,15 +200,15 @@ namespace TableCloth.Implementations.WinForms
             importButton.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
             npkiFileListBox.DataBindings.Add(nameof(Control.Enabled), mapNPKICert, nameof(CheckBox.Checked));
 
-            var enableMicrophone = dialogLayout.CreateCheckBox(StringResources.MainForm_UseMicrophoneCheckboxText, false);
-            var enableWebCam = dialogLayout.CreateCheckBox(StringResources.MainForm_UseWebCameraCheckboxText, false);
-            var enablePrinters = dialogLayout.CreateCheckBox(StringResources.MainForm_UsePrinterCheckboxText, false);
+            var enableMicrophone = dialogLayout.CreateCheckBox(LocalStringResources.MainForm_UseMicrophoneCheckboxText, false);
+            var enableWebCam = dialogLayout.CreateCheckBox(LocalStringResources.MainForm_UseWebCameraCheckboxText, false);
+            var enablePrinters = dialogLayout.CreateCheckBox(LocalStringResources.MainForm_UsePrinterCheckboxText, false);
 
             enableMicrophone.Font = new Font(enableMicrophone.Font, FontStyle.Bold);
             enableWebCam.Font = new Font(enableWebCam.Font, FontStyle.Bold);
 
             dialogLayout.CreateLabel();
-            var siteInstructionLabel = dialogLayout.CreateLabel(StringResources.MainForm_SelectSiteLabelText);
+            var siteInstructionLabel = dialogLayout.CreateLabel(LocalStringResources.MainForm_SelectSiteLabelText);
             dialogLayout.CreateLabel();
 
             var siteCatalogTabControl = new TabControl
@@ -242,17 +242,17 @@ namespace TableCloth.Implementations.WinForms
                 };
             }
 
-            var aboutButton = actionLeftLayout.CreateButton(StringResources.MainForm_AboutButtonText, handler: x =>
+            var aboutButton = actionLeftLayout.CreateButton(LocalStringResources.MainForm_AboutButtonText, handler: x =>
             {
                 _appMessageBox.DisplayInfo(this, StringResources.AboutDialog_BodyText);
             });
 
-            var cancelButton = actionRightLayout.CreateButton(StringResources.MainForm_CloseButtonText, handler: x =>
+            var cancelButton = actionRightLayout.CreateButton(LocalStringResources.MainForm_CloseButtonText, handler: x =>
             {
                 form.Close();
             });
 
-            var launchButton = actionRightLayout.CreateButton(StringResources.MainForm_LaunchSandboxButtonText);
+            var launchButton = actionRightLayout.CreateButton(LocalStringResources.MainForm_LaunchSandboxButtonText);
 
             form.CancelButton = cancelButton;
             form.AcceptButton = launchButton;
@@ -287,13 +287,13 @@ namespace TableCloth.Implementations.WinForms
                     else
                     {
                         siteCatalogTabControl.Visible = false;
-                        siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
+                        siteInstructionLabel.Text = LocalStringResources.MainForm_SelectSiteLabelText_Alt;
                     }
                 }
                 catch (Exception e)
                 {
                     siteCatalogTabControl.Visible = false;
-                    siteInstructionLabel.Text = StringResources.MainForm_SelectSiteLabelText_Alt;
+                    siteInstructionLabel.Text = LocalStringResources.MainForm_SelectSiteLabelText_Alt;
                     _appMessageBox.DisplayError(this, StringResources.Error_Cannot_Download_Catalog(e), false);
                 }
 
@@ -390,7 +390,7 @@ namespace TableCloth.Implementations.WinForms
         {
             var form = new Form()
             {
-                Text = StringResources.CertSelectForm_Title,
+                Text = LocalStringResources.CertSelectForm_Title,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 ShowInTaskbar = false,
                 MinimizeBox = false,
@@ -455,7 +455,7 @@ namespace TableCloth.Implementations.WinForms
             };
             tableLayout.SetCellPosition(actionLayout, new TableLayoutPanelCellPosition(column: 0, row: 1));
 
-            dialogLayout.CreateLabel(StringResources.CertSelectForm_InstructionLabel);
+            dialogLayout.CreateLabel(LocalStringResources.CertSelectForm_InstructionLabel);
             dialogLayout.CreateLabel();
 
             var largeListViewImageList = new ImageList()
@@ -483,15 +483,15 @@ namespace TableCloth.Implementations.WinForms
                 SmallImageList = smallListViewImageList,
             };
 
-            var refreshButton = dialogLayout.CreateButton(StringResources.CertSelectForm_RefreshButtonText);
+            var refreshButton = dialogLayout.CreateButton(LocalStringResources.CertSelectForm_RefreshButtonText);
 
             dialogLayout.CreateLabel();
-            dialogLayout.CreateLabel(StringResources.CertSelectForm_ManualInstructionLabelText);
+            dialogLayout.CreateLabel(LocalStringResources.CertSelectForm_ManualInstructionLabelText);
             dialogLayout.CreateLabel();
-            var browseCertPairButton = dialogLayout.CreateButton(StringResources.CertSelectForm_OpenNpkiCertButton);
+            var browseCertPairButton = dialogLayout.CreateButton(LocalStringResources.CertSelectForm_OpenNpkiCertButton);
 
-            var cancelButton = actionLayout.CreateButton(StringResources.CancelButtonText, dialogResult: DialogResult.Cancel);
-            var okayButton = actionLayout.CreateButton(StringResources.OkayButtonText, dialogResult: DialogResult.OK);
+            var cancelButton = actionLayout.CreateButton(LocalStringResources.CertSelectForm_CancelButtonText, dialogResult: DialogResult.Cancel);
+            var okayButton = actionLayout.CreateButton(LocalStringResources.CertSelectForm_OkayButtonText, dialogResult: DialogResult.OK);
 
             form.CancelButton = cancelButton;
             form.AcceptButton = okayButton;
@@ -545,8 +545,8 @@ namespace TableCloth.Implementations.WinForms
 
                 var certFileBrowserDialog = new OpenFileDialog()
                 {
-                    Title = StringResources.CertSelectForm_FileOpenDialog_Text,
-                    Filter = StringResources.CertSelectForm_FileOpenDialog_FilterText,
+                    Title = LocalStringResources.CertSelectForm_FileOpenDialog_Text,
+                    Filter = LocalStringResources.CertSelectForm_FileOpenDialog_FilterText,
                     ReadOnlyChecked = true,
                     SupportMultiDottedExtensions = true,
                     DereferenceLinks = true,
@@ -579,5 +579,79 @@ namespace TableCloth.Implementations.WinForms
 
             return form;
         }
+    }
+
+    // 메인 화면에 표시될 문자열들
+    partial class LocalStringResources
+    {
+        internal static readonly string MainForm_Title
+            = $"{StringResources.AppName} - 컴퓨터를 깨끗하게 사용하세요!";
+
+        internal static readonly string MainForm_SelectOptionsLabelText
+            = @"원하는 옵션을 선택해주세요.";
+
+        internal static readonly string MainForm_MapNpkiCertButtonText
+            = @"기존 공인인증서 파일 가져오기(&C)";
+
+        internal static readonly string MainForm_BrowseButtonText
+            = @"찾아보기(&B)...";
+
+        internal static readonly string MainForm_UseMicrophoneCheckboxText
+            = @"오디오 입력 사용하기(&A) - 개인 정보 노출에 주의하세요!";
+
+        internal static readonly string MainForm_UseWebCameraCheckboxText
+            = @"비디오 입력 사용하기(&V) - 개인 정보 노출에 주의하세요!";
+
+        internal static readonly string MainForm_UsePrinterCheckboxText
+            = @"프린터 같이 사용하기(&P)";
+
+        internal static readonly string MainForm_SelectSiteLabelText
+            = $"{StringResources.AppName} 위에서 접속할 사이트들을 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요.";
+
+        internal static readonly string MainForm_SelectSiteLabelText_Alt
+            = @"카탈로그 파일을 가져오지 못했어요! 그래도 샌드박스는 대신 실행해드려요.";
+
+        internal static readonly string MainForm_JustRunItemText
+            = @"그냥 실행해주세요.";
+
+        internal static readonly string MainForm_AboutButtonText
+            = @"정보";
+
+        internal static readonly string MainForm_CloseButtonText
+            = @"닫기";
+
+        internal static readonly string MainForm_LaunchSandboxButtonText
+            = @"샌드박스 실행";
+    }
+
+    // 인증서 검색 창에 표시될 문자열들
+    partial class LocalStringResources
+    {
+        internal static readonly string CertSelectForm_Title
+            = @"검색된 공인 인증서 선택";
+
+        internal static readonly string CertSelectForm_InstructionLabel
+            = @"검색된 공인 인증서가 다음과 같습니다. 다음 중 하나를 선택해주세요.";
+
+        internal static readonly string CertSelectForm_RefreshButtonText
+            = @"새로 고침(&R)";
+
+        internal static readonly string CertSelectForm_ManualInstructionLabelText
+            = @"원하는 인증서가 없다면, 직접 인증서 찾기 버튼을 눌러서 직접 DER 파일과 KEY 파일을 찾아주세요.";
+
+        internal static readonly string CertSelectForm_OpenNpkiCertButton
+            = @"직접 인증서 찾기(&B)...";
+
+        internal static readonly string CertSelectForm_OkayButtonText
+            = "확인";
+
+        internal static readonly string CertSelectForm_CancelButtonText
+            = "취소";
+
+        internal static readonly string CertSelectForm_FileOpenDialog_Text
+            = @"인증서 파일 (signCert.der, signPri.key) 열기";
+
+        internal static readonly string CertSelectForm_FileOpenDialog_FilterText
+            = @"인증서 파일 (*.der;*.key)|*.der;*.key|모든 파일|*.*";
     }
 }

@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace Hostess.Converters
 {
-    public sealed class StateToBrushConverter : IValueConverter
+    public class StateToBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
