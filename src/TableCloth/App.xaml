@@ -8,7 +8,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <converters:CategoryConverter x:Key="CategoryConverter" />
- 
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+
             <di:ViewModelLocator x:Key="ViewModelLocator" />
 
             <ResourceDictionary.MergedDictionaries>

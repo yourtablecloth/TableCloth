@@ -34,9 +34,9 @@
             <Label Grid.Row="0" VerticalAlignment="Center" Content="{StaticResource MainWindow_SelectOptionsLabelText}" />
             <WrapPanel Grid.Row="1" VerticalAlignment="Center" Orientation="Horizontal">
                 <CheckBox VerticalAlignment="Center" Content="{StaticResource MainWindow_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
-                <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{StaticResource MainWindow_BrowseButtonText}" Click="BrowseButton_Click" />
+                <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{StaticResource MainWindow_BrowseButtonText}" Click="BrowseButton_Click" IsEnabled="{Binding Path='MapNpkiCert'}" />
             </WrapPanel>
-            <ListBox Grid.Row="2" VerticalAlignment="Stretch" Margin="0 5 0 0" ItemsSource="{Binding Path='SelectedCertFiles'}">
+            <ListBox Grid.Row="2" VerticalAlignment="Stretch" Margin="0 5 0 0" ItemsSource="{Binding Path='SelectedCertFiles'}"  IsEnabled="{Binding Path='MapNpkiCert'}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
