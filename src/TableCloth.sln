@@ -15,7 +15,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0550F36D-5775-4A30-9783-E60FE4B7C438}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		BuildTableClothSetup.cmd = BuildTableClothSetup.cmd
 		..\docs\Catalog.xml = ..\docs\Catalog.xml
+		TableClothSetup.nsi = TableClothSetup.nsi
 	EndProjectSection
 EndProject
 Global
