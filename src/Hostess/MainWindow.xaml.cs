@@ -1,4 +1,6 @@
-﻿using Hostess.ViewModels;
+﻿using Hostess.SiteList;
+using Hostess.ViewModels;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,11 +8,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+using System.Xml.Serialization;
+using System.Xml;
 using TableCloth.Resources;
+using System.Threading;
 
 namespace Hostess
 {
@@ -42,9 +48,11 @@ namespace Hostess
                 packages.AddRange(targetService.Packages.Select(eachPackage => new InstallItemViewModel()
                 {
                     TargetSiteName = targetService.DisplayName,
+                    TargetSiteUrl = targetService.Url,
                     PackageName = eachPackage.Name,
                     PackageUrl = eachPackage.Url,
                     Arguments = eachPackage.Arguments,
+                    RequireIEMode = eachPackage.RequireIEMode,
                     Installed = null,
                 }));
             }
@@ -73,6 +81,8 @@ namespace Hostess
         {
             try
             {
+                var ieModeRequiredDomainList = new List<string>();
+
                 PerformInstallButton.IsEnabled = false;
                 var hasAnyFailure = false;
 
@@ -87,6 +97,15 @@ namespace Hostess
                     {
                         eachItem.Installed = null;
                         eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
+
+                        if (eachItem.RequireIEMode &&
+                            Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl) &&
+                            !ieModeRequiredDomainList.Contains(parsedUrl.Host, StringComparer.Ordinal))
+                        {
+                            // To Do: 핵심 도메인 주소만 등록하도록 수정 필요
+                            // 예: www.kbstar.com => *.kbstar.com
+                            ieModeRequiredDomainList.Add(parsedUrl.Host);
+                        }
 
                         var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
                         var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
@@ -134,6 +153,41 @@ namespace Hostess
                         eachItem.ErrorMessage = ex is AggregateException exception ? exception.InnerException.Message : ex.Message;
                         await Task.Delay(100);
                     }
+                }
+
+                try
+                {
+                    using (var edgeKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
+                    {
+                        edgeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
+                        edgeKey.SetValue("InternetExplorerIntegrationSiteList", @"C:\ie_site_list.xml", RegistryValueKind.String);
+                    }
+
+                    var siteListDocument = new SiteListDocument();
+                    siteListDocument.Sites.AddRange(ieModeRequiredDomainList.Select(x => new Site() { Url = x }));
+
+                    var serializer = new XmlSerializer(typeof(SiteListDocument));
+                    var @namespace = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty) });
+                    var targetEncoding = new UTF8Encoding(false);
+
+                    using (var fileStream = File.OpenWrite(@"C:\ie_site_list.xml"))
+                    {
+                        var contentStream = new StreamWriter(fileStream);
+                        serializer.Serialize(contentStream, siteListDocument, @namespace);
+                    }
+
+                    // IE 모드 목록이 바로 로딩되지 않아서 별도 사이트를 한 번 띄울 필요가 있음.
+                    var process = Process.Start(new ProcessStartInfo("https://www.naver.com/")
+                    {
+                        UseShellExecute = true,
+                        WindowStyle = ProcessWindowStyle.Maximized,
+                    });
+                    await Task.Delay(2000);
+                    process.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
                 }
 
                 if (!hasAnyFailure)

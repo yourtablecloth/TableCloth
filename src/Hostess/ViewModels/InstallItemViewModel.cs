@@ -9,9 +9,11 @@ namespace Hostess.ViewModels
     public sealed class InstallItemViewModel : INotifyPropertyChanged
     {
         private string _targetSiteName;
+        private string _targetSiteUrl;
         private string _packageName;
         private string _packageUrl;
         private string _arguments;
+        private bool _requireIEMode;
         private bool? _installed;
         private string _statusMessage;
         private string _errorMessage;
@@ -32,6 +34,21 @@ namespace Hostess.ViewModels
 
                 _targetSiteName = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TargetSiteName)));
+            }
+        }
+
+        public string TargetSiteUrl
+        {
+            get => _targetSiteUrl;
+            set
+            {
+                if (string.Equals(_targetSiteUrl, value, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                _targetSiteUrl = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TargetSiteUrl)));
             }
         }
 
@@ -77,6 +94,21 @@ namespace Hostess.ViewModels
 
                 _arguments = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Arguments)));
+            }
+        }
+
+        public bool RequireIEMode
+        {
+            get => _requireIEMode;
+            set
+            {
+                if (_requireIEMode == value)
+                {
+                    return;
+                }
+
+                _requireIEMode = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RequireIEMode)));
             }
         }
 

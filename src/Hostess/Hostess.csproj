@@ -86,6 +86,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="SiteList\CreatedBy.cs" />
+    <Compile Include="SiteList\Site.cs" />
+    <Compile Include="SiteList\SiteListDocument.cs" />
     <Compile Include="ViewModels\InstallItemViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
