@@ -28,17 +28,26 @@ namespace TableCloth.ViewModels
             _sandboxBuilder = sandboxBuilder;
             _sandboxLauncher = sandboxLauncher;
 
-            CatalogDocument = _catalogDeserializer.DeserializeCatalog(
-                new Uri(StringResources.CatalogUrl, UriKind.Absolute));
+            try
+            {
+                CatalogDocument = _catalogDeserializer.DeserializeCatalog(
+                    new Uri(StringResources.CatalogUrl, UriKind.Absolute));
 
-            Catalogs = CatalogDocument.Services
-                .GroupBy(x => x.Category)
-                .Select(x => new SiteCatalogTabViewModel
-                {
-                    Category = x.Key,
-                    Sites = x.ToList(),
-                })
-                .ToList();
+                Catalogs = CatalogDocument.Services
+                    .GroupBy(x => x.Category)
+                    .Select(x => new SiteCatalogTabViewModel
+                    {
+                        Category = x.Key,
+                        Sites = x.ToList(),
+                    })
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                _appMessageBox.DisplayError(_appUserInterface.MainWindowHandle, ex, false);
+                CatalogDocument = new CatalogDocument();
+                Catalogs = Array.Empty<SiteCatalogTabViewModel>().ToList();
+            }
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
@@ -191,5 +200,8 @@ namespace TableCloth.ViewModels
         public List<string> TemporaryDirectories { get; } = new();
 
         public string CurrentDirectory { get; set; }
+
+        public bool HasCatalogs
+            => Catalogs != null && Catalogs.Any();
     }
 }
