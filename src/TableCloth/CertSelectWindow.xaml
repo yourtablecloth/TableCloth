@@ -13,6 +13,7 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         Title="{StaticResource CertSelectWindow_Title}" Width="480" Height="320"
+        MinWidth="480" MinHeight="320"
         DataContext="{Binding CertSelectWindowViewModel, Source={StaticResource ViewModelLocator}}">
     <Grid>
         <Grid.RowDefinitions>
