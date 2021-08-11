@@ -25,6 +25,13 @@ namespace Hostess
         public MainWindow()
             => InitializeComponent();
 
+        private readonly string[] validAccountNames = new string[]
+        {
+            "ContainerAdministrator",
+            "ContainerUser",
+            "WDAGUtilityAccount",
+        };
+
         private void SetDesktopWallpaper()
         {
             var picturesDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
@@ -43,14 +50,31 @@ namespace Hostess
                 IntPtr.Zero, IntPtr.Zero, "1, True", 0);
         }
 
+        private void CheckWindowsContainerEnvironment()
+        {
+            if (validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
+                return;
+
+            var questionMessage = (string)Application.Current.Resources["QuestionForNonSandboxEnvironment"];
+            var questionTitle = (string)Application.Current.Resources["QuestionDialogTitle"];
+            var result = MessageBox.Show(this, questionMessage, questionTitle, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+
+            if (result != MessageBoxResult.Yes)
+            {
+                Close();
+                return;
+            }
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            SetDesktopWallpaper();
-
             Width = MinWidth;
             Height = SystemParameters.PrimaryScreenHeight * 0.5;
             Top = (SystemParameters.PrimaryScreenHeight / 2) - (Height / 2);
             Left = SystemParameters.PrimaryScreenWidth - Width;
+
+            CheckWindowsContainerEnvironment();
+            SetDesktopWallpaper();
 
             var catalog = Application.Current.GetCatalogDocument();
             var targets = Application.Current.GetInstallSites();
@@ -218,6 +242,18 @@ namespace Hostess
 
                 if (!hasAnyFailure)
                 {
+                    var catalog = Application.Current.GetCatalogDocument();
+                    var targets = Application.Current.GetInstallSites();
+
+                    foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
+                    {
+                        Process.Start(new ProcessStartInfo(eachUrl)
+                        {
+                            UseShellExecute = true,
+                            WindowStyle = ProcessWindowStyle.Maximized,
+                        });
+                    }
+
                     Close();
                     return;
                 }
@@ -225,21 +261,6 @@ namespace Hostess
             finally
             {
                 PerformInstallButton.IsEnabled = true;
-            }
-        }
-
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            var catalog = Application.Current.GetCatalogDocument();
-            var targets = Application.Current.GetInstallSites();
-
-            foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
-            {
-                Process.Start(new ProcessStartInfo(eachUrl)
-                {
-                    UseShellExecute = true,
-                    WindowStyle = ProcessWindowStyle.Maximized,
-                });
             }
         }
     }

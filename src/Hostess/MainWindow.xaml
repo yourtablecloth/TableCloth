@@ -4,9 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Loaded="Window_Loaded"
-        Closed="Window_Closed"
-        ResizeMode="CanResize"
+        Loaded="Window_Loaded" ResizeMode="CanResize"
         WindowStartupLocation="Manual" Top="0" Left="0"
         Title="{StaticResource AppTitle}" Width="320" Height="480" MinWidth="320" MinHeight="480">
     <Window.Resources>
