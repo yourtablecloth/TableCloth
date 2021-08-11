@@ -25,8 +25,28 @@ namespace Hostess
         public MainWindow()
             => InitializeComponent();
 
+        private void SetDesktopWallpaper()
+        {
+            var picturesDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+            if (!Directory.Exists(picturesDirectoryPath))
+                Directory.CreateDirectory(picturesDirectoryPath);
+
+            var wallpaperPath = Path.Combine(picturesDirectoryPath, "Signature.jpg");
+            File.WriteAllBytes(wallpaperPath, Convert.FromBase64String(GraphicResources.SignatureJpegImage));
+
+            _ = NativeMethods.SystemParametersInfoW(
+                NativeMethods.SetDesktopWallpaper, 0, wallpaperPath,
+                NativeMethods.UpdateIniFile | NativeMethods.SendWinIniChange);
+
+            NativeMethods.UpdatePerUserSystemParameters(
+                IntPtr.Zero, IntPtr.Zero, "1, True", 0);
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            SetDesktopWallpaper();
+
             Width = MinWidth;
             Height = SystemParameters.PrimaryScreenHeight * 0.5;
             Top = (SystemParameters.PrimaryScreenHeight / 2) - (Height / 2);

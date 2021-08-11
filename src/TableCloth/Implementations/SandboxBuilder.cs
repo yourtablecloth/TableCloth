@@ -50,10 +50,6 @@ namespace TableCloth.Implementations
             if (!Directory.Exists(assetsDirectory))
                 Directory.CreateDirectory(assetsDirectory);
 
-            var signatureImageContent = GraphicResources.SignatureJpegImage;
-            var signatureFilePath = Path.Combine(assetsDirectory, "Signature.jpg");
-            File.WriteAllBytes(signatureFilePath, Convert.FromBase64String(signatureImageContent));
-
             var bootstrapFileContent = GenerateSandboxBootstrapPowerShellScript(tableClothConfiguration);
             var bootstrapFilePath = Path.Combine(assetsDirectory, "Bootstrap.ps1");
             File.WriteAllText(bootstrapFilePath, bootstrapFileContent, Encoding.Unicode);
@@ -77,32 +73,6 @@ namespace TableCloth.Implementations
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
 
             var buffer = new StringBuilder();
-
-            buffer = buffer.AppendLine($@"
-# Change Wallpaper
-$SetWallpaperSource = @""
-using System.Runtime.InteropServices;
-using System.Threading;
-
-public static class Wallpaper {{
-  public const int SetDesktopWallpaper = 0x0014;
-  public const int UpdateIniFile = 0x01;
-  public const int SendWinIniChange = 0x02;
-
-  [DllImport(""user32.dll"", SetLastError = true, CharSet = CharSet.Auto)]
-  private static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
-
-  public static void SetWallpaper(string path) {{
-    SystemParametersInfo(SetDesktopWallpaper, 0, path, UpdateIniFile | SendWinIniChange);
-  }}
-}}
-""@
-Add-Type -TypeDefinition $SetWallpaperSource
-
-$WallpaperPath = ""{Path.Combine(GetAssetsPathForSandbox(), "Signature.jpg")}""
-[Wallpaper]::SetWallpaper($WallpaperPath)
-rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
-");
 
             if (_isSandboxLocalPathSupported)
                 buffer = buffer.AppendLine($@"{Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe")} {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}".Trim());

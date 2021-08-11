@@ -25,7 +25,12 @@ namespace Hostess
             }
         }
 
-        [DllImport("Shell32.dll")]
+        [DllImport("shell32.dll",
+            SetLastError = false,
+            CharSet = CharSet.None,
+            ExactSpelling = true,
+            EntryPoint = nameof(SHGetKnownFolderPath),
+            CallingConvention = CallingConvention.StdCall)]
         private static extern int SHGetKnownFolderPath(
             [MarshalAs(UnmanagedType.LPStruct)] Guid rfid,
             [MarshalAs(UnmanagedType.U4)] int dwFlags,
@@ -45,5 +50,33 @@ namespace Hostess
             NoAppcontainerRedirection = 0x00010000,
             AliasOnly = 0x80000000
         }
+
+        public const int SetDesktopWallpaper = 0x0014;
+        public const int UpdateIniFile = 0x01;
+        public const int SendWinIniChange = 0x02;
+
+        [DllImport("user32.dll",
+            SetLastError = true,
+            CharSet = CharSet.Unicode,
+            ExactSpelling = true,
+            EntryPoint = nameof(SystemParametersInfoW),
+            CallingConvention = CallingConvention.Winapi)]
+        public static extern int SystemParametersInfoW(
+            [MarshalAs(UnmanagedType.U4)] int uAction,
+            [MarshalAs(UnmanagedType.U4)] int uParam,
+            string lpvParam,
+            [MarshalAs(UnmanagedType.U4)] int fuWinIni);
+
+        [DllImport("user32.dll",
+            SetLastError = false,
+            CharSet = CharSet.Ansi,
+            ExactSpelling = true,
+            EntryPoint = nameof(UpdatePerUserSystemParameters),
+            CallingConvention = CallingConvention.StdCall)]
+        public static extern void UpdatePerUserSystemParameters(
+            IntPtr hWnd,
+            IntPtr hInstance,
+            string lpszCmdLine,
+            int nCmdShow);
     }
 }
