@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -13,10 +14,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
-using System.Xml.Serialization;
 using System.Xml;
+using System.Xml.Serialization;
 using TableCloth.Resources;
-using System.Threading;
 
 namespace Hostess
 {
@@ -33,7 +33,7 @@ namespace Hostess
                 Directory.CreateDirectory(picturesDirectoryPath);
 
             var wallpaperPath = Path.Combine(picturesDirectoryPath, "Signature.jpg");
-            File.WriteAllBytes(wallpaperPath, Convert.FromBase64String(GraphicResources.SignatureJpegImage));
+            Properties.Resources.Signature.Save(wallpaperPath, ImageFormat.Jpeg);
 
             _ = NativeMethods.SystemParametersInfoW(
                 NativeMethods.SetDesktopWallpaper, 0, wallpaperPath,
