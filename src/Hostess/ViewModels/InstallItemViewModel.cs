@@ -13,7 +13,7 @@ namespace Hostess.ViewModels
         private string _packageName;
         private string _packageUrl;
         private string _arguments;
-        private bool _requireIEMode;
+        private bool _skipIEMode;
         private bool? _installed;
         private string _statusMessage;
         private string _errorMessage;
@@ -97,18 +97,18 @@ namespace Hostess.ViewModels
             }
         }
 
-        public bool RequireIEMode
+        public bool SkipIEMode
         {
-            get => _requireIEMode;
+            get => _skipIEMode;
             set
             {
-                if (_requireIEMode == value)
+                if (_skipIEMode == value)
                 {
                     return;
                 }
 
-                _requireIEMode = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RequireIEMode)));
+                _skipIEMode = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SkipIEMode)));
             }
         }
 

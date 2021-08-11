@@ -52,7 +52,7 @@ namespace Hostess
                     PackageName = eachPackage.Name,
                     PackageUrl = eachPackage.Url,
                     Arguments = eachPackage.Arguments,
-                    RequireIEMode = eachPackage.RequireIEMode,
+                    SkipIEMode = eachPackage.SkipIEMode,
                     Installed = null,
                 }));
             }
@@ -98,13 +98,15 @@ namespace Hostess
                         eachItem.Installed = null;
                         eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
 
-                        if (eachItem.RequireIEMode &&
-                            Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl) &&
-                            !ieModeRequiredDomainList.Contains(parsedUrl.Host, StringComparer.Ordinal))
+                        if (!eachItem.SkipIEMode &&
+                            Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl))
                         {
-                            // To Do: 핵심 도메인 주소만 등록하도록 수정 필요
-                            // 예: www.kbstar.com => *.kbstar.com
-                            ieModeRequiredDomainList.Add(parsedUrl.Host);
+                            var rootDomainName = string.Join(".", parsedUrl.Host
+                                .Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries)
+                                .Reverse().Take(2).Reverse());
+
+                            if (!ieModeRequiredDomainList.Contains(rootDomainName, StringComparer.Ordinal))
+                                ieModeRequiredDomainList.Add(rootDomainName);
                         }
 
                         var tempFileName = $"installer_{Guid.NewGuid():n}.exe";

@@ -15,8 +15,8 @@ namespace TableCloth.Models.Catalog
         [XmlAttribute("Arguments")]
         public string Arguments { get; set; }
 
-        [XmlAttribute("RequireIEMode")]
-        public bool RequireIEMode { get; set; }
+        [XmlAttribute("SkipIEMode")]
+        public bool SkipIEMode { get; set; }
 
         public override string ToString()
             => $"{Name} - {Url}";
