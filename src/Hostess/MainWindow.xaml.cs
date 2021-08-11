@@ -91,6 +91,10 @@ namespace Hostess
                 if (!Directory.Exists(downloadFolderPath))
                     Directory.CreateDirectory(downloadFolderPath);
 
+                var internetExplorerExists = File.Exists(Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                    "Internet Explorer", "iexplore.exe"));
+
                 foreach (InstallItemViewModel eachItem in InstallList.ItemsSource)
                 {
                     try
@@ -98,7 +102,7 @@ namespace Hostess
                         eachItem.Installed = null;
                         eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
 
-                        if (!eachItem.SkipIEMode &&
+                        if (!eachItem.SkipIEMode && internetExplorerExists &&
                             Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl))
                         {
                             var rootDomainName = string.Join(".", parsedUrl.Host
