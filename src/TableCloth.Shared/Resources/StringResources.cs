@@ -42,13 +42,6 @@ namespace TableCloth.Resources
     {
         internal static readonly string InternetService_UnknownText = "알 수 없음";
 
-        internal static readonly string SandboxWorkingDir_ReadmeText = @"식탁보 사용 완료 후 정보 보호를 위한 권장 사항
-
-식탁보는 편의를 위하여 사용자의 인증서 파일을 샌드박스에 전송할 수 있도록 별도의 작업 디렉터리에 파일을 복사합니다.
-하지만 샌드박스 프로그램이 언제 종료될지 식탁보 프로그램에서는 파악하거나 예측할 수 없어 작업 디렉터리를 자동으로 정리할 수 없습니다.
-
-따라서 샌드박스 사용을 마친 후에는 bwsb 폴더를 모두 지우시는 것을 권장합니다.";
-
         internal static string InternetService_DisplayText(CatalogInternetService svc)
         {
             var defaultString = $"{svc.DisplayName} - {svc.Url}";
