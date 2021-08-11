@@ -9,19 +9,15 @@ using System.Xml.Serialization;
 using TableCloth.Contracts;
 using TableCloth.Implementations.WindowsSandbox;
 using TableCloth.Models.Configuration;
-using TableCloth.Resources;
 
 namespace TableCloth.Implementations
 {
     public sealed class SandboxBuilder : ISandboxBuilder
     {
-        private readonly bool _isSandboxLocalPathSupported =
-            Environment.OSVersion.Version >= new Version(10, 0, 19041);
-
         private readonly string _wdagUtilityAccountPath = @"C:\Users\WDAGUtilityAccount";
 
         private string GetAssetsPathForSandbox()
-            => _isSandboxLocalPathSupported ? @"C:\Assets" : Path.Combine(_wdagUtilityAccountPath, "Desktop", "Assets");
+            => Path.Combine(_wdagUtilityAccountPath, "Desktop", "Assets");
 
         private string GetNPKIPathForSandbox(X509CertPair certPair)
         {
@@ -50,10 +46,6 @@ namespace TableCloth.Implementations
             if (!Directory.Exists(assetsDirectory))
                 Directory.CreateDirectory(assetsDirectory);
 
-            var bootstrapFileContent = GenerateSandboxBootstrapPowerShellScript(tableClothConfiguration);
-            var bootstrapFilePath = Path.Combine(assetsDirectory, "Bootstrap.ps1");
-            File.WriteAllText(bootstrapFilePath, bootstrapFileContent, Encoding.Unicode);
-
             var batchFileContent = GenerateSandboxStartupScript(tableClothConfiguration);
             var batchFilePath = Path.Combine(assetsDirectory, "StartupScript.cmd");
             File.WriteAllText(batchFilePath, batchFileContent, Encoding.Default);
@@ -65,36 +57,6 @@ namespace TableCloth.Implementations
             File.WriteAllText(wsbFilePath, serializedXml);
 
             return wsbFilePath;
-        }
-
-        private string GenerateSandboxBootstrapPowerShellScript(TableClothConfiguration tableClothConfiguration)
-        {
-            if (tableClothConfiguration == null)
-                throw new ArgumentNullException(nameof(tableClothConfiguration));
-
-            var buffer = new StringBuilder();
-
-            if (_isSandboxLocalPathSupported)
-                buffer = buffer.AppendLine($@"{Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe")} {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}".Trim());
-            else
-            {
-                if (tableClothConfiguration.CertPair != null)
-                {
-                    var candidatePath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
-
-                    buffer = buffer.AppendLine($@"
-# Copy certs directory to AppData/LocalLow/NPKI path
-if (-Not (Test-Path -Path ""{candidatePath}"" -Type Container)) {{ mkdir ""{candidatePath}"" | Out-Null }}
-copy -Path ""{Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*")}"" -Destination ""{candidatePath}"" -Force");
-                }
-
-                buffer = buffer.AppendLine($@"
-# Run Hostess
-. '{Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe")}' {string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id))}
-");
-            }
-
-            return buffer.ToString();
         }
 
         private SandboxConfiguration BootstrapSandboxConfiguration(TableClothConfiguration tableClothConfig)
@@ -117,7 +79,7 @@ copy -Path ""{Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*")}"" -Destin
             sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
             {
                 HostFolder = tableClothConfig.AssetsDirectoryPath,
-                SandboxFolder = _isSandboxLocalPathSupported ? SandboxMappedFolder.DefaultAssetPath : null,
+                SandboxFolder = null,
                 ReadOnly = bool.FalseString,
             });
 
@@ -138,20 +100,15 @@ copy -Path ""{Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*")}"" -Destin
                 File.Copy(tableClothConfig.CertPair.DerFilePath, destDerFilePath, true);
                 File.Copy(tableClothConfig.CertPair.KeyFilePath, destKeyFileName, true);
 
-                var candidatePath = GetNPKIPathForSandbox(tableClothConfig.CertPair);
-
-                if (_isSandboxLocalPathSupported)
+                sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
                 {
-                    sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
-                    {
-                        HostFolder = certAssetsDirectoryPath,
-                        SandboxFolder = _isSandboxLocalPathSupported ? candidatePath : null,
-                        ReadOnly = bool.TrueString,
-                    });
-                }
+                    HostFolder = certAssetsDirectoryPath,
+                    SandboxFolder = null,
+                    ReadOnly = bool.TrueString,
+                });
             }
 
-            sandboxConfig.LogonCommand.Add("C:\\Windows\\System32\\cmd.exe /c " + Path.Combine(GetAssetsPathForSandbox(), "StartupScript.cmd"));
+            sandboxConfig.LogonCommand.Add(Path.Combine(GetAssetsPathForSandbox(), "StartupScript.cmd"));
             return sandboxConfig;
         }
 
@@ -160,15 +117,20 @@ copy -Path ""{Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*")}"" -Destin
             if (tableClothConfiguration == null)
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
 
-            var buffer = new StringBuilder();
-            buffer = buffer.AppendLine("@echo off");
-            buffer = buffer.AppendLine(@"pushd ""%~dp0""");
-            buffer = buffer.AppendLine(@"powershell.exe -Command ""&{{Set-ExecutionPolicy RemoteSigned -Force}}""");
-            buffer = buffer.AppendLine($@"powershell.exe -ExecutionPolicy Bypass -File ""{Path.Combine(GetAssetsPathForSandbox(), "Bootstrap.ps1")}""");
-            buffer = buffer.AppendLine(@":exit");
-            buffer = buffer.AppendLine(@"@popd");
-            buffer = buffer.AppendLine("@echo on");
-            return buffer.ToString();
+            var npkiDirectoryPath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
+            var providedCertFilePath = Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*");
+            var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");
+            var idList = string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id).Distinct());
+
+            return $@"@echo off
+pushd ""%~dp0""
+if not exist ""{npkiDirectoryPath}"" mkdir ""{npkiDirectoryPath}""
+copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
+""{hostessFilePath}"" ""{idList}""
+:exit
+popd
+@echo on
+";
         }
 
         private void ExpandHostessFiles(Stream hostessZipFileStream, string outputDirectory)
