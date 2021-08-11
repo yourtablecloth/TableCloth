@@ -98,7 +98,7 @@ namespace TableCloth.Implementations.WPF
                 EnableMicrophone = ViewModel.EnableMicrophone,
                 EnableWebCam = ViewModel.EnableWebCam,
                 EnablePrinters = ViewModel.EnablePrinters,
-                Packages = _selectedSites,
+                Services = _selectedSites,
             };
 
             var tempPath = Path.Combine(ViewModel.AppStartup.AppDataDirectoryPath, $"bwsb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}");

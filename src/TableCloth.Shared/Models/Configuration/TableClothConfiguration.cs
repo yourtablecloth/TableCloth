@@ -11,7 +11,7 @@ namespace TableCloth.Models.Configuration
         public bool EnableMicrophone { get; set; }
         public bool EnableWebCam { get; set; }
         public bool EnablePrinters { get; set; }
-        public ICollection<CatalogInternetService> Packages { get; set; }
+        public ICollection<CatalogInternetService> Services { get; set; }
         public string AssetsDirectoryPath { get; internal set; }
     }
 }

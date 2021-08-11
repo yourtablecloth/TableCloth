@@ -120,7 +120,7 @@ namespace TableCloth.Implementations
             var npkiDirectoryPath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
             var providedCertFilePath = Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*");
             var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");
-            var idList = string.Join(" ", tableClothConfiguration.Packages.Select(x => x.Id).Distinct());
+            var idList = string.Join(" ", tableClothConfiguration.Services.Select(x => x.Id).Distinct());
 
             return $@"@echo off
 pushd ""%~dp0""
