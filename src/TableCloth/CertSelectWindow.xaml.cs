@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -37,7 +38,11 @@ namespace TableCloth.Implementations.WPF
             };
 
             var npkiPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "NPKI");
-            var userDirectories = Directory.GetDirectories(npkiPath, "USER", SearchOption.AllDirectories);
+            var userDirectories = new List<string>();
+
+            if (Directory.Exists(npkiPath))
+                userDirectories.AddRange(Directory.GetDirectories(npkiPath, "USER", SearchOption.AllDirectories));
+
             var removableDrives = DriveInfo.GetDrives().Where(x => x.DriveType == DriveType.Removable).Select(x => x.RootDirectory.FullName);
 
             ofd.CustomPlaces = new string[] { npkiPath, }
