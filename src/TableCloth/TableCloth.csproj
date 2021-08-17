@@ -55,7 +55,7 @@
 	<Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-	  <Exec Command="dir &quot;$(SolutionDir)Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Hostess.zip&quot;" />
+	  <Exec Command="dir &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Hostess.zip&quot;" />
 	</Target>
 
 </Project>
