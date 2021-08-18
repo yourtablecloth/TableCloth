@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Sentry;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using TableCloth.Contracts;
 using TableCloth.Implementations;
 using TableCloth.Implementations.WPF;
+using TableCloth.Resources;
 using TableCloth.ViewModels;
 
 namespace TableCloth
@@ -16,43 +18,51 @@ namespace TableCloth
 
         public static void Main(string[] args)
         {
-            var services = new ServiceCollection();
-            ConfigureServices(services);
-
-            ServiceProvider = services.BuildServiceProvider();
-            var startup = ServiceProvider.GetService<IAppStartup>();
-            var userInterface = ServiceProvider.GetService<IAppUserInterface>();
-            var messageBox = ServiceProvider.GetService<IAppMessageBox>();
-
-            startup.Arguments = args;
-            var warnings = new List<string>();
-
-            if (!startup.HasRequirementsMet(warnings, out Exception failedReason, out bool isCritical))
+            using (SentrySdk.Init(o =>
             {
-                messageBox.DisplayError(default, failedReason, isCritical);
-
-                if (isCritical)
-                {
-                    Environment.Exit(1);
-                    return;
-                }
-            }
-
-            if (warnings.Any())
-                messageBox.DisplayError(default, string.Join(Environment.NewLine + Environment.NewLine, warnings), false);
-
-            if (!startup.Initialize(out failedReason, out isCritical))
+                o.Dsn = StringResources.SentryDsn;
+                o.Debug = true;
+                o.TracesSampleRate = 1.0;
+            }))
             {
-                messageBox.DisplayError(default, failedReason, isCritical);
+                var services = new ServiceCollection();
+                ConfigureServices(services);
 
-                if (isCritical)
+                ServiceProvider = services.BuildServiceProvider();
+                var startup = ServiceProvider.GetService<IAppStartup>();
+                var userInterface = ServiceProvider.GetService<IAppUserInterface>();
+                var messageBox = ServiceProvider.GetService<IAppMessageBox>();
+
+                startup.Arguments = args;
+                var warnings = new List<string>();
+
+                if (!startup.HasRequirementsMet(warnings, out Exception failedReason, out bool isCritical))
                 {
-                    Environment.Exit(2);
-                    return;
-                }
-            }
+                    messageBox.DisplayError(default, failedReason, isCritical);
 
-            userInterface.StartApplication(args);
+                    if (isCritical)
+                    {
+                        Environment.Exit(1);
+                        return;
+                    }
+                }
+
+                if (warnings.Any())
+                    messageBox.DisplayError(default, string.Join(Environment.NewLine + Environment.NewLine, warnings), false);
+
+                if (!startup.Initialize(out failedReason, out isCritical))
+                {
+                    messageBox.DisplayError(default, failedReason, isCritical);
+
+                    if (isCritical)
+                    {
+                        Environment.Exit(2);
+                        return;
+                    }
+                }
+
+                userInterface.StartApplication(args);
+            }
         }
 
         public static void ConfigureServices(ServiceCollection services)

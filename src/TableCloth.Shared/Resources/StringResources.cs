@@ -16,6 +16,9 @@ namespace TableCloth.Resources
         internal static readonly string CatalogUrl =
             "https://dotnetdev-kr.github.io/TableCloth/Catalog.xml";
 
+        internal static readonly string SentryDsn =
+            "https://785e3f46849c403bb6c323d7a9eaad91@o77541.ingest.sentry.io/5915832";
+
         internal static readonly string UserAgentText =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36";
     }

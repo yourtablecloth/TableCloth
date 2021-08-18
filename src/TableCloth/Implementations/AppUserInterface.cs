@@ -1,9 +1,11 @@
 ﻿using Serilog;
+using Serilog.Events;
 using Serilog.Formatting.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using TableCloth.Contracts;
+using TableCloth.Resources;
 
 namespace TableCloth.Implementations
 {
@@ -41,6 +43,12 @@ namespace TableCloth.Implementations
                 Log.Logger = new LoggerConfiguration()
                     .Enrich.FromLogContext()
                     .WriteTo.File(new JsonFormatter(), Path.Combine(_appStartup.AppDataDirectoryPath, "ApplicationLog.jsonl"))
+                    .WriteTo.Sentry(o =>
+                    {
+                        o.Dsn = StringResources.SentryDsn;
+                        o.MinimumBreadcrumbLevel = LogEventLevel.Debug;
+                        o.MinimumEventLevel = LogEventLevel.Warning;
+                    })
                     .CreateLogger();
 
                 _appInstance = new App();
