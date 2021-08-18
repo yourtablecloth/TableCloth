@@ -1,22 +1,61 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows10.0.18362.0</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
-    <MinimumPlatformVersion>10.0.18362.0</MinimumPlatformVersion>
-    <StartupObject>TableCloth.Program</StartupObject>
-    <ApplicationIcon>App.ico</ApplicationIcon>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<StartupObject>TableCloth.Program</StartupObject>
+		<ApplicationIcon>App.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+		<Platforms>x64</Platforms>
+		<UseWPF>True</UseWPF>
+		<Description>Keep your computer clean!</Description>
+		<Company>rkttu.com</Company>
+		<Product>Table Cloth</Product>
+		<ProductName>Table Cloth</ProductName>
+		<Copyright>(c) rkttu.com, 2021</Copyright>
+		<Version>1.0.0.0</Version>
+		<FileVersion>1.0.0.0</FileVersion>
+		<PackageProjectUrl>https://bit.ly/yourtablecloth</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/dotnetdev-kr/TableCloth</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>TableCloth</PackageTags>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="GitInfo" Version="2.1.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="Companions\**" />
+	  <Compile Remove="Implementations\WinForms\**" />
+	  <EmbeddedResource Remove="Companions\**" />
+	  <EmbeddedResource Remove="Implementations\WinForms\**" />
+	  <None Remove="Companions\**" />
+	  <None Remove="Implementations\WinForms\**" />
+	  <Page Remove="Implementations\WinForms\**" />
+	</ItemGroup>
 
-  <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
+	<ItemGroup>
+	  <None Remove="Hostess.zip" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Hostess.zip" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MaterialDesignThemes" Version="4.1.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Include="App.xaml" />
+	</ItemGroup>
+
+	<Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	  <Exec Command="dir &quot;$(SolutionDir)Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Hostess.zip&quot;" />
+	</Target>
 
 </Project>

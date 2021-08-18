@@ -1,0 +1,27 @@
+﻿<Application x:Class="TableCloth.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:TableCloth.Converters"
+             xmlns:di="clr-namespace:TableCloth.Implementations"
+             StartupUri="MainWindow.xaml">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <converters:CategoryConverter x:Key="CategoryConverter" />
+            <converters:BooleanToVisibilityConverters x:Key="BooleanToVisibilityConverters" />
+            <converters:InverseBooleanToVisibilityConverters x:Key="InverseBooleanToVisibilityConverters" />
+
+            <di:ViewModelLocator x:Key="ViewModelLocator" />
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="UIStringResources.xaml" />
+
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+    
+</Application>

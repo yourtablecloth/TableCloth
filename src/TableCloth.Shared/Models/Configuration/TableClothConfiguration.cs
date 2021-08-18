@@ -7,11 +7,11 @@ namespace TableCloth.Models.Configuration
     [Serializable]
     public sealed class TableClothConfiguration
     {
-        public X509CertPair CertPair { get; init; }
-        public bool EnableMicrophone { get; init; }
-        public bool EnableWebCam { get; init; }
-        public bool EnablePrinters { get; init; }
-        public ICollection<CatalogInternetService> Packages { get; init; }
+        public X509CertPair CertPair { get; set; }
+        public bool EnableMicrophone { get; set; }
+        public bool EnableWebCam { get; set; }
+        public bool EnablePrinters { get; set; }
+        public ICollection<CatalogInternetService> Services { get; set; }
         public string AssetsDirectoryPath { get; internal set; }
     }
 }

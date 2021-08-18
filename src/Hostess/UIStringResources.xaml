@@ -1,0 +1,42 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="QuestionForNonSandboxEnvironment">
+        지금 이 프로그램이 실행되는 환경은 윈도우 샌드박스 환경이 아닌 것 같습니다. 그래도 계속 실행하시겠습니까?
+    </system:String>
+
+    <system:String x:Key="QuestionDialogTitle">
+        질문
+    </system:String>
+
+    <system:String x:Key="AppTitle">
+        식탁보 자동 설치 프로그램
+    </system:String>
+
+    <system:String x:Key="AppInstructionMessage">
+        이 프로그램은 요청받은 설치 프로그램들을 샌드 박스 안에 한번에 설치해주는 도구입니다. 설치하기 버튼을 누르면 설치가 시작됩니다.
+    </system:String>
+
+    <system:String x:Key="ShowDetailError">
+        자세히 보기
+    </system:String>
+
+    <system:String x:Key="AboutButtonText">
+        프로그램 정보
+    </system:String>
+
+    <system:String x:Key="InstallButtonText">
+        설치하기
+    </system:String>
+
+    <system:String x:Key="PrecautionWindowText">
+        주의 사항
+    </system:String>
+
+    <system:String x:Key="CloseButtonText">
+        닫기
+    </system:String>
+
+</ResourceDictionary>
