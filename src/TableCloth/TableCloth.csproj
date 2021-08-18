@@ -23,12 +23,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Hostess\Hostess.csproj">
-			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-		</ProjectReference>
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Compile Remove="Companions\**" />
 	  <Compile Remove="Implementations\WinForms\**" />
 	  <EmbeddedResource Remove="Companions\**" />
