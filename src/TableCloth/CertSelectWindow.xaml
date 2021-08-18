@@ -5,20 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TableCloth.Implementations.WPF"
         mc:Ignorable="d"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        TextElement.FontWeight="Regular"
-        TextElement.FontSize="13"
-        TextOptions.TextFormattingMode="Ideal"
-        TextOptions.TextRenderingMode="Auto"
-        Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{DynamicResource MaterialDesignFont}"
         Title="{StaticResource CertSelectWindow_Title}" Width="480" Height="320"
         MinWidth="480" MinHeight="320"
-        DataContext="{Binding CertSelectWindowViewModel, Source={StaticResource ViewModelLocator}}">
+        DataContext="{Binding CertSelectWindowViewModel, Source={StaticResource ViewModelLocator}}"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="9*"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="55"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Margin="10 10 10 0">

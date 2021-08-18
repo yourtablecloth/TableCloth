@@ -7,14 +7,15 @@
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
-        Title="{StaticResource PrecautionWindowText}" Width="640" Height="480">
+        Title="{StaticResource PrecautionWindowText}" Width="640" Height="480"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
             <RowDefinition Height="360*"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="55"/>
         </Grid.RowDefinitions>
-        <TextBlock Padding="10" TextWrapping="WrapWithOverflow" FontWeight="UltraBold" FontSize="20" Background="MediumVioletRed" Foreground="White" Grid.ColumnSpan="2" Grid.Row="0" Text="{StaticResource PrecautionWindowText}" />
+        <TextBlock Padding="10" TextWrapping="WrapWithOverflow" FontWeight="UltraBold" FontSize="20" Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" Foreground="{Binding Source={x:Static SystemColors.WindowBrush}}" Grid.ColumnSpan="2" Grid.Row="0" Text="{StaticResource PrecautionWindowText}" />
         <RichTextBox Grid.Row="1" x:Name="CautionTextBody" Margin="10" />
         <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="2">
             <Button Margin="0 0 10 0" Padding="5" x:Name="PerformInstallButton" Click="PerformInstallButton_Click" Content="{StaticResource CloseButtonText}" />
