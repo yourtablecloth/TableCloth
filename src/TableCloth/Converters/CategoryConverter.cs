@@ -11,7 +11,7 @@ namespace TableCloth.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             => (value is CatalogInternetServiceCategory internalValue) ?
                 StringResources.InternetServiceCategory_DisplayText(internalValue) :
-                StringResources.InternetService_UnknownText;
+                StringResources.UnknownText;
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => throw new NotImplementedException();

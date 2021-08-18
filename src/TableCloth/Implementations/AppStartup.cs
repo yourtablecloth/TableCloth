@@ -15,7 +15,7 @@ namespace TableCloth.Implementations
         public string AppDataDirectoryPath
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TableCloth");
 
-        public bool HasRequirementsMet(out Exception failedResaon, out bool isCritical)
+        public bool HasRequirementsMet(List<string> warnings, out Exception failedResaon, out bool isCritical)
         {
             // https://stackoverflow.com/questions/336633/how-to-detect-windows-64-bit-platform-with-net
             var isWow64 = Environment.OSVersion.Version.Major >= 10
@@ -48,6 +48,15 @@ namespace TableCloth.Implementations
                 failedResaon = new ApplicationException(StringResources.Error_Already_TableCloth_Running);
                 isCritical = true;
                 return false;
+            }
+
+            var iePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                "Internet Explorer", "iexplore.exe");
+
+            if (!File.Exists(iePath))
+            {
+                warnings.Add(StringResources.Error_IEMode_NotAvailable);
             }
 
             failedResaon = null;

@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using TableCloth.Contracts;
 using TableCloth.Implementations;
 using TableCloth.Implementations.WPF;
@@ -23,8 +25,9 @@ namespace TableCloth
             var messageBox = ServiceProvider.GetService<IAppMessageBox>();
 
             startup.Arguments = args;
+            var warnings = new List<string>();
 
-            if (!startup.HasRequirementsMet(out Exception failedReason, out bool isCritical))
+            if (!startup.HasRequirementsMet(warnings, out Exception failedReason, out bool isCritical))
             {
                 messageBox.DisplayError(default, failedReason, isCritical);
 
@@ -34,6 +37,9 @@ namespace TableCloth
                     return;
                 }
             }
+
+            if (warnings.Any())
+                messageBox.DisplayError(default, string.Join(Environment.NewLine + Environment.NewLine, warnings), false);
 
             if (!startup.Initialize(out failedReason, out isCritical))
             {

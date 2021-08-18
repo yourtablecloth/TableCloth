@@ -9,7 +9,7 @@ namespace TableCloth.Contracts
 
         string AppDataDirectoryPath { get; }
 
-        bool HasRequirementsMet(out Exception failedResaon, out bool isCritical);
+        bool HasRequirementsMet(List<string> warnings, out Exception failedResaon, out bool isCritical);
 
         bool Initialize(out Exception failedReason, out bool isCritical);
     }

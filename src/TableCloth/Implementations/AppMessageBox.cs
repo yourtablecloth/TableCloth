@@ -8,28 +8,60 @@ namespace TableCloth.Implementations
 {
     public sealed class AppMessageBox : IAppMessageBox
     {
-        public void DisplayInfo(object parentWindowHandle, string message)
-            => InvokeViaUIThread(
-                parentWindowHandle is Window window ? window.Dispatcher : Dispatcher.CurrentDispatcher,
-                () => MessageBox.Show(
-                    parentWindowHandle is Window window ? window : null,
-                    message, StringResources.TitleText_Info,
-                    MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK)
-                );
+        public int DisplayInfo(object parentWindowHandle, string message)
+        {
+            var dispatcher = parentWindowHandle is Window window ? window?.Dispatcher : null;
 
-        public void DisplayError(object parentWindowHandle, Exception failureReason, bool isCritical)
-            => DisplayError(parentWindowHandle, failureReason is AggregateException ? failureReason.InnerException.Message : failureReason.Message, isCritical);
+            if (dispatcher == null)
+                dispatcher = Dispatcher.CurrentDispatcher;
 
-        public void DisplayError(object parentWindowHandle, string message, bool isCritical)
-            => InvokeViaUIThread(
-                parentWindowHandle is Window window ? window.Dispatcher : Dispatcher.CurrentDispatcher,
-                () => MessageBox.Show(
-                    parentWindowHandle is Window window ? window : null,
-                    message, isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning,
-                    MessageBoxButton.OK, isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning, MessageBoxResult.OK)
-                );
+            return (int)dispatcher.Invoke(
+                new Func<object, string, int>((parent, message) =>
+                {
+                    return parent is Window window
+                        ? (int)MessageBox.Show(
+                            window, message, StringResources.TitleText_Info,
+                            MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK)
+                        : (int)MessageBox.Show(
+                            message, StringResources.TitleText_Info,
+                            MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                }),
+                new object[] { parentWindowHandle, message, });
+        }
 
-        private static MessageBoxResult InvokeViaUIThread(Dispatcher dispatcher, Func<MessageBoxResult> func)
-            => (MessageBoxResult)dispatcher.Invoke(func, Array.Empty<object>());
+        public int DisplayError(object parentWindowHandle, Exception failureReason, bool isCritical)
+        {
+            var unwrappedException = failureReason;
+
+            if (failureReason is AggregateException ae)
+                unwrappedException = ae.InnerException;
+
+            return DisplayError(parentWindowHandle, unwrappedException?.Message ?? StringResources.UnknownText, isCritical);
+        }
+
+        public int DisplayError(object parentWindowHandle, string message, bool isCritical)
+        {
+            var dispatcher = parentWindowHandle is Window window ? window?.Dispatcher : null;
+
+            if (dispatcher == null)
+                dispatcher = Dispatcher.CurrentDispatcher;
+
+            return (int)dispatcher.Invoke(
+                new Func<object, string, bool, int>((parent, message, isCritical) =>
+                {
+                    return parent is Window window
+                        ? (int)MessageBox.Show(
+                            window, message,
+                            isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning,
+                            MessageBoxButton.OK,
+                            isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning, MessageBoxResult.OK)
+                        : (int)MessageBox.Show(
+                            message,
+                            isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning,
+                            MessageBoxButton.OK,
+                            isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning, MessageBoxResult.OK);
+                }),
+                new object[] { parentWindowHandle, message, isCritical });
+        }
     }
 }
