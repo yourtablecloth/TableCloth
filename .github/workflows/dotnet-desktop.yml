@@ -106,8 +106,9 @@ jobs:
     
     # Build Hostess project separately
     - name: Build Hostess project
-      run: msbuild $env:Hostess_Project_Path /p:Configuration=$env:Configuration
+      run: msbuild $env:Hostess_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform
       env:
+        Platform: x64
         Configuration: ${{ matrix.configuration }}
 
     # Create the app package by building and packaging the Windows Application Packaging project
@@ -115,7 +116,7 @@ jobs:
       run: msbuild $env:Wap_Project_Path /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
       env:
         Appx_Bundle: Always
-        Appx_Bundle_Platforms: x86|x64
+        Appx_Bundle_Platforms: x64
         Appx_Package_Build_Mode: StoreUpload
         Configuration: ${{ matrix.configuration }}
 
