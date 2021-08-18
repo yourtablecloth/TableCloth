@@ -70,13 +70,13 @@ jobs:
         fetch-depth: 0
 
     # Setup Windows SDK for 1903
-    - name: Setup Windows 10 SDK Action
-      # You may pin to the exact commit or the version.
-      # uses: GuillaumeFalourd/setup-windows10-sdk-action@ce22858fa3c36a3505388e6f728feb892c1b54ee
-      uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
-      with:
-        # SDK 5-digit version to install (e.g 17763, 18362, 19041)
-        sdk-version: 18362
+    #- name: Setup Windows 10 SDK Action
+    #  # You may pin to the exact commit or the version.
+    #  # uses: GuillaumeFalourd/setup-windows10-sdk-action@ce22858fa3c36a3505388e6f728feb892c1b54ee
+    #  uses: GuillaumeFalourd/setup-windows10-sdk-action@v1
+    #  with:
+    #    # SDK 5-digit version to install (e.g 17763, 18362, 19041)
+    #    sdk-version: 18362
 
     # Install the .NET Core workload
     - name: Install .NET Core
@@ -106,10 +106,10 @@ jobs:
         [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
     
     # Build Hostess project separately
-    - name: Build Hostess project
-      run: msbuild $env:Hostess_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform
-      env:
-        Configuration: ${{ matrix.configuration }}
+    #- name: Build Hostess project
+    #  run: msbuild $env:Hostess_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform
+    #  env:
+    #    Configuration: ${{ matrix.configuration }}
 
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Create the app package
@@ -130,5 +130,5 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: MSIX Package
+        name: MSIX Package (${{ matrix.configuration }})
         path: ${{ env.Wap_Project_Directory }}\AppPackages
