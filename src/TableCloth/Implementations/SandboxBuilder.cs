@@ -117,15 +117,24 @@ namespace TableCloth.Implementations
             if (tableClothConfiguration == null)
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
 
-            var npkiDirectoryPath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
-            var providedCertFilePath = Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*");
+            var certFileCopyScript = string.Empty;
+
+            if (tableClothConfiguration.CertPair != null)
+            {
+                var npkiDirectoryPath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
+                var providedCertFilePath = Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*");
+                certFileCopyScript = $@"
+if not exist ""{npkiDirectoryPath}"" mkdir ""{npkiDirectoryPath}""
+copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
+";
+            }
+
             var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");
             var idList = string.Join(" ", tableClothConfiguration.Services.Select(x => x.Id).Distinct());
 
             return $@"@echo off
 pushd ""%~dp0""
-if not exist ""{npkiDirectoryPath}"" mkdir ""{npkiDirectoryPath}""
-copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
+{certFileCopyScript}
 ""{hostessFilePath}"" ""{idList}""
 :exit
 popd
