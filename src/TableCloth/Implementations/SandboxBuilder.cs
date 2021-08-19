@@ -135,7 +135,7 @@ copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
             return $@"@echo off
 pushd ""%~dp0""
 {certFileCopyScript}
-""{hostessFilePath}"" ""{idList}""
+""{hostessFilePath}"" {idList}
 :exit
 popd
 @echo on

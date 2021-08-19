@@ -41,7 +41,7 @@ namespace Hostess
                     return;
                 }
 
-                var targetSites = e.Args.ToArray();
+                var targetSites = e.Args.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
                 Current.InitInstallSites(targetSites);
 
                 if (!targetSites.Any())
