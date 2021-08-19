@@ -129,12 +129,24 @@ copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
 ";
             }
 
+            var everyonesPrinterSetupScript = string.Empty;
+
+            if (tableClothConfiguration.EnableEveryonesPrinter)
+            {
+                var downloadUrl = "https://k.kakaocdn.net/dn/cEqior/btqCGQ8rVbX/KU5Kj1RmtQEmrpSyk256d0/MopInstaller.exe?attach=1&knm=tfile.exe";
+                everyonesPrinterSetupScript = $@"
+curl.exe -L ""{downloadUrl.Replace("?", "^?").Replace("&", "^&")}"" -o ""%temp%\MopInstaller.exe""
+""%temp%\MopInstaller.exe""
+";
+            }
+
             var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");
             var idList = string.Join(" ", tableClothConfiguration.Services.Select(x => x.Id).Distinct());
 
             return $@"@echo off
 pushd ""%~dp0""
 {certFileCopyScript}
+{everyonesPrinterSetupScript}
 ""{hostessFilePath}"" {idList}
 :exit
 popd

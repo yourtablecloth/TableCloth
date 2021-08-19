@@ -98,6 +98,7 @@ namespace TableCloth.Implementations.WPF
                 EnableMicrophone = ViewModel.EnableMicrophone,
                 EnableWebCam = ViewModel.EnableWebCam,
                 EnablePrinters = ViewModel.EnablePrinters,
+                EnableEveryonesPrinter = ViewModel.EnableEveryonesPrinter,
                 Services = _selectedSites,
             };
 

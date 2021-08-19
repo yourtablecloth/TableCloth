@@ -65,6 +65,7 @@ namespace TableCloth.ViewModels
         private bool _enableMicrophone;
         private bool _enableWebCam;
         private bool _enablePrinters;
+        private bool _enableEveryonesPrinter;
         private CatalogDocument _catalogDocument;
         private List<string> _selectedCertFiles;
         private List<SiteCatalogTabViewModel> _catalogs;
@@ -140,6 +141,19 @@ namespace TableCloth.ViewModels
                 if (value != _enablePrinters)
                 {
                     _enablePrinters = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public bool EnableEveryonesPrinter
+        {
+            get => _enableEveryonesPrinter;
+            set
+            {
+                if (value != _enableEveryonesPrinter)
+                {
+                    _enableEveryonesPrinter = value;
                     NotifyPropertyChanged();
                 }
             }
