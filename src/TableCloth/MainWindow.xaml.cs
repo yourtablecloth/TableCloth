@@ -23,7 +23,7 @@ namespace TableCloth.Implementations.WPF
         public MainWindowViewModel ViewModel
             => (MainWindowViewModel)DataContext;
 
-        private List<CatalogInternetService> _selectedSites = new ();
+        private List<CatalogInternetService> _selectedSites = new();
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -98,6 +98,8 @@ namespace TableCloth.Implementations.WPF
                 EnableMicrophone = ViewModel.EnableMicrophone,
                 EnableWebCam = ViewModel.EnableWebCam,
                 EnablePrinters = ViewModel.EnablePrinters,
+                EnableEveryonesPrinter = ViewModel.EnableEveryonesPrinter,
+                Companions = ViewModel.CatalogDocument.Companions,
                 Services = _selectedSites,
             };
 

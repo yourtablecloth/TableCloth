@@ -207,10 +207,31 @@ namespace Hostess
 
                 try
                 {
-                    using (var edgeKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
+                    var ieSiteListPath = @"C:\ie_site_list.xml";
+
+                    // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1
+                    using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
                     {
-                        edgeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
-                        edgeKey.SetValue("InternetExplorerIntegrationSiteList", @"C:\ie_site_list.xml", RegistryValueKind.String);
+                        ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
+                    }
+
+                    // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode > SiteList (REG_SZ) with path to your XML-sitelist
+                    using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode", true))
+                    {
+                        ieModeKey.SetValue("SiteList", ieSiteListPath);
+                    }
+
+                    // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main\EnterpriseMode > SiteList (REG_SZ) with path to your XML-sitelist
+                    using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main\EnterpriseMode", true))
+                    {
+                        ieModeKey.SetValue("SiteList", ieSiteListPath);
+                    }
+
+                    // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1, InternetExplorerIntegrationSiteList (REG_SZ)
+                    using (var ieModeKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
+                    {
+                        ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
+                        ieModeKey.SetValue("InternetExplorerIntegrationSiteList", ieSiteListPath, RegistryValueKind.String);
                     }
 
                     var siteListDocument = new SiteListDocument();

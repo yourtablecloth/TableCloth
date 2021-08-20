@@ -1,5 +1,7 @@
 # 식탁보 (Table Cloth) 프로젝트
 
+![식탁보 프로젝트 빌드 상황](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/dotnet-desktop.yml/badge.svg)
+
 [![식탁보 프로젝트 소개 영상](http://img.youtube.com/vi/HgHQB0Wp4Go/0.jpg)](https://youtu.be/HgHQB0Wp4Go?t=0s)
 
 ## 개요
@@ -13,6 +15,14 @@
 ## 사용 방법
 
 이 프로그램은 아직 개발 단계에 있습니다. 이 리포지터리의 소스 코드를 체크아웃하고, 닷넷 5 SDK를 다운로드하고 설치하여 프로그램을 실행하실 수 있습니다.
+
+### Windows Sandbox 설정
+ - "Windows 기능 켜기/끄기" 어플리케이션을 실행합니다.
+ - "Windows 샌드박스" 기능을 겹니다.
+
+![Windows 기능 켜기/끄기](https://user-images.githubusercontent.com/979297/130183566-dca3bd81-a76e-42bb-bfb3-37b7e8a7370c.png)
+![windows sandbox 켬](https://user-images.githubusercontent.com/979297/130183620-1b3376c6-a887-42fe-b925-1991a7b00434.png)
+
 
 ## 기여 방법
 
@@ -33,3 +43,10 @@
 Project emblem made by [Eucalyp](https://www.flaticon.com/authors/eucalyp) from [Flaticon](https://www.flaticon.com/).
 
 Photo by [Brooke Lark](https://unsplash.com/@brookelark?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/s/photos/tablecloth?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText).
+
+## 참고사항
+
+### VirtualBox Windows Guest
+ - VirtualBox 를 통한 Windows 사용시에는 SLAT 기능이 활성화가 필요합니다.
+ - macOS 에서 VirtualBox 를 통해 windows 를 사용하시는 분은 사용하실 수 없습니다.
+

@@ -117,16 +117,44 @@ namespace TableCloth.Implementations
             if (tableClothConfiguration == null)
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
 
-            var npkiDirectoryPath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
-            var providedCertFilePath = Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*");
+            var certFileCopyScript = string.Empty;
+
+            if (tableClothConfiguration.CertPair != null)
+            {
+                var npkiDirectoryPath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
+                var providedCertFilePath = Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*");
+                certFileCopyScript = $@"
+if not exist ""{npkiDirectoryPath}"" mkdir ""{npkiDirectoryPath}""
+copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
+";
+            }
+
+            var everyonesPrinterSetupScript = string.Empty;
+
+            if (tableClothConfiguration.EnableEveryonesPrinter)
+            {
+                var everyonesPrinterElement = tableClothConfiguration.Companions
+                    .Where(x => string.Equals(x.Id, "EveryonesPrinter", StringComparison.Ordinal))
+                    .SingleOrDefault();
+
+                if (everyonesPrinterElement != null)
+                {
+                    var downloadUrl = everyonesPrinterElement.Url.Replace("?", "^?").Replace("&", "^&");
+                    everyonesPrinterSetupScript = $@"
+curl.exe -L ""{downloadUrl}"" -o ""%temp%\MopInstaller.exe""
+""%temp%\MopInstaller.exe""
+";
+                }
+            }
+
             var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");
             var idList = string.Join(" ", tableClothConfiguration.Services.Select(x => x.Id).Distinct());
 
             return $@"@echo off
 pushd ""%~dp0""
-if not exist ""{npkiDirectoryPath}"" mkdir ""{npkiDirectoryPath}""
-copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
-""{hostessFilePath}"" ""{idList}""
+{certFileCopyScript}
+""{hostessFilePath}"" {idList}
+{everyonesPrinterSetupScript}
 :exit
 popd
 @echo on

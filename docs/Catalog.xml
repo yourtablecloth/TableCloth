@@ -5,8 +5,11 @@
 	Category 속성에는 Other, Banking, Financing, CreditCard, Government 등의 값을 넣을 수 있어요.
 	자세한 속성은 Models/TableClothCatalog 디렉터리 안의 소스 파일들을 참고하세요.
 	-->
+	<Companions>
+		<!-- 모두의 프린터 -->
+		<Companion Id="EveryonesPrinter" DisplayName="모두의 프린터" Url="https://k.kakaocdn.net/dn/cEqior/btqCGQ8rVbX/KU5Kj1RmtQEmrpSyk256d0/MopInstaller.exe?attach=1&amp;knm=tfile.exe" Arguments="" />
+	</Companions>
 	<InternetServices>
-		
 		<!-- 인터넷 뱅킹 시작 (https://www.kfb.or.kr/member/list_regular.php 참고함) -->
 		<Service Id="WooriBank" DisplayName="우리은행" Category="Banking" Url="https://www.wooribank.com/">
 			<CompatNotes>우리은행의 경우 키보드보안프로그램을 설치했어도 원격 데스크톱, Hyper-V 고급 세션, 그리고 윈도우 샌드박스 환경에서는 키 입력을 제대로 처리하지 못합니다. 마우스 입력기를 이용하여 비밀 번호를 입력해주셔야 합니다.</CompatNotes>

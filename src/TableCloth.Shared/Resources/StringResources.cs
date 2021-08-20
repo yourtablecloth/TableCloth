@@ -16,6 +16,9 @@ namespace TableCloth.Resources
         internal static readonly string CatalogUrl =
             "https://dotnetdev-kr.github.io/TableCloth/Catalog.xml";
 
+        internal static readonly string SentryDsn =
+            "https://785e3f46849c403bb6c323d7a9eaad91@o77541.ingest.sentry.io/5915832";
+
         internal static readonly string UserAgentText =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36";
     }
@@ -40,7 +43,7 @@ namespace TableCloth.Resources
     // 비 사용자 인터페이스 문자열들
     partial class StringResources
     {
-        internal static readonly string InternetService_UnknownText = "알 수 없음";
+        internal static readonly string UnknownText = "알 수 없음";
 
         internal static string InternetService_DisplayText(CatalogInternetService svc)
         {
@@ -100,6 +103,9 @@ namespace TableCloth.Resources
 
         internal static readonly string Error_Windows_Sandbox_Already_Running
             = "식탁보를 통해서 윈도우 샌드박스를 실행하고 있는 것 같습니다. 사용을 마친 후 윈도우 샌드박스를 먼저 종료해주세요.";
+
+        internal static readonly string Error_IEMode_NotAvailable
+            = "Microsoft Edge 브라우저 안에서 인터넷 익스플로러 모드를 활성화해야 호환성 문제를 피할 수 있습니다. 인터넷 익스플로러를 시스템 구성 요소 추가/제거를 통해 활성화해주세요.";
 
         internal static string Error_HostFolder_Unavailable(IEnumerable<string> unavailableDirectories)
         {

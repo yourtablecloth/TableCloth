@@ -6,19 +6,13 @@
         mc:Ignorable="d"
         Title="{StaticResource MainWindow_Title}" Width="800" Height="600"
         MinWidth="800" MinHeight="600"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        TextElement.FontWeight="Regular"
-        TextElement.FontSize="13"
-        TextOptions.TextFormattingMode="Ideal"
-        TextOptions.TextRenderingMode="Auto"
-        Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{DynamicResource MaterialDesignFont}"
         DataContext="{Binding MainWindowViewModel, Source={StaticResource ViewModelLocator}}"
-        Loaded="Window_Loaded" Closed="Window_Closed">
+        Loaded="Window_Loaded" Closed="Window_Closed"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="9*"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="55"/>
         </Grid.RowDefinitions>
         
         <Grid Margin="10 0 10 0">
@@ -26,6 +20,7 @@
                 <RowDefinition Height="50" />
                 <RowDefinition Height="30" />
                 <RowDefinition Height="80" />
+                <RowDefinition Height="30" />
                 <RowDefinition Height="30" />
                 <RowDefinition Height="30" />
                 <RowDefinition Height="30" />
@@ -49,8 +44,9 @@
             <CheckBox Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
             <CheckBox Grid.Row="4" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
             <CheckBox Grid.Row="5" VerticalAlignment="Center" Content="{StaticResource MainWindow_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
-            <Label Grid.Row="6" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
-            <TabControl Grid.Row="7" VerticalAlignment="Stretch" x:Name="SiteCatalog" ItemsSource="{Binding Path='Catalogs'}" SelectedItem="{Binding Path='SelectedTabView'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}">
+            <CheckBox Grid.Row="6" VerticalAlignment="Center" Content="모두의 프린터 추가하기" IsChecked="{Binding Path='EnableEveryonesPrinter'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
+            <Label Grid.Row="7" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
+            <TabControl Grid.Row="8" VerticalAlignment="Stretch" x:Name="SiteCatalog" ItemsSource="{Binding Path='Catalogs'}" SelectedItem="{Binding Path='SelectedTabView'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -64,7 +60,7 @@
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
-            <Label Grid.Row="6" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource InverseBooleanToVisibilityConverters}}" />
+            <Label Grid.Row="9" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource InverseBooleanToVisibilityConverters}}" />
         </Grid>
 
         <Grid Grid.Row="1">
