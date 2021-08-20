@@ -133,11 +133,18 @@ copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
 
             if (tableClothConfiguration.EnableEveryonesPrinter)
             {
-                var downloadUrl = "https://k.kakaocdn.net/dn/cEqior/btqCGQ8rVbX/KU5Kj1RmtQEmrpSyk256d0/MopInstaller.exe?attach=1&knm=tfile.exe";
-                everyonesPrinterSetupScript = $@"
-curl.exe -L ""{downloadUrl.Replace("?", "^?").Replace("&", "^&")}"" -o ""%temp%\MopInstaller.exe""
+                var everyonesPrinterElement = tableClothConfiguration.Companions
+                    .Where(x => string.Equals(x.Id, "EveryonesPrinter", StringComparison.Ordinal))
+                    .SingleOrDefault();
+
+                if (everyonesPrinterElement != null)
+                {
+                    var downloadUrl = everyonesPrinterElement.Url.Replace("?", "^?").Replace("&", "^&");
+                    everyonesPrinterSetupScript = $@"
+curl.exe -L ""{downloadUrl}"" -o ""%temp%\MopInstaller.exe""
 ""%temp%\MopInstaller.exe""
 ";
+                }
             }
 
             var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");
@@ -146,8 +153,8 @@ curl.exe -L ""{downloadUrl.Replace("?", "^?").Replace("&", "^&")}"" -o ""%temp%\
             return $@"@echo off
 pushd ""%~dp0""
 {certFileCopyScript}
-{everyonesPrinterSetupScript}
 ""{hostessFilePath}"" {idList}
+{everyonesPrinterSetupScript}
 :exit
 popd
 @echo on

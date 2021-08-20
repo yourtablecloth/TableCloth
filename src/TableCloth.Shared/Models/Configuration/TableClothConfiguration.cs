@@ -12,6 +12,7 @@ namespace TableCloth.Models.Configuration
         public bool EnableWebCam { get; set; }
         public bool EnablePrinters { get; set; }
         public bool EnableEveryonesPrinter { get; set; }
+        public ICollection<CatalogCompanion> Companions { get; set; }
         public ICollection<CatalogInternetService> Services { get; set; }
         public string AssetsDirectoryPath { get; internal set; }
     }

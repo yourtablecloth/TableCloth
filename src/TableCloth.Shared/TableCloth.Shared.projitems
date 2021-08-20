@@ -9,6 +9,7 @@
     <Import_RootNamespace>TableCloth</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogCompanion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogDocument.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogInternetService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogInternetServiceCategory.cs" />
