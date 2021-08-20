@@ -4,7 +4,7 @@
 
 [(Prerelease) 식탁보 0.5.0 출시했습니다! 🥳](https://github.com/dotnetdev-kr/TableCloth/releases/tag/v0.5.0)
 
-[![식탁보 프로젝트 소개 영상](http://img.youtube.com/vi/HgHQB0Wp4Go/0.jpg)](https://youtu.be/HgHQB0Wp4Go?t=0s)
+[![식탁보 프로젝트 소개 영상](TableCloth.png)](https://youtu.be/HgHQB0Wp4Go?t=0s)
 
 ## 개요
 
@@ -33,10 +33,6 @@
 이 때 프로그램을 직접 다운로드받을 수 있는 URL이 바뀌거나, 구 버전으로 다운로드되는 경우가 있을 수 있는데, 이 부분에 대한 컨트리뷰터 여러분의 기여가 필요합니다.
 
 만약 주소가 바뀌었다면 [docs](docs) 폴더의 [Catalog.xml](docs/Catalog.xml) 파일에 정확한 URL을 기재하여 풀 리퀘스트를 보내주세요.
-
-## 스크린 샷
-
-![스크린 샷](TableCloth.png)
 
 ## 라이선스
 
