@@ -1,5 +1,7 @@
 # 식탁보 (Table Cloth) 프로젝트
 
+![식탁보 프로젝트 빌드 상황](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/dotnet-desktop.yml/badge.svg)
+
 [![식탁보 프로젝트 소개 영상](http://img.youtube.com/vi/HgHQB0Wp4Go/0.jpg)](https://youtu.be/HgHQB0Wp4Go?t=0s)
 
 ## 개요
