@@ -9,7 +9,7 @@
   <Identity
     Name="391c216c-bdb4-4fbf-ae4c-7a0d9de6e6ff"
     Publisher="CN=rkttu"
-    Version="1.0.0.0" />
+    Version="0.5.0.0" />
 
   <Properties>
     <DisplayName>TableCloth</DisplayName>
