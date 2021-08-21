@@ -2,9 +2,9 @@ name: TableCloth Build Pipeline
 
 on:
   push:
-    branches: [ main, release, github-action ]
+    branches: [ dev, github-action ]
   pull_request:
-    branches: [ main, release, github-action ]
+    branches: [ dev, github-action ]
 
 jobs:
   build:
