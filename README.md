@@ -1,5 +1,7 @@
 # 식탁보 (Table Cloth) 프로젝트
 
+[프로젝트 홈페이지](https://yourtablecloth.github.io/)
+
 [![식탁보 프로젝트 빌드 상황](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions) [![식탁보 최신 버전 다운로드](https://img.shields.io/github/downloads/yourtablecloth/TableCloth/total?label=%EC%8B%9D%ED%83%81%EB%B3%B4%20%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C)](https://github.com/yourtablecloth/TableCloth/releases)
 
 ![식탁보 실행 화면](docs/images/TableCloth.png)
@@ -20,6 +22,8 @@
 
 Visual Studio 2019 이상, .NET 5 SDK, .NET Framework 4.6 SDK가 필요합니다.
 
-## 라이선스
+## 라이선스 및 기타 규정
 
-이 프로젝트는 MIT 라이선스를 따릅니다.
+이 프로젝트는 [MIT 라이선스](LICENSE.txt)를 따릅니다.
+
+보안 정책에 관해서는 [이곳](SECURITY.md)을 참고해주세요.
