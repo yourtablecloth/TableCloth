@@ -21,15 +21,6 @@
     <PackageTags>TableCloth</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Companions\**" />
-    <Compile Remove="Implementations\WinForms\**" />
-    <EmbeddedResource Remove="Companions\**" />
-    <EmbeddedResource Remove="Implementations\WinForms\**" />
-    <None Remove="Companions\**" />
-    <None Remove="Implementations\WinForms\**" />
-    <Page Remove="Implementations\WinForms\**" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="Hostess.zip" />
   </ItemGroup>
   <ItemGroup>
