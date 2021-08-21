@@ -14,7 +14,7 @@ namespace TableCloth.Resources
         internal static readonly string AppCopyright = "(c) 2021 남정현";
 
         internal static readonly string CatalogUrl =
-            "https://dotnetdev-kr.github.io/TableCloth/Catalog.xml";
+            "https://yourtablecloth.github.io/TableClothCatalog/Catalog.xml";
 
         internal static readonly string SentryDsn =
             "https://785e3f46849c403bb6c323d7a9eaad91@o77541.ingest.sentry.io/5915832";

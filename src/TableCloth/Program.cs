@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TableCloth.Contracts;
 using TableCloth.Implementations;
-using TableCloth.Implementations.WPF;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
