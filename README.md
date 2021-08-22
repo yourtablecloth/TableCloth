@@ -1,8 +1,10 @@
 # 식탁보 (Table Cloth) 프로젝트
 
-![식탁보 프로젝트 빌드 상황](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/dotnet-desktop.yml/badge.svg)
+[프로젝트 홈페이지](https://yourtablecloth.github.io/)
 
-[![식탁보 프로젝트 소개 영상](http://img.youtube.com/vi/HgHQB0Wp4Go/0.jpg)](https://youtu.be/HgHQB0Wp4Go?t=0s)
+[![식탁보 프로젝트 빌드 상황](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions) [![식탁보 최신 버전 다운로드](https://img.shields.io/github/downloads/yourtablecloth/TableCloth/total?label=%EC%8B%9D%ED%83%81%EB%B3%B4%20%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C)](https://github.com/yourtablecloth/TableCloth/releases)
+
+![식탁보 실행 화면](docs/images/TableCloth.png)
 
 ## 개요
 
@@ -12,41 +14,16 @@
 
 이런 문제를 완화하고, 컴퓨터를 항상 안정적인 상태로 유지할 수 있도록 도와주기 위하여 이 프로젝트를 시작하게 되었습니다.
 
-## 사용 방법
+## 일반적인 설치와 사용 방법 안내
 
-이 프로그램은 아직 개발 단계에 있습니다. 이 리포지터리의 소스 코드를 체크아웃하고, 닷넷 5 SDK를 다운로드하고 설치하여 프로그램을 실행하실 수 있습니다.
+일반적인 설치와 사용 방법 안내는 [식탁보 홈페이지](https://yourtablecloth.github.io)에서 소개하고 있습니다.
 
-### Windows Sandbox 설정
- - "Windows 기능 켜기/끄기" 어플리케이션을 실행합니다.
- - "Windows 샌드박스" 기능을 겹니다.
+## 빌드 환경
 
-![Windows 기능 켜기/끄기](https://user-images.githubusercontent.com/979297/130183566-dca3bd81-a76e-42bb-bfb3-37b7e8a7370c.png)
-![windows sandbox 켬](https://user-images.githubusercontent.com/979297/130183620-1b3376c6-a887-42fe-b925-1991a7b00434.png)
+Visual Studio 2019 이상, .NET 5 SDK, .NET Framework 4.6 SDK가 필요합니다.
 
+## 라이선스 및 기타 규정
 
-## 기여 방법
+이 프로젝트는 [MIT 라이선스](LICENSE.txt)를 따릅니다.
 
-이 프로그램은 카탈로그 파일을 통해 각 인터넷 뱅킹 및 전자 정부 사이트에 접속할 때 설치해야 할 소프트웨어들을 자동으로 찾아 다운로드받습니다.
-
-이 때 프로그램을 직접 다운로드받을 수 있는 URL이 바뀌거나, 구 버전으로 다운로드되는 경우가 있을 수 있는데, 이 부분에 대한 컨트리뷰터 여러분의 기여가 필요합니다.
-
-만약 주소가 바뀌었다면 [docs](docs) 폴더의 [Catalog.xml](docs/Catalog.xml) 파일에 정확한 URL을 기재하여 풀 리퀘스트를 보내주세요.
-
-## 스크린 샷
-
-![스크린 샷](TableCloth.png)
-
-## 라이선스
-
-본 프로젝트는 MIT 라이선스를 따릅니다.
-
-Project emblem made by [Eucalyp](https://www.flaticon.com/authors/eucalyp) from [Flaticon](https://www.flaticon.com/).
-
-Photo by [Brooke Lark](https://unsplash.com/@brookelark?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/s/photos/tablecloth?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText).
-
-## 참고사항
-
-### VirtualBox Windows Guest
- - VirtualBox 를 통한 Windows 사용시에는 SLAT 기능이 활성화가 필요합니다.
- - macOS 에서 VirtualBox 를 통해 windows 를 사용하시는 분은 사용하실 수 없습니다.
-
+보안 정책에 관해서는 [이곳](SECURITY.md)을 참고해주세요.

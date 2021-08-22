@@ -135,9 +135,21 @@ namespace Hostess
                 if (!Directory.Exists(downloadFolderPath))
                     Directory.CreateDirectory(downloadFolderPath);
 
-                var internetExplorerExists = File.Exists(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-                    "Internet Explorer", "iexplore.exe"));
+                var catalog = Application.Current.GetCatalogDocument();
+
+                foreach (var eachUrl in catalog.Services.Select(x => x.Url))
+                {
+                    if (!Uri.TryCreate(eachUrl, UriKind.Absolute, out Uri parsedUrl))
+                        continue;
+
+                    var rootDomain = RootDomainParser.InferenceRootDomain(parsedUrl);
+
+                    if (string.IsNullOrWhiteSpace(rootDomain))
+                        continue;
+
+                    if (!ieModeRequiredDomainList.Contains(rootDomain, StringComparer.Ordinal))
+                        ieModeRequiredDomainList.Add(rootDomain);
+                }
 
                 foreach (InstallItemViewModel eachItem in InstallList.ItemsSource)
                 {
@@ -146,15 +158,11 @@ namespace Hostess
                         eachItem.Installed = null;
                         eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
 
-                        if (!eachItem.SkipIEMode && internetExplorerExists &&
+                        if (eachItem.SkipIEMode &&
                             Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl))
                         {
-                            var rootDomainName = string.Join(".", parsedUrl.Host
-                                .Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries)
-                                .Reverse().Take(2).Reverse());
-
-                            if (!ieModeRequiredDomainList.Contains(rootDomainName, StringComparer.Ordinal))
-                                ieModeRequiredDomainList.Add(rootDomainName);
+                            var rootDomainName = RootDomainParser.InferenceRootDomain(parsedUrl);
+                            ieModeRequiredDomainList.Remove(rootDomainName);
                         }
 
                         var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
@@ -205,65 +213,71 @@ namespace Hostess
                     }
                 }
 
-                try
+                var internetExplorerExists = File.Exists(Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                    "Internet Explorer", "iexplore.exe"));
+
+                if (internetExplorerExists)
                 {
-                    var ieSiteListPath = @"C:\ie_site_list.xml";
-
-                    // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1
-                    using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
+                    try
                     {
-                        ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
+                        var ieSiteListPath = @"C:\ie_site_list.xml";
+
+                        // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1
+                        using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
+                        {
+                            ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
+                        }
+
+                        // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode > SiteList (REG_SZ) with path to your XML-sitelist
+                        using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode", true))
+                        {
+                            ieModeKey.SetValue("SiteList", ieSiteListPath);
+                        }
+
+                        // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main\EnterpriseMode > SiteList (REG_SZ) with path to your XML-sitelist
+                        using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main\EnterpriseMode", true))
+                        {
+                            ieModeKey.SetValue("SiteList", ieSiteListPath);
+                        }
+
+                        // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1, InternetExplorerIntegrationSiteList (REG_SZ)
+                        using (var ieModeKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
+                        {
+                            ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
+                            ieModeKey.SetValue("InternetExplorerIntegrationSiteList", ieSiteListPath, RegistryValueKind.String);
+                        }
+
+                        var siteListDocument = new SiteListDocument();
+                        siteListDocument.Sites.AddRange(ieModeRequiredDomainList.Select(x => new Site() { Url = x }));
+
+                        var serializer = new XmlSerializer(typeof(SiteListDocument));
+                        var @namespace = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty) });
+                        var targetEncoding = new UTF8Encoding(false);
+
+                        using (var fileStream = File.OpenWrite(ieSiteListPath))
+                        {
+                            var contentStream = new StreamWriter(fileStream);
+                            serializer.Serialize(contentStream, siteListDocument, @namespace);
+                        }
+
+                        // IE 모드 목록이 바로 로딩되지 않아서 별도 사이트를 한 번 띄울 필요가 있음.
+                        var process = Process.Start(new ProcessStartInfo("https://www.naver.com/")
+                        {
+                            UseShellExecute = true,
+                            WindowStyle = ProcessWindowStyle.Maximized,
+                        });
+                        await Task.Delay(2000);
+                        process.Close();
                     }
-
-                    // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode > SiteList (REG_SZ) with path to your XML-sitelist
-                    using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode", true))
+                    catch (Exception ex)
                     {
-                        ieModeKey.SetValue("SiteList", ieSiteListPath);
+                        MessageBox.Show(ex.ToString());
                     }
-
-                    // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main\EnterpriseMode > SiteList (REG_SZ) with path to your XML-sitelist
-                    using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main\EnterpriseMode", true))
-                    {
-                        ieModeKey.SetValue("SiteList", ieSiteListPath);
-                    }
-
-                    // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1, InternetExplorerIntegrationSiteList (REG_SZ)
-                    using (var ieModeKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
-                    {
-                        ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
-                        ieModeKey.SetValue("InternetExplorerIntegrationSiteList", ieSiteListPath, RegistryValueKind.String);
-                    }
-
-                    var siteListDocument = new SiteListDocument();
-                    siteListDocument.Sites.AddRange(ieModeRequiredDomainList.Select(x => new Site() { Url = x }));
-
-                    var serializer = new XmlSerializer(typeof(SiteListDocument));
-                    var @namespace = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty) });
-                    var targetEncoding = new UTF8Encoding(false);
-
-                    using (var fileStream = File.OpenWrite(@"C:\ie_site_list.xml"))
-                    {
-                        var contentStream = new StreamWriter(fileStream);
-                        serializer.Serialize(contentStream, siteListDocument, @namespace);
-                    }
-
-                    // IE 모드 목록이 바로 로딩되지 않아서 별도 사이트를 한 번 띄울 필요가 있음.
-                    var process = Process.Start(new ProcessStartInfo("https://www.naver.com/")
-                    {
-                        UseShellExecute = true,
-                        WindowStyle = ProcessWindowStyle.Maximized,
-                    });
-                    await Task.Delay(2000);
-                    process.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
                 }
 
                 if (!hasAnyFailure)
                 {
-                    var catalog = Application.Current.GetCatalogDocument();
                     var targets = Application.Current.GetInstallSites();
 
                     foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))

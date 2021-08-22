@@ -73,6 +73,7 @@
     </ApplicationDefinition>
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RootDomainParser.cs" />
     <Compile Include="SharedProperties.cs" />
     <Compile Include="Commands\ShowErrorMessageCommand.cs" />
     <Compile Include="Converters\StateToBrushConverter.cs" />
@@ -133,6 +134,7 @@
     <Resource Include="App.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\public_suffix_list.dat" />
     <None Include="Resources\Signature.jpg" />
   </ItemGroup>
   <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
