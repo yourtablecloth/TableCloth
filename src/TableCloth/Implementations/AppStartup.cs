@@ -5,7 +5,6 @@ using System.IO;
 using System.Threading;
 using TableCloth.Contracts;
 using TableCloth.Resources;
-using Windows.Storage;
 
 namespace TableCloth.Implementations
 {
@@ -14,13 +13,7 @@ namespace TableCloth.Implementations
         public IEnumerable<string> Arguments { get; set; }
 
         public string AppDataDirectoryPath
-        {
-            get
-            {
-                return Path.Combine(UserDataPaths.GetDefault().LocalAppDataLow, "TableCloth");
-                //return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TableCloth");
-            }
-        }
+            => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TableCloth");
 
         public bool HasRequirementsMet(List<string> warnings, out Exception failedResaon, out bool isCritical)
         {
