@@ -18,8 +18,8 @@ jobs:
     env:
       Solution_Name: src\TableCloth.sln
       Hostess_Project_Path: src\Hostess\Hostess.csproj
-      Wap_Project_Directory: src\TableClothSetup
-      Wap_Project_Path: src\TableClothSetup\TableClothSetup.wapproj
+      Setup_Project_Directory: src\TableCloth.SetupBuilder
+      Setup_Project_Path: src\TableCloth.SetupBuilder\TableCloth.SetupBuilder.csproj
       Platform: x64
 
     steps:
@@ -49,36 +49,47 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     # Decode the base 64 encoded pfx and save the Signing_Certificate
-    - name: Decode the pfx
-      run: |
-        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
-        $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
-        [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
-    
+    #- name: Decode the pfx
+    #  run: |
+    #    $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
+    #    $certificatePath = Join-Path -Path $env:Setup_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
+    #    [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+
     # Build Hostess project separately
     - name: Build Hostess project
       run: msbuild $env:Hostess_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Create the app package by building and packaging the Windows Application Packaging project
-    - name: Create the app package
-      run: msbuild $env:Wap_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:PackageCertificatePassword=${{ secrets.Pfx_Key }} /m
+    - name: Set path for candle and light
+      run: echo "$env:WIX_PATH\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       env:
-        Appx_Bundle: Always
-        Appx_Bundle_Platforms: ${{ env.Platform }}
-        Appx_Package_Build_Mode: StoreUpload
-        Configuration: ${{ matrix.configuration }}
+        WIX_PATH: ${{ env.wix }}
+
+    # Build Setup builder project separately
+    #- name: Build Setup builder project
+    #  run: msbuild $env:Setup_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
+    #  env:
+    #    Configuration: ${{ matrix.configuration }}
+
+    # Create the app package by building and packaging the Windows Application Packaging project
+    #- name: Create the app package
+    #  run: msbuild $env:Wap_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:PackageCertificatePassword=${{ secrets.Pfx_Key }} /m
+    #  env:
+    #    Appx_Bundle: Always
+    #    Appx_Bundle_Platforms: ${{ env.Platform }}
+    #    Appx_Package_Build_Mode: StoreUpload
+    #    Configuration: ${{ matrix.configuration }}
 
     # Remove the pfx
-    - name: Remove the pfx
-      run: |
-        $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
-        Remove-Item -path $certificatePath
+    #- name: Remove the pfx
+    #  run: |
+    #    $certificatePath = Join-Path -Path $env:Setup_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
+    #    Remove-Item -path $certificatePath
 
     # Upload the MSIX package: https://github.com/marketplace/actions/upload-artifact
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: MSIX Package (${{ matrix.configuration }})
-        path: ${{ env.Wap_Project_Directory }}\AppPackages
+    #- name: Upload build artifacts
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #    name: MSIX Package (${{ matrix.configuration }})
+    #    path: ${{ env.Setup_Project_Directory }}\AppPackages
