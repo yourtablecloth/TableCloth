@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "TableClothSetup", "TableClothSetup\TableClothSetup.wapproj", "{4CEEA487-1169-4AE7-8BBE-6BF87F5DFD28}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableCloth.SetupBuilder", "TableCloth.SetupBuilder\TableCloth.SetupBuilder.csproj", "{68063059-A0EA-4ED6-BADF-4D8120016E93}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -38,12 +38,10 @@ Global
 		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|x64.Build.0 = Debug|x64
 		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.ActiveCfg = Release|x64
 		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.Build.0 = Release|x64
-		{4CEEA487-1169-4AE7-8BBE-6BF87F5DFD28}.Debug|x64.ActiveCfg = Debug|x64
-		{4CEEA487-1169-4AE7-8BBE-6BF87F5DFD28}.Debug|x64.Build.0 = Debug|x64
-		{4CEEA487-1169-4AE7-8BBE-6BF87F5DFD28}.Debug|x64.Deploy.0 = Debug|x64
-		{4CEEA487-1169-4AE7-8BBE-6BF87F5DFD28}.Release|x64.ActiveCfg = Release|x64
-		{4CEEA487-1169-4AE7-8BBE-6BF87F5DFD28}.Release|x64.Build.0 = Release|x64
-		{4CEEA487-1169-4AE7-8BBE-6BF87F5DFD28}.Release|x64.Deploy.0 = Release|x64
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Debug|x64.ActiveCfg = Debug|x64
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Debug|x64.Build.0 = Debug|x64
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Release|x64.ActiveCfg = Release|x64
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
