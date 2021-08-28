@@ -37,6 +37,7 @@ namespace TableCloth.SetupBuilder
             var inputDirectory = args.ElementAtOrDefault(0);
             var pfxFilePath = args.ElementAtOrDefault(1);
             var pfxPassword = args.ElementAtOrDefault(2);
+            var licenseRtfFilePath = args.ElementAtOrDefault(3);
 
             if (string.IsNullOrWhiteSpace(inputDirectory) ||
                 !System.IO.Directory.Exists(inputDirectory))
@@ -51,7 +52,13 @@ namespace TableCloth.SetupBuilder
             project.UpgradeCode = Guid.Parse("C63DF133-51A9-4139-BD31-EDC025C7EB51");
             project.Encoding = System.Text.Encoding.UTF8;
             project.OutFileName = "TableCloth";
-            project.LicenceFile = "License.rtf";
+
+            if (!string.IsNullOrWhiteSpace(licenseRtfFilePath) &&
+                System.IO.File.Exists(licenseRtfFilePath))
+            {
+                project.LicenceFile = licenseRtfFilePath;
+            }
+
             project.Language = "ko-KR";
             project.UI = WUI.WixUI_Minimal;
             project.InstallScope = InstallScope.perUser;
