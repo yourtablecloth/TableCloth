@@ -66,6 +66,9 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="License.rtf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="wix\TableCloth.SetupBuilder.g.wxs" />
   </ItemGroup>
   <ItemGroup>
