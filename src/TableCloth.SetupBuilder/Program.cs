@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using TableCloth.Resources;
 using WixSharp;
 
 namespace TableCloth.SetupBuilder
@@ -33,7 +34,9 @@ namespace TableCloth.SetupBuilder
 
         private static void Main(string[] args)
         {
-            var inputDirectory = args.FirstOrDefault();
+            var inputDirectory = args.ElementAtOrDefault(0);
+            var pfxFilePath = args.ElementAtOrDefault(1);
+            var pfxPassword = args.ElementAtOrDefault(2);
 
             if (string.IsNullOrWhiteSpace(inputDirectory) ||
                 !System.IO.Directory.Exists(inputDirectory))
@@ -52,7 +55,22 @@ namespace TableCloth.SetupBuilder
             project.Language = "ko-KR";
             project.UI = WUI.WixUI_Minimal;
             project.InstallScope = InstallScope.perUser;
-            project.Name = "식탁보";
+            project.Name = StringResources.AppName;
+
+            if (!string.IsNullOrWhiteSpace(pfxFilePath) &&
+                System.IO.File.Exists(pfxFilePath))
+            {
+                project.DigitalSignature = new DigitalSignature()
+                {
+                    PfxFilePath = pfxFilePath,
+                    Password = pfxPassword,
+                    MaxTimeUrlRetry = 3,
+                    TimeUrl = new Uri("http://timestamp.digicert.com", UriKind.Absolute),
+                    UrlRetrySleep = 1,
+                    Description = StringResources.AppCopyright,
+                    HashAlgorithm = HashAlgorithmType.sha256,
+                };
+            }
 
             project = DefineCoreFeature(project, inputDirectory);
 
