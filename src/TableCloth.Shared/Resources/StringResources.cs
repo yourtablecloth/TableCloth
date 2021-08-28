@@ -47,7 +47,7 @@ namespace TableCloth.Resources
             = $"{AppName} 경고";
 
         internal static readonly string AboutDialog_BodyText
-            = $"{AppName} (빌드 번호: {Assembly.GetExecutingAssembly().GetName().Version})\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n{AppCopyright}";
+            = $"{AppName} (버전 {Assembly.GetExecutingAssembly().GetName().Version})\r\n\r\n{AppInfoUrl}\r\n\r\n{AppCopyright}";
     }
 
     // 비 사용자 인터페이스 문자열들

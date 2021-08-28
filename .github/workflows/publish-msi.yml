@@ -119,9 +119,9 @@ jobs:
         $certificatePath = Join-Path -Path $env:Setup_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
         Remove-Item -path $certificatePath
 
-    # Upload the MSIX package: https://github.com/marketplace/actions/upload-artifact
+    # Upload the MSI package: https://github.com/marketplace/actions/upload-artifact
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: MSIX Package (${{ matrix.configuration }})
+        name: MSI Package (${{ matrix.configuration }})
         path: TableCloth.msi
