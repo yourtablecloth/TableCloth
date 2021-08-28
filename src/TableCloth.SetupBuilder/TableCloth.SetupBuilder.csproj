@@ -66,9 +66,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="License.rtf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="License.rtf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

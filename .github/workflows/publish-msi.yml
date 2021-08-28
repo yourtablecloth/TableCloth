@@ -99,13 +99,16 @@ jobs:
         $SetupBuilderFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\${{ env.Setup_Project_Name }}.exe')
         $InputDirPath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\net5.0-windows\win-${{ env.Platform }}\publish')
         $PfxFileFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\GitHubActionsWorkflow.pfx')
+        $LicenseRtfFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\License.rtf')
         echo $SetupBuilderFullPath
         echo $InputDirPath
         echo $PfxFileFullPath
+        echo $LicenseRtfFullPath
         dir $SetupBuilderFullPath -ErrorAction Continue
         dir $InputDirPath -ErrorAction Continue
         dir $PfxFileFullPath -ErrorAction Continue
-        . $SetupBuilderFullPath $InputDirPath $PfxFileFullPath ${{ secrets.Pfx_Key }}
+        dir $LicenseRtfFullPath -ErrorAction Continue
+        . $SetupBuilderFullPath $InputDirPath $PfxFileFullPath '${{ secrets.Pfx_Key }}' $LicenseRtfFullPath
 
     # Remove the pfx
     - name: Remove the pfx
