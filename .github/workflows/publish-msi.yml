@@ -100,15 +100,18 @@ jobs:
         $InputDirPath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\net5.0-windows\win-${{ env.Platform }}\publish')
         $PfxFileFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\GitHubActionsWorkflow.pfx')
         $LicenseRtfFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\License.rtf')
+        $IconFilePath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\App.ico')
         echo $SetupBuilderFullPath
         echo $InputDirPath
         echo $PfxFileFullPath
         echo $LicenseRtfFullPath
+        echo $IconFilePath
         dir $SetupBuilderFullPath -ErrorAction Continue
         dir $InputDirPath -ErrorAction Continue
         dir $PfxFileFullPath -ErrorAction Continue
         dir $LicenseRtfFullPath -ErrorAction Continue
-        . $SetupBuilderFullPath $InputDirPath $PfxFileFullPath '${{ secrets.Pfx_Key }}' $LicenseRtfFullPath
+        dir $IconFilePath -ErrorAction Continue
+        . $SetupBuilderFullPath $InputDirPath $PfxFileFullPath '${{ secrets.Pfx_Key }}' $LicenseRtfFullPath $IconFilePath
 
     # Remove the pfx
     - name: Remove the pfx
@@ -121,4 +124,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: MSIX Package (${{ matrix.configuration }})
-        path: ${{ env.Setup_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\TableCloth.msi
+        path: TableCloth.msi
