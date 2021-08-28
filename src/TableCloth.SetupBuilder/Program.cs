@@ -45,7 +45,6 @@ namespace TableCloth.SetupBuilder
 
             var project = new Project("TableCloth");
             project.Package.AttributesDefinition = "Platform=x64";
-            project.GUID = Guid.Parse("1D7A2F0E-550D-452B-B69C-585F87C23A5B");
             project.UpgradeCode = Guid.Parse("C63DF133-51A9-4139-BD31-EDC025C7EB51");
             project.Encoding = System.Text.Encoding.UTF8;
             project.OutFileName = "TableCloth";
