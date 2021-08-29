@@ -73,6 +73,8 @@ namespace TableCloth
             });
 
             // Add Services
+            services.AddSingleton<ISharedLocations, SharedLocations>();
+            services.AddSingleton<IPreferences, Preferences>();
             services.AddSingleton<IX509CertPairScanner, X509CertPairScanner>();
             services.AddSingleton<ICatalogDeserializer, CatalogDeserializer>();
             services.AddSingleton<ISandboxBuilder, SandboxBuilder>();
