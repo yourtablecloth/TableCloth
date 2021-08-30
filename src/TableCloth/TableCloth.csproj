@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows10.0.18362.0</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <StartupObject>TableCloth.Program</StartupObject>
     <ApplicationIcon>App.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -13,10 +13,10 @@
     <Product>Table Cloth</Product>
     <ProductName>Table Cloth</ProductName>
     <Copyright>(c) rkttu.com, 2021</Copyright>
-    <Version>0.5.0.0</Version>
-    <FileVersion>0.5.0.0</FileVersion>
-    <PackageProjectUrl>https://bit.ly/yourtablecloth</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/dotnetdev-kr/TableCloth</RepositoryUrl>
+    <Version>0.5.1.0</Version>
+    <FileVersion>0.5.1.0</FileVersion>
+    <PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>TableCloth</PackageTags>
   </PropertyGroup>

@@ -13,6 +13,16 @@ namespace TableCloth.Resources
 
         internal static readonly string AppCopyright = "(c) 2021 남정현";
 
+        internal static readonly string AppPublisher = "식탁보 프로젝트";
+
+        internal static readonly string AppCommentText = "식탁보 - 컴퓨터를 깨끗하게 사용하세요!";
+
+        internal static readonly string AppInfoUrl =
+            "https://yourtablecloth.github.io";
+
+        internal static readonly string AppUpdateInfoUrl =
+            "https://github.com/yourtablecloth/TableCloth/releases";
+
         internal static readonly string CatalogUrl =
             "https://yourtablecloth.github.io/TableClothCatalog/Catalog.xml";
 
@@ -37,7 +47,7 @@ namespace TableCloth.Resources
             = $"{AppName} 경고";
 
         internal static readonly string AboutDialog_BodyText
-            = $"{AppName} (빌드 번호: {Assembly.GetExecutingAssembly().GetName().Version})\r\n\r\nhttps://bit.ly/yourtablecloth\r\n\r\n{AppCopyright}";
+            = $"{AppName} (버전 {Assembly.GetExecutingAssembly().GetName().Version})\r\n\r\n{AppInfoUrl}\r\n\r\n{AppCopyright}";
     }
 
     // 비 사용자 인터페이스 문자열들
