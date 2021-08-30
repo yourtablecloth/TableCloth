@@ -27,3 +27,7 @@ Visual Studio 2019 이상, .NET 5 SDK, .NET Framework 4.6 SDK가 필요합니다
 이 프로젝트는 [MIT 라이선스](LICENSE.txt)를 따릅니다.
 
 보안 정책에 관해서는 [이곳](SECURITY.md)을 참고해주세요.
+
+## 스폰서
+
+![마음인](docs/images/maumin.png)
