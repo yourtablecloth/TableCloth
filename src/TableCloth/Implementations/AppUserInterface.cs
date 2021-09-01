@@ -2,7 +2,6 @@
 using Serilog.Events;
 using Serilog.Formatting.Json;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using TableCloth.Contracts;
 using TableCloth.Resources;
@@ -12,24 +11,15 @@ namespace TableCloth.Implementations
     public sealed class AppUserInterface : IAppUserInterface
     {
         public AppUserInterface(
-            IAppStartup appStartup,
-            IX509CertPairScanner certPairScanner,
-            ISandboxBuilder sandboxBuilder,
-            IAppMessageBox appMessageBox,
-            ISandboxLauncher sandboxLauncher)
+            ISharedLocations sharedLocations,
+            IPreferences preferences)
         {
-            _appStartup = appStartup;
-            _certPairScanner = certPairScanner;
-            _sandboxBuilder = sandboxBuilder;
-            _appMessageBox = appMessageBox;
-            _sandboxLauncher = sandboxLauncher;
+            _sharedLocations = sharedLocations;
+            _preferences = preferences;
         }
 
-        private readonly IAppStartup _appStartup;
-        private readonly IX509CertPairScanner _certPairScanner;
-        private readonly ISandboxBuilder _sandboxBuilder;
-        private readonly IAppMessageBox _appMessageBox;
-        private readonly ISandboxLauncher _sandboxLauncher;
+        private readonly ISharedLocations _sharedLocations;
+        private readonly IPreferences _preferences;
 
         private App _appInstance;
 
@@ -40,16 +30,23 @@ namespace TableCloth.Implementations
         {
             var appThread = new Thread(new ParameterizedThreadStart(_ =>
             {
-                Log.Logger = new LoggerConfiguration()
+                var config = _preferences.GetCurrentConfig();
+
+                var logBuilder = new LoggerConfiguration()
                     .Enrich.FromLogContext()
-                    .WriteTo.File(new JsonFormatter(), Path.Combine(_appStartup.AppDataDirectoryPath, "ApplicationLog.jsonl"))
-                    .WriteTo.Sentry(o =>
+                    .WriteTo.File(new JsonFormatter(), _sharedLocations.GetDataPath("ApplicationLog.jsonl"));
+
+                if (config.UseLogCollection)
+                {
+                    logBuilder = logBuilder.WriteTo.Sentry(o =>
                     {
                         o.Dsn = StringResources.SentryDsn;
                         o.MinimumBreadcrumbLevel = LogEventLevel.Debug;
                         o.MinimumEventLevel = LogEventLevel.Warning;
-                    })
-                    .CreateLogger();
+                    });
+                }
+
+                Log.Logger = logBuilder.CreateLogger();
 
                 _appInstance = new App();
                 _appInstance.Run();

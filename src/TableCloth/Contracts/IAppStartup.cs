@@ -7,8 +7,6 @@ namespace TableCloth.Contracts
     {
         IEnumerable<string> Arguments { get; set; }
 
-        string AppDataDirectoryPath { get; }
-
         bool HasRequirementsMet(List<string> warnings, out Exception failedResaon, out bool isCritical);
 
         bool Initialize(out Exception failedReason, out bool isCritical);

@@ -10,10 +10,14 @@ namespace TableCloth.Implementations
 {
     public sealed class AppStartup : IAppStartup
     {
-        public IEnumerable<string> Arguments { get; set; }
+        public AppStartup(ISharedLocations sharedLocations)
+        {
+            _sharedLocations = sharedLocations;
+        }
 
-        public string AppDataDirectoryPath
-            => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TableCloth");
+        private readonly ISharedLocations _sharedLocations;
+
+        public IEnumerable<string> Arguments { get; set; }
 
         public bool HasRequirementsMet(List<string> warnings, out Exception failedResaon, out bool isCritical)
         {
@@ -66,7 +70,7 @@ namespace TableCloth.Implementations
 
         public bool Initialize(out Exception failedReason, out bool isCritical)
         {
-            var targetPath = AppDataDirectoryPath;
+            var targetPath = _sharedLocations.AppDataDirectoryPath;
 
             if (!Directory.Exists(targetPath))
             {

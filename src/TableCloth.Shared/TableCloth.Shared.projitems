@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogInternetServiceCategory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogPackageInformation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\PackageCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\PreferenceSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\TableClothConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\X509CertPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\StringResources.cs" />

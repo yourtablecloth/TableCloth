@@ -12,6 +12,7 @@ namespace TableCloth.ViewModels
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         public MainWindowViewModel(
+            ISharedLocations sharedLocations,
             IAppStartup appStartup,
             IAppUserInterface appUserInterface,
             IAppMessageBox appMessageBox,
@@ -20,6 +21,7 @@ namespace TableCloth.ViewModels
             ISandboxBuilder sandboxBuilder,
             ISandboxLauncher sandboxLauncher)
         {
+            _sharedLocations = sharedLocations;
             _appStartup = appStartup;
             _appUserInterface = appUserInterface;
             _appMessageBox = appMessageBox;
@@ -53,6 +55,7 @@ namespace TableCloth.ViewModels
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
+        private readonly ISharedLocations _sharedLocations;
         private readonly IAppStartup _appStartup;
         private readonly IAppUserInterface _appUserInterface;
         private readonly IAppMessageBox _appMessageBox;
@@ -72,6 +75,9 @@ namespace TableCloth.ViewModels
         private SiteCatalogTabViewModel _selectedTabView;
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public ISharedLocations SharedLocations
+            => _sharedLocations;
 
         public IAppStartup AppStartup
             => _appStartup;
