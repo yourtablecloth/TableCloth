@@ -21,14 +21,13 @@ namespace TableCloth.Implementations
         private readonly ISharedLocations _sharedLocations;
         private readonly ILogger _logger;
 
-        private readonly PreferenceSettings _defaultSettings = new PreferenceSettings();
-
-        public PreferenceSettings GetCurrentConfig()
+        public PreferenceSettings LoadConfig()
         {
+            var defaultSettings = GetDefaultConfig();
             var prefFilePath = _sharedLocations.GetDataPath("Preferences.json");
 
             if (!File.Exists(prefFilePath))
-                return _defaultSettings;
+                return defaultSettings;
 
             PreferenceSettings settings = null;
 
@@ -41,19 +40,21 @@ namespace TableCloth.Implementations
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Cannot deserialize configuration settings.");
-                settings = _defaultSettings;
+                settings = defaultSettings;
             }
 
             return settings;
         }
 
         public PreferenceSettings GetDefaultConfig()
-            => _defaultSettings;
+            => new PreferenceSettings();
 
-        public void SetConfig(PreferenceSettings config)
+        public void SaveConfig(PreferenceSettings config)
         {
+            var defaultSettings = GetDefaultConfig();
+
             if (config == null)
-                config = _defaultSettings;
+                config = defaultSettings;
 
             var prefFilePath = _sharedLocations.GetDataPath("Preferences.json");
             var json = JsonSerializer.Serialize(config, new JsonSerializerOptions() { AllowTrailingCommas = true, WriteIndented = true, });

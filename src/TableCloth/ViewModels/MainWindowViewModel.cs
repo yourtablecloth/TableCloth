@@ -19,7 +19,8 @@ namespace TableCloth.ViewModels
             ICatalogDeserializer catalogDeserializer,
             IX509CertPairScanner certPairScanner,
             ISandboxBuilder sandboxBuilder,
-            ISandboxLauncher sandboxLauncher)
+            ISandboxLauncher sandboxLauncher,
+            IPreferences preferences)
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
@@ -29,6 +30,7 @@ namespace TableCloth.ViewModels
             _certPairScanner = certPairScanner;
             _sandboxBuilder = sandboxBuilder;
             _sandboxLauncher = sandboxLauncher;
+            _preferences = preferences;
 
             try
             {
@@ -63,6 +65,7 @@ namespace TableCloth.ViewModels
         private readonly IX509CertPairScanner _certPairScanner;
         private readonly ISandboxBuilder _sandboxBuilder;
         private readonly ISandboxLauncher _sandboxLauncher;
+        private readonly IPreferences _preferences;
 
         private bool _mapNpkiCert;
         private bool _enableMicrophone;
@@ -99,6 +102,9 @@ namespace TableCloth.ViewModels
 
         public ISandboxLauncher SandboxLauncher
             => _sandboxLauncher;
+
+        public IPreferences Preferences
+            => _preferences;
 
         public bool MapNpkiCert
         {

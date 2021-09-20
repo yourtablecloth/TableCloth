@@ -30,7 +30,7 @@ namespace TableCloth.Implementations
         {
             var appThread = new Thread(new ParameterizedThreadStart(_ =>
             {
-                var config = _preferences.GetCurrentConfig();
+                var config = _preferences.LoadConfig();
 
                 var logBuilder = new LoggerConfiguration()
                     .Enrich.FromLogContext()

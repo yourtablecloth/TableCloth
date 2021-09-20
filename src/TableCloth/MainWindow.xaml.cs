@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -27,6 +28,16 @@ namespace TableCloth.Implementations.WPF
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            var currentConfig = ViewModel.Preferences.LoadConfig();
+
+            if (currentConfig == null)
+                currentConfig = ViewModel.Preferences.GetDefaultConfig();
+
+            ViewModel.EnableMicrophone = currentConfig.UseAudioRedirection;
+            ViewModel.EnableWebCam = currentConfig.UseVideoRedirection;
+            ViewModel.EnablePrinters = currentConfig.UsePrinterRedirection;
+            ViewModel.EnableEveryonesPrinter = currentConfig.InstallEveryonesPrinter;
+
             var foundCandidate = ViewModel.CertPairScanner.ScanX509Pairs(ViewModel.CertPairScanner.GetCandidateDirectories()).SingleOrDefault();
 
             if (foundCandidate != null)
@@ -39,6 +50,40 @@ namespace TableCloth.Implementations.WPF
 
                 ViewModel.MapNpkiCert = true;
             }
+
+            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+        }
+
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var currentConfig = ViewModel.Preferences.LoadConfig();
+
+            if (currentConfig == null)
+                currentConfig = ViewModel.Preferences.GetDefaultConfig();
+
+            switch (e.PropertyName)
+            {
+                case nameof(MainWindowViewModel.EnableMicrophone):
+                    currentConfig.UseAudioRedirection = ViewModel.EnableMicrophone;
+                    break;
+
+                case nameof(MainWindowViewModel.EnableWebCam):
+                    currentConfig.UseVideoRedirection = ViewModel.EnableWebCam;
+                    break;
+
+                case nameof(MainWindowViewModel.EnablePrinters):
+                    currentConfig.UsePrinterRedirection = ViewModel.EnablePrinters;
+                    break;
+
+                case nameof(MainWindowViewModel.EnableEveryonesPrinter):
+                    currentConfig.InstallEveryonesPrinter = ViewModel.EnableEveryonesPrinter;
+                    break;
+
+                default:
+                    return;
+            }
+
+            ViewModel.Preferences.SaveConfig(currentConfig);
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
