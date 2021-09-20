@@ -21,6 +21,10 @@
         찾아보기...
     </system:String>
 
+    <system:String x:Key="MainWindow_UseAutoLogCollecting">
+        식탁보 오류 로그 자동 수집
+    </system:String>
+
     <system:String x:Key="MainWindow_UseMicrophoneCheckboxText">
         오디오 입력 사용하기 - 개인 정보 노출에 주의하세요!
     </system:String>

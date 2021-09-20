@@ -33,6 +33,7 @@ namespace TableCloth.Implementations.WPF
             if (currentConfig == null)
                 currentConfig = ViewModel.Preferences.GetDefaultConfig();
 
+            ViewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
             ViewModel.EnableMicrophone = currentConfig.UseAudioRedirection;
             ViewModel.EnableWebCam = currentConfig.UseVideoRedirection;
             ViewModel.EnablePrinters = currentConfig.UsePrinterRedirection;
@@ -63,6 +64,11 @@ namespace TableCloth.Implementations.WPF
 
             switch (e.PropertyName)
             {
+                case nameof(MainWindowViewModel.EnableLogAutoCollecting):
+                    currentConfig.UseLogCollection = ViewModel.EnableLogAutoCollecting;
+                    ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_RestartRequired);
+                    break;
+
                 case nameof(MainWindowViewModel.EnableMicrophone):
                     currentConfig.UseAudioRedirection = ViewModel.EnableMicrophone;
                     break;

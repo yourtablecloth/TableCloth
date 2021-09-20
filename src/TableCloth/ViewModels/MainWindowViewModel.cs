@@ -68,6 +68,7 @@ namespace TableCloth.ViewModels
         private readonly IPreferences _preferences;
 
         private bool _mapNpkiCert;
+        private bool _enableLogAutoCollecting;
         private bool _enableMicrophone;
         private bool _enableWebCam;
         private bool _enablePrinters;
@@ -114,6 +115,19 @@ namespace TableCloth.ViewModels
                 if (value != _mapNpkiCert)
                 {
                     _mapNpkiCert = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public bool EnableLogAutoCollecting
+        {
+            get => _enableLogAutoCollecting;
+            set
+            {
+                if (value != _enableLogAutoCollecting)
+                {
+                    _enableLogAutoCollecting = value;
                     NotifyPropertyChanged();
                 }
             }
