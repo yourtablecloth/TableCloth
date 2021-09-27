@@ -17,38 +17,55 @@
         
         <Grid Margin="10 0 10 0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="50" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="80" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="40" />
-                <RowDefinition Height="80*" />
+                <RowDefinition Height="10*" />
+                <RowDefinition Height="60*" />
+                <RowDefinition Height="8*" />
+                <RowDefinition Height="30*" />
             </Grid.RowDefinitions>
             <Label Grid.Row="0" VerticalAlignment="Center" Content="{StaticResource MainWindow_SelectOptionsLabelText}" />
-            <WrapPanel Grid.Row="1" VerticalAlignment="Center" Orientation="Horizontal">
-                <CheckBox VerticalAlignment="Center" Content="{StaticResource MainWindow_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
-                <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{StaticResource MainWindow_BrowseButtonText}" Click="BrowseButton_Click" IsEnabled="{Binding Path='MapNpkiCert'}" />
-            </WrapPanel>
-            <ListBox Grid.Row="2" VerticalAlignment="Stretch" Margin="0 5 0 0" ItemsSource="{Binding Path='SelectedCertFiles'}"  IsEnabled="{Binding Path='MapNpkiCert'}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <CheckBox Grid.Row="3" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
-            <CheckBox Grid.Row="4" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
-            <CheckBox Grid.Row="5" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
-            <CheckBox Grid.Row="6" VerticalAlignment="Center" Content="{StaticResource MainWindow_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
-            <CheckBox Grid.Row="7" VerticalAlignment="Center" Content="모두의 프린터 추가하기" IsChecked="{Binding Path='EnableEveryonesPrinter'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
-            <Label Grid.Row="8" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
-            <TabControl Grid.Row="9" VerticalAlignment="Stretch" x:Name="SiteCatalog" ItemsSource="{Binding Path='Catalogs'}" SelectedItem="{Binding Path='SelectedTabView'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}">
+            <TabControl Grid.Row="1">
+                <TabItem Header="기본 설정">
+                    <Grid Margin="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="80" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                        </Grid.RowDefinitions>
+                        <WrapPanel Grid.Row="0" VerticalAlignment="Center" Orientation="Horizontal">
+                            <CheckBox VerticalAlignment="Center" Content="{StaticResource MainWindow_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
+                            <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{StaticResource MainWindow_BrowseButtonText}" Click="BrowseButton_Click" IsEnabled="{Binding Path='MapNpkiCert'}" />
+                        </WrapPanel>
+                        <ListBox Grid.Row="1" VerticalAlignment="Stretch" Margin="0 5 0 0" ItemsSource="{Binding Path='SelectedCertFiles'}"  IsEnabled="{Binding Path='MapNpkiCert'}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <CheckBox Grid.Row="2" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
+                        <CheckBox Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
+                        <CheckBox Grid.Row="4" VerticalAlignment="Center" Content="{StaticResource MainWindow_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
+                        <CheckBox Grid.Row="5" VerticalAlignment="Center" Content="모두의 프린터 추가하기" IsChecked="{Binding Path='EnableEveryonesPrinter'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
+                    </Grid>
+                </TabItem>
+                <TabItem Header="기능 개선을 위한 정보 수집">
+                    <Grid Margin="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30" />
+                        </Grid.RowDefinitions>
+
+                        <CheckBox Grid.Row="0" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
+                    </Grid>
+                </TabItem>
+            </TabControl>
+            
+            <Label Grid.Row="2" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
+            <TabControl Grid.Row="3" VerticalAlignment="Stretch" x:Name="SiteCatalog" ItemsSource="{Binding Path='Catalogs'}" SelectedItem="{Binding Path='SelectedTabView'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -62,7 +79,7 @@
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
-            <Label Grid.Row="9" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource InverseBooleanToVisibilityConverters}}" />
+            <Label Grid.Row="3" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource InverseBooleanToVisibilityConverters}}" />
         </Grid>
 
         <Grid Grid.Row="1">
