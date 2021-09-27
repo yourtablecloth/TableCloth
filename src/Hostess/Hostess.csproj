@@ -137,11 +137,17 @@
     <None Include="Resources\public_suffix_list.dat" />
     <None Include="Resources\Signature.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="commit.txt" />
+  </ItemGroup>
   <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo Compressing '$(TargetDir)' into '$(TargetDir)$(ProjectName).zip'...
 powershell.exe Compress-Archive -Path '$(TargetDir)*' -DestinationPath '$(TargetDir)$(ProjectName).zip' -CompressionLevel Optimal -Force
 dir $(TargetDir)$(ProjectName).zip</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>git.exe rev-parse HEAD &gt; "$(ProjectDir)commit.txt"</PreBuildEvent>
   </PropertyGroup>
 </Project>
