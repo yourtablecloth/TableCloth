@@ -66,7 +66,8 @@ namespace TableCloth.Implementations.WPF
             {
                 case nameof(MainWindowViewModel.EnableLogAutoCollecting):
                     currentConfig.UseLogCollection = ViewModel.EnableLogAutoCollecting;
-                    ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_RestartRequired);
+                    if (ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                        ReStartProgram();
                     break;
 
                 case nameof(MainWindowViewModel.EnableMicrophone):
@@ -208,6 +209,12 @@ namespace TableCloth.Implementations.WPF
                 try { Directory.Delete(eachDirectory, true); }
                 catch { OpenExplorer(eachDirectory); }
             }
+        }
+
+        private void ReStartProgram()
+        {
+            Process.Start(Process.GetCurrentProcess().MainModule.FileName);
+            Application.Current.Shutdown();
         }
     }
 }

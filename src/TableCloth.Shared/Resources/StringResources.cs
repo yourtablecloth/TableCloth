@@ -100,7 +100,7 @@ namespace TableCloth.Resources
     partial class StringResources
     {
         internal static readonly string Info_RestartRequired
-            = "설정이 반영되려면 식탁보 프로그램을 다시 시작해야 합니다.";
+            = "설정이 반영되려면 식탁보 프로그램을 다시 시작해야 합니다.\r\n지금 다시 시작하시겠습니까?";
 
         internal static readonly string Error_Already_TableCloth_Running
             = "이미 식탁보 프로그램이 실행되고 있어요.";
