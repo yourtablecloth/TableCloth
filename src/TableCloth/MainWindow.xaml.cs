@@ -25,6 +25,7 @@ namespace TableCloth.Implementations.WPF
             => (MainWindowViewModel)DataContext;
 
         private List<CatalogInternetService> _selectedSites = new();
+        private bool _requireRestart = false;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -66,8 +67,11 @@ namespace TableCloth.Implementations.WPF
             {
                 case nameof(MainWindowViewModel.EnableLogAutoCollecting):
                     currentConfig.UseLogCollection = ViewModel.EnableLogAutoCollecting;
-                    if (ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
-                        ReStartProgram();
+                    if (ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                    {
+                        _requireRestart = true;
+                        Close();
+                    }
                     break;
 
                 case nameof(MainWindowViewModel.EnableMicrophone):
@@ -209,12 +213,13 @@ namespace TableCloth.Implementations.WPF
                 try { Directory.Delete(eachDirectory, true); }
                 catch { OpenExplorer(eachDirectory); }
             }
-        }
 
-        private void ReStartProgram()
-        {
-            Process.Start(Process.GetCurrentProcess().MainModule.FileName);
-            Application.Current.Shutdown();
+            if (_requireRestart)
+            {
+                var filePath = Process.GetCurrentProcess().MainModule.FileName;
+                var arguments = Environment.GetCommandLineArgs().Skip(1).ToArray();
+                Process.Start(filePath, arguments);
+            }
         }
     }
 }
