@@ -125,7 +125,8 @@ namespace TableCloth.Implementations.WPF
 
         private void AboutButton_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.AppMessageBox.DisplayInfo(this, StringResources.AboutDialog_BodyText);
+            var aboutWindow = new AboutWindow();
+            aboutWindow.ShowDialog();
         }
 
         private void LaunchSandboxButton_Click(object sender, RoutedEventArgs e)

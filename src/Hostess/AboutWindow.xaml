@@ -1,0 +1,19 @@
+﻿<Window x:Class="Hostess.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Hostess"
+        mc:Ignorable="d"
+        Title="프로그램 소개" Width="320" Height="240" MinWidth="320" MinHeight="240" Loaded="Window_Loaded">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80*" />
+            <RowDefinition Height="15*" />
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="AboutContent" Grid.Row="0">Content</TextBlock>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Right">
+            <Button x:Name="OkayButton" Grid.Row="1" Padding="10 1 10 1" Click="OkayButton_Click">확인</Button>
+        </StackPanel>
+    </Grid>
+</Window>

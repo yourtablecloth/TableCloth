@@ -116,10 +116,11 @@ namespace Hostess
             }
         }
 
-        private void AboutButton_Click(object sender, RoutedEventArgs e) =>
-            MessageBox.Show(this,
-                StringResources.AboutDialog_BodyText, StringResources.AppName,
-                MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+        private void AboutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var aboutWindow = new AboutWindow();
+            aboutWindow.ShowDialog();
+        }
 
         private async void PerformInstallButton_Click(object sender, RoutedEventArgs e)
         {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.Resources
@@ -46,8 +48,25 @@ namespace TableCloth.Resources
         internal static readonly string TitleText_Warning
             = $"{AppName} 경고";
 
-        internal static readonly string AboutDialog_BodyText
-            = $"{AppName} (버전 {Assembly.GetExecutingAssembly().GetName().Version})\r\n\r\n{AppInfoUrl}\r\n\r\n{AppCopyright}";
+        internal static string Get_AboutDialog_BodyText()
+        {
+            var commitId = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+            try
+            {
+                using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{nameof(TableCloth)}.commit.txt"))
+                {
+                    var streamReader = new StreamReader(resourceStream, new UTF8Encoding(false), true);
+                    commitId = streamReader.ReadToEnd().Trim();
+
+                    if (commitId.Length > 8)
+                        commitId = commitId.Substring(0, 8);
+                }
+            }
+            catch { }
+
+            return $"{AppName} (버전 {commitId})\r\n\r\n{AppInfoUrl}\r\n\r\n{AppCopyright}";
+        }
     }
 
     // 비 사용자 인터페이스 문자열들
