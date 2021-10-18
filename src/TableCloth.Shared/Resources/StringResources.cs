@@ -50,22 +50,35 @@ namespace TableCloth.Resources
 
         internal static string Get_AboutDialog_BodyText()
         {
-            var commitId = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var executingAssembly = Assembly.GetExecutingAssembly();
+            var versionInfo = executingAssembly.GetName().Version.ToString();
+            var appName = executingAssembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title;
+
+            if (string.IsNullOrWhiteSpace(appName))
+                appName = AppName;
 
             try
             {
-                using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{nameof(TableCloth)}.commit.txt"))
-                {
-                    var streamReader = new StreamReader(resourceStream, new UTF8Encoding(false), true);
-                    commitId = streamReader.ReadToEnd().Trim();
+                var resourceNames = executingAssembly.GetManifestResourceNames();
+                var commitTextFileName = resourceNames.Where(x => x.EndsWith("commit.txt", StringComparison.Ordinal)).FirstOrDefault();
 
-                    if (commitId.Length > 8)
-                        commitId = commitId.Substring(0, 8);
+                if (commitTextFileName != null)
+                {
+                    using (var resourceStream = executingAssembly.GetManifestResourceStream(commitTextFileName))
+                    {
+                        var streamReader = new StreamReader(resourceStream, new UTF8Encoding(false), true);
+                        var commitId = streamReader.ReadToEnd().Trim();
+
+                        if (commitId.Length > 8)
+                            commitId = commitId.Substring(0, 8);
+
+                        versionInfo = $"{versionInfo}, #{commitId.Substring(0, 8)}";
+                    }
                 }
             }
             catch { }
 
-            return $"{AppName} (버전 {commitId})\r\n\r\n{AppInfoUrl}\r\n\r\n{AppCopyright}";
+            return $"{appName} (버전 {versionInfo})\r\n\r\n{AppInfoUrl}\r\n\r\n{AppCopyright}";
         }
     }
 

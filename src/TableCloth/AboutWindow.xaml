@@ -7,13 +7,20 @@
         mc:Ignorable="d"
         Title="프로그램 소개" Width="320" Height="240" MinWidth="320" MinHeight="240" Loaded="Window_Loaded">
     <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*" />
+            <ColumnDefinition Width="5*" />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="80*" />
             <RowDefinition Height="15*" />
         </Grid.RowDefinitions>
-        <TextBlock x:Name="AboutContent" Grid.Row="0">Content</TextBlock>
-        <StackPanel Grid.Row="1" HorizontalAlignment="Right">
-            <Button x:Name="OkayButton" Grid.Row="1" Padding="10 1 10 1" Click="OkayButton_Click">확인</Button>
+        <TextBlock x:Name="AboutContent" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">Content</TextBlock>
+        <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+            <Button x:Name="OpenWebsiteButton" Padding="10 1 10 1" Click="OpenWebsiteButton_Click">홈페이지 열기</Button>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
+            <Button x:Name="OkayButton" Padding="10 1 10 1" Click="OkayButton_Click">확인</Button>
         </StackPanel>
     </Grid>
 </Window>

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using TableCloth.Resources;
 
 namespace TableCloth
@@ -21,6 +22,12 @@ namespace TableCloth
         private void OkayButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void OpenWebsiteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var psi = new ProcessStartInfo(StringResources.AppInfoUrl) { UseShellExecute = true };
+            Process.Start(psi);
         }
     }
 }
