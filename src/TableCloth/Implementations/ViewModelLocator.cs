@@ -10,5 +10,8 @@ namespace TableCloth.Implementations
 
         public CertSelectWindowViewModel CertSelectWindowViewModel
             => Program.ServiceProvider.GetService<CertSelectWindowViewModel>();
+
+        public AboutWindowViewModel AboutWindowViewModel
+            => Program.ServiceProvider.GetService<AboutWindowViewModel>();
     }
 }

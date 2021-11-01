@@ -85,6 +85,7 @@ namespace TableCloth
             // ViewModel
             services.AddSingleton<MainWindowViewModel>();
             services.AddTransient<CertSelectWindowViewModel>();
+            services.AddSingleton<AboutWindowViewModel>();
 
             // UI
             services.AddSingleton<IAppMessageBox, AppMessageBox>();

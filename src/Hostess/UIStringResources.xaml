@@ -39,4 +39,24 @@
         닫기
     </system:String>
 
+    <system:String x:Key="AboutWindow_Title">
+        프로그램 정보
+    </system:String>
+
+    <system:String x:Key="AboutWindow_AppVersionText">
+        프로그램 버전
+    </system:String>
+
+    <system:String x:Key="AboutWindow_CatalogDateText">
+        카탈로그 버전
+    </system:String>
+
+    <system:String x:Key="AboutWindow_OpenHomepageButton">
+        홈페이지 열기
+    </system:String>
+
+    <system:String x:Key="AboutWindow_OkayButton">
+        확인
+    </system:String>
+
 </ResourceDictionary>

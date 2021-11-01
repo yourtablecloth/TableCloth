@@ -34,6 +34,14 @@ namespace Hostess
             where TApplication : Application
             => InitAppProperty(app, "Catalog", value);
 
+        public static string GetCatalogLastModified<TApplication>(this TApplication app)
+            where TApplication : Application
+            => GetAppProperty<TApplication, string>(app, "CatalogLastModified");
+
+        public static void InitCatalogLastModified<TApplication>(this TApplication app, string value)
+            where TApplication : Application
+            => InitAppProperty(app, "CatalogLastModified", value);
+
         public static IEnumerable<string> GetInstallSites<TApplication>(this TApplication app)
             where TApplication : Application
             => GetAppProperty<TApplication, IEnumerable<string>>(app, "InstallSites");

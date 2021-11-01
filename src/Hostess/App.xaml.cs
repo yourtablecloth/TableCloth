@@ -23,6 +23,7 @@ namespace Hostess
                 {
                     using (var catalogStream = webClient.OpenRead(StringResources.CatalogUrl))
                     {
+                        var lastModifiedValue = webClient.ResponseHeaders.Get("Last-Modified");
                         catalog = DeserializeFromXml<CatalogDocument>(catalogStream);
 
                         if (catalog == null)
@@ -31,6 +32,7 @@ namespace Hostess
                         }
 
                         Current.InitCatalogDocument(catalog);
+                        Current.InitCatalogLastModified(lastModifiedValue);
                     }
                 }
                 catch (Exception ex)

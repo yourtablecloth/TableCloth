@@ -14,9 +14,15 @@ namespace Hostess
             InitializeComponent();
         }
 
+        public string CatalogDate { get; set; } = StringResources.UnknownText;
+
+        public string License { get; set; } = StringResources.UnknownText;
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            AboutContent.Text = StringResources.Get_AboutDialog_BodyText();
+            AppVersionLabel.Content = StringResources.Get_AppVersion();
+            CatalogDateLabel.Content = CatalogDate;
+            LicenseDetails.Text = License;
         }
 
         private void OkayButton_Click(object sender, RoutedEventArgs e)

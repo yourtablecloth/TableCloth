@@ -24,7 +24,7 @@
             </Grid.RowDefinitions>
             <Label Grid.Row="0" VerticalAlignment="Center" Content="{StaticResource MainWindow_SelectOptionsLabelText}" />
             <TabControl Grid.Row="1">
-                <TabItem Header="기본 설정">
+                <TabItem Header="{StaticResource MainWindow_BasicPreferences}">
                     <Grid Margin="4">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30" />
@@ -50,19 +50,17 @@
                         <CheckBox Grid.Row="2" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
                         <CheckBox Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
                         <CheckBox Grid.Row="4" VerticalAlignment="Center" Content="{StaticResource MainWindow_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
-                        <CheckBox Grid.Row="5" VerticalAlignment="Center" Content="모두의 프린터 추가하기" IsChecked="{Binding Path='EnableEveryonesPrinter'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
+                        <CheckBox Grid.Row="5" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseEveryonesPrinter}" IsChecked="{Binding Path='EnableEveryonesPrinter'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
                     </Grid>
                 </TabItem>
-                <TabItem Header="기능 개선을 위한 정보 수집">
+                <TabItem Header="{StaticResource MainWindow_TelemetryPreferences}">
                     <Grid Margin="4">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="50" />
                             <RowDefinition Height="30" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="5">
-                            식탁보는 Sentry.io 서비스를 통하여 식탁보 프로그램 실행 도중 발생한 오류 정보를 익명으로 수집합니다. 만약 데이터 보내기를 원하지 않으시면 아래 체크 박스를 선택 해제하신 후 식탁보를 다시 실행해주세요.
-                        </TextBlock>
+                        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="5" Text="{StaticResource MainWindow_TelemetryDescriptionText}" />
                         <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
                     </Grid>
                 </TabItem>

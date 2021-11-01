@@ -5,6 +5,8 @@ namespace TableCloth.Contracts
 {
     public interface ICatalogDeserializer
     {
-        CatalogDocument DeserializeCatalog(Uri targetUri);
+        DateTimeOffset? CatalogLastModified { get; }
+
+        CatalogDocument DeserializeCatalog();
     }
 }

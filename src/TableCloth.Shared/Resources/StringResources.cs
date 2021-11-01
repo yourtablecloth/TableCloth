@@ -48,14 +48,10 @@ namespace TableCloth.Resources
         internal static readonly string TitleText_Warning
             = $"{AppName} 경고";
 
-        internal static string Get_AboutDialog_BodyText()
+        internal static string Get_AppVersion()
         {
             var executingAssembly = Assembly.GetExecutingAssembly();
             var versionInfo = executingAssembly.GetName().Version.ToString();
-            var appName = executingAssembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title;
-
-            if (string.IsNullOrWhiteSpace(appName))
-                appName = AppName;
 
             try
             {
@@ -78,7 +74,7 @@ namespace TableCloth.Resources
             }
             catch { }
 
-            return $"{appName} (버전 {versionInfo})\r\n\r\n{AppInfoUrl}\r\n\r\n{AppCopyright}";
+            return versionInfo;
         }
     }
 

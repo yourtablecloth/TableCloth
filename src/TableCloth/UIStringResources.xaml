@@ -13,16 +13,16 @@
         원하는 옵션을 선택해주세요.
     </system:String>
 
+    <system:String x:Key="MainWindow_BasicPreferences">
+        기본 설정
+    </system:String>
+
     <system:String x:Key="MainWindow_MapNpkiCertButtonText">
         기존 공동 인증서 파일 가져오기
     </system:String>
 
     <system:String x:Key="MainWindow_BrowseButtonText">
         찾아보기...
-    </system:String>
-
-    <system:String x:Key="MainWindow_UseAutoLogCollecting">
-        식탁보 오류 로그 자동 수집
     </system:String>
 
     <system:String x:Key="MainWindow_UseMicrophoneCheckboxText">
@@ -35,6 +35,22 @@
 
     <system:String x:Key="MainWindow_UsePrinterCheckboxText">
         프린터 같이 사용하기
+    </system:String>
+
+    <system:String x:Key="MainWindow_UseEveryonesPrinter">
+        모두의 프린터 추가하기
+    </system:String>
+
+    <system:String x:Key="MainWindow_TelemetryPreferences">
+        기능 개선을 위한 정보 수집
+    </system:String>
+
+    <system:String x:Key="MainWindow_TelemetryDescriptionText">
+        식탁보는 Sentry.io 서비스를 통하여 식탁보 프로그램 실행 도중 발생한 오류 정보를 익명으로 수집합니다. 만약 데이터 보내기를 원하지 않으시면 아래 체크 박스를 선택 해제하신 후 식탁보를 다시 실행해주세요.
+    </system:String>
+
+    <system:String x:Key="MainWindow_UseAutoLogCollecting">
+        식탁보 오류 로그 자동 수집
     </system:String>
 
     <system:String x:Key="MainWindow_SelectSiteLabelText">
@@ -97,6 +113,26 @@
 
     <system:String x:Key="CertSelectWindow_FileOpenDialog_FilterText">
         공동 인증서 파일 (*.der;*.key)|*.der;*.key|모든 파일|*.*
+    </system:String>
+
+    <system:String x:Key="AboutWindow_Title">
+        프로그램 정보
+    </system:String>
+
+    <system:String x:Key="AboutWindow_AppVersionText">
+        프로그램 버전
+    </system:String>
+
+    <system:String x:Key="AboutWindow_CatalogDateText">
+        카탈로그 버전
+    </system:String>
+
+    <system:String x:Key="AboutWindow_OpenHomepageButton">
+        홈페이지 열기
+    </system:String>
+
+    <system:String x:Key="AboutWindow_OkayButton">
+        확인
     </system:String>
 
 </ResourceDictionary>

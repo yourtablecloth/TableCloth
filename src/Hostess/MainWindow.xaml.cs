@@ -32,6 +32,8 @@ namespace Hostess
             "WDAGUtilityAccount",
         };
 
+        private DateTime? catalogDateTime = default;
+
         private void SetDesktopWallpaper()
         {
             var picturesDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
@@ -118,7 +120,12 @@ namespace Hostess
 
         private void AboutButton_Click(object sender, RoutedEventArgs e)
         {
-            var aboutWindow = new AboutWindow();
+            var aboutWindow = new AboutWindow()
+            {
+                CatalogDate = App.Current.GetCatalogLastModified(),
+                License = "To Do",
+            };
+
             aboutWindow.ShowDialog();
         }
 

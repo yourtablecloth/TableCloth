@@ -34,8 +34,7 @@ namespace TableCloth.ViewModels
 
             try
             {
-                CatalogDocument = _catalogDeserializer.DeserializeCatalog(
-                    new Uri(StringResources.CatalogUrl, UriKind.Absolute));
+                CatalogDocument = _catalogDeserializer.DeserializeCatalog();
 
                 Catalogs = CatalogDocument.Services
                     .GroupBy(x => x.Category)
