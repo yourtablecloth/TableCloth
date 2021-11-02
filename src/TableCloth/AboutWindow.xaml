@@ -30,7 +30,7 @@
             <Label Grid.Column="1" Grid.Row="0" x:Name="AppVersionLabel" />
             <Label Content="{StaticResource AboutWindow_CatalogDateText}" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1" />
             <Label Grid.Column="1" Grid.Row="1" x:Name="CatalogDateLabel" />
-            <TextBox x:Name="LicenseDetails" Margin="0 10 0 10" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" TextWrapping="WrapWithOverflow" Text="License information goes here." />
+            <TextBox x:Name="LicenseDetails" Margin="0 10 0 10" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" TextWrapping="WrapWithOverflow" Text="{StaticResource AboutWindow_LoadingLicensesMessage}" />
         </Grid>
         <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
             <Button x:Name="OpenWebsiteButton" Padding="10 1 10 1" Click="OpenWebsiteButton_Click" Content="{StaticResource AboutWindow_OpenHomepageButton}" />

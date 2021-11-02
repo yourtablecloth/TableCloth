@@ -18,11 +18,11 @@ namespace TableCloth
         public AboutWindowViewModel ViewModel
             => (AboutWindowViewModel)DataContext;
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             AppVersionLabel.Content = StringResources.Get_AppVersion();
             CatalogDateLabel.Content = ViewModel.CatalogVersion?.ToString("yyyy-MM-dd HH:mm:ss") ?? StringResources.UnknownText;
-            LicenseDetails.Text = "To Do";
+            LicenseDetails.Text = await LicenseDescriptor.GetLicenseDescriptions();
         }
 
         private void OkayButton_Click(object sender, RoutedEventArgs e)

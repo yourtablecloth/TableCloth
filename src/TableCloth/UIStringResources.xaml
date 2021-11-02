@@ -135,4 +135,8 @@
         확인
     </system:String>
 
+    <system:String x:Key="AboutWindow_LoadingLicensesMessage">
+        라이선스 정보를 확인 중입니다.
+    </system:String>
+
 </ResourceDictionary>

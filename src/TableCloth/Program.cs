@@ -3,7 +3,6 @@ using Sentry;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using TableCloth.Contracts;
 using TableCloth.Implementations;
