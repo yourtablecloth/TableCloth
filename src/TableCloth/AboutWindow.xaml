@@ -35,8 +35,9 @@
         <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Orientation="Horizontal">
             <Button x:Name="OpenWebsiteButton" Padding="10 1 10 1" Margin="0 0 5 0" Click="OpenWebsiteButton_Click" Content="{StaticResource AboutWindow_OpenHomepageButton}" />
             <Button x:Name="ShowSysInfo" Padding="10 1 10 1" Margin="0 0 5 0" Click="ShowSysInfo_Click" Content="{StaticResource AboutWindow_ShowSysInfoButtonText}" />
+            <Button x:Name="CheckUpdate" Padding="10 1 10 1" Margin="0 0 5 0" Click="CheckUpdate_Click" Content="{StaticResource AboutWindow_CheckUpdateButtonText}" />
         </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
             <Button x:Name="OkayButton" Padding="10 1 10 1" Click="OkayButton_Click" Content="{StaticResource AboutWindow_OkayButton}" />
         </StackPanel>
     </Grid>

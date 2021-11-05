@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using TableCloth.Resources;
 
 namespace TableCloth
 {
@@ -14,7 +15,7 @@ namespace TableCloth
         private static readonly Lazy<HttpClient> _httpClientFactory = new Lazy<HttpClient>(() =>
         {
             var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36");
+            client.DefaultRequestHeaders.Add("User-Agent", StringResources.UserAgentText);
             return client;
 
         }, true);
@@ -40,7 +41,7 @@ namespace TableCloth
             return refList;
         }
 
-        private static async Task<string?> GetLicenseDescriptionForGitHub(string owner, string repoName)
+        private static async Task<string> GetLicenseDescriptionForGitHub(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
             var httpClient = _httpClientFactory.Value;

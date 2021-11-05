@@ -53,5 +53,28 @@ namespace TableCloth
             var psi = new ProcessStartInfo(msinfoPath);
             Process.Start(psi);
         }
+
+        private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var owner = "yourtablecloth";
+                var repo = "TableCloth";
+                var thisVersion = GetType().Assembly.GetName().Version;
+
+                if (Version.TryParse(await GitHubReleaseFinder.GetLatestVersion(owner, repo), out Version parsedVersion) &&
+                    thisVersion != null && parsedVersion > thisVersion)
+                {
+                    ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_UpdateRequired);
+                    var targetUrl = await GitHubReleaseFinder.GetDownloadUrl(owner, repo);
+                    var psi = new ProcessStartInfo(targetUrl.AbsoluteUri) { UseShellExecute = true, };
+                    Process.Start(psi);
+                    return;
+                }
+            }
+            catch { }
+
+            ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_UpdateNotRequired);
+        }
     }
 }

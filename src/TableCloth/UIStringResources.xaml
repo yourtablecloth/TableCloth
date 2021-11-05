@@ -128,11 +128,15 @@
     </system:String>
 
     <system:String x:Key="AboutWindow_OpenHomepageButton">
-        홈페이지 열기
+        홈페이지
     </system:String>
 
     <system:String x:Key="AboutWindow_ShowSysInfoButtonText">
-        시스템 정보 확인
+        시스템 정보
+    </system:String>
+
+    <system:String x:Key="AboutWindow_CheckUpdateButtonText">
+        업데이트 확인
     </system:String>
 
     <system:String x:Key="AboutWindow_OkayButton">

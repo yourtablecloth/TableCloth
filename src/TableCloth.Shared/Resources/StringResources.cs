@@ -127,6 +127,12 @@ namespace TableCloth.Resources
     // 오류 메시지에 표시될 문자열들
     partial class StringResources
     {
+        internal static readonly string Info_UpdateRequired
+            = "새 버전의 식탁보가 출시되었습니다.";
+
+        internal static readonly string Info_UpdateNotRequired
+            = "최신 버전의 식탁보를 사용 중입니다.";
+
         internal static readonly string Ask_RestartRequired
             = "설정이 반영되려면 식탁보 프로그램을 다시 시작해야 합니다.\r\n지금 다시 시작하시겠습니까?";
 
