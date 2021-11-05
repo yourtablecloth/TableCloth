@@ -194,6 +194,9 @@ namespace TableCloth.Resources
 
             return message;
         }
+
+        internal static readonly string Error_Cannot_Run_SysInfo =
+            "시스템 정보 유틸리티를 실행할 수 없습니다.";
     }
 
     // 스크립트 내에서 사용되는 문자열들

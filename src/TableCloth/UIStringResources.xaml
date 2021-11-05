@@ -131,6 +131,10 @@
         홈페이지 열기
     </system:String>
 
+    <system:String x:Key="AboutWindow_ShowSysInfoButtonText">
+        시스템 정보 확인
+    </system:String>
+
     <system:String x:Key="AboutWindow_OkayButton">
         확인
     </system:String>

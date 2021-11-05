@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
@@ -33,6 +35,22 @@ namespace TableCloth
         private void OpenWebsiteButton_Click(object sender, RoutedEventArgs e)
         {
             var psi = new ProcessStartInfo(StringResources.AppInfoUrl) { UseShellExecute = true };
+            Process.Start(psi);
+        }
+
+        private void ShowSysInfo_Click(object sender, RoutedEventArgs e)
+        {
+            var msinfoPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.System),
+                "msinfo32.exe");
+
+            if (!File.Exists(msinfoPath))
+            {
+                ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_Cannot_Run_SysInfo, false);
+                return;
+            }
+
+            var psi = new ProcessStartInfo(msinfoPath);
             Process.Start(psi);
         }
     }
