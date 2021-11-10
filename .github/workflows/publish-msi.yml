@@ -71,7 +71,7 @@ jobs:
 
     # Publish TableCloth project
     - name: Build TableCloth project
-      run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} -p:PublishSingleFile=true -c:$env:Configuration
+      run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} -p:PublishSingleFile=true -p:PublishReadyToRun=true -p:PublishTrimmed=true -c:$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
 
@@ -97,7 +97,7 @@ jobs:
     - name: Run setup builder
       run: |
         $SetupBuilderFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\${{ env.Setup_Project_Name }}.exe')
-        $InputDirPath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\net5.0-windows\win-${{ env.Platform }}\publish')
+        $InputDirPath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\net6.0-windows\win-${{ env.Platform }}\publish')
         $PfxFileFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\GitHubActionsWorkflow.pfx')
         $LicenseRtfFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\License.rtf')
         $IconFilePath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\App.ico')
