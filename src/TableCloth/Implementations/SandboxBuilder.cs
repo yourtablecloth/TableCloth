@@ -141,8 +141,9 @@ copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
                 {
                     var downloadUrl = everyonesPrinterElement.Url.Replace("?", "^?").Replace("&", "^&");
                     everyonesPrinterSetupScript = $@"
-curl.exe -L ""{downloadUrl}"" -o ""%temp%\MopInstaller.exe""
-""%temp%\MopInstaller.exe""
+if not exist C:\Install mkdir C:\Install
+curl.exe -L ""{downloadUrl}"" -o ""C:\Install\MopInstaller.exe""
+""C:\Install\MopInstaller.exe""
 ";
                 }
             }
