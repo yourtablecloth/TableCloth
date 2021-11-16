@@ -13,8 +13,8 @@
     <Product>Table Cloth</Product>
     <ProductName>Table Cloth</ProductName>
     <Copyright>(c) rkttu.com, 2021</Copyright>
-    <Version>0.5.1.0</Version>
-    <FileVersion>0.5.1.0</FileVersion>
+    <Version>0.5.2.0</Version>
+    <FileVersion>0.5.2.0</FileVersion>
     <PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
