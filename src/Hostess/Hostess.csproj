@@ -54,6 +54,7 @@
     <Reference Include="PresentationFramework.Royale" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -77,6 +78,7 @@
     <Compile Include="LicenseDescriptor.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtectTermService.cs" />
     <Compile Include="RootDomainParser.cs" />
     <Compile Include="SharedProperties.cs" />
     <Compile Include="Commands\ShowErrorMessageCommand.cs" />

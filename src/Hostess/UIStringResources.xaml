@@ -3,12 +3,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
-    <system:String x:Key="QuestionForNonSandboxEnvironment">
-        지금 이 프로그램이 실행되는 환경은 윈도우 샌드박스 환경이 아닌 것 같습니다. 그래도 계속 실행하시겠습니까?
+    <system:String x:Key="WarningForNonSandboxEnvironment">
+        지금 이 프로그램이 실행되는 환경은 윈도우 샌드박스 환경이 아닌 것 같습니다. 프로그램을 실행할 수 없습니다.
     </system:String>
 
     <system:String x:Key="QuestionDialogTitle">
         질문
+    </system:String>
+
+    <system:String x:Key="ErrorDialogTitle">
+        오류
     </system:String>
 
     <system:String x:Key="AppTitle">

@@ -52,17 +52,12 @@ namespace Hostess
 
         private void CheckWindowsContainerEnvironment()
         {
-            if (validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
-                return;
-
-            var questionMessage = (string)Application.Current.Resources["QuestionForNonSandboxEnvironment"];
-            var questionTitle = (string)Application.Current.Resources["QuestionDialogTitle"];
-            var result = MessageBox.Show(this, questionMessage, questionTitle, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
-
-            if (result != MessageBoxResult.Yes)
+            if (!validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
             {
+                var questionMessage = (string)Application.Current.Resources["WarningForNonSandboxEnvironment"];
+                var questionTitle = (string)Application.Current.Resources["ErrorDialogTitle"];
+                MessageBox.Show(this, questionMessage, questionTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                 Close();
-                return;
             }
         }
 
@@ -74,6 +69,10 @@ namespace Hostess
             Left = SystemParameters.PrimaryScreenWidth - Width;
 
             CheckWindowsContainerEnvironment();
+
+            try { ProtectTermService.DenyServiceStop("TermService", Environment.UserName); }
+            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+
             SetDesktopWallpaper();
 
             var catalog = Application.Current.GetCatalogDocument();

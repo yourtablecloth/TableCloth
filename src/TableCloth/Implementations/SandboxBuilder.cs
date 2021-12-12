@@ -35,9 +35,10 @@ namespace TableCloth.Implementations
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
 
             var assembly = typeof(SandboxBuilder).Assembly;
+
             var hostessZipFileKey = assembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith("Hostess.zip", StringComparison.OrdinalIgnoreCase));
             using var hostessZipFileStream = assembly.GetManifestResourceStream(hostessZipFileKey);
-            ExpandHostessFiles(hostessZipFileStream, outputDirectory);
+            ExpandAssetZip(hostessZipFileStream, outputDirectory);
 
             if (!Directory.Exists(outputDirectory))
                 Directory.CreateDirectory(outputDirectory);
@@ -162,7 +163,7 @@ popd
 ";
         }
 
-        private void ExpandHostessFiles(Stream hostessZipFileStream, string outputDirectory)
+        private void ExpandAssetZip(Stream zipFileStream, string outputDirectory)
         {
             if (!Directory.Exists(outputDirectory))
                 Directory.CreateDirectory(outputDirectory);
@@ -171,8 +172,8 @@ popd
             if (!Directory.Exists(assetsDirectory))
                 Directory.CreateDirectory(assetsDirectory);
 
-            using var hostessZipArchive = new ZipArchive(hostessZipFileStream, ZipArchiveMode.Read);
-            hostessZipArchive.ExtractToDirectory(assetsDirectory, true);
+            using var zipArchive = new ZipArchive(zipFileStream, ZipArchiveMode.Read);
+            zipArchive.ExtractToDirectory(assetsDirectory, true);
         }
 
         private string SerializeSandboxSpec(SandboxConfiguration configuration, IList<SandboxMappedFolder> excludedFolders)
