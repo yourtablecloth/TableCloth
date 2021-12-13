@@ -70,7 +70,10 @@ namespace Hostess
 
             CheckWindowsContainerEnvironment();
 
-            try { ProtectTermService.DenyServiceStop("TermService", Environment.UserName); }
+            try { ProtectTermService.PreventProcessTermination("TermService"); }
+            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+
+            try { ProtectTermService.PreventServiceStop("TermService", Environment.UserName); }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
 
             SetDesktopWallpaper();
