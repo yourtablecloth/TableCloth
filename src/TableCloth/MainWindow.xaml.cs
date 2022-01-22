@@ -144,7 +144,7 @@ namespace TableCloth.Implementations.WPF
                 Services = _selectedSites,
             };
 
-            var tempPath = ViewModel.SharedLocations.GetDataPath($"bwsb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}");
+            var tempPath = ViewModel.SharedLocations.GetTempPath();
             var excludedFolderList = new List<SandboxMappedFolder>();
             var wsbFilePath = ViewModel.SandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
 

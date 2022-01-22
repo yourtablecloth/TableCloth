@@ -34,7 +34,7 @@ namespace TableCloth.Implementations
 
                 var logBuilder = new LoggerConfiguration()
                     .Enrich.FromLogContext()
-                    .WriteTo.File(new JsonFormatter(), _sharedLocations.GetDataPath("ApplicationLog.jsonl"));
+                    .WriteTo.File(new JsonFormatter(), _sharedLocations.ApplicationLogPath);
 
                 if (config.UseLogCollection)
                 {

@@ -4,6 +4,10 @@
     {
         string AppDataDirectoryPath { get; }
 
-        string GetDataPath(string relativePath);
+        string ApplicationLogPath { get; }
+
+        string PreferencesFilePath { get; }
+
+        string GetTempPath();
     }
 }
