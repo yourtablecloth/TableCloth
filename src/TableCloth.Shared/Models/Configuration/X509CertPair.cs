@@ -6,24 +6,27 @@ namespace TableCloth.Models.Configuration
 {
     public class X509CertPair
     {
-        public X509CertPair() { }
+        public X509CertPair(string derFilePath, string keyFilePath,
+			IEnumerable<KeyValuePair<string, string>> subject,
+			bool isPersonalCert)
+		{
+			DerFilePath = derFilePath;
+			KeyFilePath = keyFilePath;
+			Subject = subject.ToArray();
+			IsPersonalCert = isPersonalCert;
 
-        public string DerFilePath { get; set; }
-        public string KeyFilePath { get; set; }
-
-        public KeyValuePair<string, string>[] Subject { get; set; }
-        public bool IsPersonalCert { get; set; }
-
-		public string SubjectOrganization
-        {
-			get
-            {
-				return Subject
-					.Where(x => string.Equals(x.Key, "o", StringComparison.InvariantCultureIgnoreCase))
-					.Select(x => x.Value)
-					.FirstOrDefault();
-			}
+			SubjectOrganization = Subject
+				.Where(x => string.Equals(x.Key, "o", StringComparison.InvariantCultureIgnoreCase))
+				.Select(x => x.Value)
+				.FirstOrDefault();
 		}
+
+        public string DerFilePath { get; }
+        public string KeyFilePath { get; }
+        public KeyValuePair<string, string>[] Subject { get; }
+        public bool IsPersonalCert { get; }
+
+		public string SubjectOrganization { get; }
 
 		public string SubjectNameForNpkiApp
 			=> string.Join(",", Subject.Select(x => $"{x.Key.ToLowerInvariant()}={x.Value}"));

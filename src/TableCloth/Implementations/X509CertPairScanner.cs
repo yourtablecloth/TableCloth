@@ -135,13 +135,7 @@ namespace TableCloth.Implementations
                                      usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.NonRepudiation) &&
                                      usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.DigitalSignature);
 
-                return new X509CertPair()
-                {
-                    Subject = subjectNamePairs.ToArray(),
-                    IsPersonalCert = isPersonalCert,
-                    DerFilePath = derFilePath,
-                    KeyFilePath = keyFilePath,
-                };
+                return new X509CertPair(derFilePath, keyFilePath, subjectNamePairs, isPersonalCert);
             }
         }
     }
