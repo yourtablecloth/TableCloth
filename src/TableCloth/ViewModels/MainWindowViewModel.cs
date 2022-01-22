@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
+using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 
 namespace TableCloth.ViewModels
@@ -73,7 +74,7 @@ namespace TableCloth.ViewModels
         private bool _enablePrinters;
         private bool _enableEveryonesPrinter;
         private CatalogDocument _catalogDocument;
-        private List<string> _selectedCertFiles;
+        private X509CertPair _selectedCertFile;
         private List<SiteCatalogTabViewModel> _catalogs;
         private SiteCatalogTabViewModel _selectedTabView;
 
@@ -197,14 +198,14 @@ namespace TableCloth.ViewModels
             }
         }
 
-        public List<string> SelectedCertFiles
+        public X509CertPair SelectedCertFile
         {
-            get => _selectedCertFiles;
+            get => _selectedCertFile;
             set
             {
-                if (value != _selectedCertFiles)
+                if (value != _selectedCertFile)
                 {
-                    _selectedCertFiles = value;
+                    _selectedCertFile = value;
                     NotifyPropertyChanged();
                 }
             }

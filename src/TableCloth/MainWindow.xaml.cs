@@ -44,12 +44,7 @@ namespace TableCloth.Implementations.WPF
 
             if (foundCandidate != null)
             {
-                ViewModel.SelectedCertFiles = new string[]
-                {
-                    foundCandidate.DerFilePath,
-                    foundCandidate.KeyFilePath,
-                }.ToList();
-
+                ViewModel.SelectedCertFile = foundCandidate;
                 ViewModel.MapNpkiCert = true;
             }
 
@@ -109,11 +104,7 @@ namespace TableCloth.Implementations.WPF
                 File.Exists(certSelectWindow.ViewModel.SelectedCertPair.DerFilePath) &&
                 File.Exists(certSelectWindow.ViewModel.SelectedCertPair.KeyFilePath))
             {
-                ViewModel.SelectedCertFiles = new string[]
-                {
-                    certSelectWindow.ViewModel.SelectedCertPair.DerFilePath,
-                    certSelectWindow.ViewModel.SelectedCertPair.KeyFilePath,
-                }.ToList();
+                ViewModel.SelectedCertFile = certSelectWindow.ViewModel.SelectedCertPair;
             }
         }
 
@@ -137,21 +128,14 @@ namespace TableCloth.Implementations.WPF
                 return;
             }
 
-            var pair = default(X509CertPair);
-            var fileList = ViewModel.SelectedCertFiles;
+            var selectedCert = ViewModel.SelectedCertFile;
 
-            if (ViewModel.MapNpkiCert && fileList != null)
-            {
-                var derFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".der", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
-                var keyFilePath = fileList.Where(x => string.Equals(Path.GetExtension(x), ".key", StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
-
-                if (File.Exists(derFilePath) && File.Exists(keyFilePath))
-                    pair = ViewModel.CertPairScanner.CreateX509CertPair(derFilePath, keyFilePath);
-            }
+            if (!ViewModel.MapNpkiCert)
+                selectedCert = null;
 
             var config = new TableClothConfiguration()
             {
-                CertPair = pair,
+                CertPair = selectedCert,
                 EnableMicrophone = ViewModel.EnableMicrophone,
                 EnableWebCam = ViewModel.EnableWebCam,
                 EnablePrinters = ViewModel.EnablePrinters,

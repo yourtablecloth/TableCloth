@@ -38,15 +38,8 @@
                             <CheckBox VerticalAlignment="Center" Content="{StaticResource MainWindow_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
                             <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{StaticResource MainWindow_BrowseButtonText}" Click="BrowseButton_Click" IsEnabled="{Binding Path='MapNpkiCert'}" />
                         </WrapPanel>
-                        <ListBox Grid.Row="1" VerticalAlignment="Stretch" Margin="0 5 0 0" ItemsSource="{Binding Path='SelectedCertFiles'}"  IsEnabled="{Binding Path='MapNpkiCert'}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <Label Grid.Row="1" VerticalAlignment="Stretch" Margin="0 5 0 0" Content="{Binding Path='SelectedCertFile'}"  IsEnabled="{Binding Path='MapNpkiCert'}">
+                        </Label>
                         <CheckBox Grid.Row="2" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
                         <CheckBox Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
                         <CheckBox Grid.Row="4" VerticalAlignment="Center" Content="{StaticResource MainWindow_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
