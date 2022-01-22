@@ -73,6 +73,7 @@ namespace TableCloth.ViewModels
         private bool _enableWebCam;
         private bool _enablePrinters;
         private bool _enableEveryonesPrinter;
+        private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
         private X509CertPair _selectedCertFile;
         private List<SiteCatalogTabViewModel> _catalogs;
@@ -182,6 +183,34 @@ namespace TableCloth.ViewModels
                     _enableEveryonesPrinter = value;
                     NotifyPropertyChanged();
                 }
+            }
+        }
+
+        public DateTime? LastDisclaimerAgreedTime
+        {
+            get => _lastDisclaimerAgreedTime;
+            set
+            {
+                if (value != _lastDisclaimerAgreedTime)
+                {
+                    _lastDisclaimerAgreedTime = value;
+                    NotifyPropertyChanged();
+                    NotifyPropertyChanged(nameof(ShouldNotifyDisclaimer));
+                }
+            }
+        }
+
+        public bool ShouldNotifyDisclaimer
+        {
+            get
+            {
+                if (!_lastDisclaimerAgreedTime.HasValue)
+                    return true;
+
+                if ((DateTime.UtcNow - _lastDisclaimerAgreedTime.Value).TotalDays >= 7d)
+                    return true;
+
+                return false;
             }
         }
 

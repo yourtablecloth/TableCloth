@@ -2,6 +2,26 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:system="clr-namespace:System;assembly=mscorlib">
+    
+    <!-- DisclaimerWindow.xaml -->
+
+    <system:String x:Key="DisclaimerWindow_Title">
+        식탁보 사용 시 주의 사항
+    </system:String>
+
+    <system:String x:Key="DisclaimerWindow_Readme">
+        꼭 읽어주세요.
+    </system:String>
+
+    <system:String x:Key="DisclaimerWindow_Content" xml:space="preserve">
+식탁보를 사용 중 발생하는 개인, 기업, 기관의 금전 손실, 세금 신고 누락 등을 비롯한 어떠한 장애나 손해에 대해서는 사용자 본인에게 책임이 있습니다.
+
+가상 환경이 아닌 실제 컴퓨터 환경에서 실행되어야 손해나 피해가 발생하지 않는 작업은 식탁보를 이용하지 않고 실제 PC 환경에서 사용하는 것을 권장합니다.
+    </system:String>
+
+    <system:String x:Key="DisclaimerWindow_AgreeButtonText">
+        동의합니다. 일주일 동안 이 화면을 보지 않겠습니다.
+    </system:String>
 
     <!-- MainWindow.xaml -->
     

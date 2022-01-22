@@ -39,6 +39,7 @@ namespace TableCloth.Implementations.WPF
             ViewModel.EnableWebCam = currentConfig.UseVideoRedirection;
             ViewModel.EnablePrinters = currentConfig.UsePrinterRedirection;
             ViewModel.EnableEveryonesPrinter = currentConfig.InstallEveryonesPrinter;
+            ViewModel.LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
             var foundCandidate = ViewModel.CertPairScanner.ScanX509Pairs(ViewModel.CertPairScanner.GetCandidateDirectories()).SingleOrDefault();
 
@@ -49,6 +50,15 @@ namespace TableCloth.Implementations.WPF
             }
 
             ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+
+            if (ViewModel.ShouldNotifyDisclaimer)
+            {
+                var disclaimerWindow = new DisclaimerWindow();
+                var result = disclaimerWindow.ShowDialog();
+
+                if (result.HasValue && result.Value)
+                    ViewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
+            }
         }
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -83,6 +93,10 @@ namespace TableCloth.Implementations.WPF
 
                 case nameof(MainWindowViewModel.EnableEveryonesPrinter):
                     currentConfig.InstallEveryonesPrinter = ViewModel.EnableEveryonesPrinter;
+                    break;
+
+                case nameof(MainWindowViewModel.LastDisclaimerAgreedTime):
+                    currentConfig.LastDisclaimerAgreedTime = ViewModel.LastDisclaimerAgreedTime;
                     break;
 
                 default:
@@ -205,6 +219,11 @@ namespace TableCloth.Implementations.WPF
                 var arguments = Environment.GetCommandLineArgs().Skip(1).ToArray();
                 Process.Start(filePath, arguments);
             }
+        }
+
+        private void AgreeDisclaimer_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
         }
     }
 }

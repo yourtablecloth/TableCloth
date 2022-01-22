@@ -1,0 +1,20 @@
+﻿<Window x:Class="TableCloth.DisclaimerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TableCloth"
+        mc:Ignorable="d"
+        WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner"
+        Title="{StaticResource DisclaimerWindow_Title}" Height="320" Width="480" Loaded="Window_Loaded">
+    <Grid Margin="4" Visibility="{Binding Path=Visibility, ElementName=DisclaimerTab}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Content="{StaticResource DisclaimerWindow_Readme}" />
+        <TextBox Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" IsReadOnly="True" Margin="0 10 0 10" FontSize="15" FontWeight="Bold" Foreground="Red" Text="{StaticResource DisclaimerWindow_Content}" />
+        <Button x:Name="AgreeDisclaimer" Grid.Row="2" Content="{StaticResource DisclaimerWindow_AgreeButtonText}" Click="AgreeDisclaimer_Click" />
+    </Grid>
+</Window>
