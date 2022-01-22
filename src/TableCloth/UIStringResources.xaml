@@ -112,7 +112,7 @@
     </system:String>
 
     <system:String x:Key="CertSelectWindow_FileOpenDialog_FilterText">
-        공동 인증서 파일 (*.der;*.key)|*.der;*.key|모든 파일|*.*
+        공동 인증서 파일 (signCert.der;signPri.key)|signCert.der;signPri.key|모든 파일|*.*
     </system:String>
 
     <system:String x:Key="AboutWindow_Title">

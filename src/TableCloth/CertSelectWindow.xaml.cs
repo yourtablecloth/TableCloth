@@ -56,10 +56,19 @@ namespace TableCloth.Implementations.WPF
 
             if (response.HasValue && response.Value)
             {
-                ViewModel.SelectedCertPair = ViewModel.CertPairScanner.CreateX509CertPair(
-                    ofd.FileNames.Where(x => string.Equals(".der", Path.GetExtension(x), StringComparison.OrdinalIgnoreCase)).SingleOrDefault(),
-                    ofd.FileNames.Where(x => string.Equals(".key", Path.GetExtension(x), StringComparison.OrdinalIgnoreCase)).SingleOrDefault()
-                );
+                var firstFilePath = ofd.FileNames.FirstOrDefault();
+
+                if (string.IsNullOrWhiteSpace(firstFilePath) || !File.Exists(firstFilePath))
+                    return;
+
+                var basePath = Path.GetDirectoryName(firstFilePath);
+                var signCertDerPath = Path.Combine(basePath, "signCert.der");
+                var signPriKeyPath = Path.Combine(basePath, "signPri.key");
+
+                if (!File.Exists(signCertDerPath) && !File.Exists(signPriKeyPath))
+                    return;
+
+                ViewModel.SelectedCertPair = ViewModel.CertPairScanner.CreateX509CertPair(signCertDerPath, signPriKeyPath);
                 DialogResult = true;
                 Close();
                 return;
