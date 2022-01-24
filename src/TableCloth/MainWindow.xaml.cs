@@ -41,7 +41,7 @@ namespace TableCloth.Implementations.WPF
             ViewModel.EnableEveryonesPrinter = currentConfig.InstallEveryonesPrinter;
             ViewModel.LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
-            var foundCandidate = ViewModel.CertPairScanner.ScanX509Pairs(ViewModel.CertPairScanner.GetCandidateDirectories()).SingleOrDefault();
+            var foundCandidate = ViewModel.CertPairScanner.ScanX509Pairs(ViewModel.CertPairScanner.GetCandidateDirectories()).FirstOrDefault();
 
             if (foundCandidate != null)
             {

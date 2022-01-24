@@ -136,7 +136,7 @@ copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
             {
                 var everyonesPrinterElement = tableClothConfiguration.Companions
                     .Where(x => string.Equals(x.Id, "EveryonesPrinter", StringComparison.Ordinal))
-                    .SingleOrDefault();
+                    .FirstOrDefault();
 
                 if (everyonesPrinterElement != null)
                 {
