@@ -127,6 +127,7 @@ namespace TableCloth.Implementations
                 certFileCopyScript = $@"
 if not exist ""{npkiDirectoryPath}"" mkdir ""{npkiDirectoryPath}""
 copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
+del /f /q ""{providedCertFilePath}""
 ";
             }
 
