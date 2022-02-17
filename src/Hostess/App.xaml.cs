@@ -43,6 +43,32 @@ namespace Hostess
                     return;
                 }
 
+                IEModeListDocument ieModeList = null;
+
+                try
+                {
+                    using (var ieModeListStream = webClient.OpenRead(StringResources.IEModeListUrl))
+                    {
+                        var lastModifiedValue = webClient.ResponseHeaders.Get("Last-Modified");
+                        ieModeList = DeserializeFromXml<IEModeListDocument>(ieModeListStream);
+
+                        if (catalog == null)
+                        {
+                            throw new XmlException(StringResources.HostessError_CatalogDeserilizationFailure);
+                        }
+
+                        Current.InitIEModeListDocument(ieModeList);
+                        Current.InitIEModeListLastModified(lastModifiedValue);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(StringResources.HostessError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
+                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                    Current.Shutdown(0);
+                    return;
+                }
+
                 var targetSites = e.Args.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
                 Current.InitInstallSites(targetSites);
 

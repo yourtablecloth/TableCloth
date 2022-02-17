@@ -45,6 +45,8 @@ namespace TableCloth.ViewModels
                         Sites = x.ToList(),
                     })
                     .ToList();
+
+                IEModeListDocument = _catalogDeserializer.DeserializeIEModeList();
             }
             catch (Exception ex)
             {
@@ -75,6 +77,7 @@ namespace TableCloth.ViewModels
         private bool _enableEveryonesPrinter;
         private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
+        private IEModeListDocument _ieModeListDocument;
         private X509CertPair _selectedCertFile;
         private List<SiteCatalogTabViewModel> _catalogs;
         private SiteCatalogTabViewModel _selectedTabView;
@@ -222,6 +225,19 @@ namespace TableCloth.ViewModels
                 if (value != _catalogDocument)
                 {
                     _catalogDocument = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public IEModeListDocument IEModeListDocument
+        {
+            get => _ieModeListDocument;
+            set
+            {
+                if (value != _ieModeListDocument)
+                {
+                    _ieModeListDocument = value;
                     NotifyPropertyChanged();
                 }
             }

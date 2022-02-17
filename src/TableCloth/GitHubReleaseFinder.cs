@@ -8,18 +8,10 @@ namespace TableCloth
 {
     internal static class GitHubReleaseFinder
     {
-        private static readonly Lazy<HttpClient> _httpClientFactory = new Lazy<HttpClient>(() =>
-        {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", StringResources.UserAgentText);
-            return client;
-
-        }, true);
-
         internal static async Task<string> GetLatestVersion(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
-            var httpClient = _httpClientFactory.Value;
+            var httpClient = Shared.HttpClientFactory.Value;
 
             using var licenseDescription = await httpClient.GetStreamAsync(targetUri);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
@@ -29,7 +21,7 @@ namespace TableCloth
         internal static async Task<Uri> GetDownloadUrl(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
-            var httpClient = _httpClientFactory.Value;
+            var httpClient = Shared.HttpClientFactory.Value;
 
             using var licenseDescription = await httpClient.GetStreamAsync(targetUri);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);

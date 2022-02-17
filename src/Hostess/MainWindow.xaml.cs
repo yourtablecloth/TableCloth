@@ -16,6 +16,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Xml;
 using System.Xml.Serialization;
+using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
 namespace Hostess
@@ -133,7 +134,7 @@ namespace Hostess
         {
             try
             {
-                var ieModeRequiredDomainList = new List<string>();
+                var ieModeRequiredList = new List<IEModeSite>();
 
                 PerformInstallButton.IsEnabled = false;
                 var hasAnyFailure = false;
@@ -144,19 +145,17 @@ namespace Hostess
                     Directory.CreateDirectory(downloadFolderPath);
 
                 var catalog = Application.Current.GetCatalogDocument();
+                var ieModeList = Application.Current.GetIEModeListDocument();
 
-                foreach (var eachUrl in catalog.Services.Select(x => x.Url))
+                foreach (var eachSite in ieModeList.Sites)
                 {
-                    if (!Uri.TryCreate(eachUrl, UriKind.Absolute, out Uri parsedUrl))
-                        continue;
-
-                    var rootDomain = RootDomainParser.InferenceRootDomain(parsedUrl);
+                    var rootDomain = eachSite.Domain;
 
                     if (string.IsNullOrWhiteSpace(rootDomain))
                         continue;
 
-                    if (!ieModeRequiredDomainList.Contains(rootDomain, StringComparer.Ordinal))
-                        ieModeRequiredDomainList.Add(rootDomain);
+                    if (!ieModeRequiredList.Any(x => x.Domain.Equals(rootDomain, StringComparison.Ordinal)))
+                        ieModeRequiredList.Add(new IEModeSite { Domain = rootDomain, Mode = eachSite.Mode, OpenIn = eachSite.OpenIn });
                 }
 
                 foreach (InstallItemViewModel eachItem in InstallList.ItemsSource)
@@ -170,7 +169,8 @@ namespace Hostess
                             Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl))
                         {
                             var rootDomainName = RootDomainParser.InferenceRootDomain(parsedUrl);
-                            ieModeRequiredDomainList.Remove(rootDomainName);
+                            var matchedItem = ieModeRequiredList.FirstOrDefault(x => x.Domain.Equals(rootDomainName, StringComparison.Ordinal));
+                            ieModeRequiredList.Remove(matchedItem);
                         }
 
                         var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
@@ -257,7 +257,7 @@ namespace Hostess
                         }
 
                         var siteListDocument = new SiteListDocument();
-                        siteListDocument.Sites.AddRange(ieModeRequiredDomainList.Select(x => new Site() { Url = x }));
+                        siteListDocument.Sites.AddRange(ieModeRequiredList.Select(x => new Site() { Url = x.Domain, CompatibilityMode = x.Mode, OpenIn = x.OpenIn }));
 
                         var serializer = new XmlSerializer(typeof(SiteListDocument));
                         var @namespace = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty) });

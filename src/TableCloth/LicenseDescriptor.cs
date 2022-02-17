@@ -12,14 +12,6 @@ namespace TableCloth
 {
     internal static class LicenseDescriptor
     {
-        private static readonly Lazy<HttpClient> _httpClientFactory = new Lazy<HttpClient>(() =>
-        {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", StringResources.UserAgentText);
-            return client;
-
-        }, true);
-
         private static IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
         {
             var asm = Assembly.GetEntryAssembly();
@@ -44,7 +36,7 @@ namespace TableCloth
         private static async Task<string> GetLicenseDescriptionForGitHub(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
-            var httpClient = _httpClientFactory.Value;
+            var httpClient = Shared.HttpClientFactory.Value;
 
             using var licenseDescription = await httpClient.GetStreamAsync(targetUri);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);

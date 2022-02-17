@@ -8,5 +8,9 @@ namespace TableCloth.Contracts
         DateTimeOffset? CatalogLastModified { get; }
 
         CatalogDocument DeserializeCatalog();
+
+        DateTimeOffset? IEModeListLastModified { get; }
+
+        IEModeListDocument DeserializeIEModeList();
     }
 }
