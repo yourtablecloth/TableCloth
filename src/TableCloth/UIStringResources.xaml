@@ -57,8 +57,20 @@
         프린터 같이 사용하기
     </system:String>
 
+    <system:String x:Key="MainWindow_Addons">
+        부가 기능
+    </system:String>
+
     <system:String x:Key="MainWindow_UseEveryonesPrinter">
         모두의 프린터 추가하기
+    </system:String>
+
+    <system:String x:Key="MainWindow_UseAdobeReader">
+        Adobe Reader 추가하기
+    </system:String>
+
+    <system:String x:Key="MainWindow_UseIEModeCompatList">
+        Internet Explorer 호환성 모드 사용
     </system:String>
 
     <system:String x:Key="MainWindow_TelemetryPreferences">
