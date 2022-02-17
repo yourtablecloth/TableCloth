@@ -14,7 +14,7 @@
             <RowDefinition Height="9*"/>
             <RowDefinition Height="55"/>
         </Grid.RowDefinitions>
-        
+
         <Grid Margin="10 0 10 0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="10*" />
@@ -43,6 +43,7 @@
                         <CheckBox Grid.Row="2" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
                         <CheckBox Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
                         <CheckBox Grid.Row="4" VerticalAlignment="Center" Content="{StaticResource MainWindow_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
+                        <Label Grid.Row="5" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_EveryonesPrinterNotification}" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="{StaticResource MainWindow_Addons}">
@@ -71,7 +72,7 @@
                     </Grid>
                 </TabItem>
             </TabControl>
-            
+
             <Label Grid.Row="2" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
             <TabControl Grid.Row="3" VerticalAlignment="Stretch" x:Name="SiteCatalog" ItemsSource="{Binding Path='Catalogs'}" SelectedItem="{Binding Path='SelectedTabView'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}">
                 <TabControl.ItemTemplate>
