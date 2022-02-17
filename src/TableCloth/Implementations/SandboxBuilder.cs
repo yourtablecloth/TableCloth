@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using TableCloth.Contracts;
 using TableCloth.Implementations.WindowsSandbox;
 using TableCloth.Models.Configuration;
+using TableCloth.Resources;
 
 namespace TableCloth.Implementations
 {
@@ -113,6 +114,9 @@ namespace TableCloth.Implementations
             return sandboxConfig;
         }
 
+        private string EscapeUrlForCommandLine(string url)
+            => url.Replace("?", "^?").Replace("&", "^&").Replace("%", "%%");
+
         private string GenerateSandboxStartupScript(TableClothConfiguration tableClothConfiguration)
         {
             if (tableClothConfiguration == null)
@@ -135,19 +139,25 @@ del /f /q ""{providedCertFilePath}""
 
             if (tableClothConfiguration.EnableEveryonesPrinter)
             {
+                /*
                 var everyonesPrinterElement = tableClothConfiguration.Companions
                     .Where(x => string.Equals(x.Id, "EveryonesPrinter", StringComparison.Ordinal))
                     .FirstOrDefault();
 
                 if (everyonesPrinterElement != null)
                 {
-                    var downloadUrl = everyonesPrinterElement.Url.Replace("?", "^?").Replace("&", "^&");
+                    var downloadUrl = EscapeUrlForCommandLine(everyonesPrinterElement.Url);
                     everyonesPrinterSetupScript = $@"
 if not exist C:\Install mkdir C:\Install
 curl.exe -L ""{downloadUrl}"" -o ""C:\Install\MopInstaller.exe""
 ""C:\Install\MopInstaller.exe""
 ";
                 }
+                */
+
+                // 모두의 프린터 다운로드 페이지를 직접 여는 방식으로 변경합니다.
+                var targetUrl = EscapeUrlForCommandLine(StringResources.EveryonesPrinterUrl);
+                everyonesPrinterSetupScript = $"start {targetUrl}";
             }
 
             var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");

@@ -36,6 +36,9 @@ namespace TableCloth.Resources
 
         internal static readonly string UserAgentText =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36";
+
+        internal static readonly string EveryonesPrinterUrl =
+            "https://modu-print.tistory.com/category/%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C/%EB%AA%A8%EB%91%90%EC%9D%98%20%ED%94%84%EB%A6%B0%ED%84%B0";
     }
 #pragma warning disable IDE0040, IDE0066
 
