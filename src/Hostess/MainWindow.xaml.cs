@@ -247,7 +247,11 @@ namespace Hostess
                 {
                     try
                     {
-                        var ieSiteListPath = @"C:\ie_site_list.xml";
+                        var myDocumentsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                        if (!Directory.Exists(myDocumentsDirectory))
+                            Directory.CreateDirectory(myDocumentsDirectory);
+
+                        var ieSiteListPath = Path.Combine(myDocumentsDirectory, "sites.xml");
 
                         // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1
                         using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
