@@ -221,11 +221,29 @@ namespace Hostess
                     }
                 }
 
+                if (App.Current.GetHasEveryonesPrinterEnabled())
+                {
+                    Process.Start(new ProcessStartInfo(StringResources.EveryonesPrinterUrl)
+                    {
+                        UseShellExecute = true,
+                        WindowStyle = ProcessWindowStyle.Maximized,
+                    });
+                }
+
+                if (App.Current.GetHasAdobeReaderEnabled())
+                {
+                    Process.Start(new ProcessStartInfo(StringResources.AdobeReaderUrl)
+                    {
+                        UseShellExecute = true,
+                        WindowStyle = ProcessWindowStyle.Maximized,
+                    });
+                }
+
                 var internetExplorerExists = File.Exists(Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                     "Internet Explorer", "iexplore.exe"));
 
-                if (internetExplorerExists)
+                if (App.Current.GetHasIEModeEnabled() && internetExplorerExists)
                 {
                     try
                     {
@@ -300,6 +318,10 @@ namespace Hostess
                     Close();
                     return;
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
             }
             finally
             {

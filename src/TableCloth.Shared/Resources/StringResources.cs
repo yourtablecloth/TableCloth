@@ -39,6 +39,9 @@ namespace TableCloth.Resources
 
         internal static readonly string EveryonesPrinterUrl =
             "https://modu-print.tistory.com/category/%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C/%EB%AA%A8%EB%91%90%EC%9D%98%20%ED%94%84%EB%A6%B0%ED%84%B0";
+
+        internal static readonly string AdobeReaderUrl =
+            "https://get.adobe.com/kr/reader/";
     }
 #pragma warning disable IDE0040, IDE0066
 
@@ -264,6 +267,16 @@ namespace TableCloth.Resources
 
         internal static string HostessError_Package_CanNotStart
             = "패키지 설치 프로그램을 시작하지 못했습니다.";
+    }
+
+    // 호스트 프로그램에서 사용할 스위치
+    partial class StringResources
+    {
+        internal static readonly string Hostess_Switch_EnableEveryonesPrinter = "--enable-everyones-printer";
+
+        internal static readonly string Hostess_Switch_EnableAdobeReader = "--enable-adobe-reader";
+
+        internal static readonly string Hostess_Switch_EnableIEMode = "--enable-ie-mode";
     }
 
 #pragma warning restore IDE0040, IDE0066

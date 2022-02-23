@@ -65,5 +65,29 @@ namespace Hostess
         public static void InitInstallSites<TApplication>(this TApplication app, IEnumerable<string> value)
             where TApplication : Application
             => InitAppProperty(app, "InstallSites", value);
+
+        public static bool GetHasEveryonesPrinterEnabled<TApplication>(this TApplication app)
+            where TApplication : Application
+            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, "HasEveryonesPrinterEnabled"));
+
+        public static void InitHasEveryonesPrinterEnabled<TApplication>(this TApplication app, bool value)
+            where TApplication : Application
+            => InitAppProperty(app, "HasEveryonesPrinterEnabled", value ? Boolean.TrueString : Boolean.FalseString);
+
+        public static bool GetHasAdobeReaderEnabled<TApplication>(this TApplication app)
+            where TApplication : Application
+            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, "HasAdobeReaderEnabled"));
+
+        public static void InitHasAdobeReaderEnabled<TApplication>(this TApplication app, bool value)
+            where TApplication : Application
+            => InitAppProperty(app, "HasAdobeReaderEnabled", value ? Boolean.TrueString : Boolean.FalseString);
+
+        public static bool GetHasIEModeEnabled<TApplication>(this TApplication app)
+            where TApplication : Application
+            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, "HasIEModeEnabled"));
+
+        public static void InitHasIEModeEnabled<TApplication>(this TApplication app, bool value)
+            where TApplication : Application
+            => InitAppProperty(app, "HasIEModeEnabled", value ? Boolean.TrueString : Boolean.FalseString);
     }
 }

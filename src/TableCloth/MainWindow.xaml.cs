@@ -39,6 +39,8 @@ namespace TableCloth.Implementations.WPF
             ViewModel.EnableWebCam = currentConfig.UseVideoRedirection;
             ViewModel.EnablePrinters = currentConfig.UsePrinterRedirection;
             ViewModel.EnableEveryonesPrinter = currentConfig.InstallEveryonesPrinter;
+            ViewModel.EnableAdobeReader = currentConfig.InstallAdobeReader;
+            ViewModel.EnableInternetExplorerMode = currentConfig.EnableInternetExplorerMode;
             ViewModel.LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
             var foundCandidate = ViewModel.CertPairScanner.ScanX509Pairs(ViewModel.CertPairScanner.GetCandidateDirectories()).FirstOrDefault();
@@ -93,6 +95,14 @@ namespace TableCloth.Implementations.WPF
 
                 case nameof(MainWindowViewModel.EnableEveryonesPrinter):
                     currentConfig.InstallEveryonesPrinter = ViewModel.EnableEveryonesPrinter;
+                    break;
+
+                case nameof(MainWindowViewModel.EnableAdobeReader):
+                    currentConfig.InstallAdobeReader = ViewModel.EnableAdobeReader;
+                    break;
+
+                case nameof(MainWindowViewModel.EnableInternetExplorerMode):
+                    currentConfig.EnableInternetExplorerMode = ViewModel.EnableInternetExplorerMode;
                     break;
 
                 case nameof(MainWindowViewModel.LastDisclaimerAgreedTime):
@@ -154,6 +164,8 @@ namespace TableCloth.Implementations.WPF
                 EnableWebCam = ViewModel.EnableWebCam,
                 EnablePrinters = ViewModel.EnablePrinters,
                 EnableEveryonesPrinter = ViewModel.EnableEveryonesPrinter,
+                EnableAdobeReader = ViewModel.EnableAdobeReader,
+                EnableInternetExplorerMode = ViewModel.EnableInternetExplorerMode,
                 Companions = ViewModel.CatalogDocument.Companions,
                 Services = _selectedSites,
             };

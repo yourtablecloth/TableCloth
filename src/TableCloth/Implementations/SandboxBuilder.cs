@@ -135,30 +135,16 @@ del /f /q ""{providedCertFilePath}""
 ";
             }
 
-            var everyonesPrinterSetupScript = string.Empty;
+            var switches = new List<string>();
 
             if (tableClothConfiguration.EnableEveryonesPrinter)
-            {
-                /*
-                var everyonesPrinterElement = tableClothConfiguration.Companions
-                    .Where(x => string.Equals(x.Id, "EveryonesPrinter", StringComparison.Ordinal))
-                    .FirstOrDefault();
+                switches.Add(StringResources.Hostess_Switch_EnableEveryonesPrinter);
 
-                if (everyonesPrinterElement != null)
-                {
-                    var downloadUrl = EscapeUrlForCommandLine(everyonesPrinterElement.Url);
-                    everyonesPrinterSetupScript = $@"
-if not exist C:\Install mkdir C:\Install
-curl.exe -L ""{downloadUrl}"" -o ""C:\Install\MopInstaller.exe""
-""C:\Install\MopInstaller.exe""
-";
-                }
-                */
+            if (tableClothConfiguration.EnableAdobeReader)
+                switches.Add(StringResources.Hostess_Switch_EnableAdobeReader);
 
-                // 모두의 프린터 다운로드 페이지를 직접 여는 방식으로 변경합니다.
-                var targetUrl = EscapeUrlForCommandLine(StringResources.EveryonesPrinterUrl);
-                everyonesPrinterSetupScript = $"start {targetUrl}";
-            }
+            if (tableClothConfiguration.EnableInternetExplorerMode)
+                switches.Add(StringResources.Hostess_Switch_EnableIEMode);
 
             var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");
             var idList = string.Join(" ", tableClothConfiguration.Services.Select(x => x.Id).Distinct());
@@ -166,8 +152,7 @@ curl.exe -L ""{downloadUrl}"" -o ""C:\Install\MopInstaller.exe""
             return $@"@echo off
 pushd ""%~dp0""
 {certFileCopyScript}
-""{hostessFilePath}"" {idList}
-{everyonesPrinterSetupScript}
+""{hostessFilePath}"" {idList} {string.Join(" ", switches)}
 :exit
 popd
 @echo on

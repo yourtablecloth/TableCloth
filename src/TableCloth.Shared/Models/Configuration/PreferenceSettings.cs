@@ -12,6 +12,10 @@ namespace TableCloth.Models.Configuration
 
         public bool InstallEveryonesPrinter { get; set; } = true;
 
+        public bool InstallAdobeReader { get; set; } = true;
+
+        public bool EnableInternetExplorerMode { get; set; } = true;
+
         public bool UseLogCollection { get; set; } = true;
 
         public DateTime? LastDisclaimerAgreedTime { get; set; } = null;

@@ -55,9 +55,9 @@
                             <RowDefinition Height="30" />
                             <RowDefinition Height="30" />
                         </Grid.RowDefinitions>
-                        <CheckBox Grid.Row="0" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseEveryonesPrinter}" IsChecked="{Binding Path='EnableEveryonesPrinter'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
-                        <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseAdobeReader}" Visibility="Hidden" />
-                        <CheckBox Grid.Row="2" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseIEModeCompatList}" Visibility="Hidden" />
+                        <CheckBox Grid.Row="0" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseEveryonesPrinter}" IsChecked="{Binding Path='EnableEveryonesPrinter'}" />
+                        <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseAdobeReader}" IsChecked="{Binding Path='EnableAdobeReader'}" />
+                        <CheckBox Grid.Row="2" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="{StaticResource MainWindow_TelemetryPreferences}">

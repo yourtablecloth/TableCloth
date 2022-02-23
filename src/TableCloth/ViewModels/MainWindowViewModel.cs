@@ -75,6 +75,8 @@ namespace TableCloth.ViewModels
         private bool _enableWebCam;
         private bool _enablePrinters;
         private bool _enableEveryonesPrinter;
+        private bool _enableAdobeReader;
+        private bool _enableInternetExplorerMode;
         private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
         private IEModeListDocument _ieModeListDocument;
@@ -184,6 +186,32 @@ namespace TableCloth.ViewModels
                 if (value != _enableEveryonesPrinter)
                 {
                     _enableEveryonesPrinter = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public bool EnableAdobeReader
+        {
+            get => _enableAdobeReader;
+            set
+            {
+                if (value != _enableAdobeReader)
+                {
+                    _enableAdobeReader = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public bool EnableInternetExplorerMode
+        {
+            get => _enableInternetExplorerMode;
+            set
+            {
+                if (value != _enableInternetExplorerMode)
+                {
+                    _enableInternetExplorerMode = value;
                     NotifyPropertyChanged();
                 }
             }
