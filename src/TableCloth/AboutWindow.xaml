@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TableCloth"
         mc:Ignorable="d"
+        Style="{DynamicResource MainWindowStyle}"
         DataContext="{Binding AboutWindowViewModel, Source={StaticResource ViewModelLocator}}"
         Title="{StaticResource AboutWindow_Title}" Width="640" Height="480" MinWidth="320" MinHeight="240" Loaded="Window_Loaded">
     <Grid Margin="10">

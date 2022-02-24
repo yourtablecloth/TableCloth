@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TableCloth.Implementations.WPF"
         mc:Ignorable="d"
+        Style="{DynamicResource MainWindowStyle}"
         Title="{StaticResource CertSelectWindow_Title}" Width="480" Height="320"
         MinWidth="480" MinHeight="320"
         DataContext="{Binding CertSelectWindowViewModel, Source={StaticResource ViewModelLocator}}"

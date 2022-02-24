@@ -14,8 +14,8 @@
             <di:ViewModelLocator x:Key="ViewModelLocator" />
 
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/PresentationFramework.Aero2;component/themes/aero2.normalcolor.xaml" />
                 <ResourceDictionary Source="UIStringResources.xaml" />
-                <ResourceDictionary Source="/PresentationFramework.Royale;component/themes/royale.normalcolor.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

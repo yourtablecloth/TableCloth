@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TableCloth"
         mc:Ignorable="d"
+        Style="{DynamicResource MainWindowStyle}"
         WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner"
         Title="{StaticResource DisclaimerWindow_Title}" Height="320" Width="480" Loaded="Window_Loaded">
     <Grid Margin="4" Visibility="{Binding Path=Visibility, ElementName=DisclaimerTab}">

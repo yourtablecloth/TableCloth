@@ -1,15 +1,19 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using TableCloth.Implementations.WindowsSandbox;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
+using TableCloth.Themes;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Implementations.WPF
@@ -27,8 +31,62 @@ namespace TableCloth.Implementations.WPF
         private List<CatalogInternetService> _selectedSites = new();
         private bool _requireRestart = false;
 
+        private bool? IsLightThemeApplied()
+        {
+            // https://stackoverflow.com/questions/51334674/how-to-detect-windows-10-light-dark-mode-in-win32-application
+            using (var personalizeKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", false))
+            {
+                if (personalizeKey != null)
+                {
+                    if (personalizeKey.GetValueKind("AppsUseLightTheme") == RegistryValueKind.DWord)
+                    {
+                        return (int)personalizeKey.GetValue("AppsUseLightTheme", 1) > 0;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            // https://stackoverflow.com/questions/51334674/how-to-detect-windows-10-light-dark-mode-in-win32-application
+            const int WM_SETTINGCHANGE = 0x001A;
+
+            if (msg == WM_SETTINGCHANGE)
+            {
+                var data = Marshal.PtrToStringAuto(lParam);
+                if (string.Equals(data, "ImmersiveColorSet", StringComparison.Ordinal))
+                {
+                    var appliedLightTheme = IsLightThemeApplied();
+                    if (appliedLightTheme.HasValue)
+                    {
+                        if (appliedLightTheme.Value)
+                            ThemesController.CurrentTheme = ThemeTypes.ColourfulLight;
+                        else
+                            ThemesController.CurrentTheme = ThemeTypes.ColourfulDark;
+                        handled = true;
+                    }
+                }
+            }
+
+            return IntPtr.Zero;
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+            source.AddHook(WndProc);
+
+            var appliedLightTheme = IsLightThemeApplied();
+            if (appliedLightTheme.HasValue)
+            {
+                if (appliedLightTheme.Value)
+                    ThemesController.CurrentTheme = ThemeTypes.ColourfulLight;
+                else
+                    ThemesController.CurrentTheme = ThemeTypes.ColourfulDark;
+            }
+
             var currentConfig = ViewModel.Preferences.LoadConfig();
 
             if (currentConfig == null)

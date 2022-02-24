@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         Loaded="Window_Loaded"
         mc:Ignorable="d"
+        Style="{DynamicResource MainWindowStyle}"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
         Title="{StaticResource PrecautionWindowText}" Width="640" Height="480"
