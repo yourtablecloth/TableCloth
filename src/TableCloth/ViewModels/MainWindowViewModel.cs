@@ -36,23 +36,14 @@ namespace TableCloth.ViewModels
             try
             {
                 CatalogDocument = _catalogDeserializer.DeserializeCatalog();
-
-                Catalogs = CatalogDocument.Services
-                    .GroupBy(x => x.Category)
-                    .Select(x => new SiteCatalogTabViewModel
-                    {
-                        Category = x.Key,
-                        Sites = x.ToList(),
-                    })
-                    .ToList();
-
+                Services = CatalogDocument.Services.ToList();
                 IEModeListDocument = _catalogDeserializer.DeserializeIEModeList();
             }
             catch (Exception ex)
             {
                 _appMessageBox.DisplayError(_appUserInterface.MainWindowHandle, ex, false);
                 CatalogDocument = new CatalogDocument();
-                Catalogs = Array.Empty<SiteCatalogTabViewModel>().ToList();
+                Services = Array.Empty<CatalogInternetService>().ToList();
             }
         }
 
@@ -81,8 +72,7 @@ namespace TableCloth.ViewModels
         private CatalogDocument _catalogDocument;
         private IEModeListDocument _ieModeListDocument;
         private X509CertPair _selectedCertFile;
-        private List<SiteCatalogTabViewModel> _catalogs;
-        private SiteCatalogTabViewModel _selectedTabView;
+        private List<CatalogInternetService> _services;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -284,27 +274,14 @@ namespace TableCloth.ViewModels
             }
         }
 
-        public List<SiteCatalogTabViewModel> Catalogs
+        public List<CatalogInternetService> Services
         {
-            get => _catalogs;
+            get => _services;
             set
             {
-                if (value != _catalogs)
+                if (value != _services)
                 {
-                    _catalogs = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-
-        public SiteCatalogTabViewModel SelectedTabView
-        {
-            get => _selectedTabView;
-            set
-            {
-                if (value != _selectedTabView)
-                {
-                    _selectedTabView = value;
+                    _services = value;
                     NotifyPropertyChanged();
                 }
             }
@@ -314,7 +291,7 @@ namespace TableCloth.ViewModels
 
         public string CurrentDirectory { get; set; }
 
-        public bool HasCatalogs
-            => Catalogs != null && Catalogs.Any();
+        public bool HasServices
+            => Services != null && Services.Any();
     }
 }

@@ -8,6 +8,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Interop;
 using TableCloth.Implementations.WindowsSandbox;
 using TableCloth.Models.Catalog;
@@ -119,6 +121,29 @@ namespace TableCloth.Implementations.WPF
                 if (result.HasValue && result.Value)
                     ViewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
             }
+
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource);
+            view.Filter = SiteCatalog_Filter;
+        }
+
+        private bool SiteCatalog_Filter(object item)
+        {
+            var filterText = SiteCatalogFilter.Text;
+
+            if (string.IsNullOrWhiteSpace(filterText))
+                return true;
+
+            var actualItem = item as CatalogInternetService;
+
+            if (actualItem == null)
+                return true;
+
+            return actualItem.DisplayName.Contains(filterText, StringComparison.OrdinalIgnoreCase)
+                || actualItem.CategoryDisplayName.Contains(filterText, StringComparison.OrdinalIgnoreCase)
+                || actualItem.Url.Contains(filterText, StringComparison.OrdinalIgnoreCase)
+                || actualItem.Packages.Count.ToString().Contains(filterText, StringComparison.OrdinalIgnoreCase)
+                || actualItem.Packages.Any(x => x.Name.Contains(filterText, StringComparison.OrdinalIgnoreCase))
+                || actualItem.Id.Contains(filterText, StringComparison.OrdinalIgnoreCase);
         }
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -294,6 +319,47 @@ namespace TableCloth.Implementations.WPF
         private void AgreeDisclaimer_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
+        }
+
+        private void SiteCatalogFilter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
+        }
+
+        // https://stackoverflow.com/questions/660554/how-to-automatically-select-all-text-on-focus-in-wpf-textbox
+
+        private void SiteCatalogFilter_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            // Fixes issue when clicking cut/copy/paste in context menu
+            if (SiteCatalogFilter.SelectionLength < 1)
+                SiteCatalogFilter.SelectAll();
+        }
+
+        private void SiteCatalogFilter_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+            // If user highlights some text, don't override it
+            if (SiteCatalogFilter.SelectionLength < 1)
+                SiteCatalogFilter.SelectAll();
+
+            // further clicks will not select all
+            SiteCatalogFilter.LostMouseCapture -= SiteCatalogFilter_LostMouseCapture;
+        }
+
+        private void SiteCatalogFilter_LostTouchCapture(object sender, TouchEventArgs e)
+        {
+            // If user highlights some text, don't override it
+            if (SiteCatalogFilter.SelectionLength < 1)
+                SiteCatalogFilter.SelectAll();
+
+            // further clicks will not select all
+            SiteCatalogFilter.LostTouchCapture -= SiteCatalogFilter_LostTouchCapture;
+        }
+
+        private void SiteCatalogFilter_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            // once we've left the TextBox, return the select all behavior
+            SiteCatalogFilter.LostMouseCapture += SiteCatalogFilter_LostMouseCapture;
+            SiteCatalogFilter.LostTouchCapture += SiteCatalogFilter_LostTouchCapture;
         }
     }
 }

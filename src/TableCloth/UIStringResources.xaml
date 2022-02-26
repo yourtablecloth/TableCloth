@@ -112,7 +112,23 @@
     <system:String x:Key="MainWindow_LaunchSandboxButtonText">
         샌드박스 실행
     </system:String>
-    
+
+    <system:String x:Key="MainWindow_Column_SiteName">
+        웹 사이트 이름
+    </system:String>
+
+    <system:String x:Key="MainWindow_Column_Category">
+        분류
+    </system:String>
+
+    <system:String x:Key="MainWindow_Column_PackageCount">
+        필요 소프트웨어 개수
+    </system:String>
+
+    <system:String x:Key="MainWindow_Column_SiteUrl">
+        웹 사이트 주소
+    </system:String>
+
     <!-- CertSelectWindow.xaml -->
 
     <system:String x:Key="CertSelectWindow_Title">

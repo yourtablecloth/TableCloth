@@ -18,13 +18,30 @@
 
         <Grid Margin="10 0 10 0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="10*" />
-                <RowDefinition Height="60*" />
-                <RowDefinition Height="8*" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
                 <RowDefinition Height="30*" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="50*" />
             </Grid.RowDefinitions>
-            <Label Grid.Row="0" VerticalAlignment="Center" Content="{StaticResource MainWindow_SelectOptionsLabelText}" />
-            <TabControl Grid.Row="1">
+
+            <Label Grid.Row="0" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverters}}" />
+
+            <TextBox Grid.Row="1" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 0 0 10" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostTouchCapture="SiteCatalogFilter_LostTouchCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" />
+            <Label Grid.Row="2" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt}" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverters}}" />
+            <ListView Grid.Row="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" SelectionChanged="SiteList_SelectionChanged" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverters}}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="{StaticResource MainWindow_Column_SiteName}" Width="100" DisplayMemberBinding="{Binding DisplayName}" />
+                        <GridViewColumn Header="{StaticResource MainWindow_Column_Category}" Width="100" DisplayMemberBinding="{Binding CategoryDisplayName}" />
+                        <GridViewColumn Header="{StaticResource MainWindow_Column_PackageCount}" Width="140" DisplayMemberBinding="{Binding Packages.Count}" />
+                        <GridViewColumn Header="{StaticResource MainWindow_Column_SiteUrl}" Width="300" DisplayMemberBinding="{Binding Url}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            
+            <Label Grid.Row="3" VerticalAlignment="Center" Content="{StaticResource MainWindow_SelectOptionsLabelText}" />
+            <TabControl Grid.Row="4">
                 <TabItem Header="{StaticResource MainWindow_BasicPreferences}">
                     <Grid Margin="4">
                         <Grid.RowDefinitions>
@@ -73,23 +90,6 @@
                     </Grid>
                 </TabItem>
             </TabControl>
-
-            <Label Grid.Row="2" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}" />
-            <TabControl Grid.Row="3" VerticalAlignment="Stretch" x:Name="SiteCatalog" ItemsSource="{Binding Path='Catalogs'}" SelectedItem="{Binding Path='SelectedTabView'}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource BooleanToVisibilityConverters}}">
-                <TabControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="{Binding Path='Category', Converter={StaticResource CategoryConverter}}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </TabControl.ItemTemplate>
-                <TabControl.ContentTemplate>
-                    <DataTemplate>
-                        <ListBox Width="Auto" ItemsSource="{Binding Path='Sites'}" SelectionMode="Extended" SelectionChanged="SiteList_SelectionChanged" />
-                    </DataTemplate>
-                </TabControl.ContentTemplate>
-            </TabControl>
-            <Label Grid.Row="3" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt}" Visibility="{Binding Path='HasCatalogs', Converter={StaticResource InverseBooleanToVisibilityConverters}}" />
         </Grid>
 
         <Grid Grid.Row="1">
