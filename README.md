@@ -28,6 +28,12 @@ Visual Studio 2019 이상, .NET 5 SDK, .NET Framework 4.6 SDK가 필요합니다
 
 보안 정책에 관해서는 [이곳](SECURITY.md)을 참고해주세요.
 
+## 기타 라이선스 정보
+
+* Photo by [Brooke Lark](https://unsplash.com/@brookelark?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/s/photos/tablecloth?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+
+* [Sandbox](https://icons8.com/icon/SMr5hyUNwufX/sandbox) icon by [Icons8](https://icons8.com)
+
 ## 스폰서
 
 ![마음인](docs/images/maumin.png)
