@@ -9,5 +9,7 @@
         string PreferencesFilePath { get; }
 
         string GetTempPath();
+
+        string GetImageDirectoryPath();
     }
 }

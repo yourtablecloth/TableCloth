@@ -32,10 +32,43 @@
             <ListView Grid.Row="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" SelectionChanged="SiteList_SelectionChanged" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverters}}">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="{StaticResource MainWindow_Column_SiteName}" Width="100" DisplayMemberBinding="{Binding DisplayName}" />
-                        <GridViewColumn Header="{StaticResource MainWindow_Column_Category}" Width="100" DisplayMemberBinding="{Binding CategoryDisplayName}" />
-                        <GridViewColumn Header="{StaticResource MainWindow_Column_PackageCount}" Width="140" DisplayMemberBinding="{Binding Packages.Count}" />
-                        <GridViewColumn Header="{StaticResource MainWindow_Column_SiteUrl}" Width="300" DisplayMemberBinding="{Binding Url}" />
+                        <GridViewColumn Header="{StaticResource MainWindow_Column_SiteName}" Width="180">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Image Width="16" Height="16" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" Margin="0 0 10 0" RenderOptions.BitmapScalingMode="Fant" />
+                                        <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="{StaticResource MainWindow_Column_Category}" Width="100">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding CategoryDisplayName}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="{StaticResource MainWindow_Column_PackageCount}" Width="140">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Packages.Count}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="{StaticResource MainWindow_Column_SiteUrl}" Width="300">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Url}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                     </GridView>
                 </ListView.View>
             </ListView>

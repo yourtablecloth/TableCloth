@@ -33,7 +33,7 @@ namespace TableCloth.Implementations.WPF
         private List<CatalogInternetService> _selectedSites = new();
         private bool _requireRestart = false;
 
-        private bool? IsLightThemeApplied()
+        private static bool? IsLightThemeApplied()
         {
             // https://stackoverflow.com/questions/51334674/how-to-detect-windows-10-light-dark-mode-in-win32-application
             using (var personalizeKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", false))
@@ -75,7 +75,7 @@ namespace TableCloth.Implementations.WPF
             return IntPtr.Zero;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             source.AddHook(WndProc);
@@ -124,6 +124,35 @@ namespace TableCloth.Implementations.WPF
 
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource);
             view.Filter = SiteCatalog_Filter;
+
+            var imageDirectoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
+
+            if (!Directory.Exists(imageDirectoryPath))
+                Directory.CreateDirectory(imageDirectoryPath);
+
+            var httpClient = Shared.HttpClientFactory.Value;
+
+            foreach (var eachSite in ViewModel.Services)
+            {
+                var targetFilePath = Path.Combine(imageDirectoryPath, eachSite.Id + ".png");
+
+                try
+                {
+                    if (File.Exists(targetFilePath))
+                        continue;
+
+                    var targetUrl = $"{StringResources.ImageUrlPrefix}/{eachSite.Category}/{eachSite.Id}.png";
+                    var imageStream = await httpClient.GetStreamAsync(targetUrl);
+
+                    using var fileStream = File.OpenWrite(targetFilePath);
+                    await imageStream.CopyToAsync(fileStream);
+                }
+                catch
+                {
+                    try { File.WriteAllBytes(targetFilePath, Properties.Resources.SandboxIcon); }
+                    catch { }
+                }
+            }
         }
 
         private bool SiteCatalog_Filter(object item)

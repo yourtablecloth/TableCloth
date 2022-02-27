@@ -20,5 +20,8 @@ namespace TableCloth.Implementations
 
         public string GetTempPath()
             => GetDataPath($"bwsb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}");
+
+        public string GetImageDirectoryPath()
+            => GetDataPath("images");
     }
 }

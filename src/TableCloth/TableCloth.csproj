@@ -39,6 +39,19 @@
   <ItemGroup>
     <Page Include="App.xaml" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;dir &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Hostess.zip&quot;" />

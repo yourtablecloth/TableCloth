@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
-using TableCloth.Resources;
 
 namespace TableCloth.ViewModels
 {
