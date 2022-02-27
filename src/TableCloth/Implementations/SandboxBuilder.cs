@@ -22,7 +22,7 @@ namespace TableCloth.Implementations
 
         private string GetNPKIPathForSandbox(X509CertPair certPair)
         {
-            var candidatePath = Path.Join("AppData", "LocalLow", "NPKI", certPair.SubjectOrganization);
+            var candidatePath = Path.Join("AppData", "LocalLow", "NPKI", certPair.Organization);
 
             if (certPair.IsPersonalCert)
                 candidatePath = Path.Join(candidatePath, "USER", certPair.SubjectNameForNpkiApp);

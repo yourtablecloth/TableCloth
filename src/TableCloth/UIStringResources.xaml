@@ -167,6 +167,24 @@
         공동 인증서 파일 (signCert.der;signPri.key)|signCert.der;signPri.key|모든 파일|*.*
     </system:String>
 
+    <system:String x:Key="CertSelectWindow_CertList_CommonName">
+        소유자
+    </system:String>
+
+    <system:String x:Key="CertSelectWindow_CertList_OrganizationalUnits">
+        기관
+    </system:String>
+
+    <system:String x:Key="CertSelectWindow_CertList_Organization">
+        발급기관
+    </system:String>
+
+    <system:String x:Key="CertSelectWindow_CertList_CountryName">
+        국가
+    </system:String>
+
+    <!-- AboutWindow.xaml -->
+
     <system:String x:Key="AboutWindow_Title">
         프로그램 정보
     </system:String>

@@ -26,7 +26,16 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="{StaticResource CertSelectWindow_InstructionLabel}" />
-            <ListView Grid.Row="1" ItemsSource="{Binding Path='CertPairs'}" SelectedItem="{Binding Path='SelectedCertPair'}" />
+            <ListView Grid.Row="1" ItemsSource="{Binding Path='CertPairs'}" SelectedItem="{Binding Path='SelectedCertPair'}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_CommonName}" Width="100" DisplayMemberBinding="{Binding CommonName}" />
+                        <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_OrganizationalUnits}" Width="100" DisplayMemberBinding="{Binding OrganizationalUnit}" />
+                        <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_Organization}" Width="100" DisplayMemberBinding="{Binding Organization}" />
+                        <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_CountryName}" Width="100" DisplayMemberBinding="{Binding CountryName}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
             <Button x:Name="RefreshCertPairsButton" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" Content="{StaticResource CertSelectWindow_RefreshButtonText}" Margin="0 5 0 5" Click="RefreshCertPairsButton_Click" />
             <TextBlock Grid.Row="3" TextWrapping="Wrap" Text="{StaticResource CertSelectWindow_ManualInstructionLabelText}" />
             <Button x:Name="OpenCertPairManuallyButton" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" Content="{StaticResource CertSelectWindow_OpenNpkiCertButton}" Margin="0 5 0 5" Click="OpenCertPairManuallyButton_Click" />
