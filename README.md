@@ -1,4 +1,4 @@
-# 식탁보 (Table Cloth) 프로젝트
+# 식탁보 (TableCloth)
 
 [프로젝트 홈페이지](https://yourtablecloth.github.io/)
 
