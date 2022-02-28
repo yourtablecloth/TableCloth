@@ -77,6 +77,10 @@ namespace TableCloth.Implementations.WPF
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            //SiteListHelpRow.Height = new GridLength(0d);
+            //SiteListSearchRow.Height = new GridLength(0d);
+            //SiteListRow.Height = new GridLength(0d);
+
             var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             source.AddHook(WndProc);
 

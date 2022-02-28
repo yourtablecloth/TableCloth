@@ -18,11 +18,11 @@
 
         <Grid Margin="10 0 10 0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="40" />
-                <RowDefinition Height="30*" />
-                <RowDefinition Height="40" />
-                <RowDefinition Height="50*" />
+                <RowDefinition Height="40" x:Name="SiteListHelpRow" />
+                <RowDefinition Height="40" x:Name="SiteListSearchRow" />
+                <RowDefinition Height="30*" x:Name="SiteListRow" />
+                <RowDefinition Height="40" x:Name="OptionHelpRow" />
+                <RowDefinition Height="50*" x:Name="OptionRow" />
             </Grid.RowDefinitions>
 
             <Label Grid.Row="0" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverters}}" />
