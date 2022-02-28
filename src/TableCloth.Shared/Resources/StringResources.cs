@@ -233,6 +233,12 @@ namespace TableCloth.Resources
         internal static readonly string Hostess_No_Targets
             = "이용하려는 웹 사이트 아이디가 지정되지 않았습니다. 샌드박스는 지금부터 사용하실 수 있어요.";
 
+        internal static readonly string Hostess_No_PowerShell_Error
+            = "Windows PowerShell 실행 파일을 찾을 수 없어 설치 스크립트를 실행할 수 없습니다.";
+
+        internal static readonly string Hostess_CustomScript_Title
+            = "별도 설치 스크립트";
+
         internal static readonly string Hostess_Download_InProgress
             = "다운로드 중...";
 

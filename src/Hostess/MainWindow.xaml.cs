@@ -151,6 +151,7 @@ namespace Hostess
 
                 packages.AddRange(targetService.Packages.Select(eachPackage => new InstallItemViewModel()
                 {
+                    InstallItemType = InstallItemType.DownloadAndInstall,
                     TargetSiteName = targetService.DisplayName,
                     TargetSiteUrl = targetService.Url,
                     PackageName = eachPackage.Name,
@@ -159,6 +160,20 @@ namespace Hostess
                     SkipIEMode = eachPackage.SkipIEMode,
                     Installed = null,
                 }));
+
+                var bootstrapData = targetService.CustomBootstrap;
+
+                if (!string.IsNullOrWhiteSpace(bootstrapData))
+                {
+                    packages.Add(new InstallItemViewModel()
+                    {
+                        InstallItemType = InstallItemType.PowerShellScript,
+                        TargetSiteName = targetService.DisplayName,
+                        TargetSiteUrl = targetService.Url,
+                        PackageName = StringResources.Hostess_CustomScript_Title,
+                        ScriptContent = bootstrapData,
+                    });
+                }
             }
 
             InstallList.ItemsSource = new ObservableCollection<InstallItemViewModel>(packages);
@@ -219,31 +234,77 @@ namespace Hostess
                 {
                     try
                     {
-                        eachItem.Installed = null;
-                        eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
-
-                        if (eachItem.SkipIEMode &&
-                            Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl))
+                        if (eachItem.InstallItemType == InstallItemType.DownloadAndInstall)
                         {
-                            var rootDomainName = RootDomainParser.InferenceRootDomain(parsedUrl);
-                            var matchedItem = ieModeRequiredList.FirstOrDefault(x => x.Domain.Equals(rootDomainName, StringComparison.Ordinal));
-                            ieModeRequiredList.Remove(matchedItem);
+                            eachItem.Installed = null;
+                            eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
+
+                            if (eachItem.SkipIEMode &&
+                                Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl))
+                            {
+                                var rootDomainName = RootDomainParser.InferenceRootDomain(parsedUrl);
+                                var matchedItem = ieModeRequiredList.FirstOrDefault(x => x.Domain.Equals(rootDomainName, StringComparison.Ordinal));
+                                ieModeRequiredList.Remove(matchedItem);
+                            }
+
+                            var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
+                            var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
+
+                            if (File.Exists(tempFilePath))
+                                File.Delete(tempFilePath);
+
+                            using (var webClient = new WebClient())
+                            {
+                                webClient.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml");
+                                webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko");
+                                await webClient.DownloadFileTaskAsync(eachItem.PackageUrl, tempFilePath);
+
+                                eachItem.StatusMessage = StringResources.Hostess_Install_InProgress;
+                                var psi = new ProcessStartInfo(tempFilePath, eachItem.Arguments)
+                                {
+                                    UseShellExecute = false,
+                                };
+
+                                var cpSource = new TaskCompletionSource<int>();
+                                using (var process = new Process() { StartInfo = psi, })
+                                {
+                                    process.EnableRaisingEvents = true;
+                                    process.Exited += (_sender, _e) =>
+                                    {
+                                        var realSender = _sender as Process;
+                                        cpSource.SetResult(realSender.ExitCode);
+                                    };
+
+                                    if (!process.Start())
+                                        throw new ApplicationException(StringResources.HostessError_Package_CanNotStart);
+
+                                    await cpSource.Task;
+                                    eachItem.StatusMessage = StringResources.Hostess_Install_Succeed;
+                                    eachItem.Installed = true;
+                                    eachItem.ErrorMessage = null;
+                                }
+                            }
                         }
-
-                        var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
-                        var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
-                        
-                        if (File.Exists(tempFilePath))
-                            File.Delete(tempFilePath);
-
-                        using (var webClient = new WebClient())
+                        else if (eachItem.InstallItemType == InstallItemType.PowerShellScript)
                         {
-                            webClient.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml");
-                            webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko");
-                            await webClient.DownloadFileTaskAsync(eachItem.PackageUrl, tempFilePath);
-
+                            eachItem.Installed = null;
                             eachItem.StatusMessage = StringResources.Hostess_Install_InProgress;
-                            var psi = new ProcessStartInfo(tempFilePath, eachItem.Arguments)
+
+                            var tempFileName = $"bootstrap_{Guid.NewGuid():n}.ps1";
+                            var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
+
+                            if (File.Exists(tempFilePath))
+                                File.Delete(tempFilePath);
+
+                            File.WriteAllText(tempFilePath, eachItem.ScriptContent, Encoding.Unicode);
+                            var powershellPath = Path.Combine(
+                                Environment.GetFolderPath(Environment.SpecialFolder.System),
+                                @"WindowsPowerShell\v1.0\powershell.exe");
+
+                            if (!File.Exists(powershellPath))
+                                throw new Exception(StringResources.Hostess_No_PowerShell_Error);
+
+                            var psi = new ProcessStartInfo(powershellPath, $"Set-ExecutionPolicy Bypass -Scope Process -Force; {tempFilePath}")
                             {
                                 UseShellExecute = false,
                             };

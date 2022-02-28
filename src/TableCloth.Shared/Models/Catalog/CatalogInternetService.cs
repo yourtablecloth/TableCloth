@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
 using TableCloth.Resources;
 
@@ -25,6 +26,16 @@ namespace TableCloth.Models.Catalog
 
         [XmlArray, XmlArrayItem(typeof(CatalogPackageInformation), ElementName = "Package")]
         public List<CatalogPackageInformation> Packages { get; set; } = new List<CatalogPackageInformation>();
+
+        [XmlIgnore]
+        public string CustomBootstrap { get; set; }
+
+        [XmlElement("CustomBootstrap")]
+        public XmlCDataSection CustomBootstrapCDATA
+        {
+            get => new XmlDocument().CreateCDataSection(CustomBootstrap);
+            set => CustomBootstrap = value.Value;
+        }
 
         [XmlIgnore]
         public string CategoryDisplayName
