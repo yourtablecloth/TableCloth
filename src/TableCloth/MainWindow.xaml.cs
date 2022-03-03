@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -75,7 +76,37 @@ namespace TableCloth.Implementations.WPF
             return IntPtr.Zero;
         }
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private static async void LoadSiteImages(List<CatalogInternetService> services, string imageDirectoryPath)
+        {
+            if (!Directory.Exists(imageDirectoryPath))
+                Directory.CreateDirectory(imageDirectoryPath);
+
+            var httpClient = Shared.HttpClientFactory.Value;
+
+            foreach (var eachSite in services)
+            {
+                var targetFilePath = Path.Combine(imageDirectoryPath, eachSite.Id + ".png");
+
+                try
+                {
+                    if (File.Exists(targetFilePath))
+                        continue;
+
+                    var targetUrl = $"{StringResources.ImageUrlPrefix}/{eachSite.Category}/{eachSite.Id}.png";
+                    var imageStream = await httpClient.GetStreamAsync(targetUrl);
+
+                    using var fileStream = File.OpenWrite(targetFilePath);
+                    await imageStream.CopyToAsync(fileStream);
+                }
+                catch
+                {
+                    try { File.WriteAllBytes(targetFilePath, Properties.Resources.SandboxIcon); }
+                    catch { }
+                }
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //SiteListHelpRow.Height = new GridLength(0d);
             //SiteListSearchRow.Height = new GridLength(0d);
@@ -129,34 +160,9 @@ namespace TableCloth.Implementations.WPF
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource);
             view.Filter = SiteCatalog_Filter;
 
-            var imageDirectoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
-
-            if (!Directory.Exists(imageDirectoryPath))
-                Directory.CreateDirectory(imageDirectoryPath);
-
-            var httpClient = Shared.HttpClientFactory.Value;
-
-            foreach (var eachSite in ViewModel.Services)
-            {
-                var targetFilePath = Path.Combine(imageDirectoryPath, eachSite.Id + ".png");
-
-                try
-                {
-                    if (File.Exists(targetFilePath))
-                        continue;
-
-                    var targetUrl = $"{StringResources.ImageUrlPrefix}/{eachSite.Category}/{eachSite.Id}.png";
-                    var imageStream = await httpClient.GetStreamAsync(targetUrl);
-
-                    using var fileStream = File.OpenWrite(targetFilePath);
-                    await imageStream.CopyToAsync(fileStream);
-                }
-                catch
-                {
-                    try { File.WriteAllBytes(targetFilePath, Properties.Resources.SandboxIcon); }
-                    catch { }
-                }
-            }
+            var services = ViewModel.Services;
+            var directoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
+            Task.Factory.StartNew(() => LoadSiteImages(services, directoryPath));
         }
 
         private bool SiteCatalog_Filter(object item)
