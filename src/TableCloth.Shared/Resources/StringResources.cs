@@ -166,6 +166,15 @@ namespace TableCloth.Resources
         internal static readonly string Error_IEMode_NotAvailable
             = "Microsoft Edge 브라우저 안에서 인터넷 익스플로러 모드를 활성화해야 호환성 문제를 피할 수 있습니다. 인터넷 익스플로러를 시스템 구성 요소 추가/제거를 통해 활성화해주세요.";
 
+        internal static string Error_Cannot_Invoke_GetVersionEx(int errorCode)
+            => $"윈도우 OS 버전 정보 조회 API를 호출했지만, 다음의 오류 코드와 함께 실패했습니다 - {errorCode:X8}";
+
+        internal static readonly string Error_Cannot_Invoke_GetProductInfo
+            = "윈도우 OS 제품 정보 조회 API를 호출했지만, 정보를 가져올 수 없습니다.";
+
+        internal static readonly string Error_SandboxMightNotAvailable
+            = "검색된 제품 정보에 따르면, 윈도우 샌드박스 기능이 지원되지 않는 버전의 운영 체제를 사용 중인 것 같습니다.";
+
         internal static string Error_HostFolder_Unavailable(IEnumerable<string> unavailableDirectories)
         {
             var directoryList = string.Join("\r\n", unavailableDirectories.Select(x => $"- {x}"));

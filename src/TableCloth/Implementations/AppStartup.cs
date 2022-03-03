@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using TableCloth.Contracts;
 using TableCloth.Resources;
@@ -61,6 +62,42 @@ namespace TableCloth.Implementations
             if (!File.Exists(iePath))
             {
                 warnings.Add(StringResources.Error_IEMode_NotAvailable);
+            }
+
+            var osvi = new NativeMethods.OSVERSIONINFOEXW()
+            {
+                dwOSVersionInfoSize = Marshal.SizeOf(typeof(NativeMethods.OSVERSIONINFOEXW)),
+            };
+
+            var supportedOSEditions = new NativeMethods.OSEdition[]
+            {
+                NativeMethods.OSEdition.PRODUCT_EDUCATION,
+                NativeMethods.OSEdition.PRODUCT_EDUCATION_N,
+                NativeMethods.OSEdition.PRODUCT_ENTERPRISE,
+                NativeMethods.OSEdition.PRODUCT_ENTERPRISE_E,
+                NativeMethods.OSEdition.PRODUCT_ENTERPRISE_EVALUATION,
+                NativeMethods.OSEdition.PRODUCT_ENTERPRISE_N,
+                NativeMethods.OSEdition.PRODUCT_ENTERPRISE_N_EVALUATION,
+                NativeMethods.OSEdition.PRODUCT_PRO_WORKSTATION,
+                NativeMethods.OSEdition.PRODUCT_PRO_WORKSTATION_N,
+                NativeMethods.OSEdition.PRODUCT_PROFESSIONAL,
+                NativeMethods.OSEdition.PRODUCT_PROFESSIONAL_N,
+            };
+
+            if (!NativeMethods.GetVersionExW(ref osvi))
+                warnings.Add(StringResources.Error_Cannot_Invoke_GetVersionEx(Marshal.GetLastWin32Error()));
+            else
+            {
+                if (!NativeMethods.GetProductInfo(
+                    osvi.dwMajorVersion, osvi.dwMinorVersion,
+                    osvi.wServicePackMajor, osvi.wServicePackMinor,
+                    out NativeMethods.OSEdition productType))
+                    warnings.Add(StringResources.Error_Cannot_Invoke_GetProductInfo);
+                else
+                {
+                    if (Array.IndexOf(supportedOSEditions, productType) < 0)
+                        warnings.Add(StringResources.Error_SandboxMightNotAvailable);
+                }
             }
 
             failedResaon = null;
