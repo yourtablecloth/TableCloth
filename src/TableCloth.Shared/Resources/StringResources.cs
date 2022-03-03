@@ -106,7 +106,7 @@ namespace TableCloth.Resources
                 defaultString = $"*{defaultString}";
 
             if (pkgs != null && pkgs.Count > 0)
-                defaultString = $"{defaultString} (총 {pkgs.Count}개 프로그램 설치)";
+                defaultString = $"{defaultString} (총 {svc.PackageCountForDisplay}개 프로그램 설치)";
 
             return defaultString;
         }
