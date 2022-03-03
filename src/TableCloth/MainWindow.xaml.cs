@@ -177,12 +177,20 @@ namespace TableCloth.Implementations.WPF
             if (actualItem == null)
                 return true;
 
-            return actualItem.DisplayName.Contains(filterText, StringComparison.OrdinalIgnoreCase)
-                || actualItem.CategoryDisplayName.Contains(filterText, StringComparison.OrdinalIgnoreCase)
-                || actualItem.Url.Contains(filterText, StringComparison.OrdinalIgnoreCase)
-                || actualItem.Packages.Count.ToString().Contains(filterText, StringComparison.OrdinalIgnoreCase)
-                || actualItem.Packages.Any(x => x.Name.Contains(filterText, StringComparison.OrdinalIgnoreCase))
-                || actualItem.Id.Contains(filterText, StringComparison.OrdinalIgnoreCase);
+            var splittedFilterText = filterText.Split(new char[] { ',', }, StringSplitOptions.RemoveEmptyEntries);
+            var result = false;
+
+            foreach (var eachFilterText in splittedFilterText)
+            {
+                result |= actualItem.DisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.CategoryDisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.Url.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.Packages.Count.ToString().Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.Packages.Any(x => x.Name.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase))
+                    || actualItem.Id.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return result;
         }
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
