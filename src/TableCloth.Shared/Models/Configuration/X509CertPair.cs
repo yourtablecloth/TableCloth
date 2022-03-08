@@ -1,45 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TableCloth.Models.Configuration
 {
     public class X509CertPair
     {
-        public X509CertPair(string derFilePath, string keyFilePath,
-			IEnumerable<KeyValuePair<string, string>> subject,
-			bool isPersonalCert)
+        public X509CertPair(byte[] publicKey, byte[] privateKey)
 		{
-			DerFilePath = derFilePath;
-			KeyFilePath = keyFilePath;
-			Subject = subject.ToArray();
-			IsPersonalCert = isPersonalCert;
+			PublicKey = publicKey;
+			PrivateKey = privateKey;
 
-			CommonName = Subject
-				.Where(x => string.Equals(x.Key, "cn", StringComparison.InvariantCultureIgnoreCase))
-				.Select(x => x.Value)
-				.FirstOrDefault();
+			using (var cert = new X509Certificate2(publicKey))
+			{
+				var issuerName = cert.Issuer;
 
-			OrganizationalUnits = Subject
-				.Where(x => string.Equals(x.Key, "ou", StringComparison.InvariantCultureIgnoreCase))
-				.Select(x => x.Value)
-				.ToArray();
+				var subject = cert.Subject
+					.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+					.Select(x =>
+					{
+						var parts = x.Trim().Split('=');
+						var unitName = parts.ElementAtOrDefault(0)?.Trim() ?? string.Empty;
+						var value = parts.ElementAtOrDefault(1)?.Trim() ?? string.Empty;
+						return new KeyValuePair<string, string>(unitName, value);
+					})
+					.ToArray();
 
-			OrganizationalUnit = string.Join(",", OrganizationalUnits);
+				var organizationName = subject
+					.Where(x => string.Equals(x.Key, "o", StringComparison.InvariantCultureIgnoreCase))
+					.Select(x => x.Value)
+					.FirstOrDefault();
 
-			Organization = Subject
-				.Where(x => string.Equals(x.Key, "o", StringComparison.InvariantCultureIgnoreCase))
-				.Select(x => x.Value)
-				.FirstOrDefault();
+				var usageExtension = cert.Extensions
+					.OfType<X509KeyUsageExtension>()
+					.FirstOrDefault();
 
-			CountryName = Subject
-				.Where(x => string.Equals(x.Key, "c", StringComparison.InvariantCultureIgnoreCase))
-				.Select(x => x.Value)
-				.FirstOrDefault();
+				var isPersonalCert = usageExtension != null &&
+									 usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.NonRepudiation) &&
+									 usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.DigitalSignature);
+
+				Subject = subject.ToArray();
+				IsPersonalCert = isPersonalCert;
+
+				CommonName = Subject
+					.Where(x => string.Equals(x.Key, "cn", StringComparison.InvariantCultureIgnoreCase))
+					.Select(x => x.Value)
+					.FirstOrDefault();
+
+				OrganizationalUnits = Subject
+					.Where(x => string.Equals(x.Key, "ou", StringComparison.InvariantCultureIgnoreCase))
+					.Select(x => x.Value)
+					.ToArray();
+
+				OrganizationalUnit = string.Join(",", OrganizationalUnits);
+
+				Organization = Subject
+					.Where(x => string.Equals(x.Key, "o", StringComparison.InvariantCultureIgnoreCase))
+					.Select(x => x.Value)
+					.FirstOrDefault();
+
+				CountryName = Subject
+					.Where(x => string.Equals(x.Key, "c", StringComparison.InvariantCultureIgnoreCase))
+					.Select(x => x.Value)
+					.FirstOrDefault();
+			}
 		}
 
-        public string DerFilePath { get; }
-        public string KeyFilePath { get; }
+        public byte[] PublicKey { get; }
+        public byte[] PrivateKey { get; }
         public KeyValuePair<string, string>[] Subject { get; }
         public bool IsPersonalCert { get; }
 

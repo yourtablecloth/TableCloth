@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security;
 using TableCloth.Models.Configuration;
 
 namespace TableCloth.Contracts
@@ -10,5 +11,7 @@ namespace TableCloth.Contracts
         IEnumerable<string> GetCandidateDirectories();
 
         X509CertPair CreateX509CertPair(string derFilePath, string keyFilePath);
+
+        X509CertPair CreateX509Cert(string pfxFilePath, SecureString password);
     }
 }

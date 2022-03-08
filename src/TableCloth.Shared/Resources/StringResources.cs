@@ -196,6 +196,9 @@ namespace TableCloth.Resources
         internal static readonly string Error_Cannot_Find_KeyFile
             = "공동 인증서 개인 키 파일 (.key) 파일을 찾을 수 없습니다.";
 
+        internal static readonly string Error_Cannot_Find_PfxFile
+            = "공동 인증서 파일 (.pfx) 파일을 찾을 수 없습니다.";
+
         internal static string Error_Cannot_Download_Catalog(Exception ex)
         {
             if (ex is AggregateException ae)

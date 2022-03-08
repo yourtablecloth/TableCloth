@@ -254,12 +254,8 @@ namespace TableCloth.Implementations.WPF
             if (!response.HasValue || !response.Value)
                 return;
 
-            if (certSelectWindow.ViewModel.SelectedCertPair != null &&
-                File.Exists(certSelectWindow.ViewModel.SelectedCertPair.DerFilePath) &&
-                File.Exists(certSelectWindow.ViewModel.SelectedCertPair.KeyFilePath))
-            {
+            if (certSelectWindow.ViewModel.SelectedCertPair != null)
                 ViewModel.SelectedCertFile = certSelectWindow.ViewModel.SelectedCertPair;
-            }
         }
 
         private void SiteList_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -144,7 +144,7 @@
     </system:String>
 
     <system:String x:Key="CertSelectWindow_ManualInstructionLabelText">
-        원하는 공동 인증서가 없다면, 직접 공동 인증서 찾기 버튼을 눌러서 직접 DER 파일과 KEY 파일을 찾아주세요.
+        원하는 공동 인증서가 없다면, 직접 공동 인증서 찾기 버튼을 눌러서 직접 DER 파일과 KEY 파일 한 쌍, 혹은 PFX 파일을 찾아주세요.
     </system:String>
 
     <system:String x:Key="CertSelectWindow_OpenNpkiCertButton">
@@ -164,7 +164,7 @@
     </system:String>
 
     <system:String x:Key="CertSelectWindow_FileOpenDialog_FilterText">
-        공동 인증서 파일 (signCert.der;signPri.key)|signCert.der;signPri.key|모든 파일|*.*
+        공동 인증서 파일 (signCert.der;signPri.key)|signCert.der;signPri.key|공동 인증서 파일 (*.pfx)|*.pfx
     </system:String>
 
     <system:String x:Key="CertSelectWindow_CertList_CommonName">
@@ -181,6 +181,32 @@
 
     <system:String x:Key="CertSelectWindow_CertList_CountryName">
         국가
+    </system:String>
+    
+    <!-- InputPasswordWindow.xaml -->
+
+    <system:String x:Key="InputPasswordWindow_Title">
+        PFX 인증서 변환을 위한 비밀 번호 입력
+    </system:String>
+
+    <system:String x:Key="InputPasswordWindow_Instruction">
+        PFX 인증서를 DER과 KEY로 변환해서 전달하기 위해 비밀 번호 입력이 필요합니다.
+    </system:String>
+
+    <system:String x:Key="InputPasswordWindow_Disclaimer">
+        입력하시는 암호는 프로그램 내부에서만 사용되고 폐기됩니다.
+    </system:String>
+
+    <system:String x:Key="InputPasswordWindow_PfxPathPrefix">
+        PFX 인증서 파일 경로: {0}
+    </system:String>
+
+    <system:String x:Key="InputPasswordWindow_OkayButton">
+        확인
+    </system:String>
+
+    <system:String x:Key="InputPasswordWindow_CancelButton">
+        취소
     </system:String>
 
     <!-- AboutWindow.xaml -->

@@ -13,5 +13,8 @@ namespace TableCloth.Implementations
 
         public AboutWindowViewModel AboutWindowViewModel
             => Program.ServiceProvider.GetService<AboutWindowViewModel>();
+
+        public InputPasswordWindowViewModel InputPasswordWindowViewModel
+            => Program.ServiceProvider.GetService<InputPasswordWindowViewModel>();
     }
 }

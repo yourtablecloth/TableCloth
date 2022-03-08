@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using PnPeople.Security;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using TableCloth.Contracts;
 using TableCloth.Models.Configuration;
@@ -108,34 +111,25 @@ namespace TableCloth.Implementations
             if (!File.Exists(keyFilePath))
                 throw new FileNotFoundException(StringResources.Error_Cannot_Find_KeyFile, keyFilePath);
 
-            using (var cert = new X509Certificate2(derFilePath))
+            return new X509CertPair(
+                File.ReadAllBytes(derFilePath),
+                File.ReadAllBytes(keyFilePath));
+        }
+
+        public X509CertPair CreateX509Cert(string pfxFilePath, SecureString password)
+        {
+            if (!File.Exists(pfxFilePath))
+                throw new FileNotFoundException(StringResources.Error_Cannot_Find_PfxFile, pfxFilePath);
+
+            var copiedPassword = CertPrivateKeyHelper.CopyFromSecureString(password);
+
+            using (X509Certificate2 cert = new X509Certificate2(pfxFilePath, copiedPassword, X509KeyStorageFlags.Exportable))
             {
-                var issuerName = cert.Issuer;
-                var subjectNamePairs = cert.Subject
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x =>
-                    {
-                        var parts = x.Trim().Split('=');
-                        var unitName = parts.ElementAtOrDefault(0)?.Trim() ?? string.Empty;
-                        var value = parts.ElementAtOrDefault(1)?.Trim() ?? string.Empty;
-                        return new KeyValuePair<string, string>(unitName, value);
-                    })
-                    .ToArray();
+                var publicKey = cert.Export(X509ContentType.Cert);
+                var privateKey = cert.GetRSAPrivateKey().ExportEncryptedPkcs8PrivateKey(copiedPassword,
+                    new PbeParameters(PbeEncryptionAlgorithm.TripleDes3KeyPkcs12, HashAlgorithmName.SHA1, 2048));
 
-                var organizationName = subjectNamePairs
-                    .Where(x => string.Equals(x.Key, "o", StringComparison.InvariantCultureIgnoreCase))
-                    .Select(x => x.Value)
-                    .FirstOrDefault();
-
-                var usageExtension = cert.Extensions
-                    .OfType<X509KeyUsageExtension>()
-                    .FirstOrDefault();
-
-                var isPersonalCert = usageExtension != null &&
-                                     usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.NonRepudiation) &&
-                                     usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.DigitalSignature);
-
-                return new X509CertPair(derFilePath, keyFilePath, subjectNamePairs, isPersonalCert);
+                return new X509CertPair(publicKey, privateKey);
             }
         }
     }

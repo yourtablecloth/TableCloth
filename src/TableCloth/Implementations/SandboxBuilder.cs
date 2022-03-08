@@ -91,16 +91,11 @@ namespace TableCloth.Implementations
                 if (!Directory.Exists(certAssetsDirectoryPath))
                     Directory.CreateDirectory(certAssetsDirectoryPath);
 
-                var destDerFilePath = Path.Combine(
-                    certAssetsDirectoryPath,
-                    Path.GetFileName(tableClothConfig.CertPair.DerFilePath));
+                var destDerFilePath = Path.Combine(certAssetsDirectoryPath, "signCert.der");
+                var destKeyFileName = Path.Combine(certAssetsDirectoryPath, "signPri.key");
 
-                var destKeyFileName = Path.Combine(
-                    certAssetsDirectoryPath,
-                    Path.GetFileName(tableClothConfig.CertPair.KeyFilePath));
-
-                File.Copy(tableClothConfig.CertPair.DerFilePath, destDerFilePath, true);
-                File.Copy(tableClothConfig.CertPair.KeyFilePath, destKeyFileName, true);
+                File.WriteAllBytes(destDerFilePath, tableClothConfig.CertPair.PublicKey);
+                File.WriteAllBytes(destKeyFileName, tableClothConfig.CertPair.PrivateKey);
 
                 sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
                 {

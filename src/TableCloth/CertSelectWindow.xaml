@@ -51,7 +51,7 @@
             </WrapPanel>
 
             <WrapPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
-                <Button x:Name="OkayButton" Content="{StaticResource CertSelectWindow_OkayButtonText}" Padding="5" Margin="0 0 10 0" Click="OkayButton_Click"></Button>
+                <Button x:Name="OkayButton" Content="{StaticResource CertSelectWindow_OkayButtonText}" Padding="5" Margin="0 0 10 0" Click="OkayButton_Click" IsDefault="True"></Button>
                 <Button x:Name="CancelButton" Content="{StaticResource CertSelectWindow_CancelButtonText}" Padding="5" Margin="0 0 0 0" Click="CancelButton_Click"></Button>
             </WrapPanel>
         </Grid>
