@@ -404,5 +404,13 @@ namespace TableCloth.Implementations.WPF
             SiteCatalogFilter.LostMouseCapture += SiteCatalogFilter_LostMouseCapture;
             SiteCatalogFilter.LostTouchCapture += SiteCatalogFilter_LostTouchCapture;
         }
+
+        private void ReloadCatalogButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(
+                Process.GetCurrentProcess().MainModule.FileName,
+                Environment.GetCommandLineArgs().Skip(1).ToArray());
+            Application.Current.Shutdown();
+        }
     }
 }
