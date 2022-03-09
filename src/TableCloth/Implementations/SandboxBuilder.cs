@@ -121,11 +121,14 @@ namespace TableCloth.Implementations
 
             if (tableClothConfiguration.CertPair != null)
             {
-                var npkiDirectoryPath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
+                var npkiDirectoryPathInSandbox = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
+                var desktopDirectoryPathInSandbox = "%userprofile%\\Desktop\\Certificates";
                 var providedCertFilePath = Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*");
                 certFileCopyScript = $@"
-if not exist ""{npkiDirectoryPath}"" mkdir ""{npkiDirectoryPath}""
-copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
+if not exist ""{npkiDirectoryPathInSandbox}"" mkdir ""{npkiDirectoryPathInSandbox}""
+copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPathInSandbox}""
+if not exist ""{desktopDirectoryPathInSandbox}"" mkdir ""{desktopDirectoryPathInSandbox}""
+copy /y ""{providedCertFilePath}"" ""{desktopDirectoryPathInSandbox}""
 del /f /q ""{providedCertFilePath}""
 ";
             }
