@@ -55,7 +55,7 @@ namespace TableCloth.Implementations
             if (!File.Exists(prefFilePath))
                 return defaultSettings;
 
-            PreferenceSettings settings = null;
+            PreferenceSettings settings;
 
             try
             {
