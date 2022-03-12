@@ -73,6 +73,10 @@
         Adobe Reader 추가하기
     </system:String>
 
+    <system:String x:Key="MainWindow_UseHancomOfficeViewer">
+        한컴오피스 뷰어 다운로드
+    </system:String>
+
     <system:String x:Key="MainWindow_UseIEModeCompatList">
         Internet Explorer 호환성 모드 사용
     </system:String>

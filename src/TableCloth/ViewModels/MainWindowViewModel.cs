@@ -66,6 +66,7 @@ namespace TableCloth.ViewModels
         private bool _enablePrinters;
         private bool _enableEveryonesPrinter;
         private bool _enableAdobeReader;
+        private bool _enableHancomOfficeViewer;
         private bool _enableInternetExplorerMode;
         private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
@@ -188,6 +189,19 @@ namespace TableCloth.ViewModels
                 if (value != _enableAdobeReader)
                 {
                     _enableAdobeReader = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public bool EnableHancomOfficeViewer
+        {
+            get => _enableHancomOfficeViewer;
+            set
+            {
+                if (value != _enableHancomOfficeViewer)
+                {
+                    _enableHancomOfficeViewer = value;
                     NotifyPropertyChanged();
                 }
             }

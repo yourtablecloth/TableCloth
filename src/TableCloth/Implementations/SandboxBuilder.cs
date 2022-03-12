@@ -141,6 +141,9 @@ del /f /q ""{providedCertFilePath}""
             if (tableClothConfiguration.EnableAdobeReader)
                 switches.Add(StringResources.Hostess_Switch_EnableAdobeReader);
 
+            if (tableClothConfiguration.EnableHancomOfficeViewer)
+                switches.Add(StringResources.Hostess_Switch_EnableHancomOfficeViewer);
+
             if (tableClothConfiguration.EnableInternetExplorerMode)
                 switches.Add(StringResources.Hostess_Switch_EnableIEMode);
 

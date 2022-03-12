@@ -76,6 +76,7 @@ namespace Hostess
 
                     var hasEveryonesPrinterEnabled = false;
                     var hasAdobeReaderEnabled = false;
+                    var hasHancomOfficeViewerEnabled = false;
                     var hasIEModeEnabled = false;
 
                     var options = e.Args.Where(x => x.StartsWith("--", StringComparison.Ordinal)).ToArray();
@@ -87,12 +88,16 @@ namespace Hostess
                         if (eachOption.StartsWith(StringResources.Hostess_Switch_EnableAdobeReader, StringComparison.Ordinal))
                             hasAdobeReaderEnabled = true;
 
+                        if (eachOption.StartsWith(StringResources.Hostess_Switch_EnableHancomOfficeViewer, StringComparison.Ordinal))
+                            hasHancomOfficeViewerEnabled = true;
+
                         if (eachOption.StartsWith(StringResources.Hostess_Switch_EnableIEMode, StringComparison.Ordinal))
                             hasIEModeEnabled = true;
                     }
 
                     Current.InitHasEveryonesPrinterEnabled(hasEveryonesPrinterEnabled);
                     Current.InitHasAdobeReaderEnabled(hasAdobeReaderEnabled);
+                    Current.InitHasHancomOfficeViewerEnabled(hasHancomOfficeViewerEnabled);
                     Current.InitHasIEModeEnabled(hasIEModeEnabled);
 
                     if (!targetSites.Any())

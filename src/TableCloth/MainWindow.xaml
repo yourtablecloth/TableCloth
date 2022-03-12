@@ -114,7 +114,8 @@
                         </Grid.RowDefinitions>
                         <CheckBox Grid.Row="0" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseEveryonesPrinter}" IsChecked="{Binding Path='EnableEveryonesPrinter'}" />
                         <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseAdobeReader}" IsChecked="{Binding Path='EnableAdobeReader'}" />
-                        <CheckBox Grid.Row="2" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
+                        <CheckBox Grid.Row="2" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseHancomOfficeViewer}" IsChecked="False" />
+                        <CheckBox Grid.Row="3" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="{StaticResource MainWindow_TelemetryPreferences}">

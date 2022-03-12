@@ -13,6 +13,7 @@ namespace TableCloth.Models.Configuration
         public bool EnablePrinters { get; set; }
         public bool EnableEveryonesPrinter { get; set; }
         public bool EnableAdobeReader { get; set; }
+        public bool EnableHancomOfficeViewer { get; set; }
         public bool EnableInternetExplorerMode { get; set; }
         public ICollection<CatalogCompanion> Companions { get; set; }
         public ICollection<CatalogInternetService> Services { get; set; }

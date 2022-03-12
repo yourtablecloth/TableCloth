@@ -357,6 +357,15 @@ namespace Hostess
                     });
                 }
 
+                if (App.Current.GetHasHancomOfficeViewerEnabled())
+                {
+                    Process.Start(new ProcessStartInfo(StringResources.HancomOfficeViewerUrl)
+                    {
+                        UseShellExecute = true,
+                        WindowStyle = ProcessWindowStyle.Maximized,
+                    });
+                }
+
                 var internetExplorerExists = File.Exists(Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                     "Internet Explorer", "iexplore.exe"));

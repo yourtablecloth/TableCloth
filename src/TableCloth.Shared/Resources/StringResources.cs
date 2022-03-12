@@ -45,6 +45,9 @@ namespace TableCloth.Resources
 
         internal static readonly string AdobeReaderUrl =
             "https://get.adobe.com/kr/reader/";
+
+        internal static readonly string HancomOfficeViewerUrl =
+            "https://www.hancom.com/cs_center/csDownload.do";
     }
 #pragma warning disable IDE0040, IDE0066
 
@@ -296,6 +299,8 @@ namespace TableCloth.Resources
         internal static readonly string Hostess_Switch_EnableEveryonesPrinter = "--enable-everyones-printer";
 
         internal static readonly string Hostess_Switch_EnableAdobeReader = "--enable-adobe-reader";
+
+        internal static readonly string Hostess_Switch_EnableHancomOfficeViewer = "--enable-hancom-office-viewer";
 
         internal static readonly string Hostess_Switch_EnableIEMode = "--enable-ie-mode";
     }

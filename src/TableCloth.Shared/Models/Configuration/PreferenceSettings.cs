@@ -14,6 +14,8 @@ namespace TableCloth.Models.Configuration
 
         public bool InstallAdobeReader { get; set; } = true;
 
+        public bool InstallHancomOfficeViewer { get; set; } = true;
+
         public bool EnableInternetExplorerMode { get; set; } = true;
 
         public bool UseLogCollection { get; set; } = true;

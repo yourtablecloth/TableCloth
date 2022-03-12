@@ -82,6 +82,14 @@ namespace Hostess
             where TApplication : Application
             => InitAppProperty(app, "HasAdobeReaderEnabled", value ? Boolean.TrueString : Boolean.FalseString);
 
+        public static bool GetHasHancomOfficeViewerEnabled<TApplication>(this TApplication app)
+            where TApplication : Application
+            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, "HasHancomOfficeViewerEnabled"));
+
+        public static void InitHasHancomOfficeViewerEnabled<TApplication>(this TApplication app, bool value)
+            where TApplication : Application
+            => InitAppProperty(app, "HasHancomOfficeViewerEnabled", value ? Boolean.TrueString : Boolean.FalseString);
+
         public static bool GetHasIEModeEnabled<TApplication>(this TApplication app)
             where TApplication : Application
             => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, "HasIEModeEnabled"));

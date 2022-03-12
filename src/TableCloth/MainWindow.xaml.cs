@@ -135,6 +135,7 @@ namespace TableCloth.Implementations.WPF
             ViewModel.EnablePrinters = currentConfig.UsePrinterRedirection;
             ViewModel.EnableEveryonesPrinter = currentConfig.InstallEveryonesPrinter;
             ViewModel.EnableAdobeReader = currentConfig.InstallAdobeReader;
+            ViewModel.EnableHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
             ViewModel.EnableInternetExplorerMode = currentConfig.EnableInternetExplorerMode;
             ViewModel.LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
@@ -231,6 +232,10 @@ namespace TableCloth.Implementations.WPF
                     currentConfig.InstallAdobeReader = ViewModel.EnableAdobeReader;
                     break;
 
+                case nameof(MainWindowViewModel.EnableHancomOfficeViewer):
+                    currentConfig.InstallHancomOfficeViewer = ViewModel.EnableHancomOfficeViewer;
+                    break;
+
                 case nameof(MainWindowViewModel.EnableInternetExplorerMode):
                     currentConfig.EnableInternetExplorerMode = ViewModel.EnableInternetExplorerMode;
                     break;
@@ -291,6 +296,7 @@ namespace TableCloth.Implementations.WPF
                 EnablePrinters = ViewModel.EnablePrinters,
                 EnableEveryonesPrinter = ViewModel.EnableEveryonesPrinter,
                 EnableAdobeReader = ViewModel.EnableAdobeReader,
+                EnableHancomOfficeViewer = ViewModel.EnableHancomOfficeViewer,
                 EnableInternetExplorerMode = ViewModel.EnableInternetExplorerMode,
                 Companions = ViewModel.CatalogDocument.Companions,
                 Services = _selectedSites,
