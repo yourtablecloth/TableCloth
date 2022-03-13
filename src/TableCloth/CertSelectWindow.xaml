@@ -36,7 +36,14 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <Button x:Name="RefreshCertPairsButton" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" Content="{StaticResource CertSelectWindow_RefreshButtonText}" Margin="0 5 0 5" Click="RefreshCertPairsButton_Click" />
+            <Grid Grid.Row="2" Margin="0 5 0 5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="ConvertToPfxButton" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_ConvertToPfxButtonText}" Click="ConvertToPfxButton_Click" />
+                <Button x:Name="RefreshCertPairsButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_RefreshButtonText}" Click="RefreshCertPairsButton_Click" />
+            </Grid>
             <TextBlock Grid.Row="3" TextWrapping="Wrap" Text="{StaticResource CertSelectWindow_ManualInstructionLabelText}" />
             <Button x:Name="OpenCertPairManuallyButton" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" Content="{StaticResource CertSelectWindow_OpenNpkiCertButton}" Margin="0 5 0 5" Click="OpenCertPairManuallyButton_Click" />
         </Grid>

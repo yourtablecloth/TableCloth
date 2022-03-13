@@ -109,5 +109,10 @@ namespace TableCloth.Implementations.WPF
         {
             DialogResult = false;
         }
+
+        private void ConvertToPfxButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

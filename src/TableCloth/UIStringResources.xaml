@@ -147,6 +147,10 @@
         검색된 공동 인증서가 다음과 같습니다. 다음 중 하나를 선택해주세요.
     </system:String>
 
+    <system:String x:Key="CertSelectWindow_ConvertToPfxButtonText">
+        PFX 파일로 변환하기
+    </system:String>
+
     <system:String x:Key="CertSelectWindow_RefreshButtonText">
         새로 고침
     </system:String>
