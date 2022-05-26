@@ -7,9 +7,7 @@ namespace Hostess.Commands
 {
     internal sealed class ShowErrorMessageCommand : ICommand
     {
-#pragma warning disable CS0067
-        public event EventHandler CanExecuteChanged;
-#pragma warning restore CS0067
+        public event EventHandler? CanExecuteChanged;
 
         public bool CanExecute(object parameter)
             => true;

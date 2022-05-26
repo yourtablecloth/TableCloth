@@ -13,7 +13,7 @@ namespace TableCloth
 {
     internal static class Program
     {
-        public static IServiceProvider ServiceProvider { get; private set; }
+        public static IServiceProvider ServiceProvider { get; private set; } = default!;
 
         public static void Main(string[] args)
         {
@@ -28,9 +28,9 @@ namespace TableCloth
                 ConfigureServices(services);
 
                 ServiceProvider = services.BuildServiceProvider();
-                var startup = ServiceProvider.GetService<IAppStartup>();
-                var userInterface = ServiceProvider.GetService<IAppUserInterface>();
-                var messageBox = ServiceProvider.GetService<IAppMessageBox>();
+                var startup = ServiceProvider.GetService<IAppStartup>()!;
+                var userInterface = ServiceProvider.GetService<IAppUserInterface>()!;
+                var messageBox = ServiceProvider.GetService<IAppMessageBox>()!;
 
                 startup.Arguments = args;
                 var warnings = new List<string>();
@@ -64,7 +64,7 @@ namespace TableCloth
             }
         }
 
-        public static void ConfigureServices(ServiceCollection services)
+        private static void ConfigureServices(IServiceCollection services)
         {
             // Add Logging
             services.AddLogging(c =>
