@@ -1,0 +1,73 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31423.177
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableCloth", "src\TableCloth\TableCloth.csproj", "{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8} = {369BB263-3C8D-4B56-9301-2C47DE7746E8}
+	EndProjectSection
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TableCloth.Shared", "src\TableCloth.Shared\TableCloth.Shared.shproj", "{0F58B6A7-CCA8-471A-B767-01C7B8F6E839}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hostess", "src\Hostess\Hostess.csproj", "{369BB263-3C8D-4B56-9301-2C47DE7746E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableCloth.SetupBuilder", "src\TableCloth.SetupBuilder\TableCloth.SetupBuilder.csproj", "{68063059-A0EA-4ED6-BADF-4D8120016E93}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0550F36D-5775-4A30-9783-E60FE4B7C438}"
+	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+		..\.gitignore = ..\.gitignore
+		..\Directory.build.props = ..\Directory.build.props
+		..\LICENSE.txt = ..\LICENSE.txt
+		..\privacy.md = ..\privacy.md
+		..\README.md = ..\README.md
+		..\SECURITY.md = ..\SECURITY.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}.Debug|Any CPU.Build.0 = Debug|x64
+		{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}.Debug|x64.ActiveCfg = Debug|x64
+		{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}.Debug|x64.Build.0 = Debug|x64
+		{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}.Release|Any CPU.ActiveCfg = Release|x64
+		{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}.Release|Any CPU.Build.0 = Release|x64
+		{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}.Release|x64.ActiveCfg = Release|x64
+		{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}.Release|x64.Build.0 = Release|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|Any CPU.Build.0 = Debug|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|x64.ActiveCfg = Debug|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|x64.Build.0 = Debug|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|Any CPU.ActiveCfg = Release|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|Any CPU.Build.0 = Release|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.ActiveCfg = Release|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.Build.0 = Release|x64
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Debug|Any CPU.Build.0 = Debug|x64
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Debug|x64.ActiveCfg = Debug|x64
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Debug|x64.Build.0 = Debug|x64
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Release|x64.ActiveCfg = Release|x64
+		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7EAF7AB7-15CC-4504-8D15-C631B0996E8F}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\TableCloth.Shared\TableCloth.Shared.projitems*{0f58b6a7-cca8-471a-b767-01c7b8f6e839}*SharedItemsImports = 13
+		src\TableCloth.Shared\TableCloth.Shared.projitems*{2d6cd03c-52b2-46f2-8ec1-7480e7a92e5e}*SharedItemsImports = 5
+		src\TableCloth.Shared\TableCloth.Shared.projitems*{369bb263-3c8d-4b56-9301-2c47de7746e8}*SharedItemsImports = 4
+		src\TableCloth.Shared\TableCloth.Shared.projitems*{68063059-a0ea-4ed6-badf-4d8120016e93}*SharedItemsImports = 4
+	EndGlobalSection
+EndGlobal
