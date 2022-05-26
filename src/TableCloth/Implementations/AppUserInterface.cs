@@ -30,11 +30,11 @@ namespace TableCloth.Implementations
         {
             var appThread = new Thread(new ParameterizedThreadStart(_ =>
             {
-                var config = _preferences.GetCurrentConfig();
+                var config = _preferences.LoadConfig();
 
                 var logBuilder = new LoggerConfiguration()
                     .Enrich.FromLogContext()
-                    .WriteTo.File(new JsonFormatter(), _sharedLocations.GetDataPath("ApplicationLog.jsonl"));
+                    .WriteTo.File(new JsonFormatter(), _sharedLocations.ApplicationLogPath);
 
                 if (config.UseLogCollection)
                 {

@@ -9,8 +9,8 @@
             <converters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
             <converters:StateToBrushConverter x:Key="stateToBrushConverter" />
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Uid="Theme" Source="/PresentationFramework.Aero2, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, ProcessorArchitecture=MSIL;component/themes/aero2.normalcolor.xaml" />
                 <ResourceDictionary Source="UIStringResources.xaml" />
-                <ResourceDictionary Source="/PresentationFramework.Royale, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, ProcessorArchitecture=MSIL;component/themes/royale.normalcolor.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
 using TableCloth.Resources;
 
@@ -27,8 +28,33 @@ namespace TableCloth.Models.Catalog
         public List<CatalogPackageInformation> Packages { get; set; } = new List<CatalogPackageInformation>();
 
         [XmlIgnore]
+        public string CustomBootstrap { get; set; }
+
+        [XmlElement("CustomBootstrap")]
+        public XmlCDataSection CustomBootstrapCDATA
+        {
+            get => new XmlDocument().CreateCDataSection(CustomBootstrap);
+            set => CustomBootstrap = value.Value;
+        }
+
+        [XmlIgnore]
         public string CategoryDisplayName
             => StringResources.InternetServiceCategory_DisplayText(Category);
+
+        [XmlIgnore]
+        public int PackageCountForDisplay
+        {
+            get
+            {
+                var actualPackageCount = Packages.Count;
+                if (!string.IsNullOrWhiteSpace(CustomBootstrap))
+                    actualPackageCount++;
+                return actualPackageCount;
+            }
+        }
+
+        [XmlIgnore]
+        public int ListViewIconSize => 16;
 
         public override string ToString()
             => StringResources.InternetService_DisplayText(this);

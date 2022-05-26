@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+	<TargetFramework>net6.0-windows</TargetFramework>
     <StartupObject>TableCloth.Program</StartupObject>
     <ApplicationIcon>App.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -13,22 +13,26 @@
     <Product>Table Cloth</Product>
     <ProductName>Table Cloth</ProductName>
     <Copyright>(c) rkttu.com, 2021</Copyright>
-    <Version>0.5.1.0</Version>
-    <FileVersion>0.5.1.0</FileVersion>
+    <Version>0.5.4.0</Version>
+    <FileVersion>0.5.4.0</FileVersion>
     <PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
     <RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>TableCloth</PackageTags>
+    <SignAssembly>False</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="commit.txt" />
     <None Remove="Hostess.zip" />
   </ItemGroup>
   <ItemGroup>
+	<EmbeddedResource Include="commit.txt" />
     <EmbeddedResource Include="Hostess.zip" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
+    <PackageReference Include="PnPeople.Security" Version="1.1.0" />
     <PackageReference Include="Sentry.Serilog" Version="3.8.3" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
@@ -36,8 +40,21 @@
   <ItemGroup>
     <Page Include="App.xaml" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="dir &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Hostess.zip&quot;" />
+    <Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;dir &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Hostess.zip&quot;" />
   </Target>
 </Project>

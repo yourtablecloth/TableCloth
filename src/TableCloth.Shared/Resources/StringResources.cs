@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.Resources
@@ -26,11 +28,26 @@ namespace TableCloth.Resources
         internal static readonly string CatalogUrl =
             "https://yourtablecloth.github.io/TableClothCatalog/Catalog.xml";
 
+        internal static readonly string IEModeListUrl =
+            "https://yourtablecloth.github.io/TableClothCatalog/Compatibility.xml";
+
+        internal static readonly string ImageUrlPrefix =
+            "https://yourtablecloth.github.io/TableClothCatalog/images";
+
         internal static readonly string SentryDsn =
             "https://785e3f46849c403bb6c323d7a9eaad91@o77541.ingest.sentry.io/5915832";
 
         internal static readonly string UserAgentText =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36";
+
+        internal static readonly string EveryonesPrinterUrl =
+            "https://modu-print.tistory.com/category/%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C/%EB%AA%A8%EB%91%90%EC%9D%98%20%ED%94%84%EB%A6%B0%ED%84%B0";
+
+        internal static readonly string AdobeReaderUrl =
+            "https://get.adobe.com/kr/reader/";
+
+        internal static readonly string HancomOfficeViewerUrl =
+            "https://www.hancom.com/cs_center/csDownload.do";
     }
 #pragma warning disable IDE0040, IDE0066
 
@@ -46,8 +63,34 @@ namespace TableCloth.Resources
         internal static readonly string TitleText_Warning
             = $"{AppName} 경고";
 
-        internal static readonly string AboutDialog_BodyText
-            = $"{AppName} (버전 {Assembly.GetExecutingAssembly().GetName().Version})\r\n\r\n{AppInfoUrl}\r\n\r\n{AppCopyright}";
+        internal static string Get_AppVersion()
+        {
+            var executingAssembly = Assembly.GetExecutingAssembly();
+            var versionInfo = executingAssembly.GetName().Version.ToString();
+
+            try
+            {
+                var resourceNames = executingAssembly.GetManifestResourceNames();
+                var commitTextFileName = resourceNames.Where(x => x.EndsWith("commit.txt", StringComparison.Ordinal)).FirstOrDefault();
+
+                if (commitTextFileName != null)
+                {
+                    using (var resourceStream = executingAssembly.GetManifestResourceStream(commitTextFileName))
+                    {
+                        var streamReader = new StreamReader(resourceStream, new UTF8Encoding(false), true);
+                        var commitId = streamReader.ReadToEnd().Trim();
+
+                        if (commitId.Length > 8)
+                            commitId = commitId.Substring(0, 8);
+
+                        versionInfo = $"{versionInfo}, #{commitId.Substring(0, 8)}";
+                    }
+                }
+            }
+            catch { }
+
+            return versionInfo;
+        }
     }
 
     // 비 사용자 인터페이스 문자열들
@@ -66,7 +109,7 @@ namespace TableCloth.Resources
                 defaultString = $"*{defaultString}";
 
             if (pkgs != null && pkgs.Count > 0)
-                defaultString = $"{defaultString} (총 {pkgs.Count}개 프로그램 설치)";
+                defaultString = $"{defaultString} (총 {svc.PackageCountForDisplay}개 프로그램 설치)";
 
             return defaultString;
         }
@@ -99,6 +142,15 @@ namespace TableCloth.Resources
     // 오류 메시지에 표시될 문자열들
     partial class StringResources
     {
+        internal static readonly string Info_UpdateRequired
+            = "새 버전의 식탁보가 출시되었습니다.";
+
+        internal static readonly string Info_UpdateNotRequired
+            = "최신 버전의 식탁보를 사용 중입니다.";
+
+        internal static readonly string Ask_RestartRequired
+            = "설정이 반영되려면 식탁보 프로그램을 다시 시작해야 합니다.\r\n지금 다시 시작하시겠습니까?";
+
         internal static readonly string Error_Already_TableCloth_Running
             = "이미 식탁보 프로그램이 실행되고 있어요.";
 
@@ -116,6 +168,15 @@ namespace TableCloth.Resources
 
         internal static readonly string Error_IEMode_NotAvailable
             = "Microsoft Edge 브라우저 안에서 인터넷 익스플로러 모드를 활성화해야 호환성 문제를 피할 수 있습니다. 인터넷 익스플로러를 시스템 구성 요소 추가/제거를 통해 활성화해주세요.";
+
+        internal static string Error_Cannot_Invoke_GetVersionEx(int errorCode)
+            => $"윈도우 OS 버전 정보 조회 API를 호출했지만, 다음의 오류 코드와 함께 실패했습니다 - {errorCode:X8}";
+
+        internal static readonly string Error_Cannot_Invoke_GetProductInfo
+            = "윈도우 OS 제품 정보 조회 API를 호출했지만, 정보를 가져올 수 없습니다.";
+
+        internal static readonly string Error_SandboxMightNotAvailable
+            = "검색된 제품 정보에 따르면, 윈도우 샌드박스 기능이 지원되지 않는 버전의 운영 체제를 사용 중인 것 같습니다.";
 
         internal static string Error_HostFolder_Unavailable(IEnumerable<string> unavailableDirectories)
         {
@@ -137,6 +198,9 @@ namespace TableCloth.Resources
 
         internal static readonly string Error_Cannot_Find_KeyFile
             = "공동 인증서 개인 키 파일 (.key) 파일을 찾을 수 없습니다.";
+
+        internal static readonly string Error_Cannot_Find_PfxFile
+            = "공동 인증서 파일 (.pfx) 파일을 찾을 수 없습니다.";
 
         internal static string Error_Cannot_Download_Catalog(Exception ex)
         {
@@ -163,6 +227,9 @@ namespace TableCloth.Resources
 
             return message;
         }
+
+        internal static readonly string Error_Cannot_Run_SysInfo =
+            "시스템 정보 유틸리티를 실행할 수 없습니다.";
     }
 
     // 스크립트 내에서 사용되는 문자열들
@@ -180,6 +247,12 @@ namespace TableCloth.Resources
     {
         internal static readonly string Hostess_No_Targets
             = "이용하려는 웹 사이트 아이디가 지정되지 않았습니다. 샌드박스는 지금부터 사용하실 수 있어요.";
+
+        internal static readonly string Hostess_No_PowerShell_Error
+            = "Windows PowerShell 실행 파일을 찾을 수 없어 설치 스크립트를 실행할 수 없습니다.";
+
+        internal static readonly string Hostess_CustomScript_Title
+            = "별도 설치 스크립트";
 
         internal static readonly string Hostess_Download_InProgress
             = "다운로드 중...";
@@ -218,6 +291,18 @@ namespace TableCloth.Resources
 
         internal static string HostessError_Package_CanNotStart
             = "패키지 설치 프로그램을 시작하지 못했습니다.";
+    }
+
+    // 호스트 프로그램에서 사용할 스위치
+    partial class StringResources
+    {
+        internal static readonly string Hostess_Switch_EnableEveryonesPrinter = "--enable-everyones-printer";
+
+        internal static readonly string Hostess_Switch_EnableAdobeReader = "--enable-adobe-reader";
+
+        internal static readonly string Hostess_Switch_EnableHancomOfficeViewer = "--enable-hancom-office-viewer";
+
+        internal static readonly string Hostess_Switch_EnableIEMode = "--enable-ie-mode";
     }
 
 #pragma warning restore IDE0040, IDE0066

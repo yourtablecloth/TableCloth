@@ -5,10 +5,10 @@ namespace TableCloth.Contracts
 {
     public interface IPreferences
     {
-        PreferenceSettings GetCurrentConfig();
+        PreferenceSettings LoadConfig();
 
         PreferenceSettings GetDefaultConfig();
 
-        void SetConfig(PreferenceSettings config);
+        void SaveConfig(PreferenceSettings config);
     }
 }

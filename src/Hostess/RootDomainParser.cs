@@ -53,7 +53,8 @@ namespace Hostess
 
             foreach (var eachEntry in entries.Value)
             {
-                if (!host.EndsWith(eachEntry))
+                var suffix = "." + eachEntry.TrimStart('.');
+                if (!host.EndsWith(suffix))
                     continue;
                 if (longestSuffix.Length < eachEntry.Length)
                     longestSuffix = eachEntry;

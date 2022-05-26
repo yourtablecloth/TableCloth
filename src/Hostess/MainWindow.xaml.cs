@@ -1,4 +1,5 @@
 ﻿using Hostess.SiteList;
+using Hostess.Themes;
 using Hostess.ViewModels;
 using Microsoft.Win32;
 using System;
@@ -9,13 +10,16 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+using System.Windows.Interop;
 using System.Xml;
 using System.Xml.Serialization;
+using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
 namespace Hostess
@@ -52,28 +56,84 @@ namespace Hostess
 
         private void CheckWindowsContainerEnvironment()
         {
-            if (validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
-                return;
-
-            var questionMessage = (string)Application.Current.Resources["QuestionForNonSandboxEnvironment"];
-            var questionTitle = (string)Application.Current.Resources["QuestionDialogTitle"];
-            var result = MessageBox.Show(this, questionMessage, questionTitle, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
-
-            if (result != MessageBoxResult.Yes)
+            if (!validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
             {
+                var questionMessage = (string)Application.Current.Resources["WarningForNonSandboxEnvironment"];
+                var questionTitle = (string)Application.Current.Resources["ErrorDialogTitle"];
+                MessageBox.Show(this, questionMessage, questionTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                 Close();
-                return;
             }
+        }
+
+        private bool? IsLightThemeApplied()
+        {
+            // https://stackoverflow.com/questions/51334674/how-to-detect-windows-10-light-dark-mode-in-win32-application
+            using (var personalizeKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", false))
+            {
+                if (personalizeKey != null)
+                {
+                    if (personalizeKey.GetValueKind("AppsUseLightTheme") == RegistryValueKind.DWord)
+                    {
+                        return (int)personalizeKey.GetValue("AppsUseLightTheme", 1) > 0;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            // https://stackoverflow.com/questions/51334674/how-to-detect-windows-10-light-dark-mode-in-win32-application
+            const int WM_SETTINGCHANGE = 0x001A;
+
+            if (msg == WM_SETTINGCHANGE)
+            {
+                var data = Marshal.PtrToStringAuto(lParam);
+                if (string.Equals(data, "ImmersiveColorSet", StringComparison.Ordinal))
+                {
+                    var appliedLightTheme = IsLightThemeApplied();
+                    if (appliedLightTheme.HasValue)
+                    {
+                        if (appliedLightTheme.Value)
+                            ThemesController.CurrentTheme = ThemeTypes.ColourfulLight;
+                        else
+                            ThemesController.CurrentTheme = ThemeTypes.ColourfulDark;
+                        handled = true;
+                    }
+                }
+            }
+
+            return IntPtr.Zero;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+            source.AddHook(WndProc);
+
+            var appliedLightTheme = IsLightThemeApplied();
+            if (appliedLightTheme.HasValue)
+            {
+                if (appliedLightTheme.Value)
+                    ThemesController.CurrentTheme = ThemeTypes.ColourfulLight;
+                else
+                    ThemesController.CurrentTheme = ThemeTypes.ColourfulDark;
+            }
+
             Width = MinWidth;
             Height = SystemParameters.PrimaryScreenHeight * 0.5;
             Top = (SystemParameters.PrimaryScreenHeight / 2) - (Height / 2);
             Left = SystemParameters.PrimaryScreenWidth - Width;
 
             CheckWindowsContainerEnvironment();
+
+            try { ProtectTermService.PreventProcessTermination("TermService"); }
+            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+
+            try { ProtectTermService.PreventServiceStop("TermService", Environment.UserName); }
+            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+
             SetDesktopWallpaper();
 
             var catalog = Application.Current.GetCatalogDocument();
@@ -91,6 +151,7 @@ namespace Hostess
 
                 packages.AddRange(targetService.Packages.Select(eachPackage => new InstallItemViewModel()
                 {
+                    InstallItemType = InstallItemType.DownloadAndInstall,
                     TargetSiteName = targetService.DisplayName,
                     TargetSiteUrl = targetService.Url,
                     PackageName = eachPackage.Name,
@@ -99,6 +160,20 @@ namespace Hostess
                     SkipIEMode = eachPackage.SkipIEMode,
                     Installed = null,
                 }));
+
+                var bootstrapData = targetService.CustomBootstrap;
+
+                if (!string.IsNullOrWhiteSpace(bootstrapData))
+                {
+                    packages.Add(new InstallItemViewModel()
+                    {
+                        InstallItemType = InstallItemType.PowerShellScript,
+                        TargetSiteName = targetService.DisplayName,
+                        TargetSiteUrl = targetService.Url,
+                        PackageName = StringResources.Hostess_CustomScript_Title,
+                        ScriptContent = bootstrapData,
+                    });
+                }
             }
 
             InstallList.ItemsSource = new ObservableCollection<InstallItemViewModel>(packages);
@@ -116,16 +191,22 @@ namespace Hostess
             }
         }
 
-        private void AboutButton_Click(object sender, RoutedEventArgs e) =>
-            MessageBox.Show(this,
-                StringResources.AboutDialog_BodyText, StringResources.AppName,
-                MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+        private void AboutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var aboutWindow = new AboutWindow()
+            {
+                CatalogDate = App.Current.GetCatalogLastModified(),
+                License = LicenseDescriptor.GetLicenseDescriptions(),
+            };
+
+            aboutWindow.ShowDialog();
+        }
 
         private async void PerformInstallButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var ieModeRequiredDomainList = new List<string>();
+                var ieModeRequiredList = new List<IEModeSite>();
 
                 PerformInstallButton.IsEnabled = false;
                 var hasAnyFailure = false;
@@ -136,49 +217,94 @@ namespace Hostess
                     Directory.CreateDirectory(downloadFolderPath);
 
                 var catalog = Application.Current.GetCatalogDocument();
+                var ieModeList = Application.Current.GetIEModeListDocument();
 
-                foreach (var eachUrl in catalog.Services.Select(x => x.Url))
+                foreach (var eachSite in ieModeList.Sites)
                 {
-                    if (!Uri.TryCreate(eachUrl, UriKind.Absolute, out Uri parsedUrl))
-                        continue;
-
-                    var rootDomain = RootDomainParser.InferenceRootDomain(parsedUrl);
+                    var rootDomain = eachSite.Domain;
 
                     if (string.IsNullOrWhiteSpace(rootDomain))
                         continue;
 
-                    if (!ieModeRequiredDomainList.Contains(rootDomain, StringComparer.Ordinal))
-                        ieModeRequiredDomainList.Add(rootDomain);
+                    if (!ieModeRequiredList.Any(x => x.Domain.Equals(rootDomain, StringComparison.Ordinal)))
+                        ieModeRequiredList.Add(new IEModeSite { Domain = rootDomain, Mode = eachSite.Mode, OpenIn = eachSite.OpenIn });
                 }
 
                 foreach (InstallItemViewModel eachItem in InstallList.ItemsSource)
                 {
                     try
                     {
-                        eachItem.Installed = null;
-                        eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
-
-                        if (eachItem.SkipIEMode &&
-                            Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl))
+                        if (eachItem.InstallItemType == InstallItemType.DownloadAndInstall)
                         {
-                            var rootDomainName = RootDomainParser.InferenceRootDomain(parsedUrl);
-                            ieModeRequiredDomainList.Remove(rootDomainName);
+                            eachItem.Installed = null;
+                            eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
+
+                            if (eachItem.SkipIEMode &&
+                                Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl))
+                            {
+                                var rootDomainName = RootDomainParser.InferenceRootDomain(parsedUrl);
+                                var matchedItem = ieModeRequiredList.FirstOrDefault(x => x.Domain.Equals(rootDomainName, StringComparison.Ordinal));
+                                ieModeRequiredList.Remove(matchedItem);
+                            }
+
+                            var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
+                            var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
+
+                            if (File.Exists(tempFilePath))
+                                File.Delete(tempFilePath);
+
+                            using (var webClient = new WebClient())
+                            {
+                                webClient.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml");
+                                webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko");
+                                await webClient.DownloadFileTaskAsync(eachItem.PackageUrl, tempFilePath);
+
+                                eachItem.StatusMessage = StringResources.Hostess_Install_InProgress;
+                                var psi = new ProcessStartInfo(tempFilePath, eachItem.Arguments)
+                                {
+                                    UseShellExecute = false,
+                                };
+
+                                var cpSource = new TaskCompletionSource<int>();
+                                using (var process = new Process() { StartInfo = psi, })
+                                {
+                                    process.EnableRaisingEvents = true;
+                                    process.Exited += (_sender, _e) =>
+                                    {
+                                        var realSender = _sender as Process;
+                                        cpSource.SetResult(realSender.ExitCode);
+                                    };
+
+                                    if (!process.Start())
+                                        throw new ApplicationException(StringResources.HostessError_Package_CanNotStart);
+
+                                    await cpSource.Task;
+                                    eachItem.StatusMessage = StringResources.Hostess_Install_Succeed;
+                                    eachItem.Installed = true;
+                                    eachItem.ErrorMessage = null;
+                                }
+                            }
                         }
-
-                        var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
-                        var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
-                        
-                        if (File.Exists(tempFilePath))
-                            File.Delete(tempFilePath);
-
-                        using (var webClient = new WebClient())
+                        else if (eachItem.InstallItemType == InstallItemType.PowerShellScript)
                         {
-                            webClient.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml");
-                            webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko");
-                            await webClient.DownloadFileTaskAsync(eachItem.PackageUrl, tempFilePath);
-
+                            eachItem.Installed = null;
                             eachItem.StatusMessage = StringResources.Hostess_Install_InProgress;
-                            var psi = new ProcessStartInfo(tempFilePath, eachItem.Arguments)
+
+                            var tempFileName = $"bootstrap_{Guid.NewGuid():n}.ps1";
+                            var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
+
+                            if (File.Exists(tempFilePath))
+                                File.Delete(tempFilePath);
+
+                            File.WriteAllText(tempFilePath, eachItem.ScriptContent, Encoding.Unicode);
+                            var powershellPath = Path.Combine(
+                                Environment.GetFolderPath(Environment.SpecialFolder.System),
+                                @"WindowsPowerShell\v1.0\powershell.exe");
+
+                            if (!File.Exists(powershellPath))
+                                throw new Exception(StringResources.Hostess_No_PowerShell_Error);
+
+                            var psi = new ProcessStartInfo(powershellPath, $"Set-ExecutionPolicy Bypass -Scope Process -Force; {tempFilePath}")
                             {
                                 UseShellExecute = false,
                             };
@@ -213,15 +339,46 @@ namespace Hostess
                     }
                 }
 
+                if (App.Current.GetHasEveryonesPrinterEnabled())
+                {
+                    Process.Start(new ProcessStartInfo(StringResources.EveryonesPrinterUrl)
+                    {
+                        UseShellExecute = true,
+                        WindowStyle = ProcessWindowStyle.Maximized,
+                    });
+                }
+
+                if (App.Current.GetHasAdobeReaderEnabled())
+                {
+                    Process.Start(new ProcessStartInfo(StringResources.AdobeReaderUrl)
+                    {
+                        UseShellExecute = true,
+                        WindowStyle = ProcessWindowStyle.Maximized,
+                    });
+                }
+
+                if (App.Current.GetHasHancomOfficeViewerEnabled())
+                {
+                    Process.Start(new ProcessStartInfo(StringResources.HancomOfficeViewerUrl)
+                    {
+                        UseShellExecute = true,
+                        WindowStyle = ProcessWindowStyle.Maximized,
+                    });
+                }
+
                 var internetExplorerExists = File.Exists(Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                     "Internet Explorer", "iexplore.exe"));
 
-                if (internetExplorerExists)
+                if (App.Current.GetHasIEModeEnabled() && internetExplorerExists)
                 {
                     try
                     {
-                        var ieSiteListPath = @"C:\ie_site_list.xml";
+                        var myDocumentsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                        if (!Directory.Exists(myDocumentsDirectory))
+                            Directory.CreateDirectory(myDocumentsDirectory);
+
+                        var ieSiteListPath = Path.Combine(myDocumentsDirectory, "sites.xml");
 
                         // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1
                         using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
@@ -249,7 +406,7 @@ namespace Hostess
                         }
 
                         var siteListDocument = new SiteListDocument();
-                        siteListDocument.Sites.AddRange(ieModeRequiredDomainList.Select(x => new Site() { Url = x }));
+                        siteListDocument.Sites.AddRange(ieModeRequiredList.Select(x => new Site() { Url = x.Domain, CompatibilityMode = x.Mode, OpenIn = x.OpenIn }));
 
                         var serializer = new XmlSerializer(typeof(SiteListDocument));
                         var @namespace = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty) });
@@ -292,6 +449,10 @@ namespace Hostess
                     Close();
                     return;
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
             }
             finally
             {

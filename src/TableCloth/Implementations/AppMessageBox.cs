@@ -8,23 +8,23 @@ namespace TableCloth.Implementations
 {
     public sealed class AppMessageBox : IAppMessageBox
     {
-        public int DisplayInfo(object parentWindowHandle, string message)
+        public MessageBoxResult DisplayInfo(object parentWindowHandle, string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
         {
             var dispatcher = parentWindowHandle is Window window ? window?.Dispatcher : null;
 
             if (dispatcher == null)
                 dispatcher = Dispatcher.CurrentDispatcher;
 
-            return (int)dispatcher.Invoke(
-                new Func<object, string, int>((parent, message) =>
+            return (MessageBoxResult)dispatcher.Invoke(
+                new Func<object, string, MessageBoxResult>((parent, message) =>
                 {
                     return parent is Window window
-                        ? (int)MessageBox.Show(
+                        ? MessageBox.Show(
                             window, message, StringResources.TitleText_Info,
-                            MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK)
-                        : (int)MessageBox.Show(
+                            messageBoxButton, MessageBoxImage.Information, MessageBoxResult.OK)
+                        : MessageBox.Show(
                             message, StringResources.TitleText_Info,
-                            MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                            messageBoxButton, MessageBoxImage.Information, MessageBoxResult.OK);
                 }),
                 new object[] { parentWindowHandle, message, });
         }

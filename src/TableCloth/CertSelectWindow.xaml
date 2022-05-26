@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TableCloth.Implementations.WPF"
         mc:Ignorable="d"
+        Style="{DynamicResource MainWindowStyle}"
         Title="{StaticResource CertSelectWindow_Title}" Width="480" Height="320"
         MinWidth="480" MinHeight="320"
         DataContext="{Binding CertSelectWindowViewModel, Source={StaticResource ViewModelLocator}}"
@@ -25,8 +26,24 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="{StaticResource CertSelectWindow_InstructionLabel}" />
-            <ListView Grid.Row="1" ItemsSource="{Binding Path='CertPairs'}" SelectedItem="{Binding Path='SelectedCertPair'}" />
-            <Button x:Name="RefreshCertPairsButton" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" Content="{StaticResource CertSelectWindow_RefreshButtonText}" Margin="0 5 0 5" Click="RefreshCertPairsButton_Click" />
+            <ListView Grid.Row="1" ItemsSource="{Binding Path='CertPairs'}" SelectedItem="{Binding Path='SelectedCertPair'}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_CommonName}" Width="100" DisplayMemberBinding="{Binding CommonName}" />
+                        <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_OrganizationalUnits}" Width="100" DisplayMemberBinding="{Binding OrganizationalUnit}" />
+                        <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_Organization}" Width="100" DisplayMemberBinding="{Binding Organization}" />
+                        <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_CountryName}" Width="100" DisplayMemberBinding="{Binding CountryName}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <Grid Grid.Row="2" Margin="0 5 0 5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="ConvertToPfxButton" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_ConvertToPfxButtonText}" Click="ConvertToPfxButton_Click" />
+                <Button x:Name="RefreshCertPairsButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_RefreshButtonText}" Click="RefreshCertPairsButton_Click" />
+            </Grid>
             <TextBlock Grid.Row="3" TextWrapping="Wrap" Text="{StaticResource CertSelectWindow_ManualInstructionLabelText}" />
             <Button x:Name="OpenCertPairManuallyButton" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" Content="{StaticResource CertSelectWindow_OpenNpkiCertButton}" Margin="0 5 0 5" Click="OpenCertPairManuallyButton_Click" />
         </Grid>
@@ -41,7 +58,7 @@
             </WrapPanel>
 
             <WrapPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
-                <Button x:Name="OkayButton" Content="{StaticResource CertSelectWindow_OkayButtonText}" Padding="5" Margin="0 0 10 0" Click="OkayButton_Click"></Button>
+                <Button x:Name="OkayButton" Content="{StaticResource CertSelectWindow_OkayButtonText}" Padding="5" Margin="0 0 10 0" Click="OkayButton_Click" IsDefault="True"></Button>
                 <Button x:Name="CancelButton" Content="{StaticResource CertSelectWindow_CancelButtonText}" Padding="5" Margin="0 0 0 0" Click="CancelButton_Click"></Button>
             </WrapPanel>
         </Grid>

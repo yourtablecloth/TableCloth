@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
-using TableCloth.Resources;
+using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels
 {
@@ -19,7 +19,8 @@ namespace TableCloth.ViewModels
             ICatalogDeserializer catalogDeserializer,
             IX509CertPairScanner certPairScanner,
             ISandboxBuilder sandboxBuilder,
-            ISandboxLauncher sandboxLauncher)
+            ISandboxLauncher sandboxLauncher,
+            IPreferences preferences)
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
@@ -29,26 +30,19 @@ namespace TableCloth.ViewModels
             _certPairScanner = certPairScanner;
             _sandboxBuilder = sandboxBuilder;
             _sandboxLauncher = sandboxLauncher;
+            _preferences = preferences;
 
             try
             {
-                CatalogDocument = _catalogDeserializer.DeserializeCatalog(
-                    new Uri(StringResources.CatalogUrl, UriKind.Absolute));
-
-                Catalogs = CatalogDocument.Services
-                    .GroupBy(x => x.Category)
-                    .Select(x => new SiteCatalogTabViewModel
-                    {
-                        Category = x.Key,
-                        Sites = x.ToList(),
-                    })
-                    .ToList();
+                CatalogDocument = _catalogDeserializer.DeserializeCatalog();
+                Services = CatalogDocument.Services.ToList();
+                IEModeListDocument = _catalogDeserializer.DeserializeIEModeList();
             }
             catch (Exception ex)
             {
                 _appMessageBox.DisplayError(_appUserInterface.MainWindowHandle, ex, false);
                 CatalogDocument = new CatalogDocument();
-                Catalogs = Array.Empty<SiteCatalogTabViewModel>().ToList();
+                Services = Array.Empty<CatalogInternetService>().ToList();
             }
         }
 
@@ -63,16 +57,22 @@ namespace TableCloth.ViewModels
         private readonly IX509CertPairScanner _certPairScanner;
         private readonly ISandboxBuilder _sandboxBuilder;
         private readonly ISandboxLauncher _sandboxLauncher;
+        private readonly IPreferences _preferences;
 
         private bool _mapNpkiCert;
+        private bool _enableLogAutoCollecting;
         private bool _enableMicrophone;
         private bool _enableWebCam;
         private bool _enablePrinters;
         private bool _enableEveryonesPrinter;
+        private bool _enableAdobeReader;
+        private bool _enableHancomOfficeViewer;
+        private bool _enableInternetExplorerMode;
+        private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
-        private List<string> _selectedCertFiles;
-        private List<SiteCatalogTabViewModel> _catalogs;
-        private SiteCatalogTabViewModel _selectedTabView;
+        private IEModeListDocument _ieModeListDocument;
+        private X509CertPair _selectedCertFile;
+        private List<CatalogInternetService> _services;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -100,6 +100,9 @@ namespace TableCloth.ViewModels
         public ISandboxLauncher SandboxLauncher
             => _sandboxLauncher;
 
+        public IPreferences Preferences
+            => _preferences;
+
         public bool MapNpkiCert
         {
             get => _mapNpkiCert;
@@ -108,6 +111,19 @@ namespace TableCloth.ViewModels
                 if (value != _mapNpkiCert)
                 {
                     _mapNpkiCert = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public bool EnableLogAutoCollecting
+        {
+            get => _enableLogAutoCollecting;
+            set
+            {
+                if (value != _enableLogAutoCollecting)
+                {
+                    _enableLogAutoCollecting = value;
                     NotifyPropertyChanged();
                 }
             }
@@ -165,6 +181,73 @@ namespace TableCloth.ViewModels
             }
         }
 
+        public bool EnableAdobeReader
+        {
+            get => _enableAdobeReader;
+            set
+            {
+                if (value != _enableAdobeReader)
+                {
+                    _enableAdobeReader = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public bool EnableHancomOfficeViewer
+        {
+            get => _enableHancomOfficeViewer;
+            set
+            {
+                if (value != _enableHancomOfficeViewer)
+                {
+                    _enableHancomOfficeViewer = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public bool EnableInternetExplorerMode
+        {
+            get => _enableInternetExplorerMode;
+            set
+            {
+                if (value != _enableInternetExplorerMode)
+                {
+                    _enableInternetExplorerMode = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public DateTime? LastDisclaimerAgreedTime
+        {
+            get => _lastDisclaimerAgreedTime;
+            set
+            {
+                if (value != _lastDisclaimerAgreedTime)
+                {
+                    _lastDisclaimerAgreedTime = value;
+                    NotifyPropertyChanged();
+                    NotifyPropertyChanged(nameof(ShouldNotifyDisclaimer));
+                }
+            }
+        }
+
+        public bool ShouldNotifyDisclaimer
+        {
+            get
+            {
+                if (!_lastDisclaimerAgreedTime.HasValue)
+                    return true;
+
+                if ((DateTime.UtcNow - _lastDisclaimerAgreedTime.Value).TotalDays >= 7d)
+                    return true;
+
+                return false;
+            }
+        }
+
         public CatalogDocument CatalogDocument
         {
             get => _catalogDocument;
@@ -178,40 +261,40 @@ namespace TableCloth.ViewModels
             }
         }
 
-        public List<string> SelectedCertFiles
+        public IEModeListDocument IEModeListDocument
         {
-            get => _selectedCertFiles;
+            get => _ieModeListDocument;
             set
             {
-                if (value != _selectedCertFiles)
+                if (value != _ieModeListDocument)
                 {
-                    _selectedCertFiles = value;
+                    _ieModeListDocument = value;
                     NotifyPropertyChanged();
                 }
             }
         }
 
-        public List<SiteCatalogTabViewModel> Catalogs
+        public X509CertPair SelectedCertFile
         {
-            get => _catalogs;
+            get => _selectedCertFile;
             set
             {
-                if (value != _catalogs)
+                if (value != _selectedCertFile)
                 {
-                    _catalogs = value;
+                    _selectedCertFile = value;
                     NotifyPropertyChanged();
                 }
             }
         }
 
-        public SiteCatalogTabViewModel SelectedTabView
+        public List<CatalogInternetService> Services
         {
-            get => _selectedTabView;
+            get => _services;
             set
             {
-                if (value != _selectedTabView)
+                if (value != _services)
                 {
-                    _selectedTabView = value;
+                    _services = value;
                     NotifyPropertyChanged();
                 }
             }
@@ -221,7 +304,7 @@ namespace TableCloth.ViewModels
 
         public string CurrentDirectory { get; set; }
 
-        public bool HasCatalogs
-            => Catalogs != null && Catalogs.Any();
+        public bool HasServices
+            => Services != null && Services.Any();
     }
 }

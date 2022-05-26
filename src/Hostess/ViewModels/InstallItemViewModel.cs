@@ -8,11 +8,13 @@ namespace Hostess.ViewModels
     [Serializable]
     public sealed class InstallItemViewModel : INotifyPropertyChanged
     {
+        private InstallItemType _installItemType;
         private string _targetSiteName;
         private string _targetSiteUrl;
         private string _packageName;
         private string _packageUrl;
         private string _arguments;
+        private string _scriptContent;
         private bool _skipIEMode;
         private bool? _installed;
         private string _statusMessage;
@@ -21,6 +23,21 @@ namespace Hostess.ViewModels
         private readonly ICommand _showErrorMessageCommand = new ShowErrorMessageCommand();
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public InstallItemType InstallItemType
+        {
+            get => _installItemType;
+            set
+            {
+                if (_installItemType.Equals(value))
+                {
+                    return;
+                }
+
+                _installItemType = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstallItemType)));
+            }
+        }
 
         public string TargetSiteName
         {
@@ -94,6 +111,21 @@ namespace Hostess.ViewModels
 
                 _arguments = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Arguments)));
+            }
+        }
+
+        public string ScriptContent
+        {
+            get => _scriptContent;
+            set
+            {
+                if (string.Equals(_scriptContent, value, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                _scriptContent = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScriptContent)));
             }
         }
 

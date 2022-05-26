@@ -56,13 +56,47 @@ namespace TableCloth.Implementations.WPF
 
             if (response.HasValue && response.Value)
             {
-                ViewModel.SelectedCertPair = ViewModel.CertPairScanner.CreateX509CertPair(
-                    ofd.FileNames.Where(x => string.Equals(".der", Path.GetExtension(x), StringComparison.OrdinalIgnoreCase)).SingleOrDefault(),
-                    ofd.FileNames.Where(x => string.Equals(".key", Path.GetExtension(x), StringComparison.OrdinalIgnoreCase)).SingleOrDefault()
-                );
-                DialogResult = true;
-                Close();
-                return;
+                switch (ofd.FilterIndex)
+                {
+                    case 1:
+                        var firstFilePath = ofd.FileNames.FirstOrDefault();
+
+                        if (string.IsNullOrWhiteSpace(firstFilePath) || !File.Exists(firstFilePath))
+                            return;
+
+                        var basePath = Path.GetDirectoryName(firstFilePath);
+                        var signCertDerPath = Path.Combine(basePath, "signCert.der");
+                        var signPriKeyPath = Path.Combine(basePath, "signPri.key");
+
+                        if (!File.Exists(signCertDerPath) && !File.Exists(signPriKeyPath))
+                            return;
+
+                        ViewModel.SelectedCertPair = ViewModel.CertPairScanner.CreateX509CertPair(signCertDerPath, signPriKeyPath);
+                        DialogResult = true;
+                        Close();
+                        break;
+
+                    case 2:
+                        var pfxFilePath = ofd.FileNames.FirstOrDefault();
+
+                        if (string.IsNullOrWhiteSpace(pfxFilePath) || !File.Exists(pfxFilePath))
+                            return;
+
+                        var inputWindow = new InputPasswordWindow()
+                        {
+                            PfxFilePath = pfxFilePath,
+                        };
+
+                        var inputPwdResult = inputWindow.ShowDialog();
+
+                        if (!inputPwdResult.HasValue || !inputPwdResult.Value || inputWindow.ValidatedCertPair == null)
+                            return;
+
+                        ViewModel.SelectedCertPair = inputWindow.ValidatedCertPair;
+                        DialogResult = true;
+                        Close();
+                        break;
+                }
             }
         }
 
@@ -74,6 +108,11 @@ namespace TableCloth.Implementations.WPF
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
+        }
+
+        private void ConvertToPfxButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

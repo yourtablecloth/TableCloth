@@ -21,16 +21,41 @@ namespace TableCloth.Implementations
         private readonly ISharedLocations _sharedLocations;
         private readonly ILogger _logger;
 
-        private readonly PreferenceSettings _defaultSettings = new PreferenceSettings();
-
-        public PreferenceSettings GetCurrentConfig()
+        private void MigrateDesktopDataDirectory()
         {
-            var prefFilePath = _sharedLocations.GetDataPath("Preferences.json");
+            try
+            {
+                var oldPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "TableCloth");
+                var newPath = _sharedLocations.AppDataDirectoryPath;
+
+                if (!Directory.Exists(oldPath))
+                    return;
+
+                var oldConfigFile = Path.Combine(oldPath, "Preferences.json");
+
+                if (!File.Exists(oldConfigFile))
+                    return;
+
+                if (!Directory.Exists(newPath))
+                    Directory.CreateDirectory(newPath);
+
+                File.Copy(oldConfigFile, Path.Combine(newPath, "Preferences.json"), true);
+            }
+            catch { /* 마이그레이션에 실패하면 무시 */ }
+        }
+
+        public PreferenceSettings LoadConfig()
+        {
+            var defaultSettings = GetDefaultConfig();
+            var prefFilePath = _sharedLocations.PreferencesFilePath;
 
             if (!File.Exists(prefFilePath))
-                return _defaultSettings;
+                MigrateDesktopDataDirectory();
 
-            PreferenceSettings settings = null;
+            if (!File.Exists(prefFilePath))
+                return defaultSettings;
+
+            PreferenceSettings settings;
 
             try
             {
@@ -41,21 +66,23 @@ namespace TableCloth.Implementations
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Cannot deserialize configuration settings.");
-                settings = _defaultSettings;
+                settings = defaultSettings;
             }
 
             return settings;
         }
 
         public PreferenceSettings GetDefaultConfig()
-            => _defaultSettings;
+            => new PreferenceSettings();
 
-        public void SetConfig(PreferenceSettings config)
+        public void SaveConfig(PreferenceSettings config)
         {
-            if (config == null)
-                config = _defaultSettings;
+            var defaultSettings = GetDefaultConfig();
 
-            var prefFilePath = _sharedLocations.GetDataPath("Preferences.json");
+            if (config == null)
+                config = defaultSettings;
+
+            var prefFilePath = _sharedLocations.PreferencesFilePath;
             var json = JsonSerializer.Serialize(config, new JsonSerializerOptions() { AllowTrailingCommas = true, WriteIndented = true, });
             File.WriteAllText(prefFilePath, json, new UTF8Encoding(false));
         }

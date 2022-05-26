@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Windows;
 
 namespace TableCloth.Contracts
 {
     public interface IAppMessageBox
     {
-        int DisplayInfo(object parentWindowHandle, string message);
+        MessageBoxResult DisplayInfo(object parentWindowHandle, string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK);
 
         int DisplayError(object parentWindowHandle, Exception failureReason, bool isCritical);
 

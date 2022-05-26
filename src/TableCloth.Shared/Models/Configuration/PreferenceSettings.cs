@@ -1,4 +1,6 @@
-﻿namespace TableCloth.Models.Configuration
+﻿using System;
+
+namespace TableCloth.Models.Configuration
 {
     public class PreferenceSettings
     {
@@ -10,6 +12,14 @@
 
         public bool InstallEveryonesPrinter { get; set; } = true;
 
+        public bool InstallAdobeReader { get; set; } = true;
+
+        public bool InstallHancomOfficeViewer { get; set; } = true;
+
+        public bool EnableInternetExplorerMode { get; set; } = true;
+
         public bool UseLogCollection { get; set; } = true;
+
+        public DateTime? LastDisclaimerAgreedTime { get; set; } = null;
     }
 }

@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using TableCloth.Contracts;
 using TableCloth.Implementations.WindowsSandbox;
 using TableCloth.Models.Configuration;
+using TableCloth.Resources;
 
 namespace TableCloth.Implementations
 {
@@ -21,7 +22,7 @@ namespace TableCloth.Implementations
 
         private string GetNPKIPathForSandbox(X509CertPair certPair)
         {
-            var candidatePath = Path.Join("AppData", "LocalLow", "NPKI", certPair.SubjectOrganization);
+            var candidatePath = Path.Join("AppData", "LocalLow", "NPKI", certPair.Organization);
 
             if (certPair.IsPersonalCert)
                 candidatePath = Path.Join(candidatePath, "USER", certPair.SubjectNameForNpkiApp);
@@ -35,9 +36,10 @@ namespace TableCloth.Implementations
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
 
             var assembly = typeof(SandboxBuilder).Assembly;
+
             var hostessZipFileKey = assembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith("Hostess.zip", StringComparison.OrdinalIgnoreCase));
             using var hostessZipFileStream = assembly.GetManifestResourceStream(hostessZipFileKey);
-            ExpandHostessFiles(hostessZipFileStream, outputDirectory);
+            ExpandAssetZip(hostessZipFileStream, outputDirectory);
 
             if (!Directory.Exists(outputDirectory))
                 Directory.CreateDirectory(outputDirectory);
@@ -89,16 +91,11 @@ namespace TableCloth.Implementations
                 if (!Directory.Exists(certAssetsDirectoryPath))
                     Directory.CreateDirectory(certAssetsDirectoryPath);
 
-                var destDerFilePath = Path.Combine(
-                    certAssetsDirectoryPath,
-                    Path.GetFileName(tableClothConfig.CertPair.DerFilePath));
+                var destDerFilePath = Path.Combine(certAssetsDirectoryPath, "signCert.der");
+                var destKeyFileName = Path.Combine(certAssetsDirectoryPath, "signPri.key");
 
-                var destKeyFileName = Path.Combine(
-                    certAssetsDirectoryPath,
-                    Path.GetFileName(tableClothConfig.CertPair.KeyFilePath));
-
-                File.Copy(tableClothConfig.CertPair.DerFilePath, destDerFilePath, true);
-                File.Copy(tableClothConfig.CertPair.KeyFilePath, destKeyFileName, true);
+                File.WriteAllBytes(destDerFilePath, tableClothConfig.CertPair.PublicKey);
+                File.WriteAllBytes(destKeyFileName, tableClothConfig.CertPair.PrivateKey);
 
                 sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
                 {
@@ -112,6 +109,9 @@ namespace TableCloth.Implementations
             return sandboxConfig;
         }
 
+        private string EscapeUrlForCommandLine(string url)
+            => url.Replace("?", "^?").Replace("&", "^&").Replace("%", "%%");
+
         private string GenerateSandboxStartupScript(TableClothConfiguration tableClothConfiguration)
         {
             if (tableClothConfiguration == null)
@@ -121,31 +121,31 @@ namespace TableCloth.Implementations
 
             if (tableClothConfiguration.CertPair != null)
             {
-                var npkiDirectoryPath = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
+                var npkiDirectoryPathInSandbox = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
+                var desktopDirectoryPathInSandbox = "%userprofile%\\Desktop\\Certificates";
                 var providedCertFilePath = Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*");
                 certFileCopyScript = $@"
-if not exist ""{npkiDirectoryPath}"" mkdir ""{npkiDirectoryPath}""
-copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPath}""
+if not exist ""{npkiDirectoryPathInSandbox}"" mkdir ""{npkiDirectoryPathInSandbox}""
+copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPathInSandbox}""
+if not exist ""{desktopDirectoryPathInSandbox}"" mkdir ""{desktopDirectoryPathInSandbox}""
+copy /y ""{providedCertFilePath}"" ""{desktopDirectoryPathInSandbox}""
+del /f /q ""{providedCertFilePath}""
 ";
             }
 
-            var everyonesPrinterSetupScript = string.Empty;
+            var switches = new List<string>();
 
             if (tableClothConfiguration.EnableEveryonesPrinter)
-            {
-                var everyonesPrinterElement = tableClothConfiguration.Companions
-                    .Where(x => string.Equals(x.Id, "EveryonesPrinter", StringComparison.Ordinal))
-                    .SingleOrDefault();
+                switches.Add(StringResources.Hostess_Switch_EnableEveryonesPrinter);
 
-                if (everyonesPrinterElement != null)
-                {
-                    var downloadUrl = everyonesPrinterElement.Url.Replace("?", "^?").Replace("&", "^&");
-                    everyonesPrinterSetupScript = $@"
-curl.exe -L ""{downloadUrl}"" -o ""%temp%\MopInstaller.exe""
-""%temp%\MopInstaller.exe""
-";
-                }
-            }
+            if (tableClothConfiguration.EnableAdobeReader)
+                switches.Add(StringResources.Hostess_Switch_EnableAdobeReader);
+
+            if (tableClothConfiguration.EnableHancomOfficeViewer)
+                switches.Add(StringResources.Hostess_Switch_EnableHancomOfficeViewer);
+
+            if (tableClothConfiguration.EnableInternetExplorerMode)
+                switches.Add(StringResources.Hostess_Switch_EnableIEMode);
 
             var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");
             var idList = string.Join(" ", tableClothConfiguration.Services.Select(x => x.Id).Distinct());
@@ -153,15 +153,14 @@ curl.exe -L ""{downloadUrl}"" -o ""%temp%\MopInstaller.exe""
             return $@"@echo off
 pushd ""%~dp0""
 {certFileCopyScript}
-""{hostessFilePath}"" {idList}
-{everyonesPrinterSetupScript}
+""{hostessFilePath}"" {idList} {string.Join(" ", switches)}
 :exit
 popd
 @echo on
 ";
         }
 
-        private void ExpandHostessFiles(Stream hostessZipFileStream, string outputDirectory)
+        private void ExpandAssetZip(Stream zipFileStream, string outputDirectory)
         {
             if (!Directory.Exists(outputDirectory))
                 Directory.CreateDirectory(outputDirectory);
@@ -170,8 +169,8 @@ popd
             if (!Directory.Exists(assetsDirectory))
                 Directory.CreateDirectory(assetsDirectory);
 
-            using var hostessZipArchive = new ZipArchive(hostessZipFileStream, ZipArchiveMode.Read);
-            hostessZipArchive.ExtractToDirectory(assetsDirectory, true);
+            using var zipArchive = new ZipArchive(zipFileStream, ZipArchiveMode.Read);
+            zipArchive.ExtractToDirectory(assetsDirectory, true);
         }
 
         private string SerializeSandboxSpec(SandboxConfiguration configuration, IList<SandboxMappedFolder> excludedFolders)

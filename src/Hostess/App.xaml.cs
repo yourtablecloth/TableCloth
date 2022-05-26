@@ -15,49 +15,110 @@ namespace Hostess
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            using (var webClient = new WebClient())
+            try
             {
-                CatalogDocument catalog = null;
-
-                try
+                using (var webClient = new WebClient())
                 {
-                    using (var catalogStream = webClient.OpenRead(StringResources.CatalogUrl))
+                    CatalogDocument catalog = null;
+
+                    try
                     {
-                        catalog = DeserializeFromXml<CatalogDocument>(catalogStream);
-
-                        if (catalog == null)
+                        using (var catalogStream = webClient.OpenRead(StringResources.CatalogUrl))
                         {
-                            throw new XmlException(StringResources.HostessError_CatalogDeserilizationFailure);
-                        }
+                            var lastModifiedValue = webClient.ResponseHeaders.Get("Last-Modified");
+                            catalog = DeserializeFromXml<CatalogDocument>(catalogStream);
 
-                        Current.InitCatalogDocument(catalog);
+                            if (catalog == null)
+                            {
+                                throw new XmlException(StringResources.HostessError_CatalogDeserilizationFailure);
+                            }
+
+                            Current.InitCatalogDocument(catalog);
+                            Current.InitCatalogLastModified(lastModifiedValue);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(StringResources.HostessError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
+                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                        Current.Shutdown(0);
+                        return;
+                    }
+
+                    IEModeListDocument ieModeList = null;
+
+                    try
+                    {
+                        using (var ieModeListStream = webClient.OpenRead(StringResources.IEModeListUrl))
+                        {
+                            var lastModifiedValue = webClient.ResponseHeaders.Get("Last-Modified");
+                            ieModeList = DeserializeFromXml<IEModeListDocument>(ieModeListStream);
+
+                            if (catalog == null)
+                            {
+                                throw new XmlException(StringResources.HostessError_CatalogDeserilizationFailure);
+                            }
+
+                            Current.InitIEModeListDocument(ieModeList);
+                            Current.InitIEModeListLastModified(lastModifiedValue);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(StringResources.HostessError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
+                            MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                        Current.Shutdown(0);
+                        return;
+                    }
+
+                    var targetSites = e.Args.Where(x => !x.StartsWith("--", StringComparison.Ordinal)).ToArray();
+                    Current.InitInstallSites(targetSites);
+
+                    var hasEveryonesPrinterEnabled = false;
+                    var hasAdobeReaderEnabled = false;
+                    var hasHancomOfficeViewerEnabled = false;
+                    var hasIEModeEnabled = false;
+
+                    var options = e.Args.Where(x => x.StartsWith("--", StringComparison.Ordinal)).ToArray();
+                    foreach (var eachOption in options)
+                    {
+                        if (eachOption.StartsWith(StringResources.Hostess_Switch_EnableEveryonesPrinter, StringComparison.Ordinal))
+                            hasEveryonesPrinterEnabled = true;
+
+                        if (eachOption.StartsWith(StringResources.Hostess_Switch_EnableAdobeReader, StringComparison.Ordinal))
+                            hasAdobeReaderEnabled = true;
+
+                        if (eachOption.StartsWith(StringResources.Hostess_Switch_EnableHancomOfficeViewer, StringComparison.Ordinal))
+                            hasHancomOfficeViewerEnabled = true;
+
+                        if (eachOption.StartsWith(StringResources.Hostess_Switch_EnableIEMode, StringComparison.Ordinal))
+                            hasIEModeEnabled = true;
+                    }
+
+                    Current.InitHasEveryonesPrinterEnabled(hasEveryonesPrinterEnabled);
+                    Current.InitHasAdobeReaderEnabled(hasAdobeReaderEnabled);
+                    Current.InitHasHancomOfficeViewerEnabled(hasHancomOfficeViewerEnabled);
+                    Current.InitHasIEModeEnabled(hasIEModeEnabled);
+
+                    if (!targetSites.Any())
+                    {
+                        MessageBox.Show(StringResources.Hostess_No_Targets, StringResources.TitleText_Error,
+                            MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+
+                        Process.Start(new ProcessStartInfo("https://www.naver.com/")
+                        {
+                            UseShellExecute = true,
+                            WindowStyle = ProcessWindowStyle.Maximized,
+                        });
+
+                        Current.Shutdown(0);
+                        return;
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(StringResources.HostessError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
-                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                    Current.Shutdown(0);
-                    return;
-                }
-
-                var targetSites = e.Args.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-                Current.InitInstallSites(targetSites);
-
-                if (!targetSites.Any())
-                {
-                    MessageBox.Show(StringResources.Hostess_No_Targets, StringResources.TitleText_Error,
-                        MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
-
-                    Process.Start(new ProcessStartInfo("https://www.naver.com/")
-                    {
-                        UseShellExecute = true,
-                        WindowStyle = ProcessWindowStyle.Maximized,
-                    });
-
-                    Current.Shutdown(0);
-                    return;
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
             }
         }
 
