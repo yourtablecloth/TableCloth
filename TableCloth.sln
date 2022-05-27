@@ -16,13 +16,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableCloth.SetupBuilder", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0550F36D-5775-4A30-9783-E60FE4B7C438}"
 	ProjectSection(SolutionItems) = preProject
-		..\.editorconfig = ..\.editorconfig
-		..\.gitignore = ..\.gitignore
-		..\Directory.build.props = ..\Directory.build.props
-		..\LICENSE.txt = ..\LICENSE.txt
-		..\privacy.md = ..\privacy.md
-		..\README.md = ..\README.md
-		..\SECURITY.md = ..\SECURITY.md
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		Directory.build.props = Directory.build.props
+		LICENSE.txt = LICENSE.txt
+		privacy.md = privacy.md
+		README.md = README.md
+		SECURITY.md = SECURITY.md
 	EndProjectSection
 EndProject
 Global
