@@ -3,6 +3,8 @@ name: TableCloth Build Pipeline
 on:
   push:
     branches-ignore: [ dev, feature/adopt-wixsharp ]
+  pull_request:
+    branches: [ dev ]
 
 jobs:
   build:
