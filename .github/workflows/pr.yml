@@ -44,7 +44,7 @@ jobs:
 
     # Restore .NET Framework nuget packages
     - name: Restore the application (.NET Framework Part)
-      run: nuget restore $env:Solution_Name
+      run: nuget restore $env:Hostess_Project_Path
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application (.NET Core Part)
