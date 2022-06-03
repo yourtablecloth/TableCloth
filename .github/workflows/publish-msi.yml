@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    if: github.repository_owner == 'yourtablecloth'
     strategy:
       matrix:
         configuration: [Debug, Release]
