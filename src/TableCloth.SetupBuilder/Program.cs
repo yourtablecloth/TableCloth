@@ -36,11 +36,18 @@ namespace TableCloth.SetupBuilder
             return targetProject;
         }
 
+        private const string PfxIgnoreMagicWord = "--ignore--";
+
         private static void Main(string[] args)
         {
             var inputDirectory = args.ElementAtOrDefault(0);
             var pfxFilePath = args.ElementAtOrDefault(1);
             var pfxPassword = args.ElementAtOrDefault(2);
+
+            var ignorePfx =
+                string.Equals(PfxIgnoreMagicWord, pfxFilePath, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(PfxIgnoreMagicWord, pfxPassword, StringComparison.OrdinalIgnoreCase);
+
             var licenseRtfFilePath = args.ElementAtOrDefault(3);
             var iconFilePath = args.ElementAtOrDefault(4);
 
@@ -91,19 +98,22 @@ namespace TableCloth.SetupBuilder
             project.ControlPanelInfo.Contact = StringResources.AppPublisher;
             project.ControlPanelInfo.NoModify = true;
 
-            if (!string.IsNullOrWhiteSpace(pfxFilePath) &&
-                System.IO.File.Exists(pfxFilePath))
+            if (!ignorePfx)
             {
-                project.DigitalSignature = new DigitalSignature()
+                if (!string.IsNullOrWhiteSpace(pfxFilePath) &&
+                    System.IO.File.Exists(pfxFilePath))
                 {
-                    PfxFilePath = pfxFilePath,
-                    Password = pfxPassword,
-                    MaxTimeUrlRetry = 3,
-                    TimeUrl = new Uri("http://timestamp.digicert.com", UriKind.Absolute),
-                    UrlRetrySleep = 1,
-                    Description = StringResources.AppCopyright,
-                    HashAlgorithm = HashAlgorithmType.sha256,
-                };
+                    project.DigitalSignature = new DigitalSignature()
+                    {
+                        PfxFilePath = pfxFilePath,
+                        Password = pfxPassword,
+                        MaxTimeUrlRetry = 3,
+                        TimeUrl = new Uri("http://timestamp.digicert.com", UriKind.Absolute),
+                        UrlRetrySleep = 1,
+                        Description = StringResources.AppCopyright,
+                        HashAlgorithm = HashAlgorithmType.sha256,
+                    };
+                }
             }
 
             project = DefineCoreFeature(project, inputDirectory);
