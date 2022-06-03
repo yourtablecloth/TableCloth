@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>TableCloth.SetupBuilder</RootNamespace>
     <AssemblyName>TableCloth.SetupBuilder</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
