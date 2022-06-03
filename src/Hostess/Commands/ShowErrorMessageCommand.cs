@@ -7,7 +7,7 @@ namespace Hostess.Commands
 {
     internal sealed class ShowErrorMessageCommand : ICommand
     {
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler CanExecuteChanged;
 
         public bool CanExecute(object parameter)
             => true;
