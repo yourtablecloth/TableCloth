@@ -425,7 +425,9 @@ namespace Hostess
                             WindowStyle = ProcessWindowStyle.Maximized,
                         });
                         await Task.Delay(2000);
-                        process.Close();
+
+                        if (process != null)
+                            process.Close();
                     }
                     catch (Exception ex)
                     {
