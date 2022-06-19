@@ -36,3 +36,7 @@
 ## 스폰서
 
 ![마음인](docs/images/maumin.png)
+
+## 저작권 정보
+
+![Tablecloth icon](https://icons8.com/icon/7CLTCx06RSAB/tablecloth) by ![Icons8](https://icons8.com)

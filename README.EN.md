@@ -32,3 +32,7 @@ Installation and usage guide are introduced in [Tablecloth Introduction Page(KO)
 ## Sponsor
 
 ![MAUMIN](docs/images/maumin.png)
+
+## Copyrights
+
+![Tablecloth icon](https://icons8.com/icon/7CLTCx06RSAB/tablecloth) by ![Icons8](https://icons8.com)
