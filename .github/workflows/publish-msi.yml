@@ -1,8 +1,6 @@
 name: TableCloth Publish Pipeline
 
-on:
-  push:
-    branches: [ dev ]
+on: [push, pull_request]
 
 jobs:
   build:
