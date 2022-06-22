@@ -15,7 +15,6 @@ namespace Hostess.ViewModels
         private string _packageUrl;
         private string _arguments;
         private string _scriptContent;
-        private bool _skipIEMode;
         private bool? _installed;
         private string _statusMessage;
         private string _errorMessage;
@@ -126,21 +125,6 @@ namespace Hostess.ViewModels
 
                 _scriptContent = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScriptContent)));
-            }
-        }
-
-        public bool SkipIEMode
-        {
-            get => _skipIEMode;
-            set
-            {
-                if (_skipIEMode == value)
-                {
-                    return;
-                }
-
-                _skipIEMode = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SkipIEMode)));
             }
         }
 

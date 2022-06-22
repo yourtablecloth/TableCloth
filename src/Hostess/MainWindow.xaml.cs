@@ -157,7 +157,6 @@ namespace Hostess
                     PackageName = eachPackage.Name,
                     PackageUrl = eachPackage.Url,
                     Arguments = eachPackage.Arguments,
-                    SkipIEMode = eachPackage.SkipIEMode,
                     Installed = null,
                 }));
 
@@ -239,8 +238,7 @@ namespace Hostess
                             eachItem.Installed = null;
                             eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
 
-                            if (eachItem.SkipIEMode &&
-                                Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl))
+                            if (Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl))
                             {
                                 var rootDomainName = RootDomainParser.InferenceRootDomain(parsedUrl);
                                 var matchedItem = ieModeRequiredList.FirstOrDefault(x => x.Domain.Equals(rootDomainName, StringComparison.Ordinal));
