@@ -18,7 +18,7 @@ namespace TableCloth.Implementations
         /// <param name="message">표시할 메시지</param>
         /// <param name="messageBoxButton">메시지 박스 버튼 구성</param>
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
-        public MessageBoxResult DisplayInfo(object? parentWindowHandle, string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
+        public MessageBoxResult DisplayInfo(object parentWindowHandle, string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
         {
             var dispatcher = parentWindowHandle is Window window ? window?.Dispatcher : null;
 
@@ -36,7 +36,7 @@ namespace TableCloth.Implementations
                             message, StringResources.TitleText_Info,
                             messageBoxButton, MessageBoxImage.Information, MessageBoxResult.OK);
                 }),
-                new object?[] { parentWindowHandle, message, });
+                new object[] { parentWindowHandle, message, });
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace TableCloth.Implementations
         /// <param name="failureReason">발생한 예외 개체의 참조</param>
         /// <param name="isCritical">심각성 여부</param>
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
-        public int DisplayError(object? parentWindowHandle, Exception failureReason, bool isCritical)
+        public int DisplayError(object parentWindowHandle, Exception failureReason, bool isCritical)
         {
             var unwrappedException = failureReason;
 
@@ -63,7 +63,7 @@ namespace TableCloth.Implementations
         /// <param name="message">표시할 메시지</param>
         /// <param name="isCritical">심각성 여부</param>
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
-        public int DisplayError(object? parentWindowHandle, string message, bool isCritical)
+        public int DisplayError(object parentWindowHandle, string message, bool isCritical)
         {
             var dispatcher = parentWindowHandle is Window window ? window?.Dispatcher : null;
 
@@ -85,7 +85,7 @@ namespace TableCloth.Implementations
                             MessageBoxButton.OK,
                             isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning, MessageBoxResult.OK);
                 }),
-                new object?[] { parentWindowHandle, message, isCritical });
+                new object[] { parentWindowHandle, message, isCritical });
         }
     }
 }

@@ -20,9 +20,9 @@
     <PackageTags>TableCloth</PackageTags>
     <SignAssembly>False</SignAssembly>
 		<LangVersion>latest</LangVersion>
-		<Nullable>enable</Nullable>
+		<Nullable>disable</Nullable>
 		<Deterministic>true</Deterministic>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 	</PropertyGroup>
   <ItemGroup>
     <None Remove="commit.txt" />
