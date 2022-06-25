@@ -28,7 +28,7 @@ namespace TableCloth.Implementations
 
         public void StartApplication(IEnumerable<string> args)
         {
-            var appThread = new Thread(new ParameterizedThreadStart(_ =>
+            var appThread = new Thread(new ParameterizedThreadStart(_args =>
             {
                 var config = _preferences.LoadConfig();
 
@@ -48,7 +48,7 @@ namespace TableCloth.Implementations
 
                 Log.Logger = logBuilder.CreateLogger();
 
-                _appInstance = new App();
+                _appInstance = new App() { Arguments = (IEnumerable<string>)_args, };
                 _appInstance.Run();
             }));
 

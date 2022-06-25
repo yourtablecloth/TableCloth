@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 
 namespace TableCloth
 {
@@ -8,5 +9,7 @@ namespace TableCloth
         {
             InitializeComponent();
         }
+
+        public IEnumerable<string> Arguments { get; set; } = new string[0];
     }
 }

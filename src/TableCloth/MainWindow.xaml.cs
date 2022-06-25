@@ -164,6 +164,10 @@ namespace TableCloth.Implementations.WPF
             var services = ViewModel.Services;
             var directoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
             Task.Factory.StartNew(() => LoadSiteImages(services, directoryPath));
+
+            var args = ViewModel.AppStartup.Arguments.ToArray();
+
+            // To Do: 명령줄 해석 루틴을 추가하여 UI 없이 자동 실행되도록 구현 필요
         }
 
         private bool SiteCatalog_Filter(object item)
