@@ -296,13 +296,88 @@ namespace TableCloth.Resources
     // 호스트 프로그램에서 사용할 스위치
     partial class StringResources
     {
-        internal static readonly string Hostess_Switch_EnableEveryonesPrinter = "--enable-everyones-printer";
+        internal static readonly string TableCloth_Switch_Prefix = "--";
 
-        internal static readonly string Hostess_Switch_EnableAdobeReader = "--enable-adobe-reader";
+        internal static readonly string TableCloth_Switch_IgnoreSwitch = "--ignore--";
 
-        internal static readonly string Hostess_Switch_EnableHancomOfficeViewer = "--enable-hancom-office-viewer";
+        internal static readonly string TableCloth_Switch_EnableMicrophone = TableCloth_Switch_Prefix + "enable-microphone";
 
-        internal static readonly string Hostess_Switch_EnableIEMode = "--enable-ie-mode";
+        internal static readonly string TableCloth_Switch_EnableCamera = TableCloth_Switch_Prefix + "enable-camera";
+
+        internal static readonly string TableCloth_Switch_EnablePrinter = TableCloth_Switch_Prefix + "enable-printer";
+
+        internal static readonly string TableCloth_Switch_CertPublicKey = TableCloth_Switch_Prefix + "cert-public-key";
+
+        internal static readonly string TableCloth_Switch_CertPrivateKey = TableCloth_Switch_Prefix + "cert-private-key";
+
+        internal static readonly string TableCloth_Switch_EnableEveryonesPrinter = TableCloth_Switch_Prefix + "enable-everyones-printer";
+
+        internal static readonly string TableCloth_Switch_EnableAdobeReader = TableCloth_Switch_Prefix + "enable-adobe-reader";
+
+        internal static readonly string TableCloth_Switch_EnableHancomOfficeViewer = TableCloth_Switch_Prefix + "enable-hancom-office-viewer";
+
+        internal static readonly string TableCloth_Switch_EnableIEMode = TableCloth_Switch_Prefix + "enable-ie-mode";
+
+        internal static readonly string TableCloth_Switch_Help = TableCloth_Switch_Prefix + "help";
+
+        internal static readonly string TableCloth_TableCloth_Switches_Help = $@"ServiceID ServiceID ... <옵션>
+
+ServiceID는 {CatalogUrl}을 확인해주세요.
+
+옵션:
+
+{TableCloth_Switch_EnableMicrophone}
+  오디오 입력 사용하기 기능을 켭니다.
+
+{TableCloth_Switch_EnableCamera}
+  비디오 입력 사용하기 기능을 켭니다.
+
+{TableCloth_Switch_EnablePrinter}
+  프린터 공유하기 기능을 켭니다.
+
+{TableCloth_Switch_CertPublicKey} <파일 경로>
+  인증서 공개 키 파일 경로를 지정합니다.
+
+{TableCloth_Switch_CertPrivateKey} <파일 경로>
+  인증서 비밀 키 파일 경로를 지정합니다.
+
+{TableCloth_Switch_EnableEveryonesPrinter}
+  모두의 프린터 설치를 샌드박스 시작 후 실행합니다.
+
+{TableCloth_Switch_EnableAdobeReader}
+  Adobe Reader 설치를 샌드박스 시작 후 실행합니다.
+
+{TableCloth_Switch_EnableHancomOfficeViewer}
+  한컴오피스 뷰어 설치를 샌드박스 시작 후 실행합니다.
+
+{TableCloth_Switch_EnableIEMode}
+  Internet Explorer 모드를 활성화합니다.
+
+{TableCloth_Switch_Help}
+  이 도움말을 표시합니다.
+";
+
+        internal static readonly string TableCloth_Hostess_Switches_Help = $@"ServiceID ServiceID ... <옵션>
+
+ServiceID는 {CatalogUrl}을 확인해주세요.
+
+옵션:
+
+{TableCloth_Switch_EnableEveryonesPrinter}
+  모두의 프린터 설치를 샌드박스 시작 후 실행합니다.
+
+{TableCloth_Switch_EnableAdobeReader}
+  Adobe Reader 설치를 샌드박스 시작 후 실행합니다.
+
+{TableCloth_Switch_EnableHancomOfficeViewer}
+  한컴오피스 뷰어 설치를 샌드박스 시작 후 실행합니다.
+
+{TableCloth_Switch_EnableIEMode}
+  Internet Explorer 모드를 활성화합니다.
+
+{TableCloth_Switch_Help}
+  이 도움말을 표시합니다.
+";
     }
 
 #pragma warning restore IDE0040, IDE0066

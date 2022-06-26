@@ -36,8 +36,6 @@ namespace TableCloth.SetupBuilder
             return targetProject;
         }
 
-        private const string PfxIgnoreMagicWord = "--ignore--";
-
         private static void Main(string[] args)
         {
             var inputDirectory = args.ElementAtOrDefault(0);
@@ -45,8 +43,8 @@ namespace TableCloth.SetupBuilder
             var pfxPassword = args.ElementAtOrDefault(2);
 
             var ignorePfx =
-                string.Equals(PfxIgnoreMagicWord, pfxFilePath, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(PfxIgnoreMagicWord, pfxPassword, StringComparison.OrdinalIgnoreCase);
+                string.Equals(StringResources.TableCloth_Switch_IgnoreSwitch, pfxFilePath, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(StringResources.TableCloth_Switch_IgnoreSwitch, pfxPassword, StringComparison.OrdinalIgnoreCase);
 
             var licenseRtfFilePath = args.ElementAtOrDefault(3);
             var iconFilePath = args.ElementAtOrDefault(4);

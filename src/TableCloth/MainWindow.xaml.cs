@@ -166,8 +166,72 @@ namespace TableCloth.Implementations.WPF
             Task.Factory.StartNew(() => LoadSiteImages(services, directoryPath));
 
             var args = ViewModel.AppStartup.Arguments.ToArray();
+            var config = new TableClothConfiguration();
 
-            // To Do: 명령줄 해석 루틴을 추가하여 UI 없이 자동 실행되도록 구현 필요
+            var selectedServices = new List<string>();
+            var certPrivateKeyPath = default(string);
+            var certPublicKeyPath = default(string);
+            var showHelp = false;
+
+            for (var i = 0; i < args.Length; i++)
+            {
+                if (!args[i].StartsWith(StringResources.TableCloth_Switch_Prefix))
+                    selectedServices.Add(args[i]);
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableMicrophone, StringComparison.OrdinalIgnoreCase))
+                    config.EnableMicrophone = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableCamera, StringComparison.OrdinalIgnoreCase))
+                    config.EnableWebCam = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnablePrinter, StringComparison.OrdinalIgnoreCase))
+                    config.EnablePrinters = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_CertPrivateKey, StringComparison.OrdinalIgnoreCase))
+                    certPrivateKeyPath = args[Math.Min(args.Length - 1, ++i)];
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_CertPublicKey, StringComparison.OrdinalIgnoreCase))
+                    certPublicKeyPath = args[Math.Min(args.Length - 1, ++i)];
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableEveryonesPrinter, StringComparison.OrdinalIgnoreCase))
+                    config.EnableEveryonesPrinter = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableAdobeReader, StringComparison.OrdinalIgnoreCase))
+                    config.EnableAdobeReader = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableHancomOfficeViewer, StringComparison.OrdinalIgnoreCase))
+                    config.EnableHancomOfficeViewer = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableIEMode, StringComparison.OrdinalIgnoreCase))
+                    config.EnableInternetExplorerMode = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase))
+                    showHelp = true;
+            }
+
+            if (showHelp)
+            {
+                ViewModel.AppMessageBox.DisplayInfo(this, StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                return;
+            }
+
+            config.Services = services.Where(x => selectedServices.Contains(x.Id, StringComparer.OrdinalIgnoreCase)).ToList();
+
+            if (config.Services.Count > 0)
+            {
+                var certPublicKeyData = default(byte[]);
+                var certPrivateKeyData = default(byte[]);
+
+                if (File.Exists(certPublicKeyPath))
+                    certPublicKeyData = File.ReadAllBytes(certPublicKeyPath);
+
+                if (File.Exists(certPrivateKeyPath))
+                    certPrivateKeyData = File.ReadAllBytes(certPrivateKeyPath);
+
+                if (certPublicKeyData != null && certPrivateKeyData != null)
+                    config.CertPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
+
+                var tempPath = ViewModel.SharedLocations.GetTempPath();
+                var excludedFolderList = new List<SandboxMappedFolder>();
+                var wsbFilePath = ViewModel.SandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
+
+                if (excludedFolderList.Any())
+                    ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
+
+                ViewModel.CurrentDirectory = tempPath;
+                ViewModel.TemporaryDirectories.Add(tempPath);
+                ViewModel.SandboxLauncher.RunSandbox(ViewModel.AppUserInterface, tempPath, wsbFilePath);
+            }
         }
 
         private bool SiteCatalog_Filter(object item)

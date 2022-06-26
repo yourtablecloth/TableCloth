@@ -71,28 +71,40 @@ namespace Hostess
                         return;
                     }
 
-                    var targetSites = e.Args.Where(x => !x.StartsWith("--", StringComparison.Ordinal)).ToArray();
+                    var targetSites = e.Args.Where(x => !x.StartsWith(StringResources.TableCloth_Switch_Prefix, StringComparison.Ordinal)).ToArray();
                     Current.InitInstallSites(targetSites);
 
                     var hasEveryonesPrinterEnabled = false;
                     var hasAdobeReaderEnabled = false;
                     var hasHancomOfficeViewerEnabled = false;
                     var hasIEModeEnabled = false;
+                    var showHelp = false;
 
-                    var options = e.Args.Where(x => x.StartsWith("--", StringComparison.Ordinal)).ToArray();
+                    var options = e.Args.Where(x => x.StartsWith(StringResources.TableCloth_Switch_Prefix, StringComparison.Ordinal)).ToArray();
                     foreach (var eachOption in options)
                     {
-                        if (eachOption.StartsWith(StringResources.Hostess_Switch_EnableEveryonesPrinter, StringComparison.Ordinal))
+                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_EnableEveryonesPrinter, StringComparison.Ordinal))
                             hasEveryonesPrinterEnabled = true;
 
-                        if (eachOption.StartsWith(StringResources.Hostess_Switch_EnableAdobeReader, StringComparison.Ordinal))
+                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_EnableAdobeReader, StringComparison.Ordinal))
                             hasAdobeReaderEnabled = true;
 
-                        if (eachOption.StartsWith(StringResources.Hostess_Switch_EnableHancomOfficeViewer, StringComparison.Ordinal))
+                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_EnableHancomOfficeViewer, StringComparison.Ordinal))
                             hasHancomOfficeViewerEnabled = true;
 
-                        if (eachOption.StartsWith(StringResources.Hostess_Switch_EnableIEMode, StringComparison.Ordinal))
+                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_EnableIEMode, StringComparison.Ordinal))
                             hasIEModeEnabled = true;
+
+                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_Help, StringComparison.Ordinal))
+                            showHelp = true;
+                    }
+
+                    if (showHelp)
+                    {
+                        MessageBox.Show(StringResources.TableCloth_Hostess_Switches_Help, StringResources.TitleText_Info,
+                            MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                        Current.Shutdown(0);
+                        return;
                     }
 
                     Current.InitHasEveryonesPrinterEnabled(hasEveryonesPrinterEnabled);

@@ -136,16 +136,16 @@ del /f /q ""{providedCertFilePath}""
             var switches = new List<string>();
 
             if (tableClothConfiguration.EnableEveryonesPrinter)
-                switches.Add(StringResources.Hostess_Switch_EnableEveryonesPrinter);
+                switches.Add(StringResources.TableCloth_Switch_EnableEveryonesPrinter);
 
             if (tableClothConfiguration.EnableAdobeReader)
-                switches.Add(StringResources.Hostess_Switch_EnableAdobeReader);
+                switches.Add(StringResources.TableCloth_Switch_EnableAdobeReader);
 
             if (tableClothConfiguration.EnableHancomOfficeViewer)
-                switches.Add(StringResources.Hostess_Switch_EnableHancomOfficeViewer);
+                switches.Add(StringResources.TableCloth_Switch_EnableHancomOfficeViewer);
 
             if (tableClothConfiguration.EnableInternetExplorerMode)
-                switches.Add(StringResources.Hostess_Switch_EnableIEMode);
+                switches.Add(StringResources.TableCloth_Switch_EnableIEMode);
 
             var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");
             var idList = string.Join(" ", tableClothConfiguration.Services.Select(x => x.Id).Distinct());
