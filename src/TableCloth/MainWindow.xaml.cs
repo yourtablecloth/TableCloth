@@ -106,6 +106,20 @@ namespace TableCloth.Implementations.WPF
             }
         }
 
+        private void RunSandbox(TableClothConfiguration config)
+        {
+            var tempPath = ViewModel.SharedLocations.GetTempPath();
+            var excludedFolderList = new List<SandboxMappedFolder>();
+            var wsbFilePath = ViewModel.SandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
+
+            if (excludedFolderList.Any())
+                ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
+
+            ViewModel.CurrentDirectory = tempPath;
+            ViewModel.TemporaryDirectories.Add(tempPath);
+            ViewModel.SandboxLauncher.RunSandbox(ViewModel.AppUserInterface, tempPath, wsbFilePath);
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //SiteListHelpRow.Height = new GridLength(0d);
@@ -221,16 +235,7 @@ namespace TableCloth.Implementations.WPF
                 if (certPublicKeyData != null && certPrivateKeyData != null)
                     config.CertPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
 
-                var tempPath = ViewModel.SharedLocations.GetTempPath();
-                var excludedFolderList = new List<SandboxMappedFolder>();
-                var wsbFilePath = ViewModel.SandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
-
-                if (excludedFolderList.Any())
-                    ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
-
-                ViewModel.CurrentDirectory = tempPath;
-                ViewModel.TemporaryDirectories.Add(tempPath);
-                ViewModel.SandboxLauncher.RunSandbox(ViewModel.AppUserInterface, tempPath, wsbFilePath);
+                RunSandbox(config);
             }
         }
 
@@ -370,16 +375,7 @@ namespace TableCloth.Implementations.WPF
                 Services = _selectedSites,
             };
 
-            var tempPath = ViewModel.SharedLocations.GetTempPath();
-            var excludedFolderList = new List<SandboxMappedFolder>();
-            var wsbFilePath = ViewModel.SandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
-
-            if (excludedFolderList.Any())
-                ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
-
-            ViewModel.CurrentDirectory = tempPath;
-            ViewModel.TemporaryDirectories.Add(tempPath);
-            ViewModel.SandboxLauncher.RunSandbox(ViewModel.AppUserInterface, tempPath, wsbFilePath);
+            RunSandbox(config);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
