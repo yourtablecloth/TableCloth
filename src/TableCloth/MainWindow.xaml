@@ -25,14 +25,14 @@
                 <RowDefinition Height="50*" x:Name="OptionRow" />
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverters}}" />
+            <Label Grid.Row="0" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-            <TextBox Grid.Row="1" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 0 0 10" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostTouchCapture="SiteCatalogFilter_LostTouchCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverters}}" />
-            <StackPanel Grid.Row="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverters}}" Orientation="Vertical">
+            <TextBox Grid.Row="1" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 0 0 10" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostTouchCapture="SiteCatalogFilter_LostTouchCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <StackPanel Grid.Row="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical">
                 <Label VerticalAlignment="Top" HorizontalAlignment="Center" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt}" />
                 <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{StaticResource MainWindow_ReloadCatalog}" Click="ReloadCatalogButton_Click" />
             </StackPanel>
-            <ListView Grid.Row="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" SelectionChanged="SiteList_SelectionChanged" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverters}}">
+            <ListView Grid.Row="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" SelectionChanged="SiteList_SelectionChanged" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="{StaticResource MainWindow_Column_SiteName}" Width="180">
