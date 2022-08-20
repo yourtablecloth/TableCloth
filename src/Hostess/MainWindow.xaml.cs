@@ -1,5 +1,4 @@
-﻿using Hostess.SiteList;
-using Hostess.Themes;
+﻿using Hostess.Themes;
 using Hostess.ViewModels;
 using Microsoft.Win32;
 using System;
@@ -205,8 +204,6 @@ namespace Hostess
         {
             try
             {
-                var ieModeRequiredList = new List<IEModeSite>();
-
                 PerformInstallButton.IsEnabled = false;
                 var hasAnyFailure = false;
 
@@ -216,17 +213,22 @@ namespace Hostess
                     Directory.CreateDirectory(downloadFolderPath);
 
                 var catalog = Application.Current.GetCatalogDocument();
-                var ieModeList = Application.Current.GetIEModeListDocument();
 
-                foreach (var eachSite in ieModeList.Sites)
+                if (App.Current.GetHasIEModeEnabled())
                 {
-                    var rootDomain = eachSite.Domain;
-
-                    if (string.IsNullOrWhiteSpace(rootDomain))
-                        continue;
-
-                    if (!ieModeRequiredList.Any(x => x.Domain.Equals(rootDomain, StringComparison.Ordinal)))
-                        ieModeRequiredList.Add(new IEModeSite { Domain = rootDomain, Mode = eachSite.Mode, OpenIn = eachSite.OpenIn });
+                    try
+                    {
+                        // HKLM\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1, InternetExplorerIntegrationSiteList (REG_SZ)
+                        using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
+                        {
+                            ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
+                            ieModeKey.SetValue("InternetExplorerIntegrationSiteList", StringResources.IEModePolicyXmlUrl, RegistryValueKind.String);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
                 }
 
                 foreach (InstallItemViewModel eachItem in InstallList.ItemsSource)
@@ -237,13 +239,6 @@ namespace Hostess
                         {
                             eachItem.Installed = null;
                             eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
-
-                            if (Uri.TryCreate(eachItem.TargetSiteUrl, UriKind.Absolute, out Uri parsedUrl))
-                            {
-                                var rootDomainName = RootDomainParser.InferenceRootDomain(parsedUrl);
-                                var matchedItem = ieModeRequiredList.FirstOrDefault(x => x.Domain.Equals(rootDomainName, StringComparison.Ordinal));
-                                ieModeRequiredList.Remove(matchedItem);
-                            }
 
                             var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
                             var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
@@ -337,104 +332,35 @@ namespace Hostess
                     }
                 }
 
-                if (App.Current.GetHasEveryonesPrinterEnabled())
+                if (!hasAnyFailure)
                 {
-                    Process.Start(new ProcessStartInfo(StringResources.EveryonesPrinterUrl)
+                    if (App.Current.GetHasEveryonesPrinterEnabled())
                     {
-                        UseShellExecute = true,
-                        WindowStyle = ProcessWindowStyle.Maximized,
-                    });
-                }
-
-                if (App.Current.GetHasAdobeReaderEnabled())
-                {
-                    Process.Start(new ProcessStartInfo(StringResources.AdobeReaderUrl)
-                    {
-                        UseShellExecute = true,
-                        WindowStyle = ProcessWindowStyle.Maximized,
-                    });
-                }
-
-                if (App.Current.GetHasHancomOfficeViewerEnabled())
-                {
-                    Process.Start(new ProcessStartInfo(StringResources.HancomOfficeViewerUrl)
-                    {
-                        UseShellExecute = true,
-                        WindowStyle = ProcessWindowStyle.Maximized,
-                    });
-                }
-
-                var internetExplorerExists = File.Exists(Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-                    "Internet Explorer", "iexplore.exe"));
-
-                if (App.Current.GetHasIEModeEnabled() && internetExplorerExists)
-                {
-                    try
-                    {
-                        var myDocumentsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                        if (!Directory.Exists(myDocumentsDirectory))
-                            Directory.CreateDirectory(myDocumentsDirectory);
-
-                        var ieSiteListPath = Path.Combine(myDocumentsDirectory, "sites.xml");
-
-                        // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1
-                        using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
-                        {
-                            ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
-                        }
-
-                        // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode > SiteList (REG_SZ) with path to your XML-sitelist
-                        using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode", true))
-                        {
-                            ieModeKey.SetValue("SiteList", ieSiteListPath);
-                        }
-
-                        // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main\EnterpriseMode > SiteList (REG_SZ) with path to your XML-sitelist
-                        using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main\EnterpriseMode", true))
-                        {
-                            ieModeKey.SetValue("SiteList", ieSiteListPath);
-                        }
-
-                        // HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1, InternetExplorerIntegrationSiteList (REG_SZ)
-                        using (var ieModeKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
-                        {
-                            ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
-                            ieModeKey.SetValue("InternetExplorerIntegrationSiteList", ieSiteListPath, RegistryValueKind.String);
-                        }
-
-                        var siteListDocument = new SiteListDocument();
-                        siteListDocument.Sites.AddRange(ieModeRequiredList.Select(x => new Site() { Url = x.Domain, CompatibilityMode = x.Mode, OpenIn = x.OpenIn }));
-
-                        var serializer = new XmlSerializer(typeof(SiteListDocument));
-                        var @namespace = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty) });
-                        var targetEncoding = new UTF8Encoding(false);
-
-                        using (var fileStream = File.OpenWrite(ieSiteListPath))
-                        {
-                            var contentStream = new StreamWriter(fileStream);
-                            serializer.Serialize(contentStream, siteListDocument, @namespace);
-                        }
-
-                        // IE 모드 목록이 바로 로딩되지 않아서 별도 사이트를 한 번 띄울 필요가 있음.
-                        var process = Process.Start(new ProcessStartInfo("https://www.naver.com/")
+                        Process.Start(new ProcessStartInfo(StringResources.EveryonesPrinterUrl)
                         {
                             UseShellExecute = true,
                             WindowStyle = ProcessWindowStyle.Maximized,
                         });
-                        await Task.Delay(2000);
-
-                        if (process != null)
-                            process.Close();
                     }
-                    catch (Exception ex)
+
+                    if (App.Current.GetHasAdobeReaderEnabled())
                     {
-                        MessageBox.Show(ex.ToString());
+                        Process.Start(new ProcessStartInfo(StringResources.AdobeReaderUrl)
+                        {
+                            UseShellExecute = true,
+                            WindowStyle = ProcessWindowStyle.Maximized,
+                        });
                     }
-                }
 
-                if (!hasAnyFailure)
-                {
+                    if (App.Current.GetHasHancomOfficeViewerEnabled())
+                    {
+                        Process.Start(new ProcessStartInfo(StringResources.HancomOfficeViewerUrl)
+                        {
+                            UseShellExecute = true,
+                            WindowStyle = ProcessWindowStyle.Maximized,
+                        });
+                    }
+
                     var targets = Application.Current.GetInstallSites();
 
                     foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))

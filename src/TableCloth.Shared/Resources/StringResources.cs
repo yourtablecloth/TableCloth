@@ -25,6 +25,9 @@ namespace TableCloth.Resources
         internal static readonly string PrivacyPolicyUrl =
             "https://yourtablecloth.app/privacy";
 
+        internal static readonly string IEModePolicyXmlUrl =
+            "https://yourtablecloth.app/TableClothCatalog/sites.xml";
+
         internal static readonly string AppUpdateInfoUrl =
             "https://github.com/yourtablecloth/TableCloth/releases";
 
