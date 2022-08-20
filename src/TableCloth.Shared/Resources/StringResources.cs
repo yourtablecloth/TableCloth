@@ -22,6 +22,9 @@ namespace TableCloth.Resources
         internal static readonly string AppInfoUrl =
             "https://yourtablecloth.github.io";
 
+        internal static readonly string PrivacyPolicyUrl =
+            "https://yourtablecloth.app/privacy";
+
         internal static readonly string AppUpdateInfoUrl =
             "https://github.com/yourtablecloth/TableCloth/releases";
 

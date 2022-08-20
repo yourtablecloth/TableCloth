@@ -76,5 +76,11 @@ namespace TableCloth
 
             ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_UpdateNotRequired);
         }
+
+        private void OpenPrivacyHyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            var psi = new ProcessStartInfo(StringResources.PrivacyPolicyUrl) { UseShellExecute = true };
+            Process.Start(psi);
+        }
     }
 }
