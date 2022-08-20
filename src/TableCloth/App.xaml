@@ -8,8 +8,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <converters:CategoryConverter x:Key="CategoryConverter" />
-            <converters:BooleanToVisibilityConverters x:Key="BooleanToVisibilityConverters" />
-            <converters:InverseBooleanToVisibilityConverters x:Key="InverseBooleanToVisibilityConverters" />
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             <converters:ServiceLogoConverter x:Key="ServiceLogoConverter" />
 
             <di:ViewModelLocator x:Key="ViewModelLocator" />
