@@ -69,7 +69,7 @@ jobs:
 
     # Publish TableCloth project
     - name: Build TableCloth project
-      run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
+      run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
 
@@ -121,5 +121,5 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: MSI Package (${{ matrix.configuration }})
-        path: TableCloth.msi
+        name: MSI Package (${{ matrix.platform }}, ${{ matrix.configuration }})
+        path: TableCloth-${{ matrix.platform }}-${{ matrix.configuration }}.msi
