@@ -122,4 +122,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: MSI Package (${{ matrix.platform }}, ${{ matrix.configuration }})
-        path: TableCloth-${{ matrix.platform }}-${{ matrix.configuration }}.msi
+        path: TableCloth.msi
+        if-no-files-found: error
+        retention-days: 90
