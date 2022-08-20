@@ -248,7 +248,7 @@
     </system:String>
 
     <system:String x:Key="AboutWindow_PrivacyLinkText">
-        개인정보처리방침:
+        개인 정보 처리 방침
     </system:String>
 
     <system:String x:Key="AboutWindow_PrivacyHyperlink">

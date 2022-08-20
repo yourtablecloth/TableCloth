@@ -39,13 +39,7 @@
             <Button x:Name="CheckUpdate" Padding="10 1 10 1" Margin="0 0 5 0" Click="CheckUpdate_Click" Content="{StaticResource AboutWindow_CheckUpdateButtonText}" />
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-            <TextBlock Margin="0 0 5 0" VerticalAlignment="Center">
-                <Run Text="{StaticResource AboutWindow_PrivacyLinkText}"/>
-                <LineBreak/>
-                <Hyperlink Click="OpenPrivacyHyperlink_Click">
-                    <Run Text="{StaticResource AboutWindow_PrivacyHyperlink}"/>
-                </Hyperlink>
-            </TextBlock>
+            <Button x:Name="OpenPrivacyPolicyButton" Padding="10 1 10 1" Margin="0 0 5 0" Click="OpenPrivacyHyperlink_Click" Content="{StaticResource AboutWindow_PrivacyLinkText}" />
             <Button x:Name="OkayButton" Padding="10 1 10 1" Click="OkayButton_Click" Content="{StaticResource AboutWindow_OkayButton}" />
         </StackPanel>
     </Grid>
