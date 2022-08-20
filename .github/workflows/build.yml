@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         configuration: [Debug]
-        platform: [x64, ARM64]
+        platform: [x64] # Windows-AArch64 build machine is not available currently on GitHub (as of Aug, 2022)
 
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     runs-on: windows-2022
