@@ -6,7 +6,7 @@
     <ApplicationIcon>App.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-    <Platforms>x64;AnyCPU</Platforms>
+    <Platforms>x64;ARM64</Platforms>
     <UseWPF>True</UseWPF>
     <Description>Keep your computer clean!</Description>
     <Company>rkttu.com</Company>
