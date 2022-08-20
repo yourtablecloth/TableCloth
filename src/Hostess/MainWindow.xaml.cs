@@ -334,8 +334,11 @@ namespace Hostess
 
                 if (!hasAnyFailure)
                 {
+                    var hasAnySession = false;
+
                     if (App.Current.GetHasEveryonesPrinterEnabled())
                     {
+                        hasAnySession = true;
                         Process.Start(new ProcessStartInfo(StringResources.EveryonesPrinterUrl)
                         {
                             UseShellExecute = true,
@@ -345,6 +348,7 @@ namespace Hostess
 
                     if (App.Current.GetHasAdobeReaderEnabled())
                     {
+                        hasAnySession = true;
                         Process.Start(new ProcessStartInfo(StringResources.AdobeReaderUrl)
                         {
                             UseShellExecute = true,
@@ -354,12 +358,26 @@ namespace Hostess
 
                     if (App.Current.GetHasHancomOfficeViewerEnabled())
                     {
+                        hasAnySession = true;
                         Process.Start(new ProcessStartInfo(StringResources.HancomOfficeViewerUrl)
                         {
                             UseShellExecute = true,
                             WindowStyle = ProcessWindowStyle.Maximized,
                         });
                     }
+
+                    if (!hasAnySession)
+                    {
+                        hasAnySession = true;
+                        Process.Start(new ProcessStartInfo("https://www.naver.com/")
+                        {
+                            UseShellExecute = true,
+                            WindowStyle = ProcessWindowStyle.Maximized,
+                        });
+                    }
+
+                    if (hasAnySession)
+                        await Task.Delay(TimeSpan.FromSeconds(3d));
 
                     var targets = Application.Current.GetInstallSites();
 
