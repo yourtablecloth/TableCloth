@@ -34,9 +34,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Hostess.zip" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\TableCloth.SetupBuilder\License.rtf" Link="License.rtf" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />

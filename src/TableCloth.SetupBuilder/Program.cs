@@ -61,6 +61,7 @@ namespace TableCloth.SetupBuilder
             project.Encoding = System.Text.Encoding.UTF8;
             project.OutFileName = "TableCloth";
             project.LicenceFile = "License.rtf";
+            project.SourceBaseDir = Environment.CurrentDirectory;
 
             project.Language = "ko-KR";
             project.UI = WUI.WixUI_Minimal;
