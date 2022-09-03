@@ -65,8 +65,11 @@ namespace TableCloth.SetupBuilder
             if (!string.IsNullOrWhiteSpace(licenseRtfFilePath) &&
                 System.IO.File.Exists(licenseRtfFilePath))
             {
+                Console.Out.WriteLine($"RTF File Specified: {licenseRtfFilePath}");
                 project.LicenceFile = licenseRtfFilePath;
             }
+            else
+                Console.Out.WriteLine($"RTF File Not Specified");
 
             project.Language = "ko-KR";
             project.UI = WUI.WixUI_Minimal;
