@@ -46,8 +46,7 @@ namespace TableCloth.SetupBuilder
                 string.Equals(StringResources.TableCloth_Switch_IgnoreSwitch, pfxFilePath, StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(StringResources.TableCloth_Switch_IgnoreSwitch, pfxPassword, StringComparison.OrdinalIgnoreCase);
 
-            var licenseRtfFilePath = args.ElementAtOrDefault(3);
-            var iconFilePath = args.ElementAtOrDefault(4);
+            var iconFilePath = args.ElementAtOrDefault(3);
 
             if (string.IsNullOrWhiteSpace(inputDirectory) ||
                 !System.IO.Directory.Exists(inputDirectory))
@@ -61,15 +60,7 @@ namespace TableCloth.SetupBuilder
             project.Package.AttributesDefinition = "Platform=x64";
             project.Encoding = System.Text.Encoding.UTF8;
             project.OutFileName = "TableCloth";
-
-            if (!string.IsNullOrWhiteSpace(licenseRtfFilePath) &&
-                System.IO.File.Exists(licenseRtfFilePath))
-            {
-                Console.Out.WriteLine($"RTF File Specified: {licenseRtfFilePath}");
-                project.LicenceFile = licenseRtfFilePath;
-            }
-            else
-                Console.Out.WriteLine($"RTF File Not Specified");
+            project.LicenceFile = "License.rtf";
 
             project.Language = "ko-KR";
             project.UI = WUI.WixUI_Minimal;

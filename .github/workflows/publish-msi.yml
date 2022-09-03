@@ -106,7 +106,7 @@ jobs:
         dir $InputDirPath -ErrorAction Continue
         dir $PfxFileFullPath -ErrorAction Continue
         dir $IconFilePath -ErrorAction Continue
-        . $SetupBuilderFullPath $InputDirPath $PfxFileFullPath '${{ secrets.Pfx_Key }}' 'License.rtf' $IconFilePath
+        . $SetupBuilderFullPath $InputDirPath $PfxFileFullPath '${{ secrets.Pfx_Key }}' $IconFilePath
 
     # Remove the pfx
     - name: Remove the pfx

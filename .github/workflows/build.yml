@@ -95,7 +95,7 @@ jobs:
         dir $SetupBuilderFullPath -ErrorAction Continue
         dir $InputDirPath -ErrorAction Continue
         dir $IconFilePath -ErrorAction Continue
-        . $SetupBuilderFullPath $InputDirPath '--ignore--' '--ignore--' 'License.rtf' $IconFilePath
+        . $SetupBuilderFullPath $InputDirPath '--ignore--' '--ignore--' $IconFilePath
 
     # Upload the MSI package: https://github.com/marketplace/actions/upload-artifact
     - name: Upload build artifacts
