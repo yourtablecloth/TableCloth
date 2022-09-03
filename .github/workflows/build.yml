@@ -88,17 +88,14 @@ jobs:
       run: |
         $SetupBuilderFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\${{ env.Setup_Project_Name }}.exe')
         $InputDirPath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\net6.0-windows10.0.18362.0\win-${{ env.Platform }}\publish')
-        $LicenseRtfFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\License.rtf')
         $IconFilePath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\App.ico')
         echo $SetupBuilderFullPath
         echo $InputDirPath
-        echo $LicenseRtfFullPath
         echo $IconFilePath
         dir $SetupBuilderFullPath -ErrorAction Continue
         dir $InputDirPath -ErrorAction Continue
-        dir $LicenseRtfFullPath -ErrorAction Continue
         dir $IconFilePath -ErrorAction Continue
-        . $SetupBuilderFullPath $InputDirPath '--ignore--' '--ignore--' $LicenseRtfFullPath $IconFilePath
+        . $SetupBuilderFullPath $InputDirPath '--ignore--' '--ignore--' 'License.rtf' $IconFilePath
 
     # Upload the MSI package: https://github.com/marketplace/actions/upload-artifact
     - name: Upload build artifacts
