@@ -4,6 +4,8 @@ using System.Linq;
 using TableCloth.Resources;
 using WixSharp;
 
+using WixSharpFile = WixSharp.File;
+
 namespace TableCloth.SetupBuilder
 {
     internal static class Program
@@ -12,7 +14,7 @@ namespace TableCloth.SetupBuilder
         {
             FileShortcut mainShortcut;
             Files filesCollection;
-            File mainExecutableFile;
+            WixSharpFile mainExecutableFile;
             Dir tableClothDirectory;
 
             InstallDir mainDirectory = new InstallDir(@"%LocalAppDataFolder%\Programs",
@@ -22,7 +24,7 @@ namespace TableCloth.SetupBuilder
                     filesCollection = new Files($@"{inputDirectory}\*.*", new Predicate<string>(x => !x.EndsWith("TableCloth.exe", StringComparison.OrdinalIgnoreCase) ))
                 ),
                 (
-                    mainExecutableFile = new File($@"{inputDirectory}\TableCloth.exe",
+                    mainExecutableFile = new WixSharpFile($@"{inputDirectory}\TableCloth.exe",
                     (
                         mainShortcut = new FileShortcut("식탁보", @"%ProgramMenu%")
                     ))
@@ -50,7 +52,7 @@ namespace TableCloth.SetupBuilder
             var iconFilePath = args.ElementAtOrDefault(3);
 
             if (string.IsNullOrWhiteSpace(inputDirectory) ||
-                !System.IO.Directory.Exists(inputDirectory))
+                !Directory.Exists(inputDirectory))
             {
                 Console.Error.WriteLine("Please specify input directory to create setup package.");
                 Environment.Exit(1);
@@ -79,7 +81,7 @@ namespace TableCloth.SetupBuilder
             project.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 
             if (!string.IsNullOrWhiteSpace(iconFilePath) &&
-                System.IO.File.Exists(iconFilePath))
+                File.Exists(iconFilePath))
             {
                 project.ControlPanelInfo.ProductIcon = iconFilePath;
             }
@@ -95,7 +97,7 @@ namespace TableCloth.SetupBuilder
             if (!ignorePfx)
             {
                 if (!string.IsNullOrWhiteSpace(pfxFilePath) &&
-                    System.IO.File.Exists(pfxFilePath))
+                    File.Exists(pfxFilePath))
                 {
                     project.DigitalSignature = new DigitalSignature()
                     {
