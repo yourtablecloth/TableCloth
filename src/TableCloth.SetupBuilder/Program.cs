@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using TableCloth.Resources;
 using WixSharp;
@@ -61,7 +62,7 @@ namespace TableCloth.SetupBuilder
             project.Encoding = System.Text.Encoding.UTF8;
             project.OutFileName = "TableCloth";
             project.LicenceFile = "License.rtf";
-            project.SourceBaseDir = Environment.CurrentDirectory;
+            project.SourceBaseDir = Path.GetDirectoryName(new Uri(typeof(Program).Assembly.Location, UriKind.Absolute).LocalPath);
 
             project.Language = "ko-KR";
             project.UI = WUI.WixUI_Minimal;
