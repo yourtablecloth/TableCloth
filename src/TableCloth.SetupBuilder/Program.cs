@@ -81,7 +81,7 @@ namespace TableCloth.SetupBuilder
             project.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 
             if (!string.IsNullOrWhiteSpace(iconFilePath) &&
-                File.Exists(iconFilePath))
+                System.IO.File.Exists(iconFilePath))
             {
                 project.ControlPanelInfo.ProductIcon = iconFilePath;
             }
@@ -97,7 +97,7 @@ namespace TableCloth.SetupBuilder
             if (!ignorePfx)
             {
                 if (!string.IsNullOrWhiteSpace(pfxFilePath) &&
-                    File.Exists(pfxFilePath))
+                    System.IO.File.Exists(pfxFilePath))
                 {
                     project.DigitalSignature = new DigitalSignature()
                     {
