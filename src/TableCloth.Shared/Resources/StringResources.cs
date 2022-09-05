@@ -236,6 +236,13 @@ namespace TableCloth.Resources
 
         internal static readonly string Error_Cannot_Run_SysInfo =
             "시스템 정보 유틸리티를 실행할 수 없습니다.";
+
+        internal static readonly string Info_ShortcutSuccess
+            = "바로가기를 생성했습니다.";
+
+        internal static readonly string info_ShortcutFailed
+            = "바로가기 생성에 실패했습니다.";
+
     }
 
     // 스크립트 내에서 사용되는 문자열들
@@ -312,6 +319,8 @@ namespace TableCloth.Resources
 
         internal static readonly string TableCloth_Switch_EnablePrinter = TableCloth_Switch_Prefix + "enable-printer";
 
+        internal static readonly string Tablecloth_Switch_EnableCert = TableCloth_Switch_Prefix + "enable-cert";
+
         internal static readonly string TableCloth_Switch_CertPublicKey = TableCloth_Switch_Prefix + "cert-public-key";
 
         internal static readonly string TableCloth_Switch_CertPrivateKey = TableCloth_Switch_Prefix + "cert-private-key";
@@ -340,6 +349,9 @@ ServiceID는 {CatalogUrl}을 확인해주세요.
 
 {TableCloth_Switch_EnablePrinter}
   프린터 공유하기 기능을 켭니다.
+
+{Tablecloth_Switch_EnableCert}
+  인증서를 기능을 켭니다.
 
 {TableCloth_Switch_CertPublicKey} <파일 경로>
   인증서 공개 키 파일 경로를 지정합니다.

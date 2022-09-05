@@ -117,6 +117,10 @@
         닫기
     </system:String>
 
+    <system:String x:Key="MainWindow_ShortcutButtonText">
+        바로가기 만들기
+    </system:String>
+
     <system:String x:Key="MainWindow_LaunchSandboxButtonText">
         샌드박스 실행
     </system:String>

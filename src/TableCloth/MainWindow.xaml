@@ -167,6 +167,7 @@
             </WrapPanel>
 
             <WrapPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
+                <Button x:Name="ShortcutButton" Content="{StaticResource MainWindow_ShortcutButtonText}" Padding=" 5" Margin="0 0 10 0" Click="ShortcutButton_Click"></Button>
                 <Button x:Name="LaunchSandboxButton" Content="{StaticResource MainWindow_LaunchSandboxButtonText}" Padding="5" Margin="0 0 10 0" Click="LaunchSandboxButton_Click"></Button>
                 <Button x:Name="CloseButton" Content="{StaticResource MainWindow_CloseButtonText}" Padding="5" Margin="0 0 0 0" Click="CloseButton_Click"></Button>
             </WrapPanel>

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -183,6 +184,7 @@ namespace TableCloth.Implementations.WPF
             var config = new TableClothConfiguration();
 
             var selectedServices = new List<string>();
+            var enableCert = false;
             var certPrivateKeyPath = default(string);
             var certPublicKeyPath = default(string);
             var showHelp = false;
@@ -211,6 +213,8 @@ namespace TableCloth.Implementations.WPF
                     config.EnableInternetExplorerMode = true;
                 else if (string.Equals(args[i], StringResources.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase))
                     showHelp = true;
+                else if (string.Equals(args[i], StringResources.Tablecloth_Switch_EnableCert, StringComparison.OrdinalIgnoreCase))
+                    enableCert = true;
             }
 
             if (showHelp)
@@ -223,18 +227,23 @@ namespace TableCloth.Implementations.WPF
 
             if (config.Services.Count > 0)
             {
-                var certPublicKeyData = default(byte[]);
-                var certPrivateKeyData = default(byte[]);
+                if (enableCert)
+                {
+                    var certPublicKeyData = default(byte[]);
+                    var certPrivateKeyData = default(byte[]);
 
-                if (File.Exists(certPublicKeyPath))
-                    certPublicKeyData = File.ReadAllBytes(certPublicKeyPath);
+                    if (File.Exists(certPublicKeyPath))
+                        certPublicKeyData = File.ReadAllBytes(certPublicKeyPath);
 
-                if (File.Exists(certPrivateKeyPath))
-                    certPrivateKeyData = File.ReadAllBytes(certPrivateKeyPath);
+                    if (File.Exists(certPrivateKeyPath))
+                        certPrivateKeyData = File.ReadAllBytes(certPrivateKeyPath);
 
-                if (certPublicKeyData != null && certPrivateKeyData != null)
-                    config.CertPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
+                    if (certPublicKeyData != null && certPrivateKeyData != null)
+                        config.CertPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
+                    else
+                        config.CertPair = ViewModel.SelectedCertFile;
 
+                }
                 RunSandbox(config);
             }
         }
@@ -481,6 +490,55 @@ namespace TableCloth.Implementations.WPF
                 Process.GetCurrentProcess().MainModule.FileName,
                 Environment.GetCommandLineArgs().Skip(1).ToArray());
             Application.Current.Shutdown();
+        }
+
+        private void ShortcutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var options = new List<string>();
+            var targetPath = Process.GetCurrentProcess().MainModule.FileName;
+            var linkName = StringResources.AppName;
+            if (ViewModel.EnableMicrophone)
+                options.Add(StringResources.TableCloth_Switch_EnableMicrophone);
+            if (ViewModel.EnableWebCam)
+                options.Add(StringResources.TableCloth_Switch_EnableCamera);
+            if (ViewModel.EnablePrinters)
+                options.Add(StringResources.TableCloth_Switch_EnablePrinter);
+            if (ViewModel.EnableEveryonesPrinter)
+                options.Add(StringResources.TableCloth_Switch_EnableEveryonesPrinter);
+            if (ViewModel.EnableAdobeReader)
+                options.Add(StringResources.TableCloth_Switch_EnableAdobeReader);
+            if (ViewModel.EnableHancomOfficeViewer)
+                options.Add(StringResources.TableCloth_Switch_EnableHancomOfficeViewer);
+            if (ViewModel.EnableInternetExplorerMode)
+                options.Add(StringResources.TableCloth_Switch_EnableIEMode);
+            if (ViewModel.MapNpkiCert)
+                options.Add(StringResources.Tablecloth_Switch_EnableCert);
+            if (_selectedSites.Count > 0) {
+                options.Add(_selectedSites[0].Id);
+                linkName = _selectedSites[0].Id;
+            }
+
+            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            var fullPath = Path.Combine(desktopPath, linkName + ".lnk");
+            for ( int i = 1; File.Exists(fullPath); ++i)
+                fullPath = Path.Combine(desktopPath, linkName + $"({i}).lnk");
+
+            try
+            {
+                Type shellType = Type.GetTypeFromProgID("WScript.Shell");
+                dynamic shell = Activator.CreateInstance(shellType);
+                dynamic shortcut = shell.CreateShortcut(fullPath);
+                shortcut.TargetPath = targetPath;
+                shortcut.Arguments = String.Join(' ', options.ToArray());
+                shortcut.Save();
+            }
+            catch
+            {
+                ViewModel.AppMessageBox.DisplayInfo(this, StringResources.info_ShortcutFailed);
+                return;
+            }
+
+            ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_ShortcutSuccess);
         }
     }
 }
