@@ -10,8 +10,8 @@
     <UseWPF>True</UseWPF>
     <Description>Keep your computer clean!</Description>
     <Company>rkttu.com</Company>
-    <Product>Table Cloth</Product>
-    <ProductName>Table Cloth</ProductName>
+    <Product>TableCloth</Product>
+    <ProductName>TableCloth</ProductName>
     <Copyright>(c) rkttu.com, 2021</Copyright>
     <Version>0.5.4.0</Version>
     <PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>

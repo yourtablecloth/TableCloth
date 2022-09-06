@@ -2,12 +2,12 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 
-[assembly: AssemblyTitle("Table Cloth Hostess")]
+[assembly: AssemblyTitle("TableCloth Hostess")]
 [assembly: AssemblyDescription("This program is a tool that installs the requested installers at once in the sandbox.")]
 [assembly: AssemblyCompany("rkttu.com")]
-[assembly: AssemblyProduct("Table Cloth")]
+[assembly: AssemblyProduct("TableCloth")]
 [assembly: AssemblyCopyright("(c) rkttu.com, 2021")]
-[assembly: AssemblyTrademark("Table Cloth")]
+[assembly: AssemblyTrademark("TableCloth")]
 [assembly: AssemblyVersion("0.5.4.0")]
 [assembly: AssemblyFileVersion("0.5.4.0")]
 [assembly: Guid("36e7b617-ca94-4ecb-ad65-39fe94ce265b")]

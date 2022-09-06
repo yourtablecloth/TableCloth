@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Table Cloth Setup Builder")]
+[assembly: AssemblyTitle("TableCloth Setup Builder")]
 [assembly: AssemblyDescription("This program is a tool that builds the setup package.")]
 [assembly: AssemblyCompany("rkttu.com")]
-[assembly: AssemblyProduct("Table Cloth")]
+[assembly: AssemblyProduct("TableCloth")]
 [assembly: AssemblyCopyright("(c) rkttu.com, 2021")]
-[assembly: AssemblyTrademark("Table Cloth")]
+[assembly: AssemblyTrademark("TableCloth")]
 [assembly: AssemblyCulture("")]
 
 #if DEBUG
