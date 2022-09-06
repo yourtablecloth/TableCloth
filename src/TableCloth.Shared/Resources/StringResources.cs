@@ -104,6 +104,9 @@ namespace TableCloth.Resources
     {
         internal static readonly string UnknownText = "알 수 없음";
 
+        internal static string LinkNamePostfix_ManyOthers(int count)
+            => $" 외 {count}개";
+
         internal static string InternetService_DisplayText(CatalogInternetService svc)
         {
             var defaultString = $"{svc.DisplayName} - {svc.Url}";
@@ -143,8 +146,6 @@ namespace TableCloth.Resources
                     return "기타";
             }
         }
-
-        internal static readonly string LinkNamePostfix_ManyOthers = " 외 {0}개";
     }
 
     // 오류 메시지에 표시될 문자열들
@@ -156,8 +157,9 @@ namespace TableCloth.Resources
         internal static readonly string Info_UpdateNotRequired
             = "최신 버전의 식탁보를 사용 중입니다.";
 
-        internal static readonly string Ask_RestartRequired
-            = "설정이 반영되려면 식탁보 프로그램을 다시 시작해야 합니다.\r\n지금 다시 시작하시겠습니까?";
+        internal static readonly string Ask_RestartRequired =
+            "설정이 반영되려면 식탁보 프로그램을 다시 시작해야 합니다." + Environment.NewLine +
+            "지금 다시 시작하시겠습니까?";
 
         internal static readonly string Error_Already_TableCloth_Running
             = "이미 식탁보 프로그램이 실행되고 있어요.";
@@ -168,8 +170,10 @@ namespace TableCloth.Resources
         internal static readonly string Error_Windows_Sandbox_Missing
             = "윈도우 샌드박스가 설치되어있지 않은 것 같습니다! 윈도우 기능 켜기/끄기에서 윈도우 샌드박스를 활성화해주세요.";
 
-        internal static readonly string Error_OpenDerAndKey_Simultaneously
-            = "공동 인증서 정보 파일 (der)과 공동 인증서 개인 키 파일 (key)을 각각 하나씩 선택해주세요.\r\n\r\nCtrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 빈 공간을 드래그하면 여러 파일을 선택할 수 있어요.";
+        internal static readonly string Error_OpenDerAndKey_Simultaneously =
+            "공동 인증서 정보 파일 (der)과 공동 인증서 개인 키 파일 (key)을 각각 하나씩 선택해주세요." + Environment.NewLine +
+            Environment.NewLine +
+            "Ctrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 빈 공간을 드래그하면 여러 파일을 선택할 수 있어요.";
 
         internal static readonly string Error_Windows_Sandbox_Already_Running
             = "식탁보를 통해서 윈도우 샌드박스를 실행하고 있는 것 같습니다. 사용을 마친 후 윈도우 샌드박스를 먼저 종료해주세요.";
@@ -188,8 +192,10 @@ namespace TableCloth.Resources
 
         internal static string Error_HostFolder_Unavailable(IEnumerable<string> unavailableDirectories)
         {
-            var directoryList = string.Join("\r\n", unavailableDirectories.Select(x => $"- {x}"));
-            return $"다음의 디렉터리를 이 컴퓨터에서 찾을 수 없어 샌드박스에서 연결할 때 제외합니다.\r\n\r\n{directoryList}";
+            var directoryList = string.Join(Environment.NewLine, unavailableDirectories.Select(x => $"- {x}"));
+            return "다음의 디렉터리를 이 컴퓨터에서 찾을 수 없어 샌드박스에서 연결할 때 제외합니다." + Environment.NewLine +
+                Environment.NewLine +
+                $"{directoryList}";
         }
 
         internal static readonly string Error_Windows_Explorer_Missing
@@ -218,7 +224,11 @@ namespace TableCloth.Resources
             var message = $"카탈로그 파일을 내려받지 못했습니다.";
 
             if (ex != null)
-                message = string.Concat(message, $"\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");
+            {
+                message = string.Concat(message, Environment.NewLine +
+                    Environment.NewLine +
+                    $"참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");
+            }
 
             return message;
         }
@@ -231,7 +241,11 @@ namespace TableCloth.Resources
             var message = $"애플리케이션 데이터 저장을 위한 디렉터리를 만들지 못했습니다.";
 
             if (ex != null)
-                message = string.Concat(message, $"\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");
+            {
+                message = string.Concat(message, Environment.NewLine
+                    + Environment.NewLine
+                    + $"참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");
+            }
 
             return message;
         }
@@ -296,7 +310,11 @@ namespace TableCloth.Resources
             var message = $"원격 웹 사이트로부터 Catalog.xml 파일을 불러올 수 없어 설치를 계속 진행할 수 없습니다.";
 
             if (ex != null)
-                message = string.Concat(message, $"\r\n\r\n참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");
+            {
+                message = string.Concat(message, Environment.NewLine +
+                    Environment.NewLine +
+                    $"참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");
+            }
 
             return message;
         }

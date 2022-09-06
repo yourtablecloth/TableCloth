@@ -589,7 +589,7 @@ namespace TableCloth.Implementations.WPF
                 linkName = firstSite.DisplayName;
 
                 if (_selectedSites.Count > 1)
-                    linkName += string.Format(StringResources.LinkNamePostfix_ManyOthers, _selectedSites.Count);
+                    linkName += StringResources.LinkNamePostfix_ManyOthers(_selectedSites.Count);
 
                 iconFilePath = Path.Combine(
                     ViewModel.SharedLocations.GetImageDirectoryPath(),
