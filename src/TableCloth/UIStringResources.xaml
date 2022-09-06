@@ -97,6 +97,10 @@
         식탁보 위에서 접속할 사이트들을 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요.
     </system:String>
 
+    <system:String x:Key="MainWindow_SearchFilter_Watermark">
+        찾고 싶은 웹 사이트 이름을 입력하세요. (예: 신한)
+    </system:String>
+
     <system:String x:Key="MainWindow_SelectSiteLabelText_Alt">
         카탈로그 파일을 가져오지 못했어요! 그래도 샌드박스는 대신 실행해드려요.
     </system:String>
@@ -118,7 +122,7 @@
     </system:String>
 
     <system:String x:Key="MainWindow_ShortcutButtonText">
-        바로가기 만들기
+        바로 가기 만들기
     </system:String>
 
     <system:String x:Key="MainWindow_LaunchSandboxButtonText">

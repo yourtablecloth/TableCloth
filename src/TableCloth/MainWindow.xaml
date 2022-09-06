@@ -33,7 +33,7 @@
                         <Style.Resources>
                             <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                                 <VisualBrush.Visual>
-                                    <Label Content="검색어를 입력하세요 ex) 신한은행" Foreground="LightGray" />
+                                    <Label Content="{StaticResource MainWindow_SearchFilter_Watermark}" Foreground="LightGray" />
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Style.Resources>
