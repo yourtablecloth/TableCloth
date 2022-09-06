@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using TableCloth.Resources;
 using WixSharp;
 
@@ -60,7 +61,29 @@ namespace TableCloth.SetupBuilder
             }
 
             var project = new ManagedProject("TableCloth");
-            project.Package.AttributesDefinition = "Platform=x64";
+
+            switch (RuntimeInformation.ProcessArchitecture)
+            {
+                case Architecture.Arm64:
+                    project.Package.AttributesDefinition = "Platform=arm64";
+                    break;
+
+                case Architecture.Arm:
+                    project.Package.AttributesDefinition = "Platform=arm";
+                    break;
+
+                case Architecture.X64:
+                    project.Package.AttributesDefinition = "Platform=x64";
+                    break;
+
+                case Architecture.X86:
+                    project.Package.AttributesDefinition = "Platform=x86";
+                    break;
+
+                default:
+                    break;
+            }
+
             project.Encoding = System.Text.Encoding.UTF8;
             project.OutFileName = "TableCloth";
             project.LicenceFile = "License.rtf";
