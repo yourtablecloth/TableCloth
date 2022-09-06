@@ -497,6 +497,7 @@ namespace TableCloth.Implementations.WPF
             var options = new List<string>();
             var targetPath = Process.GetCurrentProcess().MainModule.FileName;
             var linkName = StringResources.AppName;
+
             if (ViewModel.EnableMicrophone)
                 options.Add(StringResources.TableCloth_Switch_EnableMicrophone);
             if (ViewModel.EnableWebCam)
@@ -513,14 +514,21 @@ namespace TableCloth.Implementations.WPF
                 options.Add(StringResources.TableCloth_Switch_EnableIEMode);
             if (ViewModel.MapNpkiCert)
                 options.Add(StringResources.Tablecloth_Switch_EnableCert);
-            if (_selectedSites.Count > 0) {
-                options.Add(_selectedSites[0].Id);
-                linkName = _selectedSites[0].Id;
+
+            var firstSite = _selectedSites.FirstOrDefault();
+
+            if (firstSite != null)
+            {
+                options.Add(firstSite.Id);
+                linkName = firstSite.DisplayName;
+
+                if (_selectedSites.Count > 1)
+                    linkName += string.Format(StringResources.LinkNamePostfix_ManyOthers, _selectedSites.Count);
             }
 
             var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             var fullPath = Path.Combine(desktopPath, linkName + ".lnk");
-            for ( int i = 1; File.Exists(fullPath); ++i)
+            for (int i = 1; File.Exists(fullPath); ++i)
                 fullPath = Path.Combine(desktopPath, linkName + $"({i}).lnk");
 
             try
@@ -534,7 +542,7 @@ namespace TableCloth.Implementations.WPF
             }
             catch
             {
-                ViewModel.AppMessageBox.DisplayInfo(this, StringResources.info_ShortcutFailed);
+                ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Error_ShortcutFailed);
                 return;
             }
 

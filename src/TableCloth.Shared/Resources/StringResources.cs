@@ -143,6 +143,8 @@ namespace TableCloth.Resources
                     return "기타";
             }
         }
+
+        internal static readonly string LinkNamePostfix_ManyOthers = " 외 {0}개";
     }
 
     // 오류 메시지에 표시될 문자열들
@@ -237,11 +239,11 @@ namespace TableCloth.Resources
         internal static readonly string Error_Cannot_Run_SysInfo =
             "시스템 정보 유틸리티를 실행할 수 없습니다.";
 
-        internal static readonly string Info_ShortcutSuccess
-            = "바로가기를 생성했습니다.";
-
-        internal static readonly string info_ShortcutFailed
-            = "바로가기 생성에 실패했습니다.";
+        internal static readonly string Error_ShortcutFailed =
+            "바로 가기 생성에 실패했습니다.";
+        
+        internal static readonly string Info_ShortcutSuccess =
+            "바탕 화면에 바로 가기를 생성했습니다.";
 
     }
 
