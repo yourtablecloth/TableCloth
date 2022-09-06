@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
@@ -224,6 +225,47 @@ namespace Hostess
                             ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
                             ieModeKey.SetValue("InternetExplorerIntegrationSiteList", StringResources.IEModePolicyXmlUrl, RegistryValueKind.String);
                         }
+
+                        // msedge.exe 파일 경로를 유추하고, Policy를 반영하기 위해 잠시 실행했다가 종료하는 동작을 추가
+                        var msedgeKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe", false);
+                        var msedgePath = default(string);
+
+                        if (msedgeKey != null)
+                        {
+                            using (msedgeKey)
+                            {
+                                msedgePath = (string)msedgeKey.GetValue(null, null);
+                            }
+                        }
+
+                        if (!File.Exists(msedgePath))
+                        {
+                            msedgePath = Path.Combine(
+                                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                                "Microsoft", "Edge", "Application", "msedge.exe");
+                        }
+
+                        if (File.Exists(msedgePath))
+                        {
+                            var msedgePsi = new ProcessStartInfo(msedgePath, "about:blank")
+                            {
+                                UseShellExecute = false,
+                                WindowStyle = ProcessWindowStyle.Minimized,
+                            };
+
+                            using (var msedgeProcess = Process.Start(msedgePsi))
+                            {
+                                var tcs = new TaskCompletionSource<int>();
+                                msedgeProcess.EnableRaisingEvents = true;
+                                msedgeProcess.Exited += (_sender, _e) =>
+                                {
+                                    tcs.SetResult(msedgeProcess.ExitCode);
+                                };
+                                await Task.Delay(TimeSpan.FromSeconds(1.5d));
+                                msedgeProcess.CloseMainWindow();
+                                await tcs.Task;
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -334,11 +376,8 @@ namespace Hostess
 
                 if (!hasAnyFailure)
                 {
-                    var hasAnySession = false;
-
                     if (App.Current.GetHasEveryonesPrinterEnabled())
                     {
-                        hasAnySession = true;
                         Process.Start(new ProcessStartInfo(StringResources.EveryonesPrinterUrl)
                         {
                             UseShellExecute = true,
@@ -348,7 +387,6 @@ namespace Hostess
 
                     if (App.Current.GetHasAdobeReaderEnabled())
                     {
-                        hasAnySession = true;
                         Process.Start(new ProcessStartInfo(StringResources.AdobeReaderUrl)
                         {
                             UseShellExecute = true,
@@ -358,26 +396,12 @@ namespace Hostess
 
                     if (App.Current.GetHasHancomOfficeViewerEnabled())
                     {
-                        hasAnySession = true;
                         Process.Start(new ProcessStartInfo(StringResources.HancomOfficeViewerUrl)
                         {
                             UseShellExecute = true,
                             WindowStyle = ProcessWindowStyle.Maximized,
                         });
                     }
-
-                    if (!hasAnySession)
-                    {
-                        hasAnySession = true;
-                        Process.Start(new ProcessStartInfo("https://www.naver.com/")
-                        {
-                            UseShellExecute = true,
-                            WindowStyle = ProcessWindowStyle.Maximized,
-                        });
-                    }
-
-                    if (hasAnySession)
-                        await Task.Delay(TimeSpan.FromSeconds(3d));
 
                     var targets = Application.Current.GetInstallSites();
 
