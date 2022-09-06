@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -88,22 +88,87 @@ namespace TableCloth.Implementations.WPF
             {
                 var targetFilePath = Path.Combine(imageDirectoryPath, eachSite.Id + ".png");
 
-                try
+                if (!File.Exists(targetFilePath))
                 {
-                    if (File.Exists(targetFilePath))
-                        continue;
+                    try
+                    {
+                        var targetUrl = $"{StringResources.ImageUrlPrefix}/{eachSite.Category}/{eachSite.Id}.png";
+                        var imageStream = await httpClient.GetStreamAsync(targetUrl);
 
-                    var targetUrl = $"{StringResources.ImageUrlPrefix}/{eachSite.Category}/{eachSite.Id}.png";
-                    var imageStream = await httpClient.GetStreamAsync(targetUrl);
-
-                    using var fileStream = File.OpenWrite(targetFilePath);
-                    await imageStream.CopyToAsync(fileStream);
+                        using var fileStream = File.OpenWrite(targetFilePath);
+                        await imageStream.CopyToAsync(fileStream);
+                    }
+                    catch
+                    {
+                        try { File.WriteAllBytes(targetFilePath, Properties.Resources.SandboxIcon); }
+                        catch { }
+                    }
                 }
-                catch
+
+                var targetIconFilePath = Path.Combine(
+                    Path.GetDirectoryName(targetFilePath),
+                    Path.GetFileNameWithoutExtension(targetFilePath) + ".ico");
+
+                if (!File.Exists(targetIconFilePath))
                 {
-                    try { File.WriteAllBytes(targetFilePath, Properties.Resources.SandboxIcon); }
-                    catch { }
+                    try
+                    {
+                        await File.WriteAllBytesAsync(targetIconFilePath, ConvertImageToIcon(targetFilePath));
+                    }
+                    catch
+                    {
+                        var memStream = new MemoryStream();
+                        Properties.Resources.SandboxIconWin32.Save(memStream);
+                        memStream.Seek(0L, SeekOrigin.Begin);
+
+                        try { File.WriteAllBytes(targetIconFilePath, memStream.ToArray()); }
+                        catch { }
+                    }
                 }
+            }
+        }
+
+        // https://stackoverflow.com/questions/21387391/how-to-convert-an-image-to-an-icon-without-losing-transparency
+        private static byte[] ConvertImageToIcon(string imageFilePath)
+        {
+            using (var ms = new MemoryStream())
+            using (var bw = new BinaryWriter(ms))
+            using (var fs = File.OpenRead(imageFilePath))
+            using (var img = System.Drawing.Image.FromStream(fs))
+            {
+                // Header
+                bw.Write((short)0);   // 0 : reserved
+                bw.Write((short)1);   // 2 : 1=ico, 2=cur
+                bw.Write((short)1);   // 4 : number of images
+
+                // Image directory
+                var w = img.Width;
+                if (w >= 256) w = 0;
+                bw.Write((byte)w);    // 0 : width of image
+
+                var h = img.Height;
+                if (h >= 256) h = 0;
+                bw.Write((byte)h);    // 1 : height of image
+
+                bw.Write((byte)0);    // 2 : number of colors in palette
+                bw.Write((byte)0);    // 3 : reserved
+                bw.Write((short)0);   // 4 : number of color planes
+                bw.Write((short)0);   // 6 : bits per pixel
+
+                var sizeHere = ms.Position;
+                bw.Write(0);     // 8 : image size
+
+                var start = (int)ms.Position + 4;
+                bw.Write(start);      // 12: offset of image data
+
+                // Image data
+                img.Save(ms, ImageFormat.Png);
+                var imageSize = (int)ms.Position - start;
+                ms.Seek(sizeHere, SeekOrigin.Begin);
+                bw.Write(imageSize);
+                ms.Seek(0L, SeekOrigin.Begin);
+
+                return ms.ToArray();
             }
         }
 
@@ -516,6 +581,7 @@ namespace TableCloth.Implementations.WPF
                 options.Add(StringResources.Tablecloth_Switch_EnableCert);
 
             var firstSite = _selectedSites.FirstOrDefault();
+            var iconFilePath = default(string);
 
             if (firstSite != null)
             {
@@ -524,12 +590,20 @@ namespace TableCloth.Implementations.WPF
 
                 if (_selectedSites.Count > 1)
                     linkName += string.Format(StringResources.LinkNamePostfix_ManyOthers, _selectedSites.Count);
+
+                iconFilePath = Path.Combine(
+                    ViewModel.SharedLocations.GetImageDirectoryPath(),
+                    $"{firstSite.Id}.ico");
+
+                if (!File.Exists(iconFilePath))
+                    iconFilePath = null;
             }
 
             var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             var fullPath = Path.Combine(desktopPath, linkName + ".lnk");
+
             for (int i = 1; File.Exists(fullPath); ++i)
-                fullPath = Path.Combine(desktopPath, linkName + $"({i}).lnk");
+                fullPath = Path.Combine(desktopPath, linkName + $" ({i}).lnk");
 
             try
             {
@@ -537,6 +611,10 @@ namespace TableCloth.Implementations.WPF
                 dynamic shell = Activator.CreateInstance(shellType);
                 dynamic shortcut = shell.CreateShortcut(fullPath);
                 shortcut.TargetPath = targetPath;
+
+                if (iconFilePath != null && File.Exists(iconFilePath))
+                    shortcut.IconLocation = iconFilePath;
+
                 shortcut.Arguments = String.Join(' ', options.ToArray());
                 shortcut.Save();
             }
