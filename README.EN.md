@@ -4,7 +4,7 @@
 * [English Readme](README.EN.md)
 
 [![Build Status](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/publish-msi.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
-[![Downloads](https://img.shields.io/github/downloads/yourtablecloth/TableCloth/total?label=%EC%8B%9D%ED%83%81%EB%B3%B4%20%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C)](https://github.com/yourtablecloth/TableCloth/releases)
+[![Downloads](https://img.shields.io/github/v/release/yourtablecloth/tablecloth)](https://github.com/yourtablecloth/TableCloth/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 
 ![Main Screen](docs/images/TableCloth.png)
@@ -35,4 +35,4 @@ Installation and usage guide are introduced in [Tablecloth Introduction Page(KO)
 
 ## Copyrights
 
-![Tablecloth icon](https://icons8.com/icon/7CLTCx06RSAB/tablecloth) by ![Icons8](https://icons8.com)
+![Tablecloth icon](https://img.icons8.com/color/96/000000/tablecloth.png) by [Icons8](https://icons8.com)

@@ -43,4 +43,4 @@ GitHub Sponsorship을 통하여 후원해주시면 지속적으로 프로젝트�
 
 ## 저작권 정보
 
-![Tablecloth icon](https://icons8.com/icon/7CLTCx06RSAB/tablecloth) by ![Icons8](https://icons8.com)
+![Tablecloth icon](https://img.icons8.com/color/96/000000/tablecloth.png) by [Icons8](https://icons8.com)
