@@ -29,10 +29,6 @@ Installation and usage guide are introduced in [Tablecloth Introduction Page(KO)
 * Windows 10 Pro, Edu and Enterprise
 * Windows Sandbox activated
 
-## Sponsor
-
-![MAUMIN](docs/images/maumin.png)
-
 ## Copyrights
 
 ![Tablecloth icon](https://img.icons8.com/color/96/000000/tablecloth.png) by [Icons8](https://icons8.com)

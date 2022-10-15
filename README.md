@@ -37,10 +37,6 @@
 
 GitHub Sponsorship을 통하여 후원해주시면 지속적으로 프로젝트를 진행하는데에 큰 도움이 됩니다. [프로젝트 후원하러 가기](https://github.com/sponsors/yourtablecloth)
 
-### 후원해주신 기업
-
-![마음인](docs/images/maumin.png)
-
 ## 저작권 정보
 
 ![Tablecloth icon](https://img.icons8.com/color/96/000000/tablecloth.png) by [Icons8](https://icons8.com)
