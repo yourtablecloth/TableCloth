@@ -85,6 +85,7 @@ namespace TableCloth.Implementations.WPF
                         var inputWindow = new InputPasswordWindow()
                         {
                             PfxFilePath = pfxFilePath,
+                            Owner = this,
                         };
 
                         var inputPwdResult = inputWindow.ShowDialog();
