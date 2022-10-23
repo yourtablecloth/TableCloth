@@ -231,7 +231,7 @@ namespace TableCloth.Implementations.WPF
 
             if (ViewModel.ShouldNotifyDisclaimer)
             {
-                var disclaimerWindow = new DisclaimerWindow();
+                var disclaimerWindow = new DisclaimerWindow() { Owner = this };
                 var result = disclaimerWindow.ShowDialog();
 
                 if (result.HasValue && result.Value)
