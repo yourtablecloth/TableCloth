@@ -232,7 +232,7 @@ namespace Hostess
             int securityInformation,
             [In] byte[] securityDescriptor);
 
-        public static void PreventProcessTermination(string service)
+        public static void PreventServiceProcessTermination(string service)
         {
             var sc = new ServiceController(service, ".");
 

@@ -130,11 +130,29 @@ namespace Hostess
 
             VerifyWindowsContainerEnvironment();
 
-            try { ProtectTermService.PreventProcessTermination("TermService"); }
-            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+            try { ProtectTermService.PreventServiceProcessTermination("TermService"); }
+            catch (AggregateException aex)
+            {
+                MessageBox.Show(this, $"{aex.InnerException.Message}", StringResources.TitleText_Error,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"{ex.Message}", StringResources.TitleText_Error,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+            }
 
             try { ProtectTermService.PreventServiceStop("TermService", Environment.UserName); }
-            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+            catch (AggregateException aex)
+            {
+                MessageBox.Show(this, $"{aex.InnerException.Message}", StringResources.TitleText_Error,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"{ex.Message}", StringResources.TitleText_Error,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+            }
 
             SetDesktopWallpaper();
 
