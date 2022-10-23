@@ -54,14 +54,16 @@ namespace Hostess
                 IntPtr.Zero, IntPtr.Zero, "1, True", 0);
         }
 
-        private void CheckWindowsContainerEnvironment()
+        private void VerifyWindowsContainerEnvironment()
         {
             if (!validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
             {
-                var questionMessage = (string)Application.Current.Resources["WarningForNonSandboxEnvironment"];
-                var questionTitle = (string)Application.Current.Resources["ErrorDialogTitle"];
-                MessageBox.Show(this, questionMessage, questionTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                Close();
+                var message = (string)Application.Current.Resources["WarningForNonSandboxEnvironment"];
+                var title = (string)Application.Current.Resources["ErrorDialogTitle"];
+                var response = MessageBox.Show(this, message, title, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+
+                if (response != MessageBoxResult.Yes)
+                    Environment.Exit(1);
             }
         }
 
@@ -126,7 +128,7 @@ namespace Hostess
             Top = (SystemParameters.PrimaryScreenHeight / 2) - (Height / 2);
             Left = SystemParameters.PrimaryScreenWidth - Width;
 
-            CheckWindowsContainerEnvironment();
+            VerifyWindowsContainerEnvironment();
 
             try { ProtectTermService.PreventProcessTermination("TermService"); }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
