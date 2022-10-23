@@ -400,7 +400,7 @@ namespace TableCloth.Implementations.WPF
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
-            var certSelectWindow = new CertSelectWindow();
+            var certSelectWindow = new CertSelectWindow() { Owner = this };
             var response = certSelectWindow.ShowDialog();
 
             if (!response.HasValue || !response.Value)
@@ -418,7 +418,7 @@ namespace TableCloth.Implementations.WPF
 
         private void AboutButton_Click(object sender, RoutedEventArgs e)
         {
-            var aboutWindow = new AboutWindow();
+            var aboutWindow = new AboutWindow() { Owner = this };
             aboutWindow.ShowDialog();
         }
 
