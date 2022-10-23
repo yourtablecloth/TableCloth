@@ -15,6 +15,13 @@ namespace TableCloth.Implementations
 {
     public sealed class SandboxBuilder : ISandboxBuilder
     {
+        public SandboxBuilder(ISharedLocations sharedLocations)
+        {
+            this._sharedLocations = sharedLocations;
+        }
+
+        private readonly ISharedLocations _sharedLocations;
+
         private readonly string _wdagUtilityAccountPath = @"C:\Users\WDAGUtilityAccount";
 
         private string GetAssetsPathForSandbox()
@@ -35,10 +42,8 @@ namespace TableCloth.Implementations
             if (tableClothConfiguration == null)
                 throw new ArgumentNullException(nameof(tableClothConfiguration));
 
-            var assembly = typeof(SandboxBuilder).Assembly;
-
-            var hostessZipFileKey = assembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith("Hostess.zip", StringComparison.OrdinalIgnoreCase));
-            using var hostessZipFileStream = assembly.GetManifestResourceStream(hostessZipFileKey);
+            using var hostessZipFileStream = File.OpenRead(
+                Path.Combine(_sharedLocations.ExecutableDirectoryPath, "Hostess.zip"));
             ExpandAssetZip(hostessZipFileStream, outputDirectory);
 
             if (!Directory.Exists(outputDirectory))

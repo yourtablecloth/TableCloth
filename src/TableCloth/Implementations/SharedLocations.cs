@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using TableCloth.Contracts;
 
@@ -23,5 +24,11 @@ namespace TableCloth.Implementations
 
         public string GetImageDirectoryPath()
             => GetDataPath("images");
+
+        public string ExecutableFilePath
+            => Process.GetCurrentProcess().MainModule.FileName;
+
+        public string ExecutableDirectoryPath
+            => Path.GetDirectoryName(ExecutableFilePath);
     }
 }

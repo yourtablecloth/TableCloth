@@ -11,5 +11,9 @@
         string GetTempPath();
 
         string GetImageDirectoryPath();
+
+        string ExecutableFilePath { get; }
+
+        string ExecutableDirectoryPath { get; }
     }
 }
