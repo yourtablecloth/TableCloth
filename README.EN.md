@@ -19,7 +19,7 @@ Installation and usage guide are introduced in [Tablecloth Introduction Page(KO)
 
 ## Build Environment
 
-* Visual Studio 2019 or up to
+* Visual Studio 2022 or up to
 * .NET 6.0 SDK
 * .NET Framework 4.8 SDK
 
