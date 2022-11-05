@@ -6,6 +6,8 @@
 [![Build Status](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/publish-msi.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
 [![Downloads](https://img.shields.io/github/v/release/yourtablecloth/tablecloth)](https://github.com/yourtablecloth/TableCloth/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
+[![Chocolatey](https://img.shields.io/badge/chocolatey-install-orange)](https://community.chocolatey.org/packages/tablecloth)
+[![Winget](https://img.shields.io/badge/winget-install-purple)](https://winstall.app/apps/TableClothProject.TableCloth)
 
 ![Main Screen](docs/images/TableCloth.png)
 
