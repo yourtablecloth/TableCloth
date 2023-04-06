@@ -74,21 +74,15 @@ namespace TableCloth.Implementations
 
         public void RunSandbox(IAppUserInterface appUserInteface, string sandboxOutputDirectory, string wsbFilePath)
         {
-            var wsbExecPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.System),
-                "WindowsSandbox.exe");
-
             if (!ValidateSandboxSpecFile(wsbFilePath, out string reason))
             {
                 _appMessageBox.DisplayError(null, reason, true);
                 return;
             }
 
-            var process = new Process()
-            {
-                EnableRaisingEvents = true,
-                StartInfo = new ProcessStartInfo(wsbExecPath, wsbFilePath) { UseShellExecute = false, },
-            };
+            var process = new Process();
+            process.StartInfo.FileName = "cmd";
+            process.StartInfo.Arguments = "/c start \"\" \"" + wsbFilePath + "\"";
 
             if (!process.Start())
             {
