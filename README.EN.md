@@ -1,5 +1,7 @@
 # TableCloth
 
+> Notice: Due to inflation and changes in Authenticode acceptance policies, the cost of renewing Authenticode certificates has become too high and we are unable to apply Codesign certificates to our application binaries. Please keep this in mind when installing and running your application, and we apologize for any inconvenience this may cause.
+
 * [Korean Readme](README.md)
 * [English Readme](README.EN.md)
 
