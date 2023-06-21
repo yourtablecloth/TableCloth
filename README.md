@@ -1,5 +1,7 @@
 # 식탁보 (TableCloth)
 
+> 알립니다: 물가 상승과 Authenticode 수령 정책 변경으로 Authenticode 인증서 갱신 비용이 너무 높아져서 Codesign 인증서를 애플리케이션 바이너리에 적용하지 못하고 있습니다. 애플리케이션 설치 및 실행 시 이 점을 참고해주시면 감사하겠습니다. 불편을 드려 죄송합니다.
+
 * [한국어 소개](README.md)
 * [영어 (English) 소개](README.EN.md)
 
