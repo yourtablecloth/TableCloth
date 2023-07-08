@@ -204,19 +204,19 @@ namespace TableCloth.Implementations.WPF
                     ThemesController.CurrentTheme = ThemeTypes.ColourfulDark;
             }
 
-            var currentConfig = ViewModel.Preferences.LoadConfig();
+            var currentConfig = ViewModel.Preferences.LoadPreferences();
 
             if (currentConfig == null)
-                currentConfig = ViewModel.Preferences.GetDefaultConfig();
+                currentConfig = ViewModel.Preferences.GetDefaultPreferences();
 
             ViewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
             ViewModel.EnableMicrophone = currentConfig.UseAudioRedirection;
             ViewModel.EnableWebCam = currentConfig.UseVideoRedirection;
             ViewModel.EnablePrinters = currentConfig.UsePrinterRedirection;
-            ViewModel.EnableEveryonesPrinter = currentConfig.InstallEveryonesPrinter;
-            ViewModel.EnableAdobeReader = currentConfig.InstallAdobeReader;
-            ViewModel.EnableHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
-            ViewModel.EnableRaiDrive = currentConfig.InstallRaiDrive;
+            ViewModel.InstallEveryonesPrinter = currentConfig.InstallEveryonesPrinter;
+            ViewModel.InstallAdobeReader = currentConfig.InstallAdobeReader;
+            ViewModel.InstallHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
+            ViewModel.InstallRaiDrive = currentConfig.InstallRaiDrive;
             ViewModel.EnableInternetExplorerMode = currentConfig.EnableInternetExplorerMode;
             ViewModel.LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
@@ -269,14 +269,14 @@ namespace TableCloth.Implementations.WPF
                     certPrivateKeyPath = args[Math.Min(args.Length - 1, ++i)];
                 else if (string.Equals(args[i], StringResources.TableCloth_Switch_CertPublicKey, StringComparison.OrdinalIgnoreCase))
                     certPublicKeyPath = args[Math.Min(args.Length - 1, ++i)];
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableEveryonesPrinter, StringComparison.OrdinalIgnoreCase))
-                    config.EnableEveryonesPrinter = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableAdobeReader, StringComparison.OrdinalIgnoreCase))
-                    config.EnableAdobeReader = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableHancomOfficeViewer, StringComparison.OrdinalIgnoreCase))
-                    config.EnableHancomOfficeViewer = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableRaiDrive, StringComparison.OrdinalIgnoreCase))
-                    config.EnableRaiDrive = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallEveryonesPrinter, StringComparison.OrdinalIgnoreCase))
+                    config.InstallEveryonesPrinter = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallAdobeReader, StringComparison.OrdinalIgnoreCase))
+                    config.InstallAdobeReader = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallHancomOfficeViewer, StringComparison.OrdinalIgnoreCase))
+                    config.InstallHancomOfficeViewer = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallRaiDrive, StringComparison.OrdinalIgnoreCase))
+                    config.InstallRaiDrive = true;
                 else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableIEMode, StringComparison.OrdinalIgnoreCase))
                     config.EnableInternetExplorerMode = true;
                 else if (string.Equals(args[i], StringResources.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase))
@@ -346,10 +346,10 @@ namespace TableCloth.Implementations.WPF
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var currentConfig = ViewModel.Preferences.LoadConfig();
+            var currentConfig = ViewModel.Preferences.LoadPreferences();
 
             if (currentConfig == null)
-                currentConfig = ViewModel.Preferences.GetDefaultConfig();
+                currentConfig = ViewModel.Preferences.GetDefaultPreferences();
 
             switch (e.PropertyName)
             {
@@ -374,20 +374,20 @@ namespace TableCloth.Implementations.WPF
                     currentConfig.UsePrinterRedirection = ViewModel.EnablePrinters;
                     break;
 
-                case nameof(MainWindowViewModel.EnableEveryonesPrinter):
-                    currentConfig.InstallEveryonesPrinter = ViewModel.EnableEveryonesPrinter;
+                case nameof(MainWindowViewModel.InstallEveryonesPrinter):
+                    currentConfig.InstallEveryonesPrinter = ViewModel.InstallEveryonesPrinter;
                     break;
 
-                case nameof(MainWindowViewModel.EnableAdobeReader):
-                    currentConfig.InstallAdobeReader = ViewModel.EnableAdobeReader;
+                case nameof(MainWindowViewModel.InstallAdobeReader):
+                    currentConfig.InstallAdobeReader = ViewModel.InstallAdobeReader;
                     break;
 
-                case nameof(MainWindowViewModel.EnableHancomOfficeViewer):
-                    currentConfig.InstallHancomOfficeViewer = ViewModel.EnableHancomOfficeViewer;
+                case nameof(MainWindowViewModel.InstallHancomOfficeViewer):
+                    currentConfig.InstallHancomOfficeViewer = ViewModel.InstallHancomOfficeViewer;
                     break;
 
-                case nameof(MainWindowViewModel.EnableRaiDrive):
-                    currentConfig.InstallRaiDrive = ViewModel.EnableRaiDrive;
+                case nameof(MainWindowViewModel.InstallRaiDrive):
+                    currentConfig.InstallRaiDrive = ViewModel.InstallRaiDrive;
                     break;
 
                 case nameof(MainWindowViewModel.EnableInternetExplorerMode):
@@ -402,7 +402,7 @@ namespace TableCloth.Implementations.WPF
                     return;
             }
 
-            ViewModel.Preferences.SaveConfig(currentConfig);
+            ViewModel.Preferences.SavePreferences(currentConfig);
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -448,10 +448,10 @@ namespace TableCloth.Implementations.WPF
                 EnableMicrophone = ViewModel.EnableMicrophone,
                 EnableWebCam = ViewModel.EnableWebCam,
                 EnablePrinters = ViewModel.EnablePrinters,
-                EnableEveryonesPrinter = ViewModel.EnableEveryonesPrinter,
-                EnableAdobeReader = ViewModel.EnableAdobeReader,
-                EnableHancomOfficeViewer = ViewModel.EnableHancomOfficeViewer,
-                EnableRaiDrive = ViewModel.EnableRaiDrive,
+                InstallEveryonesPrinter = ViewModel.InstallEveryonesPrinter,
+                InstallAdobeReader = ViewModel.InstallAdobeReader,
+                InstallHancomOfficeViewer = ViewModel.InstallHancomOfficeViewer,
+                InstallRaiDrive = ViewModel.InstallRaiDrive,
                 EnableInternetExplorerMode = ViewModel.EnableInternetExplorerMode,
                 Companions = ViewModel.CatalogDocument.Companions,
                 Services = _selectedSites,
@@ -577,14 +577,14 @@ namespace TableCloth.Implementations.WPF
                 options.Add(StringResources.TableCloth_Switch_EnableCamera);
             if (ViewModel.EnablePrinters)
                 options.Add(StringResources.TableCloth_Switch_EnablePrinter);
-            if (ViewModel.EnableEveryonesPrinter)
-                options.Add(StringResources.TableCloth_Switch_EnableEveryonesPrinter);
-            if (ViewModel.EnableAdobeReader)
-                options.Add(StringResources.TableCloth_Switch_EnableAdobeReader);
-            if (ViewModel.EnableHancomOfficeViewer)
-                options.Add(StringResources.TableCloth_Switch_EnableHancomOfficeViewer);
-            if (ViewModel.EnableRaiDrive)
-                options.Add(StringResources.TableCloth_Switch_EnableRaiDrive);
+            if (ViewModel.InstallEveryonesPrinter)
+                options.Add(StringResources.TableCloth_Switch_InstallEveryonesPrinter);
+            if (ViewModel.InstallAdobeReader)
+                options.Add(StringResources.TableCloth_Switch_InstallAdobeReader);
+            if (ViewModel.InstallHancomOfficeViewer)
+                options.Add(StringResources.TableCloth_Switch_InstallHancomOfficeViewer);
+            if (ViewModel.InstallRaiDrive)
+                options.Add(StringResources.TableCloth_Switch_InstallRaiDrive);
             if (ViewModel.EnableInternetExplorerMode)
                 options.Add(StringResources.TableCloth_Switch_EnableIEMode);
             if (ViewModel.MapNpkiCert)

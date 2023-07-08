@@ -151,10 +151,10 @@
                             <RowDefinition Height="30" />
                             <RowDefinition Height="30" />
                         </Grid.RowDefinitions>
-                        <CheckBox Grid.Row="0" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseEveryonesPrinter}" IsChecked="{Binding Path='EnableEveryonesPrinter'}" />
-                        <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseAdobeReader}" IsChecked="{Binding Path='EnableAdobeReader'}" />
-                        <CheckBox Grid.Row="2" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseHancomOfficeViewer}" IsChecked="{Binding Path='EnableHancomOfficeViewer'}" />
-                        <CheckBox Grid.Row="3" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseRaiDrive}" IsChecked="{Binding Path='EnableRaiDrive'}" />
+                        <CheckBox Grid.Row="0" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallEveryonesPrinter}" IsChecked="{Binding Path='EnableEveryonesPrinter'}" />
+                        <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallAdobeReader}" IsChecked="{Binding Path='EnableAdobeReader'}" />
+                        <CheckBox Grid.Row="2" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallHancomOfficeViewer}" IsChecked="{Binding Path='EnableHancomOfficeViewer'}" />
+                        <CheckBox Grid.Row="3" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallRaiDrive}" IsChecked="{Binding Path='EnableRaiDrive'}" />
                         <CheckBox Grid.Row="4" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
                     </Grid>
                 </TabItem>

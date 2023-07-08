@@ -33,22 +33,22 @@ namespace TableCloth.Models.Configuration
         /// <summary>
         /// 모두의 프린터 설치를 샌드박스 시작 후 자동 실행할 지 여부입니다.
         /// </summary>
-        public bool EnableEveryonesPrinter { get; set; }
+        public bool InstallEveryonesPrinter { get; set; }
 
         /// <summary>
         /// Adobe Reader 설치를 샌드박스 시작 후 자동 실행할 지 여부입니다.
         /// </summary>
-        public bool EnableAdobeReader { get; set; }
+        public bool InstallAdobeReader { get; set; }
         
         /// <summary>
         /// 한컴오피스 뷰어 설치를 샌드박스 시작 후 자동 실행할 지 여부입니다.
         /// </summary>
-        public bool EnableHancomOfficeViewer { get; set; }
+        public bool InstallHancomOfficeViewer { get; set; }
 
         /// <summary>
         /// RaiDrive 설치를 샌드박스 시작 후 자동 실행할 지 여부입니다.
         /// </summary>
-        public bool EnableRaiDrive { get; set; }
+        public bool InstallRaiDrive { get; set; }
 
         /// <summary>
         /// Internet Explorer 호환성 모드를 사용할 것인지 여부입니다.

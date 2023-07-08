@@ -66,37 +66,37 @@ namespace Hostess
             where TApplication : Application
             => InitAppProperty(app, "InstallSites", value);
 
-        public static bool GetHasEveryonesPrinterEnabled<TApplication>(this TApplication app)
+        public static bool WillInstallEveryonesPrinter<TApplication>(this TApplication app)
             where TApplication : Application
-            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, "HasEveryonesPrinterEnabled"));
+            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, nameof(WillInstallEveryonesPrinter)));
 
-        public static void InitHasEveryonesPrinterEnabled<TApplication>(this TApplication app, bool value)
+        public static void InitWillInstallEveryonesPrinter<TApplication>(this TApplication app, bool value)
             where TApplication : Application
-            => InitAppProperty(app, "HasEveryonesPrinterEnabled", value ? Boolean.TrueString : Boolean.FalseString);
+            => InitAppProperty(app, nameof(WillInstallEveryonesPrinter), value ? Boolean.TrueString : Boolean.FalseString);
 
-        public static bool GetHasAdobeReaderEnabled<TApplication>(this TApplication app)
+        public static bool WillInstallAdobeReader<TApplication>(this TApplication app)
             where TApplication : Application
-            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, "HasAdobeReaderEnabled"));
+            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, nameof(WillInstallAdobeReader)));
 
-        public static void InitHasAdobeReaderEnabled<TApplication>(this TApplication app, bool value)
+        public static void InitWillInstallAdobeReader<TApplication>(this TApplication app, bool value)
             where TApplication : Application
-            => InitAppProperty(app, "HasAdobeReaderEnabled", value ? Boolean.TrueString : Boolean.FalseString);
+            => InitAppProperty(app, nameof(WillInstallAdobeReader), value ? Boolean.TrueString : Boolean.FalseString);
 
-        public static bool GetHasHancomOfficeViewerEnabled<TApplication>(this TApplication app)
+        public static bool WillInstallHancomOfficeViewer<TApplication>(this TApplication app)
             where TApplication : Application
-            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, "HasHancomOfficeViewerEnabled"));
+            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, nameof(WillInstallHancomOfficeViewer)));
 
-        public static void InitHasHancomOfficeViewerEnabled<TApplication>(this TApplication app, bool value)
+        public static void InitWillInstallHancomOfficeViewer<TApplication>(this TApplication app, bool value)
             where TApplication : Application
-            => InitAppProperty(app, "HasHancomOfficeViewerEnabled", value ? Boolean.TrueString : Boolean.FalseString);
+            => InitAppProperty(app, nameof(WillInstallHancomOfficeViewer), value ? Boolean.TrueString : Boolean.FalseString);
 
-        public static bool GetHasRaiDriveEnabled<TApplication>(this TApplication app)
+        public static bool WillInstallRaiDrive<TApplication>(this TApplication app)
             where TApplication : Application
-            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, "HasRaiDriveEnabled"));
+            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, nameof(WillInstallRaiDrive)));
 
-        public static void InitHasRaiDriveEnabled<TApplication>(this TApplication app, bool value)
+        public static void InitWillInstallRaiDrive<TApplication>(this TApplication app, bool value)
             where TApplication : Application
-            => InitAppProperty(app, "HasRaiDriveEnabled", value ? Boolean.TrueString : Boolean.FalseString);
+            => InitAppProperty(app, nameof(WillInstallRaiDrive), value ? Boolean.TrueString : Boolean.FalseString);
 
         public static bool GetHasIEModeEnabled<TApplication>(this TApplication app)
             where TApplication : Application

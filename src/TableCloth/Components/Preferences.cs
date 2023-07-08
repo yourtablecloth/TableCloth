@@ -30,22 +30,22 @@ namespace TableCloth.Components
                 if (!Directory.Exists(oldPath))
                     return;
 
-                var oldConfigFile = Path.Combine(oldPath, "Preferences.json");
+                var oldPrefFile = Path.Combine(oldPath, "Preferences.json");
 
-                if (!File.Exists(oldConfigFile))
+                if (!File.Exists(oldPrefFile))
                     return;
 
                 if (!Directory.Exists(newPath))
                     Directory.CreateDirectory(newPath);
 
-                File.Copy(oldConfigFile, Path.Combine(newPath, "Preferences.json"), true);
+                File.Copy(oldPrefFile, Path.Combine(newPath, "Preferences.json"), true);
             }
             catch { /* 마이그레이션에 실패하면 무시 */ }
         }
 
-        public PreferenceSettings LoadConfig()
+        public PreferenceSettings LoadPreferences()
         {
-            var defaultSettings = GetDefaultConfig();
+            var defaultSettings = GetDefaultPreferences();
             var prefFilePath = _sharedLocations.PreferencesFilePath;
 
             if (!File.Exists(prefFilePath))
@@ -64,25 +64,25 @@ namespace TableCloth.Components
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Cannot deserialize configuration settings.");
+                _logger.LogWarning(ex, "Cannot deserialize preferences.");
                 settings = defaultSettings;
             }
 
             return settings;
         }
 
-        public PreferenceSettings GetDefaultConfig()
+        public PreferenceSettings GetDefaultPreferences()
             => new PreferenceSettings();
 
-        public void SaveConfig(PreferenceSettings config)
+        public void SavePreferences(PreferenceSettings preferences)
         {
-            var defaultSettings = GetDefaultConfig();
+            var defaultPreferences = GetDefaultPreferences();
 
-            if (config == null)
-                config = defaultSettings;
+            if (preferences == null)
+                preferences = defaultPreferences;
 
             var prefFilePath = _sharedLocations.PreferencesFilePath;
-            var json = JsonSerializer.Serialize(config, new JsonSerializerOptions() { AllowTrailingCommas = true, WriteIndented = true, });
+            var json = JsonSerializer.Serialize(preferences, new JsonSerializerOptions() { AllowTrailingCommas = true, WriteIndented = true, });
             File.WriteAllText(prefFilePath, json, new UTF8Encoding(false));
         }
     }

@@ -136,17 +136,17 @@ del /f /q ""{providedCertFilePath}""
 
             var switches = new List<string>();
 
-            if (tableClothConfiguration.EnableEveryonesPrinter)
-                switches.Add(StringResources.TableCloth_Switch_EnableEveryonesPrinter);
+            if (tableClothConfiguration.InstallEveryonesPrinter)
+                switches.Add(StringResources.TableCloth_Switch_InstallEveryonesPrinter);
 
-            if (tableClothConfiguration.EnableAdobeReader)
-                switches.Add(StringResources.TableCloth_Switch_EnableAdobeReader);
+            if (tableClothConfiguration.InstallAdobeReader)
+                switches.Add(StringResources.TableCloth_Switch_InstallAdobeReader);
 
-            if (tableClothConfiguration.EnableHancomOfficeViewer)
-                switches.Add(StringResources.TableCloth_Switch_EnableHancomOfficeViewer);
+            if (tableClothConfiguration.InstallHancomOfficeViewer)
+                switches.Add(StringResources.TableCloth_Switch_InstallHancomOfficeViewer);
 
-            if (tableClothConfiguration.EnableRaiDrive)
-                switches.Add(StringResources.TableCloth_Switch_EnableRaiDrive);
+            if (tableClothConfiguration.InstallRaiDrive)
+                switches.Add(StringResources.TableCloth_Switch_InstallRaiDrive);
 
             if (tableClothConfiguration.EnableInternetExplorerMode)
                 switches.Add(StringResources.TableCloth_Switch_EnableIEMode);

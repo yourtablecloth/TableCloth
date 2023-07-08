@@ -64,10 +64,10 @@ namespace TableCloth.ViewModels
         private bool _enableMicrophone;
         private bool _enableWebCam;
         private bool _enablePrinters;
-        private bool _enableEveryonesPrinter;
-        private bool _enableAdobeReader;
-        private bool _enableHancomOfficeViewer;
-        private bool _enableRaiDrive;
+        private bool _installEveryonesPrinter;
+        private bool _installAdobeReader;
+        private bool _installHancomOfficeViewer;
+        private bool _installRaiDrive;
         private bool _enableInternetExplorerMode;
         private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
@@ -169,53 +169,53 @@ namespace TableCloth.ViewModels
             }
         }
 
-        public bool EnableEveryonesPrinter
+        public bool InstallEveryonesPrinter
         {
-            get => _enableEveryonesPrinter;
+            get => _installEveryonesPrinter;
             set
             {
-                if (value != _enableEveryonesPrinter)
+                if (value != _installEveryonesPrinter)
                 {
-                    _enableEveryonesPrinter = value;
+                    _installEveryonesPrinter = value;
                     NotifyPropertyChanged();
                 }
             }
         }
 
-        public bool EnableAdobeReader
+        public bool InstallAdobeReader
         {
-            get => _enableAdobeReader;
+            get => _installAdobeReader;
             set
             {
-                if (value != _enableAdobeReader)
+                if (value != _installAdobeReader)
                 {
-                    _enableAdobeReader = value;
+                    _installAdobeReader = value;
                     NotifyPropertyChanged();
                 }
             }
         }
 
-        public bool EnableHancomOfficeViewer
+        public bool InstallHancomOfficeViewer
         {
-            get => _enableHancomOfficeViewer;
+            get => _installHancomOfficeViewer;
             set
             {
-                if (value != _enableHancomOfficeViewer)
+                if (value != _installHancomOfficeViewer)
                 {
-                    _enableHancomOfficeViewer = value;
+                    _installHancomOfficeViewer = value;
                     NotifyPropertyChanged();
                 }
             }
         }
 
-        public bool EnableRaiDrive
+        public bool InstallRaiDrive
         {
-            get => _enableRaiDrive;
+            get => _installRaiDrive;
             set
             {
-                if (value != _enableRaiDrive)
+                if (value != _installRaiDrive)
                 {
-                    _enableRaiDrive = value;
+                    _installRaiDrive = value;
                     NotifyPropertyChanged();
                 }
             }

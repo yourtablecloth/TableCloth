@@ -74,27 +74,27 @@ namespace Hostess
                     var targetSites = e.Args.Where(x => !x.StartsWith(StringResources.TableCloth_Switch_Prefix, StringComparison.Ordinal)).ToArray();
                     Current.InitInstallSites(targetSites);
 
-                    var hasEveryonesPrinterEnabled = false;
-                    var hasAdobeReaderEnabled = false;
-                    var hasHancomOfficeViewerEnabled = false;
-                    var hasRaiDriveEnabled = true;
+                    var installEveryonesPrinter = false;
+                    var installAdobeReader = false;
+                    var installHancomOfficeViewer = false;
+                    var installRaiDrive = true;
                     var hasIEModeEnabled = false;
                     var showHelp = false;
 
                     var options = e.Args.Where(x => x.StartsWith(StringResources.TableCloth_Switch_Prefix, StringComparison.Ordinal)).ToArray();
                     foreach (var eachOption in options)
                     {
-                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_EnableEveryonesPrinter, StringComparison.Ordinal))
-                            hasEveryonesPrinterEnabled = true;
+                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_InstallEveryonesPrinter, StringComparison.Ordinal))
+                            installEveryonesPrinter = true;
 
-                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_EnableAdobeReader, StringComparison.Ordinal))
-                            hasAdobeReaderEnabled = true;
+                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_InstallAdobeReader, StringComparison.Ordinal))
+                            installAdobeReader = true;
 
-                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_EnableHancomOfficeViewer, StringComparison.Ordinal))
-                            hasHancomOfficeViewerEnabled = true;
+                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_InstallHancomOfficeViewer, StringComparison.Ordinal))
+                            installHancomOfficeViewer = true;
 
-                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_EnableRaiDrive, StringComparison.Ordinal))
-                            hasRaiDriveEnabled = true;
+                        if (eachOption.StartsWith(StringResources.TableCloth_Switch_InstallRaiDrive, StringComparison.Ordinal))
+                            installRaiDrive = true;
 
                         if (eachOption.StartsWith(StringResources.TableCloth_Switch_EnableIEMode, StringComparison.Ordinal))
                             hasIEModeEnabled = true;
@@ -111,10 +111,10 @@ namespace Hostess
                         return;
                     }
 
-                    Current.InitHasEveryonesPrinterEnabled(hasEveryonesPrinterEnabled);
-                    Current.InitHasAdobeReaderEnabled(hasAdobeReaderEnabled);
-                    Current.InitHasHancomOfficeViewerEnabled(hasHancomOfficeViewerEnabled);
-                    Current.InitHasRaiDriveEnabled(hasRaiDriveEnabled);
+                    Current.InitWillInstallEveryonesPrinter(installEveryonesPrinter);
+                    Current.InitWillInstallAdobeReader(installAdobeReader);
+                    Current.InitWillInstallHancomOfficeViewer(installHancomOfficeViewer);
+                    Current.InitWillInstallRaiDrive(installRaiDrive);
                     Current.InitHasIEModeEnabled(hasIEModeEnabled);
 
                     if (!targetSites.Any())

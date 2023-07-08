@@ -65,20 +65,20 @@
         부가 기능
     </system:String>
 
-    <system:String x:Key="MainWindow_UseEveryonesPrinter">
-        모두의 프린터 추가하기
+    <system:String x:Key="MainWindow_InstallEveryonesPrinter">
+        모두의 프린터 설치하기
     </system:String>
 
-    <system:String x:Key="MainWindow_UseAdobeReader">
-        Adobe Reader 추가하기
+    <system:String x:Key="MainWindow_InstallAdobeReader">
+        Adobe Reader 설치하기
     </system:String>
 
-    <system:String x:Key="MainWindow_UseHancomOfficeViewer">
-        한컴오피스 뷰어 추가하기
+    <system:String x:Key="MainWindow_InstallHancomOfficeViewer">
+        한컴오피스 뷰어 설치하기
     </system:String>
 
-    <system:String x:Key="MainWindow_UseRaiDrive">
-        RaiDrive 추가하기
+    <system:String x:Key="MainWindow_InstallRaiDrive">
+        RaiDrive 설치하기
     </system:String>
 
     <system:String x:Key="MainWindow_UseIEModeCompatList">

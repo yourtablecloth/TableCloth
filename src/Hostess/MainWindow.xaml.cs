@@ -396,7 +396,7 @@ namespace Hostess
 
                 if (!hasAnyFailure)
                 {
-                    if (App.Current.GetHasEveryonesPrinterEnabled())
+                    if (App.Current.WillInstallEveryonesPrinter())
                     {
                         Process.Start(new ProcessStartInfo(StringResources.EveryonesPrinterUrl)
                         {
@@ -405,7 +405,7 @@ namespace Hostess
                         });
                     }
 
-                    if (App.Current.GetHasAdobeReaderEnabled())
+                    if (App.Current.WillInstallAdobeReader())
                     {
                         Process.Start(new ProcessStartInfo(StringResources.AdobeReaderUrl)
                         {
@@ -414,7 +414,7 @@ namespace Hostess
                         });
                     }
 
-                    if (App.Current.GetHasHancomOfficeViewerEnabled())
+                    if (App.Current.WillInstallHancomOfficeViewer())
                     {
                         Process.Start(new ProcessStartInfo(StringResources.HancomOfficeViewerUrl)
                         {
@@ -423,7 +423,7 @@ namespace Hostess
                         });
                     }
 
-                    if (App.Current.GetHasRaiDriveEnabled())
+                    if (App.Current.WillInstallRaiDrive())
                     {
                         Process.Start(new ProcessStartInfo(StringResources.RaiDriveUrl)
                         {

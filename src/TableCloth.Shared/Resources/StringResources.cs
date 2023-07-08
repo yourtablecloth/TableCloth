@@ -348,13 +348,13 @@ namespace TableCloth.Resources
 
         internal static readonly string TableCloth_Switch_CertPrivateKey = TableCloth_Switch_Prefix + "cert-private-key";
 
-        internal static readonly string TableCloth_Switch_EnableEveryonesPrinter = TableCloth_Switch_Prefix + "enable-everyones-printer";
+        internal static readonly string TableCloth_Switch_InstallEveryonesPrinter = TableCloth_Switch_Prefix + "install-everyones-printer";
 
-        internal static readonly string TableCloth_Switch_EnableAdobeReader = TableCloth_Switch_Prefix + "enable-adobe-reader";
+        internal static readonly string TableCloth_Switch_InstallAdobeReader = TableCloth_Switch_Prefix + "install-adobe-reader";
 
-        internal static readonly string TableCloth_Switch_EnableHancomOfficeViewer = TableCloth_Switch_Prefix + "enable-hancom-office-viewer";
+        internal static readonly string TableCloth_Switch_InstallHancomOfficeViewer = TableCloth_Switch_Prefix + "install-hancom-office-viewer";
 
-        internal static readonly string TableCloth_Switch_EnableRaiDrive = TableCloth_Switch_Prefix + "enable-rai-drive";
+        internal static readonly string TableCloth_Switch_InstallRaiDrive = TableCloth_Switch_Prefix + "install-rai-drive";
 
         internal static readonly string TableCloth_Switch_EnableIEMode = TableCloth_Switch_Prefix + "enable-ie-mode";
 
@@ -384,16 +384,16 @@ ServiceID는 {CatalogUrl}을 확인해주세요.
 {TableCloth_Switch_CertPrivateKey} <파일 경로>
   인증서 비밀 키 파일 경로를 지정합니다.
 
-{TableCloth_Switch_EnableEveryonesPrinter}
+{TableCloth_Switch_InstallEveryonesPrinter}
   모두의 프린터 설치를 샌드박스 시작 후 실행합니다.
 
-{TableCloth_Switch_EnableAdobeReader}
+{TableCloth_Switch_InstallAdobeReader}
   Adobe Reader 설치를 샌드박스 시작 후 실행합니다.
 
-{TableCloth_Switch_EnableHancomOfficeViewer}
+{TableCloth_Switch_InstallHancomOfficeViewer}
   한컴오피스 뷰어 설치를 샌드박스 시작 후 실행합니다.
 
-{TableCloth_Switch_EnableRaiDrive}
+{TableCloth_Switch_InstallRaiDrive}
   RaiDrive 설치를 샌드박스 시작 후 실행합니다.
 
 {TableCloth_Switch_EnableIEMode}
@@ -409,16 +409,16 @@ ServiceID는 {CatalogUrl}을 확인해주세요.
 
 옵션:
 
-{TableCloth_Switch_EnableEveryonesPrinter}
+{TableCloth_Switch_InstallEveryonesPrinter}
   모두의 프린터 설치를 샌드박스 시작 후 실행합니다.
 
-{TableCloth_Switch_EnableAdobeReader}
+{TableCloth_Switch_InstallAdobeReader}
   Adobe Reader 설치를 샌드박스 시작 후 실행합니다.
 
-{TableCloth_Switch_EnableHancomOfficeViewer}
+{TableCloth_Switch_InstallHancomOfficeViewer}
   한컴오피스 뷰어 설치를 샌드박스 시작 후 실행합니다.
 
-{TableCloth_Switch_EnableRaiDrive}
+{TableCloth_Switch_InstallRaiDrive}
   RaiDrive 설치를 샌드박스 시작 후 실행합니다.
 
 {TableCloth_Switch_EnableIEMode}
