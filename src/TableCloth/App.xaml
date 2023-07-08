@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:TableCloth.Converters"
              xmlns:di="clr-namespace:TableCloth.Components"
+             Startup="Application_Startup"
              StartupUri="MainWindow.xaml">
 
     <Application.Resources>

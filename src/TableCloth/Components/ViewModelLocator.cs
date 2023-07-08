@@ -3,18 +3,18 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Components
 {
-    public class ViewModelLocator
+    public sealed class ViewModelLocator
     {
         public MainWindowViewModel MainWindowViewModel
-            => Program.ServiceProvider.GetService<MainWindowViewModel>();
+            => App.Current.Services.GetService<MainWindowViewModel>();
 
         public CertSelectWindowViewModel CertSelectWindowViewModel
-            => Program.ServiceProvider.GetService<CertSelectWindowViewModel>();
+            => App.Current.Services.GetService<CertSelectWindowViewModel>();
 
         public AboutWindowViewModel AboutWindowViewModel
-            => Program.ServiceProvider.GetService<AboutWindowViewModel>();
+            => App.Current.Services.GetService<AboutWindowViewModel>();
 
         public InputPasswordWindowViewModel InputPasswordWindowViewModel
-            => Program.ServiceProvider.GetService<InputPasswordWindowViewModel>();
+            => App.Current.Services.GetService<InputPasswordWindowViewModel>();
     }
 }

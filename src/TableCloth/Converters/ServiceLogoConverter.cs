@@ -10,7 +10,7 @@ namespace TableCloth.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var locationService = Program.ServiceProvider.GetService(typeof(SharedLocations)) as SharedLocations;
+            var locationService = App.Current.Services.GetService(typeof(SharedLocations)) as SharedLocations;
 
             if (locationService == null)
                 return null;
