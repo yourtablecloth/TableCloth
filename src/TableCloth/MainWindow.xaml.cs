@@ -178,11 +178,11 @@ namespace TableCloth
             var wsbFilePath = ViewModel.SandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
 
             if (excludedFolderList.Any())
-                ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
+                ViewModel.AppMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
 
             ViewModel.CurrentDirectory = tempPath;
             ViewModel.TemporaryDirectories.Add(tempPath);
-            ViewModel.SandboxLauncher.RunSandbox(ViewModel.AppUserInterface, tempPath, wsbFilePath);
+            ViewModel.SandboxLauncher.RunSandbox(wsbFilePath);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -286,7 +286,7 @@ namespace TableCloth
 
             if (showHelp)
             {
-                ViewModel.AppMessageBox.DisplayInfo(this, StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                ViewModel.AppMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
                 return;
             }
 
@@ -354,7 +354,7 @@ namespace TableCloth
             {
                 case nameof(MainWindowViewModel.EnableLogAutoCollecting):
                     currentConfig.UseLogCollection = ViewModel.EnableLogAutoCollecting;
-                    if (ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                    if (ViewModel.AppMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                     {
                         _requireRestart = true;
                         Close();
@@ -432,7 +432,7 @@ namespace TableCloth
         {
             if (ViewModel.SandboxLauncher.IsSandboxRunning())
             {
-                ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_Windows_Sandbox_Already_Running, false);
+                ViewModel.AppMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_Already_Running, false);
                 return;
             }
 
@@ -629,11 +629,11 @@ namespace TableCloth
             }
             catch
             {
-                ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Error_ShortcutFailed);
+                ViewModel.AppMessageBox.DisplayInfo(StringResources.Error_ShortcutFailed);
                 return;
             }
 
-            ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_ShortcutSuccess);
+            ViewModel.AppMessageBox.DisplayInfo(StringResources.Info_ShortcutSuccess);
         }
 
         #region Sort Support

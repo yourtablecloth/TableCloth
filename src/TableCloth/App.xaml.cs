@@ -24,8 +24,6 @@ namespace TableCloth
 
         public IServiceProvider Services { get; }
 
-        public IEnumerable<string> Arguments { get; set; } = new string[0];
-
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             using var _ = SentrySdk.Init(o =>
@@ -36,7 +34,6 @@ namespace TableCloth
             });
 
             var startup = Services.GetService<AppStartup>()!;
-            var userInterface = Services.GetService<AppUserInterface>()!;
             var messageBox = Services.GetService<AppMessageBox>()!;
 
             var args = Environment.GetCommandLineArgs().Skip(1);
@@ -45,7 +42,7 @@ namespace TableCloth
 
             if (!startup.HasRequirementsMet(warnings, out Exception failedReason, out bool isCritical))
             {
-                messageBox.DisplayError(default, failedReason, isCritical);
+                messageBox.DisplayError(failedReason, isCritical);
 
                 if (isCritical)
                 {
@@ -55,11 +52,11 @@ namespace TableCloth
             }
 
             if (warnings.Any())
-                messageBox.DisplayError(default, string.Join(Environment.NewLine + Environment.NewLine, warnings), false);
+                messageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, warnings), false);
 
             if (!startup.Initialize(out failedReason, out isCritical))
             {
-                messageBox.DisplayError(default, failedReason, isCritical);
+                messageBox.DisplayError(failedReason, isCritical);
 
                 if (isCritical)
                 {
@@ -98,7 +95,6 @@ namespace TableCloth
 
             // UI
             services.AddSingleton<AppMessageBox>();
-            services.AddSingleton<AppUserInterface>();
 
             // HTTP Request
             services.AddHttpClient(nameof(TableCloth), c =>

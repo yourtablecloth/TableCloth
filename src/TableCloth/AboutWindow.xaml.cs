@@ -47,7 +47,7 @@ namespace TableCloth
 
             if (!File.Exists(msinfoPath))
             {
-                ViewModel.AppMessageBox.DisplayError(this, StringResources.Error_Cannot_Run_SysInfo, false);
+                ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cannot_Run_SysInfo, false);
                 return;
             }
 
@@ -66,7 +66,7 @@ namespace TableCloth
                 if (Version.TryParse(await ViewModel.GitHubReleaseFinder.GetLatestVersion(owner, repo), out Version parsedVersion) &&
                     thisVersion != null && parsedVersion > thisVersion)
                 {
-                    ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_UpdateRequired);
+                    ViewModel.AppMessageBox.DisplayInfo(StringResources.Info_UpdateRequired);
                     var targetUrl = await ViewModel.GitHubReleaseFinder.GetDownloadUrl(owner, repo);
                     var psi = new ProcessStartInfo(targetUrl.AbsoluteUri) { UseShellExecute = true, };
                     Process.Start(psi);
@@ -75,7 +75,7 @@ namespace TableCloth
             }
             catch { }
 
-            ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_UpdateNotRequired);
+            ViewModel.AppMessageBox.DisplayInfo(StringResources.Info_UpdateNotRequired);
         }
 
         private void OpenPrivacyHyperlink_Click(object sender, RoutedEventArgs e)

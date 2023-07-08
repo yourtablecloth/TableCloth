@@ -71,11 +71,11 @@ namespace TableCloth.Components
             }
         }
 
-        public void RunSandbox(AppUserInterface appUserInteface, string sandboxOutputDirectory, string wsbFilePath)
+        public void RunSandbox(string wsbFilePath)
         {
             if (!ValidateSandboxSpecFile(wsbFilePath, out string reason))
             {
-                _appMessageBox.DisplayError(null, reason, true);
+                _appMessageBox.DisplayError(reason, true);
                 return;
             }
 
@@ -96,7 +96,7 @@ namespace TableCloth.Components
             if (!process.Start())
             {
                 process.Dispose();
-                _appMessageBox.DisplayError(appUserInteface, StringResources.Error_Windows_Sandbox_CanNotStart, true);
+                _appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_CanNotStart, true);
             }
         }
 

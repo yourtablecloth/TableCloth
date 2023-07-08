@@ -40,7 +40,7 @@ namespace TableCloth
             }
             catch (Exception ex)
             {
-                ViewModel.AppMessageBox.DisplayError(this, ex, false);
+                ViewModel.AppMessageBox.DisplayError(ex, false);
                 PasswordInput.Focus();
             }
         }

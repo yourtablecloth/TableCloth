@@ -14,7 +14,6 @@ namespace TableCloth.ViewModels
         public MainWindowViewModel(
             SharedLocations sharedLocations,
             AppStartup appStartup,
-            AppUserInterface appUserInterface,
             AppMessageBox appMessageBox,
             CatalogDeserializer catalogDeserializer,
             X509CertPairScanner certPairScanner,
@@ -24,7 +23,6 @@ namespace TableCloth.ViewModels
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
-            _appUserInterface = appUserInterface;
             _appMessageBox = appMessageBox;
             _catalogDeserializer = catalogDeserializer;
             _certPairScanner = certPairScanner;
@@ -40,7 +38,7 @@ namespace TableCloth.ViewModels
             }
             catch (Exception ex)
             {
-                _appMessageBox.DisplayError(_appUserInterface.MainWindowHandle, ex, false);
+                _appMessageBox.DisplayError(ex, false);
                 CatalogDocument = new CatalogDocument();
                 Services = Array.Empty<CatalogInternetService>().ToList();
             }
@@ -51,7 +49,6 @@ namespace TableCloth.ViewModels
 
         private readonly SharedLocations _sharedLocations;
         private readonly AppStartup _appStartup;
-        private readonly AppUserInterface _appUserInterface;
         private readonly AppMessageBox _appMessageBox;
         private readonly CatalogDeserializer _catalogDeserializer;
         private readonly X509CertPairScanner _certPairScanner;
@@ -82,9 +79,6 @@ namespace TableCloth.ViewModels
 
         public AppStartup AppStartup
             => _appStartup;
-
-        public AppUserInterface AppUserInterface
-            => _appUserInterface;
 
         public AppMessageBox AppMessageBox
             => _appMessageBox;
