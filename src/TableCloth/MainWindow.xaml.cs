@@ -76,101 +76,6 @@ namespace TableCloth
             return IntPtr.Zero;
         }
 
-        private static async void LoadSiteImages(IHttpClientFactory httpClientFactory, List<CatalogInternetService> services, string imageDirectoryPath)
-        {
-            if (!Directory.Exists(imageDirectoryPath))
-                Directory.CreateDirectory(imageDirectoryPath);
-
-            var httpClient = httpClientFactory.CreateTableClothHttpClient();
-
-            foreach (var eachSite in services)
-            {
-                var targetFilePath = Path.Combine(imageDirectoryPath, eachSite.Id + ".png");
-
-                if (!File.Exists(targetFilePath))
-                {
-                    try
-                    {
-                        var targetUrl = $"{StringResources.ImageUrlPrefix}/{eachSite.Category}/{eachSite.Id}.png";
-                        var imageStream = await httpClient.GetStreamAsync(targetUrl);
-
-                        using var fileStream = File.OpenWrite(targetFilePath);
-                        await imageStream.CopyToAsync(fileStream);
-                    }
-                    catch
-                    {
-                        try { File.WriteAllBytes(targetFilePath, Properties.Resources.SandboxIcon); }
-                        catch { }
-                    }
-                }
-
-                var targetIconFilePath = Path.Combine(
-                    Path.GetDirectoryName(targetFilePath),
-                    Path.GetFileNameWithoutExtension(targetFilePath) + ".ico");
-
-                if (!File.Exists(targetIconFilePath))
-                {
-                    try
-                    {
-                        await File.WriteAllBytesAsync(targetIconFilePath, ConvertImageToIcon(targetFilePath));
-                    }
-                    catch
-                    {
-                        var memStream = new MemoryStream();
-                        Properties.Resources.SandboxIconWin32.Save(memStream);
-                        memStream.Seek(0L, SeekOrigin.Begin);
-
-                        try { File.WriteAllBytes(targetIconFilePath, memStream.ToArray()); }
-                        catch { }
-                    }
-                }
-            }
-        }
-
-        // https://stackoverflow.com/questions/21387391/how-to-convert-an-image-to-an-icon-without-losing-transparency
-        private static byte[] ConvertImageToIcon(string imageFilePath)
-        {
-            using (var ms = new MemoryStream())
-            using (var bw = new BinaryWriter(ms))
-            using (var fs = File.OpenRead(imageFilePath))
-            using (var img = System.Drawing.Image.FromStream(fs))
-            {
-                // Header
-                bw.Write((short)0);   // 0 : reserved
-                bw.Write((short)1);   // 2 : 1=ico, 2=cur
-                bw.Write((short)1);   // 4 : number of images
-
-                // Image directory
-                var w = img.Width;
-                if (w >= 256) w = 0;
-                bw.Write((byte)w);    // 0 : width of image
-
-                var h = img.Height;
-                if (h >= 256) h = 0;
-                bw.Write((byte)h);    // 1 : height of image
-
-                bw.Write((byte)0);    // 2 : number of colors in palette
-                bw.Write((byte)0);    // 3 : reserved
-                bw.Write((short)0);   // 4 : number of color planes
-                bw.Write((short)0);   // 6 : bits per pixel
-
-                var sizeHere = ms.Position;
-                bw.Write(0);     // 8 : image size
-
-                var start = (int)ms.Position + 4;
-                bw.Write(start);      // 12: offset of image data
-
-                // Image data
-                img.Save(ms, ImageFormat.Png);
-                var imageSize = (int)ms.Position - start;
-                ms.Seek(sizeHere, SeekOrigin.Begin);
-                bw.Write(imageSize);
-                ms.Seek(0L, SeekOrigin.Begin);
-
-                return ms.ToArray();
-            }
-        }
-
         private void RunSandbox(TableClothConfiguration config)
         {
             var tempPath = ViewModel.SharedLocations.GetTempPath();
@@ -203,10 +108,10 @@ namespace TableCloth
                     ThemesController.CurrentTheme = ThemeTypes.ColourfulDark;
             }
 
-            var currentConfig = ViewModel.Preferences.LoadPreferences();
+            var currentConfig = ViewModel.PreferencesManager.LoadPreferences();
 
             if (currentConfig == null)
-                currentConfig = ViewModel.Preferences.GetDefaultPreferences();
+                currentConfig = ViewModel.PreferencesManager.GetDefaultPreferences();
 
             ViewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
             ViewModel.EnableMicrophone = currentConfig.UseAudioRedirection;
@@ -243,9 +148,9 @@ namespace TableCloth
 
             var services = ViewModel.Services;
             var directoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
-            Task.Factory.StartNew(() => LoadSiteImages(App.Current.Services.GetService<IHttpClientFactory>(), services, directoryPath));
+            Task.Factory.StartNew(() => ViewModel.ResourceResolver.LoadSiteImages(App.Current.Services.GetService<IHttpClientFactory>(), services, directoryPath));
 
-            var args = ViewModel.AppStartup.Arguments.ToArray();
+            var args = App.Current.Arguments.ToArray();
             var config = new TableClothConfiguration();
 
             var selectedServices = new List<string>();
@@ -345,10 +250,10 @@ namespace TableCloth
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var currentConfig = ViewModel.Preferences.LoadPreferences();
+            var currentConfig = ViewModel.PreferencesManager.LoadPreferences();
 
             if (currentConfig == null)
-                currentConfig = ViewModel.Preferences.GetDefaultPreferences();
+                currentConfig = ViewModel.PreferencesManager.GetDefaultPreferences();
 
             switch (e.PropertyName)
             {
@@ -401,7 +306,7 @@ namespace TableCloth
                     return;
             }
 
-            ViewModel.Preferences.SavePreferences(currentConfig);
+            ViewModel.PreferencesManager.SavePreferences(currentConfig);
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -505,7 +410,7 @@ namespace TableCloth
             if (_requireRestart)
             {
                 var filePath = Process.GetCurrentProcess().MainModule.FileName;
-                var arguments = Environment.GetCommandLineArgs().Skip(1).ToArray();
+                var arguments = App.Current.Arguments;
                 Process.Start(filePath, arguments);
             }
         }
@@ -560,7 +465,7 @@ namespace TableCloth
         {
             Process.Start(
                 Process.GetCurrentProcess().MainModule.FileName,
-                Environment.GetCommandLineArgs().Skip(1).ToArray());
+                App.Current.Arguments);
             Application.Current.Shutdown();
         }
 

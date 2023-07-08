@@ -22,6 +22,8 @@ namespace TableCloth
 
         public new static App Current => (App)Application.Current;
 
+        public IEnumerable<string> Arguments { get; private set; } = new string[] { };
+
         public IServiceProvider Services { get; }
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -36,8 +38,7 @@ namespace TableCloth
             var startup = Services.GetService<AppStartup>()!;
             var messageBox = Services.GetService<AppMessageBox>()!;
 
-            var args = Environment.GetCommandLineArgs().Skip(1);
-            startup.Arguments = args;
+            Arguments = e.Args;
             var warnings = new List<string>();
 
             if (!startup.HasRequirementsMet(warnings, out Exception failedReason, out bool isCritical))
@@ -84,7 +85,7 @@ namespace TableCloth
             services.AddSingleton<SandboxBuilder>();
             services.AddSingleton<SandboxLauncher>();
             services.AddSingleton<AppStartup>();
-            services.AddSingleton<GitHubReleaseFinder>();
+            services.AddSingleton<ResourceResolver>();
             services.AddSingleton<LicenseDescriptor>();
 
             // ViewModel

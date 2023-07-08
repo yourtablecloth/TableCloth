@@ -17,8 +17,6 @@ namespace TableCloth.Components
 
         private readonly SharedLocations _sharedLocations;
 
-        public IEnumerable<string> Arguments { get; set; }
-
         public bool HasRequirementsMet(List<string> warnings, out Exception failedResaon, out bool isCritical)
         {
             // https://stackoverflow.com/questions/336633/how-to-detect-windows-64-bit-platform-with-net

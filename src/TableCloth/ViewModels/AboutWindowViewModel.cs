@@ -10,7 +10,7 @@ namespace TableCloth.ViewModels
         public AboutWindowViewModel(
             AppMessageBox appMessageBox,
             CatalogDeserializer catalogDeserializer,
-            GitHubReleaseFinder gitHubReleaseFinder,
+            ResourceResolver gitHubReleaseFinder,
             LicenseDescriptor licenseDescriptor)
         {
             _appMessageBox = appMessageBox;
@@ -24,7 +24,7 @@ namespace TableCloth.ViewModels
 
         private readonly AppMessageBox _appMessageBox;
         private readonly CatalogDeserializer _catalogDeserializer;
-        private readonly GitHubReleaseFinder _gitHubReleaseFinder;
+        private readonly ResourceResolver _gitHubReleaseFinder;
         private readonly LicenseDescriptor _licenseDescriptor;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -35,7 +35,7 @@ namespace TableCloth.ViewModels
         public AppMessageBox AppMessageBox
             => _appMessageBox;
 
-        public GitHubReleaseFinder GitHubReleaseFinder
+        public ResourceResolver GitHubReleaseFinder
             => _gitHubReleaseFinder;
 
         public LicenseDescriptor LicenseDescriptor

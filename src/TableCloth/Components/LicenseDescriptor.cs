@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace TableCloth.Components
 {
     public sealed class LicenseDescriptor
     {
-        public LicenseDescriptor(IHttpClientFactory httpClientFactory)
+        public LicenseDescriptor(ResourceResolver resourceResolver)
         {
-            _httpClientFactory = httpClientFactory;
+            _resourceResolver = resourceResolver;
         }
 
-        private IHttpClientFactory _httpClientFactory;
+        private ResourceResolver _resourceResolver;
 
         private IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
         {
@@ -37,16 +35,6 @@ namespace TableCloth.Components
                 .ToArray();
 
             return refList;
-        }
-
-        private async Task<string> GetLicenseDescriptionForGitHub(string owner, string repoName)
-        {
-            var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
-            var httpClient = _httpClientFactory.CreateTableClothHttpClient();
-
-            using var licenseDescription = await httpClient.GetStreamAsync(targetUri);
-            var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
-            return jsonDocument.RootElement.GetProperty("license").GetProperty("name").GetString();
         }
 
         public async Task<string> GetLicenseDescriptions()
@@ -86,7 +74,7 @@ namespace TableCloth.Components
                             if (!string.IsNullOrWhiteSpace(ownerPart) &&
                                 !string.IsNullOrWhiteSpace(repoNamePart))
                             {
-                                var licenseDescription = await GetLicenseDescriptionForGitHub(ownerPart, repoNamePart).ConfigureAwait(false);
+                                var licenseDescription = await _resourceResolver.GetLicenseDescriptionForGitHub(ownerPart, repoNamePart).ConfigureAwait(false);
                                 if (licenseDescription != null)
                                     buffer.AppendLine($"OSS License: {licenseDescription}");
                             }

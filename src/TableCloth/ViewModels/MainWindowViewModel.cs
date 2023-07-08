@@ -19,7 +19,8 @@ namespace TableCloth.ViewModels
             X509CertPairScanner certPairScanner,
             SandboxBuilder sandboxBuilder,
             SandboxLauncher sandboxLauncher,
-            PreferencesManager preferences)
+            PreferencesManager preferencesManager,
+            ResourceResolver resourceResolver)
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
@@ -28,7 +29,8 @@ namespace TableCloth.ViewModels
             _certPairScanner = certPairScanner;
             _sandboxBuilder = sandboxBuilder;
             _sandboxLauncher = sandboxLauncher;
-            _preferences = preferences;
+            _preferencesManager = preferencesManager;
+            _resourceResolver = resourceResolver;
 
             try
             {
@@ -54,7 +56,8 @@ namespace TableCloth.ViewModels
         private readonly X509CertPairScanner _certPairScanner;
         private readonly SandboxBuilder _sandboxBuilder;
         private readonly SandboxLauncher _sandboxLauncher;
-        private readonly PreferencesManager _preferences;
+        private readonly PreferencesManager _preferencesManager;
+        private readonly ResourceResolver _resourceResolver;
 
         private bool _mapNpkiCert;
         private bool _enableLogAutoCollecting;
@@ -95,8 +98,11 @@ namespace TableCloth.ViewModels
         public SandboxLauncher SandboxLauncher
             => _sandboxLauncher;
 
-        public PreferencesManager Preferences
-            => _preferences;
+        public PreferencesManager PreferencesManager
+            => _preferencesManager;
+
+        public ResourceResolver ResourceResolver
+            => _resourceResolver;
 
         public bool MapNpkiCert
         {
