@@ -100,6 +100,12 @@ namespace TableCloth
             services.AddSingleton<AppMessageBox>();
             services.AddSingleton<AppUserInterface>();
 
+            // HTTP Request
+            services.AddHttpClient(nameof(TableCloth), c =>
+            {
+                c.DefaultRequestHeaders.Add("User-Agent", StringResources.UserAgentText);
+            });
+
             return services.BuildServiceProvider();
         }
     }

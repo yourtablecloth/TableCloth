@@ -12,6 +12,13 @@ namespace TableCloth.Components
 {
     public sealed class CatalogDeserializer
     {
+        public CatalogDeserializer(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
+        private readonly IHttpClientFactory _httpClientFactory;
+
         private DateTimeOffset? _catalogLastModified = default;
         private DateTimeOffset? _ieModeListLastModified = default;
 
@@ -19,8 +26,7 @@ namespace TableCloth.Components
 
         public CatalogDocument DeserializeCatalog()
         {
-            var httpClient = Shared.HttpClientFactory.Value;
-
+            var httpClient = _httpClientFactory.CreateTableClothHttpClient();
             var uriBuilder = new UriBuilder(new Uri(StringResources.CatalogUrl, UriKind.Absolute));
 
             var queryKeyValues = HttpUtility.ParseQueryString(uriBuilder.Query);
@@ -50,8 +56,7 @@ namespace TableCloth.Components
 
         public IEModeListDocument DeserializeIEModeList()
         {
-            var httpClient = Shared.HttpClientFactory.Value;
-
+            var httpClient = _httpClientFactory.CreateTableClothHttpClient();
             var uriBuilder = new UriBuilder(new Uri(StringResources.IEModeListUrl, UriKind.Absolute));
 
             var queryKeyValues = HttpUtility.ParseQueryString(uriBuilder.Query);

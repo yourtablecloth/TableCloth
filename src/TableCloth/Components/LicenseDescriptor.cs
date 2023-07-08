@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -10,6 +11,13 @@ namespace TableCloth.Components
 {
     public sealed class LicenseDescriptor
     {
+        public LicenseDescriptor(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
+        private IHttpClientFactory _httpClientFactory;
+
         private IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
         {
             var asm = Assembly.GetEntryAssembly();
@@ -34,7 +42,7 @@ namespace TableCloth.Components
         private async Task<string> GetLicenseDescriptionForGitHub(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
-            var httpClient = Shared.HttpClientFactory.Value;
+            var httpClient = _httpClientFactory.CreateTableClothHttpClient();
 
             using var licenseDescription = await httpClient.GetStreamAsync(targetUri);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);

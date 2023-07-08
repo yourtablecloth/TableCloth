@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,6 +7,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -77,12 +79,12 @@ namespace TableCloth
             return IntPtr.Zero;
         }
 
-        private static async void LoadSiteImages(List<CatalogInternetService> services, string imageDirectoryPath)
+        private static async void LoadSiteImages(IHttpClientFactory httpClientFactory, List<CatalogInternetService> services, string imageDirectoryPath)
         {
             if (!Directory.Exists(imageDirectoryPath))
                 Directory.CreateDirectory(imageDirectoryPath);
 
-            var httpClient = Shared.HttpClientFactory.Value;
+            var httpClient = httpClientFactory.CreateTableClothHttpClient();
 
             foreach (var eachSite in services)
             {
@@ -244,7 +246,7 @@ namespace TableCloth
 
             var services = ViewModel.Services;
             var directoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
-            Task.Factory.StartNew(() => LoadSiteImages(services, directoryPath));
+            Task.Factory.StartNew(() => LoadSiteImages(App.Current.Services.GetService<IHttpClientFactory>(), services, directoryPath));
 
             var args = ViewModel.AppStartup.Arguments.ToArray();
             var config = new TableClothConfiguration();

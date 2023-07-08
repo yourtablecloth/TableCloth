@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -6,10 +7,17 @@ namespace TableCloth.Components
 {
     public sealed class GitHubReleaseFinder
     {
+        public GitHubReleaseFinder(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
+        private readonly IHttpClientFactory _httpClientFactory;
+
         public async Task<string> GetLatestVersion(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
-            var httpClient = Shared.HttpClientFactory.Value;
+            var httpClient = _httpClientFactory.CreateTableClothHttpClient();
 
             using var licenseDescription = await httpClient.GetStreamAsync(targetUri);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
@@ -19,7 +27,7 @@ namespace TableCloth.Components
         public async Task<Uri> GetDownloadUrl(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
-            var httpClient = Shared.HttpClientFactory.Value;
+            var httpClient = _httpClientFactory.CreateTableClothHttpClient();
 
             using var licenseDescription = await httpClient.GetStreamAsync(targetUri);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
