@@ -16,51 +16,50 @@ namespace TableCloth
 
         public static void Main(string[] args)
         {
-            using (SentrySdk.Init(o =>
+            using var _ = SentrySdk.Init(o =>
             {
                 o.Dsn = StringResources.SentryDsn;
                 o.Debug = true;
                 o.TracesSampleRate = 1.0;
-            }))
+            });
+
+            var services = new ServiceCollection();
+            ConfigureServices(services);
+
+            ServiceProvider = services.BuildServiceProvider();
+            var startup = ServiceProvider.GetService<AppStartup>()!;
+            var userInterface = ServiceProvider.GetService<AppUserInterface>()!;
+            var messageBox = ServiceProvider.GetService<AppMessageBox>()!;
+
+            startup.Arguments = args;
+            var warnings = new List<string>();
+
+            if (!startup.HasRequirementsMet(warnings, out Exception failedReason, out bool isCritical))
             {
-                var services = new ServiceCollection();
-                ConfigureServices(services);
+                messageBox.DisplayError(default, failedReason, isCritical);
 
-                ServiceProvider = services.BuildServiceProvider();
-                var startup = ServiceProvider.GetService<AppStartup>()!;
-                var userInterface = ServiceProvider.GetService<AppUserInterface>()!;
-                var messageBox = ServiceProvider.GetService<AppMessageBox>()!;
-
-                startup.Arguments = args;
-                var warnings = new List<string>();
-
-                if (!startup.HasRequirementsMet(warnings, out Exception failedReason, out bool isCritical))
+                if (isCritical)
                 {
-                    messageBox.DisplayError(default, failedReason, isCritical);
-
-                    if (isCritical)
-                    {
-                        Environment.Exit(1);
-                        return;
-                    }
+                    Environment.Exit(1);
+                    return;
                 }
-
-                if (warnings.Any())
-                    messageBox.DisplayError(default, string.Join(Environment.NewLine + Environment.NewLine, warnings), false);
-
-                if (!startup.Initialize(out failedReason, out isCritical))
-                {
-                    messageBox.DisplayError(default, failedReason, isCritical);
-
-                    if (isCritical)
-                    {
-                        Environment.Exit(2);
-                        return;
-                    }
-                }
-
-                userInterface.StartApplication(args);
             }
+
+            if (warnings.Any())
+                messageBox.DisplayError(default, string.Join(Environment.NewLine + Environment.NewLine, warnings), false);
+
+            if (!startup.Initialize(out failedReason, out isCritical))
+            {
+                messageBox.DisplayError(default, failedReason, isCritical);
+
+                if (isCritical)
+                {
+                    Environment.Exit(2);
+                    return;
+                }
+            }
+
+            userInterface.StartApplication(args);
         }
 
         private static void ConfigureServices(IServiceCollection services)
