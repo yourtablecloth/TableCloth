@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TableCloth.Components;
-using TableCloth.Models.ViewModels;
 using TableCloth.Resources;
+using TableCloth.ViewModels;
 
 namespace TableCloth
 {

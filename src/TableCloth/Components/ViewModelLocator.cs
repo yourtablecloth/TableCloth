@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TableCloth.Models.ViewModels;
+using TableCloth.ViewModels;
 
 namespace TableCloth.Components
 {

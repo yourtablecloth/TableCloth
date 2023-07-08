@@ -17,9 +17,9 @@ namespace TableCloth.Models.WindowsSandbox
         public string PrinterRedirection { get; set; }
 
         [XmlArray, XmlArrayItem(typeof(string), ElementName = "Command")]
-        public List<string> LogonCommand { get; set; } = new();
+        public List<string> LogonCommand { get; set; } = new List<string>();
 
         [XmlArray, XmlArrayItem(typeof(SandboxMappedFolder), ElementName = "MappedFolder")]
-        public List<SandboxMappedFolder> MappedFolders { get; } = new();
+        public List<SandboxMappedFolder> MappedFolders { get; } = new List<SandboxMappedFolder>();
     }
 }

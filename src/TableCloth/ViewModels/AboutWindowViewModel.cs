@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using TableCloth.Components;
 
-namespace TableCloth.Models.ViewModels
+namespace TableCloth.ViewModels
 {
     public class AboutWindowViewModel : INotifyPropertyChanged
     {
@@ -19,8 +19,10 @@ namespace TableCloth.Models.ViewModels
             _licenseDescriptor = licenseDescriptor;
         }
 
+        /*
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
+        */
 
         private readonly AppMessageBox _appMessageBox;
         private readonly CatalogDeserializer _catalogDeserializer;

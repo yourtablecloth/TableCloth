@@ -15,10 +15,10 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
-using TableCloth.Models.ViewModels;
 using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 using TableCloth.Themes;
+using TableCloth.ViewModels;
 
 namespace TableCloth.Implementations.WPF
 {

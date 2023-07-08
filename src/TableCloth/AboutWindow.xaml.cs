@@ -3,8 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using TableCloth.Components;
-using TableCloth.Models.ViewModels;
 using TableCloth.Resources;
+using TableCloth.ViewModels;
 
 namespace TableCloth
 {

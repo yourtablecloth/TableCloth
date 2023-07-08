@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using TableCloth.Components;
 
-namespace TableCloth.Models.ViewModels
+namespace TableCloth.ViewModels
 {
     public class InputPasswordWindowViewModel : INotifyPropertyChanged
     {
@@ -14,8 +14,10 @@ namespace TableCloth.Models.ViewModels
             _appMessageBox = appMessageBox;
         }
 
+        /*
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
+        */
 
         private readonly X509CertPairScanner _certPairScanner;
         private readonly AppMessageBox _appMessageBox;
