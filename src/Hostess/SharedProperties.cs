@@ -90,6 +90,14 @@ namespace Hostess
             where TApplication : Application
             => InitAppProperty(app, "HasHancomOfficeViewerEnabled", value ? Boolean.TrueString : Boolean.FalseString);
 
+        public static bool GetHasRaiDriveEnabled<TApplication>(this TApplication app)
+            where TApplication : Application
+            => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, "HasRaiDriveEnabled"));
+
+        public static void InitHasRaiDriveEnabled<TApplication>(this TApplication app, bool value)
+            where TApplication : Application
+            => InitAppProperty(app, "HasRaiDriveEnabled", value ? Boolean.TrueString : Boolean.FalseString);
+
         public static bool GetHasIEModeEnabled<TApplication>(this TApplication app)
             where TApplication : Application
             => string.Equals(Boolean.TrueString, GetAppProperty<TApplication, string>(app, "HasIEModeEnabled"));

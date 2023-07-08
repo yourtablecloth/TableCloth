@@ -74,7 +74,11 @@
     </system:String>
 
     <system:String x:Key="MainWindow_UseHancomOfficeViewer">
-        한컴오피스 뷰어 다운로드
+        한컴오피스 뷰어 추가하기
+    </system:String>
+
+    <system:String x:Key="MainWindow_UseRaiDrive">
+        RaiDrive 추가하기
     </system:String>
 
     <system:String x:Key="MainWindow_UseIEModeCompatList">

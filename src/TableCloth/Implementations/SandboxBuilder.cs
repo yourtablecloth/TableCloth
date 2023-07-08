@@ -114,9 +114,6 @@ namespace TableCloth.Implementations
             return sandboxConfig;
         }
 
-        private string EscapeUrlForCommandLine(string url)
-            => url.Replace("?", "^?").Replace("&", "^&").Replace("%", "%%");
-
         private string GenerateSandboxStartupScript(TableClothConfiguration tableClothConfiguration)
         {
             if (tableClothConfiguration == null)
@@ -148,6 +145,9 @@ del /f /q ""{providedCertFilePath}""
 
             if (tableClothConfiguration.EnableHancomOfficeViewer)
                 switches.Add(StringResources.TableCloth_Switch_EnableHancomOfficeViewer);
+
+            if (tableClothConfiguration.EnableRaiDrive)
+                switches.Add(StringResources.TableCloth_Switch_EnableRaiDrive);
 
             if (tableClothConfiguration.EnableInternetExplorerMode)
                 switches.Add(StringResources.TableCloth_Switch_EnableIEMode);

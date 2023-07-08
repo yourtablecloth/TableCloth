@@ -54,6 +54,9 @@ namespace TableCloth.Resources
 
         internal static readonly string HancomOfficeViewerUrl =
             "https://www.hancom.com/cs_center/csDownload.do";
+
+        internal static readonly string RaiDriveUrl =
+            "https://www.raidrive.com/download";
     }
 #pragma warning disable IDE0040, IDE0066
 
@@ -351,6 +354,8 @@ namespace TableCloth.Resources
 
         internal static readonly string TableCloth_Switch_EnableHancomOfficeViewer = TableCloth_Switch_Prefix + "enable-hancom-office-viewer";
 
+        internal static readonly string TableCloth_Switch_EnableRaiDrive = TableCloth_Switch_Prefix + "enable-rai-drive";
+
         internal static readonly string TableCloth_Switch_EnableIEMode = TableCloth_Switch_Prefix + "enable-ie-mode";
 
         internal static readonly string TableCloth_Switch_Help = TableCloth_Switch_Prefix + "help";
@@ -388,6 +393,9 @@ ServiceID는 {CatalogUrl}을 확인해주세요.
 {TableCloth_Switch_EnableHancomOfficeViewer}
   한컴오피스 뷰어 설치를 샌드박스 시작 후 실행합니다.
 
+{TableCloth_Switch_EnableRaiDrive}
+  RaiDrive 설치를 샌드박스 시작 후 실행합니다.
+
 {TableCloth_Switch_EnableIEMode}
   Internet Explorer 모드를 활성화합니다.
 
@@ -409,6 +417,9 @@ ServiceID는 {CatalogUrl}을 확인해주세요.
 
 {TableCloth_Switch_EnableHancomOfficeViewer}
   한컴오피스 뷰어 설치를 샌드박스 시작 후 실행합니다.
+
+{TableCloth_Switch_EnableRaiDrive}
+  RaiDrive 설치를 샌드박스 시작 후 실행합니다.
 
 {TableCloth_Switch_EnableIEMode}
   Internet Explorer 모드를 활성화합니다.

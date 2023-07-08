@@ -38,6 +38,11 @@ namespace TableCloth.Models.Configuration
         public bool InstallHancomOfficeViewer { get; set; } = true;
 
         /// <summary>
+        /// RaiDrive 설치를 샌드박스 시작 직후 실행할지 여부를 나타냅니다.
+        /// </summary>
+        public bool InstallRaiDrive { get; set; } = true;
+
+        /// <summary>
         /// Internet Explorer 호환성 모드를 사용할지 여부를 나타냅니다.
         /// </summary>
         public bool EnableInternetExplorerMode { get; set; } = true;

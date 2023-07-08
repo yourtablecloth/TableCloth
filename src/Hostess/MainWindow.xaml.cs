@@ -423,6 +423,15 @@ namespace Hostess
                         });
                     }
 
+                    if (App.Current.GetHasRaiDriveEnabled())
+                    {
+                        Process.Start(new ProcessStartInfo(StringResources.RaiDriveUrl)
+                        {
+                            UseShellExecute = true,
+                            WindowStyle = ProcessWindowStyle.Maximized,
+                        });
+                    }
+
                     var targets = Application.Current.GetInstallSites();
 
                     foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))

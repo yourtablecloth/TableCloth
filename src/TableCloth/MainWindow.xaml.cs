@@ -216,6 +216,7 @@ namespace TableCloth.Implementations.WPF
             ViewModel.EnableEveryonesPrinter = currentConfig.InstallEveryonesPrinter;
             ViewModel.EnableAdobeReader = currentConfig.InstallAdobeReader;
             ViewModel.EnableHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
+            ViewModel.EnableRaiDrive = currentConfig.InstallRaiDrive;
             ViewModel.EnableInternetExplorerMode = currentConfig.EnableInternetExplorerMode;
             ViewModel.LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
@@ -274,6 +275,8 @@ namespace TableCloth.Implementations.WPF
                     config.EnableAdobeReader = true;
                 else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableHancomOfficeViewer, StringComparison.OrdinalIgnoreCase))
                     config.EnableHancomOfficeViewer = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableRaiDrive, StringComparison.OrdinalIgnoreCase))
+                    config.EnableRaiDrive = true;
                 else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableIEMode, StringComparison.OrdinalIgnoreCase))
                     config.EnableInternetExplorerMode = true;
                 else if (string.Equals(args[i], StringResources.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase))
@@ -383,6 +386,10 @@ namespace TableCloth.Implementations.WPF
                     currentConfig.InstallHancomOfficeViewer = ViewModel.EnableHancomOfficeViewer;
                     break;
 
+                case nameof(MainWindowViewModel.EnableRaiDrive):
+                    currentConfig.InstallRaiDrive = ViewModel.EnableRaiDrive;
+                    break;
+
                 case nameof(MainWindowViewModel.EnableInternetExplorerMode):
                     currentConfig.EnableInternetExplorerMode = ViewModel.EnableInternetExplorerMode;
                     break;
@@ -444,6 +451,7 @@ namespace TableCloth.Implementations.WPF
                 EnableEveryonesPrinter = ViewModel.EnableEveryonesPrinter,
                 EnableAdobeReader = ViewModel.EnableAdobeReader,
                 EnableHancomOfficeViewer = ViewModel.EnableHancomOfficeViewer,
+                EnableRaiDrive = ViewModel.EnableRaiDrive,
                 EnableInternetExplorerMode = ViewModel.EnableInternetExplorerMode,
                 Companions = ViewModel.CatalogDocument.Companions,
                 Services = _selectedSites,
@@ -575,6 +583,8 @@ namespace TableCloth.Implementations.WPF
                 options.Add(StringResources.TableCloth_Switch_EnableAdobeReader);
             if (ViewModel.EnableHancomOfficeViewer)
                 options.Add(StringResources.TableCloth_Switch_EnableHancomOfficeViewer);
+            if (ViewModel.EnableRaiDrive)
+                options.Add(StringResources.TableCloth_Switch_EnableRaiDrive);
             if (ViewModel.EnableInternetExplorerMode)
                 options.Add(StringResources.TableCloth_Switch_EnableIEMode);
             if (ViewModel.MapNpkiCert)
