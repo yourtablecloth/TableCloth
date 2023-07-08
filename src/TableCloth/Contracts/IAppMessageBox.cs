@@ -24,7 +24,7 @@ namespace TableCloth.Contracts
         /// <param name="failureReason">발생한 예외 개체의 참조</param>
         /// <param name="isCritical">심각성 여부</param>
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
-        int DisplayError(object parentWindowHandle, Exception failureReason, bool isCritical);
+        MessageBoxResult DisplayError(object parentWindowHandle, Exception failureReason, bool isCritical);
 
         /// <summary>
         /// 오류를 안내하는 메시지 상자를 띄웁니다.
@@ -33,6 +33,6 @@ namespace TableCloth.Contracts
         /// <param name="message">표시할 메시지</param>
         /// <param name="isCritical">심각성 여부</param>
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
-        int DisplayError(object parentWindowHandle, string message, bool isCritical);
+        MessageBoxResult DisplayError(object parentWindowHandle, string message, bool isCritical);
     }
 }

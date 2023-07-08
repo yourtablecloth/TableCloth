@@ -46,7 +46,7 @@ namespace TableCloth.Implementations
         /// <param name="failureReason">발생한 예외 개체의 참조</param>
         /// <param name="isCritical">심각성 여부</param>
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
-        public int DisplayError(object parentWindowHandle, Exception failureReason, bool isCritical)
+        public MessageBoxResult DisplayError(object parentWindowHandle, Exception failureReason, bool isCritical)
         {
             var unwrappedException = failureReason;
 
@@ -63,23 +63,23 @@ namespace TableCloth.Implementations
         /// <param name="message">표시할 메시지</param>
         /// <param name="isCritical">심각성 여부</param>
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
-        public int DisplayError(object parentWindowHandle, string message, bool isCritical)
+        public MessageBoxResult DisplayError(object parentWindowHandle, string message, bool isCritical)
         {
             var dispatcher = parentWindowHandle is Window window ? window?.Dispatcher : null;
 
             if (dispatcher == null)
                 dispatcher = Dispatcher.CurrentDispatcher;
 
-            return (int)dispatcher.Invoke(
-                new Func<object, string, bool, int>((parent, message, isCritical) =>
+            return (MessageBoxResult)dispatcher.Invoke(
+                new Func<object, string, bool, MessageBoxResult>((parent, message, isCritical) =>
                 {
                     return parent is Window window
-                        ? (int)MessageBox.Show(
+                        ? MessageBox.Show(
                             window, message,
                             isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning,
                             MessageBoxButton.OK,
                             isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning, MessageBoxResult.OK)
-                        : (int)MessageBox.Show(
+                        : MessageBox.Show(
                             message,
                             isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning,
                             MessageBoxButton.OK,
