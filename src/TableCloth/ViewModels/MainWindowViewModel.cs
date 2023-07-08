@@ -20,7 +20,7 @@ namespace TableCloth.ViewModels
             X509CertPairScanner certPairScanner,
             SandboxBuilder sandboxBuilder,
             SandboxLauncher sandboxLauncher,
-            Preferences preferences)
+            PreferencesManager preferences)
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
@@ -57,7 +57,7 @@ namespace TableCloth.ViewModels
         private readonly X509CertPairScanner _certPairScanner;
         private readonly SandboxBuilder _sandboxBuilder;
         private readonly SandboxLauncher _sandboxLauncher;
-        private readonly Preferences _preferences;
+        private readonly PreferencesManager _preferences;
 
         private bool _mapNpkiCert;
         private bool _enableLogAutoCollecting;
@@ -101,7 +101,7 @@ namespace TableCloth.ViewModels
         public SandboxLauncher SandboxLauncher
             => _sandboxLauncher;
 
-        public Preferences Preferences
+        public PreferencesManager Preferences
             => _preferences;
 
         public bool MapNpkiCert

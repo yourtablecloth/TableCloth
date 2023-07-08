@@ -7,11 +7,11 @@ using TableCloth.Models.Configuration;
 
 namespace TableCloth.Components
 {
-    public sealed class Preferences
+    public sealed class PreferencesManager
     {
-        public Preferences(
+        public PreferencesManager(
             SharedLocations sharedLocations,
-            ILogger<Preferences> logger)
+            ILogger<PreferencesManager> logger)
         {
             _sharedLocations = sharedLocations;
             _logger = logger;

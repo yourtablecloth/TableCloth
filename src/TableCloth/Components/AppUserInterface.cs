@@ -11,14 +11,14 @@ namespace TableCloth.Components
     {
         public AppUserInterface(
             SharedLocations sharedLocations,
-            Preferences preferences)
+            PreferencesManager preferences)
         {
             _sharedLocations = sharedLocations;
             _preferences = preferences;
         }
 
         private readonly SharedLocations _sharedLocations;
-        private readonly Preferences _preferences;
+        private readonly PreferencesManager _preferences;
 
         private App _appInstance;
 

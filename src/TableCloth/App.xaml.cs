@@ -81,7 +81,7 @@ namespace TableCloth
 
             // Add Services
             services.AddSingleton<SharedLocations>();
-            services.AddSingleton<Preferences>();
+            services.AddSingleton<PreferencesManager>();
             services.AddSingleton<X509CertPairScanner>();
             services.AddSingleton<CatalogDeserializer>();
             services.AddSingleton<SandboxBuilder>();
