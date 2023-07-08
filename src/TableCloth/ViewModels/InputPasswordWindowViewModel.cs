@@ -14,10 +14,8 @@ namespace TableCloth.ViewModels
             _appMessageBox = appMessageBox;
         }
 
-        /*
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
-        */
 
         private readonly X509CertPairScanner _certPairScanner;
         private readonly AppMessageBox _appMessageBox;
