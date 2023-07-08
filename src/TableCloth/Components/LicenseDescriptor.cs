@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace TableCloth.Components
 {
-    internal static class LicenseDescriptor
+    public sealed class LicenseDescriptor
     {
-        private static IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
+        private IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
         {
             var asm = Assembly.GetEntryAssembly();
 
@@ -31,7 +31,7 @@ namespace TableCloth.Components
             return refList;
         }
 
-        private static async Task<string> GetLicenseDescriptionForGitHub(string owner, string repoName)
+        private async Task<string> GetLicenseDescriptionForGitHub(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
             var httpClient = Shared.HttpClientFactory.Value;
@@ -41,7 +41,7 @@ namespace TableCloth.Components
             return jsonDocument.RootElement.GetProperty("license").GetProperty("name").GetString();
         }
 
-        public static async Task<string> GetLicenseDescriptions()
+        public async Task<string> GetLicenseDescriptions()
         {
             var buffer = new StringBuilder();
 

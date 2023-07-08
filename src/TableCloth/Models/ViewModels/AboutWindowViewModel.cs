@@ -9,10 +9,14 @@ namespace TableCloth.Models.ViewModels
     {
         public AboutWindowViewModel(
             AppMessageBox appMessageBox,
-            CatalogDeserializer catalogDeserializer)
+            CatalogDeserializer catalogDeserializer,
+            GitHubReleaseFinder gitHubReleaseFinder,
+            LicenseDescriptor licenseDescriptor)
         {
             _appMessageBox = appMessageBox;
             _catalogDeserializer = catalogDeserializer;
+            _gitHubReleaseFinder = gitHubReleaseFinder;
+            _licenseDescriptor = licenseDescriptor;
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
@@ -20,6 +24,8 @@ namespace TableCloth.Models.ViewModels
 
         private readonly AppMessageBox _appMessageBox;
         private readonly CatalogDeserializer _catalogDeserializer;
+        private readonly GitHubReleaseFinder _gitHubReleaseFinder;
+        private readonly LicenseDescriptor _licenseDescriptor;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -28,5 +34,11 @@ namespace TableCloth.Models.ViewModels
 
         public AppMessageBox AppMessageBox
             => _appMessageBox;
+
+        public GitHubReleaseFinder GitHubReleaseFinder
+            => _gitHubReleaseFinder;
+
+        public LicenseDescriptor LicenseDescriptor
+            => _licenseDescriptor;
     }
 }

@@ -25,7 +25,7 @@ namespace TableCloth
         {
             AppVersionLabel.Content = StringResources.Get_AppVersion();
             CatalogDateLabel.Content = ViewModel.CatalogVersion?.ToString("yyyy-MM-dd HH:mm:ss") ?? StringResources.UnknownText;
-            LicenseDetails.Text = await LicenseDescriptor.GetLicenseDescriptions();
+            LicenseDetails.Text = await ViewModel.LicenseDescriptor.GetLicenseDescriptions();
         }
 
         private void OkayButton_Click(object sender, RoutedEventArgs e)
@@ -63,11 +63,11 @@ namespace TableCloth
                 var repo = "TableCloth";
                 var thisVersion = GetType().Assembly.GetName().Version;
 
-                if (Version.TryParse(await GitHubReleaseFinder.GetLatestVersion(owner, repo), out Version parsedVersion) &&
+                if (Version.TryParse(await ViewModel.GitHubReleaseFinder.GetLatestVersion(owner, repo), out Version parsedVersion) &&
                     thisVersion != null && parsedVersion > thisVersion)
                 {
                     ViewModel.AppMessageBox.DisplayInfo(this, StringResources.Info_UpdateRequired);
-                    var targetUrl = await GitHubReleaseFinder.GetDownloadUrl(owner, repo);
+                    var targetUrl = await ViewModel.GitHubReleaseFinder.GetDownloadUrl(owner, repo);
                     var psi = new ProcessStartInfo(targetUrl.AbsoluteUri) { UseShellExecute = true, };
                     Process.Start(psi);
                     return;

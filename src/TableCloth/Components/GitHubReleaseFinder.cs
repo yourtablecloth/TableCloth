@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace TableCloth.Components
 {
-    internal static class GitHubReleaseFinder
+    public sealed class GitHubReleaseFinder
     {
-        internal static async Task<string> GetLatestVersion(string owner, string repoName)
+        public async Task<string> GetLatestVersion(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
             var httpClient = Shared.HttpClientFactory.Value;
@@ -16,7 +16,7 @@ namespace TableCloth.Components
             return jsonDocument.RootElement.GetProperty("tag_name").GetString()?.TrimStart('v');
         }
 
-        internal static async Task<Uri> GetDownloadUrl(string owner, string repoName)
+        public async Task<Uri> GetDownloadUrl(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
             var httpClient = Shared.HttpClientFactory.Value;

@@ -79,6 +79,8 @@ namespace TableCloth
             services.AddSingleton<SandboxBuilder>();
             services.AddSingleton<SandboxLauncher>();
             services.AddSingleton<AppStartup>();
+            services.AddSingleton<GitHubReleaseFinder>();
+            services.AddSingleton<LicenseDescriptor>();
 
             // ViewModel
             services.AddSingleton<MainWindowViewModel>();
