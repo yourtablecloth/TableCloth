@@ -3,22 +3,21 @@ using System;
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using TableCloth.Contracts;
 using TableCloth.Models.Configuration;
 
-namespace TableCloth.Implementations
+namespace TableCloth.Components
 {
-    public sealed class Preferences : IPreferences
+    public sealed class Preferences
     {
         public Preferences(
-            ISharedLocations sharedLocations,
+            SharedLocations sharedLocations,
             ILogger<Preferences> logger)
         {
             _sharedLocations = sharedLocations;
             _logger = logger;
         }
 
-        private readonly ISharedLocations _sharedLocations;
+        private readonly SharedLocations _sharedLocations;
         private readonly ILogger _logger;
 
         private void MigrateDesktopDataDirectory()

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.IO;
 using System.Windows.Data;
-using TableCloth.Contracts;
+using TableCloth.Components;
 
 namespace TableCloth.Converters
 {
@@ -10,7 +10,7 @@ namespace TableCloth.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var locationService = Program.ServiceProvider.GetService(typeof(ISharedLocations)) as ISharedLocations;
+            var locationService = Program.ServiceProvider.GetService(typeof(SharedLocations)) as SharedLocations;
 
             if (locationService == null)
                 return null;

@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using TableCloth.Contracts;
+using TableCloth.Components;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
-namespace TableCloth.ViewModels
+namespace TableCloth.Models.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         public MainWindowViewModel(
-            ISharedLocations sharedLocations,
-            IAppStartup appStartup,
-            IAppUserInterface appUserInterface,
-            IAppMessageBox appMessageBox,
-            ICatalogDeserializer catalogDeserializer,
-            IX509CertPairScanner certPairScanner,
-            ISandboxBuilder sandboxBuilder,
-            ISandboxLauncher sandboxLauncher,
-            IPreferences preferences)
+            SharedLocations sharedLocations,
+            AppStartup appStartup,
+            AppUserInterface appUserInterface,
+            AppMessageBox appMessageBox,
+            CatalogDeserializer catalogDeserializer,
+            X509CertPairScanner certPairScanner,
+            SandboxBuilder sandboxBuilder,
+            SandboxLauncher sandboxLauncher,
+            Preferences preferences)
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
@@ -49,15 +49,15 @@ namespace TableCloth.ViewModels
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
-        private readonly ISharedLocations _sharedLocations;
-        private readonly IAppStartup _appStartup;
-        private readonly IAppUserInterface _appUserInterface;
-        private readonly IAppMessageBox _appMessageBox;
-        private readonly ICatalogDeserializer _catalogDeserializer;
-        private readonly IX509CertPairScanner _certPairScanner;
-        private readonly ISandboxBuilder _sandboxBuilder;
-        private readonly ISandboxLauncher _sandboxLauncher;
-        private readonly IPreferences _preferences;
+        private readonly SharedLocations _sharedLocations;
+        private readonly AppStartup _appStartup;
+        private readonly AppUserInterface _appUserInterface;
+        private readonly AppMessageBox _appMessageBox;
+        private readonly CatalogDeserializer _catalogDeserializer;
+        private readonly X509CertPairScanner _certPairScanner;
+        private readonly SandboxBuilder _sandboxBuilder;
+        private readonly SandboxLauncher _sandboxLauncher;
+        private readonly Preferences _preferences;
 
         private bool _mapNpkiCert;
         private bool _enableLogAutoCollecting;
@@ -77,31 +77,31 @@ namespace TableCloth.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public ISharedLocations SharedLocations
+        public SharedLocations SharedLocations
             => _sharedLocations;
 
-        public IAppStartup AppStartup
+        public AppStartup AppStartup
             => _appStartup;
 
-        public IAppUserInterface AppUserInterface
+        public AppUserInterface AppUserInterface
             => _appUserInterface;
 
-        public IAppMessageBox AppMessageBox
+        public AppMessageBox AppMessageBox
             => _appMessageBox;
 
-        public ICatalogDeserializer CatalogDeserializer
+        public CatalogDeserializer CatalogDeserializer
             => _catalogDeserializer;
 
-        public IX509CertPairScanner CertPairScanner
+        public X509CertPairScanner CertPairScanner
             => _certPairScanner;
 
-        public ISandboxBuilder SandboxBuilder
+        public SandboxBuilder SandboxBuilder
             => _sandboxBuilder;
 
-        public ISandboxLauncher SandboxLauncher
+        public SandboxLauncher SandboxLauncher
             => _sandboxLauncher;
 
-        public IPreferences Preferences
+        public Preferences Preferences
             => _preferences;
 
         public bool MapNpkiCert

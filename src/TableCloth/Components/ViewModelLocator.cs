@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TableCloth.ViewModels;
+using TableCloth.Models.ViewModels;
 
-namespace TableCloth.Implementations
+namespace TableCloth.Components
 {
     public class ViewModelLocator
     {

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using TableCloth.Contracts;
+using TableCloth.Components;
 
-namespace TableCloth.ViewModels
+namespace TableCloth.Models.ViewModels
 {
     public class AboutWindowViewModel : INotifyPropertyChanged
     {
         public AboutWindowViewModel(
-            IAppMessageBox appMessageBox,
-            ICatalogDeserializer catalogDeserializer)
+            AppMessageBox appMessageBox,
+            CatalogDeserializer catalogDeserializer)
         {
             _appMessageBox = appMessageBox;
             _catalogDeserializer = catalogDeserializer;
@@ -18,15 +18,15 @@ namespace TableCloth.ViewModels
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
-        private readonly IAppMessageBox _appMessageBox;
-        private readonly ICatalogDeserializer _catalogDeserializer;
+        private readonly AppMessageBox _appMessageBox;
+        private readonly CatalogDeserializer _catalogDeserializer;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public DateTimeOffset? CatalogVersion
             => _catalogDeserializer.CatalogLastModified;
 
-        public IAppMessageBox AppMessageBox
+        public AppMessageBox AppMessageBox
             => _appMessageBox;
     }
 }

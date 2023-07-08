@@ -5,13 +5,12 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Xml;
 using System.Xml.Serialization;
-using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
-namespace TableCloth.Implementations
+namespace TableCloth.Components
 {
-    public sealed class CatalogDeserializer : ICatalogDeserializer
+    public sealed class CatalogDeserializer
     {
         private DateTimeOffset? _catalogLastModified = default;
         private DateTimeOffset? _ieModeListLastModified = default;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using TableCloth.ViewModels;
+using TableCloth.Models.ViewModels;
 
 namespace TableCloth.Implementations.WPF
 {

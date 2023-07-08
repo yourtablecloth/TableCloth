@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using TableCloth.Contracts;
 
-namespace TableCloth.Implementations
+namespace TableCloth.Components
 {
-    public sealed class SharedLocations : ISharedLocations
+    public sealed class SharedLocations
     {
         public string AppDataDirectoryPath =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "TableCloth");

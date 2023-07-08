@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace TableCloth.Implementations
+namespace TableCloth
 {
     [SuppressUnmanagedCodeSecurity]
     internal static class NativeMethods

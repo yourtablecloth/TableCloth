@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Threading;
-using TableCloth.Contracts;
 using TableCloth.Resources;
 
-namespace TableCloth.Implementations
+namespace TableCloth.Components
 {
     /// <summary>
-    /// Windows Presentation Foundation의 메시지 상자 표시 기능을 구현하는 구현체입니다.
+    /// Windows Presentation Foundation의 메시지 상자 표시 기능을 구현합니다.
     /// </summary>
-    public sealed class AppMessageBox : IAppMessageBox
+    public sealed class AppMessageBox
     {
         /// <summary>
         /// 정보를 안내하는 메시지 상자를 띄웁니다.

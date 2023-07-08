@@ -2,8 +2,8 @@
 using System.Text;
 using System.Windows;
 using TableCloth.Models.Configuration;
+using TableCloth.Models.ViewModels;
 using TableCloth.Resources;
-using TableCloth.ViewModels;
 
 namespace TableCloth
 {

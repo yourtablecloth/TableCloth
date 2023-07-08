@@ -4,23 +4,22 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
-using TableCloth.Contracts;
-using TableCloth.Implementations.WindowsSandbox;
+using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 
-namespace TableCloth.Implementations
+namespace TableCloth.Components
 {
-    public sealed class SandboxLauncher : ISandboxLauncher
+    public sealed class SandboxLauncher
     {
         public SandboxLauncher(
-            IAppMessageBox appMessageBox,
+            AppMessageBox appMessageBox,
             ILogger<SandboxLauncher> logger)
         {
             _appMessageBox = appMessageBox;
             _logger = logger;
         }
 
-        private readonly IAppMessageBox _appMessageBox;
+        private readonly AppMessageBox _appMessageBox;
         private readonly ILogger _logger;
 
         private bool ValidateSandboxSpecFile(string wsbFilePath, out string reason)
@@ -72,7 +71,7 @@ namespace TableCloth.Implementations
             }
         }
 
-        public void RunSandbox(IAppUserInterface appUserInteface, string sandboxOutputDirectory, string wsbFilePath)
+        public void RunSandbox(AppUserInterface appUserInteface, string sandboxOutputDirectory, string wsbFilePath)
         {
             if (!ValidateSandboxSpecFile(wsbFilePath, out string reason))
             {

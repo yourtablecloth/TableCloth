@@ -2,7 +2,7 @@
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace TableCloth.Implementations.WindowsSandbox
+namespace TableCloth.Models.WindowsSandbox
 {
     [XmlRoot("Configuration")]
     public sealed partial class SandboxConfiguration

@@ -4,10 +4,9 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TableCloth.Contracts;
-using TableCloth.Implementations;
+using TableCloth.Components;
+using TableCloth.Models.ViewModels;
 using TableCloth.Resources;
-using TableCloth.ViewModels;
 
 namespace TableCloth
 {
@@ -28,9 +27,9 @@ namespace TableCloth
                 ConfigureServices(services);
 
                 ServiceProvider = services.BuildServiceProvider();
-                var startup = ServiceProvider.GetService<IAppStartup>()!;
-                var userInterface = ServiceProvider.GetService<IAppUserInterface>()!;
-                var messageBox = ServiceProvider.GetService<IAppMessageBox>()!;
+                var startup = ServiceProvider.GetService<AppStartup>()!;
+                var userInterface = ServiceProvider.GetService<AppUserInterface>()!;
+                var messageBox = ServiceProvider.GetService<AppMessageBox>()!;
 
                 startup.Arguments = args;
                 var warnings = new List<string>();
@@ -73,13 +72,13 @@ namespace TableCloth
             });
 
             // Add Services
-            services.AddSingleton<ISharedLocations, SharedLocations>();
-            services.AddSingleton<IPreferences, Preferences>();
-            services.AddSingleton<IX509CertPairScanner, X509CertPairScanner>();
-            services.AddSingleton<ICatalogDeserializer, CatalogDeserializer>();
-            services.AddSingleton<ISandboxBuilder, SandboxBuilder>();
-            services.AddSingleton<ISandboxLauncher, SandboxLauncher>();
-            services.AddSingleton<IAppStartup, AppStartup>();
+            services.AddSingleton<SharedLocations>();
+            services.AddSingleton<Preferences>();
+            services.AddSingleton<X509CertPairScanner>();
+            services.AddSingleton<CatalogDeserializer>();
+            services.AddSingleton<SandboxBuilder>();
+            services.AddSingleton<SandboxLauncher>();
+            services.AddSingleton<AppStartup>();
 
             // ViewModel
             services.AddSingleton<MainWindowViewModel>();
@@ -88,8 +87,8 @@ namespace TableCloth
             services.AddTransient<InputPasswordWindowViewModel>();
 
             // UI
-            services.AddSingleton<IAppMessageBox, AppMessageBox>();
-            services.AddSingleton<IAppUserInterface, AppUserInterface>();
+            services.AddSingleton<AppMessageBox>();
+            services.AddSingleton<AppUserInterface>();
         }
     }
 }

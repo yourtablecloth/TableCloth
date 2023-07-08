@@ -7,13 +7,12 @@ using System.Linq;
 using System.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using TableCloth.Contracts;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 
-namespace TableCloth.Implementations
+namespace TableCloth.Components
 {
-    public sealed class X509CertPairScanner : IX509CertPairScanner
+    public sealed class X509CertPairScanner
     {
         public X509CertPairScanner(ILogger<X509CertPairScanner> logger)
         {

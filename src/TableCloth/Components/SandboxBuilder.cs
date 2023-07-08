@@ -6,21 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using TableCloth.Contracts;
-using TableCloth.Implementations.WindowsSandbox;
 using TableCloth.Models.Configuration;
+using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 
-namespace TableCloth.Implementations
+namespace TableCloth.Components
 {
-    public sealed class SandboxBuilder : ISandboxBuilder
+    public sealed class SandboxBuilder
     {
-        public SandboxBuilder(ISharedLocations sharedLocations)
+        public SandboxBuilder(SharedLocations sharedLocations)
         {
             this._sharedLocations = sharedLocations;
         }
 
-        private readonly ISharedLocations _sharedLocations;
+        private readonly SharedLocations _sharedLocations;
 
         private readonly string _wdagUtilityAccountPath = @"C:\Users\WDAGUtilityAccount";
 

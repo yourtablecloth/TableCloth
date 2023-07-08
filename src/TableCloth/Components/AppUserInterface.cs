@@ -3,23 +3,22 @@ using Serilog.Events;
 using Serilog.Formatting.Json;
 using System.Collections.Generic;
 using System.Threading;
-using TableCloth.Contracts;
 using TableCloth.Resources;
 
-namespace TableCloth.Implementations
+namespace TableCloth.Components
 {
-    public sealed class AppUserInterface : IAppUserInterface
+    public sealed class AppUserInterface
     {
         public AppUserInterface(
-            ISharedLocations sharedLocations,
-            IPreferences preferences)
+            SharedLocations sharedLocations,
+            Preferences preferences)
         {
             _sharedLocations = sharedLocations;
             _preferences = preferences;
         }
 
-        private readonly ISharedLocations _sharedLocations;
-        private readonly IPreferences _preferences;
+        private readonly SharedLocations _sharedLocations;
+        private readonly Preferences _preferences;
 
         private App _appInstance;
 

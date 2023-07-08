@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using TableCloth.Resources;
 
-namespace TableCloth
+namespace TableCloth.Components
 {
     internal static class LicenseDescriptor
     {
@@ -70,7 +68,7 @@ namespace TableCloth
 
                     try
                     {
-                        if (Uri.TryCreate(asmRepoUrl, UriKind.Absolute, out Uri parsedAsmRepoUrl) &&
+                        if (Uri.TryCreate(asmRepoUrl, UriKind.Absolute, out var parsedAsmRepoUrl) &&
                             string.Equals("github.com", parsedAsmRepoUrl.Host, StringComparison.OrdinalIgnoreCase))
                         {
                             var parts = parsedAsmRepoUrl.GetComponents(UriComponents.Path, UriFormat.UriEscaped).Split('/');

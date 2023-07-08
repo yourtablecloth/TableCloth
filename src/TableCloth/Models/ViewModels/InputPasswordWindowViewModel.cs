@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using TableCloth.Contracts;
+using TableCloth.Components;
 
-namespace TableCloth.ViewModels
+namespace TableCloth.Models.ViewModels
 {
     public class InputPasswordWindowViewModel : INotifyPropertyChanged
     {
         public InputPasswordWindowViewModel(
-            IX509CertPairScanner certPairScanner,
-            IAppMessageBox appMessageBox)
+            X509CertPairScanner certPairScanner,
+            AppMessageBox appMessageBox)
         {
             _certPairScanner = certPairScanner;
             _appMessageBox = appMessageBox;
@@ -17,15 +17,15 @@ namespace TableCloth.ViewModels
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
-        private readonly IX509CertPairScanner _certPairScanner;
-        private readonly IAppMessageBox _appMessageBox;
+        private readonly X509CertPairScanner _certPairScanner;
+        private readonly AppMessageBox _appMessageBox;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public IX509CertPairScanner CertPairScanner
+        public X509CertPairScanner CertPairScanner
             => _certPairScanner;
 
-        public IAppMessageBox AppMessageBox
+        public AppMessageBox AppMessageBox
             => _appMessageBox;
     }
 }

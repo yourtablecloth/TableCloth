@@ -4,19 +4,18 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using TableCloth.Contracts;
 using TableCloth.Resources;
 
-namespace TableCloth.Implementations
+namespace TableCloth.Components
 {
-    public sealed class AppStartup : IAppStartup
+    public sealed class AppStartup
     {
-        public AppStartup(ISharedLocations sharedLocations)
+        public AppStartup(SharedLocations sharedLocations)
         {
             _sharedLocations = sharedLocations;
         }
 
-        private readonly ISharedLocations _sharedLocations;
+        private readonly SharedLocations _sharedLocations;
 
         public IEnumerable<string> Arguments { get; set; }
 

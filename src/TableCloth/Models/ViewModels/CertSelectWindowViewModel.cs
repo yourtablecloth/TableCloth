@@ -2,15 +2,15 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using TableCloth.Contracts;
+using TableCloth.Components;
 using TableCloth.Models.Configuration;
 
-namespace TableCloth.ViewModels
+namespace TableCloth.Models.ViewModels
 {
     public class CertSelectWindowViewModel : INotifyPropertyChanged
     {
         public CertSelectWindowViewModel(
-            IX509CertPairScanner certPairScanner)
+            X509CertPairScanner certPairScanner)
         {
             _certPairScanner = certPairScanner;
             _certPairs = _certPairScanner.ScanX509Pairs(_certPairScanner.GetCandidateDirectories()).ToList();
@@ -19,14 +19,14 @@ namespace TableCloth.ViewModels
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
-        private readonly IX509CertPairScanner _certPairScanner;
+        private readonly X509CertPairScanner _certPairScanner;
 
         private List<X509CertPair> _certPairs;
         private X509CertPair _selectedCertPair;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public IX509CertPairScanner CertPairScanner
+        public X509CertPairScanner CertPairScanner
             => _certPairScanner;
 
         public List<X509CertPair> CertPairs
