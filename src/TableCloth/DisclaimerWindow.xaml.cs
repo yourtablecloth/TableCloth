@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Interop;
-using TableCloth.Implementations;
 
 namespace TableCloth
 {

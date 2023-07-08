@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Implementations.WPF
+namespace TableCloth
 {
     public partial class CertSelectWindow : Window
     {

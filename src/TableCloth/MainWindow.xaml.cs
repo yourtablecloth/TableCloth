@@ -20,7 +20,7 @@ using TableCloth.Resources;
 using TableCloth.Themes;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Implementations.WPF
+namespace TableCloth
 {
     public partial class MainWindow : Window
     {
