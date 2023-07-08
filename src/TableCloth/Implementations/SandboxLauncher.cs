@@ -80,9 +80,19 @@ namespace TableCloth.Implementations
                 return;
             }
 
-            var process = new Process();
-            process.StartInfo.FileName = "cmd";
-            process.StartInfo.Arguments = "/c start \"\" \"" + wsbFilePath + "\"";
+            var comSpecPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.System),
+                "cmd.exe");
+
+            var process = new Process()
+            {
+                EnableRaisingEvents = true,
+                StartInfo = new ProcessStartInfo(comSpecPath, "/c start \"\" \"" + wsbFilePath + "\"")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                },
+            };
 
             if (!process.Start())
             {
