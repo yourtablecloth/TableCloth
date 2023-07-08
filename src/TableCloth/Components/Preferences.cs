@@ -20,36 +20,10 @@ namespace TableCloth.Components
         private readonly SharedLocations _sharedLocations;
         private readonly ILogger _logger;
 
-        private void MigrateDesktopDataDirectory()
-        {
-            try
-            {
-                var oldPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "TableCloth");
-                var newPath = _sharedLocations.AppDataDirectoryPath;
-
-                if (!Directory.Exists(oldPath))
-                    return;
-
-                var oldPrefFile = Path.Combine(oldPath, "Preferences.json");
-
-                if (!File.Exists(oldPrefFile))
-                    return;
-
-                if (!Directory.Exists(newPath))
-                    Directory.CreateDirectory(newPath);
-
-                File.Copy(oldPrefFile, Path.Combine(newPath, "Preferences.json"), true);
-            }
-            catch { /* 마이그레이션에 실패하면 무시 */ }
-        }
-
         public PreferenceSettings LoadPreferences()
         {
             var defaultSettings = GetDefaultPreferences();
             var prefFilePath = _sharedLocations.PreferencesFilePath;
-
-            if (!File.Exists(prefFilePath))
-                MigrateDesktopDataDirectory();
 
             if (!File.Exists(prefFilePath))
                 return defaultSettings;
