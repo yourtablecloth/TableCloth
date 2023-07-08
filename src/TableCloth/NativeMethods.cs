@@ -7,6 +7,9 @@ namespace TableCloth
     [SuppressUnmanagedCodeSecurity]
     internal static class NativeMethods
     {
+        // https://stackoverflow.com/questions/51334674/how-to-detect-windows-10-light-dark-mode-in-win32-application
+        public const int WM_SETTINGCHANGE = 0x001A;
+
         public const int GWL_STYLE = -16;
         public const int WS_SYSMENU = 0x80000;
 

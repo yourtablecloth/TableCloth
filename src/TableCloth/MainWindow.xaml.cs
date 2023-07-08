@@ -56,10 +56,7 @@ namespace TableCloth
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            // https://stackoverflow.com/questions/51334674/how-to-detect-windows-10-light-dark-mode-in-win32-application
-            const int WM_SETTINGCHANGE = 0x001A;
-
-            if (msg == WM_SETTINGCHANGE)
+            if (msg == NativeMethods.WM_SETTINGCHANGE)
             {
                 var data = Marshal.PtrToStringAuto(lParam);
                 if (string.Equals(data, "ImmersiveColorSet", StringComparison.Ordinal))
