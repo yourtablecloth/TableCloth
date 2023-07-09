@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Security;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using TableCloth.Models.Catalog;
 
@@ -320,6 +322,13 @@ namespace TableCloth.Resources
             }
 
             return message;
+        }
+
+        internal static string HostessError_X509CertError(X509Certificate cert, SslPolicyErrors error)
+        {
+            return String.Format(
+                "원격 웹 사이트와의 통신 도중 X509 인증서 오류가 발생했습니다. 인증서 주체는 {0}이며, 발생한 오류 코드는 {1} 입니다.",
+                cert.Subject, error.ToString());
         }
 
         internal static string HostessError_PackageInstallFailure(string errorMessage)

@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Windows;
 using System.Xml;
@@ -16,6 +18,8 @@ namespace Hostess
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            ServicePointManager.ServerCertificateValidationCallback += ValidateRemoteCertificate;
+
             const int retryCount = 3;
 
             try
@@ -181,6 +185,18 @@ namespace Hostess
             {
                 return (T)serializer.Deserialize(contentStream);
             }
+        }
+
+        private static bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
+        {
+            // If the certificate is a valid, signed certificate, return true.
+            if (error == SslPolicyErrors.None)
+                return true;
+
+            MessageBox.Show(StringResources.HostessError_X509CertError(cert, error), StringResources.TitleText_Error,
+                MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
+            return false;
         }
     }
 }
