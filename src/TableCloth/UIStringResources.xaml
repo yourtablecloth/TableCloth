@@ -102,7 +102,7 @@
     </system:String>
 
     <system:String x:Key="MainWindow_SearchFilter_Watermark">
-        찾고 싶은 웹 사이트 이름을 입력하세요. (예: 신한)
+        찾고 싶은 웹 사이트의 이름, 분류, 도메인 주소를 입력하세요. (예: 신한, 보험, iros)
     </system:String>
 
     <system:String x:Key="MainWindow_SelectSiteLabelText_Alt">
