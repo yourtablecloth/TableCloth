@@ -21,8 +21,17 @@ namespace TableCloth.Resources
 
         internal static readonly string AppCommentText = "식탁보 - 컴퓨터를 깨끗하게 사용하세요!";
 
+        internal static readonly string AppNameForWixAndStore = "TableCloth";
+
+        internal static readonly string AppPublisherForWixAndStore = "TableCloth Project";
+
+        internal static readonly string AppCommentTextForWixAndStore = "TableCloth - Keep your computer clean!";
+
+        internal static readonly string AppContactForWixAndStore =
+            "https://yourtablecloth.app";
+
         internal static readonly string AppInfoUrl =
-            "https://yourtablecloth.github.io";
+            "https://yourtablecloth.app";
 
         internal static readonly string PrivacyPolicyUrl =
             "https://yourtablecloth.app/privacy";
@@ -34,10 +43,10 @@ namespace TableCloth.Resources
             "https://github.com/yourtablecloth/TableCloth/releases";
 
         internal static readonly string CatalogUrl =
-            "https://yourtablecloth.github.io/TableClothCatalog/Catalog.xml";
+            "https://yourtablecloth.app/TableClothCatalog/Catalog.xml";
 
         internal static readonly string ImageUrlPrefix =
-            "https://yourtablecloth.github.io/TableClothCatalog/images";
+            "https://yourtablecloth.app/TableClothCatalog/images";
 
         internal static readonly string SentryDsn =
             "https://785e3f46849c403bb6c323d7a9eaad91@o77541.ingest.sentry.io/5915832";

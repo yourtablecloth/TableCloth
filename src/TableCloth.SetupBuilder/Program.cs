@@ -97,7 +97,7 @@ namespace TableCloth.SetupBuilder
             project.GUID = Guid.Parse("21AD9E55-CC53-4B64-9770-BFA3432DD7D3");
             project.UpgradeCode = Guid.Parse("93316BF0-E965-49AD-A6A1-049AFD551459");
 #else
-            project.Name = StringResources.AppName;
+            project.Name = StringResources.AppNameForWixAndStore;
             project.GUID = Guid.Parse("1D7A2F0E-550D-452B-B69C-585F87C23A5B");
             project.UpgradeCode = Guid.Parse("C63DF133-51A9-4139-BD31-EDC025C7EB51");
 #endif // DEBUG
@@ -112,9 +112,9 @@ namespace TableCloth.SetupBuilder
             project.ControlPanelInfo.UrlInfoAbout = StringResources.AppInfoUrl;
             project.ControlPanelInfo.UrlUpdateInfo = StringResources.AppUpdateInfoUrl;
             project.ControlPanelInfo.HelpLink = StringResources.AppInfoUrl;
-            project.ControlPanelInfo.Comments = StringResources.AppCommentText;
-            project.ControlPanelInfo.Manufacturer = StringResources.AppPublisher;
-            project.ControlPanelInfo.Contact = StringResources.AppPublisher;
+            project.ControlPanelInfo.Comments = StringResources.AppCommentTextForWixAndStore;
+            project.ControlPanelInfo.Manufacturer = StringResources.AppPublisherForWixAndStore;
+            project.ControlPanelInfo.Contact = StringResources.AppContactForWixAndStore;
             project.ControlPanelInfo.NoModify = true;
 
             if (!ignorePfx)
