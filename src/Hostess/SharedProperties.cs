@@ -34,14 +34,6 @@ namespace Hostess
             where TApplication : Application
             => InitAppProperty(app, "Catalog", value);
 
-        public static IEModeListDocument GetIEModeListDocument<TApplication>(this TApplication app)
-            where TApplication : Application
-            => GetAppProperty<TApplication, IEModeListDocument>(app, "IEModeList");
-
-        public static void InitIEModeListDocument<TApplication>(this TApplication app, IEModeListDocument value)
-            where TApplication : Application
-            => InitAppProperty(app, "IEModeList", value);
-
         public static string GetCatalogLastModified<TApplication>(this TApplication app)
             where TApplication : Application
             => GetAppProperty<TApplication, string>(app, "CatalogLastModified");

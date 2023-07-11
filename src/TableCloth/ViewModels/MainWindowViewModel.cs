@@ -36,7 +36,6 @@ namespace TableCloth.ViewModels
             {
                 CatalogDocument = _catalogDeserializer.DeserializeCatalog();
                 Services = CatalogDocument.Services.ToList();
-                IEModeListDocument = _catalogDeserializer.DeserializeIEModeList();
             }
             catch (Exception ex)
             {
@@ -71,7 +70,6 @@ namespace TableCloth.ViewModels
         private bool _enableInternetExplorerMode;
         private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
-        private IEModeListDocument _ieModeListDocument;
         private X509CertPair _selectedCertFile;
         private List<CatalogInternetService> _services;
 
@@ -270,19 +268,6 @@ namespace TableCloth.ViewModels
                 if (value != _catalogDocument)
                 {
                     _catalogDocument = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-
-        public IEModeListDocument IEModeListDocument
-        {
-            get => _ieModeListDocument;
-            set
-            {
-                if (value != _ieModeListDocument)
-                {
-                    _ieModeListDocument = value;
                     NotifyPropertyChanged();
                 }
             }

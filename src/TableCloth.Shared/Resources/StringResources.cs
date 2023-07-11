@@ -36,9 +36,6 @@ namespace TableCloth.Resources
         internal static readonly string CatalogUrl =
             "https://yourtablecloth.github.io/TableClothCatalog/Catalog.xml";
 
-        internal static readonly string IEModeListUrl =
-            "https://yourtablecloth.github.io/TableClothCatalog/Compatibility.xml";
-
         internal static readonly string ImageUrlPrefix =
             "https://yourtablecloth.github.io/TableClothCatalog/images";
 

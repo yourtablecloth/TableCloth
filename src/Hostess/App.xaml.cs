@@ -64,46 +64,6 @@ namespace Hostess
                     break;
                 }
 
-                for (int attemptCount = 1; attemptCount <= retryCount; attemptCount++)
-                {
-                    IEModeListDocument ieModeList = null;
-                    string lastModifiedValue = null;
-
-                    try
-                    {
-                        using (var webClient = new WebClient())
-                        using (var ieModeListStream = webClient.OpenRead(StringResources.IEModeListUrl))
-                        {
-                            lastModifiedValue = webClient.ResponseHeaders.Get("Last-Modified");
-                            ieModeList = DeserializeFromXml<IEModeListDocument>(ieModeListStream);
-
-                            if (ieModeList == null)
-                            {
-                                throw new XmlException(StringResources.HostessError_CatalogDeserilizationFailure);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        ieModeList = null;
-                        Thread.Sleep(TimeSpan.FromSeconds(1.5d * attemptCount));
-
-                        if (attemptCount == retryCount)
-                        {
-                            MessageBox.Show(StringResources.HostessError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
-                                MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                            Current.Shutdown(0);
-                            return;
-                        }
-
-                        continue;
-                    }
-
-                    Current.InitIEModeListDocument(ieModeList);
-                    Current.InitIEModeListLastModified(lastModifiedValue);
-                    break;
-                }
-
                 var targetSites = e.Args.Where(x => !x.StartsWith(StringResources.TableCloth_Switch_Prefix, StringComparison.Ordinal)).ToArray();
                 Current.InitInstallSites(targetSites);
 
