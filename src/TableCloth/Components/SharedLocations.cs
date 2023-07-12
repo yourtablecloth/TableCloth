@@ -7,7 +7,7 @@ namespace TableCloth.Components
     public sealed class SharedLocations
     {
         public string AppDataDirectoryPath =>
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "TableCloth");
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TableCloth");
 
         private string GetDataPath(string relativePath) =>
             Path.Combine(AppDataDirectoryPath, relativePath);

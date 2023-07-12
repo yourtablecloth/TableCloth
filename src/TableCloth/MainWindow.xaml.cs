@@ -90,7 +90,7 @@ namespace TableCloth
             ViewModel.SandboxLauncher.RunSandbox(wsbFilePath);
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //SiteListHelpRow.Height = new GridLength(0d);
             //SiteListSearchRow.Height = new GridLength(0d);
@@ -148,7 +148,10 @@ namespace TableCloth
 
             var services = ViewModel.Services;
             var directoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
-            Task.Factory.StartNew(() => ViewModel.ResourceResolver.LoadSiteImages(App.Current.Services.GetService<IHttpClientFactory>(), services, directoryPath));
+
+            await ViewModel.ResourceResolver.LoadSiteImages(
+                App.Current.Services.GetService<IHttpClientFactory>(),
+                services, directoryPath).ConfigureAwait(false);
 
             var args = App.Current.Arguments.ToArray();
             var config = new TableClothConfiguration();
