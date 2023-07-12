@@ -64,6 +64,9 @@ namespace TableCloth.Models.Configuration
 					.Where(x => string.Equals(x.Key, "c", StringComparison.InvariantCultureIgnoreCase))
 					.Select(x => x.Value)
 					.FirstOrDefault();
+
+				NotAfter = cert.NotAfter;
+				NotBefore = cert.NotBefore;
 			}
 		}
 
@@ -77,6 +80,9 @@ namespace TableCloth.Models.Configuration
 		public string OrganizationalUnit { get; }
 		public string Organization { get; }
 		public string CountryName { get; }
+
+		public DateTime NotAfter { get; }
+		public DateTime NotBefore { get; }
 
 		public string SubjectNameForNpkiApp
 			=> string.Join(",", Subject.Select(x => $"{x.Key.ToLowerInvariant()}={x.Value}"));

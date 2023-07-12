@@ -78,6 +78,19 @@ namespace TableCloth
 
         private void RunSandbox(TableClothConfiguration config)
         {
+            if (config.CertPair != null)
+            {
+                var today = DateTime.Now;
+
+                if (today < config.CertPair.NotBefore)
+                    ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cert_MayTooEarly(config.CertPair.NotBefore), false);
+
+                if (today > config.CertPair.NotAfter)
+                    ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cert_MayExpired(config.CertPair.NotAfter), false);
+                else if (today > config.CertPair.NotAfter.AddDays(-3d))
+                    ViewModel.AppMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(config.CertPair.NotAfter));
+            }
+
             var tempPath = ViewModel.SharedLocations.GetTempPath();
             var excludedFolderList = new List<SandboxMappedFolder>();
             var wsbFilePath = ViewModel.SandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
