@@ -444,5 +444,31 @@ ServiceID는 {CatalogUrl}을 확인해주세요.
 ";
     }
 
+    // 로그 기록용 메시지 (로그를 데이터로 분석하는 경우를 고려하여 이 부분은 번역하지 않습니다.)
+    partial class StringResources
+    {
+        internal static string TableCloth_Log_WsbFileCreateFail_ProhibitTranslation(string wsbFilePath)
+            => $"WSB file `{wsbFilePath}` was not created.";
+
+        internal static string TableCloth_Log_CannotParseWsbFile_ProhibitTranslation(string wsbFilePath)
+            => $"Cannot parse WSB file `{wsbFilePath}`. The file content may corrupted or invalid.";
+
+        internal static string TableCloth_Log_HostFolderNotExists_ProhibitTranslation(string hostFolderPath)
+            => $"The path `{hostFolderPath}` of the host folder listed in the WSB file does not exist on the host.";
+
+        internal static string TableCloth_Log_DirectoryEnumFail_ProhibitTranslation(string targetPath, Exception reason)
+            => $"Directory enumeration failed - {targetPath} (Reason: {TableCloth_UnwrapException(reason)})";
+
+        internal static string TableCloth_UnwrapException(Exception failureReason)
+        {
+            var unwrappedException = failureReason;
+
+            if (failureReason is AggregateException ae)
+                unwrappedException = ae.InnerException;
+
+            return unwrappedException?.Message ?? UnknownText;
+        }
+    }
+
 #pragma warning restore IDE0040, IDE0066
-}
+    }

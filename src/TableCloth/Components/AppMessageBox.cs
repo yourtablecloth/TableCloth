@@ -40,14 +40,7 @@ namespace TableCloth.Components
         /// <param name="isCritical">심각성 여부</param>
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
         public MessageBoxResult DisplayError(Exception failureReason, bool isCritical)
-        {
-            var unwrappedException = failureReason;
-
-            if (failureReason is AggregateException ae)
-                unwrappedException = ae.InnerException;
-
-            return DisplayError(unwrappedException?.Message ?? StringResources.UnknownText, isCritical);
-        }
+            => DisplayError(StringResources.TableCloth_UnwrapException(failureReason), isCritical);
 
         /// <summary>
         /// 오류를 안내하는 메시지 상자를 띄웁니다.

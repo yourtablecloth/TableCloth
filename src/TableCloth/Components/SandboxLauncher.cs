@@ -28,7 +28,7 @@ namespace TableCloth.Components
             {
                 if (!File.Exists(wsbFilePath))
                 {
-                    _logger.LogError(reason = $"WSB 파일 `{wsbFilePath}`이 생성되지 않았습니다.");
+                    _logger.LogError(reason = StringResources.TableCloth_Log_WsbFileCreateFail_ProhibitTranslation(wsbFilePath));
                     return false;
                 }
 
@@ -41,7 +41,7 @@ namespace TableCloth.Components
 
                     if (content == null)
                     {
-                        _logger.LogError(reason = $"WSB 파일을 개체로 다시 불러올 수 없습니다.");
+                        _logger.LogError(reason = StringResources.TableCloth_Log_CannotParseWsbFile_ProhibitTranslation(wsbFilePath));
                         return false;
                     }
                 }
@@ -51,7 +51,7 @@ namespace TableCloth.Components
                     // HostFolder 태그에 들어가는 경로는 절대 경로만 사용되므로 상대 경로 처리를 하지 않아도 됨.
                     if (!Directory.Exists(eachMappedFolder.HostFolder))
                     {
-                        _logger.LogError(reason = $"WSB 파일에 지정된 폴더 중 `{eachMappedFolder.HostFolder}` 디렉터리가 없습니다.");
+                        _logger.LogError(reason = StringResources.TableCloth_Log_HostFolderNotExists_ProhibitTranslation(eachMappedFolder.HostFolder));
                         return false;
                     }
                 }
@@ -66,7 +66,7 @@ namespace TableCloth.Components
                 if (ex is AggregateException)
                     actualException = ex.InnerException ?? ex;
 
-                _logger.LogError(actualException, reason = $"WSB 파일을 개체로 불러오는 도중 오류가 발생했습니다. {actualException.Message}");
+                _logger.LogError(actualException, reason = StringResources.TableCloth_UnwrapException(actualException));
                 return false;
             }
         }

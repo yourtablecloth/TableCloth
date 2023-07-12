@@ -55,21 +55,9 @@ namespace TableCloth.Components
                         foundFiles.AddRange(ScanX509Pairs(new string[] { dir }));
                     }
                 }
-                catch (UnauthorizedAccessException uae)
-                {
-                    Logger.LogWarning(uae, $"Directory enumeration failed - {eachRootPath}");
-                }
-                catch (PathTooLongException ptle)
-                {
-                    Logger.LogWarning(ptle, $"Directory enumeration failed - {eachRootPath}");
-                }
-                catch (AggregateException ae)
-                {
-                    Logger.LogWarning(ae.InnerException ?? ae, $"Directory enumeration failed - {eachRootPath}");
-                }
                 catch (Exception e)
                 {
-                    Logger.LogWarning(e, $"Directory enumeration failed - {eachRootPath}");
+                    Logger.LogWarning(e, StringResources.TableCloth_Log_DirectoryEnumFail_ProhibitTranslation(eachRootPath, e));
                 }
 
                 try
