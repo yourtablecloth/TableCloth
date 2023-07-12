@@ -57,10 +57,6 @@
         프린터 같이 사용하기
     </system:String>
 
-    <system:String x:Key="MainWindow_EveryonesPrinterNotification">
-        안내: 모두의 프린터 추가하기는 부가 기능 탭으로 이동했으며, 설치 방식이 변경되었습니다.
-    </system:String>
-
     <system:String x:Key="MainWindow_Addons">
         부가 기능
     </system:String>

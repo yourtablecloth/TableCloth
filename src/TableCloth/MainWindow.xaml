@@ -128,7 +128,6 @@
                             <RowDefinition Height="30" />
                             <RowDefinition Height="30" />
                             <RowDefinition Height="30" />
-                            <RowDefinition Height="30" />
                         </Grid.RowDefinitions>
                         <WrapPanel Grid.Row="0" VerticalAlignment="Center" Orientation="Horizontal">
                             <CheckBox VerticalAlignment="Center" Content="{StaticResource MainWindow_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
@@ -139,7 +138,6 @@
                         <CheckBox Grid.Row="2" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
                         <CheckBox Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
                         <CheckBox Grid.Row="4" VerticalAlignment="Center" Content="{StaticResource MainWindow_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
-                        <Label Grid.Row="5" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_EveryonesPrinterNotification}" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="{StaticResource MainWindow_Addons}">
