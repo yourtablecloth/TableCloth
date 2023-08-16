@@ -108,6 +108,15 @@ namespace TableCloth.Models.Catalog
         public int ListViewIconSize => 16;
 
         /// <summary>
+        /// 리스트 뷰에 표시될 아이콘의 상대적 크기 값을 가져옵니다.
+        /// </summary>
+        /// <remarks>
+        /// 이 속성은 실제 XML 데이터를 이용하여 값을 만드는 계산된 속성입니다.
+        /// </remarks>
+        [XmlIgnore]
+        public int ListViewItemSize => 48;
+
+        /// <summary>
         /// 이 개체의 정보를 문자열로 가져옵니다.
         /// </summary>
         /// <returns>사용자가 이해할 수 있는 형태의 문자열이 반환됩니다.</returns>
