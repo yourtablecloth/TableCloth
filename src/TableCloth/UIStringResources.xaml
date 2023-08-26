@@ -101,6 +101,10 @@
         찾고 싶은 웹 사이트의 이름, 분류, 도메인 주소를 입력하세요. (예: 신한, 보험, iros)
     </system:String>
 
+    <system:String x:Key="MainWindowV2_SearchFilter_Watermark">
+        검색 키워드 입력 (예: 신한, 보험)
+    </system:String>
+
     <system:String x:Key="MainWindow_SelectSiteLabelText_Alt">
         카탈로그 파일을 가져오지 못했어요! 그래도 샌드박스는 대신 실행해드려요.
     </system:String>
