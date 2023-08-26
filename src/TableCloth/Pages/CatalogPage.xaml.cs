@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,7 +21,16 @@ namespace TableCloth.Pages
         public CatalogPage()
         {
             InitializeComponent();
+        }
 
+        public MainWindowViewModel ViewModel
+            => (MainWindowViewModel)DataContext;
+
+        private static readonly PropertyGroupDescription GroupDescription =
+            new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
             var view = (CollectionView)CollectionViewSource.GetDefaultView(ViewModel.Services);
             view.Filter = SiteCatalog_Filter;
 
@@ -30,11 +40,49 @@ namespace TableCloth.Pages
             UpdateDetailView(SiteCatalog);
         }
 
-        public MainWindowViewModel ViewModel
-            => (MainWindowViewModel)DataContext;
+        /*
+        private GroupItem FindGroupItemForListViewItem(ListView listView, ListViewItem listViewItem)
+        {
+            // ListViewItem에 바인딩된 데이터 항목 가져오기
+            object dataItem = listView.ItemContainerGenerator.ItemFromContainer(listViewItem);
 
-        private static readonly PropertyGroupDescription GroupDescription =
-            new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
+            // ListView의 CollectionView 가져오기
+            ICollectionView collectionView = CollectionViewSource.GetDefaultView(listView.ItemsSource);
+            if (collectionView is ListCollectionView listCollectionView)
+            {
+                // 데이터 항목의 그룹 찾기
+                CollectionViewGroup group = listCollectionView.Groups.Cast<CollectionViewGroup>().FirstOrDefault(g => g.Items.Contains(dataItem));
+
+                if (group != null)
+                {
+                    // GroupItem 컨테이너 찾기
+                    GroupItem groupItem = listView.ItemContainerGenerator.ContainerFromItem(group) as GroupItem;
+                    return groupItem;
+                }
+            }
+
+            return null;
+        }
+
+        private void ExpandGroupItem(ListView view)
+        {
+            var item = view.SelectedItem;
+
+            if (item == null)
+                return;
+
+            var lvItem = view.ItemContainerGenerator.ContainerFromItem(item) as ListViewItem;
+
+            if (lvItem != null)
+            {
+                var groupItem = FindGroupItemForListViewItem(view, lvItem);
+                var expander = groupItem.Template.FindName("CategoryExpander", groupItem) as Expander;
+
+                if (expander != null)
+                    expander.IsExpanded = true;
+            }
+        }
+        */
 
         private void UpdateDetailView(ListView view)
         {
@@ -134,7 +182,6 @@ namespace TableCloth.Pages
             // further clicks will not select all
             SiteCatalogFilter.LostMouseCapture -= SiteCatalogFilter_LostMouseCapture;
         }
-
 
         private void SiteCatalogFilter_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
