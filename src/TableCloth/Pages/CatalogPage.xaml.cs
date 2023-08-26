@@ -8,6 +8,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
 
@@ -39,50 +40,6 @@ namespace TableCloth.Pages
 
             UpdateDetailView(SiteCatalog);
         }
-
-        /*
-        private GroupItem FindGroupItemForListViewItem(ListView listView, ListViewItem listViewItem)
-        {
-            // ListViewItem에 바인딩된 데이터 항목 가져오기
-            object dataItem = listView.ItemContainerGenerator.ItemFromContainer(listViewItem);
-
-            // ListView의 CollectionView 가져오기
-            ICollectionView collectionView = CollectionViewSource.GetDefaultView(listView.ItemsSource);
-            if (collectionView is ListCollectionView listCollectionView)
-            {
-                // 데이터 항목의 그룹 찾기
-                CollectionViewGroup group = listCollectionView.Groups.Cast<CollectionViewGroup>().FirstOrDefault(g => g.Items.Contains(dataItem));
-
-                if (group != null)
-                {
-                    // GroupItem 컨테이너 찾기
-                    GroupItem groupItem = listView.ItemContainerGenerator.ContainerFromItem(group) as GroupItem;
-                    return groupItem;
-                }
-            }
-
-            return null;
-        }
-
-        private void ExpandGroupItem(ListView view)
-        {
-            var item = view.SelectedItem;
-
-            if (item == null)
-                return;
-
-            var lvItem = view.ItemContainerGenerator.ContainerFromItem(item) as ListViewItem;
-
-            if (lvItem != null)
-            {
-                var groupItem = FindGroupItemForListViewItem(view, lvItem);
-                var expander = groupItem.Template.FindName("CategoryExpander", groupItem) as Expander;
-
-                if (expander != null)
-                    expander.IsExpanded = true;
-            }
-        }
-        */
 
         private void UpdateDetailView(ListView view)
         {
@@ -211,7 +168,7 @@ namespace TableCloth.Pages
 
             NavigationService.Navigate(
                 new Uri("Pages/DetailPage.xaml", UriKind.Relative),
-                selectedItems);
+                selectedItems.Cast<CatalogInternetService>());
         }
     }
 }

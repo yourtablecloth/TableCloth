@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="식탁보" Width="800" Height="600">
     <Grid>
-        <Frame x:Name="PageFrame" NavigationUIVisibility="Hidden" Navigating="PageFrame_Navigating" Source="Pages/CatalogPage.xaml" />
+        <Frame x:Name="PageFrame" NavigationUIVisibility="Hidden" Navigating="PageFrame_Navigating" LoadCompleted="PageFrame_LoadCompleted" Source="Pages/CatalogPage.xaml" />
     </Grid>
 </Window>

@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using System.Windows.Threading;
+using TableCloth.Contracts;
+using TableCloth.Models.Catalog;
 
 namespace TableCloth
 {
@@ -52,9 +55,9 @@ namespace TableCloth
             {
                 case NavigationMode.New:
                     if (_navArgs.Uri == null)
-                        PageFrame.Navigate(_navArgs.Content);
+                        PageFrame.Navigate(_navArgs.Content, _navArgs.ExtraData);
                     else
-                        PageFrame.Navigate(_navArgs.Uri);
+                        PageFrame.Navigate(_navArgs.Uri, _navArgs.ExtraData);
                     break;
                 case NavigationMode.Back:
                     PageFrame.GoBack();
@@ -77,6 +80,16 @@ namespace TableCloth
 
                     PageFrame.BeginAnimation(_targetProperty, animation0);
                 });
+        }
+
+        private void PageFrame_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            switch (e.Content)
+            {
+                case IPageArgument<CatalogInternetService> target:
+                    target.Arguments = e.ExtraData as IEnumerable<CatalogInternetService>;
+                    break;
+            }
         }
     }
 }

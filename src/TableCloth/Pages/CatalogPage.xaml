@@ -89,7 +89,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <Expander x:Name="CategoryExpander">
+                        <Expander>
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" FontWeight="Bold" VerticalAlignment="Bottom" />
