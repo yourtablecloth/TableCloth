@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TableCloth"
         mc:Ignorable="d"
-        Title="MainWindowV2" Height="450" Width="800">
+        Title="식탁보" Width="800" Height="600">
     <Grid>
-        <Frame x:Name="PageFrame" NavigationUIVisibility="Visible" Source="Pages/CatalogPage.xaml" />
+        <Frame x:Name="PageFrame" NavigationUIVisibility="Hidden" Navigating="PageFrame_Navigating" Source="Pages/CatalogPage.xaml" />
     </Grid>
 </Window>
