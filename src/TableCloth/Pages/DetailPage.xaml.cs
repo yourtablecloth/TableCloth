@@ -25,9 +25,9 @@ namespace TableCloth.Pages
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void GoBackButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new Uri("Pages/CatalogPage.xaml", UriKind.Relative));
+            NavigationService.GoBack();
         }
     }
 }
