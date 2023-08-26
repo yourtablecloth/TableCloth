@@ -30,6 +30,7 @@
             <Setter Property="Padding" Value="0,0,0,0"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Height" Value="96" />
             <Setter Property="Padding" Value="4,1"/>
             <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
             <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
@@ -41,7 +42,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListViewItem}">
                         <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                            <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" >
+                            <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="96" >
                                 <Border x:Name="border" BorderBrush="{x:Null}" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="2.5"/>
                                 <StackPanel HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
                                     <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -86,7 +87,7 @@
             <RowDefinition Height="10*"/>
             <RowDefinition Height="90*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0">This is a catalog page.</TextBlock>
+        <TextBlock Grid.Row="0">To Do: 검색 기능 추가 예정</TextBlock>
         <ListView Grid.Row="1" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -96,12 +97,42 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <DockPanel Width="{Binding ListViewItemSize}" Height="{Binding ListViewItemSize}">
-                        <TextBlock DockPanel.Dock="Bottom" Text="{Binding DisplayName}"/>
-                        <Image x:Name="Icon" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" Margin="0 0 10 0" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </DockPanel>
+                    <Grid Width="48" Height="96">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50*" />
+                            <RowDefinition Height="2*" />
+                            <RowDefinition Height="48*" />
+                        </Grid.RowDefinitions>
+                        <Image Grid.Row="0" x:Name="Icon" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
+                        <TextBlock Grid.Row="2" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
+
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Expander IsExpanded="False">
+                                            <Expander.Header>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" VerticalAlignment="Bottom" />
+                                                    <TextBlock Text="{Binding ItemCount}" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Bottom" />
+                                                    <TextBlock Text="개 항목" VerticalAlignment="Bottom" />
+                                                </StackPanel>
+                                            </Expander.Header>
+                                            <ItemsPresenter />
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </ListView.GroupStyle>
         </ListView>
     </Grid>
 </Page>

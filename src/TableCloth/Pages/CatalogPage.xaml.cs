@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TableCloth.Models.Catalog;
 
 namespace TableCloth.Pages
 {
@@ -23,6 +24,10 @@ namespace TableCloth.Pages
         public CatalogPage()
         {
             InitializeComponent();
+
+            var view = (CollectionView)CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource);
+            var groupDescription = new PropertyGroupDescription(nameof(CatalogInternetService.Category));
+            view.GroupDescriptions.Add(groupDescription);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
