@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TableCloth.Models.Catalog;
+using TableCloth.ViewModels;
 
 namespace TableCloth.Pages
 {
@@ -25,16 +21,56 @@ namespace TableCloth.Pages
         {
             InitializeComponent();
 
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource);
+            var view = (CollectionView)CollectionViewSource.GetDefaultView(ViewModel.Services);
             view.Filter = SiteCatalog_Filter;
 
-            var groupDescription = new PropertyGroupDescription(nameof(CatalogInternetService.Category));
-            view.GroupDescriptions.Add(groupDescription);
+            if (!view.GroupDescriptions.Contains(GroupDescription))
+                view.GroupDescriptions.Add(GroupDescription);
+
+            UpdateDetailView(SiteCatalog);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        public MainWindowViewModel ViewModel
+            => (MainWindowViewModel)DataContext;
+
+        private static readonly PropertyGroupDescription GroupDescription =
+            new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
+
+        private void UpdateDetailView(ListView view)
         {
-            NavigationService.Navigate(new Uri("Pages/DetailPage.xaml", UriKind.Relative));
+            var selectedItems = view?.SelectedItems as IEnumerable<object>;
+            var selectionCount = selectedItems?.Count() ?? 0;
+            var item = selectedItems.FirstOrDefault();
+
+            if (item == null || selectionCount < 1)
+            {
+                SelectedItemInstructionTextBlock.Visibility = Visibility.Visible;
+                MultipleSelectedItemInstructionTextBlock.Visibility = Visibility.Hidden;
+                SelectedItemPropertyGrid.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            if (selectionCount > 1)
+            {
+                SelectedItemInstructionTextBlock.Visibility = Visibility.Hidden;
+                MultipleSelectedItemInstructionTextBlock.Visibility = Visibility.Visible;
+                SelectedItemPropertyGrid.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            SelectedItemInstructionTextBlock.Visibility = Visibility.Hidden;
+            MultipleSelectedItemInstructionTextBlock.Visibility = Visibility.Hidden;
+            SelectedItemPropertyGrid.Visibility = Visibility.Visible;
+
+            if (item == null)
+            {
+                SelectedItemInstructionTextBlock.Visibility = Visibility.Visible;
+                MultipleSelectedItemInstructionTextBlock.Visibility = Visibility.Hidden;
+                SelectedItemPropertyGrid.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            SelectedItemPropertyGrid.DataContext = item;
         }
 
         private bool SiteCatalog_Filter(object item)
@@ -105,6 +141,30 @@ namespace TableCloth.Pages
             // once we've left the TextBox, return the select all behavior
             SiteCatalogFilter.LostMouseCapture += SiteCatalogFilter_LostMouseCapture;
             SiteCatalogFilter.LostTouchCapture += SiteCatalogFilter_LostTouchCapture;
+        }
+
+        private void SiteCatalog_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateDetailView(SiteCatalog);
+        }
+
+        private void SiteCatalog_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var r = VisualTreeHelper.HitTest(this, e.GetPosition(this));
+            if (r.VisualHit.GetType() != typeof(ListBoxItem))
+                SiteCatalog.UnselectAll();
+        }
+
+        private void SiteCatalog_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var selectedItems = SiteCatalog?.SelectedItems as IEnumerable<object>;
+
+            if (selectedItems == null || selectedItems.Count() < 1)
+                return;
+
+            NavigationService.Navigate(
+                new Uri("Pages/DetailPage.xaml", UriKind.Relative),
+                selectedItems);
         }
     }
 }

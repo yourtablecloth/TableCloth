@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:TableCloth.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="CatalogPage"
+      Title="인터넷 뱅킹 서비스 선택"
       DataContext="{Binding MainWindowViewModel, Source={StaticResource ViewModelLocator}}">
 
     <Page.Resources>
@@ -25,6 +25,7 @@
         <SolidColorBrush x:Key="Item.SelectedInactive.Border" Color="#FFDADADA"/>
         <SolidColorBrush x:Key="Item.SelectedActive.Background" Color="#3D26A0DA"/>
         <SolidColorBrush x:Key="Item.SelectedActive.Border" Color="#FF26A0DA"/>
+
         <Style x:Key="FileItemStyle" TargetType="{x:Type ListViewItem}">
             <Setter Property="Margin" Value="5,5,5,5"/>
             <Setter Property="Padding" Value="0,0,0,0"/>
@@ -81,22 +82,60 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style TargetType="{x:Type GroupItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Expander IsExpanded="False">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" VerticalAlignment="Bottom" />
+                                    <TextBlock Text="{Binding ItemCount}" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Bottom" />
+                                    <TextBlock Text="개 항목" VerticalAlignment="Bottom" />
+                                </StackPanel>
+                            </Expander.Header>
+                            <ItemsPresenter />
+                        </Expander>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="90*"/>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="30*" />
+            <ColumnDefinition Width="240" />
             <ColumnDefinition Width="70*" />
             <ColumnDefinition Width="30*" />
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="8 0 0 0">
-            To Do: 이곳에 선택한 항목의 제목 표기 기능 추가 예정
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="8 0 0 0" FontWeight="Bold">
+            접속하려는 웹 사이트를 선택하거나, 우측 상단의 검색창에서 검색어를 입력하세요.
         </TextBlock>
-        <Grid Grid.Row="1" Grid.Column="0" Margin="8">
-            <TextBlock>To Do: 이곳에 선택한 항목의 상세 정보 표기 기능 추가 예정</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="8" x:Name="SelectedItemInstructionTextBlock" Visibility="Hidden" TextWrapping="WrapWithOverflow">
+            우측 목록에서 항목을 선택하면 자세한 내용이 이곳에 표시됩니다.
+        </TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="8" x:Name="MultipleSelectedItemInstructionTextBlock" Visibility="Hidden" TextWrapping="WrapWithOverflow">
+            여러 개의 항목이 선택되었습니다.
+        </TextBlock>
+        <Grid Grid.Row="1" Grid.Column="0" Margin="8" x:Name="SelectedItemPropertyGrid" Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Image Grid.Row="0" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" RenderOptions.BitmapScalingMode="Fant" />
+            <TextBlock Grid.Row="1" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" />
+            <TextBlock Grid.Row="2" Text="{Binding CategoryDisplayName}" TextTrimming="CharacterEllipsis" />
+            <TextBlock Grid.Row="3" Text="{Binding Url}" TextTrimming="CharacterEllipsis" />
+            <TextBlock Grid.Row="4" Text="{Binding PackageCountForDisplay}" TextTrimming="CharacterEllipsis" />
+            <TextBlock Grid.Row="5" Text="{Binding CompatibilityNotes}" TextTrimming="CharacterEllipsis" TextWrapping="WrapWithOverflow"/>
         </Grid>
         <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 8 8 8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostTouchCapture="SiteCatalogFilter_LostTouchCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBox.Style>
@@ -122,7 +161,7 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <ListView Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListView Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="SiteCatalog_SelectionChanged" MouseDown="SiteCatalog_MouseDown" MouseDoubleClick="SiteCatalog_MouseDoubleClick">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel/>
@@ -144,28 +183,7 @@
             </ListView.ItemTemplate>
 
             <ListView.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.ContainerStyle>
-                        <Style TargetType="{x:Type GroupItem}">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate>
-                                        <Expander IsExpanded="False">
-                                            <Expander.Header>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" VerticalAlignment="Bottom" />
-                                                    <TextBlock Text="{Binding ItemCount}" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Bottom" />
-                                                    <TextBlock Text="개 항목" VerticalAlignment="Bottom" />
-                                                </StackPanel>
-                                            </Expander.Header>
-                                            <ItemsPresenter />
-                                        </Expander>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </GroupStyle.ContainerStyle>
-                </GroupStyle>
+                <GroupStyle/>
             </ListView.GroupStyle>
         </ListView>
     </Grid>
