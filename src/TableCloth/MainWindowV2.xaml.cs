@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
+using TableCloth.Pages;
 
 namespace TableCloth
 {

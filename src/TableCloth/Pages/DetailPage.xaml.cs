@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -20,8 +21,11 @@ namespace TableCloth.Pages
 
         public IEnumerable<CatalogInternetService> Arguments { get; set; } = default;
 
+        public CatalogInternetService FirstArgument => Arguments.FirstOrDefault();
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            DataContext = FirstArgument;
         }
 
         private void GoBackButton_Click(object sender, RoutedEventArgs e)
