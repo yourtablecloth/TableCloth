@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogInternetService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogInternetServiceCategory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogPackageInformation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\EnumDisplayOrderAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\IEModeListDocument.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\IEModeSite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\PackageCollection.cs" />
@@ -23,5 +24,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\WindowsSandbox\SandboxConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WindowsSandbox\SandboxMappedFolder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\StringResources.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\EnumDisplayNameAttribute.cs" />
   </ItemGroup>
 </Project>

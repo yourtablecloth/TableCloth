@@ -478,5 +478,18 @@ ServiceID는 {CatalogUrl}을 확인해주세요.
         }
     }
 
-#pragma warning restore IDE0040, IDE0066
+    // 상수
+    partial class StringResources
+    {
+        internal const string DisplayName_Other = "기타";
+        internal const string DisplayName_Banking = "인터넷 뱅킹";
+        internal const string DisplayName_Financing = "금융";
+        internal const string DisplayName_Security = "투자";
+        internal const string DisplayName_Insurance = "보험";
+        internal const string DisplayName_CreditCard = "신용 카드";
+        internal const string DisplayName_Government = "정부, 공공기관";
+        internal const string DisplayName_Education = "교육";
     }
+
+#pragma warning restore IDE0040, IDE0066
+}

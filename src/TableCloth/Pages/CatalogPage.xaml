@@ -110,8 +110,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="55" />
-            <ColumnDefinition Width="70*" />
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="80*" />
             <ColumnDefinition Width="30*" />
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="8 0 0 0" FontWeight="Bold">

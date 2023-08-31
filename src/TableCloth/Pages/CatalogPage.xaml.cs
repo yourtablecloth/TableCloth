@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -26,14 +27,16 @@ namespace TableCloth.Pages
         private static readonly PropertyGroupDescription GroupDescription =
             new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
 
-        private UIElement CreateCategoryButton(CatalogInternetServiceCategory? val)
+        private UIElement CreateCategoryButton(CatalogInternetServiceCategory val)
         {
-            var name = val?.ToString() ?? "All";
+            var displayName = val.GetType().GetField(val.ToString())
+                ?.GetCustomAttribute<EnumDisplayNameAttribute>()
+                ?.DisplayName ?? val.ToString();
 
             var button = new RadioButton()
             {
-                Content = name,
-                Tag = val?.ToString() ?? "All",
+                Content = displayName,
+                Tag = val.ToString(),
                 Margin = new Thickness(8d),
                 BorderBrush = Brushes.Transparent,
                 Background = Brushes.Transparent,
@@ -61,7 +64,6 @@ namespace TableCloth.Pages
 
             return null;
         }
-
 
         private void UpdateCategoryView(object selectedItem, bool showSelectedItemOnTop)
         {
@@ -99,10 +101,20 @@ namespace TableCloth.Pages
             if (!view.GroupDescriptions.Contains(GroupDescription))
                 view.GroupDescriptions.Add(GroupDescription);
 
-            CategoryButtonList.Children.Clear();
-            CategoryButtonList.Children.Add(CreateCategoryButton(default));
+            var tupleList = new List<Tuple<CatalogInternetServiceCategory, int>>();
 
             foreach (var eachMember in Enum.GetValues<CatalogInternetServiceCategory>())
+            {
+                var order = eachMember.GetType().GetField(eachMember.ToString())
+                    ?.GetCustomAttribute<EnumDisplayOrderAttribute>()
+                    ?.Order ?? 0;
+
+                tupleList.Add(new (eachMember, order));
+            }
+
+            CategoryButtonList.Children.Clear();
+
+            foreach (var eachMember in tupleList.OrderBy(x => x.Item2).Select(x => x.Item1))
                 CategoryButtonList.Children.Add(CreateCategoryButton(eachMember));
 
             UpdateCategoryView(SiteCatalog?.SelectedItem, true);
