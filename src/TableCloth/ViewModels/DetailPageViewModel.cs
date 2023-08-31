@@ -108,6 +108,9 @@ namespace TableCloth.ViewModels
         public string CompatibilityNotes
             => _selectedService?.CompatibilityNotes;
 
+        public int? PackageCountForDisplay
+            => _selectedService?.PackageCountForDisplay;
+
         public bool MapNpkiCert
         {
             get => _mapNpkiCert;

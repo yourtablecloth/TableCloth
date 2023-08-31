@@ -56,6 +56,7 @@
                         <RowDefinition Height="40" />
                         <RowDefinition Height="40" />
                         <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
                         <RowDefinition Height="120" />
                     </Grid.RowDefinitions>
                     <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="8" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" />
@@ -63,11 +64,12 @@
                     <Button x:Name="LaunchButton" Grid.Row="1" Grid.Column="2" Margin="8" Content="실행하기" Click="LaunchButton_Click" />
                     <Button x:Name="CreateShortcutButton" Grid.Row="2" Grid.Column="2" Margin="8" Content="바로 가기 만들기" Click="CreateShortcutButton_Click" />
                     <TextBlock Grid.Row="2" Grid.Column="1" Margin="8">
-                    <Hyperlink>
-                        <TextBlock Text="{Binding Url}" />
-                    </Hyperlink>
-                </TextBlock>
-                    <TextBlock Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CompatibilityNotes}" Margin="8" TextWrapping="Wrap" />
+                        <Hyperlink Click="Hyperlink_Click" Tag="{Binding Url}">
+                            <TextBlock Text="{Binding Url}" />
+                        </Hyperlink>
+                    </TextBlock>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="8" Text="{Binding PackageCountForDisplay}" />
+                    <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CompatibilityNotes}" Margin="8" TextWrapping="Wrap" />
                 </Grid>
                 <Grid Margin="8">
                     <Grid.ColumnDefinitions>

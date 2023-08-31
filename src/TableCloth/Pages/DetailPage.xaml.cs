@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Navigation;
 using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
@@ -276,6 +277,21 @@ namespace TableCloth.Pages
 
             if (certSelectWindow.ViewModel.SelectedCertPair != null)
                 ViewModel.SelectedCertFile = certSelectWindow.ViewModel.SelectedCertPair;
+        }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Hyperlink link)
+                return;
+
+            if (!Uri.TryCreate(link.Tag?.ToString(), UriKind.Absolute, out Uri uri) ||
+                uri == null)
+                return;
+
+            Process.Start(new ProcessStartInfo(uri.ToString())
+            {
+                UseShellExecute = true,
+            });
         }
     }
 }
