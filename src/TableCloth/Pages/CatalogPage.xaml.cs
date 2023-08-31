@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -12,9 +13,6 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Pages
 {
-    /// <summary>
-    /// Interaction logic for CatalogPage.xaml
-    /// </summary>
     public partial class CatalogPage : Page
     {
         public CatalogPage()
@@ -28,6 +26,71 @@ namespace TableCloth.Pages
         private static readonly PropertyGroupDescription GroupDescription =
             new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
 
+        private UIElement CreateCategoryButton(CatalogInternetServiceCategory? val)
+        {
+            var name = val?.ToString() ?? "All";
+
+            var button = new RadioButton()
+            {
+                Content = name,
+                Tag = val?.ToString() ?? "All",
+                Margin = new Thickness(8d),
+                BorderBrush = Brushes.Transparent,
+                Background = Brushes.Transparent,
+            };
+            button.Click += CategoryButton_Click;
+            return button;
+        }
+
+        // https://stackoverflow.com/questions/1077397/scroll-listviewitem-to-be-at-the-top-of-a-listview
+        private DependencyObject GetScrollViewer(DependencyObject o)
+        {
+            if (o is ScrollViewer)
+                return o;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(o); i++)
+            {
+                var child = VisualTreeHelper.GetChild(o, i);
+                var result = GetScrollViewer(child);
+                
+                if (result == null)
+                    continue;
+                else
+                    return result;
+            }
+
+            return null;
+        }
+
+
+        private void UpdateCategoryView(object selectedItem, bool showSelectedItemOnTop)
+        {
+            var actualItem = selectedItem as CatalogInternetService;
+
+            if (actualItem == null)
+                return;
+
+            if (showSelectedItemOnTop)
+            {
+                if (GetScrollViewer(SiteCatalog) is ScrollViewer viewer)
+                    viewer.ScrollToBottom();
+            }
+
+            SiteCatalog.ScrollIntoView(actualItem);
+
+            foreach (var child in CategoryButtonList.Children)
+            {
+                if (child is not ToggleButton elem)
+                    continue;
+
+                if (!string.Equals(elem.Tag?.ToString(), actualItem.Category.ToString(), StringComparison.Ordinal))
+                    continue;
+
+                elem.IsChecked = true;
+                break;
+            }
+        }
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             var view = (CollectionView)CollectionViewSource.GetDefaultView(ViewModel.Services);
@@ -36,61 +99,29 @@ namespace TableCloth.Pages
             if (!view.GroupDescriptions.Contains(GroupDescription))
                 view.GroupDescriptions.Add(GroupDescription);
 
-            UpdateDetailView(SiteCatalog);
-        }
+            CategoryButtonList.Children.Clear();
+            CategoryButtonList.Children.Add(CreateCategoryButton(default));
 
-        private void UpdateDetailView(ListView view)
-        {
-            var selectedItems = view?.SelectedItems as IEnumerable<object>;
-            var selectionCount = selectedItems?.Count() ?? 0;
-            var item = selectedItems.FirstOrDefault();
+            foreach (var eachMember in Enum.GetValues<CatalogInternetServiceCategory>())
+                CategoryButtonList.Children.Add(CreateCategoryButton(eachMember));
 
-            if (item == null || selectionCount < 1)
-            {
-                SelectedItemInstructionTextBlock.Visibility = Visibility.Visible;
-                MultipleSelectedItemInstructionTextBlock.Visibility = Visibility.Hidden;
-                SelectedItemPropertyGrid.Visibility = Visibility.Hidden;
-                return;
-            }
-
-            if (selectionCount > 1)
-            {
-                SelectedItemInstructionTextBlock.Visibility = Visibility.Hidden;
-                MultipleSelectedItemInstructionTextBlock.Visibility = Visibility.Visible;
-                SelectedItemPropertyGrid.Visibility = Visibility.Hidden;
-                return;
-            }
-
-            SelectedItemInstructionTextBlock.Visibility = Visibility.Hidden;
-            MultipleSelectedItemInstructionTextBlock.Visibility = Visibility.Hidden;
-            SelectedItemPropertyGrid.Visibility = Visibility.Visible;
-
-            if (item == null)
-            {
-                SelectedItemInstructionTextBlock.Visibility = Visibility.Visible;
-                MultipleSelectedItemInstructionTextBlock.Visibility = Visibility.Hidden;
-                SelectedItemPropertyGrid.Visibility = Visibility.Hidden;
-                return;
-            }
-
-            SelectedItemPropertyGrid.DataContext = item;
-            view.ScrollIntoView(item);
+            UpdateCategoryView(SiteCatalog?.SelectedItem, true);
         }
 
         private bool SiteCatalog_Filter(object item)
         {
+            var actualItem = item as CatalogInternetService;
+
+            if (actualItem == null)
+                return false;
+
             var filterText = SiteCatalogFilter.Text;
 
             if (string.IsNullOrWhiteSpace(filterText))
                 return true;
 
-            var actualItem = item as CatalogInternetService;
-
-            if (actualItem == null)
-                return true;
-
-            var splittedFilterText = filterText.Split(new char[] { ',', }, StringSplitOptions.RemoveEmptyEntries);
             var result = false;
+            var splittedFilterText = filterText.Split(new char[] { ',', }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var eachFilterText in splittedFilterText)
             {
@@ -103,6 +134,11 @@ namespace TableCloth.Pages
             }
 
             return result;
+        }
+
+        private void SiteCatalog_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateCategoryView(SiteCatalog?.SelectedItem, false);
         }
 
         private void SiteCatalogFilter_TextChanged(object sender, TextChangedEventArgs e)
@@ -146,11 +182,6 @@ namespace TableCloth.Pages
             SiteCatalogFilter.LostTouchCapture += SiteCatalogFilter_LostTouchCapture;
         }
 
-        private void SiteCatalog_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            UpdateDetailView(SiteCatalog);
-        }
-
         private void SiteCatalog_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var r = VisualTreeHelper.HitTest(this, e.GetPosition(this));
@@ -175,6 +206,33 @@ namespace TableCloth.Pages
         private void ReloadCatalogButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.AppRestartManager.RestartNow();
+        }
+
+        private void CategoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement elem = e.Source as FrameworkElement;
+
+            if (elem != null)
+            {
+                var categoryName = elem.Tag?.ToString();
+                var firstItem = default(CatalogInternetService);
+                var allItems = (IEnumerable<CatalogInternetService>)SiteCatalog.ItemsSource;
+
+                if (string.Equals(categoryName, "All", StringComparison.Ordinal))
+                    firstItem = allItems.FirstOrDefault();
+                else if (Enum.TryParse(categoryName, false, out CatalogInternetServiceCategory val))
+                    firstItem = allItems.FirstOrDefault(x => x.Category == val);
+
+                if (firstItem != null)
+                {
+                    SiteCatalog.SelectedItem = firstItem;
+
+                    if (GetScrollViewer(SiteCatalog) is ScrollViewer viewer)
+                        viewer.ScrollToBottom();
+
+                    SiteCatalog.ScrollIntoView(firstItem);
+                }
+            }
         }
     }
 }
