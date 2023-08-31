@@ -154,20 +154,27 @@ namespace TableCloth.Pages
         private void SiteCatalog_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var r = VisualTreeHelper.HitTest(this, e.GetPosition(this));
+
             if (r.VisualHit.GetType() != typeof(ListBoxItem))
                 SiteCatalog.UnselectAll();
         }
 
         private void SiteCatalog_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var selectedItems = SiteCatalog?.SelectedItems as IEnumerable<object>;
+            var r = VisualTreeHelper.HitTest(this, e.GetPosition(this));
+            var data = (r.VisualHit as FrameworkElement)?.DataContext as CatalogInternetService;
 
-            if (selectedItems == null || selectedItems.Count() < 1)
-                return;
+            if (data != null)
+            {
+                NavigationService.Navigate(
+                    new Uri("Pages/DetailPage.xaml", UriKind.Relative),
+                    new[] { data });
+            }
+        }
 
-            NavigationService.Navigate(
-                new Uri("Pages/DetailPage.xaml", UriKind.Relative),
-                selectedItems.Cast<CatalogInternetService>());
+        private void ReloadCatalogButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.AppRestartManager.RestartNow();
         }
     }
 }

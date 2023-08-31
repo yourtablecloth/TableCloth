@@ -32,6 +32,7 @@ namespace TableCloth.Components
                 return false;
             }
 
+            /*
             var wsbExecPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.System),
                 "WindowsSandbox.exe");
@@ -42,6 +43,7 @@ namespace TableCloth.Components
                 isCritical = true;
                 return false;
             }
+            */
 
             new Mutex(true, GetType().FullName, out var isFirstInstance);
 

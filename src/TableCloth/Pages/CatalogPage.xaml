@@ -163,13 +163,23 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <ListView Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="SiteCatalog_SelectionChanged" MouseDown="SiteCatalog_MouseDown" MouseDoubleClick="SiteCatalog_MouseDoubleClick">
+        <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical">
+            <Label VerticalAlignment="Top" HorizontalAlignment="Center" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt}" />
+            <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{StaticResource MainWindow_ReloadCatalog}" Click="ReloadCatalogButton_Click" />
+        </StackPanel>
+        <ListView Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" SelectionChanged="SiteCatalog_SelectionChanged" MouseDown="SiteCatalog_MouseDown" MouseDoubleClick="SiteCatalog_MouseDoubleClick">
+            <ListView.Template>
+                <ControlTemplate>
+                    <ScrollViewer CanContentScroll="False">
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ListView.Template>
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel/>
+                    <WrapPanel IsItemsHost="True"/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
-
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Width="48" Height="96">
@@ -183,7 +193,6 @@
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
-
             <ListView.GroupStyle>
                 <GroupStyle/>
             </ListView.GroupStyle>

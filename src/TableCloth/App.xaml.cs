@@ -87,6 +87,7 @@ namespace TableCloth
             services.AddSingleton<AppStartup>();
             services.AddSingleton<ResourceResolver>();
             services.AddSingleton<LicenseDescriptor>();
+            services.AddSingleton<AppRestartManager>();
 
             // ViewModel
             services.AddSingleton<MainWindowViewModel>();

@@ -5,7 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TableCloth"
         mc:Ignorable="d"
-        Title="식탁보" Width="800" Height="600">
+        Style="{DynamicResource MainWindowStyle}"
+        Loaded="Window_Loaded"
+        MinWidth="800" MinHeight="600"
+        Title="{StaticResource MainWindow_Title}" Width="800" Height="600"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <Grid>
         <Frame x:Name="PageFrame" NavigationUIVisibility="Hidden" Navigating="PageFrame_Navigating" LoadCompleted="PageFrame_LoadCompleted" Source="Pages/CatalogPage.xaml" />
     </Grid>
