@@ -97,6 +97,61 @@
                                     <TextBlock Text="개 항목" VerticalAlignment="Bottom" />
                                 </StackPanel>
                             </Expander.Header>
+                            <!-- https://stackoverflow.com/questions/41724197/how-to-hide-togglebutton-in-grouping-expander-wpf -->
+                            <Expander.Style>
+                                <Style TargetType="Expander">
+                                    <Setter Property="IsExpanded" Value="False"></Setter>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type Expander}">
+                                                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                                                    <DockPanel>
+                                                        <ToggleButton x:Name="HeaderSite" ContentTemplate="{TemplateBinding HeaderTemplate}" ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}" Content="{TemplateBinding Header}" DockPanel.Dock="Top" Foreground="{TemplateBinding Foreground}" FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}" FontStretch="{TemplateBinding FontStretch}" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="1" MinWidth="0" MinHeight="0" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                                                            <ToggleButton.Template>
+                                                                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                                                    <Border Padding="{TemplateBinding Padding}">
+                                                                        <ContentPresenter Margin="0,4,0,0" Grid.Row="1" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Top"/>
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </ToggleButton.Template>
+                                                        </ToggleButton>
+                                                        <ContentPresenter x:Name="ExpandSite" DockPanel.Dock="Bottom" Focusable="false" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" Visibility="Collapsed" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                                    </DockPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsExpanded" Value="true">
+                                                        <Setter Property="Visibility" TargetName="ExpandSite" Value="Visible"/>
+                                                    </Trigger>
+                                                    <Trigger Property="ExpandDirection" Value="Right">
+                                                        <Setter Property="DockPanel.Dock" TargetName="ExpandSite" Value="Right"/>
+                                                        <Setter Property="DockPanel.Dock" TargetName="HeaderSite" Value="Left"/>
+                                                        <Setter Property="Style" TargetName="HeaderSite" Value="{StaticResource ExpanderRightHeaderStyle}"/>
+                                                    </Trigger>
+                                                    <Trigger Property="ExpandDirection" Value="Up">
+                                                        <Setter Property="DockPanel.Dock" TargetName="ExpandSite" Value="Top"/>
+                                                        <Setter Property="DockPanel.Dock" TargetName="HeaderSite" Value="Bottom"/>
+                                                        <Setter Property="Style" TargetName="HeaderSite" Value="{StaticResource ExpanderUpHeaderStyle}"/>
+                                                    </Trigger>
+                                                    <Trigger Property="ExpandDirection" Value="Left">
+                                                        <Setter Property="DockPanel.Dock" TargetName="ExpandSite" Value="Left"/>
+                                                        <Setter Property="DockPanel.Dock" TargetName="HeaderSite" Value="Right"/>
+                                                        <Setter Property="Style" TargetName="HeaderSite" Value="{StaticResource ExpanderLeftHeaderStyle}"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="false">
+                                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Name}" Value="Title" >
+                                            <Setter Property="IsExpanded" Value="True"></Setter>
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Expander.Style>
                             <ItemsPresenter />
                         </Expander>
                     </ControlTemplate>
