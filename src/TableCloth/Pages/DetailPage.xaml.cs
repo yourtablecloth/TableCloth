@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
+using TableCloth.ViewModels;
 
 namespace TableCloth.Pages
 {
@@ -32,6 +33,20 @@ namespace TableCloth.Pages
         {
             if (NavigationService.CanGoBack)
                 NavigationService.GoBack();
+        }
+
+        private void LaunchButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CreateShortcutButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BrowseButton_Click(object sender, RoutedEventArgs e)
+        {
         }
     }
 }

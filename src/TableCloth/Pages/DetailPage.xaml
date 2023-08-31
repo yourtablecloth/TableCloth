@@ -3,71 +3,124 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:TableCloth.Pages"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="800"
+      d:DesignHeight="900" d:DesignWidth="800"
       Title="DetailPage" Loaded="Page_Loaded">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="90*"/>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="60" />
-                <ColumnDefinition Width="70*" />
-                <ColumnDefinition Width="30*" />
-            </Grid.ColumnDefinitions>
-            <Button x:Name="GoBackButton" Grid.Column="0" Content="&lt;&lt;" Margin="8" Click="GoBackButton_Click" />
-            <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" Margin="8" VerticalContentAlignment="Center">
-                <TextBox.Style>
-                    <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
-                        <Style.Resources>
-                            <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
-                                <VisualBrush.Visual>
-                                    <Label Content="{StaticResource MainWindowV2_SearchFilter_Watermark}" Foreground="LightGray" />
-                                </VisualBrush.Visual>
-                            </VisualBrush>
-                        </Style.Resources>
-                        <Style.Triggers>
-                            <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
-                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
-                            </Trigger>
-                            <Trigger Property="Text" Value="{x:Null}">
-                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
-                            </Trigger>
-                            <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter Property="Background" Value="White" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
-        </Grid>
-        <StackPanel Grid.Row="1">
-            <Grid Margin="8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="120" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="120" />
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="70*" />
+                    <ColumnDefinition Width="30*" />
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="40" />
-                    <RowDefinition Height="40" />
-                    <RowDefinition Height="40" />
-                    <RowDefinition Height="120" />
-                </Grid.RowDefinitions>
-                <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="8" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Margin="8" Text="{Binding DisplayName}" FontSize="36" Grid.RowSpan="2" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
-                <Button Grid.Row="1" Grid.Column="2" Margin="8" Content="실행하기" />
-                <Button Grid.Row="2" Grid.Column="2" Margin="8" Content="바로 가기 만들기" />
-                <TextBlock Grid.Row="2" Grid.Column="1" Margin="8">
+                <Button x:Name="GoBackButton" Grid.Column="0" Content="&lt;&lt;" Margin="8" Click="GoBackButton_Click" />
+                <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" Margin="8" VerticalContentAlignment="Center">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                            <Style.Resources>
+                                <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                    <VisualBrush.Visual>
+                                        <Label Content="{StaticResource MainWindowV2_SearchFilter_Watermark}" Foreground="LightGray" />
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Style.Resources>
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                </Trigger>
+                                <Trigger Property="Text" Value="{x:Null}">
+                                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter Property="Background" Value="White" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Grid>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel HorizontalAlignment="Stretch">
+                <Grid Margin="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="120" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="40" />
+                        <RowDefinition Height="120" />
+                    </Grid.RowDefinitions>
+                    <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="8" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="8" Text="{Binding DisplayName}" FontSize="36" Grid.RowSpan="2" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
+                    <Button x:Name="LaunchButton" Grid.Row="1" Grid.Column="2" Margin="8" Content="실행하기" Click="LaunchButton_Click" />
+                    <Button x:Name="CreateShortcutButton" Grid.Row="2" Grid.Column="2" Margin="8" Content="바로 가기 만들기" Click="CreateShortcutButton_Click" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" Margin="8">
                     <Hyperlink>
                         <TextBlock Text="{Binding Url}" />
                     </Hyperlink>
                 </TextBlock>
-                <TextBlock Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CompatibilityNotes}" Margin="8" TextWrapping="Wrap" />
-            </Grid>
-        </StackPanel>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CompatibilityNotes}" Margin="8" TextWrapping="Wrap" />
+                </Grid>
+                <Grid Margin="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="80" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                        <CheckBox VerticalAlignment="Center" Content="{StaticResource MainWindow_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
+                        <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{StaticResource MainWindow_BrowseButtonText}" Click="BrowseButton_Click" IsEnabled="{Binding Path='MapNpkiCert'}" />
+                    </WrapPanel>
+                    <Label Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" Margin="0 5 0 0" Content="{Binding Path='SelectedCertFile'}"  IsEnabled="{Binding Path='MapNpkiCert'}">
+                    </Label>
+                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
+                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
+                    <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
+                </Grid>
+                <Grid Margin="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                    </Grid.RowDefinitions>
+                    <CheckBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallEveryonesPrinter}" IsChecked="{Binding Path='EnableEveryonesPrinter'}" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallAdobeReader}" IsChecked="{Binding Path='EnableAdobeReader'}" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallHancomOfficeViewer}" IsChecked="{Binding Path='EnableHancomOfficeViewer'}" />
+                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallRaiDrive}" IsChecked="{Binding Path='EnableRaiDrive'}" />
+                    <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
+                </Grid>
+                <Grid Margin="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="30" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{StaticResource MainWindow_TelemetryDescriptionText}" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

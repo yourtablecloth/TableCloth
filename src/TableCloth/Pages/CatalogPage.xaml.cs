@@ -74,6 +74,7 @@ namespace TableCloth.Pages
             }
 
             SelectedItemPropertyGrid.DataContext = item;
+            view.ScrollIntoView(item);
         }
 
         private bool SiteCatalog_Filter(object item)
