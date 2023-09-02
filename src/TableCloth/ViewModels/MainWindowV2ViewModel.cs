@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using TableCloth.Components;
-using TableCloth.Models.Catalog;
-using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels
 {
@@ -13,13 +9,9 @@ namespace TableCloth.ViewModels
     {
         public MainWindowV2ViewModel(
             SandboxLauncher sandboxLauncher,
-            PreferencesManager preferencesManager,
-            ResourceResolver resourceResolver,
             AppRestartManager appRestartManager)
         {
             _sandboxLauncher = sandboxLauncher;
-            _preferencesManager = preferencesManager;
-            _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
         }
 
@@ -29,8 +21,6 @@ namespace TableCloth.ViewModels
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
         private readonly SandboxLauncher _sandboxLauncher;
-        private readonly PreferencesManager _preferencesManager;
-        private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
 
         public event PropertyChangedEventHandler PropertyChanged;
