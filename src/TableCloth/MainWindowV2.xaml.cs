@@ -1,6 +1,10 @@
-﻿using Microsoft.Win32;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
@@ -13,6 +17,7 @@ using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 using TableCloth.Pages;
 using TableCloth.Themes;
+using TableCloth.ViewModels;
 
 namespace TableCloth
 {
@@ -25,6 +30,9 @@ namespace TableCloth
         {
             InitializeComponent();
         }
+
+        public MainWindowV2ViewModel ViewModel
+            => (MainWindowV2ViewModel)DataContext;
 
         // https://stackoverflow.com/questions/2135113/how-do-you-do-transition-effects-using-the-frame-control-in-wpf
         private bool _allowDirectNavigation = true;
@@ -49,6 +57,21 @@ namespace TableCloth
             }
 
             return null;
+        }
+
+        private static void OpenExplorer(string targetDirectoryPath)
+        {
+            if (!Directory.Exists(targetDirectoryPath))
+                return;
+
+            var psi = new ProcessStartInfo(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"),
+                targetDirectoryPath)
+            {
+                UseShellExecute = false,
+            };
+
+            Process.Start(psi);
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -137,7 +160,7 @@ namespace TableCloth
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             source.AddHook(WndProc);
@@ -150,6 +173,40 @@ namespace TableCloth
                 else
                     ThemesController.CurrentTheme = ThemeTypes.ColourfulDark;
             }
+
+            var services = ViewModel.Services;
+            var directoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
+
+            await ViewModel.ResourceResolver.LoadSiteImages(
+                App.Current.Services.GetService<IHttpClientFactory>(),
+                services, directoryPath).ConfigureAwait(false);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            foreach (var eachDirectory in ViewModel.TemporaryDirectories)
+            {
+                if (!string.IsNullOrWhiteSpace(ViewModel.CurrentDirectory))
+                {
+                    if (string.Equals(Path.GetFullPath(eachDirectory), Path.GetFullPath(ViewModel.CurrentDirectory), StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (ViewModel.SandboxLauncher.IsSandboxRunning())
+                        {
+                            OpenExplorer(eachDirectory);
+                            continue;
+                        }
+                    }
+                }
+
+                if (!Directory.Exists(eachDirectory))
+                    continue;
+
+                try { Directory.Delete(eachDirectory, true); }
+                catch { OpenExplorer(eachDirectory); }
+            }
+
+            if (ViewModel.AppRestartManager.ReserveRestart)
+                ViewModel.AppRestartManager.RestartNow();
         }
     }
 }

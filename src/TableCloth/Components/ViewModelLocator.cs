@@ -12,6 +12,9 @@ namespace TableCloth.Components
         public MainWindowViewModel MainWindowViewModel
             => App.Current.Services.GetService<MainWindowViewModel>();
 
+        public MainWindowV2ViewModel MainWindowV2ViewModel
+            => App.Current.Services.GetService<MainWindowV2ViewModel>();
+
         public CertSelectWindowViewModel CertSelectWindowViewModel
             => App.Current.Services.GetService<CertSelectWindowViewModel>();
 

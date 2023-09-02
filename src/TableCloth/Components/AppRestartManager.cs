@@ -13,6 +13,8 @@ namespace TableCloth.Components
 
         private readonly AppMessageBox _appMessageBox;
 
+        public bool ReserveRestart { get; set; }
+
         public bool AskRestart()
             => _appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK);
 

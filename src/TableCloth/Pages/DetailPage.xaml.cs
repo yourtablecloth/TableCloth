@@ -115,7 +115,10 @@ namespace TableCloth.Pages
                 case nameof(MainWindowViewModel.EnableLogAutoCollecting):
                     currentConfig.UseLogCollection = ViewModel.EnableLogAutoCollecting;
                     if (ViewModel.AppRestartManager.AskRestart())
-                        ViewModel.AppRestartManager.RestartNow();
+                    {
+                        ViewModel.AppRestartManager.ReserveRestart = true;
+                        Window.GetWindow(this).Close();
+                    }
                     break;
 
                 case nameof(MainWindowViewModel.EnableMicrophone):

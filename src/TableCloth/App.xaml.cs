@@ -94,6 +94,7 @@ namespace TableCloth
             services.AddTransient<CertSelectWindowViewModel>();
             services.AddSingleton<AboutWindowViewModel>();
             services.AddTransient<InputPasswordWindowViewModel>();
+            services.AddSingleton<MainWindowV2ViewModel>();
 
             // UI
             services.AddSingleton<AppMessageBox>();

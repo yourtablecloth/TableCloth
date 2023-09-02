@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:TableCloth"
         mc:Ignorable="d"
         Style="{DynamicResource MainWindowStyle}"
-        Loaded="Window_Loaded"
+        Loaded="Window_Loaded" Closed="Window_Closed"
         MinWidth="800" MinHeight="600"
+        DataContext="{Binding MainWindowV2ViewModel, Source={StaticResource ViewModelLocator}}"
         Title="{StaticResource MainWindow_Title}" Width="800" Height="600"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <Grid>
