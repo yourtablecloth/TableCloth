@@ -167,19 +167,12 @@ namespace TableCloth
                     ThemesController.CurrentTheme = ThemeTypes.ColourfulDark;
             }
 
-            var services = ViewModel.CatalogCacheManager.CatalogDocument.Services;
-            var directoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
-
-            /*
-            await ViewModel.ResourceResolver.LoadSiteImages(
-                App.Current.Services.GetService<IHttpClientFactory>(),
-                services, directoryPath).ConfigureAwait(false);
-            */
             var args = App.Current.Arguments.ToArray();
             var hasArgs = args.Count() > 0;
 
             if (hasArgs)
             {
+                var services = ViewModel.CatalogCacheManager.CatalogDocument.Services;
                 var parsedArg = DetailPageArgumentModel.Parse(args, services);
 
                 if (parsedArg.ShowCommandLineHelp)

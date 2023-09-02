@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -100,7 +102,7 @@ namespace TableCloth.Pages
             }
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             var view = (CollectionView)CollectionViewSource.GetDefaultView(ViewModel.Services);
             view.Filter = SiteCatalog_Filter;
@@ -126,6 +128,12 @@ namespace TableCloth.Pages
 
             SiteCatalogFilter.Text = Arguments?.SearchKeyword ?? string.Empty;
             UpdateCategoryView(SiteCatalog?.SelectedItem, true);
+
+            var directoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
+
+            await ViewModel.ResourceResolver.LoadSiteImages(
+                App.Current.Services.GetService<IHttpClientFactory>(),
+                ViewModel.Services, directoryPath);
         }
 
         private bool SiteCatalog_Filter(object item)
@@ -199,6 +207,21 @@ namespace TableCloth.Pages
             // once we've left the TextBox, return the select all behavior
             SiteCatalogFilter.LostMouseCapture += SiteCatalogFilter_LostMouseCapture;
             SiteCatalogFilter.LostTouchCapture += SiteCatalogFilter_LostTouchCapture;
+        }
+
+        private void SiteCatalog_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter || e.Key == Key.Return)
+            {
+                var data = SiteCatalog.SelectedItem as CatalogInternetService;
+
+                if (data != null)
+                {
+                    NavigationService.Navigate(
+                        new Uri("Pages/DetailPage.xaml", UriKind.Relative),
+                        new DetailPageArgumentModel(data, builtFromCommandLine: false));
+                }
+            }
         }
 
         private void SiteCatalog_MouseDown(object sender, MouseButtonEventArgs e)

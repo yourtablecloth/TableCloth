@@ -197,11 +197,7 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical">
-            <Label VerticalAlignment="Top" HorizontalAlignment="Center" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt2}" />
-            <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{StaticResource MainWindow_ReloadCatalog}" Click="ReloadCatalogButton_Click" />
-        </StackPanel>
-        <ListView Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDown="SiteCatalog_MouseDown" MouseDoubleClick="SiteCatalog_MouseDoubleClick" SelectionChanged="SiteCatalog_SelectionChanged">
+        <ListView Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDown="SiteCatalog_MouseDown" MouseDoubleClick="SiteCatalog_MouseDoubleClick" KeyDown="SiteCatalog_KeyDown" SelectionChanged="SiteCatalog_SelectionChanged">
             <ListView.Template>
                 <ControlTemplate>
                     <ScrollViewer CanContentScroll="False">
@@ -231,5 +227,9 @@
                 <GroupStyle/>
             </ListView.GroupStyle>
         </ListView>
+        <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical">
+            <Label VerticalAlignment="Top" HorizontalAlignment="Center" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt2}" />
+            <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{StaticResource MainWindow_ReloadCatalog}" Click="ReloadCatalogButton_Click" />
+        </StackPanel>
     </Grid>
 </Page>

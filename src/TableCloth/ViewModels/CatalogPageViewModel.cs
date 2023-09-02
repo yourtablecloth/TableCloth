@@ -12,10 +12,14 @@ namespace TableCloth.ViewModels
     public class CatalogPageViewModel : INotifyPropertyChanged
     {
         public CatalogPageViewModel(
+            SharedLocations sharedLocations,
             CatalogCacheManager catalogCacheManager,
+            ResourceResolver resourceResolver,
             AppRestartManager appRestartManager)
         {
+            _sharedLocations = sharedLocations;
             _catalogCacheManager = catalogCacheManager;
+            _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
 
             CatalogDocument = _catalogCacheManager.CatalogDocument;
@@ -25,7 +29,9 @@ namespace TableCloth.ViewModels
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
+        private readonly SharedLocations _sharedLocations;
         private readonly CatalogCacheManager _catalogCacheManager;
+        private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
 
         private CatalogDocument _catalogDocument;
@@ -33,8 +39,14 @@ namespace TableCloth.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public SharedLocations SharedLocations
+            => _sharedLocations;
+
         public CatalogCacheManager CatalogCacheManager
             => _catalogCacheManager;
+
+        public ResourceResolver ResourceResolver
+            => _resourceResolver;
 
         public AppRestartManager AppRestartManager
             => _appRestartManager;
