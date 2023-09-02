@@ -111,6 +111,8 @@ namespace TableCloth.Pages
             if (currentConfig == null)
                 currentConfig = ViewModel.PreferencesManager.GetDefaultPreferences();
 
+            var window = Window.GetWindow(this);
+
             switch (e.PropertyName)
             {
                 case nameof(MainWindowViewModel.EnableLogAutoCollecting):
@@ -118,7 +120,7 @@ namespace TableCloth.Pages
                     if (ViewModel.AppRestartManager.AskRestart())
                     {
                         ViewModel.AppRestartManager.ReserveRestart = true;
-                        Window.GetWindow(this).Close();
+                        window?.Close();
                     }
                     break;
 
@@ -127,7 +129,7 @@ namespace TableCloth.Pages
                     if (ViewModel.AppRestartManager.AskRestart())
                     {
                         ViewModel.AppRestartManager.ReserveRestart = true;
-                        Window.GetWindow(this).Close();
+                        window?.Close();
                     }
                     break;
 

@@ -60,6 +60,6 @@ namespace TableCloth.Models.Configuration
         /// <summary>
         /// 새 버전 UI를 활성화할지 여부를 기록합니다.
         /// </summary>
-        public bool V2UIOptIn { get; set; } = false;
+        public bool V2UIOptIn { get; set; } = true;
     }
 }
