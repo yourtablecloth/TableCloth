@@ -56,5 +56,10 @@ namespace TableCloth.Models.Configuration
         /// 식탁보 사용 시 주의 사항 동의 여부를 언제 확인했는지 시점을 기록합니다.
         /// </summary>
         public DateTime? LastDisclaimerAgreedTime { get; set; } = null;
+
+        /// <summary>
+        /// 새 버전 UI를 활성화할지 여부를 기록합니다.
+        /// </summary>
+        public bool V2UIOptIn { get; set; } = false;
     }
 }

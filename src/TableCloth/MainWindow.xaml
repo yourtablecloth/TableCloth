@@ -156,6 +156,17 @@
                         <CheckBox Grid.Row="4" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
                     </Grid>
                 </TabItem>
+                <TabItem Header="{StaticResource MainWindow_LabPreferences}">
+                    <Grid Margin="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="30" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="5" Text="{StaticResource MainWindow_LabDescriptionText}" />
+                        <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_V2UIOptIn}" IsChecked="{Binding Path='V2UIOptIn'}" />
+                    </Grid>
+                </TabItem>
                 <TabItem Header="{StaticResource MainWindow_TelemetryPreferences}">
                     <Grid Margin="4">
                         <Grid.RowDefinitions>
@@ -167,6 +178,7 @@
                         <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
                     </Grid>
                 </TabItem>
+
             </TabControl>
         </Grid>
 

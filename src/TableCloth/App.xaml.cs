@@ -65,6 +65,14 @@ namespace TableCloth
                     return;
                 }
             }
+
+            var preferencesManager = Services.GetService<PreferencesManager>();
+            var preferences = preferencesManager.LoadPreferences();
+
+            if (preferences.V2UIOptIn)
+                StartupUri = new Uri("MainWindowV2.xaml", UriKind.Relative);
+            else
+                StartupUri = new Uri("MainWindow.xaml", UriKind.Relative);
         }
 
         private IServiceProvider ConfigureServices()

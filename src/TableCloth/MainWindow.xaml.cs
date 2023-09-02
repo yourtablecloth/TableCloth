@@ -21,6 +21,7 @@ using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 using TableCloth.Themes;
 using TableCloth.ViewModels;
+using Windows.ApplicationModel.Activation;
 
 namespace TableCloth
 {
@@ -127,6 +128,7 @@ namespace TableCloth
                 currentConfig = ViewModel.PreferencesManager.GetDefaultPreferences();
 
             ViewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
+            ViewModel.V2UIOptIn = currentConfig.V2UIOptIn;
             ViewModel.EnableMicrophone = currentConfig.UseAudioRedirection;
             ViewModel.EnableWebCam = currentConfig.UseVideoRedirection;
             ViewModel.EnablePrinters = currentConfig.UsePrinterRedirection;
@@ -275,6 +277,15 @@ namespace TableCloth
             {
                 case nameof(MainWindowViewModel.EnableLogAutoCollecting):
                     currentConfig.UseLogCollection = ViewModel.EnableLogAutoCollecting;
+                    if (ViewModel.AppMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                    {
+                        _requireRestart = true;
+                        Close();
+                    }
+                    break;
+
+                case nameof(MainWindowViewModel.V2UIOptIn):
+                    currentConfig.V2UIOptIn = ViewModel.V2UIOptIn;
                     if (ViewModel.AppMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                     {
                         _requireRestart = true;

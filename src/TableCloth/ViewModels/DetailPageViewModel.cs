@@ -66,6 +66,7 @@ namespace TableCloth.ViewModels
         private CatalogInternetService _selectedService;
         private bool _mapNpkiCert;
         private bool _enableLogAutoCollecting;
+        private bool _v2UIOptIn;
         private bool _enableMicrophone;
         private bool _enableWebCam;
         private bool _enablePrinters;
@@ -169,6 +170,19 @@ namespace TableCloth.ViewModels
                 if (value != _enableLogAutoCollecting)
                 {
                     _enableLogAutoCollecting = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public bool V2UIOptIn
+        {
+            get => _v2UIOptIn;
+            set
+            {
+                if (value != _v2UIOptIn)
+                {
+                    _v2UIOptIn = value;
                     NotifyPropertyChanged();
                 }
             }

@@ -81,6 +81,18 @@
         Internet Explorer 호환성 모드 사용
     </system:String>
 
+    <system:String x:Key="MainWindow_LabPreferences">
+        실험실
+    </system:String>
+
+    <system:String x:Key="MainWindow_LabDescriptionText">
+        새로운 기능을 본격적으로 도입하기 앞서, 원할 때 기능을 사용하고, 원하지 않을 때는 기능을 끌 수 있는 옵션을 제공합니다.
+    </system:String>
+
+    <system:String x:Key="MainWindow_V2UIOptIn">
+        새로운 사용자 인터페이스 사용
+    </system:String>
+
     <system:String x:Key="MainWindow_TelemetryPreferences">
         기능 개선을 위한 정보 수집
     </system:String>

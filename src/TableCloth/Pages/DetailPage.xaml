@@ -149,6 +149,19 @@
                         <RowDefinition Height="50" />
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{StaticResource MainWindow_LabDescriptionText}" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_V2UIOptIn}" IsChecked="{Binding Path='V2UIOptIn'}" />
+                </Grid>
+                <Grid Margin="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="30" />
+                    </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{StaticResource MainWindow_TelemetryDescriptionText}" />
                     <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
                 </Grid>

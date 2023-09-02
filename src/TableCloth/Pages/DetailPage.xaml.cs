@@ -70,6 +70,7 @@ namespace TableCloth.Pages
                 currentConfig = ViewModel.PreferencesManager.GetDefaultPreferences();
 
             ViewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
+            ViewModel.V2UIOptIn = currentConfig.V2UIOptIn;
             ViewModel.EnableMicrophone = currentConfig.UseAudioRedirection;
             ViewModel.EnableWebCam = currentConfig.UseVideoRedirection;
             ViewModel.EnablePrinters = currentConfig.UsePrinterRedirection;
@@ -114,6 +115,15 @@ namespace TableCloth.Pages
             {
                 case nameof(MainWindowViewModel.EnableLogAutoCollecting):
                     currentConfig.UseLogCollection = ViewModel.EnableLogAutoCollecting;
+                    if (ViewModel.AppRestartManager.AskRestart())
+                    {
+                        ViewModel.AppRestartManager.ReserveRestart = true;
+                        Window.GetWindow(this).Close();
+                    }
+                    break;
+
+                case nameof(MainWindowViewModel.V2UIOptIn):
+                    currentConfig.V2UIOptIn = ViewModel.V2UIOptIn;
                     if (ViewModel.AppRestartManager.AskRestart())
                     {
                         ViewModel.AppRestartManager.ReserveRestart = true;
