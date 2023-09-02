@@ -9,12 +9,14 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using TableCloth.Contracts;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Pages
 {
-    public partial class CatalogPage : Page
+    public partial class CatalogPage : Page, IPageArgument<CatalogPageModel>
     {
         public CatalogPage()
         {
@@ -26,6 +28,8 @@ namespace TableCloth.Pages
 
         private static readonly PropertyGroupDescription GroupDescription =
             new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
+
+        public CatalogPageModel Arguments { get; set; } = default;
 
         private UIElement CreateCategoryButton(CatalogInternetServiceCategory val)
         {
@@ -117,6 +121,7 @@ namespace TableCloth.Pages
             foreach (var eachMember in tupleList.OrderBy(x => x.Item2).Select(x => x.Item1))
                 CategoryButtonList.Children.Add(CreateCategoryButton(eachMember));
 
+            SiteCatalogFilter.Text = Arguments?.SearchKeyword ?? string.Empty;
             UpdateCategoryView(SiteCatalog?.SelectedItem, true);
         }
 

@@ -7,8 +7,10 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Markup;
 using System.Windows.Navigation;
 using TableCloth.Contracts;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
@@ -20,7 +22,7 @@ namespace TableCloth.Pages
     /// <summary>
     /// Interaction logic for DetailPage.xaml
     /// </summary>
-    public partial class DetailPage : Page, IPageArgument<CatalogInternetService>
+    public partial class DetailPage : Page, IPageArgument<IEnumerable<CatalogInternetService>>
     {
         public DetailPage()
         {
@@ -295,6 +297,13 @@ namespace TableCloth.Pages
             {
                 UseShellExecute = true,
             });
+        }
+
+        private void SiteCatalogFilter_LostFocus(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(
+                new Uri("Pages/CatalogPage.xaml", UriKind.Relative),
+                new CatalogPageModel() { SearchKeyword = SiteCatalogFilter.Text, });
         }
     }
 }

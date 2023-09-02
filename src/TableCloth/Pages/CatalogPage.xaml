@@ -169,7 +169,7 @@
             <ColumnDefinition Width="80*" />
             <ColumnDefinition Width="30*" />
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="8 0 0 0" FontWeight="Bold">
+        <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="8 0 0 0" FontWeight="Bold" TextWrapping="Wrap">
             접속하려는 웹 사이트를 선택하거나, 우측 상단의 검색창에서 검색어를 입력하세요.
         </TextBlock>
         <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Margin="2" x:Name="CategoryButtonList" />

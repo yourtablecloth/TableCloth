@@ -19,7 +19,7 @@
                     <ColumnDefinition Width="30*" />
                 </Grid.ColumnDefinitions>
                 <Button x:Name="GoBackButton" Grid.Column="0" Content="&lt;&lt;" Margin="8" Click="GoBackButton_Click" />
-                <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" Margin="8" VerticalContentAlignment="Center">
+                <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" Margin="8" VerticalContentAlignment="Center" LostFocus="SiteCatalogFilter_LostFocus">
                     <TextBox.Style>
                         <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                             <Style.Resources>

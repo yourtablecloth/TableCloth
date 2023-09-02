@@ -14,6 +14,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using TableCloth.Contracts;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Pages;
 using TableCloth.Themes;
@@ -154,7 +155,11 @@ namespace TableCloth
         {
             switch (e.Content)
             {
-                case IPageArgument<CatalogInternetService> target:
+                case IPageArgument<CatalogPageModel> target:
+                    target.Arguments = e.ExtraData as CatalogPageModel;
+                    break;
+
+                case IPageArgument<IEnumerable<CatalogInternetService>> target:
                     target.Arguments = e.ExtraData as IEnumerable<CatalogInternetService>;
                     break;
             }
