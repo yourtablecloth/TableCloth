@@ -276,5 +276,11 @@ namespace TableCloth.Pages
                 }
             }
         }
+
+        private void AboutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var aboutWindow = new AboutWindow() { Owner = Window.GetWindow(this), };
+            aboutWindow.ShowDialog();
+        }
     }
 }
