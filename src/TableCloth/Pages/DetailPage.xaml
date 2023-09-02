@@ -94,11 +94,11 @@
                     <Button x:Name="CreateShortcutButton" Grid.Row="2" Grid.Column="2" Margin="8" Content="바로 가기 만들기" Click="CreateShortcutButton_Click" />
                     <TextBlock Grid.Row="2" Grid.Column="1" Margin="8">
                         <Hyperlink Click="Hyperlink_Click" Tag="{Binding Url}">
-                            <TextBlock Text="{Binding Url}" />
+                            <TextBlock Text="{Binding Url, StringFormat='홈페이지 주소: {0}'}" />
                         </Hyperlink>
                     </TextBlock>
-                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="8" Text="{Binding PackageCountForDisplay}" />
-                    <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CompatibilityNotes}" Margin="8" TextWrapping="Wrap" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="8" Text="{Binding PackageCountForDisplay, StringFormat='설치할 소프트웨어 갯수: {0}개'}" />
+                    <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CompatibilityNotes}" Margin="8" TextWrapping="Wrap" Foreground="Red" FontWeight="Bold" />
                 </Grid>
                 <Grid Margin="8">
                     <Grid.ColumnDefinitions>

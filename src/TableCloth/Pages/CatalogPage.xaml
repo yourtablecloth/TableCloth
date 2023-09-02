@@ -93,8 +93,7 @@
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" FontWeight="Bold" VerticalAlignment="Bottom" />
-                                    <TextBlock Text="{Binding ItemCount}" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Bottom" />
-                                    <TextBlock Text="개 항목" VerticalAlignment="Bottom" />
+                                    <TextBlock Text="{Binding ItemCount, StringFormat=' {0}개'}" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Bottom" />
                                 </StackPanel>
                             </Expander.Header>
                             <!-- https://stackoverflow.com/questions/41724197/how-to-hide-togglebutton-in-grouping-expander-wpf -->
