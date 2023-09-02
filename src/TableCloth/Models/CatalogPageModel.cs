@@ -2,6 +2,11 @@
 {
     public sealed class CatalogPageModel
     {
-        public string SearchKeyword { get; set; } = string.Empty;
+        public CatalogPageModel(string searchKeyword)
+        {
+            SearchKeyword = searchKeyword ?? string.Empty;
+        }
+
+        public string SearchKeyword { get; private set; } = string.Empty;
     }
 }

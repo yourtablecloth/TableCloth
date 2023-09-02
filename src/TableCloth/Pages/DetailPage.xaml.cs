@@ -22,7 +22,7 @@ namespace TableCloth.Pages
     /// <summary>
     /// Interaction logic for DetailPage.xaml
     /// </summary>
-    public partial class DetailPage : Page, IPageArgument<IEnumerable<CatalogInternetService>>
+    public partial class DetailPage : Page, IPageArgument<DetailPageModel>
     {
         public DetailPage()
         {
@@ -32,9 +32,9 @@ namespace TableCloth.Pages
         public DetailPageViewModel ViewModel
             => (DetailPageViewModel)DataContext;
 
-        public IEnumerable<CatalogInternetService> Arguments { get; set; } = default;
+        public DetailPageModel Arguments { get; set; } = default;
 
-        public CatalogInternetService FirstArgument => Arguments.FirstOrDefault();
+        public CatalogInternetService FirstArgument => Arguments?.SelectedServices?.FirstOrDefault();
 
         private void RunSandbox(TableClothConfiguration config)
         {
@@ -303,7 +303,7 @@ namespace TableCloth.Pages
         {
             NavigationService.Navigate(
                 new Uri("Pages/CatalogPage.xaml", UriKind.Relative),
-                new CatalogPageModel() { SearchKeyword = SiteCatalogFilter.Text, });
+                new CatalogPageModel(SiteCatalogFilter.Text));
         }
     }
 }

@@ -7,6 +7,30 @@
       mc:Ignorable="d" 
       d:DesignHeight="900" d:DesignWidth="800"
       Title="DetailPage" Loaded="Page_Loaded">
+    <Page.Resources>
+        <!-- https://www.svgrepo.com/svg/496822/back-square -->
+        <DrawingImage x:Key="BackButtonImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                    <GeometryDrawing Geometry="F1 M24,24z M0,0z M9,22L15,22C20,22,22,20,22,15L22,9C22,4,20,2,15,2L9,2C4,2,2,4,2,9L2,15C2,20,4,22,9,22z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#FF292D32" Thickness="1.5" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing Geometry="F1 M24,24z M0,0z M9.00002,15.3802L13.92,15.3802C15.62,15.3802 17,14.0002 17,12.3002 17,10.6002 15.62,9.22021 13.92,9.22021L7.15002,9.22021">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#FF292D32" Thickness="1.5" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="10" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing Geometry="F1 M24,24z M0,0z M8.57,10.7701L7,9.19012 8.57,7.62012">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#FF292D32" Thickness="1.5" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+    </Page.Resources>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
@@ -18,7 +42,11 @@
                     <ColumnDefinition Width="70*" />
                     <ColumnDefinition Width="30*" />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="GoBackButton" Grid.Column="0" Content="&lt;&lt;" Margin="8" Click="GoBackButton_Click" />
+            <Button x:Name="GoBackButton" Grid.Column="0" Margin="8" Click="GoBackButton_Click" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                    <Button.Content>
+                        <Image Source="{StaticResource BackButtonImage}" />
+                    </Button.Content>
+                </Button>
                 <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" Margin="8" VerticalContentAlignment="Center" LostFocus="SiteCatalogFilter_LostFocus">
                     <TextBox.Style>
                         <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
