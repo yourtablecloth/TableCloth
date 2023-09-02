@@ -219,7 +219,7 @@
                             <RowDefinition Height="2*" />
                             <RowDefinition Height="48*" />
                         </Grid.RowDefinitions>
-                        <Image Grid.Row="0" x:Name="Icon" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
+                        <Image Grid.Row="0" x:Name="Icon" Source="{Binding Id, Mode=OneWay, Converter={StaticResource ServiceLogoConverter}}" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
                         <TextBlock Grid.Row="2" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
                     </Grid>
                 </DataTemplate>

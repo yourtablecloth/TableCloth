@@ -102,7 +102,7 @@ namespace TableCloth.Pages
             }
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             var view = (CollectionView)CollectionViewSource.GetDefaultView(ViewModel.Services);
             view.Filter = SiteCatalog_Filter;
@@ -129,12 +129,11 @@ namespace TableCloth.Pages
             SiteCatalogFilter.Text = Arguments?.SearchKeyword ?? string.Empty;
             UpdateCategoryView(SiteCatalog?.SelectedItem, true);
 
-            var directoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
-            /*
-            ViewModel.ResourceResolver.LoadSiteImages(
+            await ViewModel.ResourceResolver.LoadSiteImages(
                 App.Current.Services.GetService<IHttpClientFactory>(),
-                ViewModel.Services, directoryPath);
-            */
+                ViewModel.Services,
+                ViewModel.SharedLocations.GetImageDirectoryPath())
+                .ConfigureAwait(false);
         }
 
         private bool SiteCatalog_Filter(object item)
