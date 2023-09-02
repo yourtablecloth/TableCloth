@@ -109,6 +109,10 @@
         카탈로그 파일을 가져오지 못했어요! 그래도 샌드박스는 대신 실행해드려요.
     </system:String>
 
+    <system:String x:Key="MainWindow_SelectSiteLabelText_Alt2">
+        카탈로그 파일을 가져오지 못했어요!
+    </system:String>
+
     <system:String x:Key="MainWindow_ReloadCatalog">
         다시 불러오기 (프로그램 다시 실행)
     </system:String>

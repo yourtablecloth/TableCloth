@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Net.Cache;
 using System.Windows.Data;
+using System.Windows.Media.Imaging;
 using TableCloth.Components;
 
 namespace TableCloth.Converters
@@ -25,7 +28,17 @@ namespace TableCloth.Converters
             if (!File.Exists(targetFilePath))
                 return null;
 
-            return targetFilePath;
+            // https://stackoverflow.com/questions/1491383/reloading-an-image-in-wpf
+            var _image = new BitmapImage();
+            _image.BeginInit();
+            _image.CacheOption = BitmapCacheOption.None;
+            _image.UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
+            _image.CacheOption = BitmapCacheOption.OnLoad;
+            _image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            _image.UriSource = new Uri(targetFilePath, UriKind.Absolute);
+            _image.EndInit();
+
+            return _image;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

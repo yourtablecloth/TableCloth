@@ -82,6 +82,7 @@ namespace TableCloth
             services.AddSingleton<PreferencesManager>();
             services.AddSingleton<X509CertPairScanner>();
             services.AddSingleton<CatalogDeserializer>();
+            services.AddSingleton<CatalogCacheManager>();
             services.AddSingleton<SandboxBuilder>();
             services.AddSingleton<SandboxLauncher>();
             services.AddSingleton<SandboxCleanupManager>();

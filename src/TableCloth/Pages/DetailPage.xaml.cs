@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Markup;
 using System.Windows.Navigation;
 using TableCloth.Contracts;
 using TableCloth.Models;
@@ -99,6 +98,9 @@ namespace TableCloth.Pages
                 if (result.HasValue && result.Value)
                     ViewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
             }
+
+            if (Arguments.BuiltFromCommandLine)
+                RunSandbox(Arguments.GetTableClothConfiguration());
         }
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)

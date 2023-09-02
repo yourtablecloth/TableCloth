@@ -63,80 +63,6 @@ namespace TableCloth
             return null;
         }
 
-        /*
-        private void ProcessCommandLineArguments()
-        {
-            var args = App.Current.Arguments.ToArray();
-            var config = new TableClothConfiguration();
-
-            var selectedServices = new List<string>();
-            var enableCert = false;
-            var certPrivateKeyPath = default(string);
-            var certPublicKeyPath = default(string);
-            var showHelp = false;
-
-            for (var i = 0; i < args.Length; i++)
-            {
-                if (!args[i].StartsWith(StringResources.TableCloth_Switch_Prefix))
-                    selectedServices.Add(args[i]);
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableMicrophone, StringComparison.OrdinalIgnoreCase))
-                    config.EnableMicrophone = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableCamera, StringComparison.OrdinalIgnoreCase))
-                    config.EnableWebCam = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnablePrinter, StringComparison.OrdinalIgnoreCase))
-                    config.EnablePrinters = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_CertPrivateKey, StringComparison.OrdinalIgnoreCase))
-                    certPrivateKeyPath = args[Math.Min(args.Length - 1, ++i)];
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_CertPublicKey, StringComparison.OrdinalIgnoreCase))
-                    certPublicKeyPath = args[Math.Min(args.Length - 1, ++i)];
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallEveryonesPrinter, StringComparison.OrdinalIgnoreCase))
-                    config.InstallEveryonesPrinter = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallAdobeReader, StringComparison.OrdinalIgnoreCase))
-                    config.InstallAdobeReader = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallHancomOfficeViewer, StringComparison.OrdinalIgnoreCase))
-                    config.InstallHancomOfficeViewer = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallRaiDrive, StringComparison.OrdinalIgnoreCase))
-                    config.InstallRaiDrive = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableIEMode, StringComparison.OrdinalIgnoreCase))
-                    config.EnableInternetExplorerMode = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase))
-                    showHelp = true;
-                else if (string.Equals(args[i], StringResources.Tablecloth_Switch_EnableCert, StringComparison.OrdinalIgnoreCase))
-                    enableCert = true;
-            }
-
-            if (showHelp)
-            {
-                ViewModel.AppMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
-                return;
-            }
-
-            config.Services = ViewModel.Services.Where(x => selectedServices.Contains(x.Id, StringComparer.OrdinalIgnoreCase)).ToList();
-
-            if (config.Services.Count > 0)
-            {
-                if (enableCert)
-                {
-                    var certPublicKeyData = default(byte[]);
-                    var certPrivateKeyData = default(byte[]);
-
-                    if (File.Exists(certPublicKeyPath))
-                        certPublicKeyData = File.ReadAllBytes(certPublicKeyPath);
-
-                    if (File.Exists(certPrivateKeyPath))
-                        certPrivateKeyData = File.ReadAllBytes(certPrivateKeyPath);
-
-                    if (certPublicKeyData != null && certPrivateKeyData != null)
-                        config.CertPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
-                    else
-                        config.CertPair = ViewModel.SelectedCertFile;
-
-                }
-                //RunSandbox(config);
-            }
-        }
-        */
-
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (msg == NativeMethods.WM_SETTINGCHANGE)
@@ -170,16 +96,16 @@ namespace TableCloth
             e.Cancel = true;
             _navArgs = e;
 
-            var animation0 = new DoubleAnimation();
-            animation0.From = _oldValue = PageFrame.Opacity;
-            animation0.To = 0;
-            animation0.Duration = _duration;
-            animation0.Completed += SlideCompleted;
+            var animation = new DoubleAnimation();
+            animation.From = _oldValue = PageFrame.Opacity;
+            animation.To = 0;
+            animation.Duration = _duration;
+            animation.Completed += DoubleAnimation_SlideCompleted;
 
-            PageFrame.BeginAnimation(_targetProperty, animation0);
+            PageFrame.BeginAnimation(_targetProperty, animation);
         }
 
-        private void SlideCompleted(object sender, EventArgs e)
+        private void DoubleAnimation_SlideCompleted(object sender, EventArgs e)
         {
             _allowDirectNavigation = true;
             switch (_navArgs.NavigationMode)
@@ -227,7 +153,7 @@ namespace TableCloth
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             source.AddHook(WndProc);
@@ -240,18 +166,36 @@ namespace TableCloth
                 else
                     ThemesController.CurrentTheme = ThemeTypes.ColourfulDark;
             }
-            
-            /*
-            var services = ViewModel.Services;
+
+            var services = ViewModel.CatalogCacheManager.CatalogDocument.Services;
             var directoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
 
+            /*
             await ViewModel.ResourceResolver.LoadSiteImages(
                 App.Current.Services.GetService<IHttpClientFactory>(),
                 services, directoryPath).ConfigureAwait(false);
             */
-        }
+            var args = App.Current.Arguments.ToArray();
+            var hasArgs = args.Count() > 0;
 
-        // To Do: Catalog Document Cache 추가 필요
+            if (hasArgs)
+            {
+                var parsedArg = DetailPageArgumentModel.Parse(args, services);
+
+                if (parsedArg.ShowCommandLineHelp)
+                {
+                    ViewModel.AppMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                    return;
+                }
+
+                if (parsedArg.SelectedService == null)
+                    return;
+
+                PageFrame.Navigate(
+                    new Uri("Pages/DetailPage.xaml", UriKind.Relative),
+                    parsedArg);
+            }
+        }
 
         private void Window_Closed(object sender, EventArgs e)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -22,6 +23,8 @@ namespace TableCloth.Pages
         {
             InitializeComponent();
         }
+
+        private FileSystemWatcher _fileSystemWatcher;
 
         public CatalogPageViewModel ViewModel
             => (CatalogPageViewModel)DataContext;
@@ -215,7 +218,7 @@ namespace TableCloth.Pages
             {
                 NavigationService.Navigate(
                     new Uri("Pages/DetailPage.xaml", UriKind.Relative),
-                    new DetailPageArgumentModel(data));
+                    new DetailPageArgumentModel(data, builtFromCommandLine: false));
             }
         }
 
