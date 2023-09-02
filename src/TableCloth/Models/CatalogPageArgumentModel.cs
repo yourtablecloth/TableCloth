@@ -1,8 +1,8 @@
 ﻿namespace TableCloth.Models
 {
-    public sealed class CatalogPageModel
+    public sealed class CatalogPageArgumentModel
     {
-        public CatalogPageModel(string searchKeyword)
+        public CatalogPageArgumentModel(string searchKeyword)
         {
             SearchKeyword = searchKeyword ?? string.Empty;
         }

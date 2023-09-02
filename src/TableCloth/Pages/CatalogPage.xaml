@@ -9,7 +9,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="인터넷 뱅킹 서비스 선택"
       Loaded="Page_Loaded"
-      DataContext="{Binding MainWindowViewModel, Source={StaticResource ViewModelLocator}}">
+      DataContext="{Binding CatalogPageViewModel, Source={StaticResource ViewModelLocator}}">
 
     <Page.Resources>
         <Style x:Key="FocusVisual">

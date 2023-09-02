@@ -24,6 +24,9 @@ namespace TableCloth.Components
         public MainWindowViewModel MainWindowViewModel
             => App.Current.Services.GetService<MainWindowViewModel>();
 
+        public CatalogPageViewModel CatalogPageViewModel
+            => App.Current.Services.GetService<CatalogPageViewModel>();
+
         public DetailPageViewModel DetailPageViewModel
             => App.Current.Services.GetService<DetailPageViewModel>();
     }

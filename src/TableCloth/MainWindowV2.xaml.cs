@@ -217,12 +217,12 @@ namespace TableCloth
         {
             switch (e.Content)
             {
-                case IPageArgument<CatalogPageModel> target:
-                    target.Arguments = e.ExtraData as CatalogPageModel;
+                case IPageArgument<CatalogPageArgumentModel> target:
+                    target.Arguments = e.ExtraData as CatalogPageArgumentModel;
                     break;
 
-                case IPageArgument<DetailPageModel> target:
-                    target.Arguments = e.ExtraData as DetailPageModel;
+                case IPageArgument<DetailPageArgumentModel> target:
+                    target.Arguments = e.ExtraData as DetailPageArgumentModel;
                     break;
             }
         }
@@ -255,7 +255,7 @@ namespace TableCloth
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            ViewModel.SandboxManager.TryCleanup();
+            ViewModel.SandboxCleanupManager.TryCleanup();
 
             if (ViewModel.AppRestartManager.ReserveRestart)
                 ViewModel.AppRestartManager.RestartNow();

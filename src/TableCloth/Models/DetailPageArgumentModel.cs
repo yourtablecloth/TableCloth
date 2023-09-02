@@ -3,9 +3,9 @@ using TableCloth.Models.Catalog;
 
 namespace TableCloth.Models
 {
-    public sealed class DetailPageModel
+    public sealed class DetailPageArgumentModel
     {
-        public DetailPageModel(
+        public DetailPageArgumentModel(
             CatalogInternetService selectedService)
         {
             SelectedService = selectedService;

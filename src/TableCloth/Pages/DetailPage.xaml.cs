@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Navigation;
 using TableCloth.Contracts;
@@ -22,7 +23,7 @@ namespace TableCloth.Pages
     /// <summary>
     /// Interaction logic for DetailPage.xaml
     /// </summary>
-    public partial class DetailPage : Page, IPageArgument<DetailPageModel>
+    public partial class DetailPage : Page, IPageArgument<DetailPageArgumentModel>
     {
         public DetailPage()
         {
@@ -32,7 +33,7 @@ namespace TableCloth.Pages
         public DetailPageViewModel ViewModel
             => (DetailPageViewModel)DataContext;
 
-        public DetailPageModel Arguments { get; set; } = default;
+        public DetailPageArgumentModel Arguments { get; set; } = default;
 
         private void RunSandbox(TableClothConfiguration config)
         {
@@ -298,7 +299,15 @@ namespace TableCloth.Pages
         {
             NavigationService.Navigate(
                 new Uri("Pages/CatalogPage.xaml", UriKind.Relative),
-                new CatalogPageModel(SiteCatalogFilter.Text));
+                new CatalogPageArgumentModel(SiteCatalogFilter.Text));
+        }
+
+        // https://stackoverflow.com/questions/660554/how-to-automatically-select-all-text-on-focus-in-wpf-textbox
+        private void SiteCatalogFilter_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            // Fixes issue when clicking cut/copy/paste in context menu
+            if (SiteCatalogFilter.SelectionLength < 1)
+                SiteCatalogFilter.SelectAll();
         }
     }
 }

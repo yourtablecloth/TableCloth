@@ -16,20 +16,20 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Pages
 {
-    public partial class CatalogPage : Page, IPageArgument<CatalogPageModel>
+    public partial class CatalogPage : Page, IPageArgument<CatalogPageArgumentModel>
     {
         public CatalogPage()
         {
             InitializeComponent();
         }
 
-        public MainWindowViewModel ViewModel
-            => (MainWindowViewModel)DataContext;
+        public CatalogPageViewModel ViewModel
+            => (CatalogPageViewModel)DataContext;
 
         private static readonly PropertyGroupDescription GroupDescription =
             new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
 
-        public CatalogPageModel Arguments { get; set; } = default;
+        public CatalogPageArgumentModel Arguments { get; set; } = default;
 
         private UIElement CreateCategoryButton(CatalogInternetServiceCategory val)
         {
@@ -164,7 +164,6 @@ namespace TableCloth.Pages
         }
 
         // https://stackoverflow.com/questions/660554/how-to-automatically-select-all-text-on-focus-in-wpf-textbox
-
         private void SiteCatalogFilter_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             // Fixes issue when clicking cut/copy/paste in context menu
@@ -216,7 +215,7 @@ namespace TableCloth.Pages
             {
                 NavigationService.Navigate(
                     new Uri("Pages/DetailPage.xaml", UriKind.Relative),
-                    new DetailPageModel(data));
+                    new DetailPageArgumentModel(data));
             }
         }
 

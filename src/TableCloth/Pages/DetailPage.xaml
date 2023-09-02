@@ -48,7 +48,7 @@
                         <Image Source="{StaticResource BackButtonImage}" />
                     </Button.Content>
                 </Button>
-                <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" Margin="8" VerticalContentAlignment="Center" LostFocus="SiteCatalogFilter_LostFocus">
+                <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" Margin="8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostFocus="SiteCatalogFilter_LostFocus">
                     <TextBox.Style>
                         <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                             <Style.Resources>
