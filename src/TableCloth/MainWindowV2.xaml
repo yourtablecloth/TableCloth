@@ -12,6 +12,8 @@
         Title="{StaticResource MainWindow_Title}" Width="800" Height="600"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <Grid>
-        <Frame x:Name="PageFrame" NavigationUIVisibility="Hidden" Navigating="PageFrame_Navigating" LoadCompleted="PageFrame_LoadCompleted" Source="Pages/CatalogPage.xaml" />
+        <Frame x:Name="PageFrame" NavigationUIVisibility="Hidden"
+               LoadCompleted="PageFrame_LoadCompleted"
+               Source="Pages/CatalogPage.xaml" />
     </Grid>
 </Window>

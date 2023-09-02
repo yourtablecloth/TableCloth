@@ -28,17 +28,7 @@ namespace TableCloth.Converters
             if (!File.Exists(targetFilePath))
                 return null;
 
-            // https://stackoverflow.com/questions/1491383/reloading-an-image-in-wpf
-            var _image = new BitmapImage();
-            _image.BeginInit();
-            _image.CacheOption = BitmapCacheOption.None;
-            _image.UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
-            _image.CacheOption = BitmapCacheOption.OnLoad;
-            _image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-            _image.UriSource = new Uri(targetFilePath, UriKind.Absolute);
-            _image.EndInit();
-
-            return _image;
+            return targetFilePath;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
