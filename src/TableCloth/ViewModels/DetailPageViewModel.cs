@@ -13,27 +13,40 @@ namespace TableCloth.ViewModels
     public sealed class DetailPageViewModel : INotifyPropertyChanged
     {
         public DetailPageViewModel(
-            CatalogInternetService selectedService,
-            IServiceProvider serviceProvider)
+            SharedLocations sharedLocations,
+            AppStartup appStartup,
+            AppMessageBox appMessageBox,
+            CatalogDeserializer catalogDeserializer,
+            X509CertPairScanner certPairScanner,
+            SandboxBuilder sandboxBuilder,
+            PreferencesManager preferencesManager,
+            ResourceResolver resourceResolver,
+            AppRestartManager appRestartManager)
         {
-            _selectedService = selectedService;
-            _serviceProvider = serviceProvider;
-            _serviceProvider.AssignService(out _sharedLocations);
-            _serviceProvider.AssignService(out _appStartup);
-            _serviceProvider.AssignService(out _appMessageBox);
-            _serviceProvider.AssignService(out _catalogDeserializer);
-            _serviceProvider.AssignService(out _certPairScanner);
-            _serviceProvider.AssignService(out _sandboxBuilder);
-            _serviceProvider.AssignService(out _sandboxLauncher);
-            _serviceProvider.AssignService(out _preferencesManager);
-            _serviceProvider.AssignService(out _resourceResolver);
-            _serviceProvider.AssignService(out _appRestartManager);
+            _sharedLocations = sharedLocations;
+            _appStartup = appStartup;
+            _appMessageBox = appMessageBox;
+            _catalogDeserializer = catalogDeserializer;
+            _certPairScanner = certPairScanner;
+            _sandboxBuilder = sandboxBuilder;
+            _sandboxLauncher = SandboxLauncher;
+            _preferencesManager = preferencesManager;
+            _resourceResolver = resourceResolver;
+            _appRestartManager = appRestartManager;
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
-        private readonly CatalogInternetService _selectedService;
+        private void NotifyPropertiesChanged(params string[] propertiesToNotify)
+        {
+            if (propertiesToNotify == null)
+                return;
+
+            foreach (var eachPropertyName in propertiesToNotify)
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(eachPropertyName ?? string.Empty));
+        }
+
         private readonly IServiceProvider _serviceProvider;
         private readonly SharedLocations _sharedLocations;
         private readonly AppStartup _appStartup;
@@ -46,6 +59,7 @@ namespace TableCloth.ViewModels
         private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
 
+        private CatalogInternetService _selectedService;
         private bool _mapNpkiCert;
         private bool _enableLogAutoCollecting;
         private bool _enableMicrophone;
@@ -59,12 +73,8 @@ namespace TableCloth.ViewModels
         private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
         private X509CertPair _selectedCertFile;
-        private List<CatalogInternetService> _services;
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public CatalogInternetService SelectedService
-            => _selectedService;
 
         public SharedLocations SharedLocations
             => _sharedLocations;
@@ -110,6 +120,26 @@ namespace TableCloth.ViewModels
 
         public int? PackageCountForDisplay
             => _selectedService?.PackageCountForDisplay;
+
+        public CatalogInternetService SelectedService
+        {
+            get => _selectedService;
+            set
+            {
+                if (value != _selectedService)
+                {
+                    _selectedService = value;
+                    NotifyPropertiesChanged(
+                        nameof(SelectedService),
+                        nameof(Id),
+                        nameof(DisplayName),
+                        nameof(Url),
+                        nameof(CompatibilityNotes),
+                        nameof(PackageCountForDisplay)
+                    );
+                }
+            }
+        }
 
         public bool MapNpkiCert
         {
@@ -295,24 +325,8 @@ namespace TableCloth.ViewModels
             }
         }
 
-        public List<CatalogInternetService> Services
-        {
-            get => _services;
-            set
-            {
-                if (value != _services)
-                {
-                    _services = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-
         public List<string> TemporaryDirectories { get; } = new();
 
         public string CurrentDirectory { get; set; }
-
-        public bool HasServices
-            => Services != null && Services.Any();
     }
 }

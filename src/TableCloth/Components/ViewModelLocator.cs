@@ -9,9 +9,6 @@ namespace TableCloth.Components
         public IHttpClientFactory HttpClientFactory
             => App.Current.Services.GetService<IHttpClientFactory>();
 
-        public MainWindowViewModel MainWindowViewModel
-            => App.Current.Services.GetService<MainWindowViewModel>();
-
         public MainWindowV2ViewModel MainWindowV2ViewModel
             => App.Current.Services.GetService<MainWindowV2ViewModel>();
 
@@ -23,5 +20,11 @@ namespace TableCloth.Components
 
         public InputPasswordWindowViewModel InputPasswordWindowViewModel
             => App.Current.Services.GetService<InputPasswordWindowViewModel>();
+
+        public MainWindowViewModel MainWindowViewModel
+            => App.Current.Services.GetService<MainWindowViewModel>();
+
+        public DetailPageViewModel DetailPageViewModel
+            => App.Current.Services.GetService<DetailPageViewModel>();
     }
 }

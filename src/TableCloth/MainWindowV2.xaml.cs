@@ -78,6 +78,7 @@ namespace TableCloth
             Process.Start(psi);
         }
 
+        /*
         private void ProcessCommandLineArguments()
         {
             var args = App.Current.Arguments.ToArray();
@@ -149,6 +150,7 @@ namespace TableCloth
                 //RunSandbox(config);
             }
         }
+        */
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -240,7 +242,7 @@ namespace TableCloth
             }
         }
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             source.AddHook(WndProc);
@@ -254,13 +256,18 @@ namespace TableCloth
                     ThemesController.CurrentTheme = ThemeTypes.ColourfulDark;
             }
             
+            /*
             var services = ViewModel.Services;
             var directoryPath = ViewModel.SharedLocations.GetImageDirectoryPath();
 
             await ViewModel.ResourceResolver.LoadSiteImages(
                 App.Current.Services.GetService<IHttpClientFactory>(),
                 services, directoryPath).ConfigureAwait(false);
+            */
         }
+
+        // To Do: Cleanup Manager 추가 필요
+        // To Do: Catalog Document Cache 추가 필요
 
         private void Window_Closed(object sender, EventArgs e)
         {

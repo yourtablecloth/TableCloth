@@ -34,8 +34,6 @@ namespace TableCloth.Pages
 
         public DetailPageModel Arguments { get; set; } = default;
 
-        public CatalogInternetService FirstArgument => Arguments?.SelectedServices?.FirstOrDefault();
-
         private void RunSandbox(TableClothConfiguration config)
         {
             if (config.CertPair != null)
@@ -65,9 +63,7 @@ namespace TableCloth.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            DataContext = new DetailPageViewModel(
-                FirstArgument,
-                App.Current.Services);
+            ViewModel.SelectedService = Arguments.SelectedService;
 
             var currentConfig = ViewModel.PreferencesManager.LoadPreferences();
 

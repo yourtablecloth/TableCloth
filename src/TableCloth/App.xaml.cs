@@ -95,6 +95,7 @@ namespace TableCloth
             services.AddSingleton<AboutWindowViewModel>();
             services.AddTransient<InputPasswordWindowViewModel>();
             services.AddSingleton<MainWindowV2ViewModel>();
+            services.AddSingleton<DetailPageViewModel>();
 
             // UI
             services.AddSingleton<AppMessageBox>();

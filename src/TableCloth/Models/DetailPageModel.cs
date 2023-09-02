@@ -6,11 +6,11 @@ namespace TableCloth.Models
     public sealed class DetailPageModel
     {
         public DetailPageModel(
-            IEnumerable<CatalogInternetService> selectedServices)
+            CatalogInternetService selectedService)
         {
-            SelectedServices = selectedServices;
+            SelectedService = selectedService;
         }
 
-        public IEnumerable<CatalogInternetService> SelectedServices { get; private set; } = default;
+        public CatalogInternetService SelectedService { get; private set; } = default;
     }
 }

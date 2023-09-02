@@ -216,7 +216,7 @@ namespace TableCloth.Pages
             {
                 NavigationService.Navigate(
                     new Uri("Pages/DetailPage.xaml", UriKind.Relative),
-                    new DetailPageModel(new[] { data, }));
+                    new DetailPageModel(data));
             }
         }
 
