@@ -84,6 +84,7 @@ namespace TableCloth
             services.AddSingleton<CatalogDeserializer>();
             services.AddSingleton<SandboxBuilder>();
             services.AddSingleton<SandboxLauncher>();
+            services.AddSingleton<SandboxCleanupManager>();
             services.AddSingleton<AppStartup>();
             services.AddSingleton<ResourceResolver>();
             services.AddSingleton<LicenseDescriptor>();

@@ -19,6 +19,8 @@ namespace TableCloth.ViewModels
             CatalogDeserializer catalogDeserializer,
             X509CertPairScanner certPairScanner,
             SandboxBuilder sandboxBuilder,
+            SandboxCleanupManager sandboxCleanupManager,
+            SandboxLauncher sandboxLauncher,
             PreferencesManager preferencesManager,
             ResourceResolver resourceResolver,
             AppRestartManager appRestartManager)
@@ -29,7 +31,8 @@ namespace TableCloth.ViewModels
             _catalogDeserializer = catalogDeserializer;
             _certPairScanner = certPairScanner;
             _sandboxBuilder = sandboxBuilder;
-            _sandboxLauncher = SandboxLauncher;
+            _sandboxCleanupManager = sandboxCleanupManager;
+            _sandboxLauncher = sandboxLauncher;
             _preferencesManager = preferencesManager;
             _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
@@ -54,6 +57,7 @@ namespace TableCloth.ViewModels
         private readonly CatalogDeserializer _catalogDeserializer;
         private readonly X509CertPairScanner _certPairScanner;
         private readonly SandboxBuilder _sandboxBuilder;
+        private readonly SandboxCleanupManager _sandboxCleanupManager;
         private readonly SandboxLauncher _sandboxLauncher;
         private readonly PreferencesManager _preferencesManager;
         private readonly ResourceResolver _resourceResolver;
@@ -93,6 +97,9 @@ namespace TableCloth.ViewModels
 
         public SandboxBuilder SandboxBuilder
             => _sandboxBuilder;
+
+        public SandboxCleanupManager SandboxCleanupManager
+            => _sandboxCleanupManager;
 
         public SandboxLauncher SandboxLauncher
             => _sandboxLauncher;

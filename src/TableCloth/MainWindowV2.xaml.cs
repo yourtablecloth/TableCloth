@@ -63,21 +63,6 @@ namespace TableCloth
             return null;
         }
 
-        private static void OpenExplorer(string targetDirectoryPath)
-        {
-            if (!Directory.Exists(targetDirectoryPath))
-                return;
-
-            var psi = new ProcessStartInfo(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"),
-                targetDirectoryPath)
-            {
-                UseShellExecute = false,
-            };
-
-            Process.Start(psi);
-        }
-
         /*
         private void ProcessCommandLineArguments()
         {
@@ -266,31 +251,11 @@ namespace TableCloth
             */
         }
 
-        // To Do: Cleanup Manager 추가 필요
         // To Do: Catalog Document Cache 추가 필요
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            foreach (var eachDirectory in ViewModel.TemporaryDirectories)
-            {
-                if (!string.IsNullOrWhiteSpace(ViewModel.CurrentDirectory))
-                {
-                    if (string.Equals(Path.GetFullPath(eachDirectory), Path.GetFullPath(ViewModel.CurrentDirectory), StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (ViewModel.SandboxLauncher.IsSandboxRunning())
-                        {
-                            OpenExplorer(eachDirectory);
-                            continue;
-                        }
-                    }
-                }
-
-                if (!Directory.Exists(eachDirectory))
-                    continue;
-
-                try { Directory.Delete(eachDirectory, true); }
-                catch { OpenExplorer(eachDirectory); }
-            }
+            ViewModel.SandboxManager.TryCleanup();
 
             if (ViewModel.AppRestartManager.ReserveRestart)
                 ViewModel.AppRestartManager.RestartNow();

@@ -56,8 +56,7 @@ namespace TableCloth.Pages
             if (excludedFolderList.Any())
                 ViewModel.AppMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
 
-            ViewModel.CurrentDirectory = tempPath;
-            ViewModel.TemporaryDirectories.Add(tempPath);
+            ViewModel.SandboxCleanupManager.SetWorkingDirectory(tempPath);
             ViewModel.SandboxLauncher.RunSandbox(wsbFilePath);
         }
 

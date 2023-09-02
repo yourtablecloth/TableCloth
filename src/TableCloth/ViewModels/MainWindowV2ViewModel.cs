@@ -9,6 +9,7 @@ namespace TableCloth.ViewModels
     {
         public MainWindowV2ViewModel(
             SandboxLauncher sandboxLauncher,
+            SandboxCleanupManager sandboxManager,
             AppRestartManager appRestartManager)
         {
             _sandboxLauncher = sandboxLauncher;
@@ -21,6 +22,7 @@ namespace TableCloth.ViewModels
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
         private readonly SandboxLauncher _sandboxLauncher;
+        private readonly SandboxCleanupManager _sandboxManager;
         private readonly AppRestartManager _appRestartManager;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -28,11 +30,10 @@ namespace TableCloth.ViewModels
         public SandboxLauncher SandboxLauncher
             => _sandboxLauncher;
 
+        public SandboxCleanupManager SandboxManager
+            => _sandboxManager;
+
         public AppRestartManager AppRestartManager
             => _appRestartManager;
-
-        public List<string> TemporaryDirectories { get; } = new();
-
-        public string CurrentDirectory { get; set; }
     }
 }
