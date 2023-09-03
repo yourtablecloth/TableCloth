@@ -26,8 +26,6 @@ namespace TableCloth.Pages
             InitializeComponent();
         }
 
-        private FileSystemWatcher _fileSystemWatcher;
-
         public CatalogPageViewModel ViewModel
             => (CatalogPageViewModel)DataContext;
 

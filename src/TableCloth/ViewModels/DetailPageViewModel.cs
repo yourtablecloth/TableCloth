@@ -50,7 +50,6 @@ namespace TableCloth.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(eachPropertyName ?? string.Empty));
         }
 
-        private readonly IServiceProvider _serviceProvider;
         private readonly SharedLocations _sharedLocations;
         private readonly AppStartup _appStartup;
         private readonly AppMessageBox _appMessageBox;
