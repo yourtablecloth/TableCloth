@@ -172,14 +172,7 @@ namespace TableCloth
 
             if (hasArgs)
             {
-                var services = ViewModel.CatalogCacheManager.CatalogDocument.Services;
-                var parsedArg = DetailPageArgumentModel.Parse(args, services);
-
-                if (parsedArg.ShowCommandLineHelp)
-                {
-                    ViewModel.AppMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
-                    return;
-                }
+                var parsedArg = ViewModel.CommandLineParser.Parse(args);
 
                 if (parsedArg.SelectedService == null)
                     return;

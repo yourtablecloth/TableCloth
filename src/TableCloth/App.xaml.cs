@@ -37,9 +37,18 @@ namespace TableCloth
 
             var startup = Services.GetService<AppStartup>()!;
             var messageBox = Services.GetService<AppMessageBox>()!;
+            var commandLineParser = Services.GetService<CommandLineParser>();
 
             Arguments = e.Args;
             var warnings = new List<string>();
+
+            var parsedArg = commandLineParser.Parse(e.Args);
+
+            if (parsedArg.ShowCommandLineHelp)
+            {
+                messageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                return;
+            }
 
             if (!startup.HasRequirementsMet(warnings, out Exception failedReason, out bool isCritical))
             {
@@ -98,6 +107,7 @@ namespace TableCloth
             services.AddSingleton<ResourceResolver>();
             services.AddSingleton<LicenseDescriptor>();
             services.AddSingleton<AppRestartManager>();
+            services.AddSingleton<CommandLineParser>();
 
             // ViewModel
             services.AddSingleton<MainWindowViewModel>();

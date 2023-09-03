@@ -11,12 +11,14 @@ namespace TableCloth.ViewModels
             AppRestartManager appRestartManager,
             CatalogCacheManager catalogCacheManager,
             SharedLocations sharedLocations,
+            CommandLineParser commandLineParser,
             AppMessageBox appMessageBox)
         {
             _sandboxCleanupManager = sandboxCleanupManager;
             _appRestartManager = appRestartManager;
             _catalogCacheManager = catalogCacheManager;
             _sharedLocations = sharedLocations;
+            _commandLineParser = commandLineParser;
             _appMessageBox = appMessageBox;
         }
 
@@ -29,6 +31,7 @@ namespace TableCloth.ViewModels
         private readonly AppRestartManager _appRestartManager;
         private readonly CatalogCacheManager _catalogCacheManager;
         private readonly SharedLocations _sharedLocations;
+        private readonly CommandLineParser _commandLineParser;
         private readonly AppMessageBox _appMessageBox;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -44,6 +47,9 @@ namespace TableCloth.ViewModels
 
         public SharedLocations SharedLocations
             => _sharedLocations;
+
+        public CommandLineParser CommandLineParser
+            => _commandLineParser;
 
         public AppMessageBox AppMessageBox
             => _appMessageBox;
