@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using TableCloth.Models.Catalog;
+using TableCloth.Resources;
 
 namespace Hostess
 {
@@ -22,7 +23,7 @@ namespace Hostess
 
             foreach (CatalogInternetService eachItem in catalog.Services.Where(x => targets.Contains(x.Id)))
             {
-                buffer.AppendLine($"[{eachItem.DisplayName} 이용 시 주의 사항]");
+                buffer.AppendLine($"[{eachItem.DisplayName} {StringResources.Hostess_Warning_Title}]");
                 buffer.AppendLine(eachItem.CompatibilityNotes);
             }
 

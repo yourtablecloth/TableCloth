@@ -86,7 +86,7 @@
     </system:String>
 
     <system:String x:Key="MainWindow_LabDescriptionText">
-        새로운 기능을 본격적으로 도입하기 앞서, 원할 때 기능을 사용하고, 원하지 않을 때는 기능을 끌 수 있는 옵션을 제공합니다.
+        아래 옵션에서 새로운 버전의 식탁보 프로그램에 도입될 예정인 기능을 켜고 끌 수 있습니다.
     </system:String>
 
     <system:String x:Key="MainWindow_V2UIOptIn">
@@ -289,6 +289,108 @@
 
     <system:String x:Key="AboutWindow_LoadingLicensesMessage">
         라이선스 정보를 확인 중입니다.
+    </system:String>
+
+    <!-- MainWindow.xaml -->
+
+    <system:String x:Key="MainWindowV2_Title">
+        식탁보
+    </system:String>
+
+    <!-- Pages/CatalogPage.xaml -->
+
+    <system:String x:Key="CatalogPage_Title">
+        인터넷 뱅킹 서비스 선택
+    </system:String>
+
+    <system:String x:Key="CatalogPage_ItemCountLabel">
+        {0}개
+    </system:String>
+
+    <system:String x:Key="CatalogPage_Instruction">
+        접속하려는 웹 사이트를 선택하거나, 우측 상단의 검색창에서 검색어를 입력하세요.
+    </system:String>
+
+    <system:String x:Key="CatalogPage_AboutButton">
+        식탁보에 대하여...
+    </system:String>
+    
+    <!-- Pages/DetailPage.xaml -->
+
+    <system:String x:Key="DetailPage_LaunchButton">
+        실행하기
+    </system:String>
+
+    <system:String x:Key="DetailPage_CreateShortcutButton">
+        바로 가기 만들기
+    </system:String>
+
+    <system:String x:Key="DetailPage_UrlLabel">
+        홈페이지 주소: {0}
+    </system:String>
+
+    <system:String x:Key="DetailPage_PackageCountDisplayLabel">
+        샌드박스 실행 후 설치될 소프트웨어 개수: {0}개
+    </system:String>
+
+    <system:String x:Key="DetailPage_MapNpkiCertButtonText">
+        기존 공동 인증서 파일 가져오기
+    </system:String>
+
+    <system:String x:Key="DetailPage_BrowseButtonText">
+        찾아보기...
+    </system:String>
+
+    <system:String x:Key="DetailPage_UseMicrophoneCheckboxText">
+        오디오 입력 사용하기 - 개인 정보 노출에 주의하세요!
+    </system:String>
+
+    <system:String x:Key="DetailPage_UseWebCameraCheckboxText">
+        비디오 입력 사용하기 - 개인 정보 노출에 주의하세요!
+    </system:String>
+
+    <system:String x:Key="DetailPage_UsePrinterCheckboxText">
+        프린터 같이 사용하기
+    </system:String>
+
+    <system:String x:Key="DetailPage_InstallEveryonesPrinter">
+        모두의 프린터 설치하기
+    </system:String>
+
+    <system:String x:Key="DetailPage_InstallAdobeReader">
+        Adobe Reader 설치하기
+    </system:String>
+
+    <system:String x:Key="DetailPage_InstallHancomOfficeViewer">
+        한컴오피스 뷰어 설치하기
+    </system:String>
+
+    <system:String x:Key="DetailPage_InstallRaiDrive">
+        RaiDrive 설치하기
+    </system:String>
+
+    <system:String x:Key="DetailPage_UseIEModeCompatList">
+        Internet Explorer 호환성 모드 사용
+    </system:String>
+
+    <system:String x:Key="DetailPage_LabDescriptionText">
+        아래 옵션에서 새로운 버전의 식탁보 프로그램에 도입될 예정인 기능을 켜고 끌 수 있습니다.
+    </system:String>
+
+    <system:String x:Key="DetailPage_V2UIOptIn">
+        새로운 사용자 인터페이스 사용
+    </system:String>
+
+    <system:String x:Key="DetailPage_TelemetryPreferences">
+        기능 개선을 위한 정보 수집
+    </system:String>
+
+    <system:String x:Key="DetailPage_TelemetryDescriptionText">
+        식탁보는 Sentry.io 서비스를 통하여 식탁보 프로그램 실행 도중 발생한 오류 정보를 익명으로 수집합니다. 만약 데이터 보내기를 원하지 않으시면 아래 체크 박스를 선택 해제하신 후 식탁보를 다시 실행해주세요.
+    </system:String>
+
+    <system:String x:Key="DetailPage_UseAutoLogCollecting">
+        식탁보 오류 로그 자동 수집
     </system:String>
 
 </ResourceDictionary>

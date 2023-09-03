@@ -27,7 +27,7 @@ namespace TableCloth.SetupBuilder
                 (
                     mainExecutableFile = new WixSharpFile($@"{inputDirectory}\TableCloth.exe",
                     (
-                        mainShortcut = new FileShortcut("식탁보", @"%ProgramMenu%")
+                        mainShortcut = new FileShortcut(StringResources.AppName, @"%ProgramMenu%")
                     ))
                 ))
             ));

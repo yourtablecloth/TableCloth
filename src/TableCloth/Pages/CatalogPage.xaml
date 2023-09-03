@@ -7,7 +7,7 @@
       xmlns:local="clr-namespace:TableCloth.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="인터넷 뱅킹 서비스 선택"
+      Title="{StaticResource CatalogPage_Title}"
       Loaded="Page_Loaded"
       DataContext="{Binding CatalogPageViewModel, Source={StaticResource ViewModelLocator}}">
 
@@ -93,7 +93,7 @@
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" FontWeight="Bold" VerticalAlignment="Bottom" />
-                                    <TextBlock Text="{Binding ItemCount, StringFormat=' {0}개'}" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Bottom" />
+                                    <TextBlock Text="{Binding ItemCount, StringFormat={StaticResource CatalogPage_ItemCountLabel}}" FontWeight="Bold" Margin="10,0,0,0" VerticalAlignment="Bottom" />
                                 </StackPanel>
                             </Expander.Header>
                             <!-- https://stackoverflow.com/questions/41724197/how-to-hide-togglebutton-in-grouping-expander-wpf -->
@@ -169,11 +169,9 @@
             <ColumnDefinition Width="80*" />
             <ColumnDefinition Width="30*" />
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="8 0 0 0" FontWeight="Bold" TextWrapping="Wrap" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}">
-            접속하려는 웹 사이트를 선택하거나, 우측 상단의 검색창에서 검색어를 입력하세요.
-        </TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="8 0 0 0" FontWeight="Bold" TextWrapping="Wrap" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{StaticResource CatalogPage_Instruction}" />
         <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Margin="2" x:Name="CategoryButtonList" IsEnabled="{Binding HasServices}" />
-        <Button Grid.Row="2" Grid.Column="0" Margin="4" Content="프로그램 버전 정보" x:Name="AboutButton" Click="AboutButton_Click" />
+        <Button Grid.Row="2" Grid.Column="0" Margin="4" Content="{StaticResource CatalogPage_AboutButton}" x:Name="AboutButton" Click="AboutButton_Click" />
         <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 8 8 8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostTouchCapture="SiteCatalogFilter_LostTouchCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBox.Style>
                 <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
@@ -186,9 +184,6 @@
                     </Style.Resources>
                     <Style.Triggers>
                         <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
-                            <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
-                        </Trigger>
-                        <Trigger Property="Text" Value="{x:Null}">
                             <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">

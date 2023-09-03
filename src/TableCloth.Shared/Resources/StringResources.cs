@@ -336,6 +336,9 @@ namespace TableCloth.Resources
 
         internal static readonly string Hostess_Install_Failed
             = "설치 실패";
+
+        internal static readonly string Hostess_Warning_Title
+            = "사이트 이용 시 주의 사항";
     }
 
     // 호스트 프로그램의 오류 메시지 문자열들

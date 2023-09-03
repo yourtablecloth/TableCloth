@@ -62,9 +62,6 @@
                                 <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
                                     <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
                                 </Trigger>
-                                <Trigger Property="Text" Value="{x:Null}">
-                                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
-                                </Trigger>
                                 <Trigger Property="IsKeyboardFocused" Value="True">
                                     <Setter Property="Background" Value="White" />
                                 </Trigger>
@@ -90,14 +87,14 @@
                     </Grid.RowDefinitions>
                     <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="8" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Margin="8" Text="{Binding DisplayName}" FontSize="36" Grid.RowSpan="2" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
-                    <Button x:Name="LaunchButton" Grid.Row="1" Grid.Column="2" Margin="8" Content="실행하기" Click="LaunchButton_Click" />
-                    <Button x:Name="CreateShortcutButton" Grid.Row="2" Grid.Column="2" Margin="8" Content="바로 가기 만들기" Click="CreateShortcutButton_Click" />
+                    <Button x:Name="LaunchButton" Grid.Row="1" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_LaunchButton}" Click="LaunchButton_Click" />
+                    <Button x:Name="CreateShortcutButton" Grid.Row="2" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_CreateShortcutButton}" Click="CreateShortcutButton_Click" />
                     <TextBlock Grid.Row="2" Grid.Column="1" Margin="8">
                         <Hyperlink Click="Hyperlink_Click" Tag="{Binding Url}">
-                            <TextBlock Text="{Binding Url, StringFormat='홈페이지 주소: {0}'}" />
+                            <TextBlock Text="{Binding Url, StringFormat={StaticResource DetailPage_UrlLabel}}" />
                         </Hyperlink>
                     </TextBlock>
-                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="8" Text="{Binding PackageCountForDisplay, StringFormat='설치할 소프트웨어 갯수: {0}개'}" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="8" Text="{Binding PackageCountForDisplay, StringFormat={StaticResource DetailPage_PackageCountDisplayLabel}}" />
                     <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CompatibilityNotes}" Margin="8" TextWrapping="Wrap" Foreground="Red" FontWeight="Bold" />
                 </Grid>
                 <Grid Margin="8">
@@ -113,14 +110,14 @@
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
                     <WrapPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
-                        <CheckBox VerticalAlignment="Center" Content="{StaticResource MainWindow_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
-                        <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{StaticResource MainWindow_BrowseButtonText}" Click="BrowseButton_Click" IsEnabled="{Binding Path='MapNpkiCert'}" />
+                        <CheckBox VerticalAlignment="Center" Content="{StaticResource DetailPage_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
+                        <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{StaticResource DetailPage_BrowseButtonText}" Click="BrowseButton_Click" IsEnabled="{Binding Path='MapNpkiCert'}" />
                     </WrapPanel>
                     <Label Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" Margin="0 5 0 0" Content="{Binding Path='SelectedCertFile'}"  IsEnabled="{Binding Path='MapNpkiCert'}">
                     </Label>
-                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
-                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource MainWindow_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
-                    <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource DetailPage_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
+                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource DetailPage_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
+                    <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
                 </Grid>
                 <Grid Margin="8">
                     <Grid.ColumnDefinitions>
@@ -134,11 +131,11 @@
                         <RowDefinition Height="30" />
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
-                    <CheckBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallEveryonesPrinter}" IsChecked="{Binding Path='InstallEveryonesPrinter'}" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallAdobeReader}" IsChecked="{Binding Path='InstallAdobeReader'}" />
-                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallHancomOfficeViewer}" IsChecked="{Binding Path='InstallHancomOfficeViewer'}" />
-                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_InstallRaiDrive}" IsChecked="{Binding Path='InstallRaiDrive'}" />
-                    <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
+                    <CheckBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_InstallEveryonesPrinter}" IsChecked="{Binding Path='InstallEveryonesPrinter'}" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_InstallAdobeReader}" IsChecked="{Binding Path='InstallAdobeReader'}" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_InstallHancomOfficeViewer}" IsChecked="{Binding Path='InstallHancomOfficeViewer'}" />
+                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_InstallRaiDrive}" IsChecked="{Binding Path='InstallRaiDrive'}" />
+                    <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
                 </Grid>
                 <Grid Margin="8">
                     <Grid.ColumnDefinitions>
@@ -150,8 +147,8 @@
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{StaticResource MainWindow_LabDescriptionText}" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_V2UIOptIn}" IsChecked="{Binding Path='V2UIOptIn'}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{StaticResource DetailPage_LabDescriptionText}" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_V2UIOptIn}" IsChecked="{Binding Path='V2UIOptIn'}" />
                 </Grid>
                 <Grid Margin="8">
                     <Grid.ColumnDefinitions>
@@ -162,8 +159,8 @@
                         <RowDefinition Height="50" />
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{StaticResource MainWindow_TelemetryDescriptionText}" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource MainWindow_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{StaticResource DetailPage_TelemetryDescriptionText}" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
                 </Grid>
             </StackPanel>
         </ScrollViewer>
