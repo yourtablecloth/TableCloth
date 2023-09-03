@@ -1,0 +1,3 @@
+[submodule "src/TableClothCatalog"]
+	path = src/TableClothCatalog
+	url = git@github.com:yourtablecloth/TableClothCatalog.git
