@@ -24,7 +24,7 @@ namespace TableCloth.Components
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
             var httpClient = _httpClientFactory.CreateTableClothHttpClient();
 
-            using var licenseDescription = await httpClient.GetStreamAsync(targetUri);
+            using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
             return jsonDocument.RootElement.GetProperty("tag_name").GetString()?.TrimStart('v');
         }
@@ -34,7 +34,7 @@ namespace TableCloth.Components
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
             var httpClient = _httpClientFactory.CreateTableClothHttpClient();
 
-            using var licenseDescription = await httpClient.GetStreamAsync(targetUri);
+            using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
 
             if (Uri.TryCreate(jsonDocument.RootElement.GetProperty("html_url").GetString(), UriKind.Absolute, out var result))
@@ -48,7 +48,7 @@ namespace TableCloth.Components
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
             var httpClient = _httpClientFactory.CreateTableClothHttpClient();
 
-            using var licenseDescription = await httpClient.GetStreamAsync(targetUri);
+            using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
             return jsonDocument.RootElement.GetProperty("license").GetProperty("name").GetString();
         }
@@ -69,10 +69,10 @@ namespace TableCloth.Components
                     try
                     {
                         var targetUrl = $"{StringResources.ImageUrlPrefix}/{eachSite.Category}/{eachSite.Id}.png";
-                        var imageStream = await httpClient.GetStreamAsync(targetUrl);
+                        var imageStream = await httpClient.GetStreamAsync(targetUrl).ConfigureAwait(false);
 
                         using var fileStream = File.OpenWrite(targetFilePath);
-                        await imageStream.CopyToAsync(fileStream);
+                        await imageStream.CopyToAsync(fileStream).ConfigureAwait(false);
                     }
                     catch
                     {
@@ -89,7 +89,7 @@ namespace TableCloth.Components
                 {
                     try
                     {
-                        await File.WriteAllBytesAsync(targetIconFilePath, ConvertImageToIcon(targetFilePath));
+                        await File.WriteAllBytesAsync(targetIconFilePath, ConvertImageToIcon(targetFilePath)).ConfigureAwait(false);
                     }
                     catch
                     {
