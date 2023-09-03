@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,14 +10,45 @@ using TableCloth.Resources;
 
 namespace TableCloth.Components
 {
-    public sealed class AppStartup
+    public sealed class AppStartup : IDisposable
     {
-        public AppStartup(SharedLocations sharedLocations)
+        public AppStartup(
+            SharedLocations sharedLocations,
+            ILogger<AppStartup> logger)
         {
             _sharedLocations = sharedLocations;
+            _logger = logger;
+
+            _mutex = new Mutex(true, $"Global\\{GetType().FullName}", out this._isFirstInstance);
         }
 
+        ~AppStartup() => Dispose(false);
+
+        public void Dispose() => Dispose(true);
+
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                if (_mutex != null)
+                {
+                    _mutex.ReleaseMutex();
+                    _mutex.Dispose();
+                }
+            }
+
+            _disposed = true;
+        }
+
+        private bool _disposed;
         private readonly SharedLocations _sharedLocations;
+        private readonly ILogger<AppStartup> _logger;
+
+        private readonly Mutex _mutex;
+        private readonly bool _isFirstInstance;
 
         public bool HasRequirementsMet(List<string> warnings, out Exception failedResaon, out bool isCritical)
         {
@@ -58,9 +90,7 @@ namespace TableCloth.Components
                 return false;
             }
 
-            new Mutex(true, GetType().FullName, out var isFirstInstance);
-
-            if (!isFirstInstance)
+            if (!this._isFirstInstance)
             {
                 failedResaon = new ApplicationException(StringResources.Error_Already_TableCloth_Running);
                 isCritical = true;
@@ -150,7 +180,24 @@ namespace TableCloth.Components
                 using (var imagesZipStream = File.OpenRead(_sharedLocations.ImagesZipFilePath))
                 {
                     using var zipArchive = new ZipArchive(imagesZipStream, ZipArchiveMode.Read);
-                    zipArchive.ExtractToDirectory(imageDirectoryPath, true);
+
+                    foreach (var eachEntry in zipArchive.Entries)
+                    {
+                        var destPath = Path.Combine(imageDirectoryPath, eachEntry.Name);
+
+                        try
+                        {
+                            using (var outputStream = File.OpenWrite(destPath))
+                            using (var eachStream = eachEntry.Open())
+                            {
+                                eachStream.CopyTo(outputStream);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogWarning(e, $"Cannot write image file {destPath}.");
+                        }
+                    }
                 }
             }
             catch (Exception e)
