@@ -8,8 +8,8 @@ using System.Windows;
 [assembly: AssemblyProduct("TableCloth")]
 [assembly: AssemblyCopyright("(c) rkttu.com, 2021")]
 [assembly: AssemblyTrademark("TableCloth")]
-[assembly: AssemblyVersion("1.9.0.0")]
-[assembly: AssemblyFileVersion("1.9.0.0")]
+[assembly: AssemblyVersion("1.9.1.0")]
+[assembly: AssemblyFileVersion("1.9.1.0")]
 [assembly: Guid("36e7b617-ca94-4ecb-ad65-39fe94ce265b")]
 [assembly: ComVisible(true)]
 
