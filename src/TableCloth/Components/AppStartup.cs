@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Threading;
 using TableCloth.Resources;
@@ -19,6 +20,20 @@ namespace TableCloth.Components
 
         public bool HasRequirementsMet(List<string> warnings, out Exception failedResaon, out bool isCritical)
         {
+            if (!File.Exists(_sharedLocations.HostessZipFilePath))
+            {
+                failedResaon = new FileNotFoundException(StringResources.Error_Hostess_Missing);
+                isCritical = true;
+                return false;
+            }
+
+            if (!File.Exists(_sharedLocations.ImagesZipFilePath))
+            {
+                failedResaon = new FileNotFoundException(StringResources.Error_Images_Missing);
+                isCritical = true;
+                return false;
+            }
+
             // https://stackoverflow.com/questions/336633/how-to-detect-windows-64-bit-platform-with-net
             var isWow64 = Environment.OSVersion.Version.Major >= 10
                 && NativeMethods.IsWow64Process(Process.GetCurrentProcess().Handle, out var retVal)
@@ -32,7 +47,6 @@ namespace TableCloth.Components
                 return false;
             }
 
-            /*
             var wsbExecPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.System),
                 "WindowsSandbox.exe");
@@ -43,7 +57,6 @@ namespace TableCloth.Components
                 isCritical = true;
                 return false;
             }
-            */
 
             new Mutex(true, GetType().FullName, out var isFirstInstance);
 
@@ -117,6 +130,34 @@ namespace TableCloth.Components
                     isCritical = true;
                     return false;
                 }
+            }
+
+            var imageDirectoryPath = _sharedLocations.GetImageDirectoryPath();
+
+            if (!Directory.Exists(imageDirectoryPath))
+            {
+                try { Directory.CreateDirectory(imageDirectoryPath); }
+                catch (Exception e)
+                {
+                    failedReason = new ApplicationException(StringResources.Error_Cannot_Create_AppDataDirectory(e), e);
+                    isCritical = true;
+                    return false;
+                }
+            }
+
+            try
+            {
+                using (var imagesZipStream = File.OpenRead(_sharedLocations.ImagesZipFilePath))
+                {
+                    using var zipArchive = new ZipArchive(imagesZipStream, ZipArchiveMode.Read);
+                    zipArchive.ExtractToDirectory(imageDirectoryPath, true);
+                }
+            }
+            catch (Exception e)
+            {
+                failedReason = new ApplicationException(StringResources.Error_Cannot_Prepare_AppContents(e), e);
+                isCritical = true;
+                return false;
             }
 
             failedReason = null;

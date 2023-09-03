@@ -175,6 +175,12 @@ namespace TableCloth.Resources
         internal static readonly string Error_Already_TableCloth_Running
             = "이미 식탁보 프로그램이 실행되고 있어요.";
 
+        internal static readonly string Error_Hostess_Missing
+            = "샌드박스 자동 설치 프로그램 파일을 찾을 수 없습니다. 프로그램을 다시 설치해주세요.";
+
+        internal static readonly string Error_Images_Missing
+            = "기본 이미지와 아이콘 리소스 파일을 찾을 수 없습니다. 프로그램을 다시 설치해주세요.";
+
         internal static readonly string Error_Windows_OS_Too_Old
             = "실행하고 있는 운영 체제는 윈도우 샌드박스 기능을 지원하지 않는 오래된 버전의 운영 체제 같습니다. 윈도우 10 이상으로 업그레이드 해주세요.";
 
@@ -250,6 +256,23 @@ namespace TableCloth.Resources
                 return Error_Cannot_Create_AppDataDirectory(ae.InnerException);
 
             var message = $"애플리케이션 데이터 저장을 위한 디렉터리를 만들지 못했습니다.";
+
+            if (ex != null)
+            {
+                message = string.Concat(message, Environment.NewLine
+                    + Environment.NewLine
+                    + $"참고로, 발생했던 오류는 다음과 같습니다 - {ex.Message}");
+            }
+
+            return message;
+        }
+
+        internal static string Error_Cannot_Prepare_AppContents(Exception ex)
+        {
+            if (ex is AggregateException ae)
+                return Error_Cannot_Create_AppDataDirectory(ae.InnerException);
+
+            var message = $"애플리케이션 콘텐츠 생성 작업을 진행하지 못했습니다.";
 
             if (ex != null)
             {

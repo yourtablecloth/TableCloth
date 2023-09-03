@@ -5,6 +5,7 @@ VisualStudioVersion = 17.0.31423.177
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableCloth", "TableCloth\TableCloth.csproj", "{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}"
 	ProjectSection(ProjectDependencies) = postProject
+		{27405F36-877A-4B82-98FB-0C461FBAB625} = {27405F36-877A-4B82-98FB-0C461FBAB625}
 		{369BB263-3C8D-4B56-9301-2C47DE7746E8} = {369BB263-3C8D-4B56-9301-2C47DE7746E8}
 	EndProjectSection
 EndProject
@@ -26,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "TableClothApp", "TableClothApp\TableClothApp.wapproj", "{E4B4CDAF-9DE5-4107-96A3-D31A009DCC53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableCloth.ResourceBuilder", "TableCloth.ResourceBuilder\TableCloth.ResourceBuilder.csproj", "{27405F36-877A-4B82-98FB-0C461FBAB625}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +74,14 @@ Global
 		{E4B4CDAF-9DE5-4107-96A3-D31A009DCC53}.Release|x64.ActiveCfg = Release|x64
 		{E4B4CDAF-9DE5-4107-96A3-D31A009DCC53}.Release|x64.Build.0 = Release|x64
 		{E4B4CDAF-9DE5-4107-96A3-D31A009DCC53}.Release|x64.Deploy.0 = Release|x64
+		{27405F36-877A-4B82-98FB-0C461FBAB625}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{27405F36-877A-4B82-98FB-0C461FBAB625}.Debug|ARM64.Build.0 = Debug|ARM64
+		{27405F36-877A-4B82-98FB-0C461FBAB625}.Debug|x64.ActiveCfg = Debug|x64
+		{27405F36-877A-4B82-98FB-0C461FBAB625}.Debug|x64.Build.0 = Debug|x64
+		{27405F36-877A-4B82-98FB-0C461FBAB625}.Release|ARM64.ActiveCfg = Release|ARM64
+		{27405F36-877A-4B82-98FB-0C461FBAB625}.Release|ARM64.Build.0 = Release|ARM64
+		{27405F36-877A-4B82-98FB-0C461FBAB625}.Release|x64.ActiveCfg = Release|x64
+		{27405F36-877A-4B82-98FB-0C461FBAB625}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -29,5 +29,11 @@ namespace TableCloth.Components
 
         public string ExecutableDirectoryPath
             => Path.GetDirectoryName(ExecutableFilePath);
+
+        public string HostessZipFilePath
+            => Path.Combine(ExecutableDirectoryPath, "Hostess.zip");
+
+        public string ImagesZipFilePath
+            => Path.Combine(ExecutableDirectoryPath, "Images.zip");
     }
 }
