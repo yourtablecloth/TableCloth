@@ -30,6 +30,8 @@ Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "TableClothApp", "TableCloth
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableCloth.ResourceBuilder", "TableCloth.ResourceBuilder\TableCloth.ResourceBuilder.csproj", "{27405F36-877A-4B82-98FB-0C461FBAB625}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loom", "Loom\Loom.csproj", "{25CA9322-D817-4F66-AC5A-8A88794162AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -82,6 +84,14 @@ Global
 		{27405F36-877A-4B82-98FB-0C461FBAB625}.Release|ARM64.Build.0 = Release|ARM64
 		{27405F36-877A-4B82-98FB-0C461FBAB625}.Release|x64.ActiveCfg = Release|x64
 		{27405F36-877A-4B82-98FB-0C461FBAB625}.Release|x64.Build.0 = Release|x64
+		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Debug|ARM64.Build.0 = Debug|ARM64
+		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Debug|x64.ActiveCfg = Debug|x64
+		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Debug|x64.Build.0 = Debug|x64
+		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Release|ARM64.ActiveCfg = Release|ARM64
+		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Release|ARM64.Build.0 = Release|ARM64
+		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Release|x64.ActiveCfg = Release|x64
+		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
