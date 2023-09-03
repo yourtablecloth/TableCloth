@@ -6,12 +6,16 @@ namespace TableCloth.Components
 {
     public sealed class AppRestartManager
     {
-        public AppRestartManager(AppMessageBox appMessageBox)
+        public AppRestartManager(
+            AppMessageBox appMessageBox,
+            SharedLocations sharedLocations)
         {
             _appMessageBox = appMessageBox;
+            _sharedLocations = sharedLocations;
         }
 
         private readonly AppMessageBox _appMessageBox;
+        private readonly SharedLocations _sharedLocations;
 
         public bool ReserveRestart { get; set; }
 
@@ -21,7 +25,7 @@ namespace TableCloth.Components
         public void RestartNow()
         {
             Process.Start(
-                Process.GetCurrentProcess().MainModule.FileName,
+                _sharedLocations.ExecutableFilePath,
                 App.Current.Arguments);
             Application.Current.Shutdown();
         }

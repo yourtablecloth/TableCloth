@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Navigation;
+using TableCloth.Components;
 using TableCloth.Contracts;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
@@ -33,6 +34,37 @@ namespace TableCloth.Pages
             => (DetailPageViewModel)DataContext;
 
         public DetailPageArgumentModel Arguments { get; set; } = default;
+
+        private string ComposeCommandLineArguments()
+        {
+            var options = new List<string>();
+
+            if (ViewModel.EnableMicrophone)
+                options.Add(StringResources.TableCloth_Switch_EnableMicrophone);
+            if (ViewModel.EnableWebCam)
+                options.Add(StringResources.TableCloth_Switch_EnableCamera);
+            if (ViewModel.EnablePrinters)
+                options.Add(StringResources.TableCloth_Switch_EnablePrinter);
+            if (ViewModel.InstallEveryonesPrinter)
+                options.Add(StringResources.TableCloth_Switch_InstallEveryonesPrinter);
+            if (ViewModel.InstallAdobeReader)
+                options.Add(StringResources.TableCloth_Switch_InstallAdobeReader);
+            if (ViewModel.InstallHancomOfficeViewer)
+                options.Add(StringResources.TableCloth_Switch_InstallHancomOfficeViewer);
+            if (ViewModel.InstallRaiDrive)
+                options.Add(StringResources.TableCloth_Switch_InstallRaiDrive);
+            if (ViewModel.EnableInternetExplorerMode)
+                options.Add(StringResources.TableCloth_Switch_EnableIEMode);
+            if (ViewModel.MapNpkiCert)
+                options.Add(StringResources.Tablecloth_Switch_EnableCert);
+
+            var firstSite = ViewModel.SelectedService;
+
+            if (firstSite != null)
+                options.Add(firstSite.Id);
+
+            return string.Join(' ', options.ToArray());
+        }
 
         private void RunSandbox(TableClothConfiguration config)
         {
@@ -215,35 +247,14 @@ namespace TableCloth.Pages
 
         private void CreateShortcutButton_Click(object sender, RoutedEventArgs e)
         {
-            var options = new List<string>();
-            var targetPath = Process.GetCurrentProcess().MainModule.FileName;
+            var targetPath = ViewModel.SharedLocations.ExecutableFilePath;
             var linkName = StringResources.AppName;
-
-            if (ViewModel.EnableMicrophone)
-                options.Add(StringResources.TableCloth_Switch_EnableMicrophone);
-            if (ViewModel.EnableWebCam)
-                options.Add(StringResources.TableCloth_Switch_EnableCamera);
-            if (ViewModel.EnablePrinters)
-                options.Add(StringResources.TableCloth_Switch_EnablePrinter);
-            if (ViewModel.InstallEveryonesPrinter)
-                options.Add(StringResources.TableCloth_Switch_InstallEveryonesPrinter);
-            if (ViewModel.InstallAdobeReader)
-                options.Add(StringResources.TableCloth_Switch_InstallAdobeReader);
-            if (ViewModel.InstallHancomOfficeViewer)
-                options.Add(StringResources.TableCloth_Switch_InstallHancomOfficeViewer);
-            if (ViewModel.InstallRaiDrive)
-                options.Add(StringResources.TableCloth_Switch_InstallRaiDrive);
-            if (ViewModel.EnableInternetExplorerMode)
-                options.Add(StringResources.TableCloth_Switch_EnableIEMode);
-            if (ViewModel.MapNpkiCert)
-                options.Add(StringResources.Tablecloth_Switch_EnableCert);
 
             var firstSite = ViewModel.SelectedService;
             var iconFilePath = default(string);
 
             if (firstSite != null)
             {
-                options.Add(firstSite.Id);
                 linkName = firstSite.DisplayName;
 
                 iconFilePath = Path.Combine(
@@ -270,7 +281,7 @@ namespace TableCloth.Pages
                 if (iconFilePath != null && File.Exists(iconFilePath))
                     shortcut.IconLocation = iconFilePath;
 
-                shortcut.Arguments = String.Join(' ', options.ToArray());
+                shortcut.Arguments = ComposeCommandLineArguments();
                 shortcut.Save();
             }
             catch
@@ -322,6 +333,21 @@ namespace TableCloth.Pages
             // Fixes issue when clicking cut/copy/paste in context menu
             if (SiteCatalogFilter.SelectionLength < 1)
                 SiteCatalogFilter.SelectAll();
+        }
+
+        private void CopyCommandLineButton_Click(object sender, RoutedEventArgs e)
+        {
+            var targetFilePath = ViewModel.SharedLocations.ExecutableFilePath;
+            var args = ComposeCommandLineArguments();
+            var expression = $"\"{targetFilePath}\" {args}";
+
+            Clipboard.SetText(expression);
+
+            ViewModel.AppMessageBox.DisplayInfo(
+                @$"자동화 작업 실행 시 사용할 수 있는 명령어를 클립보드에 복사했으며, 명령어는 다음과 같습니다: 
+
+{expression}",
+                MessageBoxButton.OK);
         }
     }
 }

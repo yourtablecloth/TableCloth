@@ -89,6 +89,7 @@
                     <TextBlock Grid.Row="0" Grid.Column="1" Margin="8" Text="{Binding DisplayName}" FontSize="36" Grid.RowSpan="2" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
                     <Button x:Name="LaunchButton" Grid.Row="1" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_LaunchButton}" Click="LaunchButton_Click" />
                     <Button x:Name="CreateShortcutButton" Grid.Row="2" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_CreateShortcutButton}" Click="CreateShortcutButton_Click" />
+                    <Button x:Name="CopyCommandLineButton" Grid.Row="3" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_CopyCommandLineButton}" Click="CopyCommandLineButton_Click" />
                     <TextBlock Grid.Row="2" Grid.Column="1" Margin="8">
                         <Hyperlink Click="Hyperlink_Click" Tag="{Binding Url}">
                             <TextBlock Text="{Binding Url, StringFormat={StaticResource DetailPage_UrlLabel}}" />

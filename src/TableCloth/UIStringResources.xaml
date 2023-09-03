@@ -325,6 +325,10 @@
         바로 가기 만들기
     </system:String>
 
+    <system:String x:Key="DetailPage_CopyCommandLineButton">
+        명령줄 복사하기
+    </system:String>
+
     <system:String x:Key="DetailPage_UrlLabel">
         홈페이지 주소: {0}
     </system:String>
