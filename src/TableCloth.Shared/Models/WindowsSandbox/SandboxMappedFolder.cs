@@ -17,9 +17,12 @@ namespace TableCloth.Models.WindowsSandbox
         public string SandboxFolder { get; set; }
 
         [XmlElement("ReadOnly")]
-        public string ReadOnly { get; set; } = bool.TrueString;
+        public string ReadOnly { get; set; }
 
         public bool ShouldSerializeSandboxFolder()
             => !string.IsNullOrWhiteSpace(SandboxFolder);
+
+        public bool ShouldSerializeReadOnly()
+            => !string.IsNullOrWhiteSpace(ReadOnly);
     }
 }
