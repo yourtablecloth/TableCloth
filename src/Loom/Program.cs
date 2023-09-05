@@ -58,6 +58,14 @@ public static class Program
             Path.GetTempPath(),
             Guid.NewGuid().ToString("n"));
 
+        if (!string.IsNullOrWhiteSpace(runOption.TemporaryDirectoryPath))
+        {
+            if (!Directory.Exists(runOption.TemporaryDirectoryPath))
+                Directory.CreateDirectory(runOption.TemporaryDirectoryPath);
+
+            workingDirectoryPath = runOption.TemporaryDirectoryPath;
+        }
+
         var comSpecPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.System),
             "cmd.exe");
@@ -140,6 +148,9 @@ public static class Program
             if (runOption.MemorySizeInMb.HasValue)
                 config.MemoryInMB = runOption.MemorySizeInMb.Value;
 
+            if (runOption.FolderMapping != null)
+                config.MappedFolders.AddRange(ParseFolderMappingArguments(runOption.FolderMapping));
+
             var memStream = new MemoryStream();
 
             using (var xmlWriter = XmlWriter.Create(memStream, settings))
@@ -172,7 +183,8 @@ public static class Program
         finally
         {
             if (!runOption.NoWait &&
-                Directory.Exists(workingDirectoryPath))
+                Directory.Exists(workingDirectoryPath) &&
+                runOption.EraseTemporaryDirectory)
             {
                 try { Directory.Delete(workingDirectoryPath, true); }
                 catch { /* Ignore error */ }
@@ -335,7 +347,9 @@ public static class Program
             if (string.IsNullOrWhiteSpace(hostPath))
                 continue;
 
-            if (!bool.TryParse(mapAsReadOnly, out bool result))
+            if (bool.TryParse(mapAsReadOnly, out bool result))
+                mapAsReadOnly = result.ToString().ToLowerInvariant();
+            else
                 mapAsReadOnly = null;
 
             results.Add(new SandboxMappedFolder()
@@ -441,11 +455,11 @@ public class RunOption
         Required = false)]
     public string? TemporaryDirectoryPath { get; set; }
 
-    [Option('e', "erase-working-directory",
-        HelpText = "Erase working directory when exit.",
+    [Option('e', "erase-temporary-directory",
+        HelpText = "Erase temporary directory when exit.",
         Default = true,
         Required = false)]
-    public bool EraseWorkingDirectory { get; set; }
+    public bool EraseTemporaryDirectory { get; set; }
 
     [Option('w', "no-wait",
         HelpText = "Run sandbox and return immediately. This option will ignore -e option.",
