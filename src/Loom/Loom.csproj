@@ -12,4 +12,10 @@
     <FileVersion>1.9.1.0</FileVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+  </ItemGroup>
+
+  <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
+
 </Project>
