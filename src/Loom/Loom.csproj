@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0-windows10.0.18362.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>ARM64;x64</Platforms>
@@ -11,6 +11,10 @@
     <AssemblyVersion>1.9.1.0</AssemblyVersion>
     <FileVersion>1.9.1.0</FileVersion>
   </PropertyGroup>
+
+	<PropertyGroup>
+		<StartupObject>Loom.Program</StartupObject>
+	</PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
