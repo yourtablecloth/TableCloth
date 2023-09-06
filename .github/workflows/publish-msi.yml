@@ -143,6 +143,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Loom CLI (${{ matrix.platform }}, ${{ matrix.configuration }})
-        path: src\Loom\bin\${{ matrix.configuration }}\net6.0\win-${{ env.Platform }}\publish\Loom.exe
+        path: src\Loom\bin\${{ env.Platform }}\${{ matrix.configuration }}\net6.0\win-${{ env.Platform }}\publish\Loom.exe
         if-no-files-found: error
         retention-days: 90
