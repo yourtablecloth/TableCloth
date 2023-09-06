@@ -129,18 +129,18 @@ jobs:
         $certificatePath = Join-Path -Path $env:Setup_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
         Remove-Item -path $certificatePath
 
-    # Upload the MSI package: https://github.com/marketplace/actions/upload-artifact
+    # Upload the MSI package: https://github.com/actions/upload-artifact
     - name: Upload build artifacts (TableCloth MSI)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: MSI Package (${{ matrix.platform }}, ${{ matrix.configuration }})
         path: TableCloth.msi
         if-no-files-found: error
         retention-days: 90
 
-    # Upload the zip package: https://github.com/marketplace/actions/upload-artifact
+    # Upload the zip package: https://github.com/actions/upload-artifact
     - name: Upload build artifacts (Loom CLI)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Loom CLI (${{ matrix.platform }}, ${{ matrix.configuration }})
         path: src\Loom\bin\${{ env.Platform }}\${{ matrix.configuration }}\net6.0\win-${{ env.Platform }}\publish\Loom.exe

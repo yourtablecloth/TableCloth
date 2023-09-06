@@ -112,18 +112,18 @@ jobs:
         dir $IconFilePath -ErrorAction Continue
         . $SetupBuilderFullPath $InputDirPath '--ignore--' '--ignore--' $IconFilePath
 
-    # Upload the MSI package: https://github.com/marketplace/actions/upload-artifact
+    # Upload the MSI package: https://github.com/actions/upload-artifact
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: MSI Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
         path: TableCloth.msi
         if-no-files-found: warn
         retention-days: 5
 
-    # Upload the zip package: https://github.com/marketplace/actions/upload-artifact
+    # Upload the zip package: https://github.com/actions/upload-artifact
     - name: Upload build artifacts (Loom CLI)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Loom CLI (${{ matrix.platform }}, ${{ matrix.configuration }})
         path: src\Loom\bin\${{ env.Platform }}\${{ matrix.configuration }}\net6.0\win-${{ env.Platform }}\publish\Loom.exe
