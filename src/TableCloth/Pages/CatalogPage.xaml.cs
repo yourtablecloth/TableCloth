@@ -44,12 +44,11 @@ namespace TableCloth.Pages
             var button = new RadioButton()
             {
                 Content = displayName,
-                Tag = val.ToString(),
+                Tag = val,
                 Margin = new Thickness(8d),
                 BorderBrush = Brushes.Transparent,
                 Background = Brushes.Transparent,
             };
-            button.Click += CategoryButton_Click;
             return button;
         }
 
@@ -71,34 +70,6 @@ namespace TableCloth.Pages
             }
 
             return null;
-        }
-
-        private void UpdateCategoryView(object selectedItem, bool showSelectedItemOnTop)
-        {
-            var actualItem = selectedItem as CatalogInternetService;
-
-            if (actualItem == null)
-                return;
-
-            if (showSelectedItemOnTop)
-            {
-                if (GetScrollViewer(SiteCatalog) is ScrollViewer viewer)
-                    viewer.ScrollToBottom();
-            }
-
-            SiteCatalog.ScrollIntoView(actualItem);
-
-            foreach (var child in CategoryButtonList.Children)
-            {
-                if (child is not ToggleButton elem)
-                    continue;
-
-                if (!string.Equals(elem.Tag?.ToString(), actualItem.Category.ToString(), StringComparison.Ordinal))
-                    continue;
-
-                elem.IsChecked = true;
-                break;
-            }
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -126,7 +97,6 @@ namespace TableCloth.Pages
                 CategoryButtonList.Children.Add(CreateCategoryButton(eachMember));
 
             SiteCatalogFilter.Text = Arguments?.SearchKeyword ?? string.Empty;
-            UpdateCategoryView(SiteCatalog?.SelectedItem, true);
         }
 
         private bool SiteCatalog_Filter(object item)
@@ -155,11 +125,6 @@ namespace TableCloth.Pages
             }
 
             return result;
-        }
-
-        private void SiteCatalog_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            UpdateCategoryView(SiteCatalog?.SelectedItem, false);
         }
 
         private void SiteCatalogFilter_TextChanged(object sender, TextChangedEventArgs e)
@@ -243,33 +208,6 @@ namespace TableCloth.Pages
             ViewModel.AppRestartManager.RestartNow();
         }
 
-        private void CategoryButton_Click(object sender, RoutedEventArgs e)
-        {
-            FrameworkElement elem = e.Source as FrameworkElement;
-
-            if (elem != null)
-            {
-                var categoryName = elem.Tag?.ToString();
-                var firstItem = default(CatalogInternetService);
-                var allItems = (IEnumerable<CatalogInternetService>)SiteCatalog.ItemsSource;
-
-                if (string.Equals(categoryName, "All", StringComparison.Ordinal))
-                    firstItem = allItems.FirstOrDefault();
-                else if (Enum.TryParse(categoryName, false, out CatalogInternetServiceCategory val))
-                    firstItem = allItems.FirstOrDefault(x => x.Category == val);
-
-                if (firstItem != null)
-                {
-                    SiteCatalog.SelectedItem = firstItem;
-
-                    if (GetScrollViewer(SiteCatalog) is ScrollViewer viewer)
-                        viewer.ScrollToBottom();
-
-                    SiteCatalog.ScrollIntoView(firstItem);
-                }
-            }
-        }
-
         private void AboutButton_Click(object sender, RoutedEventArgs e)
         {
             var aboutWindow = new AboutWindow() { Owner = Window.GetWindow(this), };
@@ -285,30 +223,6 @@ namespace TableCloth.Pages
             Rect bounds = element.TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, element.ActualWidth, element.ActualHeight));
             Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
             return rect.Contains(bounds.TopLeft) || rect.Contains(bounds.BottomRight);
-        }
-
-        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
-        {
-            if (sender is ScrollViewer viewer)
-            {
-                var allItems = (IEnumerable<CatalogInternetService>)SiteCatalog.ItemsSource;
-
-                var visibleItems = allItems.Where(item =>
-                {
-                    var itemControl = SiteCatalog.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
-                    return IsUserVisible(itemControl, viewer);
-                });
-
-                var lastItem = visibleItems.LastOrDefault();
-                if (lastItem != null)
-                {
-                    var matchedButton = CategoryButtonList.Children.OfType<RadioButton>().SingleOrDefault(button => button.Content as string == lastItem.CategoryDisplayName);
-                    if (matchedButton != null)
-                    {
-                        matchedButton.IsChecked = true;
-                    }
-                }
-            }
         }
     }
 }
