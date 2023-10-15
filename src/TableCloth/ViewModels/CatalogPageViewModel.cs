@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using TableCloth.Components;
 using TableCloth.Models.Catalog;
@@ -23,7 +24,9 @@ namespace TableCloth.ViewModels
             _appRestartManager = appRestartManager;
 
             CatalogDocument = _catalogCacheManager.CatalogDocument;
-            Services = CatalogDocument.Services.ToList();
+            Services = CatalogDocument.Services.OrderBy(service => service.Category.GetType().GetField(service.Category.ToString())
+                ?.GetCustomAttribute<EnumDisplayOrderAttribute>()
+                ?.Order ?? 0).ToList();
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
