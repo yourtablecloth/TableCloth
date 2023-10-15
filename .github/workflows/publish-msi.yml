@@ -30,7 +30,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: true
-        token: ${{ secrets.TABLECLOTH_GITHUB_PAT }}
+        #token: ${{ secrets.TABLECLOTH_GITHUB_PAT }}
 
     # Install the .NET Core workload
     - name: Install .NET Core
