@@ -52,18 +52,18 @@ namespace TableCloth.Components
         private readonly Mutex _mutex;
         private readonly bool _isFirstInstance;
 
-        public bool HasRequirementsMet(List<string> warnings, out Exception failedResaon, out bool isCritical)
+        public bool HasRequirementsMet(List<string> warnings, out Exception failedReason, out bool isCritical)
         {
             if (!File.Exists(_sharedLocations.HostessZipFilePath))
             {
-                failedResaon = new FileNotFoundException(StringResources.Error_Hostess_Missing);
+                failedReason = new FileNotFoundException(StringResources.Error_Hostess_Missing);
                 isCritical = true;
                 return false;
             }
 
             if (!File.Exists(_sharedLocations.ImagesZipFilePath))
             {
-                failedResaon = new FileNotFoundException(StringResources.Error_Images_Missing);
+                failedReason = new FileNotFoundException(StringResources.Error_Images_Missing);
                 isCritical = true;
                 return false;
             }
@@ -76,7 +76,7 @@ namespace TableCloth.Components
 
             if (!is64BitOperatingSystem)
             {
-                failedResaon = new PlatformNotSupportedException(StringResources.Error_Windows_OS_Too_Old);
+                failedReason = new PlatformNotSupportedException(StringResources.Error_Windows_OS_Too_Old);
                 isCritical = true;
                 return false;
             }
@@ -92,7 +92,7 @@ namespace TableCloth.Components
                     warnings.Add(StringResources.Error_HyperVisor_Missing);
                     isCritical = false;
 #else
-                    failedResaon = new PlatformNotSupportedException(StringResources.Error_HyperVisor_Missing);
+                    failedReason = new PlatformNotSupportedException(StringResources.Error_HyperVisor_Missing);
                     isCritical = true;
                     return false;
 #endif
@@ -138,7 +138,7 @@ namespace TableCloth.Components
 
                     Process.Start(psi).WaitForExit();
 
-                    failedResaon = new PlatformNotSupportedException(StringResources.Error_Restart_And_RunAgain);
+                    failedReason = new PlatformNotSupportedException(StringResources.Error_Restart_And_RunAgain);
                     isCritical = true;
                     return false;
                 }
@@ -150,7 +150,7 @@ namespace TableCloth.Components
                 isCritical = false;
                 warnings.Add(StringResources.Error_Windows_Sandbox_Missing);
 #else
-                failedResaon = new PlatformNotSupportedException(StringResources.Error_Windows_Sandbox_Missing);
+                failedReason = new PlatformNotSupportedException(StringResources.Error_Windows_Sandbox_Missing);
                 isCritical = true;
                 return false;
 #endif
@@ -158,7 +158,7 @@ namespace TableCloth.Components
 
             if (!this._isFirstInstance)
             {
-                failedResaon = new ApplicationException(StringResources.Error_Already_TableCloth_Running);
+                failedReason = new ApplicationException(StringResources.Error_Already_TableCloth_Running);
                 isCritical = true;
                 return false;
             }
@@ -208,7 +208,7 @@ namespace TableCloth.Components
                 }
             }
 
-            failedResaon = null;
+            failedReason = null;
             isCritical = false;
             return true;
         }
