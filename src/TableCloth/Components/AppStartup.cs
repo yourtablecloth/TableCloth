@@ -88,24 +88,32 @@ namespace TableCloth.Components
 
                 if (!hyperVisorPresent.HasValue || !hyperVisorPresent.Value)
                 {
-                    failedResaon = new PlatformNotSupportedException(StringResources.Error_HyperVisor_Missing);
+#if DEBUG
+                    warnings.Add(StringResources.Error_HyperVisor_Missing);
                     isCritical = false;
+#else
+                    failedResaon = new PlatformNotSupportedException(StringResources.Error_HyperVisor_Missing);
+                    isCritical = true;
                     return false;
+#endif
                 }
             }
 
-#if !DEBUG
             var wsbExecPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.System),
                 "WindowsSandbox.exe");
 
             if (!File.Exists(wsbExecPath))
             {
+#if DEBUG
+                isCritical = false;
+                warnings.Add(StringResources.Error_Windows_Sandbox_Missing);
+#else
                 failedResaon = new PlatformNotSupportedException(StringResources.Error_Windows_Sandbox_Missing);
                 isCritical = true;
                 return false;
-            }
 #endif
+            }
 
             if (!this._isFirstInstance)
             {
