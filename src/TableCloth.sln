@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		Directory.build.props = Directory.build.props
 		LICENSE.txt = LICENSE.txt
-		privacy.md = privacy.md
+		PRIVACY.md = PRIVACY.md
 		README.md = README.md
 		SECURITY.md = SECURITY.md
 	EndProjectSection
