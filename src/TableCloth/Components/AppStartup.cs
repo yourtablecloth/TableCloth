@@ -83,12 +83,14 @@ namespace TableCloth.Components
                 Environment.GetFolderPath(Environment.SpecialFolder.System),
                 "WindowsSandbox.exe");
 
+#if !DEBUG
             if (!File.Exists(wsbExecPath))
             {
                 failedResaon = new PlatformNotSupportedException(StringResources.Error_Windows_Sandbox_Missing);
                 isCritical = true;
                 return false;
             }
+#endif
 
             if (!this._isFirstInstance)
             {
