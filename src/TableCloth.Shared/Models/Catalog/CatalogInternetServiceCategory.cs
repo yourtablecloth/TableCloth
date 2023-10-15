@@ -14,7 +14,7 @@ namespace TableCloth.Models.Catalog
         /// 기타
         /// </summary>
         [XmlEnum(nameof(Other))]
-        [EnumDisplayOrder(7)]
+        [EnumDisplayOrder(8)]
         [EnumDisplayName(StringResources.DisplayName_Other)]
         Other = 0,
 
@@ -70,7 +70,7 @@ namespace TableCloth.Models.Catalog
         /// 교육
         /// </summary>
         [XmlEnum(nameof(Education))]
-        [EnumDisplayOrder(8)]
+        [EnumDisplayOrder(7)]
         [EnumDisplayName(StringResources.DisplayName_Education)]
         Education,
     }
