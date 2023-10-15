@@ -471,21 +471,10 @@ namespace TableCloth
             SiteCatalogFilter.LostMouseCapture -= SiteCatalogFilter_LostMouseCapture;
         }
 
-        private void SiteCatalogFilter_LostTouchCapture(object sender, TouchEventArgs e)
-        {
-            // If user highlights some text, don't override it
-            if (SiteCatalogFilter.SelectionLength < 1)
-                SiteCatalogFilter.SelectAll();
-
-            // further clicks will not select all
-            SiteCatalogFilter.LostTouchCapture -= SiteCatalogFilter_LostTouchCapture;
-        }
-
         private void SiteCatalogFilter_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             // once we've left the TextBox, return the select all behavior
             SiteCatalogFilter.LostMouseCapture += SiteCatalogFilter_LostMouseCapture;
-            SiteCatalogFilter.LostTouchCapture += SiteCatalogFilter_LostTouchCapture;
         }
 
         private void ReloadCatalogButton_Click(object sender, RoutedEventArgs e)

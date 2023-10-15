@@ -107,16 +107,6 @@ namespace TableCloth.Pages
                 SiteCatalogFilter.SelectAll();
         }
 
-        private void SiteCatalogFilter_LostTouchCapture(object sender, TouchEventArgs e)
-        {
-            // If user highlights some text, don't override it
-            if (SiteCatalogFilter.SelectionLength < 1)
-                SiteCatalogFilter.SelectAll();
-
-            // further clicks will not select all
-            SiteCatalogFilter.LostTouchCapture -= SiteCatalogFilter_LostTouchCapture;
-        }
-
         private void SiteCatalogFilter_LostMouseCapture(object sender, MouseEventArgs e)
         {
             // If user highlights some text, don't override it
@@ -131,7 +121,6 @@ namespace TableCloth.Pages
         {
             // once we've left the TextBox, return the select all behavior
             SiteCatalogFilter.LostMouseCapture += SiteCatalogFilter_LostMouseCapture;
-            SiteCatalogFilter.LostTouchCapture += SiteCatalogFilter_LostTouchCapture;
         }
 
         private void SiteCatalog_KeyDown(object sender, KeyEventArgs e)
@@ -149,7 +138,7 @@ namespace TableCloth.Pages
             }
         }
 
-        private void SiteCatalog_MouseDown(object sender, MouseButtonEventArgs e)
+        private void SiteCatalog_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             var r = VisualTreeHelper.HitTest(this, e.GetPosition(this));
 
@@ -157,7 +146,7 @@ namespace TableCloth.Pages
                 SiteCatalog.UnselectAll();
         }
 
-        private void SiteCatalog_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void SiteCatalog_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var r = VisualTreeHelper.HitTest(this, e.GetPosition(this));
             var data = (r.VisualHit as FrameworkElement)?.DataContext as CatalogInternetService;

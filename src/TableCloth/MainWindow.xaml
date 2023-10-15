@@ -42,7 +42,7 @@
 
             <Label Grid.Row="0" VerticalAlignment="Top" Margin="0 5 0 0" Content="{StaticResource MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-            <TextBox Grid.Row="1" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 0 0 10" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostTouchCapture="SiteCatalogFilter_LostTouchCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBox Grid.Row="1" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 0 0 10" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBox.Style>
                     <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                         <Style.Resources>
