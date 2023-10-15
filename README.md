@@ -38,6 +38,8 @@
 * Windows 10 Pro, Edu, Enterprise
 * Windows Sandbox 활성화
 
+## [개발자 가이드](./DEVREADME.md)
+
 ## 스폰서
 
 GitHub Sponsorship을 통하여 후원해주시면 지속적으로 프로젝트를 진행하는데에 큰 도움이 됩니다. [프로젝트 후원하러 가기](https://github.com/sponsors/yourtablecloth)
