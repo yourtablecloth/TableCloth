@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading;
 using TableCloth.Resources;
@@ -79,11 +81,24 @@ namespace TableCloth.Components
                 return false;
             }
 
+            using (var queryResult = new ManagementObjectSearcher("select HyperVisorPresent from Win32_ComputerSystem"))
+            using (var objCollection = queryResult.Get())
+            {
+                var hyperVisorPresent = objCollection.Cast<ManagementBaseObject?>().FirstOrDefault()?.GetPropertyValue("HyperVisorPresent") as bool?;
+
+                if (!hyperVisorPresent.HasValue || !hyperVisorPresent.Value)
+                {
+                    failedResaon = new PlatformNotSupportedException(StringResources.Error_HyperVisor_Missing);
+                    isCritical = false;
+                    return false;
+                }
+            }
+
+#if !DEBUG
             var wsbExecPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.System),
                 "WindowsSandbox.exe");
 
-#if !DEBUG
             if (!File.Exists(wsbExecPath))
             {
                 failedResaon = new PlatformNotSupportedException(StringResources.Error_Windows_Sandbox_Missing);
