@@ -187,6 +187,9 @@ namespace TableCloth.Resources
         internal static readonly string Error_Windows_Sandbox_Missing
             = "윈도우 샌드박스가 설치되어있지 않은 것 같습니다! 윈도우 기능 켜기/끄기에서 윈도우 샌드박스를 활성화해주세요.";
 
+        internal static readonly string Error_HyperVisor_Missing
+            = "시스템 가상화 기능 지원 여부를 확인할 수 없습니다. 윈도우 샌드박스가 정상적으로 실행되지 않을 가능성이 있습니다.";
+
         internal static readonly string Error_OpenDerAndKey_Simultaneously =
             "공동 인증서 정보 파일 (der)과 공동 인증서 개인 키 파일 (key)을 각각 하나씩 선택해주세요." + Environment.NewLine +
             Environment.NewLine +
