@@ -5,6 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
       xmlns:local="clr-namespace:TableCloth.Pages"
+      xmlns:converter="clr-namspace:TableCloth.Converters"
+      xmlns:catalogmodel="clr-namespace:TableCloth.Models.Catalog"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="{StaticResource CatalogPage_Title}"
@@ -170,7 +172,16 @@
             <ColumnDefinition Width="30*" />
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="8 0 0 0" FontWeight="Bold" TextWrapping="Wrap" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{StaticResource CatalogPage_Instruction}" />
-        <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Margin="2" x:Name="CategoryButtonList" IsEnabled="{Binding HasServices}" />
+        <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Margin="2" IsEnabled="{Binding HasServices}">
+            <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Banking}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Banking}">뱅킹</RadioButton>
+            <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Financing}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Financing}">대출/금융</RadioButton>
+            <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Security}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Security}">증권/투자</RadioButton>
+            <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Insurance}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Insurance}">보험</RadioButton>
+            <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.CreditCard}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=CreditCard}">신용 카드</RadioButton>
+            <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Government}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Government}">공공</RadioButton>
+            <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Education}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Education}">교육</RadioButton>
+            <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Other}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Other}">기타</RadioButton>
+        </StackPanel>
         <Button Grid.Row="2" Grid.Column="0" Margin="4" Content="{StaticResource CatalogPage_AboutButton}" x:Name="AboutButton" Click="AboutButton_Click" />
         <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 8 8 8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostTouchCapture="SiteCatalogFilter_LostTouchCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBox.Style>
@@ -193,7 +204,7 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <ListView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDown="SiteCatalog_MouseDown" MouseDoubleClick="SiteCatalog_MouseDoubleClick" KeyDown="SiteCatalog_KeyDown">
+        <ListView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" SelectedItem="{Binding Path='SelectedService'}" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDown="SiteCatalog_MouseDown" MouseDoubleClick="SiteCatalog_MouseDoubleClick" KeyDown="SiteCatalog_KeyDown">
             <ListView.Template>
                 <ControlTemplate>
                     <ScrollViewer CanContentScroll="False">

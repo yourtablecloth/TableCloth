@@ -39,6 +39,8 @@ namespace TableCloth.ViewModels
 
         private CatalogDocument _catalogDocument;
         private List<CatalogInternetService> _services;
+        private CatalogInternetService _selectedService;
+        private CatalogInternetServiceCategory? _selectedServiceCategory;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -82,5 +84,34 @@ namespace TableCloth.ViewModels
 
         public bool HasServices
             => Services != null && Services.Any();
+
+        public CatalogInternetService SelectedService
+        {
+            get => _selectedService;
+            set
+            {
+                if (value != _selectedService)
+                {
+                    _selectedService = value;
+                    NotifyPropertyChanged();
+
+                    if (value != null)
+                        SelectedServiceCategory = value.Category;
+                }
+            }
+        }
+
+        public CatalogInternetServiceCategory? SelectedServiceCategory
+        {
+            get => _selectedServiceCategory;
+            set
+            {
+                if (value != _selectedServiceCategory)
+                {
+                    _selectedServiceCategory = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
     }
 }

@@ -11,6 +11,7 @@
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             <converters:ServiceLogoConverter x:Key="ServiceLogoConverter" />
+            <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
 
             <di:ViewModelLocator x:Key="ViewModelLocator" />
 

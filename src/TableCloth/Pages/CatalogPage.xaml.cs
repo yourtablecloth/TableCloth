@@ -35,23 +35,6 @@ namespace TableCloth.Pages
 
         public CatalogPageArgumentModel Arguments { get; set; } = default;
 
-        private UIElement CreateCategoryButton(CatalogInternetServiceCategory val)
-        {
-            var displayName = val.GetType().GetField(val.ToString())
-                ?.GetCustomAttribute<EnumDisplayNameAttribute>()
-                ?.DisplayName ?? val.ToString();
-
-            var button = new RadioButton()
-            {
-                Content = displayName,
-                Tag = val,
-                Margin = new Thickness(8d),
-                BorderBrush = Brushes.Transparent,
-                Background = Brushes.Transparent,
-            };
-            return button;
-        }
-
         // https://stackoverflow.com/questions/1077397/scroll-listviewitem-to-be-at-the-top-of-a-listview
         private DependencyObject GetScrollViewer(DependencyObject o)
         {
@@ -79,22 +62,6 @@ namespace TableCloth.Pages
 
             if (!view.GroupDescriptions.Contains(GroupDescription))
                 view.GroupDescriptions.Add(GroupDescription);
-
-            var tupleList = new List<Tuple<CatalogInternetServiceCategory, int>>();
-
-            foreach (var eachMember in Enum.GetValues<CatalogInternetServiceCategory>())
-            {
-                var order = eachMember.GetType().GetField(eachMember.ToString())
-                    ?.GetCustomAttribute<EnumDisplayOrderAttribute>()
-                    ?.Order ?? 0;
-
-                tupleList.Add(new(eachMember, order));
-            }
-
-            CategoryButtonList.Children.Clear();
-
-            foreach (var eachMember in tupleList.OrderBy(x => x.Item2).Select(x => x.Item1))
-                CategoryButtonList.Children.Add(CreateCategoryButton(eachMember));
 
             SiteCatalogFilter.Text = Arguments?.SearchKeyword ?? string.Empty;
         }
@@ -223,6 +190,33 @@ namespace TableCloth.Pages
             Rect bounds = element.TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, element.ActualWidth, element.ActualHeight));
             Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
             return rect.Contains(bounds.TopLeft) || rect.Contains(bounds.BottomRight);
+        }
+
+        private void CategoryRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            var tag = (sender as FrameworkElement)?.Tag as CatalogInternetServiceCategory?;
+
+            if (!tag.HasValue)
+                return;
+
+            foreach (var eachItem in SiteCatalog.Items)
+            {
+                var catalogItem = eachItem as CatalogInternetService;
+
+                if (catalogItem == null)
+                    continue;
+
+                if (catalogItem.Category != tag.Value)
+                    continue;
+
+                SiteCatalog.SelectedItem = eachItem;
+
+                if (GetScrollViewer(SiteCatalog) is ScrollViewer viewer)
+                    viewer.ScrollToBottom();
+
+                SiteCatalog.ScrollIntoView(eachItem);
+                break;
+            }
         }
     }
 }
