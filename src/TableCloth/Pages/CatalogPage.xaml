@@ -196,7 +196,7 @@
         <ListView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDown="SiteCatalog_MouseDown" MouseDoubleClick="SiteCatalog_MouseDoubleClick" KeyDown="SiteCatalog_KeyDown" SelectionChanged="SiteCatalog_SelectionChanged">
             <ListView.Template>
                 <ControlTemplate>
-                    <ScrollViewer CanContentScroll="False">
+                    <ScrollViewer CanContentScroll="False" ScrollChanged="ScrollViewer_ScrollChanged">
                         <ItemsPresenter />
                     </ScrollViewer>
                 </ControlTemplate>

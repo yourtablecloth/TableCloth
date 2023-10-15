@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
@@ -62,7 +63,7 @@ namespace TableCloth.Pages
             {
                 var child = VisualTreeHelper.GetChild(o, i);
                 var result = GetScrollViewer(child);
-                
+
                 if (result == null)
                     continue;
                 else
@@ -116,7 +117,7 @@ namespace TableCloth.Pages
                     ?.GetCustomAttribute<EnumDisplayOrderAttribute>()
                     ?.Order ?? 0;
 
-                tupleList.Add(new (eachMember, order));
+                tupleList.Add(new(eachMember, order));
             }
 
             CategoryButtonList.Children.Clear();
@@ -273,6 +274,41 @@ namespace TableCloth.Pages
         {
             var aboutWindow = new AboutWindow() { Owner = Window.GetWindow(this), };
             aboutWindow.ShowDialog();
+        }
+
+        // from https://stackoverflow.com/questions/19397780/scrollviewer-indication-of-child-element-scrolled-into-view
+        private bool IsUserVisible(FrameworkElement element, FrameworkElement container)
+        {
+            if (!(element?.IsVisible ?? false))
+                return false;
+
+            Rect bounds = element.TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, element.ActualWidth, element.ActualHeight));
+            Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
+            return rect.Contains(bounds.TopLeft) || rect.Contains(bounds.BottomRight);
+        }
+
+        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (sender is ScrollViewer viewer)
+            {
+                var allItems = (IEnumerable<CatalogInternetService>)SiteCatalog.ItemsSource;
+
+                var visibleItems = allItems.Where(item =>
+                {
+                    var itemControl = SiteCatalog.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+                    return IsUserVisible(itemControl, viewer);
+                });
+
+                var lastItem = visibleItems.LastOrDefault();
+                if (lastItem != null)
+                {
+                    var matchedButton = CategoryButtonList.Children.OfType<RadioButton>().SingleOrDefault(button => button.Content as string == lastItem.CategoryDisplayName);
+                    if (matchedButton != null)
+                    {
+                        matchedButton.IsChecked = true;
+                    }
+                }
+            }
         }
     }
 }
