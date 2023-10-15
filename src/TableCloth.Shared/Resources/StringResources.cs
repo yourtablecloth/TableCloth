@@ -187,6 +187,12 @@ namespace TableCloth.Resources
         internal static readonly string Error_Windows_Sandbox_Missing
             = "윈도우 샌드박스가 설치되어있지 않은 것 같습니다! 윈도우 기능 켜기/끄기에서 윈도우 샌드박스를 활성화해주세요.";
 
+        internal static readonly string Error_Windows_Dism_Missing
+            = "DISM.exe 유틸리티를 찾을 수 없어 식탁보가 Windows 샌드박스 설치 대리 실행을 진행할 수 없습니다. 윈도우 기능 켜기/끄기에서 윈도우 샌드박스를 활성화하는 것을 시도해볼 수 있습니다.";
+
+        internal static readonly string Error_Restart_And_RunAgain
+            = "윈도우 샌드박스를 설치한 후에는 시스템을 다시 시작해야 할 수 있습니다. 필요한 경우 시스템을 다시 시작하고, 식탁보를 다시 실행해주시기 바랍니다.";
+
         internal static readonly string Error_HyperVisor_Missing
             = "시스템 가상화 기능 지원 여부를 확인할 수 없습니다. 윈도우 샌드박스가 정상적으로 실행되지 않을 가능성이 있습니다.";
 

@@ -103,6 +103,47 @@ namespace TableCloth.Components
                 Environment.GetFolderPath(Environment.SpecialFolder.System),
                 "WindowsSandbox.exe");
 
+            // 1st Try: WindowsSandbox.exe 파일이 없을 경우 dism.exe로 설치 시도
+            if (!File.Exists(wsbExecPath))
+            {
+                var dismExecPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.System),
+                    "dism.exe");
+
+                if (!File.Exists(dismExecPath))
+                {
+#if DEBUG
+                    isCritical = false;
+                    warnings.Add(StringResources.Error_Windows_Dism_Missing);
+#else
+                    failedReason = new PlatformNotSupportedException(StringResources.Error_Windows_Dism_Missing);
+                    isCritical = true;
+                    return false;
+#endif
+                }
+                else
+                {
+                    var args = new[] {
+                        "/Online",
+                        "/Enable-Feature",
+                        "/FeatureName:Containers-DisposableClientVM",
+                        "/All",
+                    };
+
+                    var psi = new ProcessStartInfo(dismExecPath, string.Join(' ', args))
+                    {
+                        UseShellExecute = true,
+                        Verb = "runas",
+                    };
+
+                    Process.Start(psi).WaitForExit();
+
+                    failedResaon = new PlatformNotSupportedException(StringResources.Error_Restart_And_RunAgain);
+                    isCritical = true;
+                    return false;
+                }
+            }
+
             if (!File.Exists(wsbExecPath))
             {
 #if DEBUG
