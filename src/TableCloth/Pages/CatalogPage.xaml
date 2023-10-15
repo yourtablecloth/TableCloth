@@ -216,6 +216,9 @@
                         </Grid.RowDefinitions>
                         <Image Grid.Row="0" x:Name="Icon" Source="{Binding Id, Mode=OneWay, Converter={StaticResource ServiceLogoConverter}}" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
                         <TextBlock Grid.Row="2" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
+                        <Grid.ToolTip>
+                            <TextBlock Text="{Binding DisplayName}" TextWrapping="NoWrap" TextTrimming="None"/>
+                        </Grid.ToolTip>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
