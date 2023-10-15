@@ -134,6 +134,11 @@ namespace TableCloth.Pages
 
             if (Arguments.BuiltFromCommandLine)
                 RunSandbox(Arguments.GetTableClothConfiguration());
+
+            if (!string.IsNullOrEmpty(Arguments.CurrentSearchString))
+            {
+                SiteCatalogFilter.Text = Arguments.CurrentSearchString;
+            }
         }
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -322,7 +327,7 @@ namespace TableCloth.Pages
 
         private void SiteCatalogFilter_LostFocus(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(
+            NavigationService?.Navigate(
                 new Uri("Pages/CatalogPage.xaml", UriKind.Relative),
                 new CatalogPageArgumentModel(SiteCatalogFilter.Text));
         }
@@ -348,6 +353,16 @@ namespace TableCloth.Pages
 
 {expression}",
                 MessageBoxButton.OK);
+        }
+
+        private void SiteCatalogFilter_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter || e.Key == Key.Escape || e.Key == Key.Tab)
+            {
+                NavigationService.Navigate(
+                    new Uri("Pages/CatalogPage.xaml", UriKind.Relative),
+                    new CatalogPageArgumentModel(SiteCatalogFilter.Text));
+            }
         }
     }
 }

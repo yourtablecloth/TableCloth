@@ -66,6 +66,8 @@ namespace TableCloth.Models
 
         public bool ShowCommandLineHelp { get; private set; }
 
+        public string CurrentSearchString { get; set; }
+
         public TableClothConfiguration GetTableClothConfiguration()
         {
             var certPublicKeyData = new byte[] { };
