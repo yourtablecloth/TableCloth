@@ -177,7 +177,7 @@ namespace TableCloth.Pages
                 {
                     NavigationService.Navigate(
                         new Uri("Pages/DetailPage.xaml", UriKind.Relative),
-                        new DetailPageArgumentModel(data, builtFromCommandLine: false) { CurrentSearchString = SiteCatalogFilter.Text });
+                        new DetailPageArgumentModel(data, builtFromCommandLine: false, currentSearchString: SiteCatalogFilter.Text));
                 }
             }
         }
@@ -199,7 +199,7 @@ namespace TableCloth.Pages
             {
                 NavigationService.Navigate(
                     new Uri("Pages/DetailPage.xaml", UriKind.Relative),
-                    new DetailPageArgumentModel(data, builtFromCommandLine: false) { CurrentSearchString = SiteCatalogFilter.Text });
+                    new DetailPageArgumentModel(data, builtFromCommandLine: false, currentSearchString: SiteCatalogFilter.Text));
             }
         }
 
