@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableCloth.ResourceBuilder"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loom", "Loom\Loom.csproj", "{25CA9322-D817-4F66-AC5A-8A88794162AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableCloth.Test", "TableCloth.Test\TableCloth.Test.csproj", "{00E9E604-57A3-41DF-AF08-F0436D4FF9BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -92,6 +94,14 @@ Global
 		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Release|ARM64.Build.0 = Release|ARM64
 		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Release|x64.ActiveCfg = Release|x64
 		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Release|x64.Build.0 = Release|x64
+		{00E9E604-57A3-41DF-AF08-F0436D4FF9BA}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{00E9E604-57A3-41DF-AF08-F0436D4FF9BA}.Debug|ARM64.Build.0 = Debug|ARM64
+		{00E9E604-57A3-41DF-AF08-F0436D4FF9BA}.Debug|x64.ActiveCfg = Debug|x64
+		{00E9E604-57A3-41DF-AF08-F0436D4FF9BA}.Debug|x64.Build.0 = Debug|x64
+		{00E9E604-57A3-41DF-AF08-F0436D4FF9BA}.Release|ARM64.ActiveCfg = Release|ARM64
+		{00E9E604-57A3-41DF-AF08-F0436D4FF9BA}.Release|ARM64.Build.0 = Release|ARM64
+		{00E9E604-57A3-41DF-AF08-F0436D4FF9BA}.Release|x64.ActiveCfg = Release|x64
+		{00E9E604-57A3-41DF-AF08-F0436D4FF9BA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,6 +110,7 @@ Global
 		SolutionGuid = {7EAF7AB7-15CC-4504-8D15-C631B0996E8F}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		TableCloth.Shared\TableCloth.Shared.projitems*{00e9e604-57a3-41df-af08-f0436d4ff9ba}*SharedItemsImports = 5
 		TableCloth.Shared\TableCloth.Shared.projitems*{0f58b6a7-cca8-471a-b767-01c7b8f6e839}*SharedItemsImports = 13
 		TableCloth.Shared\TableCloth.Shared.projitems*{25ca9322-d817-4f66-ac5a-8a88794162af}*SharedItemsImports = 5
 		TableCloth.Shared\TableCloth.Shared.projitems*{2d6cd03c-52b2-46f2-8ec1-7480e7a92e5e}*SharedItemsImports = 5
