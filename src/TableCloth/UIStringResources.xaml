@@ -211,6 +211,10 @@
         소유자
     </system:String>
 
+    <system:String x:Key="CertSelectWindow_CertList_Available">
+        사용 가능 여부
+    </system:String>
+
     <system:String x:Key="CertSelectWindow_CertList_OrganizationalUnits">
         기관
     </system:String>

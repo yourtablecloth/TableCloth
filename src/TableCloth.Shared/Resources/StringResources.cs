@@ -110,6 +110,31 @@ namespace TableCloth.Resources
         }
     }
 
+    // 공동 인증서 관련 문자열들
+    partial class StringResources
+    {
+        internal static readonly TimeSpan Cert_ExpireWindow = TimeSpan.FromDays(-3d);
+
+        internal static string Cert_Availability_MayTooEarly(DateTime now, DateTime notBefore)
+            => $"{(int)Math.Truncate((notBefore - now).TotalDays)}일 후 사용 가능";
+
+        internal static string Cert_Availability_ExpireSoon(DateTime now, DateTime notAfter, TimeSpan expireWindow)
+            => $"{(int)Math.Truncate((now - (notAfter - expireWindow)).TotalDays)}일 후 만료";
+
+        internal static readonly string Cert_Availability_Expired = "만료됨";
+
+        internal static readonly string Cert_Availability_Available = "사용 가능";
+
+        internal static string Error_Cert_MayTooEarly(DateTime now, DateTime notBefore)
+            => $"선택하신 공동 인증서는 {(int)Math.Truncate((notBefore - now).TotalDays)}일 후부터 사용 가능합니다.";
+
+        internal static string Error_Cert_ExpireSoon(DateTime now, DateTime notAfter, TimeSpan expireWindow)
+            => $"{(int)Math.Truncate((now - (notAfter - expireWindow)).TotalDays)}일 후에 만료됩니다. 새로운 공동 인증서로 교체가 필요합니다.";
+
+        internal static readonly string Error_Cert_Expired
+            = $"선택하신 공동 인증서는 만료되었습니다. 다른 공동 인증서를 선택하거나, 새로운 공동 인증서로 교체 발급해야 합니다.";
+    }
+
     // 비 사용자 인터페이스 문자열들
     partial class StringResources
     {
@@ -301,15 +326,6 @@ namespace TableCloth.Resources
         
         internal static readonly string Info_ShortcutSuccess =
             "바탕 화면에 바로 가기를 생성했습니다.";
-
-        internal static string Error_Cert_MayTooEarly(DateTime notBefore)
-            => $"선택하신 공동 인증서는 {notBefore:yyyy년 M월 d일 tt h시 m분} 이후부터 사용 가능한 공동 인증서입니다. 인증서 사용이 불가능할 수 있습니다.";
-
-        internal static string Error_Cert_MayExpired(DateTime notAfter)
-            => $"선택하신 공동 인증서는 {notAfter:yyyy년 M월 d일 tt h시 m분} 이후부터는 사용이 불가능한 공동 인증서입니다. 인증서 사용이 불가능할 수 있습니다.";
-
-        internal static string Error_Cert_ExpireSoon(DateTime notAfter)
-            => $"선택하신 공동 인증서는 {notAfter:yyyy년 M월 d일 tt h시 m분} 이후부터는 사용이 불가능한 공동 인증서입니다. 공동 인증서 갱신을 준비하는 것이 좋습니다.";
     }
 
     // 스크립트 내에서 사용되는 문자열들

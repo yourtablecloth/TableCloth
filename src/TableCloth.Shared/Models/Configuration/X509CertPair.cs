@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using TableCloth.Resources;
 
 namespace TableCloth.Models.Configuration
 {
@@ -83,6 +84,34 @@ namespace TableCloth.Models.Configuration
 
 		public DateTime NotAfter { get; }
 		public DateTime NotBefore { get; }
+
+		public bool IsValid
+			=> NotBefore <= DateTime.Now && DateTime.Now <= NotAfter;
+
+        public bool HasExpired
+            => DateTime.Now > NotAfter;
+
+        public bool SoonExpire
+			=> DateTime.Now > NotAfter.Add(StringResources.Cert_ExpireWindow);
+
+		public string Availability
+		{
+			get
+			{
+				var now = DateTime.Now;
+				var expireWindow = StringResources.Cert_ExpireWindow;
+
+				if (now < NotBefore)
+					return StringResources.Cert_Availability_MayTooEarly(now, NotBefore);
+
+                if (now > NotAfter)
+                    return StringResources.Cert_Availability_Expired;
+                else if (now > NotAfter.Add(expireWindow))
+					return StringResources.Cert_Availability_ExpireSoon(now, NotAfter, expireWindow);
+
+				return StringResources.Cert_Availability_Available;
+			}
+		}
 
 		public string SubjectNameForNpkiApp
 			=> string.Join(",", Subject.Select(x => $"{x.Key.ToLowerInvariant()}={x.Value}"));

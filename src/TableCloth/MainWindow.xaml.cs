@@ -81,15 +81,16 @@ namespace TableCloth
         {
             if (config.CertPair != null)
             {
-                var today = DateTime.Now;
+                var now = DateTime.Now;
+                var expireWindow = StringResources.Cert_ExpireWindow;
 
-                if (today < config.CertPair.NotBefore)
-                    ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cert_MayTooEarly(config.CertPair.NotBefore), false);
+                if (now < config.CertPair.NotBefore)
+                    ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cert_MayTooEarly(now, config.CertPair.NotBefore), false);
 
-                if (today > config.CertPair.NotAfter)
-                    ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cert_MayExpired(config.CertPair.NotAfter), false);
-                else if (today > config.CertPair.NotAfter.AddDays(-3d))
-                    ViewModel.AppMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(config.CertPair.NotAfter));
+                if (now > config.CertPair.NotAfter)
+                    ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cert_Expired, false);
+                else if (now > config.CertPair.NotAfter.Add(expireWindow))
+                    ViewModel.AppMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(now, config.CertPair.NotAfter, expireWindow));
             }
 
             var tempPath = ViewModel.SharedLocations.GetTempPath();

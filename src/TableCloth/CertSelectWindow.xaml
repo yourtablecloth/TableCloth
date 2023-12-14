@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         Style="{DynamicResource MainWindowStyle}"
         Title="{StaticResource CertSelectWindow_Title}" Width="480" Height="320"
-        MinWidth="480" MinHeight="320"
+        MinWidth="640" MinHeight="480"
         DataContext="{Binding CertSelectWindowViewModel, Source={StaticResource ViewModelLocator}}"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <Grid>
@@ -26,9 +26,23 @@
 
             <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="{StaticResource CertSelectWindow_InstructionLabel}" />
             <ListView Grid.Row="1" ItemsSource="{Binding Path='CertPairs'}" SelectedItem="{Binding Path='SelectedCertPair'}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasExpired}" Value="True">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <Brush>#ffadad</Brush>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_CommonName}" Width="100" DisplayMemberBinding="{Binding CommonName}" />
+                        <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_Available}" Width="100" DisplayMemberBinding="{Binding Availability}" />
                         <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_OrganizationalUnits}" Width="100" DisplayMemberBinding="{Binding OrganizationalUnit}" />
                         <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_Organization}" Width="100" DisplayMemberBinding="{Binding Organization}" />
                         <GridViewColumn Header="{StaticResource CertSelectWindow_CertList_CountryName}" Width="100" DisplayMemberBinding="{Binding CountryName}" />
@@ -40,11 +54,11 @@
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="ConvertToPfxButton" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_ConvertToPfxButtonText}" Click="ConvertToPfxButton_Click" />
-                <Button x:Name="RefreshCertPairsButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_RefreshButtonText}" Click="RefreshCertPairsButton_Click" />
+                <Button x:Name="ConvertToPfxButton" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_ConvertToPfxButtonText}" Click="ConvertToPfxButton_Click" Padding="5" />
+                <Button x:Name="RefreshCertPairsButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_RefreshButtonText}" Click="RefreshCertPairsButton_Click" Padding="5" />
             </Grid>
             <TextBlock Grid.Row="3" TextWrapping="Wrap" Text="{StaticResource CertSelectWindow_ManualInstructionLabelText}" />
-            <Button x:Name="OpenCertPairManuallyButton" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" Content="{StaticResource CertSelectWindow_OpenNpkiCertButton}" Margin="0 5 0 5" Click="OpenCertPairManuallyButton_Click" />
+            <Button x:Name="OpenCertPairManuallyButton" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" Content="{StaticResource CertSelectWindow_OpenNpkiCertButton}" Margin="0 5 0 5" Click="OpenCertPairManuallyButton_Click" Padding="5" />
         </Grid>
 
         <Grid Grid.Row="1">
