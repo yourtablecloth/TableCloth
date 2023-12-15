@@ -12,7 +12,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands
 {
-    public sealed class LaunchSandboxCommand : ICommand
+    public sealed class LaunchSandboxCommand : BaseCommand
     {
         public LaunchSandboxCommand(
             SandboxLauncher sandboxLauncher,
@@ -28,30 +28,16 @@ namespace TableCloth.Commands
             this.sandboxCleanupManager = sandboxCleanupManager;
         }
 
-        private bool canExecute = true;
-
         private readonly SandboxLauncher sandboxLauncher;
         private readonly AppMessageBox appMessageBox;
         private readonly SharedLocations sharedLocations;
         private readonly SandboxBuilder sandboxBuilder;
         private readonly SandboxCleanupManager sandboxCleanupManager;
 
-        public event EventHandler CanExecuteChanged
-        {
-            add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested -= value;
-        }
+        protected override bool EvaluateCanExecute()
+            => (!this.sandboxLauncher.IsSandboxRunning());
 
-        public void RaiseCanExecuteChanged()
-        {
-            this.canExecute = (!this.sandboxLauncher.IsSandboxRunning());
-            CommandManager.InvalidateRequerySuggested();
-        }
-
-        public bool CanExecute(object parameter)
-            => canExecute;
-
-        public void Execute(object parameter)
+        public override void Execute(object parameter)
         {
             if (this.sandboxLauncher.IsSandboxRunning())
             {
