@@ -182,7 +182,11 @@
             <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Education}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Education}">교육</RadioButton>
             <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Other}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Other}">기타</RadioButton>
         </StackPanel>
-        <Button Grid.Row="2" Grid.Column="0" Margin="4" Content="{StaticResource CatalogPage_AboutButton}" x:Name="AboutButton" Click="AboutButton_Click" />
+        <Button Grid.Row="2" Grid.Column="0" Margin="4" Content="{StaticResource CatalogPage_AboutButton}" x:Name="AboutButton" Command="{Binding AboutThisAppCommand}">
+            <Button.CommandParameter>
+                <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+            </Button.CommandParameter>
+        </Button>
         <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 8 8 8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBox.Style>
                 <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">

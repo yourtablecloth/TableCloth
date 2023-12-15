@@ -159,12 +159,6 @@ namespace TableCloth.Pages
             }
         }
 
-        private void AboutButton_Click(object sender, RoutedEventArgs e)
-        {
-            var aboutWindow = new AboutWindow() { Owner = Window.GetWindow(this), };
-            aboutWindow.ShowDialog();
-        }
-
         // from https://stackoverflow.com/questions/19397780/scrollviewer-indication-of-child-element-scrolled-into-view
         private bool IsUserVisible(FrameworkElement element, FrameworkElement container)
         {

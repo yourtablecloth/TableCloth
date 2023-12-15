@@ -193,7 +193,11 @@
             </Grid.ColumnDefinitions>
 
             <WrapPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left" Margin="10">
-                <Button x:Name="AboutButton" Content="{StaticResource MainWindow_AboutButtonText}" Padding="5" Margin="0 0 0 0" Click="AboutButton_Click" />
+                <Button x:Name="AboutButton" Content="{StaticResource MainWindow_AboutButtonText}" Padding="5" Margin="0 0 0 0" Command="{Binding AboutThisAppCommand}">
+                    <Button.CommandParameter>
+                        <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                    </Button.CommandParameter>
+                </Button>
             </WrapPanel>
 
             <WrapPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">

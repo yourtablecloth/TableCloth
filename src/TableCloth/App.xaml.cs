@@ -127,6 +127,7 @@ namespace TableCloth
             services.AddSingleton<CreateShortcutCommand>();
             services.AddSingleton<CopyCommandLineCommand>();
             services.AddSingleton<AppRestartCommand>();
+            services.AddSingleton<AboutThisAppCommand>();
 
             // UI
             services.AddSingleton<AppMessageBox>();

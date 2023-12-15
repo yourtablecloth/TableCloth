@@ -18,13 +18,15 @@ namespace TableCloth.ViewModels
             CatalogCacheManager catalogCacheManager,
             ResourceResolver resourceResolver,
             AppRestartManager appRestartManager,
-            AppRestartCommand appRestartCommand)
+            AppRestartCommand appRestartCommand,
+            AboutThisAppCommand aboutThisAppCommand)
         {
             _sharedLocations = sharedLocations;
             _catalogCacheManager = catalogCacheManager;
             _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
             _appRestartCommand = appRestartCommand;
+            _aboutThisAppCommand = aboutThisAppCommand;
 
             CatalogDocument = _catalogCacheManager.CatalogDocument;
             Services = CatalogDocument.Services.OrderBy(service => service.Category.GetType().GetField(service.Category.ToString())
@@ -40,6 +42,7 @@ namespace TableCloth.ViewModels
         private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
         private readonly AppRestartCommand _appRestartCommand;
+        private readonly AboutThisAppCommand _aboutThisAppCommand;
 
         private CatalogDocument _catalogDocument;
         private List<CatalogInternetService> _services;
@@ -62,6 +65,9 @@ namespace TableCloth.ViewModels
 
         public AppRestartCommand AppRestartCommand
             => _appRestartCommand;
+
+        public AboutThisAppCommand AboutThisAppCommand
+            => _aboutThisAppCommand;
 
         public CatalogDocument CatalogDocument
         {

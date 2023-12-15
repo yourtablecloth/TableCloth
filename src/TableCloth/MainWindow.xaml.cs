@@ -210,12 +210,6 @@ namespace TableCloth
             ViewModel.SelectedServices = listBox.SelectedItems.Cast<CatalogInternetService>().ToList();
         }
 
-        private void AboutButton_Click(object sender, RoutedEventArgs e)
-        {
-            var aboutWindow = new AboutWindow() { Owner = this };
-            aboutWindow.ShowDialog();
-        }
-
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
