@@ -35,37 +35,6 @@ namespace TableCloth.Pages
 
         public DetailPageArgumentModel Arguments { get; set; } = default;
 
-        private string ComposeCommandLineArguments()
-        {
-            var options = new List<string>();
-
-            if (ViewModel.EnableMicrophone)
-                options.Add(StringResources.TableCloth_Switch_EnableMicrophone);
-            if (ViewModel.EnableWebCam)
-                options.Add(StringResources.TableCloth_Switch_EnableCamera);
-            if (ViewModel.EnablePrinters)
-                options.Add(StringResources.TableCloth_Switch_EnablePrinter);
-            if (ViewModel.InstallEveryonesPrinter)
-                options.Add(StringResources.TableCloth_Switch_InstallEveryonesPrinter);
-            if (ViewModel.InstallAdobeReader)
-                options.Add(StringResources.TableCloth_Switch_InstallAdobeReader);
-            if (ViewModel.InstallHancomOfficeViewer)
-                options.Add(StringResources.TableCloth_Switch_InstallHancomOfficeViewer);
-            if (ViewModel.InstallRaiDrive)
-                options.Add(StringResources.TableCloth_Switch_InstallRaiDrive);
-            if (ViewModel.EnableInternetExplorerMode)
-                options.Add(StringResources.TableCloth_Switch_EnableIEMode);
-            if (ViewModel.MapNpkiCert)
-                options.Add(StringResources.Tablecloth_Switch_EnableCert);
-
-            var firstSite = ViewModel.SelectedService;
-
-            if (firstSite != null)
-                options.Add(firstSite.Id);
-
-            return string.Join(' ', options.ToArray());
-        }
-
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ViewModel.SelectedService = Arguments.SelectedService;
@@ -193,54 +162,6 @@ namespace TableCloth.Pages
                 NavigationService.GoBack();
         }
 
-        private void CreateShortcutButton_Click(object sender, RoutedEventArgs e)
-        {
-            var targetPath = ViewModel.SharedLocations.ExecutableFilePath;
-            var linkName = StringResources.AppName;
-
-            var firstSite = ViewModel.SelectedService;
-            var iconFilePath = default(string);
-
-            if (firstSite != null)
-            {
-                linkName = firstSite.DisplayName;
-
-                iconFilePath = Path.Combine(
-                    ViewModel.SharedLocations.GetImageDirectoryPath(),
-                    $"{firstSite.Id}.ico");
-
-                if (!File.Exists(iconFilePath))
-                    iconFilePath = null;
-            }
-
-            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            var fullPath = Path.Combine(desktopPath, linkName + ".lnk");
-
-            for (int i = 1; File.Exists(fullPath); ++i)
-                fullPath = Path.Combine(desktopPath, linkName + $" ({i}).lnk");
-
-            try
-            {
-                Type shellType = Type.GetTypeFromProgID("WScript.Shell");
-                dynamic shell = Activator.CreateInstance(shellType);
-                dynamic shortcut = shell.CreateShortcut(fullPath);
-                shortcut.TargetPath = targetPath;
-
-                if (iconFilePath != null && File.Exists(iconFilePath))
-                    shortcut.IconLocation = iconFilePath;
-
-                shortcut.Arguments = ComposeCommandLineArguments();
-                shortcut.Save();
-            }
-            catch
-            {
-                ViewModel.AppMessageBox.DisplayInfo(StringResources.Error_ShortcutFailed);
-                return;
-            }
-
-            ViewModel.AppMessageBox.DisplayInfo(StringResources.Info_ShortcutSuccess);
-        }
-
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
             var certSelectWindow = new CertSelectWindow() { Owner = Window.GetWindow(this) };
@@ -286,7 +207,7 @@ namespace TableCloth.Pages
         private void CopyCommandLineButton_Click(object sender, RoutedEventArgs e)
         {
             var targetFilePath = ViewModel.SharedLocations.ExecutableFilePath;
-            var args = ComposeCommandLineArguments();
+            var args = ViewModel.CommandLineComposer.ComposeCommandLineArguments(ViewModel);
             var expression = $"\"{targetFilePath}\" {args}";
 
             Clipboard.SetText(expression);

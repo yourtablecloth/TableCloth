@@ -109,6 +109,7 @@ namespace TableCloth
             services.AddSingleton<LicenseDescriptor>();
             services.AddSingleton<AppRestartManager>();
             services.AddSingleton<CommandLineParser>();
+            services.AddSingleton<CommandLineComposer>();
 
             // ViewModel
             services.AddSingleton<MainWindowViewModel>();
@@ -121,6 +122,7 @@ namespace TableCloth
 
             // Commands
             services.AddSingleton<LaunchSandboxCommand>();
+            services.AddSingleton<CreateShortcutCommand>();
 
             // UI
             services.AddSingleton<AppMessageBox>();

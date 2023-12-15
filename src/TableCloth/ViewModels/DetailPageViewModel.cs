@@ -25,7 +25,9 @@ namespace TableCloth.ViewModels
             PreferencesManager preferencesManager,
             ResourceResolver resourceResolver,
             AppRestartManager appRestartManager,
-            LaunchSandboxCommand launchSandboxCommand)
+            CommandLineComposer commandLineComposer,
+            LaunchSandboxCommand launchSandboxCommand,
+            CreateShortcutCommand createShortcutCommand)
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
@@ -38,7 +40,9 @@ namespace TableCloth.ViewModels
             _preferencesManager = preferencesManager;
             _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
+            _commandLineComposer = commandLineComposer;
             _launchSandboxCommand = launchSandboxCommand;
+            _createShortcutCommand = createShortcutCommand;
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
@@ -64,7 +68,9 @@ namespace TableCloth.ViewModels
         private readonly PreferencesManager _preferencesManager;
         private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
+        private readonly CommandLineComposer _commandLineComposer;
         private readonly LaunchSandboxCommand _launchSandboxCommand;
+        private readonly CreateShortcutCommand _createShortcutCommand;
 
         private CatalogInternetService _selectedService;
         private bool _mapNpkiCert;
@@ -117,8 +123,14 @@ namespace TableCloth.ViewModels
         public AppRestartManager AppRestartManager
             => _appRestartManager;
 
+        public CommandLineComposer CommandLineComposer
+            => _commandLineComposer;
+
         public LaunchSandboxCommand LaunchSandboxCommand
             => _launchSandboxCommand;
+
+        public CreateShortcutCommand CreateShortcutCommand
+            => _createShortcutCommand;
 
         public string Id
             => _selectedService?.Id;
