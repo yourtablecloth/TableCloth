@@ -75,7 +75,8 @@ namespace TableCloth.Pages
                     ViewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
             }
 
-            if (Arguments.BuiltFromCommandLine)
+            if (Arguments.BuiltFromCommandLine &&
+                Arguments.SelectedService != null)
                 ViewModel.LaunchSandboxCommand.Execute(Arguments);
 
             if (!string.IsNullOrEmpty(Arguments.CurrentSearchString))

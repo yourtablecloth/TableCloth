@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
@@ -22,7 +23,9 @@ namespace TableCloth.ViewModels
             PreferencesManager preferencesManager,
             ResourceResolver resourceResolver,
             AppRestartManager appRestartManager,
-            CommandLineParser commandLineParser)
+            CommandLineParser commandLineParser,
+            LaunchSandboxCommand launchSandboxCommand,
+            CreateShortcutCommand createShortcutCommand)
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
@@ -35,6 +38,8 @@ namespace TableCloth.ViewModels
             _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
             _commandLineParser = commandLineParser;
+            _launchSandboxCommand = launchSandboxCommand;
+            _createShortcutCommand = createShortcutCommand;
 
             try
             {
@@ -63,6 +68,8 @@ namespace TableCloth.ViewModels
         private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
         private readonly CommandLineParser _commandLineParser;
+        private readonly LaunchSandboxCommand _launchSandboxCommand;
+        private readonly CreateShortcutCommand _createShortcutCommand;
 
         private bool _mapNpkiCert;
         private bool _enableLogAutoCollecting;
@@ -79,6 +86,8 @@ namespace TableCloth.ViewModels
         private CatalogDocument _catalogDocument;
         private X509CertPair _selectedCertFile;
         private List<CatalogInternetService> _services;
+        private List<CatalogInternetService> _selectedServices;
+        private bool _requireRestart;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -114,6 +123,12 @@ namespace TableCloth.ViewModels
 
         public CommandLineParser CommandLineParser
             => _commandLineParser;
+
+        public LaunchSandboxCommand LaunchSandboxCommand
+            => _launchSandboxCommand;
+
+        public CreateShortcutCommand CreateShortcutCommand
+            => _createShortcutCommand;
 
         public bool MapNpkiCert
         {
@@ -320,6 +335,32 @@ namespace TableCloth.ViewModels
                 if (value != _services)
                 {
                     _services = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public List<CatalogInternetService> SelectedServices
+        {
+            get => _selectedServices;
+            set
+            {
+                if (value != _selectedServices)
+                {
+                    _selectedServices = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public bool RequireRestart
+        {
+            get => _requireRestart;
+            set
+            {
+                if (value != _requireRestart)
+                {
+                    _requireRestart = value;
                     NotifyPropertyChanged();
                 }
             }

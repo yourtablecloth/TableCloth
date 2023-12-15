@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using TableCloth.Components;
 using TableCloth.Models;
@@ -47,12 +48,20 @@ namespace TableCloth.Commands
 
             switch (parameter)
             {
-                case DetailPageArgumentModel argumentModel:
-                    this.RunSandboxFromArgumentModel(argumentModel);
+                case MainWindowArgumentModel v1ArgumentModel:
+                    this.RunSandboxFromV1ArgumentModel(v1ArgumentModel);
                     break;
 
-                case DetailPageViewModel viewModel:
-                    this.RunSandboxFromViewModel(viewModel);
+                case MainWindowViewModel v1ViewModel:
+                    this.RunSandboxFromV1ViewModel(v1ViewModel);
+                    break;
+
+                case DetailPageArgumentModel v2ArgumentModel:
+                    this.RunSandboxFromV2ArgumentModel(v2ArgumentModel);
+                    break;
+
+                case DetailPageViewModel v2ViewModel:
+                    this.RunSandboxFromV2ViewModel(v2ViewModel);
                     break;
 
                 case TableClothConfiguration configuration:
@@ -64,10 +73,38 @@ namespace TableCloth.Commands
             }
         }
 
-        private void RunSandboxFromArgumentModel(DetailPageArgumentModel argumentModel)
+        private void RunSandboxFromV1ArgumentModel(MainWindowArgumentModel argumentModel)
             => RunSandbox(argumentModel.GetTableClothConfiguration());
 
-        private void RunSandboxFromViewModel(DetailPageViewModel viewModel)
+        private void RunSandboxFromV1ViewModel(MainWindowViewModel viewModel)
+        {
+            var selectedCert = viewModel.SelectedCertFile;
+
+            if (!viewModel.MapNpkiCert)
+                selectedCert = null;
+
+            var config = new TableClothConfiguration()
+            {
+                CertPair = selectedCert,
+                EnableMicrophone = viewModel.EnableMicrophone,
+                EnableWebCam = viewModel.EnableWebCam,
+                EnablePrinters = viewModel.EnablePrinters,
+                InstallEveryonesPrinter = viewModel.InstallEveryonesPrinter,
+                InstallAdobeReader = viewModel.InstallAdobeReader,
+                InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer,
+                InstallRaiDrive = viewModel.InstallRaiDrive,
+                EnableInternetExplorerMode = viewModel.EnableInternetExplorerMode,
+                Companions = viewModel.CatalogDocument.Companions,
+                Services = viewModel.SelectedServices,
+            };
+
+            RunSandbox(config);
+        }
+
+        private void RunSandboxFromV2ArgumentModel(DetailPageArgumentModel argumentModel)
+            => RunSandbox(argumentModel.GetTableClothConfiguration());
+
+        private void RunSandboxFromV2ViewModel(DetailPageViewModel viewModel)
         {
             var selectedCert = viewModel.SelectedCertFile;
 

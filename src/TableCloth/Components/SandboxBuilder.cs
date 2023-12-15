@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
@@ -151,8 +152,10 @@ del /f /q ""{providedCertFilePath}""
             if (tableClothConfiguration.EnableInternetExplorerMode)
                 switches.Add(StringResources.TableCloth_Switch_EnableIEMode);
 
+            var serviceIdList = (tableClothConfiguration.Services ?? Enumerable.Empty<CatalogInternetService>())
+                .Select(x => x.Id).Distinct();
             var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");
-            var idList = string.Join(" ", tableClothConfiguration.Services.Select(x => x.Id).Distinct());
+            var idList = string.Join(" ", serviceIdList);
 
             return $@"@echo off
 pushd ""%~dp0""

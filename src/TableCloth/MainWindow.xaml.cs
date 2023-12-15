@@ -1,27 +1,21 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
 using TableCloth.Models.Catalog;
-using TableCloth.Models.Configuration;
-using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 using TableCloth.Themes;
 using TableCloth.ViewModels;
-using Windows.ApplicationModel.Activation;
 
 namespace TableCloth
 {
@@ -34,9 +28,6 @@ namespace TableCloth
 
         public MainWindowViewModel ViewModel
             => (MainWindowViewModel)DataContext;
-
-        private List<CatalogInternetService> _selectedSites = new();
-        private bool _requireRestart = false;
 
         private static bool? IsLightThemeApplied()
         {
@@ -75,34 +66,6 @@ namespace TableCloth
             }
 
             return IntPtr.Zero;
-        }
-
-        private void RunSandbox(TableClothConfiguration config)
-        {
-            if (config.CertPair != null)
-            {
-                var now = DateTime.Now;
-                var expireWindow = StringResources.Cert_ExpireWindow;
-
-                if (now < config.CertPair.NotBefore)
-                    ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cert_MayTooEarly(now, config.CertPair.NotBefore), false);
-
-                if (now > config.CertPair.NotAfter)
-                    ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cert_Expired, false);
-                else if (now > config.CertPair.NotAfter.Add(expireWindow))
-                    ViewModel.AppMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(now, config.CertPair.NotAfter, expireWindow));
-            }
-
-            var tempPath = ViewModel.SharedLocations.GetTempPath();
-            var excludedFolderList = new List<SandboxMappedFolder>();
-            var wsbFilePath = ViewModel.SandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
-
-            if (excludedFolderList.Any())
-                ViewModel.AppMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
-
-            ViewModel.CurrentDirectory = tempPath;
-            ViewModel.TemporaryDirectories.Add(tempPath);
-            ViewModel.SandboxLauncher.RunSandbox(wsbFilePath);
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -183,7 +146,7 @@ namespace TableCloth
                 }
 
                 if (parsedArg.SelectedServices.Count() > 0)
-                    RunSandbox(parsedArg.GetTableClothConfiguration());
+                    ViewModel.LaunchSandboxCommand.Execute(parsedArg);
             }
         }
 
@@ -228,7 +191,7 @@ namespace TableCloth
                     currentConfig.UseLogCollection = ViewModel.EnableLogAutoCollecting;
                     if (ViewModel.AppMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                     {
-                        _requireRestart = true;
+                        ViewModel.RequireRestart = true;
                         Close();
                     }
                     break;
@@ -237,7 +200,7 @@ namespace TableCloth
                     currentConfig.V2UIOptIn = ViewModel.V2UIOptIn;
                     if (ViewModel.AppMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                     {
-                        _requireRestart = true;
+                        ViewModel.RequireRestart = true;
                         Close();
                     }
                     break;
@@ -300,44 +263,13 @@ namespace TableCloth
         private void SiteList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listBox = (ListBox)e.Source;
-            _selectedSites = listBox.SelectedItems.Cast<CatalogInternetService>().ToList();
+            ViewModel.SelectedServices = listBox.SelectedItems.Cast<CatalogInternetService>().ToList();
         }
 
         private void AboutButton_Click(object sender, RoutedEventArgs e)
         {
             var aboutWindow = new AboutWindow() { Owner = this };
             aboutWindow.ShowDialog();
-        }
-
-        private void LaunchSandboxButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.SandboxLauncher.IsSandboxRunning())
-            {
-                ViewModel.AppMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_Already_Running, false);
-                return;
-            }
-
-            var selectedCert = ViewModel.SelectedCertFile;
-
-            if (!ViewModel.MapNpkiCert)
-                selectedCert = null;
-
-            var config = new TableClothConfiguration()
-            {
-                CertPair = selectedCert,
-                EnableMicrophone = ViewModel.EnableMicrophone,
-                EnableWebCam = ViewModel.EnableWebCam,
-                EnablePrinters = ViewModel.EnablePrinters,
-                InstallEveryonesPrinter = ViewModel.InstallEveryonesPrinter,
-                InstallAdobeReader = ViewModel.InstallAdobeReader,
-                InstallHancomOfficeViewer = ViewModel.InstallHancomOfficeViewer,
-                InstallRaiDrive = ViewModel.InstallRaiDrive,
-                EnableInternetExplorerMode = ViewModel.EnableInternetExplorerMode,
-                Companions = ViewModel.CatalogDocument.Companions,
-                Services = _selectedSites,
-            };
-
-            RunSandbox(config);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -383,7 +315,7 @@ namespace TableCloth
                 catch { OpenExplorer(eachDirectory); }
             }
 
-            if (_requireRestart)
+            if (ViewModel.RequireRestart)
             {
                 var filePath = Process.GetCurrentProcess().MainModule.FileName;
                 var arguments = App.Current.Arguments;
@@ -432,76 +364,6 @@ namespace TableCloth
                 Process.GetCurrentProcess().MainModule.FileName,
                 App.Current.Arguments);
             Application.Current.Shutdown();
-        }
-
-        private void ShortcutButton_Click(object sender, RoutedEventArgs e)
-        {
-            var options = new List<string>();
-            var targetPath = Process.GetCurrentProcess().MainModule.FileName;
-            var linkName = StringResources.AppName;
-
-            if (ViewModel.EnableMicrophone)
-                options.Add(StringResources.TableCloth_Switch_EnableMicrophone);
-            if (ViewModel.EnableWebCam)
-                options.Add(StringResources.TableCloth_Switch_EnableCamera);
-            if (ViewModel.EnablePrinters)
-                options.Add(StringResources.TableCloth_Switch_EnablePrinter);
-            if (ViewModel.InstallEveryonesPrinter)
-                options.Add(StringResources.TableCloth_Switch_InstallEveryonesPrinter);
-            if (ViewModel.InstallAdobeReader)
-                options.Add(StringResources.TableCloth_Switch_InstallAdobeReader);
-            if (ViewModel.InstallHancomOfficeViewer)
-                options.Add(StringResources.TableCloth_Switch_InstallHancomOfficeViewer);
-            if (ViewModel.InstallRaiDrive)
-                options.Add(StringResources.TableCloth_Switch_InstallRaiDrive);
-            if (ViewModel.EnableInternetExplorerMode)
-                options.Add(StringResources.TableCloth_Switch_EnableIEMode);
-            if (ViewModel.MapNpkiCert)
-                options.Add(StringResources.Tablecloth_Switch_EnableCert);
-
-            // 단축 아이콘은 지정 가능한 명령줄의 길이가 260자가 최대인 관계로 여러 사이트를 지정하는 것이 어려움.
-            var firstSite = _selectedSites.FirstOrDefault();
-            var iconFilePath = default(string);
-
-            if (firstSite != null)
-            {
-                options.Add(firstSite.Id);
-                linkName = firstSite.DisplayName;
-
-                iconFilePath = Path.Combine(
-                    ViewModel.SharedLocations.GetImageDirectoryPath(),
-                    $"{firstSite.Id}.ico");
-
-                if (!File.Exists(iconFilePath))
-                    iconFilePath = null;
-            }
-
-            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            var fullPath = Path.Combine(desktopPath, linkName + ".lnk");
-
-            for (int i = 1; File.Exists(fullPath); ++i)
-                fullPath = Path.Combine(desktopPath, linkName + $" ({i}).lnk");
-
-            try
-            {
-                Type shellType = Type.GetTypeFromProgID("WScript.Shell");
-                dynamic shell = Activator.CreateInstance(shellType);
-                dynamic shortcut = shell.CreateShortcut(fullPath);
-                shortcut.TargetPath = targetPath;
-
-                if (iconFilePath != null && File.Exists(iconFilePath))
-                    shortcut.IconLocation = iconFilePath;
-
-                shortcut.Arguments = String.Join(' ', options.ToArray());
-                shortcut.Save();
-            }
-            catch
-            {
-                ViewModel.AppMessageBox.DisplayInfo(StringResources.Error_ShortcutFailed);
-                return;
-            }
-
-            ViewModel.AppMessageBox.DisplayInfo(StringResources.Info_ShortcutSuccess);
         }
 
         #region Sort Support
