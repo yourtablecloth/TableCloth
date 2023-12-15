@@ -1,20 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Interop;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
-using TableCloth.Themes;
 using TableCloth.ViewModels;
 
 namespace TableCloth
@@ -227,55 +221,12 @@ namespace TableCloth
             Close();
         }
 
-        private void OpenExplorer(string targetDirectoryPath)
-        {
-            if (!Directory.Exists(targetDirectoryPath))
-                return;
-
-            var psi = new ProcessStartInfo(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"),
-                targetDirectoryPath)
-            {
-                UseShellExecute = false,
-            };
-
-            Process.Start(psi);
-        }
-
         private void Window_Closed(object sender, EventArgs e)
         {
-            foreach (var eachDirectory in ViewModel.TemporaryDirectories)
-            {
-                if (!string.IsNullOrWhiteSpace(ViewModel.CurrentDirectory))
-                {
-                    if (string.Equals(Path.GetFullPath(eachDirectory), Path.GetFullPath(ViewModel.CurrentDirectory), StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (ViewModel.SandboxLauncher.IsSandboxRunning())
-                        {
-                            OpenExplorer(eachDirectory);
-                            continue;
-                        }
-                    }
-                }
-
-                if (!Directory.Exists(eachDirectory))
-                    continue;
-
-                try { Directory.Delete(eachDirectory, true); }
-                catch { OpenExplorer(eachDirectory); }
-            }
+            ViewModel.SandboxCleanupManager.TryCleanup();
 
             if (ViewModel.RequireRestart)
-            {
-                var filePath = Process.GetCurrentProcess().MainModule.FileName;
-                var arguments = App.Current.Arguments;
-                Process.Start(filePath, arguments);
-            }
-        }
-
-        private void AgreeDisclaimer_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
+                ViewModel.AppRestartManager.RestartNow();
         }
 
         private void SiteCatalogFilter_TextChanged(object sender, TextChangedEventArgs e)
@@ -310,10 +261,7 @@ namespace TableCloth
 
         private void ReloadCatalogButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(
-                Process.GetCurrentProcess().MainModule.FileName,
-                App.Current.Arguments);
-            Application.Current.Shutdown();
+            ViewModel.AppRestartManager.RestartNow();
         }
 
         #region Sort Support
