@@ -140,9 +140,6 @@ namespace TableCloth.Resources
     {
         internal static readonly string UnknownText = "알 수 없음";
 
-        internal static string LinkNamePostfix_ManyOthers(int count)
-            => $" 외 {count}개";
-
         internal static string InternetService_DisplayText(CatalogInternetService svc)
         {
             var defaultString = $"{svc.DisplayName} - {svc.Url}";

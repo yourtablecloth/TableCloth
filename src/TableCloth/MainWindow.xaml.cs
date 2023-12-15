@@ -169,73 +169,21 @@ namespace TableCloth
                 App.Current.Services.GetService<IHttpClientFactory>(),
                 services, directoryPath).ConfigureAwait(false);
 
+            // Command Line Parse
             var args = App.Current.Arguments.ToArray();
-            var config = new TableClothConfiguration();
 
-            var selectedServices = new List<string>();
-            var enableCert = false;
-            var certPrivateKeyPath = default(string);
-            var certPublicKeyPath = default(string);
-            var showHelp = false;
-
-            for (var i = 0; i < args.Length; i++)
+            if (args.Count() > 0)
             {
-                if (!args[i].StartsWith(StringResources.TableCloth_Switch_Prefix))
-                    selectedServices.Add(args[i]);
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableMicrophone, StringComparison.OrdinalIgnoreCase))
-                    config.EnableMicrophone = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableCamera, StringComparison.OrdinalIgnoreCase))
-                    config.EnableWebCam = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnablePrinter, StringComparison.OrdinalIgnoreCase))
-                    config.EnablePrinters = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_CertPrivateKey, StringComparison.OrdinalIgnoreCase))
-                    certPrivateKeyPath = args[Math.Min(args.Length - 1, ++i)];
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_CertPublicKey, StringComparison.OrdinalIgnoreCase))
-                    certPublicKeyPath = args[Math.Min(args.Length - 1, ++i)];
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallEveryonesPrinter, StringComparison.OrdinalIgnoreCase))
-                    config.InstallEveryonesPrinter = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallAdobeReader, StringComparison.OrdinalIgnoreCase))
-                    config.InstallAdobeReader = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallHancomOfficeViewer, StringComparison.OrdinalIgnoreCase))
-                    config.InstallHancomOfficeViewer = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallRaiDrive, StringComparison.OrdinalIgnoreCase))
-                    config.InstallRaiDrive = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableIEMode, StringComparison.OrdinalIgnoreCase))
-                    config.EnableInternetExplorerMode = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase))
-                    showHelp = true;
-                else if (string.Equals(args[i], StringResources.Tablecloth_Switch_EnableCert, StringComparison.OrdinalIgnoreCase))
-                    enableCert = true;
-            }
+                var parsedArg = ViewModel.CommandLineParser.ParseForV1(args);
 
-            if (showHelp)
-            {
-                ViewModel.AppMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
-                return;
-            }
-
-            config.Services = services.Where(x => selectedServices.Contains(x.Id, StringComparer.OrdinalIgnoreCase)).ToList();
-
-            if (config.Services.Count > 0)
-            {
-                if (enableCert)
+                if (parsedArg.ShowCommandLineHelp)
                 {
-                    var certPublicKeyData = default(byte[]);
-                    var certPrivateKeyData = default(byte[]);
-
-                    if (File.Exists(certPublicKeyPath))
-                        certPublicKeyData = File.ReadAllBytes(certPublicKeyPath);
-
-                    if (File.Exists(certPrivateKeyPath))
-                        certPrivateKeyData = File.ReadAllBytes(certPrivateKeyPath);
-
-                    if (certPublicKeyData != null && certPrivateKeyData != null)
-                        config.CertPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
-                    else
-                        config.CertPair = ViewModel.SelectedCertFile;
-
+                    ViewModel.AppMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                    return;
                 }
-                RunSandbox(config);
+
+                if (parsedArg.SelectedServices.Count() > 0)
+                    RunSandbox(parsedArg.GetTableClothConfiguration());
             }
         }
 
@@ -511,6 +459,7 @@ namespace TableCloth
             if (ViewModel.MapNpkiCert)
                 options.Add(StringResources.Tablecloth_Switch_EnableCert);
 
+            // 단축 아이콘은 지정 가능한 명령줄의 길이가 260자가 최대인 관계로 여러 사이트를 지정하는 것이 어려움.
             var firstSite = _selectedSites.FirstOrDefault();
             var iconFilePath = default(string);
 
@@ -518,9 +467,6 @@ namespace TableCloth
             {
                 options.Add(firstSite.Id);
                 linkName = firstSite.DisplayName;
-
-                if (_selectedSites.Count > 1)
-                    linkName += StringResources.LinkNamePostfix_ManyOthers(_selectedSites.Count);
 
                 iconFilePath = Path.Combine(
                     ViewModel.SharedLocations.GetImageDirectoryPath(),

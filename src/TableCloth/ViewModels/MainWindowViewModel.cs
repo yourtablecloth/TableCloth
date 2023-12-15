@@ -21,7 +21,8 @@ namespace TableCloth.ViewModels
             SandboxLauncher sandboxLauncher,
             PreferencesManager preferencesManager,
             ResourceResolver resourceResolver,
-            AppRestartManager appRestartManager)
+            AppRestartManager appRestartManager,
+            CommandLineParser commandLineParser)
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
@@ -33,6 +34,7 @@ namespace TableCloth.ViewModels
             _preferencesManager = preferencesManager;
             _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
+            _commandLineParser = commandLineParser;
 
             try
             {
@@ -60,6 +62,7 @@ namespace TableCloth.ViewModels
         private readonly PreferencesManager _preferencesManager;
         private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
+        private readonly CommandLineParser _commandLineParser;
 
         private bool _mapNpkiCert;
         private bool _enableLogAutoCollecting;
@@ -108,6 +111,9 @@ namespace TableCloth.ViewModels
 
         public AppRestartManager AppRestartManager
             => _appRestartManager;
+
+        public CommandLineParser CommandLineParser
+            => _commandLineParser;
 
         public bool MapNpkiCert
         {

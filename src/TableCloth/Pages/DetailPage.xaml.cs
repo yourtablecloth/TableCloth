@@ -79,9 +79,7 @@ namespace TableCloth.Pages
                 ViewModel.LaunchSandboxCommand.Execute(Arguments);
 
             if (!string.IsNullOrEmpty(Arguments.CurrentSearchString))
-            {
                 SiteCatalogFilter.Text = Arguments.CurrentSearchString;
-            }
         }
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
