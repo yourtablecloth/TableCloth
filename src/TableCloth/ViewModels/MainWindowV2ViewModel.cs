@@ -12,7 +12,8 @@ namespace TableCloth.ViewModels
             CatalogCacheManager catalogCacheManager,
             SharedLocations sharedLocations,
             CommandLineParser commandLineParser,
-            AppMessageBox appMessageBox)
+            AppMessageBox appMessageBox,
+            VisualThemeManager visualThemeManager)
         {
             _sandboxCleanupManager = sandboxCleanupManager;
             _appRestartManager = appRestartManager;
@@ -20,6 +21,7 @@ namespace TableCloth.ViewModels
             _sharedLocations = sharedLocations;
             _commandLineParser = commandLineParser;
             _appMessageBox = appMessageBox;
+            _visualThemeManager = visualThemeManager;
         }
 
 #pragma warning disable IDE0051 // Remove unused private members
@@ -33,6 +35,7 @@ namespace TableCloth.ViewModels
         private readonly SharedLocations _sharedLocations;
         private readonly CommandLineParser _commandLineParser;
         private readonly AppMessageBox _appMessageBox;
+        private readonly VisualThemeManager _visualThemeManager;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -53,5 +56,8 @@ namespace TableCloth.ViewModels
 
         public AppMessageBox AppMessageBox
             => _appMessageBox;
+
+        public VisualThemeManager VisualThemeManager
+            => _visualThemeManager;
     }
 }

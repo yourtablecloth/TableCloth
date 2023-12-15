@@ -24,6 +24,7 @@ namespace TableCloth.ViewModels
             ResourceResolver resourceResolver,
             AppRestartManager appRestartManager,
             CommandLineParser commandLineParser,
+            VisualThemeManager visualThemeManager,
             LaunchSandboxCommand launchSandboxCommand,
             CreateShortcutCommand createShortcutCommand)
         {
@@ -38,6 +39,7 @@ namespace TableCloth.ViewModels
             _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
             _commandLineParser = commandLineParser;
+            _visualThemeManager = visualThemeManager;
             _launchSandboxCommand = launchSandboxCommand;
             _createShortcutCommand = createShortcutCommand;
 
@@ -68,6 +70,7 @@ namespace TableCloth.ViewModels
         private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
         private readonly CommandLineParser _commandLineParser;
+        private readonly VisualThemeManager _visualThemeManager;
         private readonly LaunchSandboxCommand _launchSandboxCommand;
         private readonly CreateShortcutCommand _createShortcutCommand;
 
@@ -123,6 +126,9 @@ namespace TableCloth.ViewModels
 
         public CommandLineParser CommandLineParser
             => _commandLineParser;
+
+        public VisualThemeManager VisualThemeManager
+            => _visualThemeManager;
 
         public LaunchSandboxCommand LaunchSandboxCommand
             => _launchSandboxCommand;

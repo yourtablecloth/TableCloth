@@ -9,6 +9,7 @@ using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
+using Windows.Devices.WiFiDirect.Services;
 
 namespace TableCloth
 {
@@ -110,6 +111,7 @@ namespace TableCloth
             services.AddSingleton<AppRestartManager>();
             services.AddSingleton<CommandLineParser>();
             services.AddSingleton<CommandLineComposer>();
+            services.AddSingleton<VisualThemeManager>();
 
             // ViewModel
             services.AddSingleton<MainWindowViewModel>();
