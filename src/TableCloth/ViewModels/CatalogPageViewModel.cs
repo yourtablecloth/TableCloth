@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
@@ -16,12 +17,14 @@ namespace TableCloth.ViewModels
             SharedLocations sharedLocations,
             CatalogCacheManager catalogCacheManager,
             ResourceResolver resourceResolver,
-            AppRestartManager appRestartManager)
+            AppRestartManager appRestartManager,
+            AppRestartCommand appRestartCommand)
         {
             _sharedLocations = sharedLocations;
             _catalogCacheManager = catalogCacheManager;
             _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
+            _appRestartCommand = appRestartCommand;
 
             CatalogDocument = _catalogCacheManager.CatalogDocument;
             Services = CatalogDocument.Services.OrderBy(service => service.Category.GetType().GetField(service.Category.ToString())
@@ -36,6 +39,7 @@ namespace TableCloth.ViewModels
         private readonly CatalogCacheManager _catalogCacheManager;
         private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
+        private readonly AppRestartCommand _appRestartCommand;
 
         private CatalogDocument _catalogDocument;
         private List<CatalogInternetService> _services;
@@ -55,6 +59,9 @@ namespace TableCloth.ViewModels
 
         public AppRestartManager AppRestartManager
             => _appRestartManager;
+
+        public AppRestartCommand AppRestartCommand
+            => _appRestartCommand;
 
         public CatalogDocument CatalogDocument
         {

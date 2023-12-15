@@ -27,7 +27,8 @@ namespace TableCloth.ViewModels
             VisualThemeManager visualThemeManager,
             SandboxCleanupManager sandboxCleanupManager,
             LaunchSandboxCommand launchSandboxCommand,
-            CreateShortcutCommand createShortcutCommand)
+            CreateShortcutCommand createShortcutCommand,
+            AppRestartCommand appRestartCommand)
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
@@ -44,6 +45,7 @@ namespace TableCloth.ViewModels
             _sandboxCleanupManager = sandboxCleanupManager;
             _launchSandboxCommand = launchSandboxCommand;
             _createShortcutCommand = createShortcutCommand;
+            _appRestartCommand = appRestartCommand;
 
             try
             {
@@ -76,6 +78,7 @@ namespace TableCloth.ViewModels
         private readonly SandboxCleanupManager _sandboxCleanupManager;
         private readonly LaunchSandboxCommand _launchSandboxCommand;
         private readonly CreateShortcutCommand _createShortcutCommand;
+        private readonly AppRestartCommand _appRestartCommand;
 
         private bool _mapNpkiCert;
         private bool _enableLogAutoCollecting;
@@ -141,6 +144,9 @@ namespace TableCloth.ViewModels
 
         public CreateShortcutCommand CreateShortcutCommand
             => _createShortcutCommand;
+
+        public AppRestartCommand AppRestartCommand
+            => _appRestartCommand;
 
         public bool MapNpkiCert
         {

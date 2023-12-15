@@ -69,7 +69,11 @@
 
             <StackPanel Grid.Row="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical">
                 <Label VerticalAlignment="Top" HorizontalAlignment="Center" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt}" />
-                <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{StaticResource MainWindow_ReloadCatalog}" Click="ReloadCatalogButton_Click" />
+                <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{StaticResource MainWindow_ReloadCatalog}" Command="{Binding AppRestartCommand}">
+                    <Button.CommandParameter>
+                        <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                    </Button.CommandParameter>
+                </Button>
             </StackPanel>
             <ListView Grid.Row="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" SelectionChanged="SiteList_SelectionChanged" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                 <ListView.View>

@@ -159,11 +159,6 @@ namespace TableCloth.Pages
             }
         }
 
-        private void ReloadCatalogButton_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.AppRestartManager.RestartNow();
-        }
-
         private void AboutButton_Click(object sender, RoutedEventArgs e)
         {
             var aboutWindow = new AboutWindow() { Owner = Window.GetWindow(this), };
