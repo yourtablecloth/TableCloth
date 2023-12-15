@@ -66,33 +66,6 @@ namespace TableCloth.Pages
             return string.Join(' ', options.ToArray());
         }
 
-        private void RunSandbox(TableClothConfiguration config)
-        {
-            if (config.CertPair != null)
-            {
-                var now = DateTime.Now;
-                var expireWindow = StringResources.Cert_ExpireWindow;
-
-                if (now < config.CertPair.NotBefore)
-                    ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cert_MayTooEarly(now, config.CertPair.NotBefore), false);
-
-                if (now > config.CertPair.NotAfter)
-                    ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cert_Expired, false);
-                else if (now > config.CertPair.NotAfter.Add(expireWindow))
-                    ViewModel.AppMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(now, config.CertPair.NotAfter, expireWindow));
-            }
-
-            var tempPath = ViewModel.SharedLocations.GetTempPath();
-            var excludedFolderList = new List<SandboxMappedFolder>();
-            var wsbFilePath = ViewModel.SandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
-
-            if (excludedFolderList.Any())
-                ViewModel.AppMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
-
-            ViewModel.SandboxCleanupManager.SetWorkingDirectory(tempPath);
-            ViewModel.SandboxLauncher.RunSandbox(wsbFilePath);
-        }
-
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ViewModel.SelectedService = Arguments.SelectedService;
@@ -134,7 +107,7 @@ namespace TableCloth.Pages
             }
 
             if (Arguments.BuiltFromCommandLine)
-                RunSandbox(Arguments.GetTableClothConfiguration());
+                ViewModel.LaunchSandboxCommand.Execute(Arguments);
 
             if (!string.IsNullOrEmpty(Arguments.CurrentSearchString))
             {
@@ -218,37 +191,6 @@ namespace TableCloth.Pages
         {
             if (NavigationService.CanGoBack)
                 NavigationService.GoBack();
-        }
-
-        private void LaunchButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.SandboxLauncher.IsSandboxRunning())
-            {
-                ViewModel.AppMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_Already_Running, false);
-                return;
-            }
-
-            var selectedCert = ViewModel.SelectedCertFile;
-
-            if (!ViewModel.MapNpkiCert)
-                selectedCert = null;
-
-            var config = new TableClothConfiguration()
-            {
-                CertPair = selectedCert,
-                EnableMicrophone = ViewModel.EnableMicrophone,
-                EnableWebCam = ViewModel.EnableWebCam,
-                EnablePrinters = ViewModel.EnablePrinters,
-                InstallEveryonesPrinter = ViewModel.InstallEveryonesPrinter,
-                InstallAdobeReader = ViewModel.InstallAdobeReader,
-                InstallHancomOfficeViewer = ViewModel.InstallHancomOfficeViewer,
-                InstallRaiDrive = ViewModel.InstallRaiDrive,
-                EnableInternetExplorerMode = ViewModel.EnableInternetExplorerMode,
-                Companions = new CatalogCompanion[] { }, /*ViewModel.CatalogDocument.Companions*/
-                Services = new[] { ViewModel.SelectedService, },
-            };
-
-            RunSandbox(config);
         }
 
         private void CreateShortcutButton_Click(object sender, RoutedEventArgs e)

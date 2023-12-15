@@ -87,7 +87,11 @@
                     </Grid.RowDefinitions>
                     <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="8" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Margin="8" Text="{Binding DisplayName}" FontSize="36" Grid.RowSpan="2" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
-                    <Button x:Name="LaunchButton" Grid.Row="1" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_LaunchButton}" Click="LaunchButton_Click" />
+                    <Button x:Name="LaunchButton" Grid.Row="1" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_LaunchButton}" Command="{Binding LaunchSandboxCommand}">
+                        <Button.CommandParameter>
+                            <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                        </Button.CommandParameter>
+                    </Button>
                     <Button x:Name="CreateShortcutButton" Grid.Row="2" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_CreateShortcutButton}" Click="CreateShortcutButton_Click" />
                     <Button x:Name="CopyCommandLineButton" Grid.Row="3" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_CopyCommandLineButton}" Click="CopyCommandLineButton_Click" />
                     <TextBlock Grid.Row="2" Grid.Column="1" Margin="8">

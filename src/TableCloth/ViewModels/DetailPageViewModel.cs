@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
@@ -23,7 +24,8 @@ namespace TableCloth.ViewModels
             SandboxLauncher sandboxLauncher,
             PreferencesManager preferencesManager,
             ResourceResolver resourceResolver,
-            AppRestartManager appRestartManager)
+            AppRestartManager appRestartManager,
+            LaunchSandboxCommand launchSandboxCommand)
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
@@ -36,6 +38,7 @@ namespace TableCloth.ViewModels
             _preferencesManager = preferencesManager;
             _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
+            _launchSandboxCommand = launchSandboxCommand;
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
@@ -61,6 +64,7 @@ namespace TableCloth.ViewModels
         private readonly PreferencesManager _preferencesManager;
         private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
+        private readonly LaunchSandboxCommand _launchSandboxCommand;
 
         private CatalogInternetService _selectedService;
         private bool _mapNpkiCert;
@@ -112,6 +116,9 @@ namespace TableCloth.ViewModels
 
         public AppRestartManager AppRestartManager
             => _appRestartManager;
+
+        public LaunchSandboxCommand LaunchSandboxCommand
+            => _launchSandboxCommand;
 
         public string Id
             => _selectedService?.Id;

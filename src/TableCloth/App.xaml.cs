@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
@@ -117,6 +118,9 @@ namespace TableCloth
             services.AddSingleton<MainWindowV2ViewModel>();
             services.AddSingleton<CatalogPageViewModel>();
             services.AddSingleton<DetailPageViewModel>();
+
+            // Commands
+            services.AddSingleton<LaunchSandboxCommand>();
 
             // UI
             services.AddSingleton<AppMessageBox>();
