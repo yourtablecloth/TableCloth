@@ -123,6 +123,7 @@ namespace TableCloth
             // Commands
             services.AddSingleton<LaunchSandboxCommand>();
             services.AddSingleton<CreateShortcutCommand>();
+            services.AddSingleton<CopyCommandLineCommand>();
 
             // UI
             services.AddSingleton<AppMessageBox>();

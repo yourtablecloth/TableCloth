@@ -326,6 +326,9 @@ namespace TableCloth.Resources
         
         internal static readonly string Info_ShortcutSuccess =
             "바탕 화면에 바로 가기를 생성했습니다.";
+
+        internal static readonly string Info_CopyCommandLineSuccess =
+            "자동화 작업 실행 시 사용할 수 있는 명령어를 클립보드에 복사했습니다.";
     }
 
     // 스크립트 내에서 사용되는 문자열들

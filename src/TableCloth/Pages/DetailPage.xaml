@@ -97,7 +97,11 @@
                             <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                         </Button.CommandParameter>
                     </Button>
-                    <Button x:Name="CopyCommandLineButton" Grid.Row="3" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_CopyCommandLineButton}" Click="CopyCommandLineButton_Click" />
+                    <Button x:Name="CopyCommandLineButton" Grid.Row="3" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_CopyCommandLineButton}" Command="{Binding CopyCommandLineCommand}">
+                        <Button.CommandParameter>
+                            <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                        </Button.CommandParameter>
+                    </Button>
                     <TextBlock Grid.Row="2" Grid.Column="1" Margin="8">
                         <Hyperlink Click="Hyperlink_Click" Tag="{Binding Url}">
                             <TextBlock Text="{Binding Url, StringFormat={StaticResource DetailPage_UrlLabel}}" />

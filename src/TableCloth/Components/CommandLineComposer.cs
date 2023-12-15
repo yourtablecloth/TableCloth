@@ -12,12 +12,19 @@ namespace TableCloth.Components
     public sealed class CommandLineComposer
     {
         public CommandLineComposer(
-            ILogger<CommandLineComposer> logger)
+            SharedLocations sharedLocations)
         {
-            this.logger = logger;
+            this.sharedLocations = sharedLocations;
         }
 
-        private readonly ILogger logger;
+        private readonly SharedLocations sharedLocations;
+
+        public string ComposeCommandLineExpression(DetailPageViewModel viewModel)
+        {
+            var targetFilePath = this.sharedLocations.ExecutableFilePath;
+            var args = this.ComposeCommandLineArguments(viewModel);
+            return $"\"{targetFilePath}\" {args}";
+        }
 
         public string ComposeCommandLineArguments(DetailPageViewModel viewModel)
         {

@@ -27,7 +27,8 @@ namespace TableCloth.ViewModels
             AppRestartManager appRestartManager,
             CommandLineComposer commandLineComposer,
             LaunchSandboxCommand launchSandboxCommand,
-            CreateShortcutCommand createShortcutCommand)
+            CreateShortcutCommand createShortcutCommand,
+            CopyCommandLineCommand copyCommandLineCommand)
         {
             _sharedLocations = sharedLocations;
             _appStartup = appStartup;
@@ -43,6 +44,7 @@ namespace TableCloth.ViewModels
             _commandLineComposer = commandLineComposer;
             _launchSandboxCommand = launchSandboxCommand;
             _createShortcutCommand = createShortcutCommand;
+            _copyCommandLineCommand = copyCommandLineCommand;
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
@@ -71,6 +73,7 @@ namespace TableCloth.ViewModels
         private readonly CommandLineComposer _commandLineComposer;
         private readonly LaunchSandboxCommand _launchSandboxCommand;
         private readonly CreateShortcutCommand _createShortcutCommand;
+        private readonly CopyCommandLineCommand _copyCommandLineCommand;
 
         private CatalogInternetService _selectedService;
         private bool _mapNpkiCert;
@@ -131,6 +134,9 @@ namespace TableCloth.ViewModels
 
         public CreateShortcutCommand CreateShortcutCommand
             => _createShortcutCommand;
+
+        public CopyCommandLineCommand CopyCommandLineCommand
+            => _copyCommandLineCommand;
 
         public string Id
             => _selectedService?.Id;

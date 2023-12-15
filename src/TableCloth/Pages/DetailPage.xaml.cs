@@ -204,21 +204,6 @@ namespace TableCloth.Pages
                 SiteCatalogFilter.SelectAll();
         }
 
-        private void CopyCommandLineButton_Click(object sender, RoutedEventArgs e)
-        {
-            var targetFilePath = ViewModel.SharedLocations.ExecutableFilePath;
-            var args = ViewModel.CommandLineComposer.ComposeCommandLineArguments(ViewModel);
-            var expression = $"\"{targetFilePath}\" {args}";
-
-            Clipboard.SetText(expression);
-
-            ViewModel.AppMessageBox.DisplayInfo(
-                @$"자동화 작업 실행 시 사용할 수 있는 명령어를 클립보드에 복사했으며, 명령어는 다음과 같습니다: 
-
-{expression}",
-                MessageBoxButton.OK);
-        }
-
         private void SiteCatalogFilter_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter || e.Key == Key.Escape || e.Key == Key.Tab)
