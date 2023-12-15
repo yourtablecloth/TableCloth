@@ -1,15 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System;
 using System.Linq;
-using System.Net.Http;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
@@ -157,17 +150,6 @@ namespace TableCloth.Pages
                     new Uri("Pages/DetailPage.xaml", UriKind.Relative),
                     new DetailPageArgumentModel(data, builtFromCommandLine: false, currentSearchString: SiteCatalogFilter.Text));
             }
-        }
-
-        // from https://stackoverflow.com/questions/19397780/scrollviewer-indication-of-child-element-scrolled-into-view
-        private bool IsUserVisible(FrameworkElement element, FrameworkElement container)
-        {
-            if (!(element?.IsVisible ?? false))
-                return false;
-
-            Rect bounds = element.TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, element.ActualWidth, element.ActualHeight));
-            Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
-            return rect.Contains(bounds.TopLeft) || rect.Contains(bounds.BottomRight);
         }
 
         private void CategoryRadioButton_Click(object sender, RoutedEventArgs e)

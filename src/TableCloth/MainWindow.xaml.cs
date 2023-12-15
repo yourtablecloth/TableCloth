@@ -253,11 +253,6 @@ namespace TableCloth
             SiteCatalogFilter.LostMouseCapture += SiteCatalogFilter_LostMouseCapture;
         }
 
-        private void ReloadCatalogButton_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.AppRestartManager.RestartNow();
-        }
-
         #region Sort Support
 
         GridViewColumnHeader _lastHeaderClicked = null;
