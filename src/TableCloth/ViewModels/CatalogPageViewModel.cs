@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -7,28 +6,20 @@ using System.Runtime.CompilerServices;
 using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Models.Catalog;
-using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels
 {
     public class CatalogPageViewModel : INotifyPropertyChanged
     {
         public CatalogPageViewModel(
-            SharedLocations sharedLocations,
             CatalogCacheManager catalogCacheManager,
-            ResourceResolver resourceResolver,
-            AppRestartManager appRestartManager,
             AppRestartCommand appRestartCommand,
             AboutThisAppCommand aboutThisAppCommand)
         {
-            _sharedLocations = sharedLocations;
-            _catalogCacheManager = catalogCacheManager;
-            _resourceResolver = resourceResolver;
-            _appRestartManager = appRestartManager;
             _appRestartCommand = appRestartCommand;
             _aboutThisAppCommand = aboutThisAppCommand;
 
-            CatalogDocument = _catalogCacheManager.CatalogDocument;
+            CatalogDocument = catalogCacheManager.CatalogDocument;
             Services = CatalogDocument.Services.OrderBy(service => service.Category.GetType().GetField(service.Category.ToString())
                 ?.GetCustomAttribute<EnumDisplayOrderAttribute>()
                 ?.Order ?? 0).ToList();
@@ -37,10 +28,6 @@ namespace TableCloth.ViewModels
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
-        private readonly SharedLocations _sharedLocations;
-        private readonly CatalogCacheManager _catalogCacheManager;
-        private readonly ResourceResolver _resourceResolver;
-        private readonly AppRestartManager _appRestartManager;
         private readonly AppRestartCommand _appRestartCommand;
         private readonly AboutThisAppCommand _aboutThisAppCommand;
 
@@ -50,18 +37,6 @@ namespace TableCloth.ViewModels
         private CatalogInternetServiceCategory? _selectedServiceCategory;
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public SharedLocations SharedLocations
-            => _sharedLocations;
-
-        public CatalogCacheManager CatalogCacheManager
-            => _catalogCacheManager;
-
-        public ResourceResolver ResourceResolver
-            => _resourceResolver;
-
-        public AppRestartManager AppRestartManager
-            => _appRestartManager;
 
         public AppRestartCommand AppRestartCommand
             => _appRestartCommand;

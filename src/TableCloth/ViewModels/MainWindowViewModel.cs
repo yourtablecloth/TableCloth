@@ -14,12 +14,9 @@ namespace TableCloth.ViewModels
     {
         public MainWindowViewModel(
             SharedLocations sharedLocations,
-            AppStartup appStartup,
             AppMessageBox appMessageBox,
             CatalogDeserializer catalogDeserializer,
             X509CertPairScanner certPairScanner,
-            SandboxBuilder sandboxBuilder,
-            SandboxLauncher sandboxLauncher,
             PreferencesManager preferencesManager,
             ResourceResolver resourceResolver,
             AppRestartManager appRestartManager,
@@ -32,12 +29,8 @@ namespace TableCloth.ViewModels
             AboutThisAppCommand aboutThisAppCommand)
         {
             _sharedLocations = sharedLocations;
-            _appStartup = appStartup;
             _appMessageBox = appMessageBox;
-            _catalogDeserializer = catalogDeserializer;
             _certPairScanner = certPairScanner;
-            _sandboxBuilder = sandboxBuilder;
-            _sandboxLauncher = sandboxLauncher;
             _preferencesManager = preferencesManager;
             _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
@@ -51,7 +44,7 @@ namespace TableCloth.ViewModels
 
             try
             {
-                CatalogDocument = _catalogDeserializer.DeserializeCatalog();
+                CatalogDocument = catalogDeserializer.DeserializeCatalog();
                 Services = CatalogDocument.Services.ToList();
             }
             catch (Exception ex)
@@ -66,12 +59,8 @@ namespace TableCloth.ViewModels
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
         private readonly SharedLocations _sharedLocations;
-        private readonly AppStartup _appStartup;
         private readonly AppMessageBox _appMessageBox;
-        private readonly CatalogDeserializer _catalogDeserializer;
         private readonly X509CertPairScanner _certPairScanner;
-        private readonly SandboxBuilder _sandboxBuilder;
-        private readonly SandboxLauncher _sandboxLauncher;
         private readonly PreferencesManager _preferencesManager;
         private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
@@ -106,23 +95,11 @@ namespace TableCloth.ViewModels
         public SharedLocations SharedLocations
             => _sharedLocations;
 
-        public AppStartup AppStartup
-            => _appStartup;
-
         public AppMessageBox AppMessageBox
             => _appMessageBox;
 
-        public CatalogDeserializer CatalogDeserializer
-            => _catalogDeserializer;
-
         public X509CertPairScanner CertPairScanner
             => _certPairScanner;
-
-        public SandboxBuilder SandboxBuilder
-            => _sandboxBuilder;
-
-        public SandboxLauncher SandboxLauncher
-            => _sandboxLauncher;
 
         public PreferencesManager PreferencesManager
             => _preferencesManager;

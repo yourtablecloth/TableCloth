@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using TableCloth.Commands;
 using TableCloth.Components;
@@ -14,34 +12,16 @@ namespace TableCloth.ViewModels
     public sealed class DetailPageViewModel : INotifyPropertyChanged
     {
         public DetailPageViewModel(
-            SharedLocations sharedLocations,
-            AppStartup appStartup,
-            AppMessageBox appMessageBox,
-            CatalogDeserializer catalogDeserializer,
             X509CertPairScanner certPairScanner,
-            SandboxBuilder sandboxBuilder,
-            SandboxCleanupManager sandboxCleanupManager,
-            SandboxLauncher sandboxLauncher,
             PreferencesManager preferencesManager,
-            ResourceResolver resourceResolver,
             AppRestartManager appRestartManager,
-            CommandLineComposer commandLineComposer,
             LaunchSandboxCommand launchSandboxCommand,
             CreateShortcutCommand createShortcutCommand,
             CopyCommandLineCommand copyCommandLineCommand)
         {
-            _sharedLocations = sharedLocations;
-            _appStartup = appStartup;
-            _appMessageBox = appMessageBox;
-            _catalogDeserializer = catalogDeserializer;
             _certPairScanner = certPairScanner;
-            _sandboxBuilder = sandboxBuilder;
-            _sandboxCleanupManager = sandboxCleanupManager;
-            _sandboxLauncher = sandboxLauncher;
             _preferencesManager = preferencesManager;
-            _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
-            _commandLineComposer = commandLineComposer;
             _launchSandboxCommand = launchSandboxCommand;
             _createShortcutCommand = createShortcutCommand;
             _copyCommandLineCommand = copyCommandLineCommand;
@@ -59,18 +39,9 @@ namespace TableCloth.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(eachPropertyName ?? string.Empty));
         }
 
-        private readonly SharedLocations _sharedLocations;
-        private readonly AppStartup _appStartup;
-        private readonly AppMessageBox _appMessageBox;
-        private readonly CatalogDeserializer _catalogDeserializer;
         private readonly X509CertPairScanner _certPairScanner;
-        private readonly SandboxBuilder _sandboxBuilder;
-        private readonly SandboxCleanupManager _sandboxCleanupManager;
-        private readonly SandboxLauncher _sandboxLauncher;
         private readonly PreferencesManager _preferencesManager;
-        private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
-        private readonly CommandLineComposer _commandLineComposer;
         private readonly LaunchSandboxCommand _launchSandboxCommand;
         private readonly CreateShortcutCommand _createShortcutCommand;
         private readonly CopyCommandLineCommand _copyCommandLineCommand;
@@ -93,41 +64,14 @@ namespace TableCloth.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public SharedLocations SharedLocations
-            => _sharedLocations;
-
-        public AppStartup AppStartup
-            => _appStartup;
-
-        public AppMessageBox AppMessageBox
-            => _appMessageBox;
-
-        public CatalogDeserializer CatalogDeserializer
-            => _catalogDeserializer;
-
         public X509CertPairScanner CertPairScanner
             => _certPairScanner;
-
-        public SandboxBuilder SandboxBuilder
-            => _sandboxBuilder;
-
-        public SandboxCleanupManager SandboxCleanupManager
-            => _sandboxCleanupManager;
-
-        public SandboxLauncher SandboxLauncher
-            => _sandboxLauncher;
 
         public PreferencesManager PreferencesManager
             => _preferencesManager;
 
-        public ResourceResolver ResourceResolver
-            => _resourceResolver;
-
         public AppRestartManager AppRestartManager
             => _appRestartManager;
-
-        public CommandLineComposer CommandLineComposer
-            => _commandLineComposer;
 
         public LaunchSandboxCommand LaunchSandboxCommand
             => _launchSandboxCommand;
