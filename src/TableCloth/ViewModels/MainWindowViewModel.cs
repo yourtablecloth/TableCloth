@@ -11,7 +11,7 @@ using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainWindowViewModel : ViewModelBase
     {
         public MainWindowViewModel(
             CatalogDeserializer catalogDeserializer,
@@ -47,9 +47,6 @@ namespace TableCloth.ViewModels
             }
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
-
         private readonly MainWindowLoadedCommand _mainWindowLoadedCommand;
         private readonly MainWindowClosedCommand _mainWindowClosedCommand;
         private readonly LaunchSandboxCommand _launchSandboxCommand;
@@ -75,8 +72,6 @@ namespace TableCloth.ViewModels
         private List<CatalogInternetService> _services;
         private List<CatalogInternetService> _selectedServices;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public MainWindowLoadedCommand MainWindowLoadedCommand
             => _mainWindowLoadedCommand;
 
@@ -98,171 +93,80 @@ namespace TableCloth.ViewModels
         public string FilterText
         {
             get => _filterText;
-            set
-            {
-                if (value != _filterText)
-                {
-                    _filterText = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _filterText, value);
         }
 
         public bool MapNpkiCert
         {
             get => _mapNpkiCert;
-            set
-            {
-                if (value != _mapNpkiCert)
-                {
-                    _mapNpkiCert = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _mapNpkiCert, value);
         }
 
         public bool EnableLogAutoCollecting
         {
             get => _enableLogAutoCollecting;
-            set
-            {
-                if (value != _enableLogAutoCollecting)
-                {
-                    _enableLogAutoCollecting = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _enableLogAutoCollecting, value);
         }
 
         public bool V2UIOptIn
         {
             get => _v2UIOptIn;
-            set
-            {
-                if (value != _v2UIOptIn)
-                {
-                    _v2UIOptIn = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _v2UIOptIn, value);
         }
 
         public bool EnableMicrophone
         {
             get => _enableMicrophone;
-            set
-            {
-                if (value != _enableMicrophone)
-                {
-                    _enableMicrophone = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _enableMicrophone, value);
         }
 
         public bool EnableWebCam
         {
             get => _enableWebCam;
-            set
-            {
-                if (value != _enableWebCam)
-                {
-                    _enableWebCam = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _enableWebCam, value);
         }
 
         public bool EnablePrinters
         {
             get => _enablePrinters;
-            set
-            {
-                if (value != _enablePrinters)
-                {
-                    _enablePrinters = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _enablePrinters, value);
         }
 
         public bool InstallEveryonesPrinter
         {
             get => _installEveryonesPrinter;
-            set
-            {
-                if (value != _installEveryonesPrinter)
-                {
-                    _installEveryonesPrinter = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _installEveryonesPrinter, value);
         }
 
         public bool InstallAdobeReader
         {
             get => _installAdobeReader;
-            set
-            {
-                if (value != _installAdobeReader)
-                {
-                    _installAdobeReader = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _installAdobeReader, value);
         }
 
         public bool InstallHancomOfficeViewer
         {
             get => _installHancomOfficeViewer;
-            set
-            {
-                if (value != _installHancomOfficeViewer)
-                {
-                    _installHancomOfficeViewer = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _installHancomOfficeViewer, value);
         }
 
         public bool InstallRaiDrive
         {
             get => _installRaiDrive;
-            set
-            {
-                if (value != _installRaiDrive)
-                {
-                    _installRaiDrive = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _installRaiDrive, value);
         }
 
         public bool EnableInternetExplorerMode
         {
             get => _enableInternetExplorerMode;
-            set
-            {
-                if (value != _enableInternetExplorerMode)
-                {
-                    _enableInternetExplorerMode = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _enableInternetExplorerMode, value);
         }
 
         public DateTime? LastDisclaimerAgreedTime
         {
             get => _lastDisclaimerAgreedTime;
-            set
-            {
-                if (value != _lastDisclaimerAgreedTime)
-                {
-                    _lastDisclaimerAgreedTime = value;
-                    NotifyPropertyChanged();
-                    NotifyPropertyChanged(nameof(ShouldNotifyDisclaimer));
-                }
-            }
+            set => SetProperty(ref _lastDisclaimerAgreedTime, value,
+                new string[] { nameof(LastDisclaimerAgreedTime), nameof(ShouldNotifyDisclaimer), });
         }
 
         public bool ShouldNotifyDisclaimer
@@ -282,53 +186,25 @@ namespace TableCloth.ViewModels
         public CatalogDocument CatalogDocument
         {
             get => _catalogDocument;
-            set
-            {
-                if (value != _catalogDocument)
-                {
-                    _catalogDocument = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _catalogDocument, value);
         }
 
         public X509CertPair SelectedCertFile
         {
             get => _selectedCertFile;
-            set
-            {
-                if (value != _selectedCertFile)
-                {
-                    _selectedCertFile = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _selectedCertFile, value);
         }
 
         public List<CatalogInternetService> Services
         {
             get => _services;
-            set
-            {
-                if (value != _services)
-                {
-                    _services = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _services, value);
         }
 
         public List<CatalogInternetService> SelectedServices
         {
             get => _selectedServices;
-            set
-            {
-                if (value != _selectedServices)
-                {
-                    _selectedServices = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _selectedServices, value);
         }
 
         public List<string> TemporaryDirectories { get; } = new();

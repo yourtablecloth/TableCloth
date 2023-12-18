@@ -9,7 +9,7 @@ using TableCloth.Models.Catalog;
 
 namespace TableCloth.ViewModels
 {
-    public class CatalogPageViewModel : INotifyPropertyChanged
+    public class CatalogPageViewModel : ViewModelBase
     {
         public CatalogPageViewModel(
             CatalogCacheManager catalogCacheManager,
@@ -25,9 +25,6 @@ namespace TableCloth.ViewModels
                 ?.Order ?? 0).ToList();
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
-
         private readonly AppRestartCommand _appRestartCommand;
         private readonly AboutThisAppCommand _aboutThisAppCommand;
 
@@ -35,8 +32,6 @@ namespace TableCloth.ViewModels
         private List<CatalogInternetService> _services;
         private CatalogInternetService _selectedService;
         private CatalogInternetServiceCategory? _selectedServiceCategory;
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public AppRestartCommand AppRestartCommand
             => _appRestartCommand;
@@ -47,27 +42,13 @@ namespace TableCloth.ViewModels
         public CatalogDocument CatalogDocument
         {
             get => _catalogDocument;
-            set
-            {
-                if (value != _catalogDocument)
-                {
-                    _catalogDocument = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _catalogDocument, value);
         }
 
         public List<CatalogInternetService> Services
         {
             get => _services;
-            set
-            {
-                if (value != _services)
-                {
-                    _services = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _services, value);
         }
 
         public bool HasServices
@@ -78,28 +59,15 @@ namespace TableCloth.ViewModels
             get => _selectedService;
             set
             {
-                if (value != _selectedService)
-                {
-                    _selectedService = value;
-                    NotifyPropertyChanged();
-
-                    if (value != null)
-                        SelectedServiceCategory = value.Category;
-                }
+                if (SetProperty(ref _selectedService, value) && value != null)
+                    SelectedServiceCategory = value.Category;
             }
         }
 
         public CatalogInternetServiceCategory? SelectedServiceCategory
         {
             get => _selectedServiceCategory;
-            set
-            {
-                if (value != _selectedServiceCategory)
-                {
-                    _selectedServiceCategory = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _selectedServiceCategory, value);
         }
     }
 }

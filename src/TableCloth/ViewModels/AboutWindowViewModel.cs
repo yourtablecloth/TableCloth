@@ -5,7 +5,7 @@ using TableCloth.Components;
 
 namespace TableCloth.ViewModels
 {
-    public class AboutWindowViewModel : INotifyPropertyChanged
+    public class AboutWindowViewModel : ViewModelBase
     {
         public AboutWindowViewModel(
             AppMessageBox appMessageBox,
@@ -19,15 +19,10 @@ namespace TableCloth.ViewModels
             _licenseDescriptor = licenseDescriptor;
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
-
         private readonly AppMessageBox _appMessageBox;
         private readonly CatalogDeserializer _catalogDeserializer;
         private readonly ResourceResolver _gitHubReleaseFinder;
         private readonly LicenseDescriptor _licenseDescriptor;
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public DateTimeOffset? CatalogVersion
             => _catalogDeserializer.CatalogLastModified;

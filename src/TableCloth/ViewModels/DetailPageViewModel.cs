@@ -9,7 +9,7 @@ using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels
 {
-    public sealed class DetailPageViewModel : INotifyPropertyChanged
+    public sealed class DetailPageViewModel : ViewModelBase
     {
         public DetailPageViewModel(
             X509CertPairScanner certPairScanner,
@@ -25,18 +25,6 @@ namespace TableCloth.ViewModels
             _launchSandboxCommand = launchSandboxCommand;
             _createShortcutCommand = createShortcutCommand;
             _copyCommandLineCommand = copyCommandLineCommand;
-        }
-
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
-
-        private void NotifyPropertiesChanged(params string[] propertiesToNotify)
-        {
-            if (propertiesToNotify == null)
-                return;
-
-            foreach (var eachPropertyName in propertiesToNotify)
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(eachPropertyName ?? string.Empty));
         }
 
         private readonly X509CertPairScanner _certPairScanner;
@@ -61,8 +49,6 @@ namespace TableCloth.ViewModels
         private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
         private X509CertPair _selectedCertFile;
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public X509CertPairScanner CertPairScanner
             => _certPairScanner;
@@ -100,178 +86,86 @@ namespace TableCloth.ViewModels
         public CatalogInternetService SelectedService
         {
             get => _selectedService;
-            set
-            {
-                if (value != _selectedService)
-                {
-                    _selectedService = value;
-                    NotifyPropertiesChanged(
-                        nameof(SelectedService),
-                        nameof(Id),
-                        nameof(DisplayName),
-                        nameof(Url),
-                        nameof(CompatibilityNotes),
-                        nameof(PackageCountForDisplay)
-                    );
-                }
-            }
+            set => SetProperty(ref _selectedService, value, new string[] {
+                nameof(SelectedService),
+                nameof(Id),
+                nameof(DisplayName),
+                nameof(Url),
+                nameof(CompatibilityNotes),
+                nameof(PackageCountForDisplay),
+            });
         }
 
         public bool MapNpkiCert
         {
             get => _mapNpkiCert;
-            set
-            {
-                if (value != _mapNpkiCert)
-                {
-                    _mapNpkiCert = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _mapNpkiCert, value);
         }
 
         public bool EnableLogAutoCollecting
         {
             get => _enableLogAutoCollecting;
-            set
-            {
-                if (value != _enableLogAutoCollecting)
-                {
-                    _enableLogAutoCollecting = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _enableLogAutoCollecting, value);
         }
 
         public bool V2UIOptIn
         {
             get => _v2UIOptIn;
-            set
-            {
-                if (value != _v2UIOptIn)
-                {
-                    _v2UIOptIn = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _v2UIOptIn, value);
         }
 
         public bool EnableMicrophone
         {
             get => _enableMicrophone;
-            set
-            {
-                if (value != _enableMicrophone)
-                {
-                    _enableMicrophone = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _enableMicrophone, value);
         }
 
         public bool EnableWebCam
         {
             get => _enableWebCam;
-            set
-            {
-                if (value != _enableWebCam)
-                {
-                    _enableWebCam = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _enableWebCam, value);
         }
 
         public bool EnablePrinters
         {
             get => _enablePrinters;
-            set
-            {
-                if (value != _enablePrinters)
-                {
-                    _enablePrinters = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _enablePrinters, value);
         }
 
         public bool InstallEveryonesPrinter
         {
             get => _installEveryonesPrinter;
-            set
-            {
-                if (value != _installEveryonesPrinter)
-                {
-                    _installEveryonesPrinter = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _installEveryonesPrinter, value);
         }
 
         public bool InstallAdobeReader
         {
             get => _installAdobeReader;
-            set
-            {
-                if (value != _installAdobeReader)
-                {
-                    _installAdobeReader = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _installAdobeReader, value);
         }
 
         public bool InstallHancomOfficeViewer
         {
             get => _installHancomOfficeViewer;
-            set
-            {
-                if (value != _installHancomOfficeViewer)
-                {
-                    _installHancomOfficeViewer = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _installHancomOfficeViewer, value);
         }
 
         public bool InstallRaiDrive
         {
             get => _installRaiDrive;
-            set
-            {
-                if (value != _installRaiDrive)
-                {
-                    _installRaiDrive = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _installRaiDrive, value);
         }
 
         public bool EnableInternetExplorerMode
         {
             get => _enableInternetExplorerMode;
-            set
-            {
-                if (value != _enableInternetExplorerMode)
-                {
-                    _enableInternetExplorerMode = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _enableInternetExplorerMode, value);
         }
 
         public DateTime? LastDisclaimerAgreedTime
         {
             get => _lastDisclaimerAgreedTime;
-            set
-            {
-                if (value != _lastDisclaimerAgreedTime)
-                {
-                    _lastDisclaimerAgreedTime = value;
-                    NotifyPropertyChanged();
-                    NotifyPropertyChanged(nameof(ShouldNotifyDisclaimer));
-                }
-            }
+            set => SetProperty(ref _lastDisclaimerAgreedTime, value);
         }
 
         public bool ShouldNotifyDisclaimer
@@ -291,27 +185,13 @@ namespace TableCloth.ViewModels
         public CatalogDocument CatalogDocument
         {
             get => _catalogDocument;
-            set
-            {
-                if (value != _catalogDocument)
-                {
-                    _catalogDocument = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _catalogDocument, value);
         }
 
         public X509CertPair SelectedCertFile
         {
             get => _selectedCertFile;
-            set
-            {
-                if (value != _selectedCertFile)
-                {
-                    _selectedCertFile = value;
-                    NotifyPropertyChanged();
-                }
-            }
+            set => SetProperty(ref _selectedCertFile, value);
         }
 
         public List<string> TemporaryDirectories { get; } = new();
