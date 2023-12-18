@@ -53,12 +53,12 @@ namespace TableCloth.Components
             return jsonDocument.RootElement.GetProperty("license").GetProperty("name").GetString();
         }
 
-        public async Task LoadSiteImages(IHttpClientFactory httpClientFactory, List<CatalogInternetService> services, string imageDirectoryPath)
+        public async Task LoadSiteImages(List<CatalogInternetService> services, string imageDirectoryPath)
         {
             if (!Directory.Exists(imageDirectoryPath))
                 Directory.CreateDirectory(imageDirectoryPath);
 
-            var httpClient = httpClientFactory.CreateTableClothHttpClient();
+            var httpClient = this._httpClientFactory.CreateTableClothHttpClient();
 
             foreach (var eachSite in services)
             {

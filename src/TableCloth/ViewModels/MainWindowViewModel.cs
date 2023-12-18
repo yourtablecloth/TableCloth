@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Data;
 using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Models.Catalog;
@@ -13,30 +14,18 @@ namespace TableCloth.ViewModels
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         public MainWindowViewModel(
-            SharedLocations sharedLocations,
-            AppMessageBox appMessageBox,
             CatalogDeserializer catalogDeserializer,
-            X509CertPairScanner certPairScanner,
-            PreferencesManager preferencesManager,
-            ResourceResolver resourceResolver,
             AppRestartManager appRestartManager,
-            CommandLineParser commandLineParser,
-            VisualThemeManager visualThemeManager,
             SandboxCleanupManager sandboxCleanupManager,
+            MainWindowLoadedCommand mainWindowLoadedCommand,
             LaunchSandboxCommand launchSandboxCommand,
             CreateShortcutCommand createShortcutCommand,
             AppRestartCommand appRestartCommand,
             AboutThisAppCommand aboutThisAppCommand)
         {
-            _sharedLocations = sharedLocations;
-            _appMessageBox = appMessageBox;
-            _certPairScanner = certPairScanner;
-            _preferencesManager = preferencesManager;
-            _resourceResolver = resourceResolver;
             _appRestartManager = appRestartManager;
-            _commandLineParser = commandLineParser;
-            _visualThemeManager = visualThemeManager;
             _sandboxCleanupManager = sandboxCleanupManager;
+            _mainWindowLoadedCommand = mainWindowLoadedCommand;
             _launchSandboxCommand = launchSandboxCommand;
             _createShortcutCommand = createShortcutCommand;
             _appRestartCommand = appRestartCommand;
@@ -47,31 +36,31 @@ namespace TableCloth.ViewModels
                 CatalogDocument = catalogDeserializer.DeserializeCatalog();
                 Services = CatalogDocument.Services.ToList();
             }
-            catch (Exception ex)
+            catch
             {
-                _appMessageBox.DisplayError(ex, false);
+                // To Do: Write exception log here
                 CatalogDocument = new CatalogDocument();
                 Services = Array.Empty<CatalogInternetService>().ToList();
+            }
+            finally
+            {
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(this.Services);
+                view.Filter = Services_Filter;
             }
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
-        private readonly SharedLocations _sharedLocations;
-        private readonly AppMessageBox _appMessageBox;
-        private readonly X509CertPairScanner _certPairScanner;
-        private readonly PreferencesManager _preferencesManager;
-        private readonly ResourceResolver _resourceResolver;
         private readonly AppRestartManager _appRestartManager;
-        private readonly CommandLineParser _commandLineParser;
-        private readonly VisualThemeManager _visualThemeManager;
         private readonly SandboxCleanupManager _sandboxCleanupManager;
+        private readonly MainWindowLoadedCommand _mainWindowLoadedCommand;
         private readonly LaunchSandboxCommand _launchSandboxCommand;
         private readonly CreateShortcutCommand _createShortcutCommand;
         private readonly AppRestartCommand _appRestartCommand;
         private readonly AboutThisAppCommand _aboutThisAppCommand;
 
+        private string _filterText;
         private bool _mapNpkiCert;
         private bool _enableLogAutoCollecting;
         private bool _v2UIOptIn;
@@ -92,32 +81,14 @@ namespace TableCloth.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public SharedLocations SharedLocations
-            => _sharedLocations;
-
-        public AppMessageBox AppMessageBox
-            => _appMessageBox;
-
-        public X509CertPairScanner CertPairScanner
-            => _certPairScanner;
-
-        public PreferencesManager PreferencesManager
-            => _preferencesManager;
-
-        public ResourceResolver ResourceResolver
-            => _resourceResolver;
-
         public AppRestartManager AppRestartManager
             => _appRestartManager;
 
-        public CommandLineParser CommandLineParser
-            => _commandLineParser;
-
-        public VisualThemeManager VisualThemeManager
-            => _visualThemeManager;
-
         public SandboxCleanupManager SandboxCleanupManager
             => _sandboxCleanupManager;
+
+        public MainWindowLoadedCommand MainWindowLoadedCommand
+            => _mainWindowLoadedCommand;
 
         public LaunchSandboxCommand LaunchSandboxCommand
             => _launchSandboxCommand;
@@ -130,6 +101,19 @@ namespace TableCloth.ViewModels
 
         public AboutThisAppCommand AboutThisAppCommand
             => _aboutThisAppCommand;
+
+        public string FilterText
+        {
+            get => _filterText;
+            set
+            {
+                if (value != _filterText)
+                {
+                    _filterText = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
 
         public bool MapNpkiCert
         {
@@ -373,5 +357,33 @@ namespace TableCloth.ViewModels
 
         public bool HasServices
             => Services != null && Services.Any();
+
+        private bool Services_Filter(object item)
+        {
+            var filterText = this.FilterText;
+
+            if (string.IsNullOrWhiteSpace(filterText))
+                return true;
+
+            var actualItem = item as CatalogInternetService;
+
+            if (actualItem == null)
+                return true;
+
+            var splittedFilterText = filterText.Split(new char[] { ',', }, StringSplitOptions.RemoveEmptyEntries);
+            var result = false;
+
+            foreach (var eachFilterText in splittedFilterText)
+            {
+                result |= actualItem.DisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.CategoryDisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.Url.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.Packages.Count.ToString().Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.Packages.Any(x => x.Name.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase))
+                    || actualItem.Id.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return result;
+        }
     }
 }

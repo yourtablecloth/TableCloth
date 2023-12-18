@@ -9,6 +9,11 @@ namespace TableCloth.Components
 {
     public sealed class VisualThemeManager
     {
+        public void ApplyAutoThemeChangeToMainWindow()
+        {
+            ApplyAutoThemeChange(App.Current.MainWindow);
+        }
+
         public void ApplyAutoThemeChange(Window targetWindow)
         {
             var source = HwndSource.FromHwnd(new WindowInteropHelper(targetWindow).Handle);
