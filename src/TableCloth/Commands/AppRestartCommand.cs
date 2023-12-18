@@ -2,7 +2,7 @@
 
 namespace TableCloth.Commands
 {
-    public sealed class AppRestartCommand : BaseCommand
+    public sealed class AppRestartCommand : CommandBase
     {
         public AppRestartCommand(
             AppRestartManager appRestartManager)

@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace TableCloth.Commands
 {
-    public abstract class BaseCommand : ICommand
+    public abstract class CommandBase : ICommand
     {
         private bool canExecute = true;
 

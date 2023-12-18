@@ -13,7 +13,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands
 {
-    public sealed class LaunchSandboxCommand : BaseCommand
+    public sealed class LaunchSandboxCommand : CommandBase
     {
         public LaunchSandboxCommand(
             SandboxLauncher sandboxLauncher,

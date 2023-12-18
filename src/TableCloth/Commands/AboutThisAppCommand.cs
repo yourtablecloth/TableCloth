@@ -1,6 +1,6 @@
 ﻿namespace TableCloth.Commands
 {
-    public sealed class AboutThisAppCommand : BaseCommand
+    public sealed class AboutThisAppCommand : CommandBase
     {
         public override void Execute(object parameter)
         {

@@ -8,7 +8,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands
 {
-    public sealed class MainWindowLoadedCommand : BaseCommand
+    public sealed class MainWindowLoadedCommand : CommandBase
     {
         public MainWindowLoadedCommand(
             VisualThemeManager visualThemeManager,

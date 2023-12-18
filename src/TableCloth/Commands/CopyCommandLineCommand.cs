@@ -6,7 +6,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands
 {
-    public sealed class CopyCommandLineCommand : BaseCommand
+    public sealed class CopyCommandLineCommand : CommandBase
     {
         public CopyCommandLineCommand(
             CommandLineComposer commandLineComposer,

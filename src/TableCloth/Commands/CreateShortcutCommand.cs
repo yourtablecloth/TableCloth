@@ -9,7 +9,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands
 {
-    public sealed class CreateShortcutCommand : BaseCommand
+    public sealed class CreateShortcutCommand : CommandBase
     {
         public CreateShortcutCommand(
             CommandLineComposer commandLineComposer,
