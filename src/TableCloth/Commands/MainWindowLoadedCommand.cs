@@ -18,7 +18,7 @@ namespace TableCloth.Commands
             ResourceResolver resourceResolver,
             CommandLineParser commandLineParser,
             AppMessageBox appMessageBox,
-            AppRestartCommand appRestartCommand,
+            AppRestartManager appRestartManager,
             LaunchSandboxCommand launchSandboxCommand)
         {
             this.visualThemeManager = visualThemeManager;
@@ -28,7 +28,7 @@ namespace TableCloth.Commands
             this.resourceResolver = resourceResolver;
             this.commandLineParser = commandLineParser;
             this.appMessageBox = appMessageBox;
-            this.appRestartCommand = appRestartCommand;
+            this.appRestartManager = appRestartManager;
             this.launchSandboxCommand = launchSandboxCommand;
         }
 
@@ -39,7 +39,7 @@ namespace TableCloth.Commands
         private readonly ResourceResolver resourceResolver;
         private readonly CommandLineParser commandLineParser;
         private readonly AppMessageBox appMessageBox;
-        private readonly AppRestartCommand appRestartCommand;
+        private readonly AppRestartManager appRestartManager;
         private readonly LaunchSandboxCommand launchSandboxCommand;
 
         public override async void Execute(object parameter)
@@ -123,8 +123,8 @@ namespace TableCloth.Commands
                     currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
                     if (this.appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                     {
-                        viewModel.RequireRestart = true;
-                        this.appRestartCommand.Execute(null);
+                        this.appRestartManager.ReserveRestart = true;
+                        this.appRestartManager.RestartNow();
                     }
                     break;
 
@@ -132,8 +132,8 @@ namespace TableCloth.Commands
                     currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
                     if (this.appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                     {
-                        viewModel.RequireRestart = true;
-                        this.appRestartCommand.Execute(null);
+                        this.appRestartManager.ReserveRestart = true;
+                        this.appRestartManager.RestartNow();
                     }
                     break;
 

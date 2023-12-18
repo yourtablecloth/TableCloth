@@ -24,7 +24,7 @@ namespace TableCloth.Commands
 
             this.sandboxCleanupManager.TryCleanup();
 
-            if (viewModel.RequireRestart)
+            if (this.appRestartManager.ReserveRestart)
                 this.appRestartManager.RestartNow();
         }
     }

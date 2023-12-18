@@ -74,7 +74,6 @@ namespace TableCloth.ViewModels
         private X509CertPair _selectedCertFile;
         private List<CatalogInternetService> _services;
         private List<CatalogInternetService> _selectedServices;
-        private bool _requireRestart;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -327,19 +326,6 @@ namespace TableCloth.ViewModels
                 if (value != _selectedServices)
                 {
                     _selectedServices = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-
-        public bool RequireRestart
-        {
-            get => _requireRestart;
-            set
-            {
-                if (value != _requireRestart)
-                {
-                    _requireRestart = value;
                     NotifyPropertyChanged();
                 }
             }
