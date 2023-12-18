@@ -15,17 +15,15 @@ namespace TableCloth.ViewModels
     {
         public MainWindowViewModel(
             CatalogDeserializer catalogDeserializer,
-            AppRestartManager appRestartManager,
-            SandboxCleanupManager sandboxCleanupManager,
             MainWindowLoadedCommand mainWindowLoadedCommand,
+            MainWindowClosedCommand mainWindowClosedCommand,
             LaunchSandboxCommand launchSandboxCommand,
             CreateShortcutCommand createShortcutCommand,
             AppRestartCommand appRestartCommand,
             AboutThisAppCommand aboutThisAppCommand)
         {
-            _appRestartManager = appRestartManager;
-            _sandboxCleanupManager = sandboxCleanupManager;
             _mainWindowLoadedCommand = mainWindowLoadedCommand;
+            _mainWindowClosedCommand = mainWindowClosedCommand;
             _launchSandboxCommand = launchSandboxCommand;
             _createShortcutCommand = createShortcutCommand;
             _appRestartCommand = appRestartCommand;
@@ -52,9 +50,8 @@ namespace TableCloth.ViewModels
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName ?? string.Empty));
 
-        private readonly AppRestartManager _appRestartManager;
-        private readonly SandboxCleanupManager _sandboxCleanupManager;
         private readonly MainWindowLoadedCommand _mainWindowLoadedCommand;
+        private readonly MainWindowClosedCommand _mainWindowClosedCommand;
         private readonly LaunchSandboxCommand _launchSandboxCommand;
         private readonly CreateShortcutCommand _createShortcutCommand;
         private readonly AppRestartCommand _appRestartCommand;
@@ -81,14 +78,11 @@ namespace TableCloth.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public AppRestartManager AppRestartManager
-            => _appRestartManager;
-
-        public SandboxCleanupManager SandboxCleanupManager
-            => _sandboxCleanupManager;
-
         public MainWindowLoadedCommand MainWindowLoadedCommand
             => _mainWindowLoadedCommand;
+
+        public MainWindowClosedCommand MainWindowClosedCommand
+            => _mainWindowClosedCommand;
 
         public LaunchSandboxCommand LaunchSandboxCommand
             => _launchSandboxCommand;

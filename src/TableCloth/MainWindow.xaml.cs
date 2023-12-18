@@ -43,14 +43,6 @@ namespace TableCloth
             Close();
         }
 
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            ViewModel.SandboxCleanupManager.TryCleanup();
-
-            if (ViewModel.RequireRestart)
-                ViewModel.AppRestartManager.RestartNow();
-        }
-
         private void SiteCatalogFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
             CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
@@ -83,11 +75,10 @@ namespace TableCloth
 
         #region Sort Support
 
-        GridViewColumnHeader _lastHeaderClicked = null;
-        ListSortDirection? _lastDirection = null;
+        private GridViewColumnHeader _lastHeaderClicked = null;
+        private ListSortDirection? _lastDirection = null;
 
-        void GridViewColumnHeaderClickedHandler(object sender,
-                                                RoutedEventArgs e)
+        private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e)
         {
             var headerClicked = e.OriginalSource as GridViewColumnHeader;
             ListSortDirection? direction;
@@ -151,10 +142,9 @@ namespace TableCloth
         }
         private void Sort(string sortBy, ListSortDirection? direction)
         {
-            ICollectionView dataView =
-              CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource);
-
+            var dataView = CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource);
             dataView.SortDescriptions.Clear();
+
             if (direction != null)
             {
                 SortDescription sd = new SortDescription(sortBy, direction ?? ListSortDirection.Ascending);
