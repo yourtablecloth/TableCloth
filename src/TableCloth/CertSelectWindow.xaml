@@ -9,6 +9,7 @@
         Title="{StaticResource CertSelectWindow_Title}" Width="480" Height="320"
         MinWidth="640" MinHeight="480"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
+        Loaded="Window_Loaded"
         d:DataContext="{d:DesignInstance Type=vm:CertSelectWindowViewModel, IsDesignTimeCreatable=True}">
     <Grid>
         <Grid.RowDefinitions>
@@ -55,7 +56,7 @@
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="ConvertToPfxButton" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_ConvertToPfxButtonText}" Click="ConvertToPfxButton_Click" Padding="5" />
+                <Button x:Name="ConvertToPfxButton" Visibility="Hidden" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_ConvertToPfxButtonText}" Click="ConvertToPfxButton_Click" Padding="5" />
                 <Button x:Name="RefreshCertPairsButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_RefreshButtonText}" Click="RefreshCertPairsButton_Click" Padding="5" />
             </Grid>
             <TextBlock Grid.Row="3" TextWrapping="Wrap" Text="{StaticResource CertSelectWindow_ManualInstructionLabelText}" />

@@ -5,23 +5,45 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using TableCloth.Components;
 using TableCloth.ViewModels;
 
 namespace TableCloth
 {
     public partial class CertSelectWindow : Window
     {
-        public CertSelectWindow(CertSelectWindowViewModel viewModel)
+        public CertSelectWindow(
+            CertSelectWindowViewModel viewModel,
+            AppUserInterface appUserInterface,
+            X509CertPairScanner certPairScanner)
         {
+            _appUserInterface = appUserInterface;
+            _certPairScanner = certPairScanner;
+
             InitializeComponent();
             DataContext = viewModel;
         }
 
+        private readonly AppUserInterface _appUserInterface;
+        private readonly X509CertPairScanner _certPairScanner;
+
         public CertSelectWindowViewModel ViewModel
             => (CertSelectWindowViewModel)DataContext;
 
+        private void RefreshCertPairs()
+        {
+            ViewModel.SelectedCertPair = null;
+            ViewModel.CertPairs = _certPairScanner.ScanX509Pairs(
+                _certPairScanner.GetCandidateDirectories()).ToList();
+
+            if (ViewModel.CertPairs.Count == 1)
+                ViewModel.SelectedCertPair = ViewModel.CertPairs.Single();
+        }
+
         private void RefreshCertPairsButton_Click(object sender, RoutedEventArgs e)
-            => ViewModel.RefreshCertPairs();
+        {
+            this.RefreshCertPairs();
+        }
 
         private void OpenCertPairManuallyButton_Click(object sender, RoutedEventArgs e)
         {
@@ -75,7 +97,7 @@ namespace TableCloth
                         if (!File.Exists(signCertDerPath) && !File.Exists(signPriKeyPath))
                             return;
 
-                        ViewModel.SelectedCertPair = ViewModel.CertPairScanner.CreateX509CertPair(signCertDerPath, signPriKeyPath);
+                        ViewModel.SelectedCertPair = _certPairScanner.CreateX509CertPair(signCertDerPath, signPriKeyPath);
                         DialogResult = true;
                         Close();
                         break;
@@ -86,7 +108,7 @@ namespace TableCloth
                         if (string.IsNullOrWhiteSpace(pfxFilePath) || !File.Exists(pfxFilePath))
                             return;
 
-                        var inputWindow = ViewModel.AppUserInterface.CreateWindow<InputPasswordWindow>(inputWindow =>
+                        var inputWindow = _appUserInterface.CreateWindow<InputPasswordWindow>(inputWindow =>
                         {
                             inputWindow.PfxFilePath = pfxFilePath;
                             inputWindow.Owner = this;
@@ -118,6 +140,11 @@ namespace TableCloth
         private void ConvertToPfxButton_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            RefreshCertPairs();
         }
     }
 }

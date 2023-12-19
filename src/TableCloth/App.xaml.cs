@@ -135,16 +135,10 @@ namespace TableCloth
             // UI
             services.AddTransient<DisclaimerWindow>();
             services.AddTransient<AboutWindow>();
-
-            services.AddTransient<CertSelectWindowViewModel>(provider =>
-            {
-                return new CertSelectWindowViewModel(
-                    appUserInterface: provider.GetRequiredService<AppUserInterface>(),
-                    certPairScanner: provider.GetRequiredService<X509CertPairScanner>());
-            });
-            services.AddTransient<CertSelectWindow>();
-
             services.AddTransient<InputPasswordWindow>();
+
+            services.AddTransient<CertSelectWindowViewModel>();
+            services.AddTransient<CertSelectWindow>();
 
             services.AddSingleton<MainWindowViewModel>(provider =>
             {
