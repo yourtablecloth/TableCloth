@@ -25,9 +25,10 @@ namespace TableCloth.Pages
     /// </summary>
     public partial class DetailPage : Page, IPageArgument<DetailPageArgumentModel>
     {
-        public DetailPage()
+        public DetailPage(DetailPageViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
 
         public DetailPageViewModel ViewModel
@@ -207,8 +208,7 @@ namespace TableCloth.Pages
         {
             if (e.Key == Key.Enter || e.Key == Key.Escape || e.Key == Key.Tab)
             {
-                NavigationService.Navigate(
-                    new Uri("Pages/CatalogPage.xaml", UriKind.Relative),
+                ViewModel.NavigationService.NavigateTo<CatalogPageViewModel>(
                     new CatalogPageArgumentModel(SiteCatalogFilter.Text));
             }
         }

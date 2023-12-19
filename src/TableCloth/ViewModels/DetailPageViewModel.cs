@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.IO;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using TableCloth.Commands;
 using TableCloth.Components;
+using TableCloth.Contracts;
+using TableCloth.Converters;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
@@ -11,7 +14,12 @@ namespace TableCloth.ViewModels
 {
     public sealed class DetailPageViewModel : ViewModelBase
     {
+        [Obsolete("This constructor should be used only in design time context.")]
+        public DetailPageViewModel() { }
+
         public DetailPageViewModel(
+            NavigationService navigationService,
+            SharedLocations sharedLocations,
             X509CertPairScanner certPairScanner,
             PreferencesManager preferencesManager,
             AppRestartManager appRestartManager,
@@ -19,6 +27,8 @@ namespace TableCloth.ViewModels
             CreateShortcutCommand createShortcutCommand,
             CopyCommandLineCommand copyCommandLineCommand)
         {
+            _navigationService = navigationService;
+            _sharedLocations = sharedLocations;
             _certPairScanner = certPairScanner;
             _preferencesManager = preferencesManager;
             _appRestartManager = appRestartManager;
@@ -27,6 +37,8 @@ namespace TableCloth.ViewModels
             _copyCommandLineCommand = copyCommandLineCommand;
         }
 
+        private readonly NavigationService _navigationService;
+        private readonly SharedLocations _sharedLocations;
         private readonly X509CertPairScanner _certPairScanner;
         private readonly PreferencesManager _preferencesManager;
         private readonly AppRestartManager _appRestartManager;
@@ -49,6 +61,12 @@ namespace TableCloth.ViewModels
         private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
         private X509CertPair _selectedCertFile;
+
+        public NavigationService NavigationService
+            => _navigationService;
+
+        public SharedLocations SharedLocations
+            => _sharedLocations;
 
         public X509CertPairScanner CertPairScanner
             => _certPairScanner;
@@ -83,6 +101,24 @@ namespace TableCloth.ViewModels
         public int? PackageCountForDisplay
             => _selectedService?.PackageCountForDisplay;
 
+        public ImageSource ServiceLogo
+        {
+            get
+            {
+                var serviceId = this.Id;
+
+                if (string.IsNullOrWhiteSpace(serviceId))
+                    return null;
+
+                var targetFilePath = Path.Combine(_sharedLocations.GetImageDirectoryPath(), $"{serviceId}.png");
+
+                if (!File.Exists(targetFilePath))
+                    return null;
+
+                return new BitmapImage(new Uri(targetFilePath));
+            }
+        }
+
         public CatalogInternetService SelectedService
         {
             get => _selectedService;
@@ -93,6 +129,7 @@ namespace TableCloth.ViewModels
                 nameof(Url),
                 nameof(CompatibilityNotes),
                 nameof(PackageCountForDisplay),
+                nameof(ServiceLogo),
             });
         }
 

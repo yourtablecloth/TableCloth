@@ -3,11 +3,12 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:vm="clr-namespace:TableCloth.ViewModels"
       xmlns:local="clr-namespace:TableCloth"
       mc:Ignorable="d" 
       d:DesignHeight="900" d:DesignWidth="800"
       Title="DetailPage" Loaded="Page_Loaded"
-      DataContext="{Binding DetailPageViewModel, Source={StaticResource ViewModelLocator}}">
+      d:DataContext="{d:DesignInstance Type=vm:DetailPageViewModel, IsDesignTimeCreatable=True}">
     <Page.Resources>
         <!-- https://www.svgrepo.com/svg/496822/back-square -->
         <DrawingImage x:Key="BackButtonImage">
@@ -85,7 +86,7 @@
                         <RowDefinition Height="40" />
                         <RowDefinition Height="120" />
                     </Grid.RowDefinitions>
-                    <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="8" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" />
+                    <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="8" Source="{Binding ServiceLogo}" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Margin="8" Text="{Binding DisplayName}" FontSize="36" Grid.RowSpan="2" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
                     <Button x:Name="LaunchButton" Grid.Row="1" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_LaunchButton}" Command="{Binding LaunchSandboxCommand}">
                         <Button.CommandParameter>

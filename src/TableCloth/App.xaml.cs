@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Sentry;
 using Serilog;
 using System;
@@ -7,6 +8,8 @@ using System.Linq;
 using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Components;
+using TableCloth.Contracts;
+using TableCloth.Pages;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 using Windows.Devices.WiFiDirect.Services;
@@ -112,6 +115,8 @@ namespace TableCloth
             services.AddSingleton<CommandLineParser>();
             services.AddSingleton<CommandLineComposer>();
             services.AddSingleton<VisualThemeManager>();
+            services.AddSingleton<AppMessageBox>();
+            services.AddSingleton<NavigationService>();
 
             // ViewModel
             services.AddSingleton<MainWindowViewModel>();
@@ -119,8 +124,6 @@ namespace TableCloth
             services.AddSingleton<AboutWindowViewModel>();
             services.AddTransient<InputPasswordWindowViewModel>();
             services.AddSingleton<MainWindowV2ViewModel>();
-            services.AddSingleton<CatalogPageViewModel>();
-            services.AddSingleton<DetailPageViewModel>();
 
             // Commands
             services.AddSingleton<LaunchSandboxCommand>();
@@ -132,7 +135,29 @@ namespace TableCloth
             services.AddSingleton<MainWindowClosedCommand>();
 
             // UI
-            services.AddSingleton<AppMessageBox>();
+            services.AddTransient<CatalogPageViewModel>(provider =>
+            {
+                return new CatalogPageViewModel(
+                    catalogCacheManager: provider.GetRequiredService<CatalogCacheManager>(),
+                    navigationService: provider.GetRequiredService<NavigationService>(),
+                    appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),
+                    aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>());
+            });
+            services.AddTransient<CatalogPage>();
+
+            services.AddTransient<DetailPageViewModel>(provider =>
+            {
+                return new DetailPageViewModel(
+                    navigationService: provider.GetRequiredService<NavigationService>(),
+                    sharedLocations: provider.GetRequiredService<SharedLocations>(),
+                    certPairScanner: provider.GetRequiredService<X509CertPairScanner>(),
+                    preferencesManager: provider.GetRequiredService<PreferencesManager>(),
+                    appRestartManager: provider.GetRequiredService<AppRestartManager>(),
+                    launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
+                    createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
+                    copyCommandLineCommand: provider.GetRequiredService<CopyCommandLineCommand>());
+            });
+            services.AddTransient<DetailPage>();
 
             // HTTP Request
             services.AddHttpClient(nameof(TableCloth), c =>

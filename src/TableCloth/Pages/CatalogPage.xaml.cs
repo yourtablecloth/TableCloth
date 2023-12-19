@@ -15,9 +15,10 @@ namespace TableCloth.Pages
 {
     public partial class CatalogPage : Page, IPageArgument<CatalogPageArgumentModel>
     {
-        public CatalogPage()
+        public CatalogPage(CatalogPageViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
 
         public CatalogPageViewModel ViewModel
@@ -124,8 +125,7 @@ namespace TableCloth.Pages
 
                 if (data != null)
                 {
-                    NavigationService.Navigate(
-                        new Uri("Pages/DetailPage.xaml", UriKind.Relative),
+                    ViewModel.NavigationService.NavigateTo<DetailPageViewModel>(
                         new DetailPageArgumentModel(data, builtFromCommandLine: false, currentSearchString: SiteCatalogFilter.Text));
                 }
             }
@@ -146,8 +146,7 @@ namespace TableCloth.Pages
 
             if (data != null)
             {
-                NavigationService.Navigate(
-                    new Uri("Pages/DetailPage.xaml", UriKind.Relative),
+                ViewModel.NavigationService.NavigateTo<DetailPageViewModel>(
                     new DetailPageArgumentModel(data, builtFromCommandLine: false, currentSearchString: SiteCatalogFilter.Text));
             }
         }

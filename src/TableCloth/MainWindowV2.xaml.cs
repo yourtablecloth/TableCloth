@@ -68,23 +68,25 @@ namespace TableCloth
 
         private void DoubleAnimation_SlideCompleted(object sender, EventArgs e)
         {
+            var navService = ViewModel.NavigationService;
             _allowDirectNavigation = true;
+
             switch (_navArgs.NavigationMode)
             {
                 case NavigationMode.New:
-                    if (_navArgs.Uri == null)
-                        PageFrame.Navigate(_navArgs.Content, _navArgs.ExtraData);
-                    else
-                        PageFrame.Navigate(_navArgs.Uri, _navArgs.ExtraData);
+                    if (_navArgs.Uri.Equals(new Uri("Pages/CatalogPage.xaml", UriKind.Relative)))
+                        navService.NavigateTo<CatalogPage>(_navArgs.ExtraData);
+                    else if (_navArgs.Uri.Equals(new Uri("Pages/DetailPage.xaml", UriKind.Relative)))
+                        navService.NavigateTo<DetailPage>(_navArgs.ExtraData);
                     break;
                 case NavigationMode.Back:
-                    PageFrame.GoBack();
+                    navService.GoBack();
                     break;
                 case NavigationMode.Forward:
-                    PageFrame.GoForward();
+                    navService.GoForward();
                     break;
                 case NavigationMode.Refresh:
-                    PageFrame.Refresh();
+                    navService.Refresh();
                     break;
             }
 
@@ -116,6 +118,7 @@ namespace TableCloth
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            ViewModel.NavigationService.Initialize(this.PageFrame);
             ViewModel.VisualThemeManager.ApplyAutoThemeChange(this);
 
             var args = App.Current.Arguments.ToArray();
@@ -128,10 +131,10 @@ namespace TableCloth
                 if (parsedArg.SelectedService == null)
                     return;
 
-                PageFrame.Navigate(
-                    new Uri("Pages/DetailPage.xaml", UriKind.Relative),
-                    parsedArg);
+                ViewModel.NavigationService.NavigateTo<DetailPageViewModel>(parsedArg);
             }
+            else
+                ViewModel.NavigationService.NavigateTo<CatalogPageViewModel>(null);
         }
 
         private void Window_Closed(object sender, EventArgs e)

@@ -1,21 +1,26 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using TableCloth.Commands;
 using TableCloth.Components;
+using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.ViewModels
 {
     public class CatalogPageViewModel : ViewModelBase
     {
+        [Obsolete("This constructor should be used only in design time context.")]
+        public CatalogPageViewModel() { }
+
         public CatalogPageViewModel(
             CatalogCacheManager catalogCacheManager,
+            NavigationService navigationService,
             AppRestartCommand appRestartCommand,
             AboutThisAppCommand aboutThisAppCommand)
         {
+            _navigationService = navigationService;
             _appRestartCommand = appRestartCommand;
             _aboutThisAppCommand = aboutThisAppCommand;
 
@@ -29,9 +34,13 @@ namespace TableCloth.ViewModels
         private readonly AboutThisAppCommand _aboutThisAppCommand;
 
         private CatalogDocument _catalogDocument;
+        private NavigationService _navigationService;
         private List<CatalogInternetService> _services;
         private CatalogInternetService _selectedService;
         private CatalogInternetServiceCategory? _selectedServiceCategory;
+
+        public NavigationService NavigationService
+            => _navigationService;
 
         public AppRestartCommand AppRestartCommand
             => _appRestartCommand;

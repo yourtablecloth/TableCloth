@@ -13,7 +13,6 @@
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <Grid>
         <Frame x:Name="PageFrame" NavigationUIVisibility="Hidden"
-               LoadCompleted="PageFrame_LoadCompleted"
-               Source="Pages/CatalogPage.xaml" />
+               LoadCompleted="PageFrame_LoadCompleted" />
     </Grid>
 </Window>
