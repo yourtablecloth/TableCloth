@@ -5,11 +5,12 @@ using System.Reflection;
 using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Contracts;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.ViewModels
 {
-    public class CatalogPageViewModel : ViewModelBase
+    public class CatalogPageViewModel : ViewModelBase, IPageExtraArgument
     {
         [Obsolete("This constructor should be used only in design time context.")]
         public CatalogPageViewModel() { }
@@ -38,6 +39,8 @@ namespace TableCloth.ViewModels
         private List<CatalogInternetService> _services;
         private CatalogInternetService _selectedService;
         private CatalogInternetServiceCategory? _selectedServiceCategory;
+
+        public object ExtraArgument { get; set; }
 
         public NavigationService NavigationService
             => _navigationService;

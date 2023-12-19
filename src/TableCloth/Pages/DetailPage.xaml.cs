@@ -24,22 +24,20 @@ namespace TableCloth.Pages
     /// <summary>
     /// Interaction logic for DetailPage.xaml
     /// </summary>
-    public partial class DetailPage : Page, IPageArgument<DetailPageArgumentModel>
+    public partial class DetailPage : Page
     {
-        public DetailPage(DetailPageViewModel viewModel)
+        public DetailPage()
         {
             InitializeComponent();
-            DataContext = viewModel;
         }
 
         public DetailPageViewModel ViewModel
             => (DetailPageViewModel)DataContext;
 
-        public DetailPageArgumentModel Arguments { get; set; } = default;
-
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            ViewModel.SelectedService = Arguments.SelectedService;
+            var extraArg = ViewModel.ExtraArgument as DetailPageArgumentModel;
+            ViewModel.SelectedService = extraArg.SelectedService;
 
             var currentConfig = ViewModel.PreferencesManager.LoadPreferences();
 
@@ -77,12 +75,12 @@ namespace TableCloth.Pages
                     ViewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
             }
 
-            if (Arguments.BuiltFromCommandLine &&
-                Arguments.SelectedService != null)
-                ViewModel.LaunchSandboxCommand.Execute(Arguments);
+            if (extraArg.BuiltFromCommandLine &&
+                extraArg.SelectedService != null)
+                ViewModel.LaunchSandboxCommand.Execute(extraArg);
 
-            if (!string.IsNullOrEmpty(Arguments.CurrentSearchString))
-                SiteCatalogFilter.Text = Arguments.CurrentSearchString;
+            if (!string.IsNullOrEmpty(extraArg.CurrentSearchString))
+                SiteCatalogFilter.Text = extraArg.CurrentSearchString;
         }
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -27,18 +27,26 @@ namespace TableCloth.Components
         {
             var requestedViewModelType = typeof(TViewModel);
             var viewType = default(Type);
+            var viewModelData = default(object);
 
             if (requestedViewModelType.Equals(typeof(CatalogPageViewModel)))
+            {
                 viewType = typeof(CatalogPage);
+                viewModelData = _appUserInterface.CreateViewModel<CatalogPageViewModel>(extraData);
+            }
 
             if (requestedViewModelType.Equals(typeof(DetailPageViewModel)))
+            {
                 viewType = typeof(DetailPage);
+                viewModelData = _appUserInterface.CreateViewModel<DetailPageViewModel>(extraData);
+            }
 
             if (viewType == default)
                 return false;
 
-            var view = _appUserInterface.CreatePage(viewType) as Page;
-            return _frame.Navigate(view, extraData);
+            var view = _appUserInterface.CreatePage(viewType);
+            view.DataContext = viewModelData;
+            return _frame.Navigate(view);
         }
 
         public bool GoBack()

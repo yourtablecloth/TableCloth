@@ -5,12 +5,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TableCloth.Commands;
 using TableCloth.Components;
+using TableCloth.Contracts;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels
 {
-    public sealed class DetailPageViewModel : ViewModelBase
+    public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument
     {
         [Obsolete("This constructor should be used only in design time context.")]
         public DetailPageViewModel() { }
@@ -62,6 +64,8 @@ namespace TableCloth.ViewModels
         private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
         private X509CertPair _selectedCertFile;
+
+        public object ExtraArgument { get; set; }
 
         public AppUserInterface AppUserInterface
             => _appUserInterface;

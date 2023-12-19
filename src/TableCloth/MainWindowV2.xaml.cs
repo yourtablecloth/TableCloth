@@ -1,26 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System;
 using System.Linq;
-using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Interop;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using System.Windows.Threading;
-using TableCloth.Contracts;
-using TableCloth.Models;
-using TableCloth.Models.Catalog;
-using TableCloth.Models.Configuration;
 using TableCloth.Pages;
-using TableCloth.Resources;
-using TableCloth.Themes;
 using TableCloth.ViewModels;
 
 namespace TableCloth
@@ -101,20 +86,6 @@ namespace TableCloth
 
                     PageFrame.BeginAnimation(_targetProperty, animation0);
                 });
-        }
-
-        private void PageFrame_LoadCompleted(object sender, NavigationEventArgs e)
-        {
-            switch (e.Content)
-            {
-                case IPageArgument<CatalogPageArgumentModel> target:
-                    target.Arguments = e.ExtraData as CatalogPageArgumentModel;
-                    break;
-
-                case IPageArgument<DetailPageArgumentModel> target:
-                    target.Arguments = e.ExtraData as DetailPageArgumentModel;
-                    break;
-            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

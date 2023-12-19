@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using TableCloth.Contracts;
 
 namespace TableCloth.Components
 {
@@ -29,10 +30,12 @@ namespace TableCloth.Components
             return windowInstance;
         }
 
-        public TPage CreatePage<TPage>(Action<TPage> modifier = default)
+        public TPage CreatePage<TPage, TPageViewModel>(Action<TPage> modifier = default)
             where TPage : Page
+            where TPageViewModel : class, IPageExtraArgument
         {
             var pageInstance = (TPage)CreatePage(typeof(TPage), default);
+            pageInstance.DataContext = this.serviceProvider.GetService<TPageViewModel>();
             modifier?.Invoke(pageInstance);
             return pageInstance;
         }
@@ -42,6 +45,17 @@ namespace TableCloth.Components
             var pageInstance = (Page)this.serviceProvider.GetRequiredService(pageType);
             modifier?.Invoke(pageInstance);
             return pageInstance;
+        }
+
+        public TViewModel CreateViewModel<TViewModel>(object extraArgument)
+            where TViewModel : class, IPageExtraArgument
+        {
+            var viewModel = this.serviceProvider.GetService<TViewModel>();
+
+            if (viewModel is IPageExtraArgument extraArg)
+                extraArg.ExtraArgument = extraArgument;
+
+            return viewModel;
         }
     }
 }

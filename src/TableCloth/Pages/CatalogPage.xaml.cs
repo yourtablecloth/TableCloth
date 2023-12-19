@@ -6,19 +6,17 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
-using TableCloth.Contracts;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Pages
 {
-    public partial class CatalogPage : Page, IPageArgument<CatalogPageArgumentModel>
+    public partial class CatalogPage : Page
     {
-        public CatalogPage(CatalogPageViewModel viewModel)
+        public CatalogPage()
         {
             InitializeComponent();
-            DataContext = viewModel;
         }
 
         public CatalogPageViewModel ViewModel
@@ -26,8 +24,6 @@ namespace TableCloth.Pages
 
         private static readonly PropertyGroupDescription GroupDescription =
             new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
-
-        public CatalogPageArgumentModel Arguments { get; set; } = default;
 
         // https://stackoverflow.com/questions/1077397/scroll-listviewitem-to-be-at-the-top-of-a-listview
         private DependencyObject GetScrollViewer(DependencyObject o)
@@ -57,7 +53,8 @@ namespace TableCloth.Pages
             if (!view.GroupDescriptions.Contains(GroupDescription))
                 view.GroupDescriptions.Add(GroupDescription);
 
-            SiteCatalogFilter.Text = Arguments?.SearchKeyword ?? string.Empty;
+            var extraArg = ViewModel.ExtraArgument as CatalogPageArgumentModel;
+            SiteCatalogFilter.Text = extraArg?.SearchKeyword ?? string.Empty;
         }
 
         private bool SiteCatalog_Filter(object item)

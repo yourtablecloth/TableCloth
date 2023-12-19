@@ -13,7 +13,6 @@
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowV2ViewModel, IsDesignTimeCreatable=True}">
     <Grid>
-        <Frame x:Name="PageFrame" NavigationUIVisibility="Hidden"
-               LoadCompleted="PageFrame_LoadCompleted" />
+        <Frame x:Name="PageFrame" NavigationUIVisibility="Hidden" />
     </Grid>
 </Window>
