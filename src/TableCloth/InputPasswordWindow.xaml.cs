@@ -9,8 +9,11 @@ namespace TableCloth
 {
     public partial class InputPasswordWindow : Window
     {
-        public InputPasswordWindow()
-            => InitializeComponent();
+        public InputPasswordWindow(InputPasswordWindowViewModel viewModel)
+        {
+            InitializeComponent();
+            DataContext = viewModel;
+        }
 
         public InputPasswordWindowViewModel ViewModel
             => (InputPasswordWindowViewModel)DataContext;

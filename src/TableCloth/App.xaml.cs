@@ -104,6 +104,7 @@ namespace TableCloth
             });
 
             // Add Services
+            services.AddSingleton<AppUserInterface>();
             services.AddSingleton<SharedLocations>();
             services.AddSingleton<PreferencesManager>();
             services.AddSingleton<X509CertPairScanner>();
@@ -122,13 +123,6 @@ namespace TableCloth
             services.AddSingleton<AppMessageBox>();
             services.AddSingleton<NavigationService>();
 
-            // ViewModel
-            services.AddSingleton<MainWindowViewModel>();
-            services.AddTransient<CertSelectWindowViewModel>();
-            services.AddSingleton<AboutWindowViewModel>();
-            services.AddTransient<InputPasswordWindowViewModel>();
-            services.AddSingleton<MainWindowV2ViewModel>();
-
             // Commands
             services.AddSingleton<LaunchSandboxCommand>();
             services.AddSingleton<CreateShortcutCommand>();
@@ -139,6 +133,48 @@ namespace TableCloth
             services.AddSingleton<MainWindowClosedCommand>();
 
             // UI
+            services.AddTransient<DisclaimerWindow>();
+
+            services.AddTransient<AboutWindowViewModel>(provider =>
+            {
+                return new AboutWindowViewModel(
+                    appMessageBox: provider.GetRequiredService<AppMessageBox>(),
+                    catalogDeserializer: provider.GetRequiredService<CatalogDeserializer>(),
+                    gitHubReleaseFinder: provider.GetRequiredService<ResourceResolver>(),
+                    licenseDescriptor: provider.GetRequiredService<LicenseDescriptor>());
+            });
+            services.AddTransient<AboutWindow>();
+
+            services.AddTransient<CertSelectWindowViewModel>(provider =>
+            {
+                return new CertSelectWindowViewModel(
+                    appUserInterface: provider.GetRequiredService<AppUserInterface>(),
+                    certPairScanner: provider.GetRequiredService<X509CertPairScanner>());
+            });
+            services.AddTransient<CertSelectWindow>();
+
+            services.AddTransient<InputPasswordWindowViewModel>(provider =>
+            {
+                return new InputPasswordWindowViewModel(
+                    certPairScanner: provider.GetRequiredService<X509CertPairScanner>(),
+                    appMessageBox: provider.GetRequiredService<AppMessageBox>());
+            });
+            services.AddTransient<InputPasswordWindow>();
+
+            services.AddSingleton<MainWindowViewModel>(provider =>
+            {
+                return new MainWindowViewModel(
+                    appUserInterface: provider.GetRequiredService<AppUserInterface>(),
+                    catalogDeserializer: provider.GetRequiredService<CatalogDeserializer>(),
+                    mainWindowLoadedCommand: provider.GetRequiredService<MainWindowLoadedCommand>(),
+                    mainWindowClosedCommand: provider.GetRequiredService<MainWindowClosedCommand>(),
+                    launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
+                    createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
+                    appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),
+                    aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>());
+            });
+            services.AddSingleton<MainWindow>();
+
             services.AddTransient<CatalogPageViewModel>(provider =>
             {
                 return new CatalogPageViewModel(
@@ -152,6 +188,7 @@ namespace TableCloth
             services.AddTransient<DetailPageViewModel>(provider =>
             {
                 return new DetailPageViewModel(
+                    appUserInterface: provider.GetRequiredService<AppUserInterface>(),
                     navigationService: provider.GetRequiredService<NavigationService>(),
                     sharedLocations: provider.GetRequiredService<SharedLocations>(),
                     certPairScanner: provider.GetRequiredService<X509CertPairScanner>(),
@@ -163,7 +200,15 @@ namespace TableCloth
             });
             services.AddTransient<DetailPage>();
 
-            services.AddSingleton<MainWindow>();
+            services.AddSingleton<MainWindowV2ViewModel>(provider =>
+            {
+                return new MainWindowV2ViewModel(
+                    navigationService: provider.GetRequiredService<NavigationService>(),
+                    sandboxCleanupManager: provider.GetRequiredService<SandboxCleanupManager>(),
+                    appRestartManager: provider.GetRequiredService<AppRestartManager>(),
+                    commandLineParser: provider.GetRequiredService<CommandLineParser>(),
+                    visualThemeManager: provider.GetRequiredService<VisualThemeManager>());
+            });
             services.AddSingleton<MainWindowV2>();
 
             // HTTP Request

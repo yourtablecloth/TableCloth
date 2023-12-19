@@ -1,11 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows.Controls;
-using TableCloth.Contracts;
 using TableCloth.Pages;
 using TableCloth.ViewModels;
 
@@ -13,12 +7,14 @@ namespace TableCloth.Components
 {
     public sealed class NavigationService
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly AppUserInterface _appUserInterface;
+
         private Frame _frame;
 
-        public NavigationService(IServiceProvider serviceProvider)
+        public NavigationService(
+            AppUserInterface appUserInterface)
         {
-            _serviceProvider = serviceProvider;
+            _appUserInterface = appUserInterface;
         }
 
         public void Initialize(Frame frame)
@@ -41,7 +37,7 @@ namespace TableCloth.Components
             if (viewType == default)
                 return false;
 
-            var view = _serviceProvider.GetService(viewType) as Page;
+            var view = _appUserInterface.CreatePage(viewType) as Page;
             return _frame.Navigate(view, extraData);
         }
 

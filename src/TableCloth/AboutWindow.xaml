@@ -3,11 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:TableCloth.ViewModels"
         xmlns:local="clr-namespace:TableCloth"
         mc:Ignorable="d"
         Style="{DynamicResource MainWindowStyle}"
-        DataContext="{Binding AboutWindowViewModel, Source={StaticResource ViewModelLocator}}"
-        Title="{StaticResource AboutWindow_Title}" Width="640" Height="480" MinWidth="320" MinHeight="240" Loaded="Window_Loaded">
+        Title="{StaticResource AboutWindow_Title}" Width="640" Height="480" MinWidth="320" MinHeight="240" Loaded="Window_Loaded"
+        d:DataContext="{d:DesignInstance Type=vm:AboutWindowViewModel, IsDesignTimeCreatable=True}">
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5*" />

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using TableCloth.Components;
 
@@ -6,6 +7,9 @@ namespace TableCloth.ViewModels
 {
     public class InputPasswordWindowViewModel : ViewModelBase
     {
+        [Obsolete("This constructor should be used only in design time context.")]
+        public InputPasswordWindowViewModel() { }
+
         public InputPasswordWindowViewModel(
             X509CertPairScanner certPairScanner,
             AppMessageBox appMessageBox)

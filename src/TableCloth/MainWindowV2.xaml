@@ -3,14 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:TableCloth.ViewModels"
         xmlns:local="clr-namespace:TableCloth"
         mc:Ignorable="d"
         Style="{DynamicResource MainWindowStyle}"
         Loaded="Window_Loaded" Closed="Window_Closed"
         MinWidth="800" MinHeight="600"
-        DataContext="{Binding MainWindowV2ViewModel, Source={StaticResource ViewModelLocator}}"
         Title="{StaticResource MainWindowV2_Title}" Width="800" Height="600"
-        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
+        d:DataContext="{d:DesignInstance Type=vm:MainWindowV2ViewModel, IsDesignTimeCreatable=True}">
     <Grid>
         <Frame x:Name="PageFrame" NavigationUIVisibility="Hidden"
                LoadCompleted="PageFrame_LoadCompleted" />

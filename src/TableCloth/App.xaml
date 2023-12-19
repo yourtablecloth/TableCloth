@@ -2,7 +2,6 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:TableCloth.Converters"
-             xmlns:di="clr-namespace:TableCloth.Components"
              Startup="Application_Startup">
 
     <Application.Resources>
@@ -12,8 +11,6 @@
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             <converters:ServiceLogoConverter x:Key="ServiceLogoConverter" />
             <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
-
-            <di:ViewModelLocator x:Key="ViewModelLocator" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/PresentationFramework.Aero2;component/themes/aero2.normalcolor.xaml" />

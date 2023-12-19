@@ -7,6 +7,9 @@ namespace TableCloth.ViewModels
 {
     public class AboutWindowViewModel : ViewModelBase
     {
+        [Obsolete("This constructor should be used only in design time context.")]
+        public AboutWindowViewModel() { }
+
         public AboutWindowViewModel(
             AppMessageBox appMessageBox,
             CatalogDeserializer catalogDeserializer,

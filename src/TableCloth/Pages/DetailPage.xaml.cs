@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -69,7 +70,7 @@ namespace TableCloth.Pages
 
             if (ViewModel.ShouldNotifyDisclaimer)
             {
-                var disclaimerWindow = new DisclaimerWindow() { Owner = Window.GetWindow(this), };
+                var disclaimerWindow = ViewModel.AppUserInterface.CreateWindow<DisclaimerWindow>();
                 var result = disclaimerWindow.ShowDialog();
 
                 if (result.HasValue && result.Value)
@@ -164,7 +165,7 @@ namespace TableCloth.Pages
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
-            var certSelectWindow = new CertSelectWindow() { Owner = Window.GetWindow(this) };
+            var certSelectWindow = ViewModel.AppUserInterface.CreateWindow<CertSelectWindow>();
             var response = certSelectWindow.ShowDialog();
 
             if (!response.HasValue || !response.Value)

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using TableCloth.Commands;
 using TableCloth.Components;
@@ -13,7 +11,11 @@ namespace TableCloth.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        [Obsolete("This constructor should be used only in design time context.")]
+        public MainWindowViewModel() { }
+
         public MainWindowViewModel(
+            AppUserInterface appUserInterface,
             CatalogDeserializer catalogDeserializer,
             MainWindowLoadedCommand mainWindowLoadedCommand,
             MainWindowClosedCommand mainWindowClosedCommand,
@@ -22,6 +24,7 @@ namespace TableCloth.ViewModels
             AppRestartCommand appRestartCommand,
             AboutThisAppCommand aboutThisAppCommand)
         {
+            _appUserInterface = appUserInterface;
             _mainWindowLoadedCommand = mainWindowLoadedCommand;
             _mainWindowClosedCommand = mainWindowClosedCommand;
             _launchSandboxCommand = launchSandboxCommand;
@@ -47,6 +50,7 @@ namespace TableCloth.ViewModels
             }
         }
 
+        private readonly AppUserInterface _appUserInterface;
         private readonly MainWindowLoadedCommand _mainWindowLoadedCommand;
         private readonly MainWindowClosedCommand _mainWindowClosedCommand;
         private readonly LaunchSandboxCommand _launchSandboxCommand;
@@ -71,6 +75,9 @@ namespace TableCloth.ViewModels
         private X509CertPair _selectedCertFile;
         private List<CatalogInternetService> _services;
         private List<CatalogInternetService> _selectedServices;
+
+        public AppUserInterface AppUserInterface
+            => _appUserInterface;
 
         public MainWindowLoadedCommand MainWindowLoadedCommand
             => _mainWindowLoadedCommand;

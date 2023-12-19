@@ -3,12 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:TableCloth.ViewModels"
         mc:Ignorable="d"
         Style="{DynamicResource MainWindowStyle}"
         Title="{StaticResource CertSelectWindow_Title}" Width="480" Height="320"
         MinWidth="640" MinHeight="480"
-        DataContext="{Binding CertSelectWindowViewModel, Source={StaticResource ViewModelLocator}}"
-        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
+        d:DataContext="{d:DesignInstance Type=vm:CertSelectWindowViewModel, IsDesignTimeCreatable=True}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="9*"/>

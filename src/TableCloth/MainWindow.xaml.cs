@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -12,9 +13,10 @@ namespace TableCloth
 {
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(MainWindowViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
 
         public MainWindowViewModel ViewModel
@@ -22,7 +24,10 @@ namespace TableCloth
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
-            var certSelectWindow = new CertSelectWindow() { Owner = this };
+            var certSelectWindow = ViewModel.AppUserInterface.CreateWindow<CertSelectWindow>(window =>
+            {
+                window.Owner = this;
+            });
             var response = certSelectWindow.ShowDialog();
 
             if (!response.HasValue || !response.Value)

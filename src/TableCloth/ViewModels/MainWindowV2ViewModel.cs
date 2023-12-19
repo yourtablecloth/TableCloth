@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using TableCloth.Components;
 using TableCloth.Contracts;
@@ -7,6 +8,9 @@ namespace TableCloth.ViewModels
 {
     public class MainWindowV2ViewModel : ViewModelBase
     {
+        [Obsolete("This constructor should be used only in design time context.")]
+        public MainWindowV2ViewModel() { }
+
         public MainWindowV2ViewModel(
             NavigationService navigationService,
             SandboxCleanupManager sandboxCleanupManager,

@@ -5,8 +5,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TableCloth.Commands;
 using TableCloth.Components;
-using TableCloth.Contracts;
-using TableCloth.Converters;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
@@ -18,6 +16,7 @@ namespace TableCloth.ViewModels
         public DetailPageViewModel() { }
 
         public DetailPageViewModel(
+            AppUserInterface appUserInterface,
             NavigationService navigationService,
             SharedLocations sharedLocations,
             X509CertPairScanner certPairScanner,
@@ -27,6 +26,7 @@ namespace TableCloth.ViewModels
             CreateShortcutCommand createShortcutCommand,
             CopyCommandLineCommand copyCommandLineCommand)
         {
+            _appUserInterface = appUserInterface;
             _navigationService = navigationService;
             _sharedLocations = sharedLocations;
             _certPairScanner = certPairScanner;
@@ -37,6 +37,7 @@ namespace TableCloth.ViewModels
             _copyCommandLineCommand = copyCommandLineCommand;
         }
 
+        private readonly AppUserInterface _appUserInterface;
         private readonly NavigationService _navigationService;
         private readonly SharedLocations _sharedLocations;
         private readonly X509CertPairScanner _certPairScanner;
@@ -61,6 +62,9 @@ namespace TableCloth.ViewModels
         private DateTime? _lastDisclaimerAgreedTime;
         private CatalogDocument _catalogDocument;
         private X509CertPair _selectedCertFile;
+
+        public AppUserInterface AppUserInterface
+            => _appUserInterface;
 
         public NavigationService NavigationService
             => _navigationService;

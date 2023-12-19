@@ -77,7 +77,7 @@ namespace TableCloth.Commands
 
             if (viewModel.ShouldNotifyDisclaimer)
             {
-                var disclaimerWindow = new DisclaimerWindow();
+                var disclaimerWindow = viewModel.AppUserInterface.CreateWindow<DisclaimerWindow>();
                 var result = disclaimerWindow.ShowDialog();
 
                 if (result.HasValue && result.Value)

@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,8 +11,11 @@ namespace TableCloth
 {
     public partial class CertSelectWindow : Window
     {
-        public CertSelectWindow()
-            => InitializeComponent();
+        public CertSelectWindow(CertSelectWindowViewModel viewModel)
+        {
+            InitializeComponent();
+            DataContext = viewModel;
+        }
 
         public CertSelectWindowViewModel ViewModel
             => (CertSelectWindowViewModel)DataContext;
@@ -82,11 +86,11 @@ namespace TableCloth
                         if (string.IsNullOrWhiteSpace(pfxFilePath) || !File.Exists(pfxFilePath))
                             return;
 
-                        var inputWindow = new InputPasswordWindow()
+                        var inputWindow = ViewModel.AppUserInterface.CreateWindow<InputPasswordWindow>(inputWindow =>
                         {
-                            PfxFilePath = pfxFilePath,
-                            Owner = this,
-                        };
+                            inputWindow.PfxFilePath = pfxFilePath;
+                            inputWindow.Owner = this;
+                        });
 
                         var inputPwdResult = inputWindow.ShowDialog();
 

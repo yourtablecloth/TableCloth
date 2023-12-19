@@ -13,9 +13,10 @@ namespace TableCloth
     /// </summary>
     public partial class AboutWindow : Window
     {
-        public AboutWindow()
+        public AboutWindow(AboutWindowViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
 
         public AboutWindowViewModel ViewModel

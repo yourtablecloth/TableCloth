@@ -30,9 +30,10 @@ namespace TableCloth
     /// </summary>
     public partial class MainWindowV2 : Window
     {
-        public MainWindowV2()
+        public MainWindowV2(MainWindowV2ViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
 
         public MainWindowV2ViewModel ViewModel
