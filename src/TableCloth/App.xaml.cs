@@ -82,11 +82,15 @@ namespace TableCloth
 
             var preferencesManager = Services.GetService<PreferencesManager>();
             var preferences = preferencesManager.LoadPreferences();
+            var window = default(Window);
 
             if (preferences.V2UIOptIn)
-                StartupUri = new Uri("MainWindowV2.xaml", UriKind.Relative);
+                window = Services.GetRequiredService<MainWindowV2>();
             else
-                StartupUri = new Uri("MainWindow.xaml", UriKind.Relative);
+                window = Services.GetRequiredService<MainWindow>();
+
+            this.MainWindow = window;
+            window.Show();
         }
 
         private IServiceProvider ConfigureServices()
@@ -158,6 +162,9 @@ namespace TableCloth
                     copyCommandLineCommand: provider.GetRequiredService<CopyCommandLineCommand>());
             });
             services.AddTransient<DetailPage>();
+
+            services.AddSingleton<MainWindow>();
+            services.AddSingleton<MainWindowV2>();
 
             // HTTP Request
             services.AddHttpClient(nameof(TableCloth), c =>
