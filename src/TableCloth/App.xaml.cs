@@ -144,12 +144,6 @@ namespace TableCloth
             });
             services.AddTransient<CertSelectWindow>();
 
-            services.AddTransient<InputPasswordWindowViewModel>(provider =>
-            {
-                return new InputPasswordWindowViewModel(
-                    certPairScanner: provider.GetRequiredService<X509CertPairScanner>(),
-                    appMessageBox: provider.GetRequiredService<AppMessageBox>());
-            });
             services.AddTransient<InputPasswordWindow>();
 
             services.AddSingleton<MainWindowViewModel>(provider =>

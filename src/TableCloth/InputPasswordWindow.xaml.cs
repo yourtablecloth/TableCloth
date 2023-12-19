@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Text;
 using System.Windows;
+using TableCloth.Components;
 using TableCloth.Models.Configuration;
-using TableCloth.Resources;
-using TableCloth.ViewModels;
 
 namespace TableCloth
 {
     public partial class InputPasswordWindow : Window
     {
-        public InputPasswordWindow(InputPasswordWindowViewModel viewModel)
+        public InputPasswordWindow(
+            X509CertPairScanner certPairScanner,
+            AppMessageBox appMessageBox)
         {
+            _certPairScanner = certPairScanner;
+            _appMessageBox = appMessageBox;
+
             InitializeComponent();
-            DataContext = viewModel;
         }
 
-        public InputPasswordWindowViewModel ViewModel
-            => (InputPasswordWindowViewModel)DataContext;
+        private readonly X509CertPairScanner _certPairScanner;
+        private readonly AppMessageBox _appMessageBox;
 
         public string PfxFilePath { get; set; }
 
@@ -34,7 +37,7 @@ namespace TableCloth
         {
             try
             {
-                var certPair = ViewModel.CertPairScanner.CreateX509Cert(PfxFilePath, PasswordInput.SecurePassword);
+                var certPair = _certPairScanner.CreateX509Cert(PfxFilePath, PasswordInput.SecurePassword);
 
                 if (certPair != null)
                     ValidatedCertPair = certPair;
@@ -43,7 +46,7 @@ namespace TableCloth
             }
             catch (Exception ex)
             {
-                ViewModel.AppMessageBox.DisplayError(ex, false);
+                _appMessageBox.DisplayError(ex, false);
                 PasswordInput.Focus();
             }
         }
