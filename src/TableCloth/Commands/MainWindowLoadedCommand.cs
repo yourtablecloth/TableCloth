@@ -47,7 +47,9 @@ namespace TableCloth.Commands
             if (parameter is not MainWindowViewModel viewModel)
                 throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
-            this.visualThemeManager.ApplyAutoThemeChangeToMainWindow();
+            this.visualThemeManager.ApplyAutoThemeChange(
+                Application.Current.MainWindow);
+
             var currentConfig = this.preferencesManager.LoadPreferences();
 
             if (currentConfig == null)
