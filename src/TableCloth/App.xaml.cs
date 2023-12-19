@@ -134,15 +134,6 @@ namespace TableCloth
 
             // UI
             services.AddTransient<DisclaimerWindow>();
-
-            services.AddTransient<AboutWindowViewModel>(provider =>
-            {
-                return new AboutWindowViewModel(
-                    appMessageBox: provider.GetRequiredService<AppMessageBox>(),
-                    catalogDeserializer: provider.GetRequiredService<CatalogDeserializer>(),
-                    gitHubReleaseFinder: provider.GetRequiredService<ResourceResolver>(),
-                    licenseDescriptor: provider.GetRequiredService<LicenseDescriptor>());
-            });
             services.AddTransient<AboutWindow>();
 
             services.AddTransient<CertSelectWindowViewModel>(provider =>

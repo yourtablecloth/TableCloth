@@ -13,20 +13,30 @@ namespace TableCloth
     /// </summary>
     public partial class AboutWindow : Window
     {
-        public AboutWindow(AboutWindowViewModel viewModel)
+        public AboutWindow(
+            AppMessageBox appMessageBox,
+            CatalogDeserializer catalogDeserializer,
+            ResourceResolver resourceResolver,
+            LicenseDescriptor licenseDescriptor)
         {
+            this._appMessageBox = appMessageBox;
+            this._catalogDeserializer = catalogDeserializer;
+            this._resourceResolver = resourceResolver;
+            this._licenseDescriptor = licenseDescriptor;
+
             InitializeComponent();
-            DataContext = viewModel;
         }
 
-        public AboutWindowViewModel ViewModel
-            => (AboutWindowViewModel)DataContext;
+        private readonly AppMessageBox _appMessageBox;
+        private readonly CatalogDeserializer _catalogDeserializer;
+        private readonly ResourceResolver _resourceResolver;
+        private readonly LicenseDescriptor _licenseDescriptor;
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             AppVersionLabel.Content = StringResources.Get_AppVersion();
-            CatalogDateLabel.Content = ViewModel.CatalogVersion?.ToString("yyyy-MM-dd HH:mm:ss") ?? StringResources.UnknownText;
-            LicenseDetails.Text = await ViewModel.LicenseDescriptor.GetLicenseDescriptions();
+            CatalogDateLabel.Content = _catalogDeserializer.CatalogLastModified?.ToString("yyyy-MM-dd HH:mm:ss") ?? StringResources.UnknownText;
+            LicenseDetails.Text = await _licenseDescriptor.GetLicenseDescriptions();
         }
 
         private void OkayButton_Click(object sender, RoutedEventArgs e)
@@ -48,7 +58,7 @@ namespace TableCloth
 
             if (!File.Exists(msinfoPath))
             {
-                ViewModel.AppMessageBox.DisplayError(StringResources.Error_Cannot_Run_SysInfo, false);
+                _appMessageBox.DisplayError(StringResources.Error_Cannot_Run_SysInfo, false);
                 return;
             }
 
@@ -64,11 +74,11 @@ namespace TableCloth
                 var repo = "TableCloth";
                 var thisVersion = GetType().Assembly.GetName().Version;
 
-                if (Version.TryParse(await ViewModel.GitHubReleaseFinder.GetLatestVersion(owner, repo), out Version parsedVersion) &&
+                if (Version.TryParse(await _resourceResolver.GetLatestVersion(owner, repo), out Version parsedVersion) &&
                     thisVersion != null && parsedVersion > thisVersion)
                 {
-                    ViewModel.AppMessageBox.DisplayInfo(StringResources.Info_UpdateRequired);
-                    var targetUrl = await ViewModel.GitHubReleaseFinder.GetDownloadUrl(owner, repo);
+                    _appMessageBox.DisplayInfo(StringResources.Info_UpdateRequired);
+                    var targetUrl = await _resourceResolver.GetDownloadUrl(owner, repo);
                     var psi = new ProcessStartInfo(targetUrl.AbsoluteUri) { UseShellExecute = true, };
                     Process.Start(psi);
                     return;
@@ -76,7 +86,7 @@ namespace TableCloth
             }
             catch { }
 
-            ViewModel.AppMessageBox.DisplayInfo(StringResources.Info_UpdateNotRequired);
+            _appMessageBox.DisplayInfo(StringResources.Info_UpdateNotRequired);
         }
 
         private void OpenPrivacyHyperlink_Click(object sender, RoutedEventArgs e)
