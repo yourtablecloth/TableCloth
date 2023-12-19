@@ -190,8 +190,7 @@ namespace TableCloth.Pages
 
         private void SiteCatalogFilter_LostFocus(object sender, RoutedEventArgs e)
         {
-            NavigationService?.Navigate(
-                new Uri("Pages/CatalogPage.xaml", UriKind.Relative),
+            ViewModel.NavigationService.NavigateTo<CatalogPageViewModel>(
                 new CatalogPageArgumentModel(SiteCatalogFilter.Text));
         }
 
