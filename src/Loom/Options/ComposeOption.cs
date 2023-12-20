@@ -78,6 +78,6 @@ namespace Loom.Options
         [Option('o', "output",
             HelpText = "Output file path.",
             Required = true)]
-        public string OutputFilePath { get; set; }
+        public string OutputFilePath { get; set; } = "output.wsbx";
     }
 }

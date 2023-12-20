@@ -70,6 +70,6 @@ namespace Loom.Options
         [Option('i', "input",
             HelpText = "Existing input wsbx file path.",
             Required = true)]
-        public string InputFilePath { get; set; }
+        public string InputFilePath { get; set; } = string.Empty;
     }
 }
