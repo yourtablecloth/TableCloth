@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-	<TargetFramework>net6.0-windows10.0.18362.0</TargetFramework>
+	<TargetFramework>net8.0-windows10.0.18362.0</TargetFramework>
     <StartupObject>TableCloth.App</StartupObject>
     <ApplicationIcon>App.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
