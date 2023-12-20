@@ -231,7 +231,7 @@ namespace TableCloth.ViewModels
             set => SetProperty(ref _selectedServices, value);
         }
 
-        public List<string> TemporaryDirectories { get; } = [];
+        public List<string> TemporaryDirectories { get; } = new List<string>();
 
         public string? CurrentDirectory { get; set; }
 
