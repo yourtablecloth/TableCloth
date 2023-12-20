@@ -4,12 +4,13 @@ using System.Linq;
 using System.Windows.Data;
 using TableCloth.Commands;
 using TableCloth.Components;
+using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase, ICertSelect
     {
         [Obsolete("This constructor should be used only in design time context.")]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -24,7 +25,8 @@ namespace TableCloth.ViewModels
             LaunchSandboxCommand launchSandboxCommand,
             CreateShortcutCommand createShortcutCommand,
             AppRestartCommand appRestartCommand,
-            AboutThisAppCommand aboutThisAppCommand)
+            AboutThisAppCommand aboutThisAppCommand,
+            CertSelectCommand certSelectCommand)
         {
             _appUserInterface = appUserInterface;
             _catalogDeserializer = catalogDeserializer;
@@ -34,6 +36,7 @@ namespace TableCloth.ViewModels
             _createShortcutCommand = createShortcutCommand;
             _appRestartCommand = appRestartCommand;
             _aboutThisAppCommand = aboutThisAppCommand;
+            _certSelectCommand = certSelectCommand;
 
             try
             {
@@ -67,6 +70,7 @@ namespace TableCloth.ViewModels
         private readonly CreateShortcutCommand _createShortcutCommand;
         private readonly AppRestartCommand _appRestartCommand;
         private readonly AboutThisAppCommand _aboutThisAppCommand;
+        private readonly CertSelectCommand _certSelectCommand;
 
         private string _filterText = string.Empty;
         private bool _mapNpkiCert;
@@ -106,6 +110,9 @@ namespace TableCloth.ViewModels
 
         public AboutThisAppCommand AboutThisAppCommand
             => _aboutThisAppCommand;
+
+        public CertSelectCommand CertSelectCommand
+            => _certSelectCommand;
 
         public string FilterText
         {

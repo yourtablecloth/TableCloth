@@ -12,7 +12,7 @@ using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels
 {
-    public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument
+    public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICertSelect
     {
         [Obsolete("This constructor should be used only in design time context.")]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -28,7 +28,8 @@ namespace TableCloth.ViewModels
             AppRestartManager appRestartManager,
             LaunchSandboxCommand launchSandboxCommand,
             CreateShortcutCommand createShortcutCommand,
-            CopyCommandLineCommand copyCommandLineCommand)
+            CopyCommandLineCommand copyCommandLineCommand,
+            CertSelectCommand certSelectCommand)
         {
             _appUserInterface = appUserInterface;
             _navigationService = navigationService;
@@ -39,6 +40,7 @@ namespace TableCloth.ViewModels
             _launchSandboxCommand = launchSandboxCommand;
             _createShortcutCommand = createShortcutCommand;
             _copyCommandLineCommand = copyCommandLineCommand;
+            _certSelectCommand = certSelectCommand;
         }
 
         private readonly AppUserInterface _appUserInterface;
@@ -50,6 +52,7 @@ namespace TableCloth.ViewModels
         private readonly LaunchSandboxCommand _launchSandboxCommand;
         private readonly CreateShortcutCommand _createShortcutCommand;
         private readonly CopyCommandLineCommand _copyCommandLineCommand;
+        private readonly CertSelectCommand _certSelectCommand;
 
         private CatalogInternetService? _selectedService;
         private bool _mapNpkiCert;
@@ -99,6 +102,9 @@ namespace TableCloth.ViewModels
 
         public CopyCommandLineCommand CopyCommandLineCommand
             => _copyCommandLineCommand;
+
+        public CertSelectCommand CertSelectCommand
+            => _certSelectCommand;
 
         public string? Id
             => _selectedService?.Id;

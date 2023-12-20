@@ -159,20 +159,7 @@ namespace TableCloth.Pages
 
         private void GoBackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (NavigationService.CanGoBack)
-                NavigationService.GoBack();
-        }
-
-        private void BrowseButton_Click(object sender, RoutedEventArgs e)
-        {
-            var certSelectWindow = ViewModel.AppUserInterface.CreateWindow<CertSelectWindow>();
-            var response = certSelectWindow.ShowDialog();
-
-            if (!response.HasValue || !response.Value)
-                return;
-
-            if (certSelectWindow.ViewModel.SelectedCertPair != null)
-                ViewModel.SelectedCertFile = certSelectWindow.ViewModel.SelectedCertPair;
+            ViewModel.NavigationService.GoBack();
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)

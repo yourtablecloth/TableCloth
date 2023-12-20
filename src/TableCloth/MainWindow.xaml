@@ -151,7 +151,11 @@
                         </Grid.RowDefinitions>
                         <WrapPanel Grid.Row="0" VerticalAlignment="Center" Orientation="Horizontal">
                             <CheckBox VerticalAlignment="Center" Content="{StaticResource MainWindow_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
-                            <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{StaticResource MainWindow_BrowseButtonText}" Click="BrowseButton_Click" IsEnabled="{Binding Path='MapNpkiCert'}" />
+                            <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{StaticResource MainWindow_BrowseButtonText}" Command="{Binding CertSelectCommand}" IsEnabled="{Binding Path='MapNpkiCert'}">
+                                <Button.CommandParameter>
+                                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                                </Button.CommandParameter>
+                            </Button>
                         </WrapPanel>
                         <Label Grid.Row="1" VerticalAlignment="Stretch" Margin="0 5 0 0" Content="{Binding Path='SelectedCertFile'}"  IsEnabled="{Binding Path='MapNpkiCert'}">
                         </Label>

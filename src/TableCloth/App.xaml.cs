@@ -128,6 +128,7 @@ namespace TableCloth
             services.AddSingleton<LaunchSandboxCommand>();
             services.AddSingleton<CreateShortcutCommand>();
             services.AddSingleton<CopyCommandLineCommand>();
+            services.AddSingleton<CertSelectCommand>();
             services.AddSingleton<AppRestartCommand>();
             services.AddSingleton<AboutThisAppCommand>();
             services.AddSingleton<MainWindowLoadedCommand>();
@@ -143,7 +144,7 @@ namespace TableCloth
             services.AddTransient<CertSelectWindowViewModel>();
             services.AddTransient<CertSelectWindow>();
 
-            services.AddSingleton<MainWindowViewModel>(provider =>
+            services.AddTransient<MainWindowViewModel>(provider =>
             {
                 return new MainWindowViewModel(
                     appUserInterface: provider.GetRequiredService<AppUserInterface>(),
@@ -153,7 +154,8 @@ namespace TableCloth
                     launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
                     createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
                     appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),
-                    aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>());
+                    aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>(),
+                    certSelectCommand: provider.GetRequiredService<CertSelectCommand>());
             });
             services.AddSingleton<MainWindow>();
 
@@ -178,7 +180,8 @@ namespace TableCloth
                     appRestartManager: provider.GetRequiredService<AppRestartManager>(),
                     launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
                     createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
-                    copyCommandLineCommand: provider.GetRequiredService<CopyCommandLineCommand>());
+                    copyCommandLineCommand: provider.GetRequiredService<CopyCommandLineCommand>(),
+                    certSelectCommand: provider.GetRequiredService<CertSelectCommand>());
             });
             services.AddTransient<DetailPage>();
 

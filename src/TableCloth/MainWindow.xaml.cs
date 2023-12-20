@@ -22,21 +22,6 @@ namespace TableCloth
         public MainWindowViewModel ViewModel
             => (MainWindowViewModel)DataContext;
 
-        private void BrowseButton_Click(object sender, RoutedEventArgs e)
-        {
-            var certSelectWindow = ViewModel.AppUserInterface.CreateWindow<CertSelectWindow>(window =>
-            {
-                window.Owner = this;
-            });
-            var response = certSelectWindow.ShowDialog();
-
-            if (!response.HasValue || !response.Value)
-                return;
-
-            if (certSelectWindow.ViewModel.SelectedCertPair != null)
-                ViewModel.SelectedCertFile = certSelectWindow.ViewModel.SelectedCertPair;
-        }
-
         private void SiteList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listBox = (ListBox)e.Source;
