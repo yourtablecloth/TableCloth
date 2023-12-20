@@ -132,6 +132,8 @@ namespace TableCloth
             services.AddSingleton<AboutThisAppCommand>();
             services.AddSingleton<MainWindowLoadedCommand>();
             services.AddSingleton<MainWindowClosedCommand>();
+            services.AddSingleton<MainWindowV2LoadedCommand>();
+            services.AddSingleton<MainWindowV2ClosedCommand>();
 
             // UI
             services.AddTransient<DisclaimerWindow>();
@@ -183,11 +185,8 @@ namespace TableCloth
             services.AddSingleton<MainWindowV2ViewModel>(provider =>
             {
                 return new MainWindowV2ViewModel(
-                    navigationService: provider.GetRequiredService<NavigationService>(),
-                    sandboxCleanupManager: provider.GetRequiredService<SandboxCleanupManager>(),
-                    appRestartManager: provider.GetRequiredService<AppRestartManager>(),
-                    commandLineParser: provider.GetRequiredService<CommandLineParser>(),
-                    visualThemeManager: provider.GetRequiredService<VisualThemeManager>());
+                    mainWindowV2LoadedCommand: provider.GetRequiredService<MainWindowV2LoadedCommand>(),
+                    mainWindowV2ClosedCommand: provider.GetRequiredService<MainWindowV2ClosedCommand>());
             });
             services.AddSingleton<MainWindowV2>();
 

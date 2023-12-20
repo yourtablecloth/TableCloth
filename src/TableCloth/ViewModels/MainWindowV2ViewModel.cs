@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Contracts;
 
@@ -14,38 +15,20 @@ namespace TableCloth.ViewModels
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public MainWindowV2ViewModel(
-            NavigationService navigationService,
-            SandboxCleanupManager sandboxCleanupManager,
-            AppRestartManager appRestartManager,
-            CommandLineParser commandLineParser,
-            VisualThemeManager visualThemeManager)
+            MainWindowV2LoadedCommand mainWindowV2LoadedCommand,
+            MainWindowV2ClosedCommand mainWindowV2ClosedCommand)
         {
-            _navigationService = navigationService;
-            _sandboxCleanupManager = sandboxCleanupManager;
-            _appRestartManager = appRestartManager;
-            _commandLineParser = commandLineParser;
-            _visualThemeManager = visualThemeManager;
+            _mainWindowV2LoadedCommand = mainWindowV2LoadedCommand;
+            _mainWindowV2ClosedCommand = mainWindowV2ClosedCommand;
         }
 
-        private readonly NavigationService _navigationService;
-        private readonly SandboxCleanupManager _sandboxCleanupManager;
-        private readonly AppRestartManager _appRestartManager;
-        private readonly CommandLineParser _commandLineParser;
-        private readonly VisualThemeManager _visualThemeManager;
+        private readonly MainWindowV2LoadedCommand _mainWindowV2LoadedCommand;
+        private readonly MainWindowV2ClosedCommand _mainWindowV2ClosedCommand;
 
-        public NavigationService NavigationService
-            => _navigationService;
+        public MainWindowV2LoadedCommand MainWindowV2LoadedCommand
+            => _mainWindowV2LoadedCommand;
 
-        public SandboxCleanupManager SandboxCleanupManager
-            => _sandboxCleanupManager;
-
-        public AppRestartManager AppRestartManager
-            => _appRestartManager;
-
-        public CommandLineParser CommandLineParser
-            => _commandLineParser;
-
-        public VisualThemeManager VisualThemeManager
-            => _visualThemeManager;
+        public MainWindowV2ClosedCommand MainWindowV2ClosedCommand
+            => _mainWindowV2ClosedCommand;
     }
 }

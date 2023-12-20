@@ -4,14 +4,29 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:TableCloth.ViewModels"
-        xmlns:local="clr-namespace:TableCloth"
+        xmlns:local="clr-namespace:TableCloth" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Style="{DynamicResource MainWindowStyle}"
-        Loaded="Window_Loaded" Closed="Window_Closed"
         MinWidth="800" MinHeight="600"
         Title="{StaticResource MainWindowV2_Title}" Width="800" Height="600"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowV2ViewModel, IsDesignTimeCreatable=True}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding MainWindowV2LoadedCommand}">
+                <i:InvokeCommandAction.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                </i:InvokeCommandAction.CommandParameter>
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Closed">
+            <i:InvokeCommandAction Command="{Binding MainWindowV2ClosedCommand}">
+                <i:InvokeCommandAction.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                </i:InvokeCommandAction.CommandParameter>
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Frame x:Name="PageFrame" NavigationUIVisibility="Hidden" />
     </Grid>

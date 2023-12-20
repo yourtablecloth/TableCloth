@@ -4,9 +4,9 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands
 {
-    public sealed class MainWindowClosedCommand : CommandBase
+    public sealed class MainWindowV2ClosedCommand : CommandBase
     {
-        public MainWindowClosedCommand(
+        public MainWindowV2ClosedCommand(
             SandboxCleanupManager sandboxCleanupManager,
             AppRestartManager appRestartManager)
         {
