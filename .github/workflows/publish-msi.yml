@@ -36,7 +36,7 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
 
     # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
@@ -110,7 +110,7 @@ jobs:
     - name: Run setup builder
       run: |
         $SetupBuilderFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\${{ env.Setup_Project_Name }}.exe')
-        $InputDirPath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\net6.0-windows10.0.18362.0\win-${{ env.Platform }}\publish')
+        $InputDirPath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\net8.0-windows10.0.18362.0\win-${{ env.Platform }}\publish')
         $PfxFileFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\GitHubActionsWorkflow.pfx')
         $IconFilePath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\App.ico')
         echo $SetupBuilderFullPath
@@ -143,6 +143,6 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: Loom CLI (${{ matrix.platform }}, ${{ matrix.configuration }})
-        path: src\Loom\bin\${{ env.Platform }}\${{ matrix.configuration }}\net6.0\win-${{ env.Platform }}\publish\Loom.exe
+        path: src\Loom\bin\${{ env.Platform }}\${{ matrix.configuration }}\net8.0\win-${{ env.Platform }}\publish\Loom.exe
         if-no-files-found: error
         retention-days: 90
