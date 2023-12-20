@@ -12,20 +12,20 @@ namespace TableCloth.Models
     public sealed class MainWindowArgumentModel
     {
         public MainWindowArgumentModel(
-            IEnumerable<CatalogInternetService> selectedServices,
+            IEnumerable<CatalogInternetService>? selectedServices,
             bool builtFromCommandLine,
             bool? enableMicrophone = default,
             bool? enableWebCam = default,
             bool? enablePrinters = default,
-            string certPrivateKeyPath = default,
-            string certPublicKeyPath = default,
+            string? certPrivateKeyPath = default,
+            string? certPublicKeyPath = default,
             bool? installEveryonesPrinter = default,
             bool? installAdobeReader = default,
             bool? installHancomOfficeViewer = default,
             bool? installRaiDrive = default,
             bool? enableInternetExplorerMode = default,
             bool showCommandLineHelp = default,
-            string currentSearchString = default)
+            string? currentSearchString = default)
         {
             SelectedServices = selectedServices ?? new List<CatalogInternetService>();
             EnableMicrophone = enableMicrophone;
@@ -40,7 +40,7 @@ namespace TableCloth.Models
             EnableInternetExplorerMode = enableInternetExplorerMode;
             ShowCommandLineHelp = showCommandLineHelp;
             BuiltFromCommandLine = builtFromCommandLine;
-            CurrentSearchString = currentSearchString;
+            CurrentSearchString = currentSearchString ?? string.Empty;
         }
 
         public bool BuiltFromCommandLine { get; private set; } = false;
@@ -53,9 +53,9 @@ namespace TableCloth.Models
 
         public bool? EnablePrinters { get; private set; }
 
-        public string CertPrivateKeyPath { get; private set; }
+        public string? CertPrivateKeyPath { get; private set; }
 
-        public string CertPublicKeyPath { get; private set; }
+        public string? CertPublicKeyPath { get; private set; }
 
         public bool? InstallEveryonesPrinter { get; private set; }
 

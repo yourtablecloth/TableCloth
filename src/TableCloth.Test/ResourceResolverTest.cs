@@ -13,7 +13,7 @@ namespace TableCloth.Test
         public ResourceResolverTest(ContainerFixture fixture)
         {
             serviceProvider = fixture.ServiceProvider;
-            resourceResolver = serviceProvider.GetService<ResourceResolver>() ??
+            resourceResolver = serviceProvider.GetRequiredService<ResourceResolver>() ??
                 throw new Exception("Cannot obtain resource resolver due to configuration");
         }
 

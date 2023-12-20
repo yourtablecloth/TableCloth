@@ -26,7 +26,7 @@ namespace TableCloth
 
         // https://stackoverflow.com/questions/2135113/how-do-you-do-transition-effects-using-the-frame-control-in-wpf
         private bool _allowDirectNavigation = true;
-        private NavigatingCancelEventArgs _navArgs = null;
+        private NavigatingCancelEventArgs? _navArgs = null;
         private double _oldValue = 0d;
 
         private readonly Duration _duration = new Duration(TimeSpan.FromSeconds(0.25));
@@ -52,28 +52,31 @@ namespace TableCloth
             PageFrame.BeginAnimation(_targetProperty, animation);
         }
 
-        private void DoubleAnimation_SlideCompleted(object sender, EventArgs e)
+        private void DoubleAnimation_SlideCompleted(object? sender, EventArgs e)
         {
             var navService = ViewModel.NavigationService;
             _allowDirectNavigation = true;
 
-            switch (_navArgs.NavigationMode)
+            if (_navArgs != null)
             {
-                case NavigationMode.New:
-                    if (_navArgs.Uri.Equals(new Uri("Pages/CatalogPage.xaml", UriKind.Relative)))
-                        navService.NavigateTo<CatalogPage>(_navArgs.ExtraData);
-                    else if (_navArgs.Uri.Equals(new Uri("Pages/DetailPage.xaml", UriKind.Relative)))
-                        navService.NavigateTo<DetailPage>(_navArgs.ExtraData);
-                    break;
-                case NavigationMode.Back:
-                    navService.GoBack();
-                    break;
-                case NavigationMode.Forward:
-                    navService.GoForward();
-                    break;
-                case NavigationMode.Refresh:
-                    navService.Refresh();
-                    break;
+                switch (_navArgs.NavigationMode)
+                {
+                    case NavigationMode.New:
+                        if (_navArgs.Uri.Equals(new Uri("Pages/CatalogPage.xaml", UriKind.Relative)))
+                            navService.NavigateTo<CatalogPage>(_navArgs.ExtraData);
+                        else if (_navArgs.Uri.Equals(new Uri("Pages/DetailPage.xaml", UriKind.Relative)))
+                            navService.NavigateTo<DetailPage>(_navArgs.ExtraData);
+                        break;
+                    case NavigationMode.Back:
+                        navService.GoBack();
+                        break;
+                    case NavigationMode.Forward:
+                        navService.GoForward();
+                        break;
+                    case NavigationMode.Refresh:
+                        navService.Refresh();
+                        break;
+                }
             }
 
             Dispatcher.BeginInvoke(DispatcherPriority.Loaded,

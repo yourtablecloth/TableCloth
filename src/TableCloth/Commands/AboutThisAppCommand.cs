@@ -11,7 +11,7 @@ namespace TableCloth.Commands
 
         private readonly AppUserInterface appUserInterface;
 
-        public override void Execute(object parameter)
+        public override void Execute(object? parameter)
         {
             var aboutWindow = this.appUserInterface.CreateWindow<AboutWindow>();
             aboutWindow.ShowDialog();

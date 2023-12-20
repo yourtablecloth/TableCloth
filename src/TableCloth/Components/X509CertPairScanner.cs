@@ -113,7 +113,12 @@ namespace TableCloth.Components
             using (X509Certificate2 cert = new X509Certificate2(pfxFilePath, copiedPassword, X509KeyStorageFlags.Exportable))
             {
                 var publicKey = cert.Export(X509ContentType.Cert);
-                var privateKey = cert.GetRSAPrivateKey().ExportEncryptedPkcs8PrivateKey(copiedPassword,
+                var rsaPrivateKey = cert.GetRSAPrivateKey();
+
+                if (rsaPrivateKey == null)
+                    throw new Exception("Cannot obtain RSA private key.");
+
+                var privateKey = rsaPrivateKey.ExportEncryptedPkcs8PrivateKey(copiedPassword,
                     new PbeParameters(PbeEncryptionAlgorithm.TripleDes3KeyPkcs12, HashAlgorithmName.SHA1, 2048));
 
                 return new X509CertPair(publicKey, privateKey);

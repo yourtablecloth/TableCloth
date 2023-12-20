@@ -10,14 +10,22 @@ namespace TableCloth.Models.WindowsSandbox
         public const string DefaultAssetPath = @"C:\assets";
 
         [XmlElement("HostFolder")]
-        public string HostFolder { get; set; }
+        public string HostFolder { get; set; } = string.Empty;
 
         // https://docs.microsoft.com/en-us/windows/whats-new/whats-new-windows-10-version-2004#virtualization
         [XmlElement("SandboxFolder")]
-        public string SandboxFolder { get; set; }
+        public string
+#if !NETFX
+            ?
+#endif
+            SandboxFolder { get; set; }
 
         [XmlElement("ReadOnly")]
-        public string ReadOnly { get; set; }
+        public string
+#if !NETFX
+            ?
+#endif
+            ReadOnly { get; set; }
 
         public bool ShouldSerializeSandboxFolder()
             => !string.IsNullOrWhiteSpace(SandboxFolder);

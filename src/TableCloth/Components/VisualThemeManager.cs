@@ -33,7 +33,7 @@ namespace TableCloth.Components
                 {
                     if (personalizeKey.GetValueKind("AppsUseLightTheme") == RegistryValueKind.DWord)
                     {
-                        return (int)personalizeKey.GetValue("AppsUseLightTheme", 1) > 0;
+                        return personalizeKey.GetValue<int>("AppsUseLightTheme", 1) > 0;
                     }
                 }
             }

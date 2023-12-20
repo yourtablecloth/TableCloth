@@ -13,7 +13,9 @@ namespace TableCloth.ViewModels
     public class CatalogPageViewModel : ViewModelBase, IPageExtraArgument
     {
         [Obsolete("This constructor should be used only in design time context.")]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public CatalogPageViewModel() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public CatalogPageViewModel(
             CatalogCacheManager catalogCacheManager,
@@ -21,26 +23,34 @@ namespace TableCloth.ViewModels
             AppRestartCommand appRestartCommand,
             AboutThisAppCommand aboutThisAppCommand)
         {
+            _catalogCacheManager = catalogCacheManager;
             _navigationService = navigationService;
             _appRestartCommand = appRestartCommand;
             _aboutThisAppCommand = aboutThisAppCommand;
 
-            CatalogDocument = catalogCacheManager.CatalogDocument;
-            Services = CatalogDocument.Services.OrderBy(service => service.Category.GetType().GetField(service.Category.ToString())
-                ?.GetCustomAttribute<EnumDisplayOrderAttribute>()
-                ?.Order ?? 0).ToList();
+            var catalogDoc = _catalogCacheManager.CatalogDocument;
+
+            if (catalogDoc != null)
+            {
+                CatalogDocument = catalogDoc;
+                Services = CatalogDocument.Services
+                    .OrderBy(service => typeof(CatalogInternetServiceCategory).GetField(service.Category.ToString())
+                    ?.GetCustomAttribute<EnumDisplayOrderAttribute>()
+                    ?.Order ?? 0).ToList();
+            }
         }
 
+        private readonly CatalogCacheManager _catalogCacheManager;
+        private readonly NavigationService _navigationService;
         private readonly AppRestartCommand _appRestartCommand;
         private readonly AboutThisAppCommand _aboutThisAppCommand;
 
-        private CatalogDocument _catalogDocument;
-        private NavigationService _navigationService;
-        private List<CatalogInternetService> _services;
-        private CatalogInternetService _selectedService;
+        private CatalogDocument? _catalogDocument;
+        private List<CatalogInternetService> _services = new List<CatalogInternetService>();
+        private CatalogInternetService? _selectedService;
         private CatalogInternetServiceCategory? _selectedServiceCategory;
 
-        public object ExtraArgument { get; set; }
+        public object? ExtraArgument { get; set; }
 
         public NavigationService NavigationService
             => _navigationService;
@@ -51,7 +61,7 @@ namespace TableCloth.ViewModels
         public AboutThisAppCommand AboutThisAppCommand
             => _aboutThisAppCommand;
 
-        public CatalogDocument CatalogDocument
+        public CatalogDocument? CatalogDocument
         {
             get => _catalogDocument;
             set => SetProperty(ref _catalogDocument, value);
@@ -66,7 +76,7 @@ namespace TableCloth.ViewModels
         public bool HasServices
             => Services != null && Services.Any();
 
-        public CatalogInternetService SelectedService
+        public CatalogInternetService? SelectedService
         {
             get => _selectedService;
             set

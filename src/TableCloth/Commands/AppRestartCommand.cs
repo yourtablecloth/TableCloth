@@ -12,7 +12,7 @@ namespace TableCloth.Commands
 
         private readonly AppRestartManager appRestartManager;
 
-        public override void Execute(object parameter)
+        public override void Execute(object? parameter)
         {
             this.appRestartManager.RestartNow();
         }

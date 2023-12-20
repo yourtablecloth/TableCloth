@@ -32,7 +32,7 @@ namespace TableCloth
 
         private void RefreshCertPairs()
         {
-            ViewModel.SelectedCertPair = null;
+            ViewModel.SelectedCertPair = default;
             ViewModel.CertPairs = _certPairScanner.ScanX509Pairs(
                 _certPairScanner.GetCandidateDirectories()).ToList();
 
@@ -90,7 +90,8 @@ namespace TableCloth
                         if (string.IsNullOrWhiteSpace(firstFilePath) || !File.Exists(firstFilePath))
                             return;
 
-                        var basePath = Path.GetDirectoryName(firstFilePath);
+                        var basePath = Path.GetDirectoryName(firstFilePath)
+                            ?? throw new Exception($"Cannot obtain the directory name of '{firstFilePath}'.");
                         var signCertDerPath = Path.Combine(basePath, "signCert.der");
                         var signPriKeyPath = Path.Combine(basePath, "signPri.key");
 

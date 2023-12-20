@@ -80,7 +80,7 @@ namespace TableCloth
 
         #region Sort Support
 
-        private GridViewColumnHeader _lastHeaderClicked = null;
+        private GridViewColumnHeader? _lastHeaderClicked = null;
         private ListSortDirection? _lastDirection = null;
 
         private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e)
@@ -145,7 +145,7 @@ namespace TableCloth
                 }
             }
         }
-        private void Sort(string sortBy, ListSortDirection? direction)
+        private void Sort(string? sortBy, ListSortDirection? direction)
         {
             var dataView = CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource);
             dataView.SortDescriptions.Clear();

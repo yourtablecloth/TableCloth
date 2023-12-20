@@ -18,7 +18,8 @@ namespace TableCloth.Components
 
         private IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
         {
-            var asm = Assembly.GetEntryAssembly();
+            var asm = Assembly.GetEntryAssembly()
+                ?? throw new Exception("Cannot obtain entry assembly information.");
 
             var bclPublicKeyTokens = new byte[][] {
                 new byte[] { 0xb0, 0x3f, 0x5f, 0x7f, 0x11, 0xd5, 0x0a, 0x3a, },

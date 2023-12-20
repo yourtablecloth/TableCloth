@@ -13,18 +13,30 @@ namespace TableCloth.Models.Catalog
 		/// 도메인
 		/// </summary>
 		[XmlAttribute("Domain")]
-		public string Domain { get; set; }
+		public string
+#if !NETFX
+            ?
+#endif
+			Domain { get; set; }
 
 		/// <summary>
 		/// 동작 모드
 		/// </summary>
 		[XmlAttribute("Mode")]
-		public string Mode { get; set; }
+		public string
+#if !NETFX
+            ?
+#endif
+			Mode { get; set; }
 
 		/// <summary>
 		/// 브라우저 실행 방법
 		/// </summary>
 		[XmlAttribute("OpenIn")]
-		public string OpenIn { get; set; }
+		public string
+#if !NETFX
+            ?
+#endif
+			OpenIn { get; set; }
 	}
 }

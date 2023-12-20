@@ -37,7 +37,7 @@ namespace TableCloth.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             var extraArg = ViewModel.ExtraArgument as DetailPageArgumentModel;
-            ViewModel.SelectedService = extraArg.SelectedService;
+            ViewModel.SelectedService = extraArg?.SelectedService;
 
             var currentConfig = ViewModel.PreferencesManager.LoadPreferences();
 
@@ -75,15 +75,17 @@ namespace TableCloth.Pages
                     ViewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
             }
 
-            if (extraArg.BuiltFromCommandLine &&
-                extraArg.SelectedService != null)
-                ViewModel.LaunchSandboxCommand.Execute(extraArg);
+            if (extraArg != null)
+            {
+                if (extraArg.BuiltFromCommandLine && extraArg.SelectedService != null)
+                    ViewModel.LaunchSandboxCommand.Execute(extraArg);
 
-            if (!string.IsNullOrEmpty(extraArg.CurrentSearchString))
-                SiteCatalogFilter.Text = extraArg.CurrentSearchString;
+                if (!string.IsNullOrEmpty(extraArg.CurrentSearchString))
+                    SiteCatalogFilter.Text = extraArg.CurrentSearchString;
+            }
         }
 
-        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             var currentConfig = ViewModel.PreferencesManager.LoadPreferences();
 
@@ -178,7 +180,7 @@ namespace TableCloth.Pages
             if (sender is not Hyperlink link)
                 return;
 
-            if (!Uri.TryCreate(link.Tag?.ToString(), UriKind.Absolute, out Uri uri) ||
+            if (!Uri.TryCreate(link.Tag?.ToString(), UriKind.Absolute, out Uri? uri) ||
                 uri == null)
                 return;
 

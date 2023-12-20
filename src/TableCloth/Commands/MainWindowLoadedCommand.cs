@@ -42,7 +42,7 @@ namespace TableCloth.Commands
         private readonly AppRestartManager appRestartManager;
         private readonly LaunchSandboxCommand launchSandboxCommand;
 
-        public override async void Execute(object parameter)
+        public override async void Execute(object? parameter)
         {
             if (parameter is not MainWindowViewModel viewModel)
                 throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
@@ -89,7 +89,8 @@ namespace TableCloth.Commands
             var services = viewModel.Services;
             var directoryPath = this.sharedLocations.GetImageDirectoryPath();
 
-            await this.resourceResolver.LoadSiteImages(services, directoryPath).ConfigureAwait(false);
+            if (services != null)
+                await this.resourceResolver.LoadSiteImages(services, directoryPath).ConfigureAwait(false);
 
             // Command Line Parse
             var args = App.Current.Arguments.ToArray();
@@ -109,7 +110,7 @@ namespace TableCloth.Commands
             }
         }
 
-        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (sender is not MainWindowViewModel viewModel)
                 throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));

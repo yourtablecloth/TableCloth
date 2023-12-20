@@ -3,6 +3,7 @@ using System.Text;
 using System.Windows;
 using TableCloth.Components;
 using TableCloth.Models.Configuration;
+using TableCloth.Resources;
 
 namespace TableCloth
 {
@@ -21,9 +22,9 @@ namespace TableCloth
         private readonly X509CertPairScanner _certPairScanner;
         private readonly AppMessageBox _appMessageBox;
 
-        public string PfxFilePath { get; set; }
+        public string? PfxFilePath { get; set; }
 
-        public X509CertPair ValidatedCertPair { get; private set; }
+        public X509CertPair? ValidatedCertPair { get; private set; }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -37,6 +38,9 @@ namespace TableCloth
         {
             try
             {
+                if (PfxFilePath == null)
+                    throw new InvalidOperationException(StringResources.Error_Cannot_Find_PfxFile);
+
                 var certPair = _certPairScanner.CreateX509Cert(PfxFilePath, PasswordInput.SecurePassword);
 
                 if (certPair != null)

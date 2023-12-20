@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Security;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using TableCloth.Models.Catalog;
@@ -83,7 +84,7 @@ namespace TableCloth.Resources
         internal static string Get_AppVersion()
         {
             var executingAssembly = Assembly.GetExecutingAssembly();
-            var versionInfo = executingAssembly.GetName().Version.ToString();
+            var versionInfo = executingAssembly.GetName().Version?.ToString() ?? "Unknown";
 
             try
             {
@@ -92,15 +93,23 @@ namespace TableCloth.Resources
 
                 if (commitTextFileName != null)
                 {
-                    using (var resourceStream = executingAssembly.GetManifestResourceStream(commitTextFileName))
+                    var resourceStream = executingAssembly.GetManifestResourceStream(commitTextFileName);
+                    var commitId = string.Empty;
+
+                    if (resourceStream == null)
+                        commitId = "Unknown Commit ID";
+                    else
                     {
-                        var streamReader = new StreamReader(resourceStream, new UTF8Encoding(false), true);
-                        var commitId = streamReader.ReadToEnd().Trim();
+                        using (resourceStream)
+                        {
+                            var streamReader = new StreamReader(resourceStream, new UTF8Encoding(false), true);
+                            commitId = streamReader.ReadToEnd().Trim();
 
-                        if (commitId.Length > 8)
-                            commitId = commitId.Substring(0, 8);
+                            if (commitId.Length > 8)
+                                commitId = commitId.Substring(0, 8);
 
-                        versionInfo = $"{versionInfo}, #{commitId.Substring(0, 8)}";
+                            versionInfo = $"{versionInfo}, #{commitId.Substring(0, 8)}";
+                        }
                     }
                 }
             }
@@ -156,7 +165,7 @@ namespace TableCloth.Resources
             return defaultString;
         }
 
-        internal static string InternetServiceCategory_DisplayText(CatalogInternetServiceCategory value)
+        internal static string InternetServiceCategory_DisplayText(CatalogInternetServiceCategory? value)
         {
             switch (value)
             {
@@ -193,6 +202,9 @@ namespace TableCloth.Resources
         internal static readonly string Ask_RestartRequired =
             "설정이 반영되려면 식탁보 프로그램을 다시 시작해야 합니다." + Environment.NewLine +
             "지금 다시 시작하시겠습니까?";
+
+        internal static string Error_Unknown([CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+            => $"예기치 않은 오류가 발생했습니다. (파일: {file} (행: {line}), 멤버: {member})";
 
         internal static readonly string Error_Already_TableCloth_Running
             = "이미 식탁보 프로그램이 실행되고 있어요.";
@@ -264,10 +276,14 @@ namespace TableCloth.Resources
         internal static readonly string Error_Cannot_Find_PfxFile
             = "공동 인증서 파일 (.pfx) 파일을 찾을 수 없습니다.";
 
-        internal static string Error_Cannot_Download_Catalog(Exception ex)
+        internal static string Error_Cannot_Download_Catalog(Exception
+#if !NETFX
+            ?
+#endif
+            ex)
         {
             if (ex is AggregateException ae)
-                return Error_Cannot_Download_Catalog(ae.InnerException);
+                return Error_Cannot_Download_Catalog(ae?.InnerException);
 
             var message = $"카탈로그 파일을 내려받지 못했습니다.";
 
@@ -281,10 +297,14 @@ namespace TableCloth.Resources
             return message;
         }
 
-        internal static string Error_Cannot_Create_AppDataDirectory(Exception ex)
+        internal static string Error_Cannot_Create_AppDataDirectory(Exception
+#if !NETFX
+            ?
+#endif
+            ex)
         {
             if (ex is AggregateException ae)
-                return Error_Cannot_Create_AppDataDirectory(ae.InnerException);
+                return Error_Cannot_Create_AppDataDirectory(ae?.InnerException);
 
             var message = $"애플리케이션 데이터 저장을 위한 디렉터리를 만들지 못했습니다.";
 
@@ -298,10 +318,14 @@ namespace TableCloth.Resources
             return message;
         }
 
-        internal static string Error_Cannot_Prepare_AppContents(Exception ex)
+        internal static string Error_Cannot_Prepare_AppContents(Exception
+#if !NETFX
+            ?
+#endif
+            ex)
         {
             if (ex is AggregateException ae)
-                return Error_Cannot_Create_AppDataDirectory(ae.InnerException);
+                return Error_Cannot_Create_AppDataDirectory(ae?.InnerException);
 
             var message = $"애플리케이션 콘텐츠 생성 작업을 진행하지 못했습니다.";
 
@@ -372,10 +396,14 @@ namespace TableCloth.Resources
         internal static readonly string HostessError_CatalogDeserilizationFailure
             = "Catalog.xml 파일의 형식이 프로그램이 이해하는 것과 다른 것 같습니다.";
 
-        internal static string HostessError_CatalogLoadFailure(Exception ex)
+        internal static string HostessError_CatalogLoadFailure(Exception
+#if !NETFX
+            ?
+#endif
+            ex)
         {
             if (ex is AggregateException ae)
-                return HostessError_CatalogLoadFailure(ae.InnerException);
+                return HostessError_CatalogLoadFailure(ae?.InnerException);
 
             var message = $"원격 웹 사이트로부터 Catalog.xml 파일을 불러올 수 없어 설치를 계속 진행할 수 없습니다.";
 
@@ -512,13 +540,21 @@ ServiceID는 {CatalogUrl}을 확인해주세요.
         internal static string TableCloth_Log_CannotParseWsbFile_ProhibitTranslation(string wsbFilePath)
             => $"Cannot parse WSB file `{wsbFilePath}`. The file content may corrupted or invalid.";
 
-        internal static string TableCloth_Log_HostFolderNotExists_ProhibitTranslation(string hostFolderPath)
+        internal static string TableCloth_Log_HostFolderNotExists_ProhibitTranslation(string
+#if !NETFX
+            ?
+#endif
+            hostFolderPath)
             => $"The path `{hostFolderPath}` of the host folder listed in the WSB file does not exist on the host.";
 
         internal static string TableCloth_Log_DirectoryEnumFail_ProhibitTranslation(string targetPath, Exception reason)
             => $"Directory enumeration failed - {targetPath} (Reason: {TableCloth_UnwrapException(reason)})";
 
-        internal static string TableCloth_UnwrapException(Exception failureReason)
+        internal static string TableCloth_UnwrapException(Exception
+#if !NETFX
+            ?
+#endif
+            failureReason)
         {
             var unwrappedException = failureReason;
 

@@ -74,7 +74,7 @@ namespace TableCloth
                 var repo = "TableCloth";
                 var thisVersion = GetType().Assembly.GetName().Version;
 
-                if (Version.TryParse(await _resourceResolver.GetLatestVersion(owner, repo), out Version parsedVersion) &&
+                if (Version.TryParse(await _resourceResolver.GetLatestVersion(owner, repo), out Version? parsedVersion) &&
                     thisVersion != null && parsedVersion > thisVersion)
                 {
                     _appMessageBox.DisplayInfo(StringResources.Info_UpdateRequired);

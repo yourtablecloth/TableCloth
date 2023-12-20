@@ -12,7 +12,9 @@ namespace TableCloth.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         [Obsolete("This constructor should be used only in design time context.")]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public MainWindowViewModel() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public MainWindowViewModel(
             AppUserInterface appUserInterface,
@@ -25,6 +27,7 @@ namespace TableCloth.ViewModels
             AboutThisAppCommand aboutThisAppCommand)
         {
             _appUserInterface = appUserInterface;
+            _catalogDeserializer = catalogDeserializer;
             _mainWindowLoadedCommand = mainWindowLoadedCommand;
             _mainWindowClosedCommand = mainWindowClosedCommand;
             _launchSandboxCommand = launchSandboxCommand;
@@ -34,7 +37,13 @@ namespace TableCloth.ViewModels
 
             try
             {
-                CatalogDocument = catalogDeserializer.DeserializeCatalog();
+                var catalogDoc = _catalogDeserializer.DeserializeCatalog();
+
+                if (catalogDoc == null)
+                    catalogDoc = new CatalogDocument();
+
+                CatalogDocument = catalogDoc;
+
                 Services = CatalogDocument.Services.ToList();
             }
             catch
@@ -51,6 +60,7 @@ namespace TableCloth.ViewModels
         }
 
         private readonly AppUserInterface _appUserInterface;
+        private readonly CatalogDeserializer _catalogDeserializer;
         private readonly MainWindowLoadedCommand _mainWindowLoadedCommand;
         private readonly MainWindowClosedCommand _mainWindowClosedCommand;
         private readonly LaunchSandboxCommand _launchSandboxCommand;
@@ -58,7 +68,7 @@ namespace TableCloth.ViewModels
         private readonly AppRestartCommand _appRestartCommand;
         private readonly AboutThisAppCommand _aboutThisAppCommand;
 
-        private string _filterText;
+        private string _filterText = string.Empty;
         private bool _mapNpkiCert;
         private bool _enableLogAutoCollecting;
         private bool _v2UIOptIn;
@@ -71,10 +81,10 @@ namespace TableCloth.ViewModels
         private bool _installRaiDrive;
         private bool _enableInternetExplorerMode;
         private DateTime? _lastDisclaimerAgreedTime;
-        private CatalogDocument _catalogDocument;
-        private X509CertPair _selectedCertFile;
-        private List<CatalogInternetService> _services;
-        private List<CatalogInternetService> _selectedServices;
+        private CatalogDocument? _catalogDocument;
+        private X509CertPair? _selectedCertFile;
+        private List<CatalogInternetService> _services = new();
+        private List<CatalogInternetService> _selectedServices = new();
 
         public AppUserInterface AppUserInterface
             => _appUserInterface;
@@ -190,13 +200,13 @@ namespace TableCloth.ViewModels
             }
         }
 
-        public CatalogDocument CatalogDocument
+        public CatalogDocument? CatalogDocument
         {
             get => _catalogDocument;
             set => SetProperty(ref _catalogDocument, value);
         }
 
-        public X509CertPair SelectedCertFile
+        public X509CertPair? SelectedCertFile
         {
             get => _selectedCertFile;
             set => SetProperty(ref _selectedCertFile, value);
@@ -214,9 +224,9 @@ namespace TableCloth.ViewModels
             set => SetProperty(ref _selectedServices, value);
         }
 
-        public List<string> TemporaryDirectories { get; } = new();
+        public List<string> TemporaryDirectories { get; } = [];
 
-        public string CurrentDirectory { get; set; }
+        public string? CurrentDirectory { get; set; }
 
         public bool HasServices
             => Services != null && Services.Any();
@@ -228,9 +238,7 @@ namespace TableCloth.ViewModels
             if (string.IsNullOrWhiteSpace(filterText))
                 return true;
 
-            var actualItem = item as CatalogInternetService;
-
-            if (actualItem == null)
+            if (item is not CatalogInternetService actualItem)
                 return true;
 
             var splittedFilterText = filterText.Split(new char[] { ',', }, StringSplitOptions.RemoveEmptyEntries);

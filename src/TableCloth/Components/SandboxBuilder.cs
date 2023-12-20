@@ -86,7 +86,6 @@ namespace TableCloth.Components
             sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
             {
                 HostFolder = tableClothConfig.AssetsDirectoryPath,
-                SandboxFolder = null,
                 ReadOnly = bool.FalseString,
             });
 
@@ -105,7 +104,6 @@ namespace TableCloth.Components
                 sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
                 {
                     HostFolder = certAssetsDirectoryPath,
-                    SandboxFolder = null,
                     ReadOnly = bool.TrueString,
                 });
             }

@@ -13,6 +13,10 @@ namespace TableCloth.ResourceBuilder
         [STAThread]
         private static void Main(string[] args)
         {
+            var ignoreWarning = string.Equals(
+                Environment.GetEnvironmentVariable("IGNORE_WARNING"),
+                "1", StringComparison.OrdinalIgnoreCase);
+
             // Create temporary directory
             var tempDirectoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("n"));
             if (Directory.Exists(tempDirectoryPath))
@@ -49,7 +53,10 @@ namespace TableCloth.ResourceBuilder
                 }
 
                 if (File.Exists(outputZipFilePath))
-                    Console.Out.WriteLine($"Warning: {outputZipFilePath} file will be overwritten.");
+                {
+                    if (!ignoreWarning)
+                        Console.Out.WriteLine($"Warning: {outputZipFilePath} file will be overwritten.");
+                }
 
                 // Collect all png files (including sub directoriess) into temporary directory
                 var allPngFiles = Directory.GetFiles(inputDirectoryPath, "*.png", SearchOption.AllDirectories);
@@ -60,7 +67,8 @@ namespace TableCloth.ResourceBuilder
 
                     if (File.Exists(destPngFilePath))
                     {
-                        Console.Out.WriteLine($"Warning: {pngFileName} has duplicated. Skipping.");
+                        if (!ignoreWarning)
+                            Console.Out.WriteLine($"Warning: {pngFileName} has duplicated. Skipping.");
                         continue;
                     }
 

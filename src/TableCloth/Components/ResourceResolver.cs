@@ -19,7 +19,7 @@ namespace TableCloth.Components
 
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public async Task<string> GetLatestVersion(string owner, string repoName)
+        public async Task<string?> GetLatestVersion(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
             var httpClient = _httpClientFactory.CreateTableClothHttpClient();
@@ -43,7 +43,7 @@ namespace TableCloth.Components
                 return new Uri($"https://github.com/{owner}/{repoName}/releases", UriKind.Absolute);
         }
 
-        public async Task<string> GetLicenseDescriptionForGitHub(string owner, string repoName)
+        public async Task<string?> GetLicenseDescriptionForGitHub(string owner, string repoName)
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
             var httpClient = _httpClientFactory.CreateTableClothHttpClient();
@@ -82,7 +82,7 @@ namespace TableCloth.Components
                 }
 
                 var targetIconFilePath = Path.Combine(
-                    Path.GetDirectoryName(targetFilePath),
+                    imageDirectoryPath,
                     Path.GetFileNameWithoutExtension(targetFilePath) + ".ico");
 
                 if (!File.Exists(targetIconFilePath))

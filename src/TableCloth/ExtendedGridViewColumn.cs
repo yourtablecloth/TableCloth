@@ -4,6 +4,6 @@ namespace TableCloth
 {
     public class ExtendedGridViewColumn : GridViewColumn
     {
-        public string BindingPath { get; set; }
+        public string? BindingPath { get; set; }
     }
 }

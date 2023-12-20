@@ -25,7 +25,7 @@ namespace TableCloth.Commands
         private readonly SharedLocations sharedLocations;
         private readonly AppMessageBox appMessageBox;
 
-        public override void Execute(object parameter)
+        public override void Execute(object? parameter)
         {
             switch (parameter)
             {
@@ -44,8 +44,10 @@ namespace TableCloth.Commands
 
         private void ExecuteFromV1Model(MainWindowViewModel viewModel)
         {
-            var options = new List<string>();
-            var targetPath = Process.GetCurrentProcess().MainModule.FileName;
+            var options = new List<string?>();
+            var mainModule = Process.GetCurrentProcess().MainModule
+                ?? throw new Exception("Cannot obtain current process main module information.");
+            var targetPath = mainModule.FileName;
             var linkName = StringResources.AppName;
 
             if (viewModel.EnableMicrophone)
@@ -92,9 +94,11 @@ namespace TableCloth.Commands
 
             try
             {
-                Type shellType = Type.GetTypeFromProgID("WScript.Shell");
-                dynamic shell = Activator.CreateInstance(shellType);
-                dynamic shortcut = shell.CreateShortcut(fullPath);
+                var shellType = Type.GetTypeFromProgID("WScript.Shell")
+                    ?? throw new Exception("Cannot obtain WScript.Shell object type information.");
+                var shell = Activator.CreateInstance(shellType)
+                    ?? throw new Exception("Cannot obtain WScript.Shell object instance.");
+                dynamic shortcut = ((dynamic)shell).CreateShortcut(fullPath);
                 shortcut.TargetPath = targetPath;
 
                 if (iconFilePath != null && File.Exists(iconFilePath))
@@ -140,9 +144,11 @@ namespace TableCloth.Commands
 
             try
             {
-                Type shellType = Type.GetTypeFromProgID("WScript.Shell");
-                dynamic shell = Activator.CreateInstance(shellType);
-                dynamic shortcut = shell.CreateShortcut(fullPath);
+                var shellType = Type.GetTypeFromProgID("WScript.Shell")
+                    ?? throw new Exception("Cannot obtain WScript.Shell object type information.");
+                var shell = Activator.CreateInstance(shellType)
+                    ?? throw new Exception("Cannot obtain WScript.Shell object instance.");
+                dynamic shortcut = ((dynamic)shell).CreateShortcut(fullPath);
                 shortcut.TargetPath = targetPath;
 
                 if (iconFilePath != null && File.Exists(iconFilePath))

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.CodeDom;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -13,20 +15,16 @@ namespace TableCloth.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var locationService = App.Current.Services.GetService(typeof(SharedLocations)) as SharedLocations;
-
-            if (locationService == null)
-                return null;
-
+            var locationService = App.Current.Services.GetRequiredService<SharedLocations>();
             var serviceId = value as string;
 
             if (string.IsNullOrWhiteSpace(serviceId))
-                return null;
+                throw new ArgumentException(nameof(value));
 
-            var targetFilePath = Path.Combine(locationService.GetImageDirectoryPath(), $"{serviceId}.png");
+            string targetFilePath = Path.Combine(locationService.GetImageDirectoryPath(), $"{serviceId}.png");
 
             if (!File.Exists(targetFilePath))
-                return null;
+                throw new FileNotFoundException("File does not exists.", targetFilePath);
 
             return targetFilePath;
         }

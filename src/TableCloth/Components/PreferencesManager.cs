@@ -20,7 +20,7 @@ namespace TableCloth.Components
         private readonly SharedLocations _sharedLocations;
         private readonly ILogger _logger;
 
-        public PreferenceSettings LoadPreferences()
+        public PreferenceSettings? LoadPreferences()
         {
             var defaultSettings = GetDefaultPreferences();
             var prefFilePath = _sharedLocations.PreferencesFilePath;
@@ -28,7 +28,7 @@ namespace TableCloth.Components
             if (!File.Exists(prefFilePath))
                 return defaultSettings;
 
-            PreferenceSettings settings;
+            PreferenceSettings? settings;
 
             try
             {

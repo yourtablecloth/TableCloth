@@ -17,7 +17,7 @@ namespace TableCloth.Commands
         private readonly SandboxCleanupManager sandboxCleanupManager;
         private readonly AppRestartManager appRestartManager;
 
-        public override void Execute(object parameter)
+        public override void Execute(object? parameter)
         {
             if (parameter is not MainWindowViewModel viewModel)
                 throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));

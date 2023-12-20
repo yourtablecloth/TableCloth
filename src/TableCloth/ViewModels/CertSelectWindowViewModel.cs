@@ -12,8 +12,8 @@ namespace TableCloth.ViewModels
         {
         }
 
-        private List<X509CertPair> _certPairs;
-        private X509CertPair _selectedCertPair;
+        private List<X509CertPair> _certPairs = new List<X509CertPair>();
+        private X509CertPair? _selectedCertPair;
 
         public List<X509CertPair> CertPairs
         {
@@ -21,7 +21,7 @@ namespace TableCloth.ViewModels
             set => SetProperty(ref _certPairs, value);
         }
 
-        public X509CertPair SelectedCertPair
+        public X509CertPair? SelectedCertPair
         {
             get => _selectedCertPair;
             set => SetProperty(ref _selectedCertPair, value);

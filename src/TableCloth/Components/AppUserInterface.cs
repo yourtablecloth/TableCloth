@@ -15,7 +15,7 @@ namespace TableCloth.Components
 
         private readonly IServiceProvider serviceProvider;
 
-        public TWindow CreateWindow<TWindow>(Action<TWindow> modifier = default)
+        public TWindow CreateWindow<TWindow>(Action<TWindow>? modifier = default)
             where TWindow : Window
         {
             var windowInstance = (TWindow)CreateWindow(typeof(TWindow), default);
@@ -23,14 +23,14 @@ namespace TableCloth.Components
             return windowInstance;
         }
 
-        public Window CreateWindow(Type windowType, Action<Window> modifier = default)
+        public Window CreateWindow(Type windowType, Action<Window>? modifier = default)
         {
             var windowInstance = (Window)this.serviceProvider.GetRequiredService(windowType);
             modifier?.Invoke(windowInstance);
             return windowInstance;
         }
 
-        public TPage CreatePage<TPage, TPageViewModel>(Action<TPage> modifier = default)
+        public TPage CreatePage<TPage, TPageViewModel>(Action<TPage>? modifier = default)
             where TPage : Page
             where TPageViewModel : class, IPageExtraArgument
         {
@@ -40,17 +40,17 @@ namespace TableCloth.Components
             return pageInstance;
         }
 
-        public Page CreatePage(Type pageType, Action<Page> modifier = default)
+        public Page CreatePage(Type pageType, Action<Page>? modifier = default)
         {
             var pageInstance = (Page)this.serviceProvider.GetRequiredService(pageType);
             modifier?.Invoke(pageInstance);
             return pageInstance;
         }
 
-        public TViewModel CreateViewModel<TViewModel>(object extraArgument)
+        public TViewModel CreateViewModel<TViewModel>(object? extraArgument)
             where TViewModel : class, IPageExtraArgument
         {
-            var viewModel = this.serviceProvider.GetService<TViewModel>();
+            var viewModel = this.serviceProvider.GetRequiredService<TViewModel>();
 
             if (viewModel is IPageExtraArgument extraArg)
                 extraArg.ExtraArgument = extraArgument;

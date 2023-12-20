@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Threading;
 using TableCloth.Resources;
@@ -54,7 +55,7 @@ namespace TableCloth.Components
         /// <param name="failureReason">발생한 예외 개체의 참조</param>
         /// <param name="isCritical">심각성 여부</param>
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
-        public MessageBoxResult DisplayError(Exception failureReason, bool isCritical)
+        public MessageBoxResult DisplayError(Exception? failureReason, bool isCritical)
             => DisplayError(StringResources.TableCloth_UnwrapException(failureReason), isCritical);
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace TableCloth.Components
         /// <param name="message">표시할 메시지</param>
         /// <param name="isCritical">심각성 여부</param>
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
-        public MessageBoxResult DisplayError(string message, bool isCritical)
+        public MessageBoxResult DisplayError(string? message, bool isCritical)
         {
             var dispatcher = App.Current?.Dispatcher;
 
@@ -71,8 +72,11 @@ namespace TableCloth.Components
                 dispatcher = Dispatcher.CurrentDispatcher;
 
             return (MessageBoxResult)dispatcher.Invoke(
-                new Func<string, bool, MessageBoxResult>((message, isCritical) =>
+                new Func<string?, bool, MessageBoxResult>((message, isCritical) =>
                 {
+                    if (string.IsNullOrWhiteSpace(message))
+                        message = StringResources.Error_Unknown();
+
                     var owner = App.Current?.MainWindow;
                     var title = isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning;
                     var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
@@ -92,7 +96,7 @@ namespace TableCloth.Components
                             image, MessageBoxResult.OK);
                     }
                 }),
-                new object[] { message, isCritical });
+                new object?[] { message, isCritical });
         }
     }
 }

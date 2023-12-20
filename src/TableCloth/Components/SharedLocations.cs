@@ -25,10 +25,24 @@ namespace TableCloth.Components
             => GetDataPath("images");
 
         public string ExecutableFilePath
-            => Process.GetCurrentProcess().MainModule.FileName;
+        {
+            get
+            {
+                var mainModule = Process.GetCurrentProcess().MainModule
+                    ?? throw new Exception("Cannot obtain process main module information.");
+                return mainModule.FileName
+                    ?? throw new Exception("Cannot obtain executable file name.");
+            }
+        }
 
         public string ExecutableDirectoryPath
-            => Path.GetDirectoryName(ExecutableFilePath);
+        {
+            get
+            {
+                return Path.GetDirectoryName(ExecutableFilePath)
+                    ?? throw new Exception("Cannot obtain executable directory path.");
+            }
+        }
 
         public string HostessZipFilePath
             => Path.Combine(ExecutableDirectoryPath, "Hostess.zip");

@@ -22,7 +22,7 @@ namespace TableCloth.Components
         private readonly AppMessageBox _appMessageBox;
         private readonly ILogger _logger;
 
-        private bool ValidateSandboxSpecFile(string wsbFilePath, out string reason)
+        private bool ValidateSandboxSpecFile(string wsbFilePath, out string? reason)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace TableCloth.Components
                     return false;
                 }
 
-                SandboxConfiguration content = null;
+                var content = default(SandboxConfiguration);
 
                 using (var fileStream = File.OpenRead(wsbFilePath))
                 {
@@ -73,7 +73,7 @@ namespace TableCloth.Components
 
         public void RunSandbox(string wsbFilePath)
         {
-            if (!ValidateSandboxSpecFile(wsbFilePath, out string reason))
+            if (!ValidateSandboxSpecFile(wsbFilePath, out string? reason))
             {
                 _appMessageBox.DisplayError(reason, true);
                 return;

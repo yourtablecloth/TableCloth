@@ -9,7 +9,7 @@ namespace TableCloth.Components
     {
         private readonly AppUserInterface _appUserInterface;
 
-        private Frame _frame;
+        private Frame? _frame = default;
 
         public NavigationService(
             AppUserInterface appUserInterface)
@@ -19,12 +19,15 @@ namespace TableCloth.Components
 
         public void Initialize(Frame frame)
         {
-            _frame = frame;
+            _frame = frame ?? throw new ArgumentNullException(nameof(frame));
         }
 
-        public bool NavigateTo<TViewModel>(object extraData)
+        public bool NavigateTo<TViewModel>(object? extraData)
             where TViewModel : class
         {
+            if (_frame == default)
+                throw new InvalidOperationException($"You should initialize {nameof(NavigationService)} before use.");
+
             var requestedViewModelType = typeof(TViewModel);
             var viewType = default(Type);
             var viewModelData = default(object);
@@ -51,6 +54,9 @@ namespace TableCloth.Components
 
         public bool GoBack()
         {
+            if (_frame == default)
+                throw new InvalidOperationException($"You should initialize {nameof(NavigationService)} before use.");
+
             if (!_frame.CanGoBack)
                 return false;
 
@@ -60,6 +66,9 @@ namespace TableCloth.Components
 
         public bool GoForward()
         {
+            if (_frame == default)
+                throw new InvalidOperationException($"You should initialize {nameof(NavigationService)} before use.");
+
             if (!_frame.CanGoForward)
                 return false;
 
@@ -69,6 +78,9 @@ namespace TableCloth.Components
 
         public void Refresh()
         {
+            if (_frame == default)
+                throw new InvalidOperationException($"You should initialize {nameof(NavigationService)} before use.");
+
             _frame.Refresh();
         }
     }

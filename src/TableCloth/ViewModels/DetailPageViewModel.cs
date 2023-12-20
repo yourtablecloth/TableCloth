@@ -15,7 +15,9 @@ namespace TableCloth.ViewModels
     public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument
     {
         [Obsolete("This constructor should be used only in design time context.")]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public DetailPageViewModel() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public DetailPageViewModel(
             AppUserInterface appUserInterface,
@@ -49,7 +51,7 @@ namespace TableCloth.ViewModels
         private readonly CreateShortcutCommand _createShortcutCommand;
         private readonly CopyCommandLineCommand _copyCommandLineCommand;
 
-        private CatalogInternetService _selectedService;
+        private CatalogInternetService? _selectedService;
         private bool _mapNpkiCert;
         private bool _enableLogAutoCollecting;
         private bool _v2UIOptIn;
@@ -62,10 +64,14 @@ namespace TableCloth.ViewModels
         private bool _installRaiDrive;
         private bool _enableInternetExplorerMode;
         private DateTime? _lastDisclaimerAgreedTime;
-        private CatalogDocument _catalogDocument;
-        private X509CertPair _selectedCertFile;
+        private CatalogDocument? _catalogDocument;
+        private X509CertPair? _selectedCertFile;
 
-        public object ExtraArgument { get; set; }
+        public object? ExtraArgument { get; set; }
+
+        public List<string> TemporaryDirectories { get; } = new();
+
+        public string? CurrentDirectory { get; set; }
 
         public AppUserInterface AppUserInterface
             => _appUserInterface;
@@ -94,22 +100,22 @@ namespace TableCloth.ViewModels
         public CopyCommandLineCommand CopyCommandLineCommand
             => _copyCommandLineCommand;
 
-        public string Id
+        public string? Id
             => _selectedService?.Id;
 
-        public string DisplayName
+        public string? DisplayName
             => _selectedService?.DisplayName;
 
-        public string Url
+        public string? Url
             => _selectedService?.Url;
 
-        public string CompatibilityNotes
+        public string? CompatibilityNotes
             => _selectedService?.CompatibilityNotes;
 
         public int? PackageCountForDisplay
             => _selectedService?.PackageCountForDisplay;
 
-        public ImageSource ServiceLogo
+        public ImageSource? ServiceLogo
         {
             get
             {
@@ -127,7 +133,7 @@ namespace TableCloth.ViewModels
             }
         }
 
-        public CatalogInternetService SelectedService
+        public CatalogInternetService? SelectedService
         {
             get => _selectedService;
             set => SetProperty(ref _selectedService, value, new string[] {
@@ -227,20 +233,16 @@ namespace TableCloth.ViewModels
             }
         }
 
-        public CatalogDocument CatalogDocument
+        public CatalogDocument? CatalogDocument
         {
             get => _catalogDocument;
             set => SetProperty(ref _catalogDocument, value);
         }
 
-        public X509CertPair SelectedCertFile
+        public X509CertPair? SelectedCertFile
         {
             get => _selectedCertFile;
             set => SetProperty(ref _selectedCertFile, value);
         }
-
-        public List<string> TemporaryDirectories { get; } = new();
-
-        public string CurrentDirectory { get; set; }
     }
 }

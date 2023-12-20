@@ -7,7 +7,8 @@ namespace TableCloth.Components
 {
     public sealed class SandboxCleanupManager
     {
-        public SandboxCleanupManager(SandboxLauncher sandboxLauncher)
+        public SandboxCleanupManager(
+            SandboxLauncher sandboxLauncher)
         {
             _sandboxLauncher = sandboxLauncher;
         }
@@ -16,7 +17,7 @@ namespace TableCloth.Components
 
         private readonly List<string> _temporaryDirectories = new List<string>();
 
-        public string CurrentDirectory { get; private set; }
+        public string? CurrentDirectory { get; private set; }
 
         public void SetWorkingDirectory(string workingDirectory)
         {

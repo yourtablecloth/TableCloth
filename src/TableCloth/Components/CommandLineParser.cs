@@ -23,7 +23,7 @@ namespace TableCloth.Components
 
         public MainWindowArgumentModel ParseForV1(string[] args)
         {
-            var services = _catalogCacheManager.CatalogDocument.Services;
+            var services = _catalogCacheManager.CatalogDocument?.Services;
 
             var selectedServiceIds = new List<string>();
             var enableMicrophone = default(bool?);
@@ -69,7 +69,7 @@ namespace TableCloth.Components
                     enableCert = true;
             }
 
-            var selectedServices = services.Where(x => selectedServiceIds.Contains(x.Id, StringComparer.OrdinalIgnoreCase)).ToList();
+            var selectedServices = services?.Where(x => selectedServiceIds.Contains(x.Id, StringComparer.OrdinalIgnoreCase)).ToList();
             var certPair = default(X509CertPair);
 
             if (enableCert)
@@ -107,7 +107,7 @@ namespace TableCloth.Components
 
         public DetailPageArgumentModel Parse(string[] args)
         {
-            var services = _catalogCacheManager.CatalogDocument.Services;
+            var services = _catalogCacheManager.CatalogDocument?.Services;
 
             var selectedServiceIds = new List<string>();
             var enableMicrophone = default(bool?);
@@ -153,7 +153,6 @@ namespace TableCloth.Components
                     enableCert = true;
             }
 
-            var selectedServices = services.Where(x => selectedServiceIds.Contains(x.Id, StringComparer.OrdinalIgnoreCase)).ToList();
             var certPair = default(X509CertPair);
 
             if (enableCert)
@@ -173,8 +172,10 @@ namespace TableCloth.Components
                     certPair = null;
             }
 
+            var selectedService = services?.Where(x => selectedServiceIds.Contains(x.Id, StringComparer.OrdinalIgnoreCase)).ToList().FirstOrDefault();
+
             return new DetailPageArgumentModel(
-                selectedServices.FirstOrDefault(),
+                selectedService,
                 enableMicrophone: enableMicrophone,
                 enableWebCam: enableWebCam,
                 enablePrinters: enablePrinters,

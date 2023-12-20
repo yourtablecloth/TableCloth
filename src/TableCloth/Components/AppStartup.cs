@@ -52,7 +52,7 @@ namespace TableCloth.Components
         private readonly Mutex _mutex;
         private readonly bool _isFirstInstance;
 
-        public bool HasRequirementsMet(List<string> warnings, out Exception failedReason, out bool isCritical)
+        public bool HasRequirementsMet(List<string> warnings, out Exception? failedReason, out bool isCritical)
         {
             if (!File.Exists(_sharedLocations.HostessZipFilePath))
             {
@@ -136,7 +136,10 @@ namespace TableCloth.Components
                         Verb = "runas",
                     };
 
-                    Process.Start(psi).WaitForExit();
+                    var process = Process.Start(psi);
+
+                    if (process != null)
+                        process.WaitForExit();
 
                     failedReason = new PlatformNotSupportedException(StringResources.Error_Restart_And_RunAgain);
                     isCritical = true;
@@ -213,7 +216,7 @@ namespace TableCloth.Components
             return true;
         }
 
-        public bool Initialize(out Exception failedReason, out bool isCritical)
+        public bool Initialize(out Exception? failedReason, out bool isCritical)
         {
             var targetPath = _sharedLocations.AppDataDirectoryPath;
 

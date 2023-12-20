@@ -38,7 +38,7 @@ namespace TableCloth.Commands
         protected override bool EvaluateCanExecute()
             => (!this.sandboxLauncher.IsSandboxRunning());
 
-        public override void Execute(object parameter)
+        public override void Execute(object? parameter)
         {
             if (this.sandboxLauncher.IsSandboxRunning())
             {
@@ -94,9 +94,11 @@ namespace TableCloth.Commands
                 InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer,
                 InstallRaiDrive = viewModel.InstallRaiDrive,
                 EnableInternetExplorerMode = viewModel.EnableInternetExplorerMode,
-                Companions = viewModel.CatalogDocument.Companions,
                 Services = viewModel.SelectedServices,
             };
+
+            if (viewModel.CatalogDocument != null)
+                config.Companions = viewModel.CatalogDocument.Companions;
 
             RunSandbox(config);
         }
@@ -123,8 +125,10 @@ namespace TableCloth.Commands
                 InstallRaiDrive = viewModel.InstallRaiDrive,
                 EnableInternetExplorerMode = viewModel.EnableInternetExplorerMode,
                 Companions = new CatalogCompanion[] { }, /*ViewModel.CatalogDocument.Companions*/
-                Services = new[] { viewModel.SelectedService, },
             };
+
+            if (viewModel.SelectedService != null)
+                config.Services = new[] { viewModel.SelectedService };
 
             this.RunSandbox(config);
         }

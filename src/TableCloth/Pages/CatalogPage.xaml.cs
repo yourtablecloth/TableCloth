@@ -26,7 +26,7 @@ namespace TableCloth.Pages
             new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
 
         // https://stackoverflow.com/questions/1077397/scroll-listviewitem-to-be-at-the-top-of-a-listview
-        private DependencyObject GetScrollViewer(DependencyObject o)
+        private DependencyObject? GetScrollViewer(DependencyObject o)
         {
             if (o is ScrollViewer)
                 return o;

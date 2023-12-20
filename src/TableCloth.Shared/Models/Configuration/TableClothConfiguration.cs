@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.Models.Configuration
@@ -13,7 +14,11 @@ namespace TableCloth.Models.Configuration
         /// <summary>
         /// 선택한 X.509 인증서 정보입니다.
         /// </summary>
-        public X509CertPair CertPair { get; set; }
+        public X509CertPair
+#if !NETFX
+            ?
+#endif
+            CertPair { get; set; }
 
         /// <summary>
         /// 마이크 입력을 공유할 것인지 여부입니다.
@@ -58,16 +63,20 @@ namespace TableCloth.Models.Configuration
         /// <summary>
         /// 같이 설치하는 공통 소프트웨어에 관한 정보입니다.
         /// </summary>
-        public ICollection<CatalogCompanion> Companions { get; set; }
+        public ICollection<CatalogCompanion> Companions { get; set; } = new List<CatalogCompanion>();
 
         /// <summary>
         /// 식탁보를 이용하여 샌드박스 내에서 설치해야 할 각 서비스 별 필요 소프트웨어에 관한 정보입니다.
         /// </summary>
-        public ICollection<CatalogInternetService> Services { get; set; }
+        public ICollection<CatalogInternetService> Services { get; set; } = new List<CatalogInternetService>();
 
         /// <summary>
         /// 샌드박스 명세 파일 (WSB) 및 데이터 파일을 저장할 디렉터리 경로입니다.
         /// </summary>
-        public string AssetsDirectoryPath { get; internal set; }
+        public string
+#if !NETFX
+            ?
+#endif
+            AssetsDirectoryPath { get; internal set; }
     }
 }

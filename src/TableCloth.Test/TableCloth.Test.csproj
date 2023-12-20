@@ -27,6 +27,4 @@
     <ProjectReference Include="..\TableCloth\TableCloth.csproj" />
   </ItemGroup>
 
-  <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
-
 </Project>

@@ -5,9 +5,9 @@ namespace TableCloth.Commands
 {
     public abstract class CommandBase : ICommand
     {
-        private bool canExecute = true;
+        private bool _canExecute = true;
 
-        public event EventHandler CanExecuteChanged
+        public event EventHandler? CanExecuteChanged
         {
             add => CommandManager.RequerySuggested += value;
             remove => CommandManager.RequerySuggested -= value;
@@ -15,16 +15,16 @@ namespace TableCloth.Commands
 
         public void RaiseCanExecuteChanged()
         {
-            this.canExecute = this.EvaluateCanExecute();
+            this._canExecute = this.EvaluateCanExecute();
             CommandManager.InvalidateRequerySuggested();
         }
 
         protected virtual bool EvaluateCanExecute()
             => true;
 
-        public bool CanExecute(object parameter)
-            => canExecute;
+        public bool CanExecute(object? parameter)
+            => _canExecute;
 
-        public abstract void Execute(object parameter);
+        public abstract void Execute(object? parameter);
     }
 }

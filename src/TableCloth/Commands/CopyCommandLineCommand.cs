@@ -19,7 +19,7 @@ namespace TableCloth.Commands
         private readonly CommandLineComposer commandLineComposer;
         private readonly AppMessageBox appMessageBox;
 
-        public override void Execute(object parameter)
+        public override void Execute(object? parameter)
         {
             if (parameter is not DetailPageViewModel viewModel)
                 throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));

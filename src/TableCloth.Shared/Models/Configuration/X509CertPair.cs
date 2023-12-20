@@ -76,11 +76,27 @@ namespace TableCloth.Models.Configuration
         public KeyValuePair<string, string>[] Subject { get; }
         public bool IsPersonalCert { get; }
 
-		public string CommonName { get; }
+		public string
+#if !NETFX
+            ?
+#endif
+			CommonName { get; }
 		public IEnumerable<string> OrganizationalUnits { get; }
-		public string OrganizationalUnit { get; }
-		public string Organization { get; }
-		public string CountryName { get; }
+		public string
+#if !NETFX
+            ?
+#endif
+			OrganizationalUnit { get; }
+		public string
+#if !NETFX
+            ?
+#endif
+			Organization { get; }
+		public string
+#if !NETFX
+            ?
+#endif
+			CountryName { get; }
 
 		public DateTime NotAfter { get; }
 		public DateTime NotBefore { get; }

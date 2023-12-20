@@ -23,7 +23,7 @@ namespace TableCloth.Components
 
         public DateTimeOffset? CatalogLastModified => _catalogLastModified;
 
-        public CatalogDocument DeserializeCatalog()
+        public CatalogDocument? DeserializeCatalog()
         {
             var httpClient = _httpClientFactory.CreateTableClothHttpClient();
             var uriBuilder = new UriBuilder(new Uri(StringResources.CatalogUrl, UriKind.Absolute));
@@ -48,7 +48,7 @@ namespace TableCloth.Components
             };
 
             using var contentStream = XmlReader.Create(catalogStream, xmlReaderSetting);
-            return (CatalogDocument)serializer.Deserialize(contentStream);
+            return serializer.Deserialize(contentStream) as CatalogDocument;
         }
     }
 }

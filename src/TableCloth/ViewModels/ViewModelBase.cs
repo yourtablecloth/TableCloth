@@ -6,10 +6,10 @@ namespace TableCloth.ViewModels
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void NotifyPropertyChanged(
-            [CallerMemberName] string propertyName = null)
+            [CallerMemberName] string? propertyName = default)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -26,7 +26,7 @@ namespace TableCloth.ViewModels
 
         protected virtual bool SetProperty<T>(
             ref T member, T value,
-            [CallerMemberName] string propertyName = null)
+            [CallerMemberName] string? propertyName = default)
         {
             if (EqualityComparer<T>.Default.Equals(member, value))
                 return false;

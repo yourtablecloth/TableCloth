@@ -11,20 +11,20 @@ namespace TableCloth.Models
     public sealed class DetailPageArgumentModel
     {
         public DetailPageArgumentModel(
-            CatalogInternetService selectedService,
-            bool builtFromCommandLine,
+            CatalogInternetService? selectedService = default,
+            bool builtFromCommandLine = default,
             bool? enableMicrophone = default,
             bool? enableWebCam = default,
             bool? enablePrinters = default,
-            string certPrivateKeyPath = default,
-            string certPublicKeyPath = default,
+            string? certPrivateKeyPath = default,
+            string? certPublicKeyPath = default,
             bool? installEveryonesPrinter = default,
             bool? installAdobeReader = default,
             bool? installHancomOfficeViewer = default,
             bool? installRaiDrive = default,
             bool? enableInternetExplorerMode = default,
             bool showCommandLineHelp = default,
-            string currentSearchString = default)
+            string? currentSearchString = default)
         {
             SelectedService = selectedService;
             EnableMicrophone = enableMicrophone;
@@ -39,12 +39,12 @@ namespace TableCloth.Models
             EnableInternetExplorerMode = enableInternetExplorerMode;
             ShowCommandLineHelp = showCommandLineHelp;
             BuiltFromCommandLine = builtFromCommandLine;
-            CurrentSearchString = currentSearchString;
+            CurrentSearchString = currentSearchString ?? string.Empty;
         }
 
         public bool BuiltFromCommandLine { get; private set; } = false;
 
-        public CatalogInternetService SelectedService { get; private set; } = default;
+        public CatalogInternetService? SelectedService { get; private set; } = default;
 
         public bool? EnableMicrophone { get; private set; }
 
@@ -52,9 +52,9 @@ namespace TableCloth.Models
 
         public bool? EnablePrinters { get; private set; }
 
-        public string CertPrivateKeyPath { get; private set; }
+        public string? CertPrivateKeyPath { get; private set; }
 
-        public string CertPublicKeyPath { get; private set; }
+        public string? CertPublicKeyPath { get; private set; }
 
         public bool? InstallEveryonesPrinter { get; private set; }
 
@@ -88,9 +88,8 @@ namespace TableCloth.Models
                 certPrivateKeyData.Length > 0)
                 certPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
 
-            return new TableClothConfiguration()
+            var config = new TableClothConfiguration()
             {
-                Services = new[] { SelectedService },
                 EnableMicrophone = EnableMicrophone ?? default,
                 EnableWebCam = EnableWebCam ?? default,
                 EnablePrinters = EnablePrinters ?? default,
@@ -101,6 +100,11 @@ namespace TableCloth.Models
                 InstallRaiDrive = InstallRaiDrive ?? default,
                 EnableInternetExplorerMode = EnableInternetExplorerMode ?? default,
             };
+
+            if (SelectedService != null)
+                config.Services = new[] { SelectedService };
+
+            return config;
         }
     }
 }

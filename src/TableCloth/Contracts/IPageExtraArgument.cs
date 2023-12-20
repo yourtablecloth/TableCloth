@@ -2,6 +2,6 @@
 {
     public interface IPageExtraArgument
     {
-        object ExtraArgument { get; set; }
+        object? ExtraArgument { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace TableCloth.Themes
     internal static class ThemesController
     {
         private static ThemeTypes? _currentTheme = null;
-        private static ResourceDictionary _currentThemeDictionary = null;
+        private static ResourceDictionary? _currentThemeDictionary = null;
 
         public static ThemeTypes? CurrentTheme
         {

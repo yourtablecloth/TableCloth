@@ -40,9 +40,9 @@ namespace TableCloth
                 o.TracesSampleRate = 1.0;
             });
 
-            var startup = Services.GetService<AppStartup>()!;
-            var messageBox = Services.GetService<AppMessageBox>()!;
-            var commandLineParser = Services.GetService<CommandLineParser>();
+            var startup = Services.GetRequiredService<AppStartup>()!;
+            var messageBox = Services.GetRequiredService<AppMessageBox>()!;
+            var commandLineParser = Services.GetRequiredService<CommandLineParser>();
 
             Arguments = e.Args;
             var warnings = new List<string>();
@@ -55,7 +55,7 @@ namespace TableCloth
                 return;
             }
 
-            if (!startup.HasRequirementsMet(warnings, out Exception failedReason, out bool isCritical))
+            if (!startup.HasRequirementsMet(warnings, out Exception? failedReason, out bool isCritical))
             {
                 messageBox.DisplayError(failedReason, isCritical);
 
@@ -80,11 +80,12 @@ namespace TableCloth
                 }
             }
 
-            var preferencesManager = Services.GetService<PreferencesManager>();
+            var preferencesManager = Services.GetRequiredService<PreferencesManager>();
             var preferences = preferencesManager.LoadPreferences();
+            var v2UIOptIn = preferences?.V2UIOptIn ?? true;
             var window = default(Window);
 
-            if (preferences.V2UIOptIn)
+            if (v2UIOptIn)
                 window = Services.GetRequiredService<MainWindowV2>();
             else
                 window = Services.GetRequiredService<MainWindow>();
