@@ -18,14 +18,16 @@ namespace TableCloth.Models.WindowsSandbox
 #if !NETFX
             ?
 #endif
-            SandboxFolder { get; set; }
+            SandboxFolder
+        { get; set; }
 
         [XmlElement("ReadOnly")]
         public string
 #if !NETFX
             ?
 #endif
-            ReadOnly { get; set; }
+            ReadOnly
+        { get; set; }
 
         public bool ShouldSerializeSandboxFolder()
             => !string.IsNullOrWhiteSpace(SandboxFolder);

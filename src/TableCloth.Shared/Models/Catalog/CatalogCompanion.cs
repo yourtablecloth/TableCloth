@@ -17,7 +17,8 @@ namespace TableCloth.Models.Catalog
 #if !NETFX
             ?
 #endif
-            Id { get; set; }
+            Id
+        { get; set; }
 
         /// <summary>
         /// 사용자에게 표시될 이름
@@ -27,7 +28,8 @@ namespace TableCloth.Models.Catalog
 #if !NETFX
             ?
 #endif
-            DisplayName { get; set; }
+            DisplayName
+        { get; set; }
 
         /// <summary>
         /// 소프트웨어를 다운로드할 수 있는 URL
@@ -37,7 +39,8 @@ namespace TableCloth.Models.Catalog
 #if !NETFX
             ?
 #endif
-            Url { get; set; }
+            Url
+        { get; set; }
 
         /// <summary>
         /// 설치 프로그램 실행 시 전달할 매개 변수
@@ -47,6 +50,7 @@ namespace TableCloth.Models.Catalog
 #if !NETFX
             ?
 #endif
-            Arguments { get; set; }
+            Arguments
+        { get; set; }
     }
 }

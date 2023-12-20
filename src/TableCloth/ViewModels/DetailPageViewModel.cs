@@ -6,7 +6,6 @@ using System.Windows.Media.Imaging;
 using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Contracts;
-using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 

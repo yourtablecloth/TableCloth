@@ -1,12 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.CodeDom;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Net.Cache;
 using System.Windows.Data;
-using System.Windows.Media.Imaging;
 using TableCloth.Components;
 
 namespace TableCloth.Converters

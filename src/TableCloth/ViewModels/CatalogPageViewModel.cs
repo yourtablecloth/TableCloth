@@ -5,7 +5,6 @@ using System.Reflection;
 using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Contracts;
-using TableCloth.Models;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.ViewModels

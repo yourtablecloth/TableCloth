@@ -12,7 +12,8 @@ namespace TableCloth.Models.WindowsSandbox
 #if !NETFX
             ?
 #endif
-            Networking { get; set; }
+            Networking
+        { get; set; }
 
         [XmlIgnore]
         public bool NetworkingSpecified => Networking != null;
@@ -22,7 +23,8 @@ namespace TableCloth.Models.WindowsSandbox
 #if !NETFX
             ?
 #endif
-            AudioInput { get; set; }
+            AudioInput
+        { get; set; }
 
         [XmlIgnore]
         public bool AudioInputSpecified => AudioInput != null;
@@ -32,7 +34,8 @@ namespace TableCloth.Models.WindowsSandbox
 #if !NETFX
             ?
 #endif
-            VideoInput { get; set; }
+            VideoInput
+        { get; set; }
 
         [XmlIgnore]
         public bool VideoInputSpecified => VideoInput != null;
@@ -42,7 +45,8 @@ namespace TableCloth.Models.WindowsSandbox
 #if !NETFX
             ?
 #endif
-            VirtualGpu { get; set; }
+            VirtualGpu
+        { get; set; }
 
         [XmlIgnore]
         public bool VirtualGpuSpecified => VirtualGpu != null;
@@ -52,7 +56,8 @@ namespace TableCloth.Models.WindowsSandbox
 #if !NETFX
             ?
 #endif
-            PrinterRedirection { get; set; }
+            PrinterRedirection
+        { get; set; }
 
         [XmlIgnore]
         public bool PrinterRedirectionSpecified => PrinterRedirection != null;
@@ -62,7 +67,8 @@ namespace TableCloth.Models.WindowsSandbox
 #if !NETFX
             ?
 #endif
-            ClipboardRedirection { get; set; }
+            ClipboardRedirection
+        { get; set; }
 
         [XmlIgnore]
         public bool ClipboardRedirectionSpecified => ClipboardRedirection != null;
@@ -72,7 +78,8 @@ namespace TableCloth.Models.WindowsSandbox
 #if !NETFX
             ?
 #endif
-            ProtectedClient { get; set; }
+            ProtectedClient
+        { get; set; }
 
         [XmlIgnore]
         public bool ProtectedClientSpecified => ProtectedClient != null;

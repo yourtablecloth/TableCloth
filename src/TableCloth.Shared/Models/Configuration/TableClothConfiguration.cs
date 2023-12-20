@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.Models.Configuration
@@ -18,13 +17,47 @@ namespace TableCloth.Models.Configuration
 #if !NETFX
             ?
 #endif
-            CertPair { get; set; }
+            CertPair
+        { get; set; }
 
         /// <summary>
         /// 마이크 입력을 공유할 것인지 여부입니다.
         /// </summary>
+
+        /* Unmerged change from project 'TableCloth.SetupBuilder'
+        Before:
+                public bool EnableMicrophone { get; set; }
+
+                /// <summary>
+        After:
+                public bool EnableMicrophone { get; set; }
+
+                /// <summary>
+        */
+
+        /* Unmerged change from project 'TableCloth'
+        Before:
+                public bool EnableMicrophone { get; set; }
+
+                /// <summary>
+        After:
+                public bool EnableMicrophone { get; set; }
+
+                /// <summary>
+        */
+
+        /* Unmerged change from project 'Loom'
+        Before:
+                public bool EnableMicrophone { get; set; }
+
+                /// <summary>
+        After:
+                public bool EnableMicrophone { get; set; }
+
+                /// <summary>
+        */
         public bool EnableMicrophone { get; set; }
-        
+
         /// <summary>
         /// 웹캠 입력을 공유할 것인지 여부입니다.
         /// </summary>
@@ -44,7 +77,7 @@ namespace TableCloth.Models.Configuration
         /// Adobe Reader 설치를 샌드박스 시작 후 자동 실행할 지 여부입니다.
         /// </summary>
         public bool InstallAdobeReader { get; set; }
-        
+
         /// <summary>
         /// 한컴오피스 뷰어 설치를 샌드박스 시작 후 자동 실행할 지 여부입니다.
         /// </summary>
@@ -77,6 +110,7 @@ namespace TableCloth.Models.Configuration
 #if !NETFX
             ?
 #endif
-            AssetsDirectoryPath { get; internal set; }
+            AssetsDirectoryPath
+        { get; internal set; }
     }
 }

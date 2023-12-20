@@ -344,7 +344,7 @@ namespace TableCloth.Resources
 
         internal static readonly string Error_ShortcutFailed =
             "바로 가기 생성에 실패했습니다.";
-        
+
         internal static readonly string Info_ShortcutSuccess =
             "바탕 화면에 바로 가기를 생성했습니다.";
 

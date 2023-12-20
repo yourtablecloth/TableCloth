@@ -1,9 +1,5 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using TableCloth.Commands;
-using TableCloth.Components;
-using TableCloth.Contracts;
 
 namespace TableCloth.ViewModels
 {

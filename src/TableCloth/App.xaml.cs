@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using Sentry;
 using Serilog;
 using System;
@@ -8,11 +7,9 @@ using System.Linq;
 using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Components;
-using TableCloth.Contracts;
 using TableCloth.Pages;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
-using Windows.Devices.WiFiDirect.Services;
 
 namespace TableCloth
 {

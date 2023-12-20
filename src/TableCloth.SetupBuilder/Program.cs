@@ -22,7 +22,7 @@ namespace TableCloth.SetupBuilder
             (
                 tableClothDirectory = new Dir("TableCloth",
                 (
-                    filesCollection = new Files($@"{inputDirectory}\*.*", new Predicate<string>(x => !x.EndsWith("TableCloth.exe", StringComparison.OrdinalIgnoreCase) ))
+                    filesCollection = new Files($@"{inputDirectory}\*.*", new Predicate<string>(x => !x.EndsWith("TableCloth.exe", StringComparison.OrdinalIgnoreCase)))
                 ),
                 (
                     mainExecutableFile = new WixSharpFile($@"{inputDirectory}\TableCloth.exe",

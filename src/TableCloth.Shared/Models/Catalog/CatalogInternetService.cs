@@ -44,7 +44,8 @@ namespace TableCloth.Models.Catalog
 #if !NETFX
             ?
 #endif
-            CompatibilityNotes { get; set; }
+            CompatibilityNotes
+        { get; set; }
 
         /// <summary>
         /// 서비스를 이용하기 위해 설치해야 하는 소프트웨어 정보 목록
@@ -63,7 +64,8 @@ namespace TableCloth.Models.Catalog
 #if !NETFX
             ?
 #endif
-            CustomBootstrap { get; set; }
+            CustomBootstrap
+        { get; set; }
 
         /// <summary>
         /// 서비스를 이용하기 위해 실행해야 하는 부트스트랩 스크립트

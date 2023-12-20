@@ -1,22 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Navigation;
-using TableCloth.Components;
-using TableCloth.Contracts;
 using TableCloth.Models;
-using TableCloth.Models.Catalog;
-using TableCloth.Models.Configuration;
-using TableCloth.Models.WindowsSandbox;
-using TableCloth.Resources;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Pages

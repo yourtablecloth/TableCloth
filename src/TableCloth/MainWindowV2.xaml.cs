@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Navigation;
-using TableCloth.Pages;
+﻿using System.Windows;
 using TableCloth.ViewModels;
 
 namespace TableCloth

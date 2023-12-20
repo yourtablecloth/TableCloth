@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using TableCloth.Components;
+﻿using System.Collections.Generic;
 using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels

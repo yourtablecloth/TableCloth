@@ -11,15 +11,11 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Interop;
-using System.Xml;
-using System.Xml.Serialization;
-using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
 namespace Hostess
