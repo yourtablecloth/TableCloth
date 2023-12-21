@@ -4,7 +4,8 @@ namespace TableCloth.Commands
 {
     public sealed class AboutThisAppCommand : CommandBase
     {
-        public AboutThisAppCommand(AppUserInterface appUserInterface)
+        public AboutThisAppCommand(
+            AppUserInterface appUserInterface)
         {
             _appUserInterface = appUserInterface;
         }

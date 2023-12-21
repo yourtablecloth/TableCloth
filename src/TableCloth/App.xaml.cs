@@ -132,13 +132,22 @@ namespace TableCloth
             services.AddSingleton<MainWindowClosedCommand>();
             services.AddSingleton<MainWindowV2LoadedCommand>();
             services.AddSingleton<MainWindowV2ClosedCommand>();
+            services.AddSingleton<ScanCertPairCommand>();
+            services.AddSingleton<CertSelectWindowLoadedCommand>();
+            services.AddSingleton<ManualCertLoadCommand>();
 
             // UI
             services.AddTransient<DisclaimerWindow>();
             services.AddTransient<AboutWindow>();
             services.AddTransient<InputPasswordWindow>();
 
-            services.AddTransient<CertSelectWindowViewModel>();
+            services.AddTransient<CertSelectWindowViewModel>(provider =>
+            {
+                return new CertSelectWindowViewModel(
+                    scanCertPairCommand: provider.GetRequiredService<ScanCertPairCommand>(),
+                    certSelectWindowLoadedCommand: provider.GetRequiredService<CertSelectWindowLoadedCommand>(),
+                    manualCertLoadCommand: provider.GetRequiredService<ManualCertLoadCommand>());
+            });
             services.AddTransient<CertSelectWindow>();
 
             services.AddTransient<MainWindowViewModel>(provider =>

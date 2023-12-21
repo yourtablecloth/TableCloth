@@ -109,7 +109,8 @@ namespace TableCloth.Commands
                 }
 
                 if (parsedArg.SelectedServices.Count() > 0)
-                    _launchSandboxCommand.Execute(parsedArg);
+                    if (_launchSandboxCommand.CanExecute(parsedArg))
+                        _launchSandboxCommand.Execute(parsedArg);
             }
         }
 
