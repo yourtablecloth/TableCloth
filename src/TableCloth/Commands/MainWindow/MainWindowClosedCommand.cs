@@ -1,10 +1,10 @@
 ﻿using TableCloth.Components;
 
-namespace TableCloth.Commands;
+namespace TableCloth.Commands.MainWindow;
 
-public sealed class MainWindowV2ClosedCommand : CommandBase
+public sealed class MainWindowClosedCommand : CommandBase
 {
-    public MainWindowV2ClosedCommand(
+    public MainWindowClosedCommand(
         SandboxCleanupManager sandboxCleanupManager,
         AppRestartManager appRestartManager)
     {

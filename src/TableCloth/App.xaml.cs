@@ -8,6 +8,8 @@ using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
 using TableCloth.Commands.CertSelectWindow;
+using TableCloth.Commands.MainWindow;
+using TableCloth.Commands.MainWindowV2;
 using TableCloth.Components;
 using TableCloth.Dialogs;
 using TableCloth.Pages;

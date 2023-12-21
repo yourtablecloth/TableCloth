@@ -6,7 +6,7 @@ using TableCloth.Components;
 using TableCloth.ViewModels;
 using NavigationService = TableCloth.Components.NavigationService;
 
-namespace TableCloth.Commands;
+namespace TableCloth.Commands.MainWindowV2;
 
 public sealed class MainWindowV2LoadedCommand : CommandBase
 {

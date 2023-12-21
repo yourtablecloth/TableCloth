@@ -7,7 +7,7 @@ using TableCloth.Dialogs;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Commands;
+namespace TableCloth.Commands.MainWindow;
 
 public sealed class MainWindowLoadedCommand : CommandBase
 {
