@@ -1,22 +1,21 @@
 ﻿using TableCloth.Components;
 using TableCloth.Dialogs;
 
-namespace TableCloth.Commands
+namespace TableCloth.Commands;
+
+public sealed class AboutThisAppCommand : CommandBase
 {
-    public sealed class AboutThisAppCommand : CommandBase
+    public AboutThisAppCommand(
+        AppUserInterface appUserInterface)
     {
-        public AboutThisAppCommand(
-            AppUserInterface appUserInterface)
-        {
-            _appUserInterface = appUserInterface;
-        }
+        _appUserInterface = appUserInterface;
+    }
 
-        private readonly AppUserInterface _appUserInterface;
+    private readonly AppUserInterface _appUserInterface;
 
-        public override void Execute(object? parameter)
-        {
-            var aboutWindow = _appUserInterface.CreateWindow<AboutWindow>();
-            aboutWindow.ShowDialog();
-        }
+    public override void Execute(object? parameter)
+    {
+        var aboutWindow = _appUserInterface.CreateWindow<AboutWindow>();
+        aboutWindow.ShowDialog();
     }
 }

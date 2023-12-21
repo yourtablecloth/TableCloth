@@ -3,72 +3,71 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace TableCloth.Components
+namespace TableCloth.Components;
+
+public sealed class SandboxCleanupManager
 {
-    public sealed class SandboxCleanupManager
+    public SandboxCleanupManager(
+        SandboxLauncher sandboxLauncher)
     {
-        public SandboxCleanupManager(
-            SandboxLauncher sandboxLauncher)
+        _sandboxLauncher = sandboxLauncher;
+    }
+
+    private readonly SandboxLauncher _sandboxLauncher;
+
+    private readonly List<string> _temporaryDirectories = new List<string>();
+
+    public string? CurrentDirectory { get; private set; }
+
+    public void SetWorkingDirectory(string workingDirectory)
+    {
+        var normalizedPath = Path.GetFullPath(workingDirectory);
+
+        if (!Directory.Exists(normalizedPath))
+            throw new DirectoryNotFoundException($"Directory not found: {normalizedPath}");
+
+        CurrentDirectory = normalizedPath;
+
+        if (!_temporaryDirectories.Contains(CurrentDirectory))
+            _temporaryDirectories.Add(CurrentDirectory);
+    }
+
+    private void OpenExplorer(string targetDirectoryPath)
+    {
+        if (!Directory.Exists(targetDirectoryPath))
+            return;
+
+        var psi = new ProcessStartInfo(
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"),
+            targetDirectoryPath)
         {
-            _sandboxLauncher = sandboxLauncher;
-        }
+            UseShellExecute = false,
+        };
 
-        private readonly SandboxLauncher _sandboxLauncher;
+        Process.Start(psi);
+    }
 
-        private readonly List<string> _temporaryDirectories = new List<string>();
-
-        public string? CurrentDirectory { get; private set; }
-
-        public void SetWorkingDirectory(string workingDirectory)
+    public void TryCleanup()
+    {
+        foreach (var eachDirectory in _temporaryDirectories)
         {
-            var normalizedPath = Path.GetFullPath(workingDirectory);
-
-            if (!Directory.Exists(normalizedPath))
-                throw new DirectoryNotFoundException($"Directory not found: {normalizedPath}");
-
-            CurrentDirectory = normalizedPath;
-
-            if (!_temporaryDirectories.Contains(CurrentDirectory))
-                _temporaryDirectories.Add(CurrentDirectory);
-        }
-
-        private void OpenExplorer(string targetDirectoryPath)
-        {
-            if (!Directory.Exists(targetDirectoryPath))
-                return;
-
-            var psi = new ProcessStartInfo(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"),
-                targetDirectoryPath)
+            if (!string.IsNullOrWhiteSpace(CurrentDirectory))
             {
-                UseShellExecute = false,
-            };
-
-            Process.Start(psi);
-        }
-
-        public void TryCleanup()
-        {
-            foreach (var eachDirectory in _temporaryDirectories)
-            {
-                if (!string.IsNullOrWhiteSpace(CurrentDirectory))
+                if (string.Equals(Path.GetFullPath(eachDirectory), Path.GetFullPath(CurrentDirectory), StringComparison.OrdinalIgnoreCase))
                 {
-                    if (string.Equals(Path.GetFullPath(eachDirectory), Path.GetFullPath(CurrentDirectory), StringComparison.OrdinalIgnoreCase))
+                    if (_sandboxLauncher.IsSandboxRunning())
                     {
-                        if (_sandboxLauncher.IsSandboxRunning())
-                        {
-                            OpenExplorer(eachDirectory);
-                            continue;
-                        }
+                        OpenExplorer(eachDirectory);
+                        continue;
                     }
                 }
-
-                if (!Directory.Exists(eachDirectory))
-                    continue;
-
-                try { Directory.Delete(eachDirectory, true); }
-                catch { OpenExplorer(eachDirectory); }
             }
+
+            if (!Directory.Exists(eachDirectory))
+                continue;
+
+            try { Directory.Delete(eachDirectory, true); }
+            catch { OpenExplorer(eachDirectory); }
         }
     }
 }

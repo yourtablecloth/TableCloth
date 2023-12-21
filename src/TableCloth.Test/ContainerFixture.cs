@@ -1,8 +1,8 @@
-namespace TableCloth.Test;
-
 using Microsoft.Extensions.DependencyInjection;
 using TableCloth.Components;
 using TableCloth.Resources;
+
+namespace TableCloth.Test;
 
 public class ContainerFixture
 {

@@ -3,36 +3,35 @@ using TableCloth.Components;
 using TableCloth.Contracts;
 using TableCloth.Dialogs;
 
-namespace TableCloth.Commands
+namespace TableCloth.Commands;
+
+public sealed class CertSelectCommand : CommandBase
 {
-    public sealed class CertSelectCommand : CommandBase
+    public CertSelectCommand(
+        AppUserInterface appUserInterface)
     {
-        public CertSelectCommand(
-            AppUserInterface appUserInterface)
-        {
-            _appUserInterface = appUserInterface;
-        }
+        _appUserInterface = appUserInterface;
+    }
 
-        private readonly AppUserInterface _appUserInterface;
+    private readonly AppUserInterface _appUserInterface;
 
-        public AppUserInterface AppUserInterface
-            => _appUserInterface;
+    public AppUserInterface AppUserInterface
+        => _appUserInterface;
 
-        public override void Execute(object? parameter)
-        {
-            var viewModel = parameter as ICertSelect;
+    public override void Execute(object? parameter)
+    {
+        var viewModel = parameter as ICertPairSelect;
 
-            if (viewModel == null)
-                throw new ArgumentException(nameof(parameter));
+        if (viewModel == null)
+            throw new ArgumentException(nameof(parameter));
 
-            var certSelectWindow = _appUserInterface.CreateWindow<CertSelectWindow>();
-            var response = certSelectWindow.ShowDialog();
+        var certSelectWindow = _appUserInterface.CreateWindow<CertSelectWindow>();
+        var response = certSelectWindow.ShowDialog();
 
-            if (!response.HasValue || !response.Value)
-                return;
+        if (!response.HasValue || !response.Value)
+            return;
 
-            if (certSelectWindow.ViewModel.SelectedCertPair != null)
-                viewModel.SelectedCertFile = certSelectWindow.ViewModel.SelectedCertPair;
-        }
+        if (certSelectWindow.ViewModel.SelectedCertPair != null)
+            viewModel.SelectedCertFile = certSelectWindow.ViewModel.SelectedCertPair;
     }
 }

@@ -3,32 +3,31 @@ using System.Linq;
 using TableCloth.Components;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Commands
+namespace TableCloth.Commands;
+
+public sealed class ScanCertPairCommand : CommandBase
 {
-    public sealed class ScanCertPairCommand : CommandBase
+    public ScanCertPairCommand(
+        X509CertPairScanner certPairScanner)
     {
-        public ScanCertPairCommand(
-            X509CertPairScanner certPairScanner)
-        {
-            _certPairScanner = certPairScanner;
-        }
+        _certPairScanner = certPairScanner;
+    }
 
-        private readonly X509CertPairScanner _certPairScanner;
+    private readonly X509CertPairScanner _certPairScanner;
 
-        public override void Execute(object? parameter)
-        {
-            var viewModel = parameter as CertSelectWindowViewModel;
+    public override void Execute(object? parameter)
+    {
+        var viewModel = parameter as CertSelectWindowViewModel;
 
-            if (viewModel == null)
-                throw new ArgumentException(nameof(parameter));
+        if (viewModel == null)
+            throw new ArgumentException(nameof(parameter));
 
-            viewModel.SelectedCertPair = default;
-            viewModel.CertPairs = _certPairScanner.ScanX509Pairs(
-                _certPairScanner.GetCandidateDirectories()).ToList();
+        viewModel.SelectedCertPair = default;
+        viewModel.CertPairs = _certPairScanner.ScanX509Pairs(
+            _certPairScanner.GetCandidateDirectories()).ToList();
 
-            if (viewModel.CertPairs.Count == 1)
-                viewModel.SelectedCertPair = viewModel.CertPairs.Single();
+        if (viewModel.CertPairs.Count == 1)
+            viewModel.SelectedCertPair = viewModel.CertPairs.Single();
 
-        }
     }
 }

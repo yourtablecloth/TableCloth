@@ -1,26 +1,25 @@
 ﻿using TableCloth.Components;
 
-namespace TableCloth.Commands
+namespace TableCloth.Commands;
+
+public sealed class MainWindowV2ClosedCommand : CommandBase
 {
-    public sealed class MainWindowV2ClosedCommand : CommandBase
+    public MainWindowV2ClosedCommand(
+        SandboxCleanupManager sandboxCleanupManager,
+        AppRestartManager appRestartManager)
     {
-        public MainWindowV2ClosedCommand(
-            SandboxCleanupManager sandboxCleanupManager,
-            AppRestartManager appRestartManager)
-        {
-            _sandboxCleanupManager = sandboxCleanupManager;
-            _appRestartManager = appRestartManager;
-        }
+        _sandboxCleanupManager = sandboxCleanupManager;
+        _appRestartManager = appRestartManager;
+    }
 
-        private readonly SandboxCleanupManager _sandboxCleanupManager;
-        private readonly AppRestartManager _appRestartManager;
+    private readonly SandboxCleanupManager _sandboxCleanupManager;
+    private readonly AppRestartManager _appRestartManager;
 
-        public override void Execute(object? parameter)
-        {
-            _sandboxCleanupManager.TryCleanup();
+    public override void Execute(object? parameter)
+    {
+        _sandboxCleanupManager.TryCleanup();
 
-            if (_appRestartManager.ReserveRestart)
-                _appRestartManager.RestartNow();
-        }
+        if (_appRestartManager.ReserveRestart)
+            _appRestartManager.RestartNow();
     }
 }

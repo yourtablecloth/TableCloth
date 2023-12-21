@@ -1,12 +1,11 @@
 ﻿// https://github.com/AngryCarrot789/WPFDarkTheme
 
-namespace TableCloth.Themes
+namespace TableCloth.Themes;
+
+internal enum ThemeTypes
 {
-    internal enum ThemeTypes
-    {
-        Light,
-        ColourfulLight,
-        Dark,
-        ColourfulDark,
-    }
+    Light,
+    ColourfulLight,
+    Dark,
+    ColourfulDark,
 }

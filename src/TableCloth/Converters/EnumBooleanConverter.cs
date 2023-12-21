@@ -2,36 +2,35 @@
 using System.Windows;
 using System.Windows.Data;
 
-namespace TableCloth.Converters
+namespace TableCloth.Converters;
+
+// https://stackoverflow.com/posts/406798/
+
+public class EnumBooleanConverter : IValueConverter
 {
-    // https://stackoverflow.com/posts/406798/
-
-    public class EnumBooleanConverter : IValueConverter
+    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value == null)
-                return DependencyProperty.UnsetValue;
+        if (value == null)
+            return DependencyProperty.UnsetValue;
 
-            var parameterString = parameter as string;
-            if (parameterString == null)
-                return DependencyProperty.UnsetValue;
+        var parameterString = parameter as string;
+        if (parameterString == null)
+            return DependencyProperty.UnsetValue;
 
-            if (Enum.IsDefined(value.GetType(), value) == false)
-                return DependencyProperty.UnsetValue;
+        if (Enum.IsDefined(value.GetType(), value) == false)
+            return DependencyProperty.UnsetValue;
 
-            var parameterValue = Enum.Parse(value.GetType(), parameterString);
+        var parameterValue = Enum.Parse(value.GetType(), parameterString);
 
-            return parameterValue.Equals(value);
-        }
+        return parameterValue.Equals(value);
+    }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            var parameterString = parameter as string;
-            if (parameterString == null)
-                return DependencyProperty.UnsetValue;
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+        var parameterString = parameter as string;
+        if (parameterString == null)
+            return DependencyProperty.UnsetValue;
 
-            return Enum.Parse(targetType, parameterString);
-        }
+        return Enum.Parse(targetType, parameterString);
     }
 }

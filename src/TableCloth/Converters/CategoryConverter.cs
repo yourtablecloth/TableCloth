@@ -4,16 +4,15 @@ using System.Windows.Data;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
-namespace TableCloth.Converters
-{
-    public class CategoryConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            => (value is CatalogInternetServiceCategory internalValue) ?
-                StringResources.InternetServiceCategory_DisplayText(internalValue) :
-                StringResources.UnknownText;
+namespace TableCloth.Converters;
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => throw new NotImplementedException();
-    }
+public class CategoryConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        => (value is CatalogInternetServiceCategory internalValue) ?
+            StringResources.InternetServiceCategory_DisplayText(internalValue) :
+            StringResources.UnknownText;
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
 }

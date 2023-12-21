@@ -1,20 +1,19 @@
 ﻿using TableCloth.Components;
 
-namespace TableCloth.Commands
+namespace TableCloth.Commands;
+
+public sealed class AppRestartCommand : CommandBase
 {
-    public sealed class AppRestartCommand : CommandBase
+    public AppRestartCommand(
+        AppRestartManager appRestartManager)
     {
-        public AppRestartCommand(
-            AppRestartManager appRestartManager)
-        {
-            _appRestartManager = appRestartManager;
-        }
+        _appRestartManager = appRestartManager;
+    }
 
-        private readonly AppRestartManager _appRestartManager;
+    private readonly AppRestartManager _appRestartManager;
 
-        public override void Execute(object? parameter)
-        {
-            _appRestartManager.RestartNow();
-        }
+    public override void Execute(object? parameter)
+    {
+        _appRestartManager.RestartNow();
     }
 }
