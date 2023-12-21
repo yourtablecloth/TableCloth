@@ -18,7 +18,6 @@ namespace TableCloth.ViewModels
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public MainWindowViewModel(
-            AppUserInterface appUserInterface,
             CatalogDeserializer catalogDeserializer,
             MainWindowLoadedCommand mainWindowLoadedCommand,
             MainWindowClosedCommand mainWindowClosedCommand,
@@ -28,7 +27,6 @@ namespace TableCloth.ViewModels
             AboutThisAppCommand aboutThisAppCommand,
             CertSelectCommand certSelectCommand)
         {
-            _appUserInterface = appUserInterface;
             _catalogDeserializer = catalogDeserializer;
             _mainWindowLoadedCommand = mainWindowLoadedCommand;
             _mainWindowClosedCommand = mainWindowClosedCommand;
@@ -62,7 +60,6 @@ namespace TableCloth.ViewModels
             }
         }
 
-        private readonly AppUserInterface _appUserInterface;
         private readonly CatalogDeserializer _catalogDeserializer;
         private readonly MainWindowLoadedCommand _mainWindowLoadedCommand;
         private readonly MainWindowClosedCommand _mainWindowClosedCommand;
@@ -89,9 +86,6 @@ namespace TableCloth.ViewModels
         private X509CertPair? _selectedCertFile;
         private List<CatalogInternetService> _services = new();
         private List<CatalogInternetService> _selectedServices = new();
-
-        public AppUserInterface AppUserInterface
-            => _appUserInterface;
 
         public MainWindowLoadedCommand MainWindowLoadedCommand
             => _mainWindowLoadedCommand;

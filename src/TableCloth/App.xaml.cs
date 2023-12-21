@@ -144,7 +144,6 @@ namespace TableCloth
             services.AddTransient<MainWindowViewModel>(provider =>
             {
                 return new MainWindowViewModel(
-                    appUserInterface: provider.GetRequiredService<AppUserInterface>(),
                     catalogDeserializer: provider.GetRequiredService<CatalogDeserializer>(),
                     mainWindowLoadedCommand: provider.GetRequiredService<MainWindowLoadedCommand>(),
                     mainWindowClosedCommand: provider.GetRequiredService<MainWindowClosedCommand>(),
