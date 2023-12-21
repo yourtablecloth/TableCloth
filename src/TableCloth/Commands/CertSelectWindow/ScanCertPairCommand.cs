@@ -3,7 +3,7 @@ using System.Linq;
 using TableCloth.Components;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Commands;
+namespace TableCloth.Commands.CertSelectWindow;
 
 public sealed class ScanCertPairCommand : CommandBase
 {

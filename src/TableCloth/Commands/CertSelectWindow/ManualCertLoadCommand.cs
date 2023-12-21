@@ -9,7 +9,7 @@ using TableCloth.Dialogs;
 using TableCloth.Events;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Commands;
+namespace TableCloth.Commands.CertSelectWindow;
 
 public sealed class ManualCertLoadCommand : CommandBase
 {
@@ -65,7 +65,6 @@ public sealed class ManualCertLoadCommand : CommandBase
         var response = ofd.ShowDialog();
 
         if (response.HasValue && response.Value)
-        {
             switch (ofd.FilterIndex)
             {
                 case 1:
@@ -106,6 +105,5 @@ public sealed class ManualCertLoadCommand : CommandBase
                     viewModel.RequestClose(this, new DialogRequestEventArgs(viewModel.SelectedCertPair != null));
                     break;
             }
-        }
     }
 }

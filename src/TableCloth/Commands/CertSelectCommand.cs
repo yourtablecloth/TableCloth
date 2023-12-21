@@ -25,7 +25,7 @@ public sealed class CertSelectCommand : CommandBase
         if (viewModel == null)
             throw new ArgumentException(nameof(parameter));
 
-        var certSelectWindow = _appUserInterface.CreateWindow<CertSelectWindow>();
+        var certSelectWindow = _appUserInterface.CreateWindow<TableCloth.Dialogs.CertSelectWindow>();
         var response = certSelectWindow.ShowDialog();
 
         if (!response.HasValue || !response.Value)

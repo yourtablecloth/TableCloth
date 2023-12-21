@@ -1,4 +1,4 @@
-﻿namespace TableCloth.Commands;
+﻿namespace TableCloth.Commands.CertSelectWindow;
 
 public sealed class CertSelectWindowLoadedCommand : CommandBase
 {
