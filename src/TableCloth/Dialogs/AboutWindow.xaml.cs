@@ -5,7 +5,7 @@ using System.Windows;
 using TableCloth.Components;
 using TableCloth.Resources;
 
-namespace TableCloth
+namespace TableCloth.Dialogs
 {
     /// <summary>
     /// Interaction logic for AboutWindow.xaml

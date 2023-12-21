@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Components;
+using TableCloth.Dialogs;
 using TableCloth.Pages;
 using TableCloth.Resources;
 using TableCloth.ViewModels;

@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:TableCloth.ViewModels"
-        xmlns:local="clr-namespace:TableCloth" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:TableCloth"
+        xmlns:controls="clr-namespace:TableCloth.Controls"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Style="{DynamicResource MainWindowStyle}"
         Title="{StaticResource MainWindow_Title}" Width="800" Height="600"
@@ -94,7 +96,7 @@
             <ListView Grid.Row="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" SelectionChanged="SiteList_SelectionChanged" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
                 <ListView.View>
                     <GridView>
-                        <local:ExtendedGridViewColumn Header="{StaticResource MainWindow_Column_SiteName}" BindingPath="DisplayName" Width="180">
+                        <controls:ExtendedGridViewColumn Header="{StaticResource MainWindow_Column_SiteName}" BindingPath="DisplayName" Width="180">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
@@ -103,8 +105,8 @@
                                     </StackPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
-                        </local:ExtendedGridViewColumn>
-                        <local:ExtendedGridViewColumn Header="{StaticResource MainWindow_Column_Category}" BindingPath="CategoryDisplayName" Width="100">
+                        </controls:ExtendedGridViewColumn>
+                        <controls:ExtendedGridViewColumn Header="{StaticResource MainWindow_Column_Category}" BindingPath="CategoryDisplayName" Width="100">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
@@ -113,8 +115,8 @@
                                     </StackPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
-                        </local:ExtendedGridViewColumn>
-                        <local:ExtendedGridViewColumn Header="{StaticResource MainWindow_Column_PackageCount}" BindingPath="PackageCountForDisplay" Width="140">
+                        </controls:ExtendedGridViewColumn>
+                        <controls:ExtendedGridViewColumn Header="{StaticResource MainWindow_Column_PackageCount}" BindingPath="PackageCountForDisplay" Width="140">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
@@ -123,8 +125,8 @@
                                     </StackPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
-                        </local:ExtendedGridViewColumn>
-                        <local:ExtendedGridViewColumn Header="{StaticResource MainWindow_Column_SiteUrl}" BindingPath="Url" Width="300">
+                        </controls:ExtendedGridViewColumn>
+                        <controls:ExtendedGridViewColumn Header="{StaticResource MainWindow_Column_SiteUrl}" BindingPath="Url" Width="300">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
@@ -133,7 +135,7 @@
                                     </StackPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
-                        </local:ExtendedGridViewColumn>
+                        </controls:ExtendedGridViewColumn>
                     </GridView>
                 </ListView.View>
             </ListView>

@@ -1,6 +1,7 @@
 ﻿using System;
 using TableCloth.Components;
 using TableCloth.Contracts;
+using TableCloth.Dialogs;
 
 namespace TableCloth.Commands
 {

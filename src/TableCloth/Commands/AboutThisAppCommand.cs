@@ -1,4 +1,5 @@
 ﻿using TableCloth.Components;
+using TableCloth.Dialogs;
 
 namespace TableCloth.Commands
 {

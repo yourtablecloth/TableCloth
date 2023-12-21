@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using TableCloth.Components;
+using TableCloth.Dialogs;
 using TableCloth.Events;
 using TableCloth.ViewModels;
 

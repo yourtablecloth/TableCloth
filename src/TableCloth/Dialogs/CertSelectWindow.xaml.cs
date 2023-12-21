@@ -2,7 +2,7 @@
 using TableCloth.Events;
 using TableCloth.ViewModels;
 
-namespace TableCloth
+namespace TableCloth.Dialogs
 {
     public partial class CertSelectWindow : Window
     {

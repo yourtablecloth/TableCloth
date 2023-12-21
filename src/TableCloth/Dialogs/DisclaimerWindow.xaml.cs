@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Interop;
 
-namespace TableCloth
+namespace TableCloth.Dialogs
 {
     public partial class DisclaimerWindow : Window
     {

@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using TableCloth.Controls;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
 

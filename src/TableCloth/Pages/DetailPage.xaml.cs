@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using TableCloth.Dialogs;
 using TableCloth.Models;
 using TableCloth.ViewModels;
 

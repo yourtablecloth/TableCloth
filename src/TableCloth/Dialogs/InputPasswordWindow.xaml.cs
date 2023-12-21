@@ -5,7 +5,7 @@ using TableCloth.Components;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 
-namespace TableCloth
+namespace TableCloth.Dialogs
 {
     public partial class InputPasswordWindow : Window
     {
