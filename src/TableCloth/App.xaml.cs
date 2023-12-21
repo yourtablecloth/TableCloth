@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using TableCloth.Commands;
+using TableCloth.Commands.AboutWindow;
 using TableCloth.Components;
 using TableCloth.Dialogs;
 using TableCloth.Pages;
@@ -96,13 +97,13 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
 
-        // Add Logging
-        services.AddLogging(c =>
-        {
-            c.AddSerilog(dispose: true);
-        });
+        // Add Logging Service
+        services.AddLogging(c => c.AddSerilog(dispose: true));
 
-        // Add Services
+        // Add HTTP Service
+        services.AddHttpClient(nameof(TableCloth), c => c.DefaultRequestHeaders.Add("User-Agent", StringResources.UserAgentText));
+
+        // Add Components
         services.AddSingleton<AppUserInterface>();
         services.AddSingleton<SharedLocations>();
         services.AddSingleton<PreferencesManager>();
@@ -122,88 +123,125 @@ public partial class App : Application
         services.AddSingleton<AppMessageBox>();
         services.AddSingleton<NavigationService>();
 
-        // Commands
-        services.AddSingleton<LaunchSandboxCommand>();
-        services.AddSingleton<CreateShortcutCommand>();
-        services.AddSingleton<CopyCommandLineCommand>();
-        services.AddSingleton<CertSelectCommand>();
-        services.AddSingleton<AppRestartCommand>();
-        services.AddSingleton<AboutThisAppCommand>();
-        services.AddSingleton<MainWindowLoadedCommand>();
-        services.AddSingleton<MainWindowClosedCommand>();
-        services.AddSingleton<MainWindowV2LoadedCommand>();
-        services.AddSingleton<MainWindowV2ClosedCommand>();
-        services.AddSingleton<ScanCertPairCommand>();
-        services.AddSingleton<CertSelectWindowLoadedCommand>();
-        services.AddSingleton<ManualCertLoadCommand>();
-
-        // UI
-        services.AddTransient<DisclaimerWindow>();
-        services.AddTransient<AboutWindow>();
-        services.AddTransient<InputPasswordWindow>();
-
-        services.AddTransient<CertSelectWindowViewModel>(provider =>
+        // Disclaimer Window
         {
-            return new CertSelectWindowViewModel(
-                scanCertPairCommand: provider.GetRequiredService<ScanCertPairCommand>(),
-                certSelectWindowLoadedCommand: provider.GetRequiredService<CertSelectWindowLoadedCommand>(),
-                manualCertLoadCommand: provider.GetRequiredService<ManualCertLoadCommand>());
-        });
-        services.AddTransient<CertSelectWindow>();
+            services.AddTransient<DisclaimerWindow>();
+        }
 
-        services.AddTransient<MainWindowViewModel>(provider =>
+        // Input Password Window
         {
-            return new MainWindowViewModel(
-                catalogDeserializer: provider.GetRequiredService<CatalogDeserializer>(),
-                mainWindowLoadedCommand: provider.GetRequiredService<MainWindowLoadedCommand>(),
-                mainWindowClosedCommand: provider.GetRequiredService<MainWindowClosedCommand>(),
-                launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
-                createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
-                appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),
-                aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>(),
-                certSelectCommand: provider.GetRequiredService<CertSelectCommand>());
-        });
-        services.AddSingleton<MainWindow>();
+            services.AddTransient<InputPasswordWindow>();
+        }
 
-        services.AddTransient<CatalogPageViewModel>(provider =>
+        // About Window
         {
-            return new CatalogPageViewModel(
-                catalogCacheManager: provider.GetRequiredService<CatalogCacheManager>(),
-                navigationService: provider.GetRequiredService<NavigationService>(),
-                appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),
-                aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>());
-        });
-        services.AddTransient<CatalogPage>();
+            services.AddTransient<AboutWindow>();
 
-        services.AddTransient<DetailPageViewModel>(provider =>
-        {
-            return new DetailPageViewModel(
-                appUserInterface: provider.GetRequiredService<AppUserInterface>(),
-                navigationService: provider.GetRequiredService<NavigationService>(),
-                sharedLocations: provider.GetRequiredService<SharedLocations>(),
-                certPairScanner: provider.GetRequiredService<X509CertPairScanner>(),
-                preferencesManager: provider.GetRequiredService<PreferencesManager>(),
-                appRestartManager: provider.GetRequiredService<AppRestartManager>(),
-                launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
-                createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
-                copyCommandLineCommand: provider.GetRequiredService<CopyCommandLineCommand>(),
-                certSelectCommand: provider.GetRequiredService<CertSelectCommand>());
-        });
-        services.AddTransient<DetailPage>();
+            services.AddTransient<AboutWindowViewModel>(provider =>
+            {
+                return new AboutWindowViewModel(
+                    aboutWindowLoadedCommand: provider.GetRequiredService<AboutWindowLoadedCommand>(),
+                    openWebsiteCommand: provider.GetRequiredService<OpenWebsiteCommand>(),
+                    showSystemInfoCommand: provider.GetRequiredService<ShowSystemInfoCommand>(),
+                    checkUpdatedVersionCommand: provider.GetRequiredService<CheckUpdatedVersionCommand>(),
+                    openPrivacyPolicyCommand: provider.GetRequiredService<OpenPrivacyPolicyCommand>());
+            });
 
-        services.AddSingleton<MainWindowV2ViewModel>(provider =>
-        {
-            return new MainWindowV2ViewModel(
-                mainWindowV2LoadedCommand: provider.GetRequiredService<MainWindowV2LoadedCommand>(),
-                mainWindowV2ClosedCommand: provider.GetRequiredService<MainWindowV2ClosedCommand>());
-        });
-        services.AddSingleton<MainWindowV2>();
+            services.AddSingleton<AboutWindowLoadedCommand>();
+            services.AddSingleton<OpenWebsiteCommand>();
+            services.AddSingleton<ShowSystemInfoCommand>();
+            services.AddSingleton<CheckUpdatedVersionCommand>();
+            services.AddSingleton<OpenPrivacyPolicyCommand>();
+        }
 
-        // HTTP Request
-        services.AddHttpClient(nameof(TableCloth), c =>
+        // Cert Select Window
         {
-            c.DefaultRequestHeaders.Add("User-Agent", StringResources.UserAgentText);
-        });
+            services.AddTransient<CertSelectWindow>();
+
+            services.AddTransient<CertSelectWindowViewModel>(provider =>
+            {
+                return new CertSelectWindowViewModel(
+                    scanCertPairCommand: provider.GetRequiredService<ScanCertPairCommand>(),
+                    certSelectWindowLoadedCommand: provider.GetRequiredService<CertSelectWindowLoadedCommand>(),
+                    manualCertLoadCommand: provider.GetRequiredService<ManualCertLoadCommand>());
+            });
+
+            services.AddSingleton<ScanCertPairCommand>();
+            services.AddSingleton<CertSelectWindowLoadedCommand>();
+            services.AddSingleton<ManualCertLoadCommand>();
+        }
+
+        // Main Window
+        {
+            services.AddTransient<MainWindow>();
+            {
+                services.AddTransient<MainWindowViewModel>(provider =>
+                {
+                    return new MainWindowViewModel(
+                        catalogDeserializer: provider.GetRequiredService<CatalogDeserializer>(),
+                        mainWindowLoadedCommand: provider.GetRequiredService<MainWindowLoadedCommand>(),
+                        mainWindowClosedCommand: provider.GetRequiredService<MainWindowClosedCommand>(),
+                        launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
+                        createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
+                        appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),
+                        aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>(),
+                        certSelectCommand: provider.GetRequiredService<CertSelectCommand>());
+                });
+
+                services.AddSingleton<MainWindowLoadedCommand>();
+                services.AddSingleton<MainWindowClosedCommand>();
+            }
+
+            services.AddTransient<MainWindowV2>();
+            {
+                services.AddTransient<MainWindowV2ViewModel>(provider =>
+                {
+                    return new MainWindowV2ViewModel(
+                        mainWindowV2LoadedCommand: provider.GetRequiredService<MainWindowV2LoadedCommand>(),
+                        mainWindowV2ClosedCommand: provider.GetRequiredService<MainWindowV2ClosedCommand>());
+                });
+
+                services.AddSingleton<MainWindowV2LoadedCommand>();
+                services.AddSingleton<MainWindowV2ClosedCommand>();
+
+                services.AddTransient<CatalogPage>();
+                {
+                    services.AddTransient<CatalogPageViewModel>(provider =>
+                    {
+                        return new CatalogPageViewModel(
+                            catalogCacheManager: provider.GetRequiredService<CatalogCacheManager>(),
+                            navigationService: provider.GetRequiredService<NavigationService>(),
+                            appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),
+                            aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>());
+                    });
+                }
+
+                services.AddTransient<DetailPage>();
+                {
+                    services.AddTransient<DetailPageViewModel>(provider =>
+                    {
+                        return new DetailPageViewModel(
+                            appUserInterface: provider.GetRequiredService<AppUserInterface>(),
+                            navigationService: provider.GetRequiredService<NavigationService>(),
+                            sharedLocations: provider.GetRequiredService<SharedLocations>(),
+                            certPairScanner: provider.GetRequiredService<X509CertPairScanner>(),
+                            preferencesManager: provider.GetRequiredService<PreferencesManager>(),
+                            appRestartManager: provider.GetRequiredService<AppRestartManager>(),
+                            launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
+                            createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
+                            copyCommandLineCommand: provider.GetRequiredService<CopyCommandLineCommand>(),
+                            certSelectCommand: provider.GetRequiredService<CertSelectCommand>());
+                    });
+                }
+            }
+
+            services.AddSingleton<LaunchSandboxCommand>();
+            services.AddSingleton<CreateShortcutCommand>();
+            services.AddSingleton<CertSelectCommand>();
+            services.AddSingleton<AppRestartCommand>();
+            services.AddSingleton<CopyCommandLineCommand>();
+            services.AddSingleton<AboutThisAppCommand>();
+        }
 
         return services.BuildServiceProvider();
     }

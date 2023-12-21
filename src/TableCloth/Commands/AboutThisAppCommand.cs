@@ -15,7 +15,7 @@ public sealed class AboutThisAppCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
-        var aboutWindow = _appUserInterface.CreateWindow<AboutWindow>();
+        var aboutWindow = _appUserInterface.CreateWindow<TableCloth.Dialogs.AboutWindow>();
         aboutWindow.ShowDialog();
     }
 }
