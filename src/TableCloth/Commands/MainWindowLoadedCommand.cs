@@ -11,6 +11,7 @@ namespace TableCloth.Commands
     public sealed class MainWindowLoadedCommand : CommandBase
     {
         public MainWindowLoadedCommand(
+            AppUserInterface appUserInterface,
             VisualThemeManager visualThemeManager,
             PreferencesManager preferencesManager,
             X509CertPairScanner certPairScanner,
@@ -21,39 +22,41 @@ namespace TableCloth.Commands
             AppRestartManager appRestartManager,
             LaunchSandboxCommand launchSandboxCommand)
         {
-            this.visualThemeManager = visualThemeManager;
-            this.preferencesManager = preferencesManager;
-            this.certPairScanner = certPairScanner;
-            this.sharedLocations = sharedLocations;
-            this.resourceResolver = resourceResolver;
-            this.commandLineParser = commandLineParser;
-            this.appMessageBox = appMessageBox;
-            this.appRestartManager = appRestartManager;
-            this.launchSandboxCommand = launchSandboxCommand;
+            _appUserInterface = appUserInterface;
+            _visualThemeManager = visualThemeManager;
+            _preferencesManager = preferencesManager;
+            _certPairScanner = certPairScanner;
+            _sharedLocations = sharedLocations;
+            _resourceResolver = resourceResolver;
+            _commandLineParser = commandLineParser;
+            _appMessageBox = appMessageBox;
+            _appRestartManager = appRestartManager;
+            _launchSandboxCommand = launchSandboxCommand;
         }
 
-        private readonly VisualThemeManager visualThemeManager;
-        private readonly PreferencesManager preferencesManager;
-        private readonly X509CertPairScanner certPairScanner;
-        private readonly SharedLocations sharedLocations;
-        private readonly ResourceResolver resourceResolver;
-        private readonly CommandLineParser commandLineParser;
-        private readonly AppMessageBox appMessageBox;
-        private readonly AppRestartManager appRestartManager;
-        private readonly LaunchSandboxCommand launchSandboxCommand;
+        private readonly AppUserInterface _appUserInterface;
+        private readonly VisualThemeManager _visualThemeManager;
+        private readonly PreferencesManager _preferencesManager;
+        private readonly X509CertPairScanner _certPairScanner;
+        private readonly SharedLocations _sharedLocations;
+        private readonly ResourceResolver _resourceResolver;
+        private readonly CommandLineParser _commandLineParser;
+        private readonly AppMessageBox _appMessageBox;
+        private readonly AppRestartManager _appRestartManager;
+        private readonly LaunchSandboxCommand _launchSandboxCommand;
 
         public override async void Execute(object? parameter)
         {
             if (parameter is not MainWindowViewModel viewModel)
                 throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
-            this.visualThemeManager.ApplyAutoThemeChange(
+            _visualThemeManager.ApplyAutoThemeChange(
                 Application.Current.MainWindow);
 
-            var currentConfig = this.preferencesManager.LoadPreferences();
+            var currentConfig = _preferencesManager.LoadPreferences();
 
             if (currentConfig == null)
-                currentConfig = this.preferencesManager.GetDefaultPreferences();
+                currentConfig = _preferencesManager.GetDefaultPreferences();
 
             viewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
             viewModel.V2UIOptIn = currentConfig.V2UIOptIn;
@@ -67,7 +70,7 @@ namespace TableCloth.Commands
             viewModel.EnableInternetExplorerMode = currentConfig.EnableInternetExplorerMode;
             viewModel.LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
-            var foundCandidate = this.certPairScanner.ScanX509Pairs(this.certPairScanner.GetCandidateDirectories()).FirstOrDefault();
+            var foundCandidate = _certPairScanner.ScanX509Pairs(_certPairScanner.GetCandidateDirectories()).FirstOrDefault();
 
             if (foundCandidate != null)
             {
@@ -79,7 +82,7 @@ namespace TableCloth.Commands
 
             if (viewModel.ShouldNotifyDisclaimer)
             {
-                var disclaimerWindow = viewModel.AppUserInterface.CreateWindow<DisclaimerWindow>();
+                var disclaimerWindow = _appUserInterface.CreateWindow<DisclaimerWindow>();
                 var result = disclaimerWindow.ShowDialog();
 
                 if (result.HasValue && result.Value)
@@ -87,26 +90,26 @@ namespace TableCloth.Commands
             }
 
             var services = viewModel.Services;
-            var directoryPath = this.sharedLocations.GetImageDirectoryPath();
+            var directoryPath = _sharedLocations.GetImageDirectoryPath();
 
             if (services != null)
-                await this.resourceResolver.LoadSiteImages(services, directoryPath).ConfigureAwait(false);
+                await _resourceResolver.LoadSiteImages(services, directoryPath).ConfigureAwait(false);
 
             // Command Line Parse
             var args = App.Current.Arguments.ToArray();
 
             if (args.Count() > 0)
             {
-                var parsedArg = this.commandLineParser.ParseForV1(args);
+                var parsedArg = _commandLineParser.ParseForV1(args);
 
                 if (parsedArg.ShowCommandLineHelp)
                 {
-                    this.appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                    _appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
                     return;
                 }
 
                 if (parsedArg.SelectedServices.Count() > 0)
-                    this.launchSandboxCommand.Execute(parsedArg);
+                    _launchSandboxCommand.Execute(parsedArg);
             }
         }
 
@@ -115,28 +118,28 @@ namespace TableCloth.Commands
             if (sender is not MainWindowViewModel viewModel)
                 throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));
 
-            var currentConfig = this.preferencesManager.LoadPreferences();
+            var currentConfig = _preferencesManager.LoadPreferences();
 
             if (currentConfig == null)
-                currentConfig = this.preferencesManager.GetDefaultPreferences();
+                currentConfig = _preferencesManager.GetDefaultPreferences();
 
             switch (e.PropertyName)
             {
                 case nameof(MainWindowViewModel.EnableLogAutoCollecting):
                     currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
-                    if (this.appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                    if (_appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                     {
-                        this.appRestartManager.ReserveRestart = true;
-                        this.appRestartManager.RestartNow();
+                        _appRestartManager.ReserveRestart = true;
+                        _appRestartManager.RestartNow();
                     }
                     break;
 
                 case nameof(MainWindowViewModel.V2UIOptIn):
                     currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
-                    if (this.appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                    if (_appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                     {
-                        this.appRestartManager.ReserveRestart = true;
-                        this.appRestartManager.RestartNow();
+                        _appRestartManager.ReserveRestart = true;
+                        _appRestartManager.RestartNow();
                     }
                     break;
 
@@ -180,7 +183,7 @@ namespace TableCloth.Commands
                     return;
             }
 
-            this.preferencesManager.SavePreferences(currentConfig);
+            _preferencesManager.SavePreferences(currentConfig);
         }
     }
 }

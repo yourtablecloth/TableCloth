@@ -15,7 +15,7 @@ namespace TableCloth.Commands
 
         public void RaiseCanExecuteChanged()
         {
-            this._canExecute = this.EvaluateCanExecute();
+            _canExecute = this.EvaluateCanExecute();
             CommandManager.InvalidateRequerySuggested();
         }
 

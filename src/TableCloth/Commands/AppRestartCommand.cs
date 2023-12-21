@@ -7,14 +7,14 @@ namespace TableCloth.Commands
         public AppRestartCommand(
             AppRestartManager appRestartManager)
         {
-            this.appRestartManager = appRestartManager;
+            _appRestartManager = appRestartManager;
         }
 
-        private readonly AppRestartManager appRestartManager;
+        private readonly AppRestartManager _appRestartManager;
 
         public override void Execute(object? parameter)
         {
-            this.appRestartManager.RestartNow();
+            _appRestartManager.RestartNow();
         }
     }
 }

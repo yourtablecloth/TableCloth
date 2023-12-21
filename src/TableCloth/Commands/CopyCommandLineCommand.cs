@@ -12,22 +12,22 @@ namespace TableCloth.Commands
             CommandLineComposer commandLineComposer,
             AppMessageBox appMessageBox)
         {
-            this.commandLineComposer = commandLineComposer;
-            this.appMessageBox = appMessageBox;
+            _commandLineComposer = commandLineComposer;
+            _appMessageBox = appMessageBox;
         }
 
-        private readonly CommandLineComposer commandLineComposer;
-        private readonly AppMessageBox appMessageBox;
+        private readonly CommandLineComposer _commandLineComposer;
+        private readonly AppMessageBox _appMessageBox;
 
         public override void Execute(object? parameter)
         {
             if (parameter is not DetailPageViewModel viewModel)
                 throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
-            var expression = this.commandLineComposer.ComposeCommandLineExpression(viewModel);
+            var expression = _commandLineComposer.ComposeCommandLineExpression(viewModel);
             Clipboard.SetText(expression);
 
-            this.appMessageBox.DisplayInfo(StringResources.Info_CopyCommandLineSuccess, MessageBoxButton.OK);
+            _appMessageBox.DisplayInfo(StringResources.Info_CopyCommandLineSuccess, MessageBoxButton.OK);
         }
     }
 }

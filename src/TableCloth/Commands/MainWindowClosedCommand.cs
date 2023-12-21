@@ -8,19 +8,19 @@ namespace TableCloth.Commands
             SandboxCleanupManager sandboxCleanupManager,
             AppRestartManager appRestartManager)
         {
-            this.sandboxCleanupManager = sandboxCleanupManager;
-            this.appRestartManager = appRestartManager;
+            _sandboxCleanupManager = sandboxCleanupManager;
+            _appRestartManager = appRestartManager;
         }
 
-        private readonly SandboxCleanupManager sandboxCleanupManager;
-        private readonly AppRestartManager appRestartManager;
+        private readonly SandboxCleanupManager _sandboxCleanupManager;
+        private readonly AppRestartManager _appRestartManager;
 
         public override void Execute(object? parameter)
         {
-            this.sandboxCleanupManager.TryCleanup();
+            _sandboxCleanupManager.TryCleanup();
 
-            if (this.appRestartManager.ReserveRestart)
-                this.appRestartManager.RestartNow();
+            if (_appRestartManager.ReserveRestart)
+                _appRestartManager.RestartNow();
         }
     }
 }

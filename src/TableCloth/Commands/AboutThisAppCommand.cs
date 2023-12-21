@@ -6,14 +6,14 @@ namespace TableCloth.Commands
     {
         public AboutThisAppCommand(AppUserInterface appUserInterface)
         {
-            this.appUserInterface = appUserInterface;
+            _appUserInterface = appUserInterface;
         }
 
-        private readonly AppUserInterface appUserInterface;
+        private readonly AppUserInterface _appUserInterface;
 
         public override void Execute(object? parameter)
         {
-            var aboutWindow = this.appUserInterface.CreateWindow<AboutWindow>();
+            var aboutWindow = _appUserInterface.CreateWindow<AboutWindow>();
             aboutWindow.ShowDialog();
         }
     }

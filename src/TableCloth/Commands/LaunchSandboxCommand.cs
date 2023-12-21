@@ -20,27 +20,27 @@ namespace TableCloth.Commands
             SandboxBuilder sandboxBuilder,
             SandboxCleanupManager sandboxCleanupManager)
         {
-            this.sandboxLauncher = sandboxLauncher;
-            this.appMessageBox = appMessageBox;
-            this.sharedLocations = sharedLocations;
-            this.sandboxBuilder = sandboxBuilder;
-            this.sandboxCleanupManager = sandboxCleanupManager;
+            _sandboxLauncher = sandboxLauncher;
+            _appMessageBox = appMessageBox;
+            _sharedLocations = sharedLocations;
+            _sandboxBuilder = sandboxBuilder;
+            _sandboxCleanupManager = sandboxCleanupManager;
         }
 
-        private readonly SandboxLauncher sandboxLauncher;
-        private readonly AppMessageBox appMessageBox;
-        private readonly SharedLocations sharedLocations;
-        private readonly SandboxBuilder sandboxBuilder;
-        private readonly SandboxCleanupManager sandboxCleanupManager;
+        private readonly SandboxLauncher _sandboxLauncher;
+        private readonly AppMessageBox _appMessageBox;
+        private readonly SharedLocations _sharedLocations;
+        private readonly SandboxBuilder _sandboxBuilder;
+        private readonly SandboxCleanupManager _sandboxCleanupManager;
 
         protected override bool EvaluateCanExecute()
-            => (!this.sandboxLauncher.IsSandboxRunning());
+            => (!_sandboxLauncher.IsSandboxRunning());
 
         public override void Execute(object? parameter)
         {
-            if (this.sandboxLauncher.IsSandboxRunning())
+            if (_sandboxLauncher.IsSandboxRunning())
             {
-                this.appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_Already_Running, false);
+                _appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_Already_Running, false);
                 return;
             }
 
@@ -139,23 +139,23 @@ namespace TableCloth.Commands
                 var expireWindow = StringResources.Cert_ExpireWindow;
 
                 if (now < config.CertPair.NotBefore)
-                    this.appMessageBox.DisplayError(StringResources.Error_Cert_MayTooEarly(now, config.CertPair.NotBefore), false);
+                    _appMessageBox.DisplayError(StringResources.Error_Cert_MayTooEarly(now, config.CertPair.NotBefore), false);
 
                 if (now > config.CertPair.NotAfter)
-                    this.appMessageBox.DisplayError(StringResources.Error_Cert_Expired, false);
+                    _appMessageBox.DisplayError(StringResources.Error_Cert_Expired, false);
                 else if (now > config.CertPair.NotAfter.Add(expireWindow))
-                    this.appMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(now, config.CertPair.NotAfter, expireWindow));
+                    _appMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(now, config.CertPair.NotAfter, expireWindow));
             }
 
-            var tempPath = this.sharedLocations.GetTempPath();
+            var tempPath = _sharedLocations.GetTempPath();
             var excludedFolderList = new List<SandboxMappedFolder>();
-            var wsbFilePath = this.sandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
+            var wsbFilePath = _sandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
 
             if (excludedFolderList.Any())
-                this.appMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
+                _appMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
 
-            this.sandboxCleanupManager.SetWorkingDirectory(tempPath);
-            this.sandboxLauncher.RunSandbox(wsbFilePath);
+            _sandboxCleanupManager.SetWorkingDirectory(tempPath);
+            _sandboxLauncher.RunSandbox(wsbFilePath);
         }
     }
 }

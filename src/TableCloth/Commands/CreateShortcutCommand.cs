@@ -16,14 +16,14 @@ namespace TableCloth.Commands
             SharedLocations sharedLocations,
             AppMessageBox appMessageBox)
         {
-            this.commandLineComposer = commandLineComposer;
-            this.sharedLocations = sharedLocations;
-            this.appMessageBox = appMessageBox;
+            _commandLineComposer = commandLineComposer;
+            _sharedLocations = sharedLocations;
+            _appMessageBox = appMessageBox;
         }
 
-        private readonly CommandLineComposer commandLineComposer;
-        private readonly SharedLocations sharedLocations;
-        private readonly AppMessageBox appMessageBox;
+        private readonly CommandLineComposer _commandLineComposer;
+        private readonly SharedLocations _sharedLocations;
+        private readonly AppMessageBox _appMessageBox;
 
         public override void Execute(object? parameter)
         {
@@ -79,7 +79,7 @@ namespace TableCloth.Commands
                 linkName = firstSite.DisplayName;
 
                 iconFilePath = Path.Combine(
-                    this.sharedLocations.GetImageDirectoryPath(),
+                    _sharedLocations.GetImageDirectoryPath(),
                     $"{firstSite.Id}.ico");
 
                 if (!File.Exists(iconFilePath))
@@ -109,16 +109,16 @@ namespace TableCloth.Commands
             }
             catch
             {
-                this.appMessageBox.DisplayInfo(StringResources.Error_ShortcutFailed);
+                _appMessageBox.DisplayInfo(StringResources.Error_ShortcutFailed);
                 return;
             }
 
-            this.appMessageBox.DisplayInfo(StringResources.Info_ShortcutSuccess);
+            _appMessageBox.DisplayInfo(StringResources.Info_ShortcutSuccess);
         }
 
         private void ExecuteFromV2Model(DetailPageViewModel viewModel)
         {
-            var targetPath = this.sharedLocations.ExecutableFilePath;
+            var targetPath = _sharedLocations.ExecutableFilePath;
             var linkName = StringResources.AppName;
 
             var firstSite = viewModel.SelectedService;
@@ -129,7 +129,7 @@ namespace TableCloth.Commands
                 linkName = firstSite.DisplayName;
 
                 iconFilePath = Path.Combine(
-                    this.sharedLocations.GetImageDirectoryPath(),
+                    _sharedLocations.GetImageDirectoryPath(),
                     $"{firstSite.Id}.ico");
 
                 if (!File.Exists(iconFilePath))
@@ -154,16 +154,16 @@ namespace TableCloth.Commands
                 if (iconFilePath != null && File.Exists(iconFilePath))
                     shortcut.IconLocation = iconFilePath;
 
-                shortcut.Arguments = this.commandLineComposer.ComposeCommandLineArguments(viewModel);
+                shortcut.Arguments = _commandLineComposer.ComposeCommandLineArguments(viewModel);
                 shortcut.Save();
             }
             catch
             {
-                this.appMessageBox.DisplayInfo(StringResources.Error_ShortcutFailed);
+                _appMessageBox.DisplayInfo(StringResources.Error_ShortcutFailed);
                 return;
             }
 
-            this.appMessageBox.DisplayInfo(StringResources.Info_ShortcutSuccess);
+            _appMessageBox.DisplayInfo(StringResources.Info_ShortcutSuccess);
         }
     }
 }
