@@ -14,12 +14,12 @@ public partial class CertSelectWindow : Window
         viewModel.OnRequestClose += ViewModel_OnRequestClose;
     }
 
+    public CertSelectWindowViewModel ViewModel
+        => (CertSelectWindowViewModel)DataContext;
+
     private void ViewModel_OnRequestClose(object? sender, DialogRequestEventArgs e)
     {
         this.DialogResult = e.DialogResult;
         this.Close();
     }
-
-    public CertSelectWindowViewModel ViewModel
-        => (CertSelectWindowViewModel)DataContext;
 }

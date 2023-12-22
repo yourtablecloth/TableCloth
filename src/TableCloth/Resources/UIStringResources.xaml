@@ -200,11 +200,11 @@
     </system:String>
 
     <system:String x:Key="CertSelectWindow_FileOpenDialog_Text">
-        공동 인증서 파일 (signCert.der, signPri.key) 열기
+        공동 인증서 파일 (signCert.der, signPri.key, *.pfx, *.p12) 열기
     </system:String>
 
     <system:String x:Key="CertSelectWindow_FileOpenDialog_FilterText">
-        공동 인증서 파일 (signCert.der;signPri.key)|signCert.der;signPri.key|공동 인증서 파일 (*.pfx)|*.pfx
+        공동 인증서 파일 (signCert.der;signPri.key)|signCert.der;signPri.key|공동 인증서 파일 (*.pfx;*.p12)|*.pfx;*.p12
     </system:String>
 
     <system:String x:Key="CertSelectWindow_CertList_CommonName">

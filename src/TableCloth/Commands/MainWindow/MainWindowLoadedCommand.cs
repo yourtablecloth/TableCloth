@@ -83,7 +83,7 @@ public sealed class MainWindowLoadedCommand : CommandBase
 
         if (viewModel.ShouldNotifyDisclaimer)
         {
-            var disclaimerWindow = _appUserInterface.CreateWindow<DisclaimerWindow>();
+            var disclaimerWindow = _appUserInterface.CreateWindow<TableCloth.Dialogs.DisclaimerWindow>();
             var result = disclaimerWindow.ShowDialog();
 
             if (result.HasValue && result.Value)

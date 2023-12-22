@@ -9,7 +9,18 @@
         mc:Ignorable="d"
         Style="{DynamicResource MainWindowStyle}"
         WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner"
-        Title="{StaticResource DisclaimerWindow_Title}" Height="320" Width="480" Loaded="Window_Loaded">
+        Title="{StaticResource DisclaimerWindow_Title}" Height="320" Width="480"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
+        d:DataContext="{d:DesignInstance Type=vm:DisclaimerWindowViewModel, IsDesignTimeCreatable=True}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding DisclaimerWindowLoadedCommand}">
+                <i:InvokeCommandAction.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                </i:InvokeCommandAction.CommandParameter>
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid Margin="4" Visibility="{Binding Path=Visibility, ElementName=DisclaimerTab}">
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
@@ -18,6 +29,10 @@
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Content="{StaticResource DisclaimerWindow_Readme}" />
         <TextBox Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" IsReadOnly="True" Margin="0 10 0 10" FontSize="15" FontWeight="Bold" Foreground="Red" Text="{StaticResource DisclaimerWindow_Content}" />
-        <Button x:Name="AgreeDisclaimer" Grid.Row="2" Content="{StaticResource DisclaimerWindow_AgreeButtonText}" Click="AgreeDisclaimer_Click" />
+        <Button x:Name="AgreeDisclaimer" Grid.Row="2" Content="{StaticResource DisclaimerWindow_AgreeButtonText}" Command="{Binding DisclaimerWindowAcknowledgeCommand}">
+            <Button.CommandParameter>
+                <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+            </Button.CommandParameter>
+        </Button>
     </Grid>
 </Window>

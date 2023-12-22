@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows;
 using TableCloth.Components;
 using TableCloth.Dialogs;
@@ -65,45 +66,46 @@ public sealed class ManualCertLoadCommand : CommandBase
         var response = ofd.ShowDialog();
 
         if (response.HasValue && response.Value)
-            switch (ofd.FilterIndex)
-            {
-                case 1:
-                    var firstFilePath = ofd.FileNames.FirstOrDefault();
+        {
+            if (ofd.FilterIndex == 1)
+                LoadCertPair(viewModel, ofd.FileNames.FirstOrDefault());
+            else if (ofd.FilterIndex == 2)
+                LoadPfxCert(viewModel, ofd.FileNames.FirstOrDefault());
+        }
+    }
 
-                    if (string.IsNullOrWhiteSpace(firstFilePath) || !File.Exists(firstFilePath))
-                        return;
+    private void LoadCertPair(CertSelectWindowViewModel viewModel, string? firstFilePath)
+    {
+        if (string.IsNullOrWhiteSpace(firstFilePath) || !File.Exists(firstFilePath))
+            return;
 
-                    var basePath = Path.GetDirectoryName(firstFilePath)
-                        ?? throw new Exception($"Cannot obtain the directory name of '{firstFilePath}'.");
-                    var signCertDerPath = Path.Combine(basePath, "signCert.der");
-                    var signPriKeyPath = Path.Combine(basePath, "signPri.key");
+        var basePath = Path.GetDirectoryName(firstFilePath)
+            ?? throw new Exception($"Cannot obtain the directory name of '{firstFilePath}'.");
+        var signCertDerPath = Path.Combine(basePath, "signCert.der");
+        var signPriKeyPath = Path.Combine(basePath, "signPri.key");
 
-                    if (!File.Exists(signCertDerPath) && !File.Exists(signPriKeyPath))
-                        return;
+        if (!File.Exists(signCertDerPath) && !File.Exists(signPriKeyPath))
+            return;
 
-                    viewModel.SelectedCertPair = _certPairScanner.CreateX509CertPair(signCertDerPath, signPriKeyPath);
-                    viewModel.RequestClose(this, new DialogRequestEventArgs(viewModel.SelectedCertPair != null));
-                    break;
+        viewModel.SelectedCertPair = _certPairScanner.CreateX509CertPair(signCertDerPath, signPriKeyPath);
+        viewModel.RequestClose(this, new DialogRequestEventArgs(viewModel.SelectedCertPair != null));
+    }
 
-                case 2:
-                    var pfxFilePath = ofd.FileNames.FirstOrDefault();
+    private void LoadPfxCert(CertSelectWindowViewModel viewModel, string? pfxFilePath)
+    {
+        if (string.IsNullOrWhiteSpace(pfxFilePath) || !File.Exists(pfxFilePath))
+            return;
 
-                    if (string.IsNullOrWhiteSpace(pfxFilePath) || !File.Exists(pfxFilePath))
-                        return;
+        var inputWindow = _appUserInterface.CreateWindow<TableCloth.Dialogs.InputPasswordWindow>();
+        var inputWindowViewModel = inputWindow.ViewModel;
+        inputWindowViewModel.PfxFilePath = pfxFilePath;
 
-                    var inputWindow = _appUserInterface.CreateWindow<InputPasswordWindow>(inputWindow =>
-                    {
-                        inputWindow.PfxFilePath = pfxFilePath;
-                    });
+        var inputPwdResult = inputWindow.ShowDialog();
 
-                    var inputPwdResult = inputWindow.ShowDialog();
+        if (!inputPwdResult.HasValue || !inputPwdResult.Value || inputWindowViewModel.ValidatedCertPair == null)
+            return;
 
-                    if (!inputPwdResult.HasValue || !inputPwdResult.Value || inputWindow.ValidatedCertPair == null)
-                        return;
-
-                    viewModel.SelectedCertPair = inputWindow.ValidatedCertPair;
-                    viewModel.RequestClose(this, new DialogRequestEventArgs(viewModel.SelectedCertPair != null));
-                    break;
-            }
+        viewModel.SelectedCertPair = inputWindowViewModel.ValidatedCertPair;
+        viewModel.RequestClose(this, new DialogRequestEventArgs(viewModel.SelectedCertPair != null));
     }
 }

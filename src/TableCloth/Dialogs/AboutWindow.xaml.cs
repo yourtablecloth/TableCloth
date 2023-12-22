@@ -17,8 +17,11 @@ public partial class AboutWindow : Window
         AboutWindowViewModel aboutWindowViewModel)
     {
         InitializeComponent();
-        this.DataContext = aboutWindowViewModel;
+        DataContext = aboutWindowViewModel;
     }
+
+    public AboutWindowViewModel ViewModel
+        => (AboutWindowViewModel)DataContext;
 
     private void OkayButton_Click(object sender, RoutedEventArgs e)
     {

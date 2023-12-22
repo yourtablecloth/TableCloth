@@ -1,62 +1,45 @@
 ﻿using System;
 using System.Text;
 using System.Windows;
-using TableCloth.Components;
-using TableCloth.Models.Configuration;
-using TableCloth.Resources;
+using TableCloth.Events;
+using TableCloth.ViewModels;
 
 namespace TableCloth.Dialogs;
 
 public partial class InputPasswordWindow : Window
 {
     public InputPasswordWindow(
-        X509CertPairScanner certPairScanner,
-        AppMessageBox appMessageBox)
+        InputPasswordWindowViewModel viewModel)
     {
-        _certPairScanner = certPairScanner;
-        _appMessageBox = appMessageBox;
-
         InitializeComponent();
+        DataContext = viewModel;
+        viewModel.ViewLoaded += ViewModel_ViewLoaded;
+        viewModel.CloseRequested += ViewModel_CloseRequested;
+        viewModel.RetryPasswordInputRequested += ViewModel_RetryPasswordInputRequested;
     }
 
-    private readonly X509CertPairScanner _certPairScanner;
-    private readonly AppMessageBox _appMessageBox;
+    public InputPasswordWindowViewModel ViewModel
+        => (InputPasswordWindowViewModel)DataContext;
 
-    public string? PfxFilePath { get; set; }
-
-    public X509CertPair? ValidatedCertPair { get; private set; }
-
-    private void Window_Loaded(object sender, RoutedEventArgs e)
+    private void ViewModel_ViewLoaded(object? sender, EventArgs e)
     {
         var lines = new StringBuilder();
-        lines.AppendLine(string.Format((string)CertInformation.Tag, PfxFilePath));
+        lines.AppendLine(string.Format((string)CertInformation.Tag, ViewModel.PfxFilePath));
         CertInformation.Text = lines.ToString();
         PasswordInput.Focus();
     }
 
-    private void OkayButton_Click(object sender, RoutedEventArgs e)
+    private void ViewModel_CloseRequested(object? sender, DialogRequestEventArgs e)
     {
-        try
-        {
-            if (PfxFilePath == null)
-                throw new InvalidOperationException(StringResources.Error_Cannot_Find_PfxFile);
-
-            var certPair = _certPairScanner.CreateX509Cert(PfxFilePath, PasswordInput.SecurePassword);
-
-            if (certPair != null)
-                ValidatedCertPair = certPair;
-
-            DialogResult = true;
-        }
-        catch (Exception ex)
-        {
-            _appMessageBox.DisplayError(ex, false);
-            PasswordInput.Focus();
-        }
+        DialogResult = e.DialogResult;
+        Close();
     }
 
-    private void CancelButton_Click(object sender, RoutedEventArgs e)
+    private void ViewModel_RetryPasswordInputRequested(object? sender, EventArgs e)
     {
-        DialogResult = false;
+        PasswordInput.Focus();
     }
+
+    private void PasswordInput_PasswordChanged(object sender, RoutedEventArgs e)
+        => ViewModel.Password = PasswordInput.SecurePassword;
 }

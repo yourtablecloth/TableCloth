@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -10,9 +11,7 @@ public abstract class ViewModelBase : INotifyPropertyChanged
 
     protected void NotifyPropertyChanged(
         [CallerMemberName] string? propertyName = default)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     protected void NotifyMultiplePropertiesChanged(
         string[] propertiesToNotify)
