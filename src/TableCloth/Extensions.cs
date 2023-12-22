@@ -1,5 +1,9 @@
-﻿using Microsoft.Win32;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
+using System;
 using System.Net.Http;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace TableCloth;
 
@@ -14,5 +18,49 @@ internal static class Extensions
     {
         var value = registryKey.GetValue(name, defaultValue, options) as TValue?;
         return value.HasValue ? value.Value : defaultValue;
+    }
+
+    public static void AddCommands(this IServiceCollection services, params Type[] commandTypes)
+    {
+        foreach (var eachCommandType in commandTypes)
+            services.AddSingleton(eachCommandType);
+    }
+
+    public static IServiceCollection AddWindow<TWindow, TViewModel>(this IServiceCollection services,
+        Func<IServiceProvider, TWindow>? windowImplementationFactory = default,
+        Func<IServiceProvider, TViewModel>? viewModelImplementationFactory = default)
+        where TWindow : Window
+        where TViewModel : class
+    {
+        if (windowImplementationFactory != null)
+            services.AddTransient<TWindow>(windowImplementationFactory);
+        else
+            services.AddTransient<TWindow>();
+
+        if (viewModelImplementationFactory != null)
+            services.AddTransient<TViewModel>(viewModelImplementationFactory);
+        else
+            services.AddTransient<TViewModel>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddPage<TPage, TViewModel>(this IServiceCollection services,
+        Func<IServiceProvider, TPage>? pageImplementationFactory = default,
+        Func<IServiceProvider, TViewModel>? viewModelImplementationFactory = default)
+        where TPage : Page
+        where TViewModel : class
+    {
+        if (pageImplementationFactory != null)
+            services.AddTransient<TPage>(pageImplementationFactory);
+        else
+            services.AddTransient<TPage>();
+
+        if (viewModelImplementationFactory != null)
+            services.AddTransient<TViewModel>(viewModelImplementationFactory);
+        else
+            services.AddTransient<TViewModel>();
+
+        return services;
     }
 }
