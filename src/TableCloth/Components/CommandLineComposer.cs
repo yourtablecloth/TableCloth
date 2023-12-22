@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TableCloth.Contracts;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
@@ -14,14 +16,14 @@ public sealed class CommandLineComposer
 
     private readonly SharedLocations sharedLocations;
 
-    public string ComposeCommandLineExpression(DetailPageViewModel viewModel)
+    public string ComposeCommandLineExpression(ICommandLineArgumentModel viewModel, bool allowMultipleItems)
     {
         var targetFilePath = this.sharedLocations.ExecutableFilePath;
-        var args = this.ComposeCommandLineArguments(viewModel);
+        var args = this.ComposeCommandLineArguments(viewModel, allowMultipleItems);
         return $"\"{targetFilePath}\" {args}";
     }
 
-    public string ComposeCommandLineArguments(DetailPageViewModel viewModel)
+    public string ComposeCommandLineArguments(ICommandLineArgumentModel viewModel, bool allowMultipleItems)
     {
         var options = new List<string>();
 
@@ -44,10 +46,14 @@ public sealed class CommandLineComposer
         if (viewModel.MapNpkiCert)
             options.Add(StringResources.Tablecloth_Switch_EnableCert);
 
-        var firstSite = viewModel.SelectedService;
+        var firstSite = viewModel.SelectedServices.FirstOrDefault();
 
         if (firstSite != null)
             options.Add(firstSite.Id);
+
+        if (allowMultipleItems)
+            foreach (var eachSite in viewModel.SelectedServices.Skip(1).ToList())
+                options.Add(eachSite.Id);
 
         return string.Join(' ', options.ToArray());
     }

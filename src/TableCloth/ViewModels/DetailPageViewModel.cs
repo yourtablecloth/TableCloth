@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TableCloth.Commands;
@@ -11,7 +12,7 @@ using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels;
 
-public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICertPairSelect, ICanComposeConfiguration
+public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICertPairSelect, ICanComposeConfiguration, ICommandLineArgumentModel
 {
     [Obsolete("This constructor should be used only in design time context.")]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -249,6 +250,9 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICe
         get => _selectedCertFile;
         set => SetProperty(ref _selectedCertFile, value);
     }
+
+    public IEnumerable<CatalogInternetService> SelectedServices
+        => _selectedService != null ? new CatalogInternetService[] { _selectedService, } : Enumerable.Empty<CatalogInternetService>();
 
     public TableClothConfiguration GetTableClothConfiguration()
     {

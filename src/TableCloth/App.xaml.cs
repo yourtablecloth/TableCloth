@@ -127,7 +127,8 @@ public partial class App : Application
             .AddSingleton<CommandLineComposer>()
             .AddSingleton<VisualThemeManager>()
             .AddSingleton<AppMessageBox>()
-            .AddSingleton<NavigationService>();
+            .AddSingleton<NavigationService>()
+            .AddSingleton<ShortcutCrerator>();
 
         // Shared Commands
         services

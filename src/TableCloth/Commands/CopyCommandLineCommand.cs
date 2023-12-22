@@ -24,7 +24,7 @@ public sealed class CopyCommandLineCommand : CommandBase
         if (parameter is not DetailPageViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
-        var expression = _commandLineComposer.ComposeCommandLineExpression(viewModel);
+        var expression = _commandLineComposer.ComposeCommandLineExpression(viewModel, true);
         Clipboard.SetText(expression);
 
         _appMessageBox.DisplayInfo(StringResources.Info_CopyCommandLineSuccess, MessageBoxButton.OK);
