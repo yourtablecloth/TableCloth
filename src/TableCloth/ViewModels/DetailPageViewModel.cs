@@ -11,7 +11,7 @@ using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels;
 
-public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICertPairSelect
+public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICertPairSelect, ICanComposeConfiguration
 {
     [Obsolete("This constructor should be used only in design time context.")]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -248,5 +248,32 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICe
     {
         get => _selectedCertFile;
         set => SetProperty(ref _selectedCertFile, value);
+    }
+
+    public TableClothConfiguration GetTableClothConfiguration()
+    {
+        var selectedCert = this.SelectedCertFile;
+
+        if (!this.MapNpkiCert)
+            selectedCert = null;
+
+        var config = new TableClothConfiguration()
+        {
+            CertPair = selectedCert,
+            EnableMicrophone = this.EnableMicrophone,
+            EnableWebCam = this.EnableWebCam,
+            EnablePrinters = this.EnablePrinters,
+            InstallEveryonesPrinter = this.InstallEveryonesPrinter,
+            InstallAdobeReader = this.InstallAdobeReader,
+            InstallHancomOfficeViewer = this.InstallHancomOfficeViewer,
+            InstallRaiDrive = this.InstallRaiDrive,
+            EnableInternetExplorerMode = this.EnableInternetExplorerMode,
+            Companions = new CatalogCompanion[] { }, /*ViewModel.CatalogDocument.Companions*/
+        };
+
+        if (this.SelectedService != null)
+            config.Services = new[] { this.SelectedService };
+
+        return config;
     }
 }

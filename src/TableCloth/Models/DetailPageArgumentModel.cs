@@ -1,10 +1,11 @@
 ﻿using System.IO;
+using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
 namespace TableCloth.Models;
 
-public sealed class DetailPageArgumentModel
+public sealed class DetailPageArgumentModel : ICanComposeConfiguration
 {
     public DetailPageArgumentModel(
         CatalogInternetService? selectedService = default,

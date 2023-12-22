@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
 namespace TableCloth.Models;
 
-public sealed class MainWindowArgumentModel
+public sealed class MainWindowArgumentModel : ICanComposeConfiguration
 {
     public MainWindowArgumentModel(
         IEnumerable<CatalogInternetService>? selectedServices,

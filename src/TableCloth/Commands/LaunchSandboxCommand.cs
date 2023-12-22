@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using TableCloth.Components;
-using TableCloth.Models;
-using TableCloth.Models.Catalog;
-using TableCloth.Models.Configuration;
+using TableCloth.Contracts;
 using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
-using TableCloth.ViewModels;
 
 namespace TableCloth.Commands;
 
@@ -44,95 +41,13 @@ public sealed class LaunchSandboxCommand : CommandBase
             return;
         }
 
-        switch (parameter)
-        {
-            case MainWindowArgumentModel v1ArgumentModel:
-                this.RunSandboxFromV1ArgumentModel(v1ArgumentModel);
-                break;
+        var viewModel = parameter as ICanComposeConfiguration;
 
-            case MainWindowViewModel v1ViewModel:
-                this.RunSandboxFromV1ViewModel(v1ViewModel);
-                break;
+        if (viewModel == null)
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
-            case DetailPageArgumentModel v2ArgumentModel:
-                this.RunSandboxFromV2ArgumentModel(v2ArgumentModel);
-                break;
+        var config = viewModel.GetTableClothConfiguration();
 
-            case DetailPageViewModel v2ViewModel:
-                this.RunSandboxFromV2ViewModel(v2ViewModel);
-                break;
-
-            case TableClothConfiguration configuration:
-                this.RunSandbox(configuration);
-                break;
-
-            default:
-                throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-        }
-    }
-
-    private void RunSandboxFromV1ArgumentModel(MainWindowArgumentModel argumentModel)
-        => RunSandbox(argumentModel.GetTableClothConfiguration());
-
-    private void RunSandboxFromV1ViewModel(MainWindowViewModel viewModel)
-    {
-        var selectedCert = viewModel.SelectedCertFile;
-
-        if (!viewModel.MapNpkiCert)
-            selectedCert = null;
-
-        var config = new TableClothConfiguration()
-        {
-            CertPair = selectedCert,
-            EnableMicrophone = viewModel.EnableMicrophone,
-            EnableWebCam = viewModel.EnableWebCam,
-            EnablePrinters = viewModel.EnablePrinters,
-            InstallEveryonesPrinter = viewModel.InstallEveryonesPrinter,
-            InstallAdobeReader = viewModel.InstallAdobeReader,
-            InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer,
-            InstallRaiDrive = viewModel.InstallRaiDrive,
-            EnableInternetExplorerMode = viewModel.EnableInternetExplorerMode,
-            Services = viewModel.SelectedServices,
-        };
-
-        if (viewModel.CatalogDocument != null)
-            config.Companions = viewModel.CatalogDocument.Companions;
-
-        RunSandbox(config);
-    }
-
-    private void RunSandboxFromV2ArgumentModel(DetailPageArgumentModel argumentModel)
-        => RunSandbox(argumentModel.GetTableClothConfiguration());
-
-    private void RunSandboxFromV2ViewModel(DetailPageViewModel viewModel)
-    {
-        var selectedCert = viewModel.SelectedCertFile;
-
-        if (!viewModel.MapNpkiCert)
-            selectedCert = null;
-
-        var config = new TableClothConfiguration()
-        {
-            CertPair = selectedCert,
-            EnableMicrophone = viewModel.EnableMicrophone,
-            EnableWebCam = viewModel.EnableWebCam,
-            EnablePrinters = viewModel.EnablePrinters,
-            InstallEveryonesPrinter = viewModel.InstallEveryonesPrinter,
-            InstallAdobeReader = viewModel.InstallAdobeReader,
-            InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer,
-            InstallRaiDrive = viewModel.InstallRaiDrive,
-            EnableInternetExplorerMode = viewModel.EnableInternetExplorerMode,
-            Companions = new CatalogCompanion[] { }, /*ViewModel.CatalogDocument.Companions*/
-        };
-
-        if (viewModel.SelectedService != null)
-            config.Services = new[] { viewModel.SelectedService };
-
-        this.RunSandbox(config);
-    }
-
-    private void RunSandbox(TableClothConfiguration config)
-    {
         if (config.CertPair != null)
         {
             var now = DateTime.Now;

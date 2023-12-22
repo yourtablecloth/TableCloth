@@ -11,7 +11,7 @@ using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase, ICertPairSelect
+public class MainWindowViewModel : ViewModelBase, ICertPairSelect, ICanComposeConfiguration
 {
     [Obsolete("This constructor should be used only in design time context.")]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -257,5 +257,32 @@ public class MainWindowViewModel : ViewModelBase, ICertPairSelect
         }
 
         return result;
+    }
+
+    public TableClothConfiguration GetTableClothConfiguration()
+    {
+        var selectedCert = this.SelectedCertFile;
+
+        if (!this.MapNpkiCert)
+            selectedCert = null;
+
+        var config = new TableClothConfiguration()
+        {
+            CertPair = selectedCert,
+            EnableMicrophone = this.EnableMicrophone,
+            EnableWebCam = this.EnableWebCam,
+            EnablePrinters = this.EnablePrinters,
+            InstallEveryonesPrinter = this.InstallEveryonesPrinter,
+            InstallAdobeReader = this.InstallAdobeReader,
+            InstallHancomOfficeViewer = this.InstallHancomOfficeViewer,
+            InstallRaiDrive = this.InstallRaiDrive,
+            EnableInternetExplorerMode = this.EnableInternetExplorerMode,
+            Services = this.SelectedServices,
+        };
+
+        if (this.CatalogDocument != null)
+            config.Companions = this.CatalogDocument.Companions;
+
+        return config;
     }
 }
