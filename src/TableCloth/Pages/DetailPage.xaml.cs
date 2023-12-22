@@ -73,8 +73,8 @@ public partial class DetailPage : Page
             if (extraArg.BuiltFromCommandLine && extraArg.SelectedService != null)
                 ViewModel.LaunchSandboxCommand.Execute(extraArg);
 
-            if (!string.IsNullOrEmpty(extraArg.CurrentSearchString))
-                SiteCatalogFilter.Text = extraArg.CurrentSearchString;
+            if (!string.IsNullOrEmpty(extraArg.SearchKeyword))
+                SiteCatalogFilter.Text = extraArg.SearchKeyword;
         }
     }
 

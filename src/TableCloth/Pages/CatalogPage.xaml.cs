@@ -124,7 +124,7 @@ public partial class CatalogPage : Page
             if (data != null)
             {
                 ViewModel.NavigationService.NavigateTo<DetailPageViewModel>(
-                    new DetailPageArgumentModel(data, builtFromCommandLine: false, currentSearchString: SiteCatalogFilter.Text));
+                    new DetailPageArgumentModel(data, builtFromCommandLine: false, searchKeyword: SiteCatalogFilter.Text));
             }
         }
     }
@@ -145,7 +145,7 @@ public partial class CatalogPage : Page
         if (data != null)
         {
             ViewModel.NavigationService.NavigateTo<DetailPageViewModel>(
-                new DetailPageArgumentModel(data, builtFromCommandLine: false, currentSearchString: SiteCatalogFilter.Text));
+                new DetailPageArgumentModel(data, builtFromCommandLine: false, searchKeyword: SiteCatalogFilter.Text));
         }
     }
 

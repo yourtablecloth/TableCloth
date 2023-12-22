@@ -23,7 +23,7 @@ public sealed class MainWindowArgumentModel : ICanComposeConfiguration
         bool? installRaiDrive = default,
         bool? enableInternetExplorerMode = default,
         bool showCommandLineHelp = default,
-        string? currentSearchString = default)
+        string? searchKeyword = default)
     {
         SelectedServices = selectedServices ?? new List<CatalogInternetService>();
         EnableMicrophone = enableMicrophone;
@@ -38,7 +38,7 @@ public sealed class MainWindowArgumentModel : ICanComposeConfiguration
         EnableInternetExplorerMode = enableInternetExplorerMode;
         ShowCommandLineHelp = showCommandLineHelp;
         BuiltFromCommandLine = builtFromCommandLine;
-        CurrentSearchString = currentSearchString ?? string.Empty;
+        SearchKeyword = searchKeyword ?? string.Empty;
     }
 
     public bool BuiltFromCommandLine { get; private set; } = false;
@@ -67,7 +67,7 @@ public sealed class MainWindowArgumentModel : ICanComposeConfiguration
 
     public bool ShowCommandLineHelp { get; private set; }
 
-    public string CurrentSearchString { get; private set; }
+    public string SearchKeyword { get; private set; }
 
     public TableClothConfiguration GetTableClothConfiguration()
     {
