@@ -12,7 +12,8 @@ namespace TableCloth;
 
 public partial class MainWindow : Window
 {
-    public MainWindow(MainWindowViewModel viewModel)
+    public MainWindow(
+        MainWindowViewModel viewModel)
     {
         InitializeComponent();
         DataContext = viewModel;

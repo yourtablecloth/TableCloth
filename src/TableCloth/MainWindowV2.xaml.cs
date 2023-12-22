@@ -8,7 +8,8 @@ namespace TableCloth;
 /// </summary>
 public partial class MainWindowV2 : Window
 {
-    public MainWindowV2(MainWindowV2ViewModel viewModel)
+    public MainWindowV2(
+        MainWindowV2ViewModel viewModel)
     {
         InitializeComponent();
         DataContext = viewModel;

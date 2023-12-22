@@ -17,9 +17,11 @@ namespace TableCloth.Pages;
 /// </summary>
 public partial class DetailPage : Page
 {
-    public DetailPage()
+    public DetailPage(
+        DetailPageViewModel viewModel)
     {
         InitializeComponent();
+        DataContext = viewModel;
     }
 
     public DetailPageViewModel ViewModel

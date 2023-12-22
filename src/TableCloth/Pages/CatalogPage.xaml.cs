@@ -13,9 +13,11 @@ namespace TableCloth.Pages;
 
 public partial class CatalogPage : Page
 {
-    public CatalogPage()
+    public CatalogPage(
+        CatalogPageViewModel viewModel)
     {
         InitializeComponent();
+        DataContext = viewModel;
     }
 
     public CatalogPageViewModel ViewModel
