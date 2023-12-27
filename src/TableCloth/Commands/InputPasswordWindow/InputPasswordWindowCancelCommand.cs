@@ -14,6 +14,6 @@ public sealed class InputPasswordWindowCancelCommand : CommandBase
             throw new ArgumentException(nameof(parameter));
 
         viewModel.ValidatedCertPair = null;
-        viewModel.OnRequestClose(this, new DialogRequestEventArgs(false));
+        viewModel.RequestClose(this, new DialogRequestEventArgs(false));
     }
 }

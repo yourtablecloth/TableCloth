@@ -12,6 +12,6 @@ public sealed class DisclaimerWindowLoadedCommand : CommandBase
         if (viewModel == null)
             throw new ArgumentException(nameof(parameter));
 
-        viewModel.OnViewLoaded(this, EventArgs.Empty);
+        viewModel.NotifyViewLoaded(this, EventArgs.Empty);
     }
 }

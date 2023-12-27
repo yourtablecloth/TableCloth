@@ -40,7 +40,7 @@ public sealed class InputPasswordWindowConfirmCommand : CommandBase
             if (certPair != null)
                 viewModel.ValidatedCertPair = certPair;
 
-            viewModel.OnRequestClose(this, new DialogRequestEventArgs(true));
+            viewModel.RequestClose(this, new DialogRequestEventArgs(true));
         }
         catch (Exception ex)
         {

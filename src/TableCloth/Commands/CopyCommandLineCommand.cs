@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using TableCloth.Components;
+using TableCloth.Contracts;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
@@ -23,10 +24,8 @@ public sealed class CopyCommandLineCommand : CommandBase
     {
         var expression = string.Empty;
 
-        if (parameter is MainWindowViewModel viewModelV1)
-            expression = _commandLineComposer.ComposeCommandLineExpressionForV1(viewModelV1, true);
-        if (parameter is DetailPageViewModel viewModelV2)
-            expression = _commandLineComposer.ComposeCommandLineExpressionForV2(viewModelV2, true);
+        if (parameter is ITableClothViewModel viewModel)
+            expression = _commandLineComposer.ComposeCommandLineExpression(viewModel, true);
         else
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 

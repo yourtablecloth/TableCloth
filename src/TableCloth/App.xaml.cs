@@ -8,11 +8,13 @@ using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
 using TableCloth.Commands.CertSelectWindow;
+using TableCloth.Commands.DetailPage;
 using TableCloth.Commands.DisclaimerWindow;
 using TableCloth.Commands.InputPasswordWindow;
 using TableCloth.Commands.MainWindow;
 using TableCloth.Commands.MainWindowV2;
 using TableCloth.Components;
+using TableCloth.Contracts;
 using TableCloth.Dialogs;
 using TableCloth.Pages;
 using TableCloth.Resources;
@@ -48,10 +50,18 @@ public partial class App : Application
         var messageBox = Services.GetRequiredService<AppMessageBox>()!;
         var commandLineParser = Services.GetRequiredService<CommandLineParser>();
 
+        var preferencesManager = Services.GetRequiredService<PreferencesManager>();
+        var preferences = preferencesManager.LoadPreferences();
+        var v2UIOptIn = preferences?.V2UIOptIn ?? true;
+
         Arguments = e.Args;
         var warnings = new List<string>();
+        var parsedArg = default(ITableClothArgumentModel);
 
-        var parsedArg = commandLineParser.Parse(e.Args);
+        if (v2UIOptIn)
+            parsedArg = commandLineParser.ParseForV2(e.Args);
+        else
+            parsedArg = commandLineParser.ParseForV1(e.Args);
 
         if (parsedArg.ShowCommandLineHelp)
         {
@@ -84,9 +94,6 @@ public partial class App : Application
             }
         }
 
-        var preferencesManager = Services.GetRequiredService<PreferencesManager>();
-        var preferences = preferencesManager.LoadPreferences();
-        var v2UIOptIn = preferences?.V2UIOptIn ?? true;
         var window = default(Window);
 
         if (v2UIOptIn)
@@ -125,6 +132,7 @@ public partial class App : Application
             .AddSingleton<AppRestartManager>()
             .AddSingleton<CommandLineParser>()
             .AddSingleton<CommandLineComposer>()
+            .AddSingleton<ConfigurationComposer>()
             .AddSingleton<VisualThemeManager>()
             .AddSingleton<AppMessageBox>()
             .AddSingleton<NavigationService>()
@@ -222,17 +230,17 @@ public partial class App : Application
         // Detail Page
         services.AddPage<DetailPage, DetailPageViewModel>(
             viewModelImplementationFactory: provider => new DetailPageViewModel(
-                appUserInterface: provider.GetRequiredService<AppUserInterface>(),
-                navigationService: provider.GetRequiredService<NavigationService>(),
-                sharedLocations: provider.GetRequiredService<SharedLocations>(),
-                certPairScanner: provider.GetRequiredService<X509CertPairScanner>(),
-                preferencesManager: provider.GetRequiredService<PreferencesManager>(),
-                appRestartManager: provider.GetRequiredService<AppRestartManager>(),
+                detailPageLoadedCommand: provider.GetRequiredService<DetailPageLoadedCommand>(),
+                detailPageLostFocusCommand: provider.GetRequiredService<DetailPageLostFocusCommand>(),
+                detailPageGoBackCommand: provider.GetRequiredService<DetailPageGoBackCommand>(),
                 launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
                 createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
                 copyCommandLineCommand: provider.GetRequiredService<CopyCommandLineCommand>(),
                 certSelectCommand: provider.GetRequiredService<CertSelectCommand>()
-            ));
+            ))
+            .AddSingleton<DetailPageLoadedCommand>()
+            .AddSingleton<DetailPageLostFocusCommand>()
+            .AddSingleton<DetailPageGoBackCommand>();
 
         return services.BuildServiceProvider();
     }

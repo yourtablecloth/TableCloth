@@ -13,6 +13,6 @@ public sealed class InputPasswordWindowLoadedCommand : CommandBase
         if (inputPasswordWindowViewModel == null)
             throw new ArgumentException(nameof(inputPasswordWindowViewModel));
 
-        inputPasswordWindowViewModel.OnViewLoaded(this, EventArgs.Empty);
+        inputPasswordWindowViewModel.NotifyViewLoaded(this, EventArgs.Empty);
     }
 }

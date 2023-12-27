@@ -21,10 +21,10 @@ public sealed class DisclaimerWindowViewModel : ViewModelBase
     public event EventHandler? ViewLoaded;
     public event EventHandler? DisclaimerAcknowledged;
 
-    public void OnViewLoaded(object? sender, EventArgs e)
+    public void NotifyViewLoaded(object? sender, EventArgs e)
         => ViewLoaded?.Invoke(sender, e);
 
-    public void OnDisclaimerAcknowledged(object? sender, EventArgs e)
+    public void NotifyDisclaimerAcknowledged(object? sender, EventArgs e)
         => DisclaimerAcknowledged?.Invoke(sender, e);
 
     private readonly DisclaimerWindowLoadedCommand _disclaimerWindowLoadedCommand;

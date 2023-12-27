@@ -1,14 +1,16 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
 namespace TableCloth.Models;
 
-public sealed class DetailPageArgumentModel : ICanComposeConfiguration
+public sealed class DetailPageArgumentModel : ITableClothArgumentModel
 {
     public DetailPageArgumentModel(
-        CatalogInternetService? selectedService = default,
+        string[]? selectedServices = default,
         bool builtFromCommandLine = default,
         bool? enableMicrophone = default,
         bool? enableWebCam = default,
@@ -20,10 +22,9 @@ public sealed class DetailPageArgumentModel : ICanComposeConfiguration
         bool? installHancomOfficeViewer = default,
         bool? installRaiDrive = default,
         bool? enableInternetExplorerMode = default,
-        bool showCommandLineHelp = default,
-        string? searchKeyword = default)
+        bool showCommandLineHelp = default)
     {
-        SelectedService = selectedService;
+        SelectedServices = selectedServices ?? Enumerable.Empty<string>();
         EnableMicrophone = enableMicrophone;
         EnableWebCam = enableWebCam;
         EnablePrinters = enablePrinters;
@@ -36,12 +37,9 @@ public sealed class DetailPageArgumentModel : ICanComposeConfiguration
         EnableInternetExplorerMode = enableInternetExplorerMode;
         ShowCommandLineHelp = showCommandLineHelp;
         BuiltFromCommandLine = builtFromCommandLine;
-        SearchKeyword = searchKeyword ?? string.Empty;
     }
 
     public bool BuiltFromCommandLine { get; private set; } = false;
-
-    public CatalogInternetService? SelectedService { get; private set; } = default;
 
     public bool? EnableMicrophone { get; private set; }
 
@@ -65,42 +63,7 @@ public sealed class DetailPageArgumentModel : ICanComposeConfiguration
 
     public bool ShowCommandLineHelp { get; private set; }
 
-    public string SearchKeyword { get; private set; }
+    public IEnumerable<string> SelectedServices { get; private set; } = new List<string>();
 
-    public TableClothConfiguration GetTableClothConfiguration()
-    {
-        var certPublicKeyData = new byte[] { };
-        var certPrivateKeyData = new byte[] { };
-        var certPair = default(X509CertPair);
-
-        if (!string.IsNullOrWhiteSpace(CertPublicKeyPath) &&
-            File.Exists(CertPublicKeyPath))
-            certPublicKeyData = File.ReadAllBytes(CertPublicKeyPath);
-
-        if (!string.IsNullOrWhiteSpace(CertPrivateKeyPath) &&
-            File.Exists(CertPrivateKeyPath))
-            certPrivateKeyData = File.ReadAllBytes(CertPrivateKeyPath);
-
-        if (certPublicKeyData.Length > 0 &&
-            certPrivateKeyData.Length > 0)
-            certPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
-
-        var config = new TableClothConfiguration()
-        {
-            EnableMicrophone = EnableMicrophone ?? default,
-            EnableWebCam = EnableWebCam ?? default,
-            EnablePrinters = EnablePrinters ?? default,
-            CertPair = certPair,
-            InstallEveryonesPrinter = InstallEveryonesPrinter ?? default,
-            InstallAdobeReader = InstallAdobeReader ?? default,
-            InstallHancomOfficeViewer = InstallHancomOfficeViewer ?? default,
-            InstallRaiDrive = InstallRaiDrive ?? default,
-            EnableInternetExplorerMode = EnableInternetExplorerMode ?? default,
-        };
-
-        if (SelectedService != null)
-            config.Services = new[] { SelectedService };
-
-        return config;
-    }
+    public string SearchKeyword { get; set; } = string.Empty;
 }

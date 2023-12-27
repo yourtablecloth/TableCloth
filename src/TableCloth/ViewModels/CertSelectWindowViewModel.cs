@@ -31,7 +31,11 @@ public class CertSelectWindowViewModel : ViewModelBase
     private List<X509CertPair> _certPairs = new List<X509CertPair>();
     private X509CertPair? _selectedCertPair;
 
-    public event EventHandler<DialogRequestEventArgs>? OnRequestClose;
+    public event EventHandler<DialogRequestEventArgs>? CloseRequested;
+
+    public void RequestClose(object sender, DialogRequestEventArgs e)
+        => this.CloseRequested?.Invoke(sender, e);
+
 
     public ScanCertPairCommand ScanCertPairCommand
         => _scanCertPairCommand;
@@ -53,7 +57,4 @@ public class CertSelectWindowViewModel : ViewModelBase
         get => _selectedCertPair;
         set => SetProperty(ref _selectedCertPair, value);
     }
-
-    public void RequestClose(object sender, DialogRequestEventArgs e)
-        => this.OnRequestClose?.Invoke(sender, e);
 }

@@ -3,10 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Windows;
 using TableCloth.Components;
-using TableCloth.Dialogs;
 using TableCloth.Events;
 using TableCloth.ViewModels;
 
@@ -96,7 +94,7 @@ public sealed class ManualCertLoadCommand : CommandBase
         if (string.IsNullOrWhiteSpace(pfxFilePath) || !File.Exists(pfxFilePath))
             return;
 
-        var inputWindow = _appUserInterface.CreateWindow<TableCloth.Dialogs.InputPasswordWindow>();
+        var inputWindow = _appUserInterface.CreateInputPasswordWindow();
         var inputWindowViewModel = inputWindow.ViewModel;
         inputWindowViewModel.PfxFilePath = pfxFilePath;
 

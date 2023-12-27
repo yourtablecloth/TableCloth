@@ -11,7 +11,7 @@ public partial class CertSelectWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
-        viewModel.OnRequestClose += ViewModel_OnRequestClose;
+        viewModel.CloseRequested += ViewModel_OnRequestClose;
     }
 
     public CertSelectWindowViewModel ViewModel

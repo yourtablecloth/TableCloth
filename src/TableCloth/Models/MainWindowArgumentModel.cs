@@ -7,10 +7,10 @@ using TableCloth.Models.Configuration;
 
 namespace TableCloth.Models;
 
-public sealed class MainWindowArgumentModel : ICanComposeConfiguration
+public sealed class MainWindowArgumentModel : ITableClothArgumentModel
 {
     public MainWindowArgumentModel(
-        IEnumerable<CatalogInternetService>? selectedServices,
+        string[]? selectedServices,
         bool builtFromCommandLine,
         bool? enableMicrophone = default,
         bool? enableWebCam = default,
@@ -22,10 +22,9 @@ public sealed class MainWindowArgumentModel : ICanComposeConfiguration
         bool? installHancomOfficeViewer = default,
         bool? installRaiDrive = default,
         bool? enableInternetExplorerMode = default,
-        bool showCommandLineHelp = default,
-        string? searchKeyword = default)
+        bool showCommandLineHelp = default)
     {
-        SelectedServices = selectedServices ?? new List<CatalogInternetService>();
+        SelectedServices = selectedServices ?? Enumerable.Empty<string>();
         EnableMicrophone = enableMicrophone;
         EnableWebCam = enableWebCam;
         EnablePrinters = enablePrinters;
@@ -38,12 +37,9 @@ public sealed class MainWindowArgumentModel : ICanComposeConfiguration
         EnableInternetExplorerMode = enableInternetExplorerMode;
         ShowCommandLineHelp = showCommandLineHelp;
         BuiltFromCommandLine = builtFromCommandLine;
-        SearchKeyword = searchKeyword ?? string.Empty;
     }
 
     public bool BuiltFromCommandLine { get; private set; } = false;
-
-    public IEnumerable<CatalogInternetService> SelectedServices { get; private set; } = new List<CatalogInternetService>();
 
     public bool? EnableMicrophone { get; private set; }
 
@@ -65,40 +61,7 @@ public sealed class MainWindowArgumentModel : ICanComposeConfiguration
 
     public bool? EnableInternetExplorerMode { get; private set; }
 
-    public bool ShowCommandLineHelp { get; private set; }
+    public bool ShowCommandLineHelp { get; private set; } = false;
 
-    public string SearchKeyword { get; private set; }
-
-    public TableClothConfiguration GetTableClothConfiguration()
-    {
-        var certPublicKeyData = new byte[] { };
-        var certPrivateKeyData = new byte[] { };
-        var certPair = default(X509CertPair);
-
-        if (!string.IsNullOrWhiteSpace(CertPublicKeyPath) &&
-            File.Exists(CertPublicKeyPath))
-            certPublicKeyData = File.ReadAllBytes(CertPublicKeyPath);
-
-        if (!string.IsNullOrWhiteSpace(CertPrivateKeyPath) &&
-            File.Exists(CertPrivateKeyPath))
-            certPrivateKeyData = File.ReadAllBytes(CertPrivateKeyPath);
-
-        if (certPublicKeyData.Length > 0 &&
-            certPrivateKeyData.Length > 0)
-            certPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
-
-        return new TableClothConfiguration()
-        {
-            Services = SelectedServices.ToList(),
-            EnableMicrophone = EnableMicrophone ?? default,
-            EnableWebCam = EnableWebCam ?? default,
-            EnablePrinters = EnablePrinters ?? default,
-            CertPair = certPair,
-            InstallEveryonesPrinter = InstallEveryonesPrinter ?? default,
-            InstallAdobeReader = InstallAdobeReader ?? default,
-            InstallHancomOfficeViewer = InstallHancomOfficeViewer ?? default,
-            InstallRaiDrive = InstallRaiDrive ?? default,
-            EnableInternetExplorerMode = EnableInternetExplorerMode ?? default,
-        };
-    }
+    public IEnumerable<string> SelectedServices { get; private set; } = new List<string>();
 }

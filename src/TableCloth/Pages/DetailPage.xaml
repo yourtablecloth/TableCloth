@@ -2,13 +2,23 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:vm="clr-namespace:TableCloth.ViewModels"
       xmlns:local="clr-namespace:TableCloth"
       mc:Ignorable="d" 
       d:DesignHeight="900" d:DesignWidth="800"
-      Title="DetailPage" Loaded="Page_Loaded"
+      Title="DetailPage" 
       d:DataContext="{d:DesignInstance Type=vm:DetailPageViewModel, IsDesignTimeCreatable=True}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding DetailPageLoadedCommand}">
+                <i:InvokeCommandAction.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                </i:InvokeCommandAction.CommandParameter>
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Page.Resources>
         <!-- https://www.svgrepo.com/svg/496822/back-square -->
         <DrawingImage x:Key="BackButtonImage">
@@ -44,12 +54,24 @@
                     <ColumnDefinition Width="70*" />
                     <ColumnDefinition Width="30*" />
                 </Grid.ColumnDefinitions>
-            <Button x:Name="GoBackButton" Grid.Column="0" Margin="8" Click="GoBackButton_Click" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                    <Button.Content>
-                        <Image Source="{StaticResource BackButtonImage}" />
-                    </Button.Content>
-                </Button>
-            <TextBox Grid.Row="0" Grid.Column="2" x:Name="SiteCatalogFilter" Width="Auto" Margin="8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostFocus="SiteCatalogFilter_LostFocus" PreviewKeyUp="SiteCatalogFilter_PreviewKeyUp">
+            <Button x:Name="GoBackButton" Grid.Column="0" Margin="8" Command="{Binding DetailPageGoBackCommand}" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Button.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                </Button.CommandParameter>
+                <Button.Content>
+                    <Image Source="{StaticResource BackButtonImage}" />
+                </Button.Content>
+            </Button>
+            <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding SearchKeyword}" Width="Auto" Margin="8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" PreviewKeyUp="SiteCatalogFilter_PreviewKeyUp">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="LostFocus">
+                        <i:InvokeCommandAction Command="{Binding DetailPageLostFocusCommand}">
+                            <i:InvokeCommandAction.CommandParameter>
+                                <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                            </i:InvokeCommandAction.CommandParameter>
+                        </i:InvokeCommandAction>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <TextBox.Style>
                         <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                             <Style.Resources>

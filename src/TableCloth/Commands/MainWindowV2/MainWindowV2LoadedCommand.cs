@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using TableCloth.Components;
+using TableCloth.Models;
 using TableCloth.ViewModels;
 using NavigationService = TableCloth.Components.NavigationService;
 
@@ -42,14 +43,14 @@ public sealed class MainWindowV2LoadedCommand : CommandBase
 
         if (hasArgs)
         {
-            var parsedArg = _commandLineParser.Parse(args);
+            var parsedArg = _commandLineParser.ParseForV2(args);
 
-            if (parsedArg.SelectedService == null)
+            if (parsedArg.SelectedServices.Count() < 1)
                 return;
 
-            _navigationService.NavigateTo<DetailPageViewModel>(parsedArg);
+            _navigationService.NavigateToDetail(parsedArg);
         }
         else
-            _navigationService.NavigateTo<CatalogPageViewModel>(null);
+            _navigationService.NavigateToCatalog(new CatalogPageArgumentModel() { SearchKeyword = string.Empty, });
     }
 }

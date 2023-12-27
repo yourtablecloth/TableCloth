@@ -5,9 +5,12 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Navigation;
+using TableCloth.Contracts;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
+using Windows.UI.Input.Spatial;
 
 namespace TableCloth.Pages;
 
@@ -54,8 +57,8 @@ public partial class CatalogPage : Page
         if (!view.GroupDescriptions.Contains(GroupDescription))
             view.GroupDescriptions.Add(GroupDescription);
 
-        var extraArg = ViewModel.ExtraArgument as CatalogPageArgumentModel;
-        SiteCatalogFilter.Text = extraArg?.SearchKeyword ?? string.Empty;
+        var extraArg = ViewModel.PageArgument as CatalogPageArgumentModel;
+        ViewModel.SearchKeyword = extraArg?.SearchKeyword ?? string.Empty;
     }
 
     private bool SiteCatalog_Filter(object item)
@@ -65,7 +68,7 @@ public partial class CatalogPage : Page
         if (actualItem == null)
             return false;
 
-        var filterText = SiteCatalogFilter.Text;
+        var filterText = ViewModel.SearchKeyword;
 
         if (string.IsNullOrWhiteSpace(filterText))
             return true;
@@ -86,33 +89,37 @@ public partial class CatalogPage : Page
         return result;
     }
 
-    private void SiteCatalogFilter_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
-    }
-
     // https://stackoverflow.com/questions/660554/how-to-automatically-select-all-text-on-focus-in-wpf-textbox
     private void SiteCatalogFilter_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
     {
+        if (sender is not TextBox siteCatalogFilter)
+            return;
+
         // Fixes issue when clicking cut/copy/paste in context menu
-        if (SiteCatalogFilter.SelectionLength < 1)
-            SiteCatalogFilter.SelectAll();
+        if (siteCatalogFilter.SelectionLength < 1)
+            siteCatalogFilter.SelectAll();
     }
 
     private void SiteCatalogFilter_LostMouseCapture(object sender, MouseEventArgs e)
     {
+        if (sender is not TextBox siteCatalogFilter)
+            return;
+
         // If user highlights some text, don't override it
-        if (SiteCatalogFilter.SelectionLength < 1)
-            SiteCatalogFilter.SelectAll();
+        if (siteCatalogFilter.SelectionLength < 1)
+            siteCatalogFilter.SelectAll();
 
         // further clicks will not select all
-        SiteCatalogFilter.LostMouseCapture -= SiteCatalogFilter_LostMouseCapture;
+        siteCatalogFilter.LostMouseCapture -= SiteCatalogFilter_LostMouseCapture;
     }
 
     private void SiteCatalogFilter_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
     {
+        if (sender is not TextBox siteCatalogFilter)
+            return;
+
         // once we've left the TextBox, return the select all behavior
-        SiteCatalogFilter.LostMouseCapture += SiteCatalogFilter_LostMouseCapture;
+        siteCatalogFilter.LostMouseCapture += SiteCatalogFilter_LostMouseCapture;
     }
 
     private void SiteCatalog_KeyDown(object sender, KeyEventArgs e)
@@ -123,8 +130,10 @@ public partial class CatalogPage : Page
 
             if (data != null)
             {
-                ViewModel.NavigationService.NavigateTo<DetailPageViewModel>(
-                    new DetailPageArgumentModel(data, builtFromCommandLine: false, searchKeyword: SiteCatalogFilter.Text));
+                ViewModel.NavigationService.NavigateToDetail(new DetailPageArgumentModel(new string[] { data.Id }, builtFromCommandLine: false)
+                {
+                    SearchKeyword = ViewModel.SearchKeyword,
+                });
             }
         }
     }
@@ -144,8 +153,10 @@ public partial class CatalogPage : Page
 
         if (data != null)
         {
-            ViewModel.NavigationService.NavigateTo<DetailPageViewModel>(
-                new DetailPageArgumentModel(data, builtFromCommandLine: false, searchKeyword: SiteCatalogFilter.Text));
+            ViewModel.NavigationService.NavigateToDetail(new DetailPageArgumentModel(new string[] { data.Id }, builtFromCommandLine: false)
+            {
+                SearchKeyword = ViewModel.SearchKeyword,
+            });
         }
     }
 

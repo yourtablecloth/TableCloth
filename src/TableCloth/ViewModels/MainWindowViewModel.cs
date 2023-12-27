@@ -11,7 +11,7 @@ using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase, ICertPairSelect, ICanComposeConfiguration
+public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
 {
     [Obsolete("This constructor should be used only in design time context.")]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -232,6 +232,9 @@ public class MainWindowViewModel : ViewModelBase, ICertPairSelect, ICanComposeCo
 
     public bool HasServices
         => Services != null && Services.Any();
+
+    IEnumerable<CatalogInternetService> ITableClothViewModel.SelectedServices
+        => this.SelectedServices;
 
     private bool Services_Filter(object item)
     {

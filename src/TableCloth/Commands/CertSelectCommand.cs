@@ -1,7 +1,6 @@
 ﻿using System;
 using TableCloth.Components;
 using TableCloth.Contracts;
-using TableCloth.Dialogs;
 
 namespace TableCloth.Commands;
 
@@ -20,12 +19,12 @@ public sealed class CertSelectCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
-        var viewModel = parameter as ICertPairSelect;
+        var viewModel = parameter as ITableClothViewModel;
 
         if (viewModel == null)
             throw new ArgumentException(nameof(parameter));
 
-        var certSelectWindow = _appUserInterface.CreateWindow<TableCloth.Dialogs.CertSelectWindow>();
+        var certSelectWindow = _appUserInterface.CreateCertSelectWindow();
         var response = certSelectWindow.ShowDialog();
 
         if (!response.HasValue || !response.Value)

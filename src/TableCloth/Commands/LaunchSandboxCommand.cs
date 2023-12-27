@@ -15,13 +15,15 @@ public sealed class LaunchSandboxCommand : CommandBase
         AppMessageBox appMessageBox,
         SharedLocations sharedLocations,
         SandboxBuilder sandboxBuilder,
-        SandboxCleanupManager sandboxCleanupManager)
+        SandboxCleanupManager sandboxCleanupManager,
+        ConfigurationComposer configurationComposer)
     {
         _sandboxLauncher = sandboxLauncher;
         _appMessageBox = appMessageBox;
         _sharedLocations = sharedLocations;
         _sandboxBuilder = sandboxBuilder;
         _sandboxCleanupManager = sandboxCleanupManager;
+        _configurationComposer = configurationComposer;
     }
 
     private readonly SandboxLauncher _sandboxLauncher;
@@ -29,6 +31,7 @@ public sealed class LaunchSandboxCommand : CommandBase
     private readonly SharedLocations _sharedLocations;
     private readonly SandboxBuilder _sandboxBuilder;
     private readonly SandboxCleanupManager _sandboxCleanupManager;
+    private readonly ConfigurationComposer _configurationComposer;
 
     protected override bool EvaluateCanExecute()
         => (!_sandboxLauncher.IsSandboxRunning());
@@ -41,12 +44,12 @@ public sealed class LaunchSandboxCommand : CommandBase
             return;
         }
 
-        var viewModel = parameter as ICanComposeConfiguration;
+        var viewModel = parameter as ITableClothViewModel;
 
         if (viewModel == null)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
-        var config = viewModel.GetTableClothConfiguration();
+        var config = _configurationComposer.GetConfigurationFromViewModel(viewModel);
 
         if (config.CertPair != null)
         {

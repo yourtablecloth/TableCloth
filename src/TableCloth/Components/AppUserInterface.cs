@@ -1,60 +1,63 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Windows;
-using System.Windows.Controls;
+using System.Linq;
 using TableCloth.Contracts;
+using TableCloth.Dialogs;
+using TableCloth.Models;
+using TableCloth.Pages;
+using TableCloth.ViewModels;
 
 namespace TableCloth.Components;
 
 public sealed class AppUserInterface
 {
-    public AppUserInterface(IServiceProvider serviceProvider)
+    public AppUserInterface(
+        IServiceProvider serviceProvider,
+        CatalogCacheManager catalogCacheManager)
     {
-        this.serviceProvider = serviceProvider;
+        _serviceProvider = serviceProvider;
+        _catalogCacheManager = catalogCacheManager;
     }
 
-    private readonly IServiceProvider serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly CatalogCacheManager _catalogCacheManager;
 
-    public TWindow CreateWindow<TWindow>(Action<TWindow>? modifier = default)
-        where TWindow : Window
+    public AboutWindow CreateAboutWindow()
+        => _serviceProvider.GetRequiredService<AboutWindow>();
+
+    public CertSelectWindow CreateCertSelectWindow()
+        => _serviceProvider.GetRequiredService<CertSelectWindow>();
+
+    public InputPasswordWindow CreateInputPasswordWindow()
+        => _serviceProvider.GetRequiredService<InputPasswordWindow>();
+
+    public DisclaimerWindow CreateDisclaimerWindow()
+        => _serviceProvider.GetRequiredService<DisclaimerWindow>();
+
+    public CatalogPage CreateCatalogPage(CatalogPageArgumentModel argumentModel)
+        => new CatalogPage(CreateCatalogPageViewModel(argumentModel));
+
+    public CatalogPageViewModel CreateCatalogPageViewModel(CatalogPageArgumentModel argumentModel)
     {
-        var windowInstance = (TWindow)CreateWindow(typeof(TWindow), default);
-        modifier?.Invoke(windowInstance);
-        return windowInstance;
+        var viewModel = _serviceProvider.GetRequiredService<CatalogPageViewModel>();
+        viewModel.SearchKeyword = argumentModel.SearchKeyword;
+        viewModel.PageArgument = argumentModel;
+        return viewModel;
     }
 
-    public Window CreateWindow(Type windowType, Action<Window>? modifier = default)
+    public DetailPage CreateDetailPage(ITableClothArgumentModel argumentModel)
+        => new DetailPage(CreateDetailPageViewModel(argumentModel));
+
+    public DetailPageViewModel CreateDetailPageViewModel(ITableClothArgumentModel argumentModel)
     {
-        var windowInstance = (Window)this.serviceProvider.GetRequiredService(windowType);
-        modifier?.Invoke(windowInstance);
-        return windowInstance;
-    }
+        var viewModel = _serviceProvider.GetRequiredService<DetailPageViewModel>();
 
-    public TPage CreatePage<TPage, TPageViewModel>(Action<TPage>? modifier = default)
-        where TPage : Page
-        where TPageViewModel : class, IPageExtraArgument
-    {
-        var pageInstance = (TPage)CreatePage(typeof(TPage), default);
-        pageInstance.DataContext = this.serviceProvider.GetService<TPageViewModel>();
-        modifier?.Invoke(pageInstance);
-        return pageInstance;
-    }
+        var selectedService = _catalogCacheManager.CatalogDocument?.Services
+            .Where(x => argumentModel.SelectedServices.Contains(x.Id))
+            .FirstOrDefault();
 
-    public Page CreatePage(Type pageType, Action<Page>? modifier = default)
-    {
-        var pageInstance = (Page)this.serviceProvider.GetRequiredService(pageType);
-        modifier?.Invoke(pageInstance);
-        return pageInstance;
-    }
-
-    public TViewModel CreateViewModel<TViewModel>(object? extraArgument)
-        where TViewModel : class, IPageExtraArgument
-    {
-        var viewModel = this.serviceProvider.GetRequiredService<TViewModel>();
-
-        if (viewModel is IPageExtraArgument extraArg)
-            extraArg.ExtraArgument = extraArgument;
-
+        viewModel.SelectedService = selectedService;
+        viewModel.PageArgument = argumentModel;
         return viewModel;
     }
 }

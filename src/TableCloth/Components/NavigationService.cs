@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Windows.Controls;
+using TableCloth.Contracts;
+using TableCloth.Models;
+using TableCloth.Models.Catalog;
 using TableCloth.Pages;
 using TableCloth.ViewModels;
 
@@ -22,34 +25,22 @@ public sealed class NavigationService
         _frame = frame ?? throw new ArgumentNullException(nameof(frame));
     }
 
-    public bool NavigateTo<TViewModel>(object? extraData)
-        where TViewModel : class
+    public bool NavigateToCatalog(CatalogPageArgumentModel argumentModel)
     {
         if (_frame == default)
             throw new InvalidOperationException($"You should initialize {nameof(NavigationService)} before use.");
 
-        var requestedViewModelType = typeof(TViewModel);
-        var viewType = default(Type);
-        var viewModelData = default(object);
+        var page = _appUserInterface.CreateCatalogPage(argumentModel);
+        return _frame.Navigate(page);
+    }
 
-        if (requestedViewModelType.Equals(typeof(CatalogPageViewModel)))
-        {
-            viewType = typeof(CatalogPage);
-            viewModelData = _appUserInterface.CreateViewModel<CatalogPageViewModel>(extraData);
-        }
+    public bool NavigateToDetail(ITableClothArgumentModel argumentModel)
+    {
+        if (_frame == default)
+            throw new InvalidOperationException($"You should initialize {nameof(NavigationService)} before use.");
 
-        if (requestedViewModelType.Equals(typeof(DetailPageViewModel)))
-        {
-            viewType = typeof(DetailPage);
-            viewModelData = _appUserInterface.CreateViewModel<DetailPageViewModel>(extraData);
-        }
-
-        if (viewType == default)
-            return false;
-
-        var view = _appUserInterface.CreatePage(viewType);
-        view.DataContext = viewModelData;
-        return _frame.Navigate(view);
+        var page = _appUserInterface.CreateDetailPage(argumentModel);
+        return _frame.Navigate(page);
     }
 
     public bool GoBack()

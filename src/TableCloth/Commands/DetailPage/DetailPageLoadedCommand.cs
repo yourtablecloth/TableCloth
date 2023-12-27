@@ -1,57 +1,56 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using TableCloth.Components;
-using TableCloth.Resources;
+using TableCloth.Models;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Commands.MainWindow;
+namespace TableCloth.Commands.DetailPage;
 
-public sealed class MainWindowLoadedCommand : CommandBase
+public sealed class DetailPageLoadedCommand : CommandBase
 {
-    public MainWindowLoadedCommand(
-        AppUserInterface appUserInterface,
-        VisualThemeManager visualThemeManager,
+    public DetailPageLoadedCommand(
+        CatalogCacheManager catalogCacheManager,
         PreferencesManager preferencesManager,
         X509CertPairScanner certPairScanner,
-        SharedLocations sharedLocations,
-        ResourceResolver resourceResolver,
-        CommandLineParser commandLineParser,
-        AppMessageBox appMessageBox,
         AppRestartManager appRestartManager,
+        AppUserInterface appUserInterface,
+        SharedLocations sharedLocations,
         LaunchSandboxCommand launchSandboxCommand)
     {
-        _appUserInterface = appUserInterface;
-        _visualThemeManager = visualThemeManager;
+        _catalogCacheManager = catalogCacheManager;
         _preferencesManager = preferencesManager;
         _certPairScanner = certPairScanner;
-        _sharedLocations = sharedLocations;
-        _resourceResolver = resourceResolver;
-        _commandLineParser = commandLineParser;
-        _appMessageBox = appMessageBox;
         _appRestartManager = appRestartManager;
+        _appUserInterface = appUserInterface;
+        _sharedLocations = sharedLocations;
         _launchSandboxCommand = launchSandboxCommand;
     }
 
-    private readonly AppUserInterface _appUserInterface;
-    private readonly VisualThemeManager _visualThemeManager;
+    private readonly CatalogCacheManager _catalogCacheManager;
     private readonly PreferencesManager _preferencesManager;
     private readonly X509CertPairScanner _certPairScanner;
-    private readonly SharedLocations _sharedLocations;
-    private readonly ResourceResolver _resourceResolver;
-    private readonly CommandLineParser _commandLineParser;
-    private readonly AppMessageBox _appMessageBox;
     private readonly AppRestartManager _appRestartManager;
+    private readonly AppUserInterface _appUserInterface;
+    private readonly SharedLocations _sharedLocations;
     private readonly LaunchSandboxCommand _launchSandboxCommand;
 
-    public override async void Execute(object? parameter)
+    public override void Execute(object? parameter)
     {
-        if (parameter is not MainWindowViewModel viewModel)
+        if (parameter is not DetailPageViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
-        _visualThemeManager.ApplyAutoThemeChange(
-            Application.Current.MainWindow);
+        var services = _catalogCacheManager.CatalogDocument?.Services;
+        var extraArg = viewModel.PageArgument as DetailPageArgumentModel;
+        var selectedServiceId = extraArg?.SelectedServices?.FirstOrDefault();
+        var selectedService = services?.Where(x => string.Equals(x.Id, selectedServiceId, StringComparison.Ordinal)).FirstOrDefault();
+        viewModel.SelectedService = selectedService;
 
         var currentConfig = _preferencesManager.LoadPreferences();
 
@@ -69,6 +68,11 @@ public sealed class MainWindowLoadedCommand : CommandBase
         viewModel.InstallRaiDrive = currentConfig.InstallRaiDrive;
         viewModel.EnableInternetExplorerMode = currentConfig.EnableInternetExplorerMode;
         viewModel.LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
+
+        var targetFilePath = Path.Combine(_sharedLocations.GetImageDirectoryPath(), $"{selectedServiceId}.png");
+
+        if (File.Exists(targetFilePath))
+            viewModel.ServiceLogo = new BitmapImage(new Uri(targetFilePath));
 
         var foundCandidate = _certPairScanner.ScanX509Pairs(_certPairScanner.GetCandidateDirectories()).FirstOrDefault();
 
@@ -89,34 +93,17 @@ public sealed class MainWindowLoadedCommand : CommandBase
                 viewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
         }
 
-        var services = viewModel.Services;
-        var directoryPath = _sharedLocations.GetImageDirectoryPath();
-
-        if (services != null)
-            await _resourceResolver.LoadSiteImages(services, directoryPath).ConfigureAwait(false);
-
-        // Command Line Parse
-        var args = App.Current.Arguments.ToArray();
-
-        if (args.Count() > 0)
+        if (extraArg != null)
         {
-            var parsedArg = _commandLineParser.ParseForV1(args);
-
-            if (parsedArg.ShowCommandLineHelp)
-            {
-                _appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
-                return;
-            }
-
-            if (parsedArg.SelectedServices.Count() > 0)
-                if (_launchSandboxCommand.CanExecute(parsedArg))
-                    _launchSandboxCommand.Execute(parsedArg);
+            if (extraArg.BuiltFromCommandLine && extraArg.SelectedServices.Count() > 0)
+                viewModel.LaunchSandboxCommand.Execute(extraArg);
         }
     }
 
+
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (sender is not MainWindowViewModel viewModel)
+        if (sender is not DetailPageViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));
 
         var currentConfig = _preferencesManager.LoadPreferences();
@@ -128,19 +115,19 @@ public sealed class MainWindowLoadedCommand : CommandBase
         {
             case nameof(MainWindowViewModel.EnableLogAutoCollecting):
                 currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
-                if (_appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                if (_appRestartManager.AskRestart())
                 {
                     _appRestartManager.ReserveRestart = true;
-                    _appRestartManager.RestartNow();
+                    viewModel.RequestClose(sender, e);
                 }
                 break;
 
             case nameof(MainWindowViewModel.V2UIOptIn):
                 currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
-                if (_appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                if (_appRestartManager.AskRestart())
                 {
                     _appRestartManager.ReserveRestart = true;
-                    _appRestartManager.RestartNow();
+                    viewModel.RequestClose(sender, e);
                 }
                 break;
 

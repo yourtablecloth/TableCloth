@@ -1,5 +1,4 @@
 ﻿using TableCloth.Components;
-using TableCloth.Dialogs;
 
 namespace TableCloth.Commands;
 
@@ -15,7 +14,7 @@ public sealed class AboutThisAppCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
-        var aboutWindow = _appUserInterface.CreateWindow<TableCloth.Dialogs.AboutWindow>();
+        var aboutWindow = _appUserInterface.CreateAboutWindow();
         aboutWindow.ShowDialog();
     }
 }

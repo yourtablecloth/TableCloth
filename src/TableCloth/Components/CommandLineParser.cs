@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TableCloth.Contracts;
 using TableCloth.Models;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
@@ -10,18 +11,8 @@ namespace TableCloth.Components;
 
 public sealed class CommandLineParser
 {
-    public CommandLineParser(
-        CatalogCacheManager catalogCacheManager)
+    public ITableClothArgumentModel ParseForV1(string[] args)
     {
-        this._catalogCacheManager = catalogCacheManager;
-    }
-
-    private readonly CatalogCacheManager _catalogCacheManager;
-
-    public MainWindowArgumentModel ParseForV1(string[] args)
-    {
-        var services = _catalogCacheManager.CatalogDocument?.Services;
-
         var selectedServiceIds = new List<string>();
         var enableMicrophone = default(bool?);
         var enableWebCam = default(bool?);
@@ -66,7 +57,6 @@ public sealed class CommandLineParser
                 enableCert = true;
         }
 
-        var selectedServices = services?.Where(x => selectedServiceIds.Contains(x.Id, StringComparer.OrdinalIgnoreCase)).ToList();
         var certPair = default(X509CertPair);
 
         if (enableCert)
@@ -87,7 +77,7 @@ public sealed class CommandLineParser
         }
 
         return new MainWindowArgumentModel(
-            selectedServices,
+            selectedServices: selectedServiceIds.ToArray(),
             enableMicrophone: enableMicrophone,
             enableWebCam: enableWebCam,
             enablePrinters: enablePrinters,
@@ -102,10 +92,8 @@ public sealed class CommandLineParser
             builtFromCommandLine: true);
     }
 
-    public DetailPageArgumentModel Parse(string[] args)
+    public ITableClothArgumentModel ParseForV2(string[] args)
     {
-        var services = _catalogCacheManager.CatalogDocument?.Services;
-
         var selectedServiceIds = new List<string>();
         var enableMicrophone = default(bool?);
         var enableWebCam = default(bool?);
@@ -169,10 +157,8 @@ public sealed class CommandLineParser
                 certPair = null;
         }
 
-        var selectedService = services?.Where(x => selectedServiceIds.Contains(x.Id, StringComparer.OrdinalIgnoreCase)).ToList().FirstOrDefault();
-
         return new DetailPageArgumentModel(
-            selectedService,
+            selectedServices: selectedServiceIds.ToArray(),
             enableMicrophone: enableMicrophone,
             enableWebCam: enableWebCam,
             enablePrinters: enablePrinters,

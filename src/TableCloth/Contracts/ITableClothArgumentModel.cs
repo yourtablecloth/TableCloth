@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
-using TableCloth.Models.Catalog;
 
 namespace TableCloth.Contracts;
 
-public interface ICommandLineArgumentModel
+public interface ITableClothArgumentModel
 {
+    bool BuiltFromCommandLine { get; }
+    bool ShowCommandLineHelp { get; }
     bool? EnableMicrophone { get; }
     bool? EnableWebCam { get; }
     bool? EnablePrinters { get; }
@@ -13,6 +14,7 @@ public interface ICommandLineArgumentModel
     bool? InstallHancomOfficeViewer { get; }
     bool? InstallRaiDrive { get; }
     bool? EnableInternetExplorerMode { get; }
-    bool? MapNpkiCert { get; }
+    string? CertPublicKeyPath { get; }
+    string? CertPrivateKeyPath { get; }
     IEnumerable<string> SelectedServices { get; }
 }

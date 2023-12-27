@@ -27,13 +27,13 @@ public sealed class InputPasswordWindowViewModel : ViewModelBase
     public event EventHandler<DialogRequestEventArgs>? CloseRequested;
     public event EventHandler? RetryPasswordInputRequested;
 
-    public void OnViewLoaded(object? sender, EventArgs e)
+    public void NotifyViewLoaded(object? sender, EventArgs e)
         => ViewLoaded?.Invoke(sender, e);
 
-    public void OnRequestClose(object sender, DialogRequestEventArgs e)
+    public void RequestClose(object sender, DialogRequestEventArgs e)
         => CloseRequested?.Invoke(sender, e);
 
-    public void OnRetryPasswordInputRequested(object sender, EventArgs e)
+    public void RequestRetryPasswordInput(object sender, EventArgs e)
         => RetryPasswordInputRequested?.Invoke(sender, e);
 
     private readonly InputPasswordWindowLoadedCommand _inputPasswordWindowLoadedCommand;

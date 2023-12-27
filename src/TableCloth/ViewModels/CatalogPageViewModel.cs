@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Data;
 using TableCloth.Commands;
 using TableCloth.Components;
 using TableCloth.Contracts;
@@ -9,7 +10,7 @@ using TableCloth.Models.Catalog;
 
 namespace TableCloth.ViewModels;
 
-public class CatalogPageViewModel : ViewModelBase, IPageExtraArgument
+public class CatalogPageViewModel : ViewModelBase, IPageArgument
 {
     [Obsolete("This constructor should be used only in design time context.")]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -48,8 +49,7 @@ public class CatalogPageViewModel : ViewModelBase, IPageExtraArgument
     private List<CatalogInternetService> _services = new List<CatalogInternetService>();
     private CatalogInternetService? _selectedService;
     private CatalogInternetServiceCategory? _selectedServiceCategory;
-
-    public object? ExtraArgument { get; set; }
+    private string _searchKeyword = string.Empty;
 
     public NavigationService NavigationService
         => _navigationService;
@@ -59,6 +59,8 @@ public class CatalogPageViewModel : ViewModelBase, IPageExtraArgument
 
     public AboutThisAppCommand AboutThisAppCommand
         => _aboutThisAppCommand;
+
+    public object? PageArgument { get; set; }
 
     public CatalogDocument? CatalogDocument
     {
@@ -89,5 +91,15 @@ public class CatalogPageViewModel : ViewModelBase, IPageExtraArgument
     {
         get => _selectedServiceCategory;
         set => SetProperty(ref _selectedServiceCategory, value);
+    }
+
+    public string SearchKeyword
+    {
+        get => _searchKeyword;
+        set
+        {
+            SetProperty(ref _searchKeyword, value);
+            CollectionViewSource.GetDefaultView(Services).Refresh();
+        }
     }
 }

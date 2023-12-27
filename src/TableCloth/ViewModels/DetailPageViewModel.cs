@@ -5,14 +5,16 @@ using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TableCloth.Commands;
+using TableCloth.Commands.DetailPage;
 using TableCloth.Components;
 using TableCloth.Contracts;
+using TableCloth.Events;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels;
 
-public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICertPairSelect, ICanComposeConfiguration
+public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableClothViewModel
 {
     [Obsolete("This constructor should be used only in design time context.")]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -20,41 +22,38 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICe
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public DetailPageViewModel(
-        AppUserInterface appUserInterface,
-        NavigationService navigationService,
-        SharedLocations sharedLocations,
-        X509CertPairScanner certPairScanner,
-        PreferencesManager preferencesManager,
-        AppRestartManager appRestartManager,
+        DetailPageLoadedCommand detailPageLoadedCommand,
+        DetailPageLostFocusCommand detailPageLostFocusCommand,
+        DetailPageGoBackCommand detailPageGoBackCommand,
         LaunchSandboxCommand launchSandboxCommand,
         CreateShortcutCommand createShortcutCommand,
         CopyCommandLineCommand copyCommandLineCommand,
         CertSelectCommand certSelectCommand)
     {
-        _appUserInterface = appUserInterface;
-        _navigationService = navigationService;
-        _sharedLocations = sharedLocations;
-        _certPairScanner = certPairScanner;
-        _preferencesManager = preferencesManager;
-        _appRestartManager = appRestartManager;
+        _detailPageLoadedCommand = detailPageLoadedCommand;
+        _detailPageLostFocusCommand = detailPageLostFocusCommand;
+        _detailPageGoBackCommand = detailPageGoBackCommand;
         _launchSandboxCommand = launchSandboxCommand;
         _createShortcutCommand = createShortcutCommand;
         _copyCommandLineCommand = copyCommandLineCommand;
         _certSelectCommand = certSelectCommand;
     }
 
-    private readonly AppUserInterface _appUserInterface;
-    private readonly NavigationService _navigationService;
-    private readonly SharedLocations _sharedLocations;
-    private readonly X509CertPairScanner _certPairScanner;
-    private readonly PreferencesManager _preferencesManager;
-    private readonly AppRestartManager _appRestartManager;
+    private readonly DetailPageLoadedCommand _detailPageLoadedCommand;
+    private readonly DetailPageLostFocusCommand _detailPageLostFocusCommand;
+    private readonly DetailPageGoBackCommand _detailPageGoBackCommand;
     private readonly LaunchSandboxCommand _launchSandboxCommand;
     private readonly CreateShortcutCommand _createShortcutCommand;
     private readonly CopyCommandLineCommand _copyCommandLineCommand;
     private readonly CertSelectCommand _certSelectCommand;
 
+    public event EventHandler? CloseRequested;
+
+    public void RequestClose(object sender, EventArgs e)
+        => CloseRequested?.Invoke(sender, e);
+
     private CatalogInternetService? _selectedService;
+    private ImageSource? _serviceLogo;
     private bool _mapNpkiCert;
     private bool _enableLogAutoCollecting;
     private bool _v2UIOptIn;
@@ -67,32 +66,17 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICe
     private bool _installRaiDrive;
     private bool _enableInternetExplorerMode;
     private DateTime? _lastDisclaimerAgreedTime;
-    private CatalogDocument? _catalogDocument;
     private X509CertPair? _selectedCertFile;
+    private string _searchKeyword = string.Empty;
 
-    public object? ExtraArgument { get; set; }
+    public DetailPageLoadedCommand DetailPageLoadedCommand
+        => _detailPageLoadedCommand;
 
-    public List<string> TemporaryDirectories { get; } = new();
+    public DetailPageLostFocusCommand DetailPageLostFocusCommand
+        => _detailPageLostFocusCommand;
 
-    public string? CurrentDirectory { get; set; }
-
-    public AppUserInterface AppUserInterface
-        => _appUserInterface;
-
-    public NavigationService NavigationService
-        => _navigationService;
-
-    public SharedLocations SharedLocations
-        => _sharedLocations;
-
-    public X509CertPairScanner CertPairScanner
-        => _certPairScanner;
-
-    public PreferencesManager PreferencesManager
-        => _preferencesManager;
-
-    public AppRestartManager AppRestartManager
-        => _appRestartManager;
+    public DetailPageGoBackCommand DetailPageGoBackCommand
+        => _detailPageGoBackCommand;
 
     public LaunchSandboxCommand LaunchSandboxCommand
         => _launchSandboxCommand;
@@ -105,6 +89,8 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICe
 
     public CertSelectCommand CertSelectCommand
         => _certSelectCommand;
+
+    public object? PageArgument { get; set; }
 
     public string? Id
         => _selectedService?.Id;
@@ -123,20 +109,8 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICe
 
     public ImageSource? ServiceLogo
     {
-        get
-        {
-            var serviceId = this.Id;
-
-            if (string.IsNullOrWhiteSpace(serviceId))
-                return null;
-
-            var targetFilePath = Path.Combine(_sharedLocations.GetImageDirectoryPath(), $"{serviceId}.png");
-
-            if (!File.Exists(targetFilePath))
-                return null;
-
-            return new BitmapImage(new Uri(targetFilePath));
-        }
+        get => _serviceLogo;
+        set => SetProperty(ref _serviceLogo, value);
     }
 
     public CatalogInternetService? SelectedService
@@ -239,12 +213,6 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICe
         }
     }
 
-    public CatalogDocument? CatalogDocument
-    {
-        get => _catalogDocument;
-        set => SetProperty(ref _catalogDocument, value);
-    }
-
     public X509CertPair? SelectedCertFile
     {
         get => _selectedCertFile;
@@ -253,6 +221,12 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageExtraArgument, ICe
 
     public IEnumerable<CatalogInternetService> SelectedServices
         => _selectedService != null ? new CatalogInternetService[] { _selectedService, } : Enumerable.Empty<CatalogInternetService>();
+
+    public string SearchKeyword
+    {
+        get => _searchKeyword;
+        set => SetProperty(ref _searchKeyword, value);
+    }
 
     public TableClothConfiguration GetTableClothConfiguration()
     {

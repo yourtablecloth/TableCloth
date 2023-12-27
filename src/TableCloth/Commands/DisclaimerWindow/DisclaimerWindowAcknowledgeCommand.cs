@@ -12,6 +12,6 @@ public sealed class DisclaimerWindowAcknowledgeCommand : CommandBase
         if (viewModel == null)
             throw new ArgumentException(nameof(viewModel));
 
-        viewModel.OnDisclaimerAcknowledged(this, EventArgs.Empty);
+        viewModel.NotifyDisclaimerAcknowledged(this, EventArgs.Empty);
     }
 }
