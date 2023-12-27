@@ -209,7 +209,7 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <ListView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" SelectedItem="{Binding Path='SelectedService'}" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" PreviewMouseDown="SiteCatalog_PreviewMouseDown" PreviewMouseDoubleClick="SiteCatalog_PreviewMouseDoubleClick" KeyDown="SiteCatalog_KeyDown">
+        <ListView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" SelectedItem="{Binding Path='SelectedService'}" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" PreviewMouseDown="SiteCatalog_PreviewMouseDown" PreviewMouseDoubleClick="SiteCatalog_PreviewMouseDoubleClick">
             <ListView.Template>
                 <ControlTemplate>
                     <ScrollViewer CanContentScroll="False" IsDeferredScrollingEnabled="False" HorizontalScrollBarVisibility="Disabled">

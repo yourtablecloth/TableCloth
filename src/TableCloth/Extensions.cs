@@ -4,6 +4,7 @@ using System;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace TableCloth;
 
@@ -62,5 +63,20 @@ internal static class Extensions
             services.AddTransient<TViewModel>();
 
         return services;
+    }
+
+    // https://stackoverflow.com/a/2914599
+    public static bool TryLeaveFocus(this FrameworkElement? targetElement)
+    {
+        if (targetElement == null)
+            return false;
+
+        var parent = (FrameworkElement)targetElement.Parent;
+        while (parent != null && parent is IInputElement && !((IInputElement)parent).Focusable)
+            parent = (FrameworkElement)parent.Parent;
+
+        var scope = FocusManager.GetFocusScope(targetElement);
+        FocusManager.SetFocusedElement(scope, parent as IInputElement);
+        return true;
     }
 }

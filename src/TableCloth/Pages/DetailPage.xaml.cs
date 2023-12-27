@@ -66,6 +66,6 @@ public partial class DetailPage : Page
             return;
 
         if (e.Key == Key.Enter || e.Key == Key.Escape || e.Key == Key.Tab)
-            this.Focus();
+            siteCatalogFilter.TryLeaveFocus();
     }
 }
