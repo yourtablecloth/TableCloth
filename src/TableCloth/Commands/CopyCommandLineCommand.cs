@@ -21,12 +21,16 @@ public sealed class CopyCommandLineCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
-        if (parameter is not DetailPageViewModel viewModel)
+        var expression = string.Empty;
+
+        if (parameter is MainWindowViewModel viewModelV1)
+            expression = _commandLineComposer.ComposeCommandLineExpressionForV1(viewModelV1, true);
+        if (parameter is DetailPageViewModel viewModelV2)
+            expression = _commandLineComposer.ComposeCommandLineExpressionForV2(viewModelV2, true);
+        else
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
-        var expression = _commandLineComposer.ComposeCommandLineExpression(viewModel, true);
         Clipboard.SetText(expression);
-
         _appMessageBox.DisplayInfo(StringResources.Info_CopyCommandLineSuccess, MessageBoxButton.OK);
     }
 }
