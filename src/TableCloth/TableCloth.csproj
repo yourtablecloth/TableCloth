@@ -25,6 +25,9 @@
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 	</PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\SandboxIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="commit.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -54,6 +57,10 @@
 
   <ItemGroup>
     <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\SandboxIcon.png" />
   </ItemGroup>
 
   <ItemGroup>

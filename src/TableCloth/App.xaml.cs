@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Sentry;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
@@ -14,9 +12,10 @@ using TableCloth.Commands.DisclaimerWindow;
 using TableCloth.Commands.InputPasswordWindow;
 using TableCloth.Commands.MainWindow;
 using TableCloth.Commands.MainWindowV2;
+using TableCloth.Commands.SplashScreen;
 using TableCloth.Components;
-using TableCloth.Contracts;
 using TableCloth.Dialogs;
+using TableCloth.Events;
 using TableCloth.Pages;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
@@ -38,72 +37,37 @@ public partial class App : Application
 
     public IServiceProvider Services { get; }
 
+    private SplashScreen? _splashScreen;
+
     private void Application_Startup(object sender, StartupEventArgs e)
     {
-        using var _ = SentrySdk.Init(o =>
-        {
-            o.Dsn = StringResources.SentryDsn;
-            o.Debug = true;
-            o.TracesSampleRate = 1.0;
-        });
-
-        var startup = Services.GetRequiredService<AppStartup>()!;
-        var messageBox = Services.GetRequiredService<AppMessageBox>()!;
-        var commandLineParser = Services.GetRequiredService<CommandLineParser>();
-
-        var preferencesManager = Services.GetRequiredService<PreferencesManager>();
-        var preferences = preferencesManager.LoadPreferences();
-        var v2UIOptIn = preferences?.V2UIOptIn ?? true;
-
         Arguments = e.Args;
-        var warnings = new List<string>();
-        var parsedArg = default(ITableClothArgumentModel);
 
-        if (v2UIOptIn)
-            parsedArg = commandLineParser.ParseForV2(e.Args);
-        else
-            parsedArg = commandLineParser.ParseForV1(e.Args);
+        _splashScreen = Services.GetRequiredService<SplashScreen>();
+        _splashScreen.ViewModel.InitializeDone += ViewModel_InitializeDone;
+        _splashScreen.Show();
+    }
 
-        if (parsedArg.ShowCommandLineHelp)
-        {
-            messageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+    private void ViewModel_InitializeDone(object? sender, DialogRequestEventArgs e)
+    {
+        if (_splashScreen == null)
             return;
-        }
 
-        if (!startup.HasRequirementsMet(warnings, out Exception? failedReason, out bool isCritical))
+        _splashScreen.Hide();
+
+        if (e.DialogResult.HasValue && e.DialogResult.Value)
         {
-            messageBox.DisplayError(failedReason, isCritical);
+            var mainWindow = default(Window);
+            if (_splashScreen.ViewModel.V2UIOptedIn)
+                mainWindow = Services.GetRequiredService<MainWindowV2>();
+            else
+                mainWindow = Services.GetRequiredService<MainWindow>();
 
-            if (isCritical)
-            {
-                Environment.Exit(1);
-                return;
-            }
+            this.MainWindow = mainWindow;
+            mainWindow.Show();
         }
 
-        if (warnings.Any())
-            messageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, warnings), false);
-
-        if (!startup.Initialize(out failedReason, out isCritical))
-        {
-            messageBox.DisplayError(failedReason, isCritical);
-
-            if (isCritical)
-            {
-                Environment.Exit(2);
-                return;
-            }
-        }
-
-        var window = default(Window);
-
-        if (v2UIOptIn)
-            window = Services.GetRequiredService<MainWindowV2>();
-        else
-            window = Services.GetRequiredService<MainWindow>();
-
-        this.MainWindow = window;
-        window.Show();
+        _splashScreen.Close();
     }
 
     private IServiceProvider ConfigureServices()
@@ -247,6 +211,13 @@ public partial class App : Application
             .AddSingleton<DetailPageSearchTextLostFocusCommand>()
             .AddSingleton<DetailPageGoBackCommand>()
             .AddSingleton<DetailPageOpenHomepageLinkCommand>();
+
+        // Splash Screen
+        services.AddWindow<SplashScreen, SplashScreenViewModel>(
+            viewModelImplementationFactory: provider => new SplashScreenViewModel(
+                splashScreenLoadedCommand: provider.GetRequiredService<SplashScreenLoadedCommand>()
+            ))
+            .AddSingleton<SplashScreenLoadedCommand>();
 
         return services.BuildServiceProvider();
     }

@@ -6,6 +6,7 @@
         xmlns:vm="clr-namespace:TableCloth.ViewModels"
         xmlns:local="clr-namespace:TableCloth" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Style="{DynamicResource MainWindowStyle}"
         MinWidth="800" MinHeight="600"
         Title="{StaticResource MainWindowV2_Title}" Width="800" Height="600"

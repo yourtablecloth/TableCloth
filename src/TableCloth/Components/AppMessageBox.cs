@@ -18,7 +18,7 @@ public sealed class AppMessageBox
     /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
     public MessageBoxResult DisplayInfo(string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
     {
-        var dispatcher = App.Current?.Dispatcher;
+        var dispatcher = Application.Current.Dispatcher;
 
         if (dispatcher == null)
             dispatcher = Dispatcher.CurrentDispatcher;
@@ -28,7 +28,7 @@ public sealed class AppMessageBox
             {
                 // owner 파라미터를 null 참조로 지정하더라도 Windows Forms 처럼 parent-less 메시지 박스를 만들어주지는 않음.
                 // GH-121 fix
-                var owner = App.Current?.MainWindow;
+                var owner = Application.Current.MainWindow;
 
                 if (owner != null)
                 {
@@ -65,7 +65,7 @@ public sealed class AppMessageBox
     /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
     public MessageBoxResult DisplayError(string? message, bool isCritical)
     {
-        var dispatcher = App.Current?.Dispatcher;
+        var dispatcher = Application.Current.Dispatcher;
 
         if (dispatcher == null)
             dispatcher = Dispatcher.CurrentDispatcher;
@@ -76,7 +76,7 @@ public sealed class AppMessageBox
                 if (string.IsNullOrWhiteSpace(message))
                     message = StringResources.Error_Unknown();
 
-                var owner = App.Current?.MainWindow;
+                var owner = Application.Current.MainWindow;
                 var title = isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning;
                 var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 

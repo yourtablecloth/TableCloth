@@ -104,7 +104,7 @@ public sealed class MainWindowLoadedCommand : CommandBase
 
             if (parsedArg.ShowCommandLineHelp)
             {
-                _appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                _appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help_V1, MessageBoxButton.OK);
                 return;
             }
 

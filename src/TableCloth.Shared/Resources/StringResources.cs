@@ -462,7 +462,50 @@ namespace TableCloth.Resources
 
         internal static readonly string TableCloth_Switch_Help = TableCloth_Switch_Prefix + "help";
 
-        internal static readonly string TableCloth_TableCloth_Switches_Help = $@"ServiceID ServiceID ... <옵션>
+        internal static readonly string TableCloth_TableCloth_Switches_Help_V1 = $@"ServiceID ServiceID ... <옵션>
+
+ServiceID는 {CatalogUrl}을 확인해주세요.
+
+옵션:
+
+{TableCloth_Switch_EnableMicrophone}
+  오디오 입력 사용하기 기능을 켭니다.
+
+{TableCloth_Switch_EnableCamera}
+  비디오 입력 사용하기 기능을 켭니다.
+
+{TableCloth_Switch_EnablePrinter}
+  프린터 공유하기 기능을 켭니다.
+
+{Tablecloth_Switch_EnableCert}
+  인증서를 기능을 켭니다.
+
+{TableCloth_Switch_CertPublicKey} <파일 경로>
+  인증서 공개 키 파일 경로를 지정합니다.
+
+{TableCloth_Switch_CertPrivateKey} <파일 경로>
+  인증서 비밀 키 파일 경로를 지정합니다.
+
+{TableCloth_Switch_InstallEveryonesPrinter}
+  모두의 프린터 설치를 샌드박스 시작 후 실행합니다.
+
+{TableCloth_Switch_InstallAdobeReader}
+  Adobe Reader 설치를 샌드박스 시작 후 실행합니다.
+
+{TableCloth_Switch_InstallHancomOfficeViewer}
+  한컴오피스 뷰어 설치를 샌드박스 시작 후 실행합니다.
+
+{TableCloth_Switch_InstallRaiDrive}
+  RaiDrive 설치를 샌드박스 시작 후 실행합니다.
+
+{TableCloth_Switch_EnableIEMode}
+  Internet Explorer 모드를 활성화합니다.
+
+{TableCloth_Switch_Help}
+  이 도움말을 표시합니다.
+";
+
+        internal static readonly string TableCloth_TableCloth_Switches_Help_V2 = $@"ServiceID ServiceID ... <옵션>
 
 ServiceID는 {CatalogUrl}을 확인해주세요.
 

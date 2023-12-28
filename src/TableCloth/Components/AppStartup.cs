@@ -52,7 +52,7 @@ public sealed class AppStartup : IDisposable
     private readonly Mutex _mutex;
     private readonly bool _isFirstInstance;
 
-    public bool HasRequirementsMet(List<string> warnings, out Exception? failedReason, out bool isCritical)
+    public bool HasRequirementsMet(IList<string> warnings, out Exception? failedReason, out bool isCritical)
     {
         if (!File.Exists(_sharedLocations.HostessZipFilePath))
         {
