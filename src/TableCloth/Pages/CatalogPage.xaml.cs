@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Linq;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
 
@@ -18,6 +17,7 @@ public partial class CatalogPage : Page
     {
         InitializeComponent();
         DataContext = viewModel;
+        viewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
 
     public CatalogPageViewModel ViewModel
@@ -121,5 +121,11 @@ public partial class CatalogPage : Page
             SiteCatalog.ScrollIntoView(eachItem);
             break;
         }
+    }
+
+    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (string.Equals(nameof(CatalogPageViewModel.SearchKeyword), e.PropertyName, StringComparison.Ordinal))
+            CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
     }
 }

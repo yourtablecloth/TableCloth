@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Data;
 using TableCloth.Commands;
 using TableCloth.Commands.CatalogPage;
 using TableCloth.Components;
@@ -103,10 +102,6 @@ public class CatalogPageViewModel : ViewModelBase, IPageArgument
     public string SearchKeyword
     {
         get => _searchKeyword;
-        set
-        {
-            SetProperty(ref _searchKeyword, value);
-            CollectionViewSource.GetDefaultView(Services).Refresh();
-        }
+        set => SetProperty(ref _searchKeyword, value);
     }
 }
