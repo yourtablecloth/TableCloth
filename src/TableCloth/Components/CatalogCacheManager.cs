@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Models.Catalog;
+using TableCloth.Resources;
 
 namespace TableCloth.Components;
 
@@ -9,15 +12,15 @@ public sealed class CatalogCacheManager
         CatalogDeserializer catalogDeserializer)
     {
         _catalogDeserializer = catalogDeserializer;
-
-        _catalogDocumentFactory = new Lazy<CatalogDocument>(
-            () => _catalogDeserializer.DeserializeCatalog(),
-            false);
     }
 
     private readonly CatalogDeserializer _catalogDeserializer;
 
-    private Lazy<CatalogDocument> _catalogDocumentFactory;
+    private CatalogDocument? _catalogDocument;
 
-    public CatalogDocument CatalogDocument => _catalogDocumentFactory.Value;
+    public async Task<CatalogDocument> LoadCatalogDocumentAsync(CancellationToken cancellationToken = default)
+        => _catalogDocument = await _catalogDeserializer.DeserializeCatalogAsync(cancellationToken).ConfigureAwait(false);
+
+    public CatalogDocument CatalogDocument
+        => _catalogDocument ?? throw new InvalidOperationException(StringResources.HostessError_CatalogLoadFailure(null));
 }

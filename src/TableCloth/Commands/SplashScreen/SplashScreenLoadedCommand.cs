@@ -16,18 +16,21 @@ public sealed class SplashScreenLoadedCommand : CommandBase
         AppStartup appStartup,
         AppMessageBox appMessageBox,
         CommandLineParser commandLineParser,
-        PreferencesManager preferencesManager)
+        PreferencesManager preferencesManager,
+        CatalogCacheManager catalogCacheManager)
     {
         _appStartup = appStartup;
         _appMessageBox = appMessageBox;
         _commandLineParser = commandLineParser;
         _preferencesManager = preferencesManager;
+        _catalogCacheManager = catalogCacheManager;
     }
 
     private readonly AppStartup _appStartup;
     private readonly AppMessageBox _appMessageBox;
     private readonly CommandLineParser _commandLineParser;
     private readonly PreferencesManager _preferencesManager;
+    private readonly CatalogCacheManager _catalogCacheManager;
 
     public override async void Execute(object? parameter)
     {
@@ -36,8 +39,6 @@ public sealed class SplashScreenLoadedCommand : CommandBase
 
         try
         {
-            await Task.Delay(5000);
-
             using var _ = SentrySdk.Init(o =>
             {
                 o.Dsn = StringResources.SentryDsn;
@@ -79,6 +80,7 @@ public sealed class SplashScreenLoadedCommand : CommandBase
                     return;
             }
 
+            await _catalogCacheManager.LoadCatalogDocumentAsync();
             viewModel.AppStartupSucceed = true;
         }
         catch (Exception ex)
