@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TableCloth.Models;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
@@ -9,9 +10,12 @@ namespace TableCloth.Components;
 
 public sealed class CommandLineParser
 {
+    public CommandLineArgumentModel? ParseFromArgv()
+        => Parse(Helpers.GetCommandLineArguments());
+
     public CommandLineArgumentModel? Parse(string[] args)
     {
-        if (args == null || args.Length < 1)
+        if (args.Length < 1)
             return default;
 
         var selectedServiceIds = new List<string>();

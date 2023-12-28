@@ -48,11 +48,7 @@ public sealed class SplashScreenLoadedCommand : CommandBase
 
             var preferences = _preferencesManager.LoadPreferences();
             viewModel.V2UIOptedIn = preferences?.V2UIOptIn ?? true;
-
-            if (viewModel.V2UIOptedIn)
-                viewModel.ParsedArgument = _commandLineParser.Parse(viewModel.PassedArguments.ToArray());
-            else
-                viewModel.ParsedArgument = _commandLineParser.Parse(viewModel.PassedArguments.ToArray());
+            viewModel.ParsedArgument = _commandLineParser.ParseFromArgv();
 
             if (viewModel.ParsedArgument != null &&
                 viewModel.ParsedArgument.ShowCommandLineHelp)

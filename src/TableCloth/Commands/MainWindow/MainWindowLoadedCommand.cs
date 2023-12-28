@@ -137,8 +137,7 @@ public sealed class MainWindowLoadedCommand : CommandBase
             await _resourceResolver.LoadSiteImages(services, directoryPath).ConfigureAwait(false);
 
         // Command Line Parse
-        var args = App.Current.Arguments.ToArray();
-        var parsedArg = _commandLineParser.Parse(args);
+        var parsedArg = _commandLineParser.ParseFromArgv();
 
         if (parsedArg != null)
         {

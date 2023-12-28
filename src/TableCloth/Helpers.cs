@@ -7,6 +7,9 @@ namespace TableCloth;
 
 internal static class Helpers
 {
+    public static string[] GetCommandLineArguments()
+        => Environment.GetCommandLineArgs().Skip(1).ToArray();
+
     public static bool GetSandboxRunningState()
         => Process.GetProcesses().Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase)).Any();
 

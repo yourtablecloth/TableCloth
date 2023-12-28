@@ -24,9 +24,7 @@ public sealed class AppRestartManager
 
     public void RestartNow()
     {
-        Process.Start(
-            _sharedLocations.ExecutableFilePath,
-            App.Current.Arguments);
+        Process.Start(_sharedLocations.ExecutableFilePath, Helpers.GetCommandLineArguments());
         Application.Current.Shutdown();
     }
 }

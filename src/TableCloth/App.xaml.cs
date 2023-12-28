@@ -33,16 +33,12 @@ public partial class App : Application
 
     public new static App Current => (App)Application.Current;
 
-    public IEnumerable<string> Arguments { get; private set; } = new string[] { };
-
     public IServiceProvider Services { get; }
 
     private SplashScreen? _splashScreen;
 
     private void Application_Startup(object sender, StartupEventArgs e)
     {
-        Arguments = e.Args;
-
         _splashScreen = Services.GetRequiredService<SplashScreen>();
         _splashScreen.ViewModel.InitializeDone += ViewModel_InitializeDone;
         _splashScreen.Show();

@@ -42,7 +42,7 @@ public sealed class MainWindowV2LoadedCommand : CommandBase
         _navigationService.Initialize(pageFrame);
         _visualThemeManager.ApplyAutoThemeChange(mainWindow);
 
-        var parsedArg = _commandLineParser.Parse(App.Current.Arguments.ToArray());
+        var parsedArg = _commandLineParser.ParseFromArgv();
         var services = _catalogCacheManager.CatalogDocument.Services;
 
         var commandLineSelectedService = default(CatalogInternetService);
