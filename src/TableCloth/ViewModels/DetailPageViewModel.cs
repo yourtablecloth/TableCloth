@@ -23,7 +23,7 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
 
     public DetailPageViewModel(
         DetailPageLoadedCommand detailPageLoadedCommand,
-        DetailPageLostFocusCommand detailPageLostFocusCommand,
+        DetailPageSearchTextLostFocusCommand detailPageSearchTextLostFocusCommand,
         DetailPageGoBackCommand detailPageGoBackCommand,
         DetailPageOpenHomepageLinkCommand detailPageOpenHomepageLinkCommand,
         LaunchSandboxCommand launchSandboxCommand,
@@ -32,7 +32,7 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
         CertSelectCommand certSelectCommand)
     {
         _detailPageLoadedCommand = detailPageLoadedCommand;
-        _detailPageLostFocusCommand = detailPageLostFocusCommand;
+        _detailPageSearchTextLostFocusCommand = detailPageSearchTextLostFocusCommand;
         _detailPageGoBackCommand = detailPageGoBackCommand;
         _detailPageOpenHomepageLinkCommand = detailPageOpenHomepageLinkCommand;
         _launchSandboxCommand = launchSandboxCommand;
@@ -42,7 +42,7 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
     }
 
     private readonly DetailPageLoadedCommand _detailPageLoadedCommand;
-    private readonly DetailPageLostFocusCommand _detailPageLostFocusCommand;
+    private readonly DetailPageSearchTextLostFocusCommand _detailPageSearchTextLostFocusCommand;
     private readonly DetailPageGoBackCommand _detailPageGoBackCommand;
     private readonly DetailPageOpenHomepageLinkCommand _detailPageOpenHomepageLinkCommand;
     private readonly LaunchSandboxCommand _launchSandboxCommand;
@@ -75,8 +75,8 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
     public DetailPageLoadedCommand DetailPageLoadedCommand
         => _detailPageLoadedCommand;
 
-    public DetailPageLostFocusCommand DetailPageLostFocusCommand
-        => _detailPageLostFocusCommand;
+    public DetailPageSearchTextLostFocusCommand DetailPageSearchTextLostFocusCommand
+        => _detailPageSearchTextLostFocusCommand;
 
     public DetailPageGoBackCommand DetailPageGoBackCommand
         => _detailPageGoBackCommand;

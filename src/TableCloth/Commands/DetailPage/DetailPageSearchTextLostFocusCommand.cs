@@ -5,9 +5,9 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.DetailPage;
 
-public sealed class DetailPageLostFocusCommand : CommandBase
+public sealed class DetailPageSearchTextLostFocusCommand : CommandBase
 {
-    public DetailPageLostFocusCommand(
+    public DetailPageSearchTextLostFocusCommand(
         NavigationService navigationService)
     {
         _navigationService = navigationService;

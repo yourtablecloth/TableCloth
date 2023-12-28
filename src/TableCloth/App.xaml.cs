@@ -235,7 +235,7 @@ public partial class App : Application
         services.AddPage<DetailPage, DetailPageViewModel>(
             viewModelImplementationFactory: provider => new DetailPageViewModel(
                 detailPageLoadedCommand: provider.GetRequiredService<DetailPageLoadedCommand>(),
-                detailPageLostFocusCommand: provider.GetRequiredService<DetailPageLostFocusCommand>(),
+                detailPageSearchTextLostFocusCommand: provider.GetRequiredService<DetailPageSearchTextLostFocusCommand>(),
                 detailPageGoBackCommand: provider.GetRequiredService<DetailPageGoBackCommand>(),
                 detailPageOpenHomepageLinkCommand: provider.GetRequiredService<DetailPageOpenHomepageLinkCommand>(),
                 launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
@@ -244,7 +244,7 @@ public partial class App : Application
                 certSelectCommand: provider.GetRequiredService<CertSelectCommand>()
             ))
             .AddSingleton<DetailPageLoadedCommand>()
-            .AddSingleton<DetailPageLostFocusCommand>()
+            .AddSingleton<DetailPageSearchTextLostFocusCommand>()
             .AddSingleton<DetailPageGoBackCommand>()
             .AddSingleton<DetailPageOpenHomepageLinkCommand>();
 

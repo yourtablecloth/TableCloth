@@ -65,7 +65,7 @@
             <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding SearchKeyword}" Width="Auto" Margin="8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" PreviewKeyUp="SiteCatalogFilter_PreviewKeyUp">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="LostFocus">
-                        <i:InvokeCommandAction Command="{Binding DetailPageLostFocusCommand}">
+                        <i:InvokeCommandAction Command="{Binding DetailPageSearchTextLostFocusCommand}">
                             <i:InvokeCommandAction.CommandParameter>
                                 <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                             </i:InvokeCommandAction.CommandParameter>
