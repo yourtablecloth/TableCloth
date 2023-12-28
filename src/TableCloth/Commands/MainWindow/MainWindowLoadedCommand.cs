@@ -2,7 +2,9 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using TableCloth.Components;
+using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
@@ -91,6 +93,33 @@ public sealed class MainWindowLoadedCommand : CommandBase
 
         var services = viewModel.Services;
         var directoryPath = _sharedLocations.GetImageDirectoryPath();
+
+        var view = (CollectionView)CollectionViewSource.GetDefaultView(viewModel.Services);
+        view.Filter = (item) =>
+        {
+            var filterText = viewModel.FilterText;
+
+            if (string.IsNullOrWhiteSpace(filterText))
+                return true;
+
+            if (item is not CatalogInternetService actualItem)
+                return true;
+
+            var splittedFilterText = filterText.Split(new char[] { ',', }, StringSplitOptions.RemoveEmptyEntries);
+            var result = false;
+
+            foreach (var eachFilterText in splittedFilterText)
+            {
+                result |= actualItem.DisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.CategoryDisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.Url.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.Packages.Count.ToString().Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                    || actualItem.Packages.Any(x => x.Name.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase))
+                    || actualItem.Id.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return result;
+        };
 
         if (services != null)
             await _resourceResolver.LoadSiteImages(services, directoryPath).ConfigureAwait(false);
