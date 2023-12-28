@@ -3,7 +3,7 @@ using System.Diagnostics;
 using TableCloth.Components;
 using TableCloth.Resources;
 
-namespace TableCloth.Commands.AboutWindow;
+namespace TableCloth.Commands;
 
 public sealed class CheckUpdatedVersionCommand : CommandBase
 {
@@ -26,7 +26,7 @@ public sealed class CheckUpdatedVersionCommand : CommandBase
             var repo = "TableCloth";
             var thisVersion = GetType().Assembly.GetName().Version;
 
-            if (Version.TryParse(await _resourceResolver.GetLatestVersion(owner, repo), out Version? parsedVersion) &&
+            if (Version.TryParse(await _resourceResolver.GetLatestVersion(owner, repo), out var parsedVersion) &&
                 thisVersion != null && parsedVersion > thisVersion)
             {
                 _appMessageBox.DisplayInfo(StringResources.Info_UpdateRequired);

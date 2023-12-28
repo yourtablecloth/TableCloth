@@ -3,12 +3,12 @@
 public sealed class CertSelectWindowLoadedCommand : CommandBase
 {
     public CertSelectWindowLoadedCommand(
-        ScanCertPairCommand scanCertPairCommand)
+        CertSelectWindowScanCertPairCommand scanCertPairCommand)
     {
         _scanCertPairCommand = scanCertPairCommand;
     }
 
-    private readonly ScanCertPairCommand _scanCertPairCommand;
+    private readonly CertSelectWindowScanCertPairCommand _scanCertPairCommand;
 
     public override void Execute(object? parameter)
     {

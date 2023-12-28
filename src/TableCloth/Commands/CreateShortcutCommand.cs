@@ -17,9 +17,9 @@ public sealed class CreateShortcutCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
-        if (parameter is ITableClothViewModel viewModel)
-            _shortcutCreator.CreateShortcut(viewModel);
-        else
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));        
+        if (parameter is not ITableClothViewModel viewModel)
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
+
+        _shortcutCreator.CreateShortcut(viewModel);
     }
 }

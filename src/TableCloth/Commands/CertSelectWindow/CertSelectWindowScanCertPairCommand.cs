@@ -5,9 +5,9 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CertSelectWindow;
 
-public sealed class ScanCertPairCommand : CommandBase
+public sealed class CertSelectWindowScanCertPairCommand : CommandBase
 {
-    public ScanCertPairCommand(
+    public CertSelectWindowScanCertPairCommand(
         X509CertPairScanner certPairScanner)
     {
         _certPairScanner = certPairScanner;
@@ -28,6 +28,5 @@ public sealed class ScanCertPairCommand : CommandBase
 
         if (viewModel.CertPairs.Count == 1)
             viewModel.SelectedCertPair = viewModel.CertPairs.Single();
-
     }
 }

@@ -22,14 +22,12 @@ public sealed class CopyCommandLineCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
-        var expression = string.Empty;
-
-        if (parameter is ITableClothViewModel viewModel)
-            expression = _commandLineComposer.ComposeCommandLineExpression(viewModel, true);
-        else
+        if (parameter is not ITableClothViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
+        
+        var expression = _commandLineComposer.ComposeCommandLineExpression(viewModel, true);
         Clipboard.SetText(expression);
+
         _appMessageBox.DisplayInfo(StringResources.Info_CopyCommandLineSuccess, MessageBoxButton.OK);
     }
 }

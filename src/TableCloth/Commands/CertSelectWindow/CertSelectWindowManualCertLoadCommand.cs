@@ -10,9 +10,9 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CertSelectWindow;
 
-public sealed class ManualCertLoadCommand : CommandBase
+public sealed class CertSelectWindowManualCertLoadCommand : CommandBase
 {
-    public ManualCertLoadCommand(
+    public CertSelectWindowManualCertLoadCommand(
         AppUserInterface appUserInterface,
         X509CertPairScanner certPairScanner)
     {

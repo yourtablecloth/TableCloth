@@ -4,7 +4,7 @@ using System.IO;
 using TableCloth.Components;
 using TableCloth.Resources;
 
-namespace TableCloth.Commands.AboutWindow;
+namespace TableCloth.Commands;
 
 public sealed class ShowSystemInfoCommand : CommandBase
 {

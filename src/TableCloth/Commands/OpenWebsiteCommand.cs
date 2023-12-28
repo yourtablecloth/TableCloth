@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using TableCloth.Resources;
 
-namespace TableCloth.Commands.AboutWindow;
+namespace TableCloth.Commands;
 
 public sealed class OpenWebsiteCommand : CommandBase
 {

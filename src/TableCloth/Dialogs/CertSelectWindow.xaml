@@ -72,14 +72,14 @@
                     </Button.CommandParameter>
                 </Button>
                 -->
-                <Button x:Name="RefreshCertPairsButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_RefreshButtonText}" Command="{Binding ScanCertPairCommand}" Padding="5">
+                <Button x:Name="RefreshCertPairsButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{StaticResource CertSelectWindow_RefreshButtonText}" Command="{Binding CertSelectWindowScanCertPairCommand}" Padding="5">
                     <Button.CommandParameter>
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                     </Button.CommandParameter>
                 </Button>
             </Grid>
             <TextBlock Grid.Row="3" TextWrapping="Wrap" Text="{StaticResource CertSelectWindow_ManualInstructionLabelText}" />
-            <Button x:Name="OpenCertPairManuallyButton" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" Content="{StaticResource CertSelectWindow_OpenNpkiCertButton}" Margin="0 5 0 5" Padding="5" Command="{Binding ManualCertLoadCommand}">
+            <Button x:Name="OpenCertPairManuallyButton" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" Content="{StaticResource CertSelectWindow_OpenNpkiCertButton}" Margin="0 5 0 5" Padding="5" Command="{Binding CertSelectWindowManualCertLoadCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>

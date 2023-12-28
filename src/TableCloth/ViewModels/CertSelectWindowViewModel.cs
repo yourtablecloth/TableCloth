@@ -15,18 +15,18 @@ public class CertSelectWindowViewModel : ViewModelBase
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public CertSelectWindowViewModel(
-        ScanCertPairCommand scanCertPairCommand,
+        CertSelectWindowScanCertPairCommand certSelectWindowScanCertPairCommand,
         CertSelectWindowLoadedCommand certSelectWindowLoadedCommand,
-        ManualCertLoadCommand manualCertLoadCommand)
+        CertSelectWindowManualCertLoadCommand certSelectWindowManualCertLoadCommand)
     {
-        _scanCertPairCommand = scanCertPairCommand;
+        _certSelectWindowScanCertPairCommand = certSelectWindowScanCertPairCommand;
         _certSelectWindowLoadedCommand = certSelectWindowLoadedCommand;
-        _manualCertLoadCommand = manualCertLoadCommand;
+        _certSelectManualCertLoadCommand = certSelectWindowManualCertLoadCommand;
     }
 
-    private readonly ScanCertPairCommand _scanCertPairCommand;
+    private readonly CertSelectWindowScanCertPairCommand _certSelectWindowScanCertPairCommand;
     private readonly CertSelectWindowLoadedCommand _certSelectWindowLoadedCommand;
-    private readonly ManualCertLoadCommand _manualCertLoadCommand;
+    private readonly CertSelectWindowManualCertLoadCommand _certSelectManualCertLoadCommand;
 
     private List<X509CertPair> _certPairs = new List<X509CertPair>();
     private X509CertPair? _selectedCertPair;
@@ -37,14 +37,14 @@ public class CertSelectWindowViewModel : ViewModelBase
         => this.CloseRequested?.Invoke(sender, e);
 
 
-    public ScanCertPairCommand ScanCertPairCommand
-        => _scanCertPairCommand;
+    public CertSelectWindowScanCertPairCommand CertSelectWindowScanCertPairCommand
+        => _certSelectWindowScanCertPairCommand;
 
     public CertSelectWindowLoadedCommand CertSelectWindowLoadedCommand
         => _certSelectWindowLoadedCommand;
 
-    public ManualCertLoadCommand ManualCertLoadCommand
-        => _manualCertLoadCommand;
+    public CertSelectWindowManualCertLoadCommand CertSelectWindowManualCertLoadCommand
+        => _certSelectManualCertLoadCommand;
 
     public List<X509CertPair> CertPairs
     {

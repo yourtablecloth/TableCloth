@@ -187,13 +187,13 @@ public partial class App : Application
         services.AddWindow<CertSelectWindow, CertSelectWindowViewModel>(
             viewModelImplementationFactory: provider =>
                 new (
-                    scanCertPairCommand: provider.GetRequiredService<ScanCertPairCommand>(),
+                    certSelectWindowScanCertPairCommand: provider.GetRequiredService<CertSelectWindowScanCertPairCommand>(),
                     certSelectWindowLoadedCommand: provider.GetRequiredService<CertSelectWindowLoadedCommand>(),
-                    manualCertLoadCommand: provider.GetRequiredService<ManualCertLoadCommand>()
+                    certSelectWindowManualCertLoadCommand: provider.GetRequiredService<CertSelectWindowManualCertLoadCommand>()
                 ))
-            .AddSingleton<ScanCertPairCommand>()
+            .AddSingleton<CertSelectWindowScanCertPairCommand>()
             .AddSingleton<CertSelectWindowLoadedCommand>()
-            .AddSingleton<ManualCertLoadCommand>();
+            .AddSingleton<CertSelectWindowManualCertLoadCommand>();
 
         // Main Window
         services.AddWindow<MainWindow, MainWindowViewModel>(
