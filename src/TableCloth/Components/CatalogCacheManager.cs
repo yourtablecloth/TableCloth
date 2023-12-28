@@ -10,14 +10,14 @@ public sealed class CatalogCacheManager
     {
         _catalogDeserializer = catalogDeserializer;
 
-        _catalogDocumentFactory = new Lazy<CatalogDocument?>(
+        _catalogDocumentFactory = new Lazy<CatalogDocument>(
             () => _catalogDeserializer.DeserializeCatalog(),
             false);
     }
 
     private readonly CatalogDeserializer _catalogDeserializer;
 
-    private Lazy<CatalogDocument?> _catalogDocumentFactory;
+    private Lazy<CatalogDocument> _catalogDocumentFactory;
 
-    public CatalogDocument? CatalogDocument => _catalogDocumentFactory.Value;
+    public CatalogDocument CatalogDocument => _catalogDocumentFactory.Value;
 }

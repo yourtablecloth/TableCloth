@@ -18,41 +18,25 @@ public class CatalogPageViewModel : ViewModelBase, IPageArgument
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public CatalogPageViewModel(
-        CatalogCacheManager catalogCacheManager,
         CatalogPageLoadedCommand catalogPageLoadedCommand,
         CatalogPageItemSelectCommand catalogPageItemSelectCommand,
         AppRestartCommand appRestartCommand,
         AboutThisAppCommand aboutThisAppCommand)
     {
-        _catalogCacheManager = catalogCacheManager;
         _catalogPageLoadedCommand = catalogPageLoadedCommand;
         _catalogPageItemSelectCommand = catalogPageItemSelectCommand;
         _appRestartCommand = appRestartCommand;
         _aboutThisAppCommand = aboutThisAppCommand;
-
-        var catalogDoc = _catalogCacheManager.CatalogDocument;
-
-        if (catalogDoc != null)
-        {
-            CatalogDocument = catalogDoc;
-            Services = CatalogDocument.Services
-                .OrderBy(service => typeof(CatalogInternetServiceCategory).GetField(service.Category.ToString())
-                ?.GetCustomAttribute<EnumDisplayOrderAttribute>()
-                ?.Order ?? 0).ToList();
-        }
     }
 
-    private readonly CatalogCacheManager _catalogCacheManager;
     private readonly CatalogPageLoadedCommand _catalogPageLoadedCommand;
     private readonly CatalogPageItemSelectCommand _catalogPageItemSelectCommand;
     private readonly AppRestartCommand _appRestartCommand;
     private readonly AboutThisAppCommand _aboutThisAppCommand;
 
-    private CatalogDocument? _catalogDocument;
-    private List<CatalogInternetService> _services = new List<CatalogInternetService>();
     private CatalogInternetService? _selectedService;
-    private CatalogInternetServiceCategory? _selectedServiceCategory;
     private string _searchKeyword = string.Empty;
+    private IList<CatalogInternetService> _services = new List<CatalogInternetService>();
 
     public CatalogPageLoadedCommand CatalogPageLoadedCommand
         => _catalogPageLoadedCommand;
@@ -68,40 +52,27 @@ public class CatalogPageViewModel : ViewModelBase, IPageArgument
 
     public object? PageArgument { get; set; }
 
-    public CatalogDocument? CatalogDocument
-    {
-        get => _catalogDocument;
-        set => SetProperty(ref _catalogDocument, value);
-    }
-
-    public List<CatalogInternetService> Services
-    {
-        get => _services;
-        set => SetProperty(ref _services, value);
-    }
-
-    public bool HasServices
-        => Services != null && Services.Any();
-
     public CatalogInternetService? SelectedService
     {
         get => _selectedService;
-        set
-        {
-            if (SetProperty(ref _selectedService, value) && value != null)
-                SelectedServiceCategory = value.Category;
-        }
+        set => SetProperty(ref _selectedService, value, new string[] { nameof(SelectedService), nameof(SelectedServiceCategory), });
     }
 
     public CatalogInternetServiceCategory? SelectedServiceCategory
-    {
-        get => _selectedServiceCategory;
-        set => SetProperty(ref _selectedServiceCategory, value);
-    }
+        => _selectedService?.Category;
 
     public string SearchKeyword
     {
         get => _searchKeyword;
         set => SetProperty(ref _searchKeyword, value);
     }
+
+    public IList<CatalogInternetService> Services
+    {
+        get => _services;
+        set => SetProperty(ref _services, value, new string[] { nameof(Services), nameof(HasServices), });
+    }
+
+    public bool HasServices
+        => _services.Count > 0;
 }

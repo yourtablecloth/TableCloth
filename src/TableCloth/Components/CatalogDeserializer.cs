@@ -24,7 +24,7 @@ public sealed class CatalogDeserializer
 
     public DateTimeOffset? CatalogLastModified => _catalogLastModified;
 
-    public CatalogDocument? DeserializeCatalog()
+    public CatalogDocument DeserializeCatalog()
     {
         var httpClient = _httpClientFactory.CreateTableClothHttpClient();
         var uriBuilder = new UriBuilder(new Uri(StringResources.CatalogUrl, UriKind.Absolute));
@@ -49,6 +49,11 @@ public sealed class CatalogDeserializer
         };
 
         using var contentStream = XmlReader.Create(catalogStream, xmlReaderSetting);
-        return serializer.Deserialize(contentStream) as CatalogDocument;
+        var document = serializer.Deserialize(contentStream) as CatalogDocument;
+
+        if (document == null)
+            throw new Exception(StringResources.HostessError_CatalogLoadFailure(null));
+
+        return document;
     }
 }

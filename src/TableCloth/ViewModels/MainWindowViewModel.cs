@@ -19,7 +19,6 @@ public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public MainWindowViewModel(
-        CatalogDeserializer catalogDeserializer,
         MainWindowLoadedCommand mainWindowLoadedCommand,
         MainWindowClosedCommand mainWindowClosedCommand,
         LaunchSandboxCommand launchSandboxCommand,
@@ -28,7 +27,6 @@ public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
         AboutThisAppCommand aboutThisAppCommand,
         CertSelectCommand certSelectCommand)
     {
-        _catalogDeserializer = catalogDeserializer;
         _mainWindowLoadedCommand = mainWindowLoadedCommand;
         _mainWindowClosedCommand = mainWindowClosedCommand;
         _launchSandboxCommand = launchSandboxCommand;
@@ -36,27 +34,8 @@ public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
         _appRestartCommand = appRestartCommand;
         _aboutThisAppCommand = aboutThisAppCommand;
         _certSelectCommand = certSelectCommand;
-
-        try
-        {
-            var catalogDoc = _catalogDeserializer.DeserializeCatalog();
-
-            if (catalogDoc == null)
-                catalogDoc = new CatalogDocument();
-
-            CatalogDocument = catalogDoc;
-
-            Services = CatalogDocument.Services.ToList();
-        }
-        catch
-        {
-            // To Do: Write exception log here
-            CatalogDocument = new CatalogDocument();
-            Services = Array.Empty<CatalogInternetService>().ToList();
-        }
     }
 
-    private readonly CatalogDeserializer _catalogDeserializer;
     private readonly MainWindowLoadedCommand _mainWindowLoadedCommand;
     private readonly MainWindowClosedCommand _mainWindowClosedCommand;
     private readonly LaunchSandboxCommand _launchSandboxCommand;
@@ -78,10 +57,9 @@ public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
     private bool _installRaiDrive;
     private bool _enableInternetExplorerMode;
     private DateTime? _lastDisclaimerAgreedTime;
-    private CatalogDocument? _catalogDocument;
     private X509CertPair? _selectedCertFile;
-    private List<CatalogInternetService> _services = new();
-    private List<CatalogInternetService> _selectedServices = new();
+    private IList<CatalogInternetService> _services = new List<CatalogInternetService>();
+    private IList<CatalogInternetService> _selectedServices = new List<CatalogInternetService>();
 
     public MainWindowLoadedCommand MainWindowLoadedCommand
         => _mainWindowLoadedCommand;
@@ -197,65 +175,27 @@ public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
         }
     }
 
-    public CatalogDocument? CatalogDocument
-    {
-        get => _catalogDocument;
-        set => SetProperty(ref _catalogDocument, value);
-    }
-
     public X509CertPair? SelectedCertFile
     {
         get => _selectedCertFile;
         set => SetProperty(ref _selectedCertFile, value);
     }
 
-    public List<CatalogInternetService> Services
-    {
-        get => _services;
-        set => SetProperty(ref _services, value);
-    }
-
-    public List<CatalogInternetService> SelectedServices
+    public IList<CatalogInternetService> SelectedServices
     {
         get => _selectedServices;
         set => SetProperty(ref _selectedServices, value);
     }
 
-    public List<string> TemporaryDirectories { get; } = new List<string>();
-
-    public string? CurrentDirectory { get; set; }
-
-    public bool HasServices
-        => Services != null && Services.Any();
-
     IEnumerable<CatalogInternetService> ITableClothViewModel.SelectedServices
         => this.SelectedServices;
 
-
-    public TableClothConfiguration GetTableClothConfiguration()
+    public IList<CatalogInternetService> Services
     {
-        var selectedCert = this.SelectedCertFile;
-
-        if (!this.MapNpkiCert)
-            selectedCert = null;
-
-        var config = new TableClothConfiguration()
-        {
-            CertPair = selectedCert,
-            EnableMicrophone = this.EnableMicrophone,
-            EnableWebCam = this.EnableWebCam,
-            EnablePrinters = this.EnablePrinters,
-            InstallEveryonesPrinter = this.InstallEveryonesPrinter,
-            InstallAdobeReader = this.InstallAdobeReader,
-            InstallHancomOfficeViewer = this.InstallHancomOfficeViewer,
-            InstallRaiDrive = this.InstallRaiDrive,
-            EnableInternetExplorerMode = this.EnableInternetExplorerMode,
-            Services = this.SelectedServices,
-        };
-
-        if (this.CatalogDocument != null)
-            config.Companions = this.CatalogDocument.Companions;
-
-        return config;
+        get => _services;
+        set => SetProperty(ref _services, value, new string[] { nameof(Services), nameof(HasServices), });
     }
+
+    public bool HasServices
+        => _services.Count > 0;
 }

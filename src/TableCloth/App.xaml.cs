@@ -162,7 +162,6 @@ public partial class App : Application
         // Main Window
         services.AddWindow<MainWindow, MainWindowViewModel>(
             viewModelImplementationFactory: provider => new(
-                catalogDeserializer: provider.GetRequiredService<CatalogDeserializer>(),
                 mainWindowLoadedCommand: provider.GetRequiredService<MainWindowLoadedCommand>(),
                 mainWindowClosedCommand: provider.GetRequiredService<MainWindowClosedCommand>(),
                 launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
@@ -186,7 +185,6 @@ public partial class App : Application
         // Catalog Page
         services.AddPage<CatalogPage, CatalogPageViewModel>(
             viewModelImplementationFactory: provider => new CatalogPageViewModel(
-                catalogCacheManager: provider.GetRequiredService<CatalogCacheManager>(),
                 catalogPageLoadedCommand: provider.GetRequiredService<CatalogPageLoadedCommand>(),
                 catalogPageItemSelectCommand: provider.GetRequiredService<CatalogPageItemSelectCommand>(),
                 appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),

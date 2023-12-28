@@ -13,6 +13,7 @@ namespace TableCloth.Commands.MainWindow;
 public sealed class MainWindowLoadedCommand : CommandBase
 {
     public MainWindowLoadedCommand(
+        CatalogCacheManager catalogCacheManager,
         AppUserInterface appUserInterface,
         VisualThemeManager visualThemeManager,
         PreferencesManager preferencesManager,
@@ -24,6 +25,7 @@ public sealed class MainWindowLoadedCommand : CommandBase
         AppRestartManager appRestartManager,
         LaunchSandboxCommand launchSandboxCommand)
     {
+        _catalogCacheManager = catalogCacheManager;
         _appUserInterface = appUserInterface;
         _visualThemeManager = visualThemeManager;
         _preferencesManager = preferencesManager;
@@ -36,6 +38,7 @@ public sealed class MainWindowLoadedCommand : CommandBase
         _launchSandboxCommand = launchSandboxCommand;
     }
 
+    private readonly CatalogCacheManager _catalogCacheManager;
     private readonly AppUserInterface _appUserInterface;
     private readonly VisualThemeManager _visualThemeManager;
     private readonly PreferencesManager _preferencesManager;
@@ -91,35 +94,41 @@ public sealed class MainWindowLoadedCommand : CommandBase
                 viewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
         }
 
-        var services = viewModel.Services;
-        var directoryPath = _sharedLocations.GetImageDirectoryPath();
+        var doc = _catalogCacheManager.CatalogDocument;
+        var services = doc.Services;
+        viewModel.Services = services;
 
         var view = (CollectionView)CollectionViewSource.GetDefaultView(viewModel.Services);
-        view.Filter = (item) =>
+        if (view != null)
         {
-            var filterText = viewModel.FilterText;
-
-            if (string.IsNullOrWhiteSpace(filterText))
-                return true;
-
-            if (item is not CatalogInternetService actualItem)
-                return true;
-
-            var splittedFilterText = filterText.Split(new char[] { ',', }, StringSplitOptions.RemoveEmptyEntries);
-            var result = false;
-
-            foreach (var eachFilterText in splittedFilterText)
+            view.Filter = (item) =>
             {
-                result |= actualItem.DisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                    || actualItem.CategoryDisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                    || actualItem.Url.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                    || actualItem.Packages.Count.ToString().Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                    || actualItem.Packages.Any(x => x.Name.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase))
-                    || actualItem.Id.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase);
-            }
+                var filterText = viewModel.FilterText;
 
-            return result;
-        };
+                if (string.IsNullOrWhiteSpace(filterText))
+                    return true;
+
+                if (item is not CatalogInternetService actualItem)
+                    return true;
+
+                var splittedFilterText = filterText.Split(new char[] { ',', }, StringSplitOptions.RemoveEmptyEntries);
+                var result = false;
+
+                foreach (var eachFilterText in splittedFilterText)
+                {
+                    result |= actualItem.DisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                        || actualItem.CategoryDisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                        || actualItem.Url.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                        || actualItem.Packages.Count.ToString().Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
+                        || actualItem.Packages.Any(x => x.Name.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase))
+                        || actualItem.Id.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase);
+                }
+
+                return result;
+            };
+        }
+
+        var directoryPath = _sharedLocations.GetImageDirectoryPath();
 
         if (services != null)
             await _resourceResolver.LoadSiteImages(services, directoryPath).ConfigureAwait(false);
