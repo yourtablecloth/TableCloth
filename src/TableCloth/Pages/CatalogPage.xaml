@@ -11,9 +11,16 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="{StaticResource CatalogPage_Title}"
-      Loaded="Page_Loaded"
       d:DataContext="{d:DesignInstance Type=vm:CatalogPageViewModel, IsDesignTimeCreatable=True}">
-
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding CatalogPageLoadedCommand}">
+                <i:InvokeCommandAction.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                </i:InvokeCommandAction.CommandParameter>
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Page.Resources>
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">

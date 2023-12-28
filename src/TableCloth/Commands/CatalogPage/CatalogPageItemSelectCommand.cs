@@ -6,9 +6,9 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CatalogPage;
 
-public sealed class ItemSelectCommand : CommandBase
+public sealed class CatalogPageItemSelectCommand : CommandBase
 {
-    public ItemSelectCommand(
+    public CatalogPageItemSelectCommand(
         NavigationService navigationService)
     {
         _navigationService = navigationService;

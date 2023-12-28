@@ -223,11 +223,13 @@ public partial class App : Application
         services.AddPage<CatalogPage, CatalogPageViewModel>(
             viewModelImplementationFactory: provider => new CatalogPageViewModel(
                 catalogCacheManager: provider.GetRequiredService<CatalogCacheManager>(),
-                itemSelectCommand: provider.GetRequiredService<ItemSelectCommand>(),
+                catalogPageLoadedCommand: provider.GetRequiredService<CatalogPageLoadedCommand>(),
+                catalogPageItemSelectCommand: provider.GetRequiredService<CatalogPageItemSelectCommand>(),
                 appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),
                 aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>()
             ))
-            .AddSingleton<ItemSelectCommand>();
+            .AddSingleton<CatalogPageLoadedCommand>()
+            .AddSingleton<CatalogPageItemSelectCommand>();
 
         // Detail Page
         services.AddPage<DetailPage, DetailPageViewModel>(

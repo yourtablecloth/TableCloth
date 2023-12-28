@@ -5,12 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Navigation;
-using TableCloth.Contracts;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
-using Windows.UI.Input.Spatial;
 
 namespace TableCloth.Pages;
 
@@ -25,9 +22,6 @@ public partial class CatalogPage : Page
 
     public CatalogPageViewModel ViewModel
         => (CatalogPageViewModel)DataContext;
-
-    private static readonly PropertyGroupDescription GroupDescription =
-        new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
 
     // https://stackoverflow.com/questions/1077397/scroll-listviewitem-to-be-at-the-top-of-a-listview
     private DependencyObject? GetScrollViewer(DependencyObject o)
@@ -47,46 +41,6 @@ public partial class CatalogPage : Page
         }
 
         return null;
-    }
-
-    private void Page_Loaded(object sender, RoutedEventArgs e)
-    {
-        var view = (CollectionView)CollectionViewSource.GetDefaultView(ViewModel.Services);
-        view.Filter = SiteCatalog_Filter;
-
-        if (!view.GroupDescriptions.Contains(GroupDescription))
-            view.GroupDescriptions.Add(GroupDescription);
-
-        var extraArg = ViewModel.PageArgument as CatalogPageArgumentModel;
-        ViewModel.SearchKeyword = extraArg?.SearchKeyword ?? string.Empty;
-    }
-
-    private bool SiteCatalog_Filter(object item)
-    {
-        var actualItem = item as CatalogInternetService;
-
-        if (actualItem == null)
-            return false;
-
-        var filterText = ViewModel.SearchKeyword;
-
-        if (string.IsNullOrWhiteSpace(filterText))
-            return true;
-
-        var result = false;
-        var splittedFilterText = filterText.Split(new char[] { ',', }, StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (var eachFilterText in splittedFilterText)
-        {
-            result |= actualItem.DisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                || actualItem.CategoryDisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                || actualItem.Url.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                || actualItem.Packages.Count.ToString().Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                || actualItem.Packages.Any(x => x.Name.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase))
-                || actualItem.Id.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase);
-        }
-
-        return result;
     }
 
     // https://stackoverflow.com/questions/660554/how-to-automatically-select-all-text-on-focus-in-wpf-textbox

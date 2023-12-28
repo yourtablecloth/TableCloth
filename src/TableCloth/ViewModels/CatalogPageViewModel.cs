@@ -20,12 +20,14 @@ public class CatalogPageViewModel : ViewModelBase, IPageArgument
 
     public CatalogPageViewModel(
         CatalogCacheManager catalogCacheManager,
-        ItemSelectCommand itemSelectCommand,
+        CatalogPageLoadedCommand catalogPageLoadedCommand,
+        CatalogPageItemSelectCommand catalogPageItemSelectCommand,
         AppRestartCommand appRestartCommand,
         AboutThisAppCommand aboutThisAppCommand)
     {
         _catalogCacheManager = catalogCacheManager;
-        _itemSelectCommand = itemSelectCommand;
+        _catalogPageLoadedCommand = catalogPageLoadedCommand;
+        _catalogPageItemSelectCommand = catalogPageItemSelectCommand;
         _appRestartCommand = appRestartCommand;
         _aboutThisAppCommand = aboutThisAppCommand;
 
@@ -42,7 +44,8 @@ public class CatalogPageViewModel : ViewModelBase, IPageArgument
     }
 
     private readonly CatalogCacheManager _catalogCacheManager;
-    private readonly ItemSelectCommand _itemSelectCommand;
+    private readonly CatalogPageLoadedCommand _catalogPageLoadedCommand;
+    private readonly CatalogPageItemSelectCommand _catalogPageItemSelectCommand;
     private readonly AppRestartCommand _appRestartCommand;
     private readonly AboutThisAppCommand _aboutThisAppCommand;
 
@@ -52,8 +55,11 @@ public class CatalogPageViewModel : ViewModelBase, IPageArgument
     private CatalogInternetServiceCategory? _selectedServiceCategory;
     private string _searchKeyword = string.Empty;
 
-    public ItemSelectCommand ItemSelectCommand
-        => _itemSelectCommand;
+    public CatalogPageLoadedCommand CatalogPageLoadedCommand
+        => _catalogPageLoadedCommand;
+
+    public CatalogPageItemSelectCommand CatalogPageItemSelectCommand
+        => _catalogPageItemSelectCommand;
 
     public AppRestartCommand AppRestartCommand
         => _appRestartCommand;
