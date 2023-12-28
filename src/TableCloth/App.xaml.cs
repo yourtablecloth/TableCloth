@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
+using TableCloth.Commands.CatalogPage;
 using TableCloth.Commands.CertSelectWindow;
 using TableCloth.Commands.DetailPage;
 using TableCloth.Commands.DisclaimerWindow;
@@ -222,10 +223,11 @@ public partial class App : Application
         services.AddPage<CatalogPage, CatalogPageViewModel>(
             viewModelImplementationFactory: provider => new CatalogPageViewModel(
                 catalogCacheManager: provider.GetRequiredService<CatalogCacheManager>(),
-                navigationService: provider.GetRequiredService<NavigationService>(),
+                itemSelectCommand: provider.GetRequiredService<ItemSelectCommand>(),
                 appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),
                 aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>()
-            ));
+            ))
+            .AddSingleton<ItemSelectCommand>();
 
         // Detail Page
         services.AddPage<DetailPage, DetailPageViewModel>(

@@ -209,7 +209,14 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <ListView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" SelectedItem="{Binding Path='SelectedService'}" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" PreviewMouseDown="SiteCatalog_PreviewMouseDown" PreviewMouseDoubleClick="SiteCatalog_PreviewMouseDoubleClick">
+        <ListView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" SelectedItem="{Binding Path='SelectedService'}" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" PreviewMouseDown="SiteCatalog_PreviewMouseDown">
+            <ListView.InputBindings>
+                <KeyBinding Key="Return" Command="{Binding ItemSelectCommand}">
+                    <KeyBinding.CommandParameter>
+                        <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                    </KeyBinding.CommandParameter>
+                </KeyBinding>
+            </ListView.InputBindings>
             <ListView.Template>
                 <ControlTemplate>
                     <ScrollViewer CanContentScroll="False" IsDeferredScrollingEnabled="False" HorizontalScrollBarVisibility="Disabled">
@@ -225,6 +232,15 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Width="48" Height="96">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseLeftButtonDown">
+                                <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType=Page, Mode=FindAncestor}, Path=DataContext.ItemSelectCommand }">
+                                    <i:InvokeCommandAction.CommandParameter>
+                                        <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                                    </i:InvokeCommandAction.CommandParameter>
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="50*" />
                             <RowDefinition Height="2*" />

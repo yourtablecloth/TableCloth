@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Data;
 using TableCloth.Commands;
+using TableCloth.Commands.CatalogPage;
 using TableCloth.Components;
 using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
@@ -19,12 +20,12 @@ public class CatalogPageViewModel : ViewModelBase, IPageArgument
 
     public CatalogPageViewModel(
         CatalogCacheManager catalogCacheManager,
-        NavigationService navigationService,
+        ItemSelectCommand itemSelectCommand,
         AppRestartCommand appRestartCommand,
         AboutThisAppCommand aboutThisAppCommand)
     {
         _catalogCacheManager = catalogCacheManager;
-        _navigationService = navigationService;
+        _itemSelectCommand = itemSelectCommand;
         _appRestartCommand = appRestartCommand;
         _aboutThisAppCommand = aboutThisAppCommand;
 
@@ -41,7 +42,7 @@ public class CatalogPageViewModel : ViewModelBase, IPageArgument
     }
 
     private readonly CatalogCacheManager _catalogCacheManager;
-    private readonly NavigationService _navigationService;
+    private readonly ItemSelectCommand _itemSelectCommand;
     private readonly AppRestartCommand _appRestartCommand;
     private readonly AboutThisAppCommand _aboutThisAppCommand;
 
@@ -51,8 +52,8 @@ public class CatalogPageViewModel : ViewModelBase, IPageArgument
     private CatalogInternetServiceCategory? _selectedServiceCategory;
     private string _searchKeyword = string.Empty;
 
-    public NavigationService NavigationService
-        => _navigationService;
+    public ItemSelectCommand ItemSelectCommand
+        => _itemSelectCommand;
 
     public AppRestartCommand AppRestartCommand
         => _appRestartCommand;

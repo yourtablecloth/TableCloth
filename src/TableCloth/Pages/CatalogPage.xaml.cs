@@ -122,42 +122,24 @@ public partial class CatalogPage : Page
         siteCatalogFilter.LostMouseCapture += SiteCatalogFilter_LostMouseCapture;
     }
 
-    private void SiteCatalog_KeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.Key == Key.Enter || e.Key == Key.Return)
-        {
-            var data = SiteCatalog.SelectedItem as CatalogInternetService;
-
-            if (data != null)
-            {
-                ViewModel.NavigationService.NavigateToDetail(new DetailPageArgumentModel(new string[] { data.Id }, builtFromCommandLine: false)
-                {
-                    SearchKeyword = ViewModel.SearchKeyword,
-                });
-            }
-        }
-    }
-
     private void SiteCatalog_PreviewMouseDown(object sender, MouseButtonEventArgs e)
     {
         var r = VisualTreeHelper.HitTest(this, e.GetPosition(this));
 
-        if (r.VisualHit.GetType() != typeof(ListBoxItem))
-            SiteCatalog.UnselectAll();
-    }
-
-    private void SiteCatalog_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
-    {
-        var r = VisualTreeHelper.HitTest(this, e.GetPosition(this));
-        var data = (r.VisualHit as FrameworkElement)?.DataContext as CatalogInternetService;
-
-        if (data != null)
+        if (r.VisualHit is Image || r.VisualHit is TextBlock)
         {
-            ViewModel.NavigationService.NavigateToDetail(new DetailPageArgumentModel(new string[] { data.Id }, builtFromCommandLine: false)
+            var elem = (FrameworkElement)r.VisualHit;
+            var context = elem.DataContext as CatalogInternetService;
+            var hitTestServiceId = context?.Id;
+
+            if (string.IsNullOrWhiteSpace(hitTestServiceId) ||
+                !string.Equals(hitTestServiceId, ViewModel.SelectedService?.Id, StringComparison.Ordinal))
             {
-                SearchKeyword = ViewModel.SearchKeyword,
-            });
+                SiteCatalog.UnselectAll();
+            }
         }
+        else
+            SiteCatalog.UnselectAll();
     }
 
     private void CategoryRadioButton_Click(object sender, RoutedEventArgs e)
