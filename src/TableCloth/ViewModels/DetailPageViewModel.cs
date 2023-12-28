@@ -25,6 +25,7 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
         DetailPageLoadedCommand detailPageLoadedCommand,
         DetailPageLostFocusCommand detailPageLostFocusCommand,
         DetailPageGoBackCommand detailPageGoBackCommand,
+        DetailPageOpenHomepageLinkCommand detailPageOpenHomepageLinkCommand,
         LaunchSandboxCommand launchSandboxCommand,
         CreateShortcutCommand createShortcutCommand,
         CopyCommandLineCommand copyCommandLineCommand,
@@ -33,6 +34,7 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
         _detailPageLoadedCommand = detailPageLoadedCommand;
         _detailPageLostFocusCommand = detailPageLostFocusCommand;
         _detailPageGoBackCommand = detailPageGoBackCommand;
+        _detailPageOpenHomepageLinkCommand = detailPageOpenHomepageLinkCommand;
         _launchSandboxCommand = launchSandboxCommand;
         _createShortcutCommand = createShortcutCommand;
         _copyCommandLineCommand = copyCommandLineCommand;
@@ -42,6 +44,7 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
     private readonly DetailPageLoadedCommand _detailPageLoadedCommand;
     private readonly DetailPageLostFocusCommand _detailPageLostFocusCommand;
     private readonly DetailPageGoBackCommand _detailPageGoBackCommand;
+    private readonly DetailPageOpenHomepageLinkCommand _detailPageOpenHomepageLinkCommand;
     private readonly LaunchSandboxCommand _launchSandboxCommand;
     private readonly CreateShortcutCommand _createShortcutCommand;
     private readonly CopyCommandLineCommand _copyCommandLineCommand;
@@ -77,6 +80,9 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
 
     public DetailPageGoBackCommand DetailPageGoBackCommand
         => _detailPageGoBackCommand;
+
+    public DetailPageOpenHomepageLinkCommand DetailPageOpenHomepageLinkCommand
+        => _detailPageOpenHomepageLinkCommand;
 
     public LaunchSandboxCommand LaunchSandboxCommand
         => _launchSandboxCommand;

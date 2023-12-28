@@ -235,6 +235,7 @@ public partial class App : Application
                 detailPageLoadedCommand: provider.GetRequiredService<DetailPageLoadedCommand>(),
                 detailPageLostFocusCommand: provider.GetRequiredService<DetailPageLostFocusCommand>(),
                 detailPageGoBackCommand: provider.GetRequiredService<DetailPageGoBackCommand>(),
+                detailPageOpenHomepageLinkCommand: provider.GetRequiredService<DetailPageOpenHomepageLinkCommand>(),
                 launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
                 createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
                 copyCommandLineCommand: provider.GetRequiredService<CopyCommandLineCommand>(),
@@ -242,7 +243,8 @@ public partial class App : Application
             ))
             .AddSingleton<DetailPageLoadedCommand>()
             .AddSingleton<DetailPageLostFocusCommand>()
-            .AddSingleton<DetailPageGoBackCommand>();
+            .AddSingleton<DetailPageGoBackCommand>()
+            .AddSingleton<DetailPageOpenHomepageLinkCommand>();
 
         return services.BuildServiceProvider();
     }

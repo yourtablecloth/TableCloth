@@ -34,21 +34,6 @@ public partial class DetailPage : Page
     public DetailPageViewModel ViewModel
         => (DetailPageViewModel)DataContext;
 
-    private void Hyperlink_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is not Hyperlink link)
-            return;
-
-        if (!Uri.TryCreate(link.Tag?.ToString(), UriKind.Absolute, out Uri? uri) ||
-            uri == null)
-            return;
-
-        Process.Start(new ProcessStartInfo(uri.ToString())
-        {
-            UseShellExecute = true,
-        });
-    }
-
     // https://stackoverflow.com/questions/660554/how-to-automatically-select-all-text-on-focus-in-wpf-textbox
     private void SiteCatalogFilter_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
     {
