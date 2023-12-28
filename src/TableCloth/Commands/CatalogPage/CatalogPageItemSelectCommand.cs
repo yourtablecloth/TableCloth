@@ -1,7 +1,6 @@
 ﻿using System;
 using TableCloth.Components;
 using TableCloth.Models;
-using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CatalogPage;
@@ -18,23 +17,11 @@ public sealed class CatalogPageItemSelectCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
-        var selectedServiceId = default(string);
-        var searchKeyword = string.Empty;
+        if (parameter is not CatalogPageViewModel viewModel)
+            throw new ArgumentException(nameof(viewModel));
 
-        switch (parameter)
-        {
-            case CatalogPageViewModel viewModel:
-                selectedServiceId = viewModel.SelectedService?.Id;
-                searchKeyword = viewModel.SearchKeyword;
-                break;
-
-            case CatalogInternetService service:
-                selectedServiceId = service.Id;
-                break;
-
-            default:
-                throw new ArgumentException(nameof(parameter));
-        }
+        var selectedServiceId = viewModel.SelectedService?.Id;
+        var searchKeyword = viewModel.SearchKeyword;
 
         if (string.IsNullOrWhiteSpace(selectedServiceId))
             return;
