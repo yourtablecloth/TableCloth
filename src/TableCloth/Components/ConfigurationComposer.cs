@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using TableCloth.Contracts;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
+using TableCloth.ViewModels;
 
 namespace TableCloth.Components;
 
@@ -40,7 +41,7 @@ public sealed class ConfigurationComposer
         };
     }
 
-    public TableClothConfiguration GetConfigurationFromArgumentModel(ITableClothArgumentModel argumentModel)
+    public TableClothConfiguration GetConfigurationFromArgumentModel(CommandLineArgumentModel argumentModel)
     {
         var certPublicKeyData = new byte[] { };
         var certPrivateKeyData = new byte[] { };

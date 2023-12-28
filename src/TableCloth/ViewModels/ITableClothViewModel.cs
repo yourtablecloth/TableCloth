@@ -2,7 +2,7 @@
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
-namespace TableCloth.Contracts;
+namespace TableCloth.ViewModels;
 
 public interface ITableClothViewModel
 {

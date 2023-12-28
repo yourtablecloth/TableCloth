@@ -20,15 +20,9 @@ public sealed class CatalogPageItemSelectCommand : CommandBase
         if (parameter is not CatalogPageViewModel viewModel)
             throw new ArgumentException(nameof(viewModel));
 
-        var selectedServiceId = viewModel.SelectedService?.Id;
-        var searchKeyword = viewModel.SearchKeyword;
-
-        if (string.IsNullOrWhiteSpace(selectedServiceId))
+        if (viewModel.SelectedService == null)
             return;
 
-        _navigationService.NavigateToDetail(new DetailPageArgumentModel(new string[] { selectedServiceId }, builtFromCommandLine: false)
-        {
-            SearchKeyword = searchKeyword,
-        });
+        _navigationService.NavigateToDetail(viewModel.SelectedService, null);
     }
 }

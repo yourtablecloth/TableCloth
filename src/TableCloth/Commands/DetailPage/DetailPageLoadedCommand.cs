@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media.Imaging;
 using TableCloth.Components;
 using TableCloth.Models;
@@ -22,7 +18,8 @@ public sealed class DetailPageLoadedCommand : CommandBase
         AppRestartManager appRestartManager,
         AppUserInterface appUserInterface,
         SharedLocations sharedLocations,
-        LaunchSandboxCommand launchSandboxCommand)
+        ConfigurationComposer configurationComposer,
+        SandboxLauncher sandboxLauncher)
     {
         _catalogCacheManager = catalogCacheManager;
         _preferencesManager = preferencesManager;
@@ -30,7 +27,8 @@ public sealed class DetailPageLoadedCommand : CommandBase
         _appRestartManager = appRestartManager;
         _appUserInterface = appUserInterface;
         _sharedLocations = sharedLocations;
-        _launchSandboxCommand = launchSandboxCommand;
+        _configurationComposer = configurationComposer;
+        _sandboxLauncher = sandboxLauncher;
     }
 
     private readonly CatalogCacheManager _catalogCacheManager;
@@ -39,7 +37,8 @@ public sealed class DetailPageLoadedCommand : CommandBase
     private readonly AppRestartManager _appRestartManager;
     private readonly AppUserInterface _appUserInterface;
     private readonly SharedLocations _sharedLocations;
-    private readonly LaunchSandboxCommand _launchSandboxCommand;
+    private readonly ConfigurationComposer _configurationComposer;
+    private readonly SandboxLauncher _sandboxLauncher;
 
     public override void Execute(object? parameter)
     {
@@ -47,8 +46,7 @@ public sealed class DetailPageLoadedCommand : CommandBase
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
         var services = _catalogCacheManager.CatalogDocument?.Services;
-        var extraArg = viewModel.PageArgument as DetailPageArgumentModel;
-        var selectedServiceId = extraArg?.SelectedServices?.FirstOrDefault();
+        var selectedServiceId = viewModel.SelectedService?.Id;
         var selectedService = services?.Where(x => string.Equals(x.Id, selectedServiceId, StringComparison.Ordinal)).FirstOrDefault();
         viewModel.SelectedService = selectedService;
 
@@ -93,13 +91,13 @@ public sealed class DetailPageLoadedCommand : CommandBase
                 viewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
         }
 
-        if (extraArg != null)
+        if (viewModel.CommandLineArgumentModel != null &&
+            viewModel.CommandLineArgumentModel.SelectedServices.Count() > 0)
         {
-            if (extraArg.BuiltFromCommandLine && extraArg.SelectedServices.Count() > 0)
-                viewModel.LaunchSandboxCommand.Execute(extraArg);
+            var config = _configurationComposer.GetConfigurationFromArgumentModel(viewModel.CommandLineArgumentModel);
+            _sandboxLauncher.RunSandbox(config);
         }
     }
-
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {

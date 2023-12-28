@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using TableCloth.Components;
-using TableCloth.Contracts;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 

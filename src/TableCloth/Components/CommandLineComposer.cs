@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TableCloth.Contracts;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 

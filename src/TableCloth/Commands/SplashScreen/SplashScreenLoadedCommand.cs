@@ -48,22 +48,15 @@ public sealed class SplashScreenLoadedCommand : CommandBase
             var preferences = _preferencesManager.LoadPreferences();
             viewModel.V2UIOptedIn = preferences?.V2UIOptIn ?? true;
 
-            var helpMessage = default(string);
-
             if (viewModel.V2UIOptedIn)
-            {
-                viewModel.ParsedArgument = _commandLineParser.ParseForV2(viewModel.PassedArguments.ToArray());
-                helpMessage = StringResources.TableCloth_TableCloth_Switches_Help_V2;
-            }
+                viewModel.ParsedArgument = _commandLineParser.Parse(viewModel.PassedArguments.ToArray());
             else
-            {
-                viewModel.ParsedArgument = _commandLineParser.ParseForV1(viewModel.PassedArguments.ToArray());
-                helpMessage = StringResources.TableCloth_TableCloth_Switches_Help_V1;
-            }
+                viewModel.ParsedArgument = _commandLineParser.Parse(viewModel.PassedArguments.ToArray());
 
-            if (viewModel.ParsedArgument.ShowCommandLineHelp)
+            if (viewModel.ParsedArgument != null &&
+                viewModel.ParsedArgument.ShowCommandLineHelp)
             {
-                _appMessageBox.DisplayInfo(helpMessage, MessageBoxButton.OK);
+                _appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
                 return;
             }
 

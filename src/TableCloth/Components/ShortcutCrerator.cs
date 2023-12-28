@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using TableCloth.Contracts;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 

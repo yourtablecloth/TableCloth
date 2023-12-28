@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using TableCloth.Commands;
 using TableCloth.Commands.DetailPage;
-using TableCloth.Components;
-using TableCloth.Contracts;
-using TableCloth.Events;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels;
 
-public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableClothViewModel
+public sealed class DetailPageViewModel : ViewModelBase, ITableClothViewModel
 {
     [Obsolete("This constructor should be used only in design time context.")]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -41,6 +37,11 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
         _certSelectCommand = certSelectCommand;
     }
 
+    public event EventHandler? CloseRequested;
+
+    public void RequestClose(object sender, EventArgs e)
+        => CloseRequested?.Invoke(sender, e);
+
     private readonly DetailPageLoadedCommand _detailPageLoadedCommand;
     private readonly DetailPageSearchTextLostFocusCommand _detailPageSearchTextLostFocusCommand;
     private readonly DetailPageGoBackCommand _detailPageGoBackCommand;
@@ -49,28 +50,6 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
     private readonly CreateShortcutCommand _createShortcutCommand;
     private readonly CopyCommandLineCommand _copyCommandLineCommand;
     private readonly CertSelectCommand _certSelectCommand;
-
-    public event EventHandler? CloseRequested;
-
-    public void RequestClose(object sender, EventArgs e)
-        => CloseRequested?.Invoke(sender, e);
-
-    private CatalogInternetService? _selectedService;
-    private ImageSource? _serviceLogo;
-    private bool _mapNpkiCert;
-    private bool _enableLogAutoCollecting;
-    private bool _v2UIOptIn;
-    private bool _enableMicrophone;
-    private bool _enableWebCam;
-    private bool _enablePrinters;
-    private bool _installEveryonesPrinter;
-    private bool _installAdobeReader;
-    private bool _installHancomOfficeViewer;
-    private bool _installRaiDrive;
-    private bool _enableInternetExplorerMode;
-    private DateTime? _lastDisclaimerAgreedTime;
-    private X509CertPair? _selectedCertFile;
-    private string _searchKeyword = string.Empty;
 
     public DetailPageLoadedCommand DetailPageLoadedCommand
         => _detailPageLoadedCommand;
@@ -96,7 +75,21 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
     public CertSelectCommand CertSelectCommand
         => _certSelectCommand;
 
-    public object? PageArgument { get; set; }
+    private CatalogInternetService? _selectedService;
+
+    public CatalogInternetService? SelectedService
+    {
+        get => _selectedService;
+        set => SetProperty(ref _selectedService, value, new string[] {
+            nameof(SelectedService),
+            nameof(Id),
+            nameof(DisplayName),
+            nameof(Url),
+            nameof(CompatibilityNotes),
+            nameof(PackageCountForDisplay),
+            nameof(ServiceLogo),
+        });
+    }
 
     public string? Id
         => _selectedService?.Id;
@@ -113,24 +106,33 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
     public int? PackageCountForDisplay
         => _selectedService?.PackageCountForDisplay;
 
+    private CommandLineArgumentModel? _commandLineArgumentModel;
+    private ImageSource? _serviceLogo;
+    private bool _mapNpkiCert;
+    private bool _enableLogAutoCollecting;
+    private bool _v2UIOptIn;
+    private bool _enableMicrophone;
+    private bool _enableWebCam;
+    private bool _enablePrinters;
+    private bool _installEveryonesPrinter;
+    private bool _installAdobeReader;
+    private bool _installHancomOfficeViewer;
+    private bool _installRaiDrive;
+    private bool _enableInternetExplorerMode;
+    private DateTime? _lastDisclaimerAgreedTime;
+    private X509CertPair? _selectedCertFile;
+    private string _searchKeyword = string.Empty;
+
+    public CommandLineArgumentModel? CommandLineArgumentModel
+    {
+        get => _commandLineArgumentModel;
+        set => SetProperty(ref _commandLineArgumentModel, value);
+    }
+
     public ImageSource? ServiceLogo
     {
         get => _serviceLogo;
         set => SetProperty(ref _serviceLogo, value);
-    }
-
-    public CatalogInternetService? SelectedService
-    {
-        get => _selectedService;
-        set => SetProperty(ref _selectedService, value, new string[] {
-            nameof(SelectedService),
-            nameof(Id),
-            nameof(DisplayName),
-            nameof(Url),
-            nameof(CompatibilityNotes),
-            nameof(PackageCountForDisplay),
-            nameof(ServiceLogo),
-        });
     }
 
     public bool MapNpkiCert
@@ -232,32 +234,5 @@ public sealed class DetailPageViewModel : ViewModelBase, IPageArgument, ITableCl
     {
         get => _searchKeyword;
         set => SetProperty(ref _searchKeyword, value);
-    }
-
-    public TableClothConfiguration GetTableClothConfiguration()
-    {
-        var selectedCert = this.SelectedCertFile;
-
-        if (!this.MapNpkiCert)
-            selectedCert = null;
-
-        var config = new TableClothConfiguration()
-        {
-            CertPair = selectedCert,
-            EnableMicrophone = this.EnableMicrophone,
-            EnableWebCam = this.EnableWebCam,
-            EnablePrinters = this.EnablePrinters,
-            InstallEveryonesPrinter = this.InstallEveryonesPrinter,
-            InstallAdobeReader = this.InstallAdobeReader,
-            InstallHancomOfficeViewer = this.InstallHancomOfficeViewer,
-            InstallRaiDrive = this.InstallRaiDrive,
-            EnableInternetExplorerMode = this.EnableInternetExplorerMode,
-            Companions = new CatalogCompanion[] { }, /*ViewModel.CatalogDocument.Companions*/
-        };
-
-        if (this.SelectedService != null)
-            config.Services = new[] { this.SelectedService };
-
-        return config;
     }
 }

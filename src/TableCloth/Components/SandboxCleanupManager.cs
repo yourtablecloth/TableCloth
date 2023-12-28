@@ -7,14 +7,6 @@ namespace TableCloth.Components;
 
 public sealed class SandboxCleanupManager
 {
-    public SandboxCleanupManager(
-        SandboxLauncher sandboxLauncher)
-    {
-        _sandboxLauncher = sandboxLauncher;
-    }
-
-    private readonly SandboxLauncher _sandboxLauncher;
-
     private readonly List<string> _temporaryDirectories = new List<string>();
 
     public string? CurrentDirectory { get; private set; }
@@ -32,21 +24,6 @@ public sealed class SandboxCleanupManager
             _temporaryDirectories.Add(CurrentDirectory);
     }
 
-    private void OpenExplorer(string targetDirectoryPath)
-    {
-        if (!Directory.Exists(targetDirectoryPath))
-            return;
-
-        var psi = new ProcessStartInfo(
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"),
-            targetDirectoryPath)
-        {
-            UseShellExecute = false,
-        };
-
-        Process.Start(psi);
-    }
-
     public void TryCleanup()
     {
         foreach (var eachDirectory in _temporaryDirectories)
@@ -55,9 +32,9 @@ public sealed class SandboxCleanupManager
             {
                 if (string.Equals(Path.GetFullPath(eachDirectory), Path.GetFullPath(CurrentDirectory), StringComparison.OrdinalIgnoreCase))
                 {
-                    if (_sandboxLauncher.IsSandboxRunning())
+                    if (Helpers.GetSandboxRunningState())
                     {
-                        OpenExplorer(eachDirectory);
+                        Helpers.OpenExplorer(eachDirectory);
                         continue;
                     }
                 }
@@ -67,7 +44,7 @@ public sealed class SandboxCleanupManager
                 continue;
 
             try { Directory.Delete(eachDirectory, true); }
-            catch { OpenExplorer(eachDirectory); }
+            catch { Helpers.OpenExplorer(eachDirectory); }
         }
     }
 }

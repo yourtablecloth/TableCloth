@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using TableCloth.Components;
 using TableCloth.Models;
+using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
 using NavigationService = TableCloth.Components.NavigationService;
 
@@ -12,15 +13,18 @@ namespace TableCloth.Commands.MainWindowV2;
 public sealed class MainWindowV2LoadedCommand : CommandBase
 {
     public MainWindowV2LoadedCommand(
+        CatalogCacheManager catalogCacheManager,
         NavigationService navigationService,
         VisualThemeManager visualThemeManager,
         CommandLineParser commandLineParser)
     {
+        _catalogCacheManager = catalogCacheManager;
         _navigationService = navigationService;
         _visualThemeManager = visualThemeManager;
         _commandLineParser = commandLineParser;
     }
 
+    private readonly CatalogCacheManager _catalogCacheManager;
     private readonly NavigationService _navigationService;
     private readonly VisualThemeManager _visualThemeManager;
     private readonly CommandLineParser _commandLineParser;
@@ -38,19 +42,20 @@ public sealed class MainWindowV2LoadedCommand : CommandBase
         _navigationService.Initialize(pageFrame);
         _visualThemeManager.ApplyAutoThemeChange(mainWindow);
 
-        var args = App.Current.Arguments.ToArray();
-        var hasArgs = args.Count() > 0;
+        var parsedArg = _commandLineParser.Parse(App.Current.Arguments.ToArray());
+        var services = _catalogCacheManager.CatalogDocument.Services;
 
-        if (hasArgs)
+        var commandLineSelectedService = default(CatalogInternetService);
+        if (parsedArg != null && parsedArg.SelectedServices.Count() > 0)
         {
-            var parsedArg = _commandLineParser.ParseForV2(args);
-
-            if (parsedArg.SelectedServices.Count() < 1)
-                return;
-
-            _navigationService.NavigateToDetail(parsedArg);
+            commandLineSelectedService = services
+                .Where(x => parsedArg.SelectedServices.Contains(x.Id))
+                .FirstOrDefault();
         }
+
+        if (commandLineSelectedService != null)
+            _navigationService.NavigateToDetail(commandLineSelectedService, parsedArg);
         else
-            _navigationService.NavigateToCatalog(new CatalogPageArgumentModel() { SearchKeyword = string.Empty, });
+            _navigationService.NavigateToCatalog(string.Empty);
     }
 }

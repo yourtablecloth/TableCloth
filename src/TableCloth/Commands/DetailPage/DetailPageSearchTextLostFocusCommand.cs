@@ -20,9 +20,6 @@ public sealed class DetailPageSearchTextLostFocusCommand : CommandBase
         if (parameter is not DetailPageViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
-        _navigationService.NavigateToCatalog(new CatalogPageArgumentModel()
-        {
-            SearchKeyword = viewModel.SearchKeyword,
-        });
+        _navigationService.NavigateToCatalog(viewModel.SearchKeyword);
     }
 }

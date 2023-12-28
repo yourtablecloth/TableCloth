@@ -1,17 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using TableCloth.Contracts;
-using TableCloth.Models.Catalog;
-using TableCloth.Models.Configuration;
 
 namespace TableCloth.Models;
 
-public sealed class DetailPageArgumentModel : ITableClothArgumentModel
+public sealed class CommandLineArgumentModel
 {
-    public DetailPageArgumentModel(
+    public CommandLineArgumentModel(
         string[]? selectedServices = default,
-        bool builtFromCommandLine = default,
         bool? enableMicrophone = default,
         bool? enableWebCam = default,
         bool? enablePrinters = default,
@@ -36,10 +31,7 @@ public sealed class DetailPageArgumentModel : ITableClothArgumentModel
         InstallRaiDrive = installRaiDrive;
         EnableInternetExplorerMode = enableInternetExplorerMode;
         ShowCommandLineHelp = showCommandLineHelp;
-        BuiltFromCommandLine = builtFromCommandLine;
     }
-
-    public bool BuiltFromCommandLine { get; private set; } = false;
 
     public bool? EnableMicrophone { get; private set; }
 
@@ -64,6 +56,4 @@ public sealed class DetailPageArgumentModel : ITableClothArgumentModel
     public bool ShowCommandLineHelp { get; private set; }
 
     public IEnumerable<string> SelectedServices { get; private set; } = new List<string>();
-
-    public string SearchKeyword { get; set; } = string.Empty;
 }

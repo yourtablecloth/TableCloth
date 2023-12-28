@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using TableCloth.Commands.SplashScreen;
-using TableCloth.Contracts;
 using TableCloth.Events;
+using TableCloth.Models;
 
 namespace TableCloth.ViewModels;
 
@@ -32,7 +32,7 @@ public sealed class SplashScreenViewModel : ViewModelBase
     private bool _appStartupSucceed = false;
     private bool _v2UIOptedIn = true;
     private IList<string> _passedArguments = new string[] { };
-    private ITableClothArgumentModel? _parsedArgument;
+    private CommandLineArgumentModel? _parsedArgument;
     private IList<string> _warnings = new List<string>();
 
     public bool AppStartupSucceed
@@ -53,7 +53,7 @@ public sealed class SplashScreenViewModel : ViewModelBase
         set => SetProperty(ref _passedArguments, value);
     }
 
-    public ITableClothArgumentModel? ParsedArgument
+    public CommandLineArgumentModel? ParsedArgument
     {
         get => _parsedArgument;
         set => SetProperty(ref _parsedArgument, value);

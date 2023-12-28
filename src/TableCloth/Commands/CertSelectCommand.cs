@@ -1,6 +1,6 @@
 ﻿using System;
 using TableCloth.Components;
-using TableCloth.Contracts;
+using TableCloth.ViewModels;
 
 namespace TableCloth.Commands;
 

@@ -79,8 +79,5 @@ public sealed class CatalogPageLoadedCommand : CommandBase
             if (!view.GroupDescriptions.Contains(GroupDescription))
                 view.GroupDescriptions.Add(GroupDescription);
         }
-
-        var extraArg = viewModel.PageArgument as CatalogPageArgumentModel;
-        viewModel.SearchKeyword = extraArg?.SearchKeyword ?? string.Empty;
     }
 }

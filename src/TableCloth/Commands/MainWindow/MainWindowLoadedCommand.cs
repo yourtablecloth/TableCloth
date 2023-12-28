@@ -23,7 +23,8 @@ public sealed class MainWindowLoadedCommand : CommandBase
         CommandLineParser commandLineParser,
         AppMessageBox appMessageBox,
         AppRestartManager appRestartManager,
-        LaunchSandboxCommand launchSandboxCommand)
+        ConfigurationComposer configurationComposer,
+        SandboxLauncher sandboxLauncher)
     {
         _catalogCacheManager = catalogCacheManager;
         _appUserInterface = appUserInterface;
@@ -35,7 +36,8 @@ public sealed class MainWindowLoadedCommand : CommandBase
         _commandLineParser = commandLineParser;
         _appMessageBox = appMessageBox;
         _appRestartManager = appRestartManager;
-        _launchSandboxCommand = launchSandboxCommand;
+        _configurationComposer = configurationComposer;
+        _sandboxLauncher = sandboxLauncher;
     }
 
     private readonly CatalogCacheManager _catalogCacheManager;
@@ -48,7 +50,8 @@ public sealed class MainWindowLoadedCommand : CommandBase
     private readonly CommandLineParser _commandLineParser;
     private readonly AppMessageBox _appMessageBox;
     private readonly AppRestartManager _appRestartManager;
-    private readonly LaunchSandboxCommand _launchSandboxCommand;
+    private readonly ConfigurationComposer _configurationComposer;
+    private readonly SandboxLauncher _sandboxLauncher;
 
     public override async void Execute(object? parameter)
     {
@@ -135,20 +138,21 @@ public sealed class MainWindowLoadedCommand : CommandBase
 
         // Command Line Parse
         var args = App.Current.Arguments.ToArray();
+        var parsedArg = _commandLineParser.Parse(args);
 
-        if (args.Count() > 0)
+        if (parsedArg != null)
         {
-            var parsedArg = _commandLineParser.ParseForV1(args);
-
             if (parsedArg.ShowCommandLineHelp)
             {
-                _appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help_V1, MessageBoxButton.OK);
+                _appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
                 return;
             }
 
             if (parsedArg.SelectedServices.Count() > 0)
-                if (_launchSandboxCommand.CanExecute(parsedArg))
-                    _launchSandboxCommand.Execute(parsedArg);
+            {
+                var config = _configurationComposer.GetConfigurationFromArgumentModel(parsedArg);
+                _sandboxLauncher.RunSandbox(config);
+            }
         }
     }
 

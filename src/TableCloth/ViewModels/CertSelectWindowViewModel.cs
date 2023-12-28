@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using TableCloth.Commands.CertSelectWindow;
-using TableCloth.Contracts;
 using TableCloth.Events;
 using TableCloth.Models.Configuration;
 

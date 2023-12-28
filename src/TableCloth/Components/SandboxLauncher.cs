@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 
@@ -13,16 +15,86 @@ public sealed class SandboxLauncher
 {
     public SandboxLauncher(
         AppMessageBox appMessageBox,
+        SharedLocations sharedLocations,
+        SandboxBuilder sandboxBuilder,
+        SandboxCleanupManager sandboxCleanupManager,
+        ConfigurationComposer configurationComposer,
         ILogger<SandboxLauncher> logger)
     {
         _appMessageBox = appMessageBox;
+        _sharedLocations = sharedLocations;
+        _sandboxBuilder = sandboxBuilder;
+        _sandboxCleanupManager = sandboxCleanupManager;
+        _configurationComposer = configurationComposer;
         _logger = logger;
     }
 
     private readonly AppMessageBox _appMessageBox;
+    private readonly SharedLocations _sharedLocations;
+    private readonly SandboxBuilder _sandboxBuilder;
+    private readonly SandboxCleanupManager _sandboxCleanupManager;
+    private readonly ConfigurationComposer _configurationComposer;
     private readonly ILogger _logger;
 
-    private bool ValidateSandboxSpecFile(string wsbFilePath, out string? reason)
+    public void RunSandbox(TableClothConfiguration config)
+    {
+        if (Helpers.GetSandboxRunningState())
+        {
+            _appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_Already_Running, false);
+            return;
+        }
+
+        if (config.CertPair != null)
+        {
+            var now = DateTime.Now;
+            var expireWindow = StringResources.Cert_ExpireWindow;
+
+            if (now < config.CertPair.NotBefore)
+                _appMessageBox.DisplayError(StringResources.Error_Cert_MayTooEarly(now, config.CertPair.NotBefore), false);
+
+            if (now > config.CertPair.NotAfter)
+                _appMessageBox.DisplayError(StringResources.Error_Cert_Expired, false);
+            else if (now > config.CertPair.NotAfter.Add(expireWindow))
+                _appMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(now, config.CertPair.NotAfter, expireWindow));
+        }
+
+        var tempPath = _sharedLocations.GetTempPath();
+        var excludedFolderList = new List<SandboxMappedFolder>();
+        var wsbFilePath = _sandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
+
+        if (excludedFolderList.Any())
+            _appMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
+
+        _sandboxCleanupManager.SetWorkingDirectory(tempPath);
+
+        if (!ValidateSandboxSpecFile(wsbFilePath, out string? reason))
+        {
+            _appMessageBox.DisplayError(reason, true);
+            return;
+        }
+
+        var comSpecPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.System),
+            "cmd.exe");
+
+        var process = new Process()
+        {
+            EnableRaisingEvents = true,
+            StartInfo = new ProcessStartInfo(comSpecPath, "/c start \"\" \"" + wsbFilePath + "\"")
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            },
+        };
+
+        if (!process.Start())
+        {
+            process.Dispose();
+            _appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_CanNotStart, true);
+        }
+    }
+
+    public bool ValidateSandboxSpecFile(string wsbFilePath, out string? reason)
     {
         try
         {
@@ -70,36 +142,4 @@ public sealed class SandboxLauncher
             return false;
         }
     }
-
-    public void RunSandbox(string wsbFilePath)
-    {
-        if (!ValidateSandboxSpecFile(wsbFilePath, out string? reason))
-        {
-            _appMessageBox.DisplayError(reason, true);
-            return;
-        }
-
-        var comSpecPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.System),
-            "cmd.exe");
-
-        var process = new Process()
-        {
-            EnableRaisingEvents = true,
-            StartInfo = new ProcessStartInfo(comSpecPath, "/c start \"\" \"" + wsbFilePath + "\"")
-            {
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            },
-        };
-
-        if (!process.Start())
-        {
-            process.Dispose();
-            _appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_CanNotStart, true);
-        }
-    }
-
-    public bool IsSandboxRunning()
-        => Process.GetProcesses().Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase)).Any();
 }

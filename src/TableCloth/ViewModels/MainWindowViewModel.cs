@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Data;
 using TableCloth.Commands;
 using TableCloth.Commands.MainWindow;
-using TableCloth.Components;
-using TableCloth.Contracts;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 
