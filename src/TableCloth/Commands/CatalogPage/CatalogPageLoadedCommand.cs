@@ -12,12 +12,12 @@ namespace TableCloth.Commands.CatalogPage;
 public sealed class CatalogPageLoadedCommand : CommandBase
 {
     public CatalogPageLoadedCommand(
-        CatalogCacheManager catalogCacheManager)
+        ResourceCacheManager resourceCacheManager)
     {
-        _catalogCacheManager = catalogCacheManager;
+        _resourceCacheManager = resourceCacheManager;
     }
 
-    private readonly CatalogCacheManager _catalogCacheManager;
+    private readonly ResourceCacheManager _resourceCacheManager;
 
     private static readonly PropertyGroupDescription GroupDescription =
         new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
@@ -27,7 +27,7 @@ public sealed class CatalogPageLoadedCommand : CommandBase
         if (parameter is not CatalogPageViewModel viewModel)
             throw new ArgumentException(nameof(parameter));
 
-        var doc = _catalogCacheManager.CatalogDocument;
+        var doc = _resourceCacheManager.CatalogDocument;
         var services = doc.Services.OrderBy(service =>
         {
             var fieldInfo = typeof(CatalogInternetServiceCategory).GetField(service.Category.ToString());

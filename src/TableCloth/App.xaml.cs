@@ -86,7 +86,7 @@ public partial class App : Application
             .AddSingleton<PreferencesManager>()
             .AddSingleton<X509CertPairScanner>()
             .AddSingleton<CatalogDeserializer>()
-            .AddSingleton<CatalogCacheManager>()
+            .AddSingleton<ResourceCacheManager>()
             .AddSingleton<SandboxBuilder>()
             .AddSingleton<SandboxLauncher>()
             .AddSingleton<SandboxCleanupManager>()

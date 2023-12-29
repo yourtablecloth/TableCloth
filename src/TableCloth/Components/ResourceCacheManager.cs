@@ -13,9 +13,9 @@ using TableCloth.Resources;
 
 namespace TableCloth.Components;
 
-public sealed class CatalogCacheManager
+public sealed class ResourceCacheManager
 {
-    public CatalogCacheManager(
+    public ResourceCacheManager(
         CatalogDeserializer catalogDeserializer,
         SharedLocations sharedLocations,
         ResourceResolver resourceResolver)

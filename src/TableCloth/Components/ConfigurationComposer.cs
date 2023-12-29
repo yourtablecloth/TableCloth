@@ -11,12 +11,12 @@ namespace TableCloth.Components;
 public sealed class ConfigurationComposer
 {
     public ConfigurationComposer(
-        CatalogCacheManager catalogCacheManager)
+        ResourceCacheManager resourceCacheManager)
     {
-        _catalogCacheManager = catalogCacheManager;
+        _resourceCacheManager = resourceCacheManager;
     }
 
-    private readonly CatalogCacheManager _catalogCacheManager;
+    private readonly ResourceCacheManager _resourceCacheManager;
 
     public TableClothConfiguration GetConfigurationFromViewModel(ITableClothViewModel viewModel)
     {
@@ -59,7 +59,7 @@ public sealed class ConfigurationComposer
             certPrivateKeyData.Length > 0)
             certPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
 
-        var selectedServices = _catalogCacheManager.CatalogDocument?.Services
+        var selectedServices = _resourceCacheManager.CatalogDocument?.Services
             .Where(x => argumentModel.SelectedServices.Contains(x.Id))
             ?? Enumerable.Empty<CatalogInternetService>();
 

@@ -13,14 +13,14 @@ public sealed class AppUserInterface
 {
     public AppUserInterface(
         IServiceProvider serviceProvider,
-        CatalogCacheManager catalogCacheManager)
+        ResourceCacheManager resourceCacheManager)
     {
         _serviceProvider = serviceProvider;
-        _catalogCacheManager = catalogCacheManager;
+        _resourceCacheManager = resourceCacheManager;
     }
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly CatalogCacheManager _catalogCacheManager;
+    private readonly ResourceCacheManager _resourceCacheManager;
 
     public AboutWindow CreateAboutWindow()
         => _serviceProvider.GetRequiredService<AboutWindow>();
@@ -62,7 +62,7 @@ public sealed class AppUserInterface
 
         if (viewModel.CommandLineArgumentModel != null)
         {
-            var commandLineSelectedService = _catalogCacheManager.CatalogDocument?.Services
+            var commandLineSelectedService = _resourceCacheManager.CatalogDocument?.Services
                 .Where(x => viewModel.CommandLineArgumentModel.SelectedServices.Contains(x.Id))
                 .FirstOrDefault();
 

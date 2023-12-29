@@ -13,18 +13,18 @@ namespace TableCloth.Commands.MainWindowV2;
 public sealed class MainWindowV2LoadedCommand : CommandBase
 {
     public MainWindowV2LoadedCommand(
-        CatalogCacheManager catalogCacheManager,
+        ResourceCacheManager resourceCacheManager,
         NavigationService navigationService,
         VisualThemeManager visualThemeManager,
         CommandLineParser commandLineParser)
     {
-        _catalogCacheManager = catalogCacheManager;
+        _resourceCacheManager = resourceCacheManager;
         _navigationService = navigationService;
         _visualThemeManager = visualThemeManager;
         _commandLineParser = commandLineParser;
     }
 
-    private readonly CatalogCacheManager _catalogCacheManager;
+    private readonly ResourceCacheManager _resourceCacheManager;
     private readonly NavigationService _navigationService;
     private readonly VisualThemeManager _visualThemeManager;
     private readonly CommandLineParser _commandLineParser;
@@ -43,7 +43,7 @@ public sealed class MainWindowV2LoadedCommand : CommandBase
         _visualThemeManager.ApplyAutoThemeChange(mainWindow);
 
         var parsedArg = _commandLineParser.ParseFromArgv();
-        var services = _catalogCacheManager.CatalogDocument.Services;
+        var services = _resourceCacheManager.CatalogDocument.Services;
 
         var commandLineSelectedService = default(CatalogInternetService);
         if (parsedArg != null && parsedArg.SelectedServices.Count() > 0)

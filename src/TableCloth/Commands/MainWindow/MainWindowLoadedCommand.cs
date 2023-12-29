@@ -13,7 +13,7 @@ namespace TableCloth.Commands.MainWindow;
 public sealed class MainWindowLoadedCommand : CommandBase
 {
     public MainWindowLoadedCommand(
-        CatalogCacheManager catalogCacheManager,
+        ResourceCacheManager resourceCacheManager,
         AppUserInterface appUserInterface,
         VisualThemeManager visualThemeManager,
         PreferencesManager preferencesManager,
@@ -25,7 +25,7 @@ public sealed class MainWindowLoadedCommand : CommandBase
         ConfigurationComposer configurationComposer,
         SandboxLauncher sandboxLauncher)
     {
-        _catalogCacheManager = catalogCacheManager;
+        _resourceCacheManager = resourceCacheManager;
         _appUserInterface = appUserInterface;
         _visualThemeManager = visualThemeManager;
         _preferencesManager = preferencesManager;
@@ -38,7 +38,7 @@ public sealed class MainWindowLoadedCommand : CommandBase
         _sandboxLauncher = sandboxLauncher;
     }
 
-    private readonly CatalogCacheManager _catalogCacheManager;
+    private readonly ResourceCacheManager _resourceCacheManager;
     private readonly AppUserInterface _appUserInterface;
     private readonly VisualThemeManager _visualThemeManager;
     private readonly PreferencesManager _preferencesManager;
@@ -94,7 +94,7 @@ public sealed class MainWindowLoadedCommand : CommandBase
                 viewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
         }
 
-        var doc = _catalogCacheManager.CatalogDocument;
+        var doc = _resourceCacheManager.CatalogDocument;
         var services = doc.Services;
         viewModel.Services = services;
 

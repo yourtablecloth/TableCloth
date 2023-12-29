@@ -17,14 +17,14 @@ public sealed class SplashScreenLoadedCommand : CommandBase
         AppMessageBox appMessageBox,
         CommandLineParser commandLineParser,
         PreferencesManager preferencesManager,
-        CatalogCacheManager catalogCacheManager,
+        ResourceCacheManager resourceCacheManager,
         VisualThemeManager visualThemeManager)
     {
         _appStartup = appStartup;
         _appMessageBox = appMessageBox;
         _commandLineParser = commandLineParser;
         _preferencesManager = preferencesManager;
-        _catalogCacheManager = catalogCacheManager;
+        _resourceCacheManager = resourceCacheManager;
         _visualThemeManager = visualThemeManager;
     }
 
@@ -32,7 +32,7 @@ public sealed class SplashScreenLoadedCommand : CommandBase
     private readonly AppMessageBox _appMessageBox;
     private readonly CommandLineParser _commandLineParser;
     private readonly PreferencesManager _preferencesManager;
-    private readonly CatalogCacheManager _catalogCacheManager;
+    private readonly ResourceCacheManager _resourceCacheManager;
     private readonly VisualThemeManager _visualThemeManager;
 
     public override async void Execute(object? parameter)
@@ -108,12 +108,12 @@ public sealed class SplashScreenLoadedCommand : CommandBase
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_LoadingCatalog));
 
-            await _catalogCacheManager.LoadCatalogDocumentAsync();
+            await _resourceCacheManager.LoadCatalogDocumentAsync();
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_LoadingImages));
 
-            await _catalogCacheManager.LoadSiteImages();
+            await _resourceCacheManager.LoadSiteImages();
 
             viewModel.AppStartupSucceed = true;
         }

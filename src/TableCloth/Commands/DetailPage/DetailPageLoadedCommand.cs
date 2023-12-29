@@ -12,7 +12,7 @@ namespace TableCloth.Commands.DetailPage;
 public sealed class DetailPageLoadedCommand : CommandBase
 {
     public DetailPageLoadedCommand(
-        CatalogCacheManager catalogCacheManager,
+        ResourceCacheManager resourceCacheManager,
         PreferencesManager preferencesManager,
         X509CertPairScanner certPairScanner,
         AppRestartManager appRestartManager,
@@ -21,7 +21,7 @@ public sealed class DetailPageLoadedCommand : CommandBase
         ConfigurationComposer configurationComposer,
         SandboxLauncher sandboxLauncher)
     {
-        _catalogCacheManager = catalogCacheManager;
+        _resourceCacheManager = resourceCacheManager;
         _preferencesManager = preferencesManager;
         _certPairScanner = certPairScanner;
         _appRestartManager = appRestartManager;
@@ -31,7 +31,7 @@ public sealed class DetailPageLoadedCommand : CommandBase
         _sandboxLauncher = sandboxLauncher;
     }
 
-    private readonly CatalogCacheManager _catalogCacheManager;
+    private readonly ResourceCacheManager _resourceCacheManager;
     private readonly PreferencesManager _preferencesManager;
     private readonly X509CertPairScanner _certPairScanner;
     private readonly AppRestartManager _appRestartManager;
@@ -45,7 +45,7 @@ public sealed class DetailPageLoadedCommand : CommandBase
         if (parameter is not DetailPageViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
-        var services = _catalogCacheManager.CatalogDocument?.Services;
+        var services = _resourceCacheManager.CatalogDocument?.Services;
         var selectedServiceId = viewModel.SelectedService?.Id;
         var selectedService = services?.Where(x => string.Equals(x.Id, selectedServiceId, StringComparison.Ordinal)).FirstOrDefault();
         viewModel.SelectedService = selectedService;

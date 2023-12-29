@@ -8,14 +8,14 @@ namespace TableCloth.Converters;
 
 public class ServiceLogoConverter : IValueConverter
 {
-    private CatalogCacheManager? _catalogCacheManager;
+    private ResourceCacheManager? _resourceCacheManager;
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (_catalogCacheManager == null)
-            _catalogCacheManager = App.Current.Services.GetRequiredService<CatalogCacheManager>();
+        if (_resourceCacheManager == null)
+            _resourceCacheManager = App.Current.Services.GetRequiredService<ResourceCacheManager>();
 
-        return _catalogCacheManager.GetImage((string)value) ?? throw new ArgumentException(nameof(value));
+        return _resourceCacheManager.GetImage((string)value) ?? throw new ArgumentException(nameof(value));
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
