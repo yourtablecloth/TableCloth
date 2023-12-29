@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
 using TableCloth.Components;
-using TableCloth.Models;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.DetailPage;

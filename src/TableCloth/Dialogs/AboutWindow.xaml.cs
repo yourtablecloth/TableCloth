@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Windows;
-using TableCloth.Components;
-using TableCloth.Resources;
+﻿using System.Windows;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Dialogs;

@@ -23,7 +23,7 @@ public sealed class CopyCommandLineCommand : CommandBase
     {
         if (parameter is not ITableClothViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-        
+
         var expression = _commandLineComposer.ComposeCommandLineExpression(viewModel, true);
         Clipboard.SetText(expression);
 

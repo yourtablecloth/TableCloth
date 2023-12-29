@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Data;
 using TableCloth.Components;
-using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
 

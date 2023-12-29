@@ -1,14 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
-using TableCloth.Dialogs;
-using TableCloth.Events;
-using TableCloth.Models;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Pages;

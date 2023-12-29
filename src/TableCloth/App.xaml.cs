@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
@@ -149,7 +148,7 @@ public partial class App : Application
         // Cert Select Window
         services.AddWindow<CertSelectWindow, CertSelectWindowViewModel>(
             viewModelImplementationFactory: provider =>
-                new (
+                new(
                     certSelectWindowScanCertPairCommand: provider.GetRequiredService<CertSelectWindowScanCertPairCommand>(),
                     certSelectWindowLoadedCommand: provider.GetRequiredService<CertSelectWindowLoadedCommand>(),
                     certSelectWindowManualCertLoadCommand: provider.GetRequiredService<CertSelectWindowManualCertLoadCommand>()

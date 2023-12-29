@@ -3,9 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using TableCloth.Components;
-using TableCloth.Models;
 using TableCloth.Models.Catalog;
-using TableCloth.ViewModels;
 using NavigationService = TableCloth.Components.NavigationService;
 
 namespace TableCloth.Commands.MainWindowV2;

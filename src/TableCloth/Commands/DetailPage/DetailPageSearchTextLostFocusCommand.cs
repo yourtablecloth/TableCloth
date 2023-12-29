@@ -1,6 +1,5 @@
 ﻿using System;
 using TableCloth.Components;
-using TableCloth.Models;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.DetailPage;

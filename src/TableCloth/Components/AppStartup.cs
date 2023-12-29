@@ -7,13 +7,11 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Management;
-using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Resources;
-using Windows.Networking.Connectivity;
 
 namespace TableCloth.Components;
 
