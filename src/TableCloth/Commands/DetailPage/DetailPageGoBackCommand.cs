@@ -19,7 +19,6 @@ public sealed class DetailPageGoBackCommand : CommandBase
         if (parameter is not DetailPageViewModel /*viewModel*/)
             throw new ArgumentException("Uncompatible parameter type.", nameof(parameter));
 
-        if (!_navigationService.GoBack())
-            _navigationService.NavigateToCatalog(string.Empty);
+        _navigationService.NavigateToCatalog(string.Empty);
     }
 }

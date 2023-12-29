@@ -41,16 +41,4 @@ public sealed class NavigationService
         var page = _appUserInterface.CreateDetailPage(selectedService, commandLineArgumentModel);
         return _frame.Navigate(page);
     }
-
-    public bool GoBack()
-    {
-        if (_frame == default)
-            throw new InvalidOperationException($"You should initialize {nameof(NavigationService)} before use.");
-
-        if (!_frame.CanGoBack)
-            return false;
-
-        _frame.GoBack();
-        return true;
-    }
 }

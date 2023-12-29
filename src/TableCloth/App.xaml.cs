@@ -181,6 +181,7 @@ public partial class App : Application
 
         // Catalog Page
         services.AddPage<CatalogPage, CatalogPageViewModel>(
+            addPageAsSingleton: true,
             viewModelImplementationFactory: provider => new CatalogPageViewModel(
                 catalogPageLoadedCommand: provider.GetRequiredService<CatalogPageLoadedCommand>(),
                 catalogPageItemSelectCommand: provider.GetRequiredService<CatalogPageItemSelectCommand>(),

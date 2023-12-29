@@ -47,15 +47,26 @@ internal static class Extensions
     }
 
     public static IServiceCollection AddPage<TPage, TViewModel>(this IServiceCollection services,
+        bool addPageAsSingleton = false,
         Func<IServiceProvider, TPage>? pageImplementationFactory = default,
         Func<IServiceProvider, TViewModel>? viewModelImplementationFactory = default)
         where TPage : Page
         where TViewModel : class
     {
-        if (pageImplementationFactory != null)
-            services.AddTransient<TPage>(pageImplementationFactory);
+        if (addPageAsSingleton)
+        {
+            if (pageImplementationFactory != null)
+                services.AddSingleton<TPage>(pageImplementationFactory);
+            else
+                services.AddSingleton<TPage>();
+        }
         else
-            services.AddTransient<TPage>();
+        {
+            if (pageImplementationFactory != null)
+                services.AddTransient<TPage>(pageImplementationFactory);
+            else
+                services.AddTransient<TPage>();
+        }
 
         if (viewModelImplementationFactory != null)
             services.AddTransient<TViewModel>(viewModelImplementationFactory);
