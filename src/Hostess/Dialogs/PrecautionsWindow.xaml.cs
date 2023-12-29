@@ -1,4 +1,5 @@
 ﻿using Hostess.Components;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,8 +18,11 @@ namespace Hostess.Dialogs
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            CatalogDocument catalog = Application.Current.GetCatalogDocument();
-            IEnumerable<string> targets = Application.Current.GetInstallSites();
+            var services = App.Current.Services;
+            var sharedProperties = services.GetRequiredService<SharedProperties>();
+
+            CatalogDocument catalog = sharedProperties.GetCatalogDocument();
+            IEnumerable<string> targets = sharedProperties.GetInstallSites();
             var buffer = new StringBuilder();
 
             foreach (CatalogInternetService eachItem in catalog.Services.Where(x => targets.Contains(x.Id)))

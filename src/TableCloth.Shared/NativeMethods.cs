@@ -1,11 +1,236 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Security.AccessControl;
 
 namespace TableCloth
 {
     [SuppressUnmanagedCodeSecurity]
-    internal static class NativeMethods
+    internal static partial class NativeMethods { }
+
+    partial class NativeMethods
+    {
+        public const int SERVICE_CHANGE_CONFIG = 0x0002;
+        public const int SERVICE_PAUSE_CONTINUE = 0x0040;
+        public const int SERVICE_STOP = 0x0020;
+
+        public const int ERROR_INSUFFICIENT_BUFFER = 0x7a;
+        public const int SC_STATUS_PROCESS_INFO = 0;
+
+        public enum SE_OBJECT_TYPE : int
+        {
+            SE_UNKNOWN_OBJECT_TYPE,
+            SE_FILE_OBJECT,
+            SE_SERVICE,
+            SE_PRINTER,
+            SE_REGISTRY_KEY,
+            SE_LMSHARE,
+            SE_KERNEL_OBJECT,
+            SE_WINDOW_OBJECT,
+            SE_DS_OBJECT,
+            SE_DS_OBJECT_ALL,
+            SE_PROVIDER_DEFINED_OBJECT,
+            SE_WMIGUID_OBJECT,
+            SE_REGISTRY_WOW64_32KEY
+        }
+
+        [Flags]
+        public enum SECURITY_INFORMATION : int
+        {
+            OWNER_SECURITY_INFORMATION = 1,
+            GROUP_SECURITY_INFORMATION = 2,
+            DACL_SECURITY_INFORMATION = 4,
+            SACL_SECURITY_INFORMATION = 8,
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public sealed class SERVICE_STATUS_PROCESS
+        {
+            [MarshalAs(UnmanagedType.U4)]
+            public int dwServiceType;
+            [MarshalAs(UnmanagedType.U4)]
+            public int dwCurrentState;
+            [MarshalAs(UnmanagedType.U4)]
+            public int dwControlsAccepted;
+            [MarshalAs(UnmanagedType.U4)]
+            public int dwWin32ExitCode;
+            [MarshalAs(UnmanagedType.U4)]
+            public int dwServiceSpecificExitCode;
+            [MarshalAs(UnmanagedType.U4)]
+            public int dwCheckPoint;
+            [MarshalAs(UnmanagedType.U4)]
+            public int dwWaitHint;
+            [MarshalAs(UnmanagedType.U4)]
+            public int dwProcessId;
+            [MarshalAs(UnmanagedType.U4)]
+            public int dwServiceFlags;
+        }
+
+        [Flags]
+        public enum ProcessAccessRights
+        {
+            /// <summary>
+            /// PROCESS_CREATE_PROCESS
+            /// </summary>
+            PROCESS_CREATE_PROCESS = 0x0080,
+
+            /// <summary>
+            /// PROCESS_CREATE_THREAD
+            /// </summary>
+            PROCESS_CREATE_THREAD = 0x0002,
+
+            /// <summary>
+            /// PROCESS_DUP_HANDLE
+            /// </summary>
+            PROCESS_DUP_HANDLE = 0x0040,
+
+            /// <summary>
+            /// PROCESS_QUERY_INFORMATION
+            /// </summary>
+            PROCESS_QUERY_INFORMATION = 0x0400,
+
+            /// <summary>
+            /// PROCESS_QUERY_LIMITED_INFORMATION
+            /// </summary>
+            PROCESS_QUERY_LIMITED_INFORMATION = 0x1000,
+
+            /// <summary>
+            /// PROCESS_SET_INFORMATION
+            /// </summary>
+            PROCESS_SET_INFORMATION = 0x0200,
+
+            /// <summary>
+            /// PROCESS_SET_QUOTA
+            /// </summary>
+            PROCESS_SET_QUOTA = 0x0100,
+
+            /// <summary>
+            /// PROCESS_SUSPEND_RESUME
+            /// </summary>
+            PROCESS_SUSPEND_RESUME = 0x0800,
+
+            /// <summary>
+            /// PROCESS_TERMINATE
+            /// </summary>
+            PROCESS_TERMINATE = 0x0001,
+
+            /// <summary>
+            /// PROCESS_VM_OPERATION
+            /// </summary>
+            PROCESS_VM_OPERATION = 0x0008,
+
+            /// <summary>
+            /// PROCESS_VM_READ
+            /// </summary>
+            PROCESS_VM_READ = 0x0010,
+
+            /// <summary>
+            /// PROCESS_VM_WRITE
+            /// </summary>
+            PROCESS_VM_WRITE = 0x0020,
+
+            /// <summary>
+            /// DELETE
+            /// </summary>
+            DELETE = 0x00010000,
+
+            /// <summary>
+            /// READ_CONTROL
+            /// </summary>
+            READ_CONTROL = 0x00020000,
+
+            /// <summary>
+            /// SYNCHRONIZE
+            /// </summary>
+            SYNCHRONIZE = 0x00100000,
+
+            /// <summary>
+            /// WRITE_DAC
+            /// </summary>
+            WRITE_DAC = 0x00040000,
+
+            /// <summary>
+            /// WRITE_OWNER
+            /// </summary>
+            WRITE_OWNER = 0x00080000,
+
+            /// <summary>
+            /// STANDARD_RIGHTS_REQUIRED
+            /// </summary>
+            STANDARD_RIGHTS_REQUIRED = 0x000f0000,
+
+            /// <summary>
+            /// PROCESS_ALL_ACCESS
+            /// </summary>
+            PROCESS_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xFFF)
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SECURITY_DESCRIPTOR
+        {
+            public byte revision;
+            public byte size;
+            public short control;
+            public IntPtr owner;
+            public IntPtr group;
+            public IntPtr sacl;
+            public IntPtr dacl;
+        }
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        internal static extern bool QueryServiceStatusEx(
+            SafeHandle hService,
+            int infoLevel,
+            IntPtr lpBuffer,
+            [MarshalAs(UnmanagedType.U4)] int cbBufSize,
+            [MarshalAs(UnmanagedType.U4)] out int pcbBytesNeeded);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        internal static extern bool QueryServiceObjectSecurity(IntPtr serviceHandle,
+            SecurityInfos secInfo,
+            ref SECURITY_DESCRIPTOR lpSecDesrBuf,
+            [MarshalAs(UnmanagedType.U4)] int bufSize,
+            [MarshalAs(UnmanagedType.U4)] out int bufSizeNeeded);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        internal static extern bool QueryServiceObjectSecurity(SafeHandle serviceHandle,
+            SecurityInfos secInfo,
+            byte[] lpSecDesrBuf,
+            [MarshalAs(UnmanagedType.U4)] int bufSize,
+            [MarshalAs(UnmanagedType.U4)] out int bufSizeNeeded);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        internal static extern bool SetServiceObjectSecurity(SafeHandle serviceHandle,
+            SecurityInfos secInfos,
+            byte[] lpSecDesrBuf);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        internal static extern bool GetKernelObjectSecurity(
+            IntPtr handle,
+            int securityInformation,
+            [Out] byte[] securityDescriptor,
+            [MarshalAs(UnmanagedType.U4)] int length,
+            [MarshalAs(UnmanagedType.U4)] out int lengthNeeded);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        internal static extern uint GetSecurityInfo(
+            IntPtr handle,
+            SE_OBJECT_TYPE ObjectType,
+            SECURITY_INFORMATION SecurityInfo,
+            out IntPtr pSidOwner,
+            out IntPtr pSidGroup,
+            out IntPtr pDacl,
+            out IntPtr pSacl,
+            out IntPtr pSecurityDescriptor);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        internal static extern bool SetKernelObjectSecurity(
+            IntPtr handle,
+            int securityInformation,
+            [In] byte[] securityDescriptor);
+    }
+
+    partial class NativeMethods
     {
         // https://stackoverflow.com/questions/51334674/how-to-detect-windows-10-light-dark-mode-in-win32-application
         public const int WM_SETTINGCHANGE = 0x001A;
@@ -224,7 +449,10 @@ namespace TableCloth
             PRODUCT_WEB_SERVER = 0x00000011, // Web Server (full installation)
             PRODUCT_WEB_SERVER_CORE = 0x0000001D, // Web Server (core installation)
         }
+    }
 
+    partial class NativeMethods
+    {
         public static readonly Guid DownloadFolderGuid = new Guid("{374DE290-123F-4565-9164-39C4925E467B}");
 
         public static string

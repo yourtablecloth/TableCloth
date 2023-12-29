@@ -25,10 +25,14 @@ namespace Hostess
             Services = ConfigureServices();
         }
 
+        public static new App Current => (App)Application.Current;
+
         public IServiceProvider Services { get; }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            var sharedProperties = Services.GetService<SharedProperties>();
+
             ServicePointManager.ServerCertificateValidationCallback += ValidateRemoteCertificate;
 
             const int retryCount = 3;
@@ -70,13 +74,13 @@ namespace Hostess
                         continue;
                     }
 
-                    Current.InitCatalogDocument(catalog);
-                    Current.InitCatalogLastModified(lastModifiedValue);
+                    sharedProperties.InitCatalogDocument(catalog);
+                    sharedProperties.InitCatalogLastModified(lastModifiedValue);
                     break;
                 }
 
                 var targetSites = e.Args.Where(x => !x.StartsWith(StringResources.TableCloth_Switch_Prefix, StringComparison.Ordinal)).ToArray();
-                Current.InitInstallSites(targetSites);
+                sharedProperties.InitInstallSites(targetSites);
 
                 var installEveryonesPrinter = false;
                 var installAdobeReader = false;
@@ -115,11 +119,11 @@ namespace Hostess
                     return;
                 }
 
-                Current.InitWillInstallEveryonesPrinter(installEveryonesPrinter);
-                Current.InitWillInstallAdobeReader(installAdobeReader);
-                Current.InitWillInstallHancomOfficeViewer(installHancomOfficeViewer);
-                Current.InitWillInstallRaiDrive(installRaiDrive);
-                Current.InitHasIEModeEnabled(hasIEModeEnabled);
+                sharedProperties.InitWillInstallEveryonesPrinter(installEveryonesPrinter);
+                sharedProperties.InitWillInstallAdobeReader(installAdobeReader);
+                sharedProperties.InitWillInstallHancomOfficeViewer(installHancomOfficeViewer);
+                sharedProperties.InitWillInstallRaiDrive(installRaiDrive);
+                sharedProperties.InitHasIEModeEnabled(hasIEModeEnabled);
 
                 if (!targetSites.Any())
                 {
@@ -179,7 +183,10 @@ namespace Hostess
 
             // Components
             services
-                .AddSingleton<AppMessageBox>();
+                .AddSingleton<AppMessageBox>()
+                .AddSingleton<LicenseDescriptor>()
+                .AddSingleton<ProtectTermService>()
+                .AddSingleton<SharedProperties>();
 
             return services.BuildServiceProvider();
         }

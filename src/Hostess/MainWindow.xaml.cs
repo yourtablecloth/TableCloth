@@ -2,6 +2,7 @@
 using Hostess.Dialogs;
 using Hostess.Themes;
 using Hostess.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -110,6 +111,10 @@ namespace Hostess
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            var services = App.Current.Services;
+            var protectTermService = services.GetRequiredService<ProtectTermService>();
+            var sharedProperties = services.GetRequiredService<SharedProperties>();
+
             var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             source.AddHook(WndProc);
 
@@ -129,7 +134,7 @@ namespace Hostess
 
             VerifyWindowsContainerEnvironment();
 
-            try { ProtectTermService.PreventServiceProcessTermination("TermService"); }
+            try { protectTermService.PreventServiceProcessTermination("TermService"); }
             catch (AggregateException aex)
             {
                 MessageBox.Show(this, $"{aex.InnerException.Message}", StringResources.TitleText_Error,
@@ -141,7 +146,7 @@ namespace Hostess
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
 
-            try { ProtectTermService.PreventServiceStop("TermService", Environment.UserName); }
+            try { protectTermService.PreventServiceStop("TermService", Environment.UserName); }
             catch (AggregateException aex)
             {
                 MessageBox.Show(this, $"{aex.InnerException.Message}", StringResources.TitleText_Error,
@@ -155,8 +160,8 @@ namespace Hostess
 
             SetDesktopWallpaper();
 
-            var catalog = Application.Current.GetCatalogDocument();
-            var targets = Application.Current.GetInstallSites();
+            var catalog = sharedProperties.GetCatalogDocument();
+            var targets = sharedProperties.GetInstallSites();
             var packages = new List<InstallItemViewModel>();
 
             foreach (var eachTargetName in targets)
@@ -211,10 +216,14 @@ namespace Hostess
 
         private void AboutButton_Click(object sender, RoutedEventArgs e)
         {
+            var services = App.Current.Services;
+            var sharedProperties = services.GetRequiredService<SharedProperties>();
+            var licenseDescriptor = services.GetRequiredService<LicenseDescriptor>();
+
             var aboutWindow = new AboutWindow()
             {
-                CatalogDate = App.Current.GetCatalogLastModified(),
-                License = LicenseDescriptor.GetLicenseDescriptions(),
+                CatalogDate = sharedProperties.GetCatalogLastModified(),
+                License = licenseDescriptor.GetLicenseDescriptions(),
             };
 
             aboutWindow.ShowDialog();
@@ -222,6 +231,9 @@ namespace Hostess
 
         private async void PerformInstallButton_Click(object sender, RoutedEventArgs e)
         {
+            var services = App.Current.Services;
+            var sharedProperties = services.GetRequiredService<SharedProperties>();
+
             try
             {
                 PerformInstallButton.IsEnabled = false;
@@ -232,9 +244,9 @@ namespace Hostess
                 if (!Directory.Exists(downloadFolderPath))
                     Directory.CreateDirectory(downloadFolderPath);
 
-                var catalog = Application.Current.GetCatalogDocument();
+                var catalog = sharedProperties.GetCatalogDocument();
 
-                if (App.Current.GetHasIEModeEnabled())
+                if (sharedProperties.GetHasIEModeEnabled())
                 {
                     try
                     {
@@ -395,7 +407,7 @@ namespace Hostess
 
                 if (!hasAnyFailure)
                 {
-                    if (App.Current.WillInstallEveryonesPrinter())
+                    if (sharedProperties.WillInstallEveryonesPrinter())
                     {
                         Process.Start(new ProcessStartInfo(StringResources.EveryonesPrinterUrl)
                         {
@@ -404,7 +416,7 @@ namespace Hostess
                         });
                     }
 
-                    if (App.Current.WillInstallAdobeReader())
+                    if (sharedProperties.WillInstallAdobeReader())
                     {
                         Process.Start(new ProcessStartInfo(StringResources.AdobeReaderUrl)
                         {
@@ -413,7 +425,7 @@ namespace Hostess
                         });
                     }
 
-                    if (App.Current.WillInstallHancomOfficeViewer())
+                    if (sharedProperties.WillInstallHancomOfficeViewer())
                     {
                         Process.Start(new ProcessStartInfo(StringResources.HancomOfficeViewerUrl)
                         {
@@ -422,7 +434,7 @@ namespace Hostess
                         });
                     }
 
-                    if (App.Current.WillInstallRaiDrive())
+                    if (sharedProperties.WillInstallRaiDrive())
                     {
                         Process.Start(new ProcessStartInfo(StringResources.RaiDriveUrl)
                         {
@@ -431,7 +443,7 @@ namespace Hostess
                         });
                     }
 
-                    var targets = Application.Current.GetInstallSites();
+                    var targets = sharedProperties.GetInstallSites();
 
                     foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
                     {

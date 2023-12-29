@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Hostess.Components
 {
-    internal static class LicenseDescriptor
+    public sealed class LicenseDescriptor
     {
-        private static IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
+        private IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
         {
             var asm = Assembly.GetEntryAssembly();
 
@@ -29,7 +29,7 @@ namespace Hostess.Components
             return refList;
         }
 
-        public static string GetLicenseDescriptions()
+        public string GetLicenseDescriptions()
         {
             var buffer = new StringBuilder();
 
