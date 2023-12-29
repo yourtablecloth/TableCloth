@@ -36,7 +36,8 @@ namespace TableCloth.Models
             bool? installHancomOfficeViewer = default,
             bool? installRaiDrive = default,
             bool? enableInternetExplorerMode = default,
-            bool showCommandLineHelp = default)
+            bool showCommandLineHelp = default,
+            bool dryRun = default)
         {
             SelectedServices = selectedServices ?? Enumerable.Empty<string>();
             EnableMicrophone = enableMicrophone;
@@ -50,6 +51,7 @@ namespace TableCloth.Models
             InstallRaiDrive = installRaiDrive;
             EnableInternetExplorerMode = enableInternetExplorerMode;
             ShowCommandLineHelp = showCommandLineHelp;
+            DryRun = dryRun;
         }
 
         public bool? EnableMicrophone { get; private set; }
@@ -84,6 +86,8 @@ namespace TableCloth.Models
 
         public IEnumerable<string> SelectedServices { get; private set; } = new List<string>();
 
+        public bool DryRun { get; private set; }
+
         public static CommandLineArgumentModel
 #if !NETFX
             ?
@@ -113,6 +117,7 @@ namespace TableCloth.Models
             var enableInternetExplorerMode = default(bool?);
             var showCommandLineHelp = false;
             var enableCert = false;
+            var dryRun = false;
 
             for (var i = 0; i < args.Length; i++)
             {
@@ -138,6 +143,8 @@ namespace TableCloth.Models
                     installRaiDrive = true;
                 else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableIEMode, StringComparison.OrdinalIgnoreCase))
                     enableInternetExplorerMode = true;
+                else if (string.Equals(args[i], StringResources.TableCloth_Switch_DryRun, StringComparison.OrdinalIgnoreCase))
+                    dryRun = true;
                 else if (string.Equals(args[i], StringResources.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase))
                     showCommandLineHelp = true;
                 else if (string.Equals(args[i], StringResources.Tablecloth_Switch_EnableCert, StringComparison.OrdinalIgnoreCase))
@@ -175,7 +182,8 @@ namespace TableCloth.Models
                 installHancomOfficeViewer: installHancomOfficeViewer,
                 installRaiDrive: installRaiDrive,
                 enableInternetExplorerMode: enableInternetExplorerMode,
-                showCommandLineHelp: showCommandLineHelp);
+                showCommandLineHelp: showCommandLineHelp,
+                dryRun: dryRun);
         }
     }
 }

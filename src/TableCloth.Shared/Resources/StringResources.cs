@@ -490,6 +490,8 @@ namespace TableCloth.Resources
 
         internal static readonly string TableCloth_Switch_EnableIEMode = TableCloth_Switch_Prefix + "enable-ie-mode";
 
+        internal static readonly string TableCloth_Switch_DryRun = TableCloth_Switch_Prefix + "dry-run";
+
         internal static readonly string TableCloth_Switch_Help = TableCloth_Switch_Prefix + "help";
 
         internal static readonly string TableCloth_TableCloth_Switches_Help = $@"ServiceID ServiceID ... <옵션>
@@ -555,6 +557,9 @@ ServiceID는 {CatalogUrl}을 확인해주세요.
 
 {TableCloth_Switch_EnableIEMode}
   Internet Explorer 모드를 활성화합니다.
+
+{TableCloth_Switch_DryRun}
+  애플리케이션 패키지 설치나 바탕 화면 변경을 건너뜁니다.
 
 {TableCloth_Switch_Help}
   이 도움말을 표시합니다.
