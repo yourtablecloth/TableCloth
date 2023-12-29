@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using TableCloth.Components;
 using TableCloth.Events;
+using TableCloth.Models;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
@@ -14,14 +15,12 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
     public SplashScreenLoadedCommand(
         AppStartup appStartup,
         AppMessageBox appMessageBox,
-        CommandLineParser commandLineParser,
         PreferencesManager preferencesManager,
         ResourceCacheManager resourceCacheManager,
         VisualThemeManager visualThemeManager)
     {
         _appStartup = appStartup;
         _appMessageBox = appMessageBox;
-        _commandLineParser = commandLineParser;
         _preferencesManager = preferencesManager;
         _resourceCacheManager = resourceCacheManager;
         _visualThemeManager = visualThemeManager;
@@ -29,7 +28,6 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
 
     private readonly AppStartup _appStartup;
     private readonly AppMessageBox _appMessageBox;
-    private readonly CommandLineParser _commandLineParser;
     private readonly PreferencesManager _preferencesManager;
     private readonly ResourceCacheManager _resourceCacheManager;
     private readonly VisualThemeManager _visualThemeManager;
@@ -44,7 +42,7 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_ParsingCommandLine));
 
-            var parsedArgs = _commandLineParser.ParseFromArgv();
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
 
             if (parsedArgs != null && parsedArgs.ShowCommandLineHelp)
             {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using TableCloth.Components;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
@@ -19,7 +20,6 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
         PreferencesManager preferencesManager,
         X509CertPairScanner certPairScanner,
         SharedLocations sharedLocations,
-        CommandLineParser commandLineParser,
         AppMessageBox appMessageBox,
         AppRestartManager appRestartManager,
         ConfigurationComposer configurationComposer,
@@ -31,7 +31,6 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
         _preferencesManager = preferencesManager;
         _certPairScanner = certPairScanner;
         _sharedLocations = sharedLocations;
-        _commandLineParser = commandLineParser;
         _appMessageBox = appMessageBox;
         _appRestartManager = appRestartManager;
         _configurationComposer = configurationComposer;
@@ -44,7 +43,6 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
     private readonly PreferencesManager _preferencesManager;
     private readonly X509CertPairScanner _certPairScanner;
     private readonly SharedLocations _sharedLocations;
-    private readonly CommandLineParser _commandLineParser;
     private readonly AppMessageBox _appMessageBox;
     private readonly AppRestartManager _appRestartManager;
     private readonly ConfigurationComposer _configurationComposer;
@@ -128,7 +126,7 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
         var directoryPath = _sharedLocations.GetImageDirectoryPath();
 
         // Command Line Parse
-        var parsedArg = _commandLineParser.ParseFromArgv();
+        var parsedArg = CommandLineArgumentModel.ParseFromArgv();
 
         if (parsedArg != null)
         {

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using TableCloth.Components;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
 using NavigationService = TableCloth.Components.NavigationService;
@@ -14,19 +15,16 @@ public sealed class MainWindowV2LoadedCommand : ViewModelCommandBase<MainWindowV
     public MainWindowV2LoadedCommand(
         ResourceCacheManager resourceCacheManager,
         NavigationService navigationService,
-        VisualThemeManager visualThemeManager,
-        CommandLineParser commandLineParser)
+        VisualThemeManager visualThemeManager)
     {
         _resourceCacheManager = resourceCacheManager;
         _navigationService = navigationService;
         _visualThemeManager = visualThemeManager;
-        _commandLineParser = commandLineParser;
     }
 
     private readonly ResourceCacheManager _resourceCacheManager;
     private readonly NavigationService _navigationService;
     private readonly VisualThemeManager _visualThemeManager;
-    private readonly CommandLineParser _commandLineParser;
 
     public override void Execute(MainWindowV2ViewModel viewModel)
     {
@@ -41,7 +39,7 @@ public sealed class MainWindowV2LoadedCommand : ViewModelCommandBase<MainWindowV
         _navigationService.Initialize(pageFrame);
         _visualThemeManager.ApplyAutoThemeChange(mainWindow);
 
-        var parsedArg = _commandLineParser.ParseFromArgv();
+        var parsedArg = CommandLineArgumentModel.ParseFromArgv();
         var services = _resourceCacheManager.CatalogDocument.Services;
 
         var commandLineSelectedService = default(CatalogInternetService);

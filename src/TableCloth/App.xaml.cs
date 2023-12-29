@@ -93,7 +93,6 @@ public partial class App : Application
             .AddSingleton<ResourceResolver>()
             .AddSingleton<LicenseDescriptor>()
             .AddSingleton<AppRestartManager>()
-            .AddSingleton<CommandLineParser>()
             .AddSingleton<CommandLineComposer>()
             .AddSingleton<ConfigurationComposer>()
             .AddSingleton<VisualThemeManager>()
