@@ -16,6 +16,7 @@ using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Interop;
+using TableCloth;
 using TableCloth.Resources;
 
 namespace Hostess

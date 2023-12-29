@@ -143,7 +143,6 @@
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Components\AppMessageBox.cs" />
     <Compile Include="LicenseDescriptor.cs" />
-    <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtectTermService.cs" />
     <Compile Include="SharedProperties.cs" />
