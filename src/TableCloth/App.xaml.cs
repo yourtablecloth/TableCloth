@@ -110,34 +110,21 @@ public partial class App : Application
             .AddSingleton<AboutThisAppCommand>();
 
         // Disclaimer Window
-        services.AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>(
-            viewModelImplementationFactory: provider => new(
-                disclaimerWindowLoadedCommand: provider.GetRequiredService<DisclaimerWindowLoadedCommand>(),
-                disclaimerWindowAcknowledgeCommand: provider.GetRequiredService<DisclaimerWindowAcknowledgeCommand>()
-            ))
+        services
+            .AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>()
             .AddSingleton<DisclaimerWindowLoadedCommand>()
             .AddSingleton<DisclaimerWindowAcknowledgeCommand>();
 
         // Input Password Window
-        services.AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>(
-            viewModelImplementationFactory: provider => new(
-                inputPasswordWindowLoadedCommand: provider.GetRequiredService<InputPasswordWindowLoadedCommand>(),
-                inputPasswordWindowConfirmCommand: provider.GetRequiredService<InputPasswordWindowConfirmCommand>(),
-                inputPasswordWindowCancelCommand: provider.GetRequiredService<InputPasswordWindowCancelCommand>()
-            ))
+        services
+            .AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>()
             .AddSingleton<InputPasswordWindowLoadedCommand>()
             .AddSingleton<InputPasswordWindowConfirmCommand>()
             .AddSingleton<InputPasswordWindowCancelCommand>();
 
         // About Window
-        services.AddWindow<AboutWindow, AboutWindowViewModel>(
-            viewModelImplementationFactory: provider => new(
-                aboutWindowLoadedCommand: provider.GetRequiredService<AboutWindowLoadedCommand>(),
-                openWebsiteCommand: provider.GetRequiredService<OpenWebsiteCommand>(),
-                showSystemInfoCommand: provider.GetRequiredService<ShowSystemInfoCommand>(),
-                checkUpdatedVersionCommand: provider.GetRequiredService<CheckUpdatedVersionCommand>(),
-                openPrivacyPolicyCommand: provider.GetRequiredService<OpenPrivacyPolicyCommand>()
-            ))
+        services
+            .AddWindow<AboutWindow, AboutWindowViewModel>()
             .AddSingleton<AboutWindowLoadedCommand>()
             .AddSingleton<OpenWebsiteCommand>()
             .AddSingleton<ShowSystemInfoCommand>()
@@ -145,74 +132,41 @@ public partial class App : Application
             .AddSingleton<OpenPrivacyPolicyCommand>();
 
         // Cert Select Window
-        services.AddWindow<CertSelectWindow, CertSelectWindowViewModel>(
-            viewModelImplementationFactory: provider =>
-                new(
-                    certSelectWindowScanCertPairCommand: provider.GetRequiredService<CertSelectWindowScanCertPairCommand>(),
-                    certSelectWindowLoadedCommand: provider.GetRequiredService<CertSelectWindowLoadedCommand>(),
-                    certSelectWindowManualCertLoadCommand: provider.GetRequiredService<CertSelectWindowManualCertLoadCommand>()
-                ))
+        services
+            .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
             .AddSingleton<CertSelectWindowScanCertPairCommand>()
             .AddSingleton<CertSelectWindowLoadedCommand>()
             .AddSingleton<CertSelectWindowManualCertLoadCommand>();
 
         // Main Window
-        services.AddWindow<MainWindow, MainWindowViewModel>(
-            viewModelImplementationFactory: provider => new(
-                mainWindowLoadedCommand: provider.GetRequiredService<MainWindowLoadedCommand>(),
-                mainWindowClosedCommand: provider.GetRequiredService<MainWindowClosedCommand>(),
-                launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
-                createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
-                appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),
-                aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>(),
-                certSelectCommand: provider.GetRequiredService<CertSelectCommand>()
-            ))
+        services
+            .AddWindow<MainWindow, MainWindowViewModel>()
             .AddSingleton<MainWindowLoadedCommand>()
             .AddSingleton<MainWindowClosedCommand>();
 
         // Main Window v2
-        services.AddWindow<MainWindowV2, MainWindowV2ViewModel>(
-            viewModelImplementationFactory: provider => new(
-                mainWindowV2LoadedCommand: provider.GetRequiredService<MainWindowV2LoadedCommand>(),
-                mainWindowClosedCommand: provider.GetRequiredService<MainWindowClosedCommand>()
-            ))
+        services
+            .AddWindow<MainWindowV2, MainWindowV2ViewModel>()
             .AddSingleton<MainWindowV2LoadedCommand>()
             .AddSingleton<MainWindowClosedCommand>();
 
         // Catalog Page
-        services.AddPage<CatalogPage, CatalogPageViewModel>(
-            addPageAsSingleton: true,
-            viewModelImplementationFactory: provider => new CatalogPageViewModel(
-                catalogPageLoadedCommand: provider.GetRequiredService<CatalogPageLoadedCommand>(),
-                catalogPageItemSelectCommand: provider.GetRequiredService<CatalogPageItemSelectCommand>(),
-                appRestartCommand: provider.GetRequiredService<AppRestartCommand>(),
-                aboutThisAppCommand: provider.GetRequiredService<AboutThisAppCommand>()
-            ))
+        services
+            .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
             .AddSingleton<CatalogPageLoadedCommand>()
             .AddSingleton<CatalogPageItemSelectCommand>();
 
         // Detail Page
-        services.AddPage<DetailPage, DetailPageViewModel>(
-            viewModelImplementationFactory: provider => new DetailPageViewModel(
-                detailPageLoadedCommand: provider.GetRequiredService<DetailPageLoadedCommand>(),
-                detailPageSearchTextLostFocusCommand: provider.GetRequiredService<DetailPageSearchTextLostFocusCommand>(),
-                detailPageGoBackCommand: provider.GetRequiredService<DetailPageGoBackCommand>(),
-                detailPageOpenHomepageLinkCommand: provider.GetRequiredService<DetailPageOpenHomepageLinkCommand>(),
-                launchSandboxCommand: provider.GetRequiredService<LaunchSandboxCommand>(),
-                createShortcutCommand: provider.GetRequiredService<CreateShortcutCommand>(),
-                copyCommandLineCommand: provider.GetRequiredService<CopyCommandLineCommand>(),
-                certSelectCommand: provider.GetRequiredService<CertSelectCommand>()
-            ))
+        services
+            .AddPage<DetailPage, DetailPageViewModel>()
             .AddSingleton<DetailPageLoadedCommand>()
             .AddSingleton<DetailPageSearchTextLostFocusCommand>()
             .AddSingleton<DetailPageGoBackCommand>()
             .AddSingleton<DetailPageOpenHomepageLinkCommand>();
 
         // Splash Screen
-        services.AddWindow<SplashScreen, SplashScreenViewModel>(
-            viewModelImplementationFactory: provider => new SplashScreenViewModel(
-                splashScreenLoadedCommand: provider.GetRequiredService<SplashScreenLoadedCommand>()
-            ))
+        services
+            .AddWindow<SplashScreen, SplashScreenViewModel>()
             .AddSingleton<SplashScreenLoadedCommand>();
 
         return services.BuildServiceProvider();
