@@ -137,18 +137,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AboutWindow.xaml.cs">
+    <Compile Include="Dialogs\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Components\AppMessageBox.cs" />
-    <Compile Include="LicenseDescriptor.cs" />
+    <Compile Include="Components\LicenseDescriptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProtectTermService.cs" />
-    <Compile Include="SharedProperties.cs" />
+    <Compile Include="Components\ProtectTermService.cs" />
+    <Compile Include="Components\SharedProperties.cs" />
     <Compile Include="Commands\ShowErrorMessageCommand.cs" />
     <Compile Include="Converters\StateToBrushConverter.cs" />
-    <Page Include="AboutWindow.xaml">
+    <Page Include="Dialogs\AboutWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -181,7 +181,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="PrecautionsWindow.xaml">
+    <Page Include="Dialogs\PrecautionsWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -207,7 +207,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PrecautionsWindow.xaml.cs">
+    <Compile Include="Dialogs\PrecautionsWindow.xaml.cs">
       <DependentUpon>PrecautionsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">

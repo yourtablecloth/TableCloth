@@ -2,7 +2,7 @@
 using System.Windows;
 using TableCloth.Resources;
 
-namespace Hostess
+namespace Hostess.Dialogs
 {
     /// <summary>
     /// Interaction logic for AboutWindow.xaml

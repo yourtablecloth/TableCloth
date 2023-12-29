@@ -6,7 +6,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.ServiceProcess;
 
-namespace Hostess
+namespace Hostess.Components
 {
     // https://stackoverflow.com/questions/15771998/how-to-give-a-user-permission-to-start-and-stop-a-particular-service-using-c-sha
     // https://docs.microsoft.com/en-us/windows/win32/services/service-security-and-access-rights

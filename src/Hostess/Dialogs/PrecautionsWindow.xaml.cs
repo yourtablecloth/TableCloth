@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Hostess.Components;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
-namespace Hostess
+namespace Hostess.Dialogs
 {
     public partial class PrecautionsWindow : Window
     {

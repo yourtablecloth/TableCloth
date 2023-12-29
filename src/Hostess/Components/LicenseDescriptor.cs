@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Hostess
+namespace Hostess.Components
 {
     internal static class LicenseDescriptor
     {

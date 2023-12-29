@@ -1,4 +1,6 @@
-﻿using Hostess.Themes;
+﻿using Hostess.Components;
+using Hostess.Dialogs;
+using Hostess.Themes;
 using Hostess.ViewModels;
 using Microsoft.Win32;
 using System;
