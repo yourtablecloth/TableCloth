@@ -8,14 +8,14 @@ namespace TableCloth.Commands.AboutWindow;
 public sealed class AboutWindowLoadedCommand : CommandBase
 {
     public AboutWindowLoadedCommand(
-        CatalogDeserializer catalogDeserializer,
+        ResourceResolver resourceResolver,
         LicenseDescriptor licenseDescriptor)
     {
-        _catalogDeserializer = catalogDeserializer;
+        _resourceResolver = resourceResolver;
         _licenseDescriptor = licenseDescriptor;
     }
 
-    private readonly CatalogDeserializer _catalogDeserializer;
+    private readonly ResourceResolver _resourceResolver;
     private readonly LicenseDescriptor _licenseDescriptor;
 
     public override async void Execute(object? parameter)
@@ -26,7 +26,7 @@ public sealed class AboutWindowLoadedCommand : CommandBase
             throw new ArgumentNullException(nameof(viewModel));
 
         viewModel.AppVersion = StringResources.Get_AppVersion();
-        viewModel.CatalogDate = _catalogDeserializer.CatalogLastModified?.ToString("yyyy-MM-dd HH:mm:ss") ?? StringResources.UnknownText;
+        viewModel.CatalogDate = _resourceResolver.CatalogLastModified?.ToString("yyyy-MM-dd HH:mm:ss") ?? StringResources.UnknownText;
         viewModel.LicenseDetails = await _licenseDescriptor.GetLicenseDescriptions();
     }
 }

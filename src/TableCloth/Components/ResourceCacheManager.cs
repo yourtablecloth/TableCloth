@@ -14,16 +14,13 @@ namespace TableCloth.Components;
 public sealed class ResourceCacheManager
 {
     public ResourceCacheManager(
-        CatalogDeserializer catalogDeserializer,
         SharedLocations sharedLocations,
         ResourceResolver resourceResolver)
     {
-        _catalogDeserializer = catalogDeserializer;
         _sharedLocations = sharedLocations;
         _resourceResolver = resourceResolver;
     }
 
-    private readonly CatalogDeserializer _catalogDeserializer;
     private readonly SharedLocations _sharedLocations;
     private readonly ResourceResolver _resourceResolver;
 
@@ -31,7 +28,7 @@ public sealed class ResourceCacheManager
     private Dictionary<string, ImageSource> _imageTable = new Dictionary<string, ImageSource>();
 
     public async Task<CatalogDocument> LoadCatalogDocumentAsync(CancellationToken cancellationToken = default)
-        => _catalogDocument = await _catalogDeserializer.DeserializeCatalogAsync(cancellationToken).ConfigureAwait(false);
+        => _catalogDocument = await _resourceResolver.DeserializeCatalogAsync(cancellationToken).ConfigureAwait(false);
 
     public async Task LoadSiteImages(CancellationToken cancellationToken = default)
     {

@@ -53,24 +53,4 @@ public sealed class NavigationService
         _frame.GoBack();
         return true;
     }
-
-    public bool GoForward()
-    {
-        if (_frame == default)
-            throw new InvalidOperationException($"You should initialize {nameof(NavigationService)} before use.");
-
-        if (!_frame.CanGoForward)
-            return false;
-
-        _frame.GoForward();
-        return true;
-    }
-
-    public void Refresh()
-    {
-        if (_frame == default)
-            throw new InvalidOperationException($"You should initialize {nameof(NavigationService)} before use.");
-
-        _frame.Refresh();
-    }
 }

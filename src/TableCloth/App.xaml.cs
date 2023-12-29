@@ -84,7 +84,6 @@ public partial class App : Application
             .AddSingleton<SharedLocations>()
             .AddSingleton<PreferencesManager>()
             .AddSingleton<X509CertPairScanner>()
-            .AddSingleton<CatalogDeserializer>()
             .AddSingleton<ResourceCacheManager>()
             .AddSingleton<SandboxBuilder>()
             .AddSingleton<SandboxLauncher>()
