@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Hostess.Components;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -16,6 +18,15 @@ namespace Hostess
 {
     public partial class App : Application
     {
+        public App()
+        {
+            InitializeComponent();
+
+            Services = ConfigureServices();
+        }
+
+        public IServiceProvider Services { get; }
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             ServicePointManager.ServerCertificateValidationCallback += ValidateRemoteCertificate;
@@ -157,6 +168,20 @@ namespace Hostess
                 MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
             return false;
+        }
+
+        private IServiceProvider ConfigureServices()
+        {
+            var services = new ServiceCollection();
+
+            // Add HTTP Service
+            services.AddHttpClient(nameof(Hostess), c => c.DefaultRequestHeaders.Add("User-Agent", StringResources.UserAgentText));
+
+            // Components
+            services
+                .AddSingleton<AppMessageBox>();
+
+            return services.BuildServiceProvider();
         }
     }
 }
