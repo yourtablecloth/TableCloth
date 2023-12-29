@@ -10,7 +10,7 @@
         Title="{StaticResource CertSelectWindow_Title}" Width="480" Height="320"
         MinWidth="640" MinHeight="480"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
-        d:DataContext="{d:DesignInstance Type=vm:CertSelectWindowViewModel, IsDesignTimeCreatable=True}">
+        d:DataContext="{d:DesignInstance Type=vm:CertSelectWindowViewModelForDesigner, IsDesignTimeCreatable=True}">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding CertSelectWindowLoadedCommand}">

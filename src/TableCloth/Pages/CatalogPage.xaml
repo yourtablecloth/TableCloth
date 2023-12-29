@@ -11,7 +11,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="{StaticResource CatalogPage_Title}"
-      d:DataContext="{d:DesignInstance Type=vm:CatalogPageViewModel, IsDesignTimeCreatable=True}">
+      d:DataContext="{d:DesignInstance Type=vm:CatalogPageViewModelForDesigner, IsDesignTimeCreatable=True}">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding CatalogPageLoadedCommand}">

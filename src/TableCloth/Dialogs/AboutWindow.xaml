@@ -7,7 +7,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:TableCloth.Dialogs"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type=vm:AboutWindowViewModel, IsDesignTimeCreatable=True}"
+        d:DataContext="{d:DesignInstance Type=vm:AboutWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
         Style="{DynamicResource MainWindowStyle}"
         Title="{StaticResource AboutWindow_Title}" Width="640" Height="480" MinWidth="320" MinHeight="240">
     <i:Interaction.Triggers>

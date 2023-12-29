@@ -12,7 +12,7 @@
         Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
         Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
-        d:DataContext="{d:DesignInstance Type=vm:SplashScreenViewModel, IsDesignTimeCreatable=True}">
+        d:DataContext="{d:DesignInstance Type=vm:SplashScreenViewModelForDesigner, IsDesignTimeCreatable=True}">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding SplashScreenLoadedCommand}">

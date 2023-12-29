@@ -6,11 +6,13 @@ using TableCloth.Models.Configuration;
 
 namespace TableCloth.ViewModels;
 
+[Obsolete("This class is reserved for design-time usage.", false)]
+public class CertSelectWindowViewModelForDesigner : CertSelectWindowViewModel { }
+
 public class CertSelectWindowViewModel : ViewModelBase
 {
-    [Obsolete("This constructor should be used only in design time context.")]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public CertSelectWindowViewModel() { }
+    protected CertSelectWindowViewModel() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public CertSelectWindowViewModel(

@@ -11,7 +11,7 @@
         WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner"
         Title="{StaticResource DisclaimerWindow_Title}" Height="320" Width="480"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
-        d:DataContext="{d:DesignInstance Type=vm:DisclaimerWindowViewModel, IsDesignTimeCreatable=True}">
+        d:DataContext="{d:DesignInstance Type=vm:DisclaimerWindowViewModelForDesigner, IsDesignTimeCreatable=True}">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding DisclaimerWindowLoadedCommand}">
