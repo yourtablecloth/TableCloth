@@ -2,9 +2,9 @@
 using TableCloth.Components;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Commands;
+namespace TableCloth.Commands.Shared;
 
-public sealed class CertSelectCommand : CommandBase
+public sealed class CertSelectCommand : ViewModelCommandBase<ITableClothViewModel>
 {
     public CertSelectCommand(
         AppUserInterface appUserInterface)
@@ -17,11 +17,8 @@ public sealed class CertSelectCommand : CommandBase
     public AppUserInterface AppUserInterface
         => _appUserInterface;
 
-    public override void Execute(object? parameter)
+    public override void Execute(ITableClothViewModel viewModel)
     {
-        if (parameter is not ITableClothViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         var certSelectWindow = _appUserInterface.CreateCertSelectWindow();
         var response = certSelectWindow.ShowDialog();
 

@@ -10,7 +10,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.MainWindow;
 
-public sealed class MainWindowLoadedCommand : CommandBase
+public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowViewModel>
 {
     public MainWindowLoadedCommand(
         ResourceCacheManager resourceCacheManager,
@@ -50,11 +50,8 @@ public sealed class MainWindowLoadedCommand : CommandBase
     private readonly ConfigurationComposer _configurationComposer;
     private readonly SandboxLauncher _sandboxLauncher;
 
-    public override void Execute(object? parameter)
+    public override void Execute(MainWindowViewModel viewModel)
     {
-        if (parameter is not MainWindowViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         _visualThemeManager.ApplyAutoThemeChange(
             Application.Current.MainWindow);
 

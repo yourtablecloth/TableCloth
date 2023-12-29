@@ -4,9 +4,9 @@ using TableCloth.Components;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Commands;
+namespace TableCloth.Commands.Shared;
 
-public sealed class CopyCommandLineCommand : CommandBase
+public sealed class CopyCommandLineCommand : ViewModelCommandBase<ITableClothViewModel>
 {
     public CopyCommandLineCommand(
         CommandLineComposer commandLineComposer,
@@ -19,11 +19,8 @@ public sealed class CopyCommandLineCommand : CommandBase
     private readonly CommandLineComposer _commandLineComposer;
     private readonly AppMessageBox _appMessageBox;
 
-    public override void Execute(object? parameter)
+    public override void Execute(ITableClothViewModel viewModel)
     {
-        if (parameter is not ITableClothViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         var expression = _commandLineComposer.ComposeCommandLineExpression(viewModel, true);
         Clipboard.SetText(expression);
 

@@ -2,13 +2,12 @@
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Windows.Media.Imaging;
 using TableCloth.Components;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.DetailPage;
 
-public sealed class DetailPageLoadedCommand : CommandBase
+public sealed class DetailPageLoadedCommand : ViewModelCommandBase<DetailPageViewModel>
 {
     public DetailPageLoadedCommand(
         ResourceCacheManager resourceCacheManager,
@@ -39,13 +38,13 @@ public sealed class DetailPageLoadedCommand : CommandBase
     private readonly ConfigurationComposer _configurationComposer;
     private readonly SandboxLauncher _sandboxLauncher;
 
-    public override void Execute(object? parameter)
+    public override void Execute(DetailPageViewModel viewModel)
     {
-        if (parameter is not DetailPageViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
+        if (viewModel.SelectedService == null)
+            return;
 
         var services = _resourceCacheManager.CatalogDocument?.Services;
-        var selectedServiceId = viewModel.SelectedService?.Id;
+        var selectedServiceId = viewModel.SelectedService.Id;
         var selectedService = services?.Where(x => string.Equals(x.Id, selectedServiceId, StringComparison.Ordinal)).FirstOrDefault();
         viewModel.SelectedService = selectedService;
 
@@ -69,7 +68,7 @@ public sealed class DetailPageLoadedCommand : CommandBase
         var targetFilePath = Path.Combine(_sharedLocations.GetImageDirectoryPath(), $"{selectedServiceId}.png");
 
         if (File.Exists(targetFilePath))
-            viewModel.ServiceLogo = new BitmapImage(new Uri(targetFilePath));
+            viewModel.ServiceLogo = _resourceCacheManager.GetImage(selectedServiceId);
 
         var foundCandidate = _certPairScanner.ScanX509Pairs(_certPairScanner.GetCandidateDirectories()).FirstOrDefault();
 

@@ -9,7 +9,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.SplashScreen;
 
-public sealed class SplashScreenLoadedCommand : CommandBase
+public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScreenViewModel>
 {
     public SplashScreenLoadedCommand(
         AppStartup appStartup,
@@ -34,11 +34,8 @@ public sealed class SplashScreenLoadedCommand : CommandBase
     private readonly ResourceCacheManager _resourceCacheManager;
     private readonly VisualThemeManager _visualThemeManager;
 
-    public override async void Execute(object? parameter)
+    public override async void Execute(SplashScreenViewModel viewModel)
     {
-        if (parameter is not SplashScreenViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         _visualThemeManager.ApplyAutoThemeChange(
             Application.Current.MainWindow);
 

@@ -5,7 +5,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.AboutWindow;
 
-public sealed class AboutWindowLoadedCommand : CommandBase
+public sealed class AboutWindowLoadedCommand : ViewModelCommandBase<AboutWindowViewModel>
 {
     public AboutWindowLoadedCommand(
         ResourceResolver resourceResolver,
@@ -18,13 +18,8 @@ public sealed class AboutWindowLoadedCommand : CommandBase
     private readonly ResourceResolver _resourceResolver;
     private readonly LicenseDescriptor _licenseDescriptor;
 
-    public override async void Execute(object? parameter)
+    public override async void Execute(AboutWindowViewModel viewModel)
     {
-        var viewModel = parameter as AboutWindowViewModel;
-
-        if (viewModel == null)
-            throw new ArgumentNullException(nameof(viewModel));
-
         viewModel.AppVersion = StringResources.Get_AppVersion();
         viewModel.CatalogDate = _resourceResolver.CatalogLastModified?.ToString("yyyy-MM-dd HH:mm:ss") ?? StringResources.UnknownText;
         viewModel.LicenseDetails = await _licenseDescriptor.GetLicenseDescriptions();

@@ -4,7 +4,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.DetailPage;
 
-public sealed class DetailPageGoBackCommand : CommandBase
+public sealed class DetailPageGoBackCommand : ViewModelCommandBase<DetailPageViewModel>
 {
     public DetailPageGoBackCommand(
         NavigationService navigationService)
@@ -14,11 +14,6 @@ public sealed class DetailPageGoBackCommand : CommandBase
 
     private readonly NavigationService _navigationService;
 
-    public override void Execute(object? parameter)
-    {
-        if (parameter is not DetailPageViewModel /*viewModel*/)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
-        _navigationService.NavigateToCatalog(string.Empty);
-    }
+    public override void Execute(DetailPageViewModel viewModel)
+        => _navigationService.NavigateToCatalog(string.Empty);
 }

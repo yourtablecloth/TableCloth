@@ -11,6 +11,7 @@ using TableCloth.Commands.DisclaimerWindow;
 using TableCloth.Commands.InputPasswordWindow;
 using TableCloth.Commands.MainWindow;
 using TableCloth.Commands.MainWindowV2;
+using TableCloth.Commands.Shared;
 using TableCloth.Commands.SplashScreen;
 using TableCloth.Components;
 using TableCloth.Dialogs;
@@ -174,10 +175,10 @@ public partial class App : Application
         services.AddWindow<MainWindowV2, MainWindowV2ViewModel>(
             viewModelImplementationFactory: provider => new(
                 mainWindowV2LoadedCommand: provider.GetRequiredService<MainWindowV2LoadedCommand>(),
-                mainWindowV2ClosedCommand: provider.GetRequiredService<MainWindowV2ClosedCommand>()
+                mainWindowClosedCommand: provider.GetRequiredService<MainWindowClosedCommand>()
             ))
             .AddSingleton<MainWindowV2LoadedCommand>()
-            .AddSingleton<MainWindowV2ClosedCommand>();
+            .AddSingleton<MainWindowClosedCommand>();
 
         // Catalog Page
         services.AddPage<CatalogPage, CatalogPageViewModel>(

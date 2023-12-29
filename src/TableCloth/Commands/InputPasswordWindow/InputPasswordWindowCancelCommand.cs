@@ -4,13 +4,10 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.InputPasswordWindow;
 
-public sealed class InputPasswordWindowCancelCommand : CommandBase
+public sealed class InputPasswordWindowCancelCommand : ViewModelCommandBase<InputPasswordWindowViewModel>
 {
-    public override void Execute(object? parameter)
+    public override void Execute(InputPasswordWindowViewModel viewModel)
     {
-        if (parameter is not InputPasswordWindowViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         viewModel.ValidatedCertPair = null;
         viewModel.RequestClose(this, new DialogRequestEventArgs(false));
     }

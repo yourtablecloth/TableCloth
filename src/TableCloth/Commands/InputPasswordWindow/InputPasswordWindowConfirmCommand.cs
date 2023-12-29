@@ -6,7 +6,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.InputPasswordWindow;
 
-public sealed class InputPasswordWindowConfirmCommand : CommandBase
+public sealed class InputPasswordWindowConfirmCommand : ViewModelCommandBase<InputPasswordWindowViewModel>
 {
     public InputPasswordWindowConfirmCommand(
         X509CertPairScanner certPairScanner,
@@ -19,11 +19,8 @@ public sealed class InputPasswordWindowConfirmCommand : CommandBase
     private readonly X509CertPairScanner _certPairScanner;
     private readonly AppMessageBox _appMessageBox;
 
-    public override void Execute(object? parameter)
+    public override void Execute(InputPasswordWindowViewModel viewModel)
     {
-        if (parameter is not InputPasswordWindowViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         try
         {
             if (viewModel.PfxFilePath == null)

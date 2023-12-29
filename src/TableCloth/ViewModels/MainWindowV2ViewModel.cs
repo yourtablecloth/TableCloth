@@ -1,4 +1,5 @@
 ﻿using System;
+using TableCloth.Commands;
 using TableCloth.Commands.MainWindowV2;
 
 namespace TableCloth.ViewModels;
@@ -14,18 +15,18 @@ public class MainWindowV2ViewModel : ViewModelBase
 
     public MainWindowV2ViewModel(
         MainWindowV2LoadedCommand mainWindowV2LoadedCommand,
-        MainWindowV2ClosedCommand mainWindowV2ClosedCommand)
+        MainWindowClosedCommand mainWindowClosedCommand)
     {
         _mainWindowV2LoadedCommand = mainWindowV2LoadedCommand;
-        _mainWindowV2ClosedCommand = mainWindowV2ClosedCommand;
+        _mainWindowClosedCommand = mainWindowClosedCommand;
     }
 
     private readonly MainWindowV2LoadedCommand _mainWindowV2LoadedCommand;
-    private readonly MainWindowV2ClosedCommand _mainWindowV2ClosedCommand;
+    private readonly MainWindowClosedCommand _mainWindowClosedCommand;
 
     public MainWindowV2LoadedCommand MainWindowV2LoadedCommand
         => _mainWindowV2LoadedCommand;
 
-    public MainWindowV2ClosedCommand MainWindowV2ClosedCommand
-        => _mainWindowV2ClosedCommand;
+    public MainWindowClosedCommand MainWindowClosedCommand
+        => _mainWindowClosedCommand;
 }

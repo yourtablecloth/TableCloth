@@ -5,7 +5,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CertSelectWindow;
 
-public sealed class CertSelectWindowScanCertPairCommand : CommandBase
+public sealed class CertSelectWindowScanCertPairCommand : ViewModelCommandBase<CertSelectWindowViewModel>
 {
     public CertSelectWindowScanCertPairCommand(
         X509CertPairScanner certPairScanner)
@@ -15,11 +15,8 @@ public sealed class CertSelectWindowScanCertPairCommand : CommandBase
 
     private readonly X509CertPairScanner _certPairScanner;
 
-    public override void Execute(object? parameter)
+    public override void Execute(CertSelectWindowViewModel viewModel)
     {
-        if (parameter is not CertSelectWindowViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         viewModel.SelectedCertPair = default;
         viewModel.CertPairs = _certPairScanner.ScanX509Pairs(
             _certPairScanner.GetCandidateDirectories()).ToList();

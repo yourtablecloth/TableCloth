@@ -8,7 +8,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CatalogPage;
 
-public sealed class CatalogPageLoadedCommand : CommandBase
+public sealed class CatalogPageLoadedCommand : ViewModelCommandBase<CatalogPageViewModel>
 {
     public CatalogPageLoadedCommand(
         ResourceCacheManager resourceCacheManager)
@@ -21,11 +21,8 @@ public sealed class CatalogPageLoadedCommand : CommandBase
     private static readonly PropertyGroupDescription GroupDescription =
         new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
 
-    public override void Execute(object? parameter)
+    public override void Execute(CatalogPageViewModel viewModel)
     {
-        if (parameter is not CatalogPageViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         var doc = _resourceCacheManager.CatalogDocument;
         var services = doc.Services.OrderBy(service =>
         {

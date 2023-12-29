@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TableCloth.Commands;
 using TableCloth.Commands.MainWindow;
+using TableCloth.Commands.Shared;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 

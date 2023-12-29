@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
-using TableCloth.Commands;
 using TableCloth.Commands.DetailPage;
+using TableCloth.Commands.Shared;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;

@@ -3,13 +3,8 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.DisclaimerWindow;
 
-public sealed class DisclaimerWindowLoadedCommand : CommandBase
+public sealed class DisclaimerWindowLoadedCommand : ViewModelCommandBase<DisclaimerWindowViewModel>
 {
-    public override void Execute(object? parameter)
-    {
-        if (parameter is not DisclaimerWindowViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
-        viewModel.NotifyViewLoaded(this, EventArgs.Empty);
-    }
+    public override void Execute(DisclaimerWindowViewModel viewModel)
+        => viewModel.NotifyViewLoaded(this, EventArgs.Empty);
 }

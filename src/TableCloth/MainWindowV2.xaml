@@ -21,7 +21,7 @@
             </i:InvokeCommandAction>
         </i:EventTrigger>
         <i:EventTrigger EventName="Closed">
-            <i:InvokeCommandAction Command="{Binding MainWindowV2ClosedCommand}">
+            <i:InvokeCommandAction Command="{Binding MainWindowClosedCommand}">
                 <i:InvokeCommandAction.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </i:InvokeCommandAction.CommandParameter>

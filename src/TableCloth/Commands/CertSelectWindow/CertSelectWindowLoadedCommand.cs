@@ -3,7 +3,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CertSelectWindow;
 
-public sealed class CertSelectWindowLoadedCommand : CommandBase
+public sealed class CertSelectWindowLoadedCommand : ViewModelCommandBase<CertSelectWindowViewModel>
 {
     public CertSelectWindowLoadedCommand(
         CertSelectWindowScanCertPairCommand scanCertPairCommand)
@@ -13,12 +13,9 @@ public sealed class CertSelectWindowLoadedCommand : CommandBase
 
     private readonly CertSelectWindowScanCertPairCommand _scanCertPairCommand;
 
-    public override void Execute(object? parameter)
+    public override void Execute(CertSelectWindowViewModel viewModel)
     {
-        if (parameter is not CertSelectWindowViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
-        if (_scanCertPairCommand.CanExecute(parameter))
-            _scanCertPairCommand.Execute(parameter);
+        if (_scanCertPairCommand.CanExecute(viewModel))
+            _scanCertPairCommand.Execute(viewModel);
     }
 }

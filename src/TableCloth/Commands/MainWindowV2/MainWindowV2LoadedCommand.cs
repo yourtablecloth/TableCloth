@@ -9,7 +9,7 @@ using NavigationService = TableCloth.Components.NavigationService;
 
 namespace TableCloth.Commands.MainWindowV2;
 
-public sealed class MainWindowV2LoadedCommand : CommandBase
+public sealed class MainWindowV2LoadedCommand : ViewModelCommandBase<MainWindowV2ViewModel>
 {
     public MainWindowV2LoadedCommand(
         ResourceCacheManager resourceCacheManager,
@@ -28,11 +28,8 @@ public sealed class MainWindowV2LoadedCommand : CommandBase
     private readonly VisualThemeManager _visualThemeManager;
     private readonly CommandLineParser _commandLineParser;
 
-    public override void Execute(object? parameter)
+    public override void Execute(MainWindowV2ViewModel viewModel)
     {
-        if (parameter is not MainWindowV2ViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         const string pageFrameName = "PageFrame";
 
         var mainWindow = Application.Current.MainWindow;

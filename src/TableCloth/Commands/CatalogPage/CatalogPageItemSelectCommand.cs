@@ -4,7 +4,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CatalogPage;
 
-public sealed class CatalogPageItemSelectCommand : CommandBase
+public sealed class CatalogPageItemSelectCommand : ViewModelCommandBase<CatalogPageViewModel>
 {
     public CatalogPageItemSelectCommand(
         NavigationService navigationService)
@@ -14,11 +14,8 @@ public sealed class CatalogPageItemSelectCommand : CommandBase
 
     private readonly NavigationService _navigationService;
 
-    public override void Execute(object? parameter)
+    public override void Execute(CatalogPageViewModel viewModel)
     {
-        if (parameter is not CatalogPageViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         if (viewModel.SelectedService == null)
             return;
 

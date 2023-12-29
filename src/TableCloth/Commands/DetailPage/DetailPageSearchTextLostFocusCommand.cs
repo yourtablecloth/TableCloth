@@ -4,7 +4,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.DetailPage;
 
-public sealed class DetailPageSearchTextLostFocusCommand : CommandBase
+public sealed class DetailPageSearchTextLostFocusCommand : ViewModelCommandBase<DetailPageViewModel>
 {
     public DetailPageSearchTextLostFocusCommand(
         NavigationService navigationService)
@@ -14,11 +14,6 @@ public sealed class DetailPageSearchTextLostFocusCommand : CommandBase
 
     private readonly NavigationService _navigationService;
 
-    public override void Execute(object? parameter)
-    {
-        if (parameter is not DetailPageViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
-        _navigationService.NavigateToCatalog(viewModel.SearchKeyword);
-    }
+    public override void Execute(DetailPageViewModel viewModel)
+        => _navigationService.NavigateToCatalog(viewModel.SearchKeyword);
 }

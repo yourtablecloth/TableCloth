@@ -4,13 +4,10 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.DetailPage;
 
-public sealed class DetailPageOpenHomepageLinkCommand : CommandBase
+public sealed class DetailPageOpenHomepageLinkCommand : ViewModelCommandBase<DetailPageViewModel>
 {
-    public override void Execute(object? parameter)
+    public override void Execute(DetailPageViewModel viewModel)
     {
-        if (parameter is not DetailPageViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         if (!Uri.TryCreate(viewModel.Url, UriKind.Absolute, out var parsedUri) || parsedUri == null)
             return;
 

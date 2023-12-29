@@ -3,13 +3,8 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.InputPasswordWindow;
 
-public sealed class InputPasswordWindowLoadedCommand : CommandBase
+public sealed class InputPasswordWindowLoadedCommand : ViewModelCommandBase<InputPasswordWindowViewModel>
 {
-    public override void Execute(object? parameter)
-    {
-        if (parameter is not InputPasswordWindowViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
-        viewModel.NotifyViewLoaded(this, EventArgs.Empty);
-    }
+    public override void Execute(InputPasswordWindowViewModel viewModel)
+        => viewModel.NotifyViewLoaded(this, EventArgs.Empty);
 }

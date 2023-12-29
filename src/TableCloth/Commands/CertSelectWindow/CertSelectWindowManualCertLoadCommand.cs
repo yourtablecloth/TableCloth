@@ -10,7 +10,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CertSelectWindow;
 
-public sealed class CertSelectWindowManualCertLoadCommand : CommandBase
+public sealed class CertSelectWindowManualCertLoadCommand : ViewModelCommandBase<CertSelectWindowViewModel>
 {
     public CertSelectWindowManualCertLoadCommand(
         AppUserInterface appUserInterface,
@@ -23,11 +23,8 @@ public sealed class CertSelectWindowManualCertLoadCommand : CommandBase
     private readonly AppUserInterface _appUserInterface;
     private readonly X509CertPairScanner _certPairScanner;
 
-    public override void Execute(object? parameter)
+    public override void Execute(CertSelectWindowViewModel viewModel)
     {
-        if (parameter is not CertSelectWindowViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
         var ofd = new OpenFileDialog()
         {
             AddExtension = true,

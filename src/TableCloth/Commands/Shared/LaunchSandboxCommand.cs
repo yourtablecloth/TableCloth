@@ -2,9 +2,9 @@
 using TableCloth.Components;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Commands;
+namespace TableCloth.Commands.Shared;
 
-public sealed class LaunchSandboxCommand : CommandBase
+public sealed class LaunchSandboxCommand : ViewModelCommandBase<ITableClothViewModel>
 {
     public LaunchSandboxCommand(
         SandboxLauncher sandboxLauncher,
@@ -18,14 +18,8 @@ public sealed class LaunchSandboxCommand : CommandBase
     private readonly ConfigurationComposer _configurationComposer;
 
     protected override bool EvaluateCanExecute()
-        => (!Helpers.GetSandboxRunningState());
+        => !Helpers.GetSandboxRunningState();
 
-    public override void Execute(object? parameter)
-    {
-        if (parameter is not ITableClothViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
-
-        var config = _configurationComposer.GetConfigurationFromViewModel(viewModel);
-        _sandboxLauncher.RunSandbox(config);
-    }
+    public override void Execute(ITableClothViewModel viewModel)
+        => _sandboxLauncher.RunSandbox(_configurationComposer.GetConfigurationFromViewModel(viewModel));
 }
