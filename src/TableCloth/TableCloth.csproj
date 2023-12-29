@@ -53,6 +53,7 @@
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
     <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="XamlRadialProgressBar" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>

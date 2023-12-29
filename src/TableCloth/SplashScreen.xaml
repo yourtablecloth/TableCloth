@@ -5,6 +5,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:TableCloth.ViewModels"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:xrpb="http://XamlRadialProgressBar/DotNet"
         mc:Ignorable="d"
         Title="Splash Screen" Height="400" Width="600"
         WindowStartupLocation="CenterScreen"
@@ -37,7 +38,8 @@
 
             <!-- Circular Progress Indicator -->
             <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <ProgressBar Height="12" IsIndeterminate="True" />
+                <xrpb:RadialProgressBar ArcMode="Fill"  ArcDirection="Counterclockwise" ShapeModeStep="2" ArcRotationDegree="90"
+                                        ShapeModeWidth="32" Width="100" Height="100" IsIndeterminate="True" Foreground="{DynamicResource ControlDefaultForeground}" />
                 <TextBlock Text="{Binding Status}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
             </StackPanel>
         </Grid>

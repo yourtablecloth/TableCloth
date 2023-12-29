@@ -153,6 +153,8 @@ namespace TableCloth.Resources
 
         internal static readonly string Status_LoadingPreferences = "환경 설정 불러오는 중...";
 
+        internal static readonly string Status_CheckInternetConnection = "인터넷 연결 상태 확인 중...";
+
         internal static readonly string Status_EvaluatingRequirementsMet = "시스템 환경 확인 중...";
 
         internal static readonly string Status_InitializingApplication = "애플리케이션 초기화 중...";
@@ -228,6 +230,9 @@ namespace TableCloth.Resources
 
         internal static string Error_Unknown([CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
             => $"예기치 않은 오류가 발생했습니다. (파일: {file} (행: {line}), 멤버: {member})";
+
+        internal static string Info_Offline
+            = "시스템이 인터넷과 연결되지 않은 것 같습니다. 모든 기능을 사용하려면 인터넷에 연결한 후 식탁보 프로그램을 다시 실행해 주세요.";
 
         internal static readonly string Error_Already_TableCloth_Running
             = "이미 식탁보 프로그램이 실행되고 있어요.";

@@ -2,13 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Management;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Resources;
+using Windows.Networking.Connectivity;
 
 namespace TableCloth.Components;
 
@@ -16,10 +21,12 @@ public sealed class AppStartup : IDisposable
 {
     public AppStartup(
         SharedLocations sharedLocations,
-        ILogger<AppStartup> logger)
+        ILogger<AppStartup> logger,
+        IHttpClientFactory httpClientFactory)
     {
         _sharedLocations = sharedLocations;
         _logger = logger;
+        _httpClientFactory = httpClientFactory;
 
         _mutex = new Mutex(true, $"Global\\{GetType().FullName}", out this._isFirstInstance);
     }
@@ -48,9 +55,33 @@ public sealed class AppStartup : IDisposable
     private bool _disposed;
     private readonly SharedLocations _sharedLocations;
     private readonly ILogger<AppStartup> _logger;
+    private readonly IHttpClientFactory _httpClientFactory;
 
     private readonly Mutex _mutex;
     private readonly bool _isFirstInstance;
+
+    public async Task<bool> CheckForInternetConnection(
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var currentUICulture = CultureInfo.InstalledUICulture;
+            var testUri = "http://www.gstatic.com/generate_204";
+
+            if (currentUICulture.Name.StartsWith("fa", StringComparison.Ordinal))
+                testUri = "http://www.aparat.com";
+            else if (currentUICulture.Name.StartsWith("zh", StringComparison.Ordinal))
+                testUri = "http://www.baidu.com";
+
+            var client = _httpClientFactory.CreateTableClothHttpClient();
+            using var response = await client.GetAsync(new Uri(testUri, UriKind.Absolute), cancellationToken).ConfigureAwait(false);
+            return response.IsSuccessStatusCode;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
     public bool HasRequirementsMet(IList<string> warnings, out Exception? failedReason, out bool isCritical)
     {

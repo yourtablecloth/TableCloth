@@ -43,7 +43,6 @@ public sealed class SplashScreenLoadedCommand : CommandBase
         _visualThemeManager.ApplyAutoThemeChange(
             Application.Current.MainWindow);
 
-        await Task.Delay(5000);
         try
         {
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
@@ -74,6 +73,12 @@ public sealed class SplashScreenLoadedCommand : CommandBase
             var preferences = _preferencesManager.LoadPreferences();
             viewModel.V2UIOptedIn = preferences?.V2UIOptIn ?? true;
             viewModel.ParsedArgument = parsedArgs;
+
+            viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
+                StringResources.Status_CheckInternetConnection));
+
+            if (!await _appStartup.CheckForInternetConnection())
+                _appMessageBox.DisplayError(StringResources.Info_Offline, false);
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_EvaluatingRequirementsMet));
