@@ -161,6 +161,8 @@ namespace TableCloth.Resources
 
         internal static readonly string Status_LoadingCatalog = "카탈로그 불러오는 중...";
 
+        internal static readonly string Status_LoadingImages = "이미지 불러오는 중...";
+
         internal static readonly string Status_InitializingFailed = "오류가 발생했습니다.";
 
         internal static readonly string Status_Done = "실행 준비가 완료되었습니다.";

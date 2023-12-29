@@ -19,7 +19,6 @@ public sealed class MainWindowLoadedCommand : CommandBase
         PreferencesManager preferencesManager,
         X509CertPairScanner certPairScanner,
         SharedLocations sharedLocations,
-        ResourceResolver resourceResolver,
         CommandLineParser commandLineParser,
         AppMessageBox appMessageBox,
         AppRestartManager appRestartManager,
@@ -32,7 +31,6 @@ public sealed class MainWindowLoadedCommand : CommandBase
         _preferencesManager = preferencesManager;
         _certPairScanner = certPairScanner;
         _sharedLocations = sharedLocations;
-        _resourceResolver = resourceResolver;
         _commandLineParser = commandLineParser;
         _appMessageBox = appMessageBox;
         _appRestartManager = appRestartManager;
@@ -46,14 +44,13 @@ public sealed class MainWindowLoadedCommand : CommandBase
     private readonly PreferencesManager _preferencesManager;
     private readonly X509CertPairScanner _certPairScanner;
     private readonly SharedLocations _sharedLocations;
-    private readonly ResourceResolver _resourceResolver;
     private readonly CommandLineParser _commandLineParser;
     private readonly AppMessageBox _appMessageBox;
     private readonly AppRestartManager _appRestartManager;
     private readonly ConfigurationComposer _configurationComposer;
     private readonly SandboxLauncher _sandboxLauncher;
 
-    public override async void Execute(object? parameter)
+    public override void Execute(object? parameter)
     {
         if (parameter is not MainWindowViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
@@ -132,9 +129,6 @@ public sealed class MainWindowLoadedCommand : CommandBase
         }
 
         var directoryPath = _sharedLocations.GetImageDirectoryPath();
-
-        if (services != null)
-            await _resourceResolver.LoadSiteImages(services, directoryPath).ConfigureAwait(false);
 
         // Command Line Parse
         var parsedArg = _commandLineParser.ParseFromArgv();

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
-using System.IO;
 using System.Windows.Data;
 using TableCloth.Components;
 
@@ -9,20 +8,14 @@ namespace TableCloth.Converters;
 
 public class ServiceLogoConverter : IValueConverter
 {
+    private CatalogCacheManager? _catalogCacheManager;
+
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        var locationService = App.Current.Services.GetRequiredService<SharedLocations>();
-        var serviceId = value as string;
+        if (_catalogCacheManager == null)
+            _catalogCacheManager = App.Current.Services.GetRequiredService<CatalogCacheManager>();
 
-        if (string.IsNullOrWhiteSpace(serviceId))
-            throw new ArgumentException(nameof(value));
-
-        string targetFilePath = Path.Combine(locationService.GetImageDirectoryPath(), $"{serviceId}.png");
-
-        if (!File.Exists(targetFilePath))
-            throw new FileNotFoundException("File does not exists.", targetFilePath);
-
-        return targetFilePath;
+        return _catalogCacheManager.GetImage((string)value) ?? throw new ArgumentException(nameof(value));
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

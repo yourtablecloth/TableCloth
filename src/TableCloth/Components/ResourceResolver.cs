@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
@@ -53,7 +54,10 @@ public sealed class ResourceResolver
         return jsonDocument.RootElement.GetProperty("license").GetProperty("name").GetString();
     }
 
-    public async Task LoadSiteImages(List<CatalogInternetService> services, string imageDirectoryPath)
+    public async Task LoadSiteImagesAsync(
+        IEnumerable<CatalogInternetService> services,
+        string imageDirectoryPath,
+        CancellationToken cancellationToken = default)
     {
         if (!Directory.Exists(imageDirectoryPath))
             Directory.CreateDirectory(imageDirectoryPath);
@@ -69,14 +73,14 @@ public sealed class ResourceResolver
                 try
                 {
                     var targetUrl = $"{StringResources.ImageUrlPrefix}/{eachSite.Category}/{eachSite.Id}.png";
-                    var imageStream = await httpClient.GetStreamAsync(targetUrl).ConfigureAwait(false);
+                    var imageStream = await httpClient.GetStreamAsync(targetUrl, cancellationToken).ConfigureAwait(false);
 
                     using var fileStream = File.OpenWrite(targetFilePath);
-                    await imageStream.CopyToAsync(fileStream).ConfigureAwait(false);
+                    await imageStream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
                 }
                 catch
                 {
-                    try { File.WriteAllBytes(targetFilePath, Properties.Resources.SandboxIcon); }
+                    try { await File.WriteAllBytesAsync(targetFilePath, Properties.Resources.SandboxIcon, cancellationToken).ConfigureAwait(false); }
                     catch { }
                 }
             }
@@ -89,7 +93,7 @@ public sealed class ResourceResolver
             {
                 try
                 {
-                    await File.WriteAllBytesAsync(targetIconFilePath, ConvertImageToIcon(targetFilePath)).ConfigureAwait(false);
+                    await File.WriteAllBytesAsync(targetIconFilePath, ConvertImageToIcon(targetFilePath), cancellationToken).ConfigureAwait(false);
                 }
                 catch
                 {
@@ -97,7 +101,7 @@ public sealed class ResourceResolver
                     Properties.Resources.SandboxIconWin32.Save(memStream);
                     memStream.Seek(0L, SeekOrigin.Begin);
 
-                    try { File.WriteAllBytes(targetIconFilePath, memStream.ToArray()); }
+                    try { await File.WriteAllBytesAsync(targetIconFilePath, memStream.ToArray(), cancellationToken).ConfigureAwait(false); }
                     catch { }
                 }
             }

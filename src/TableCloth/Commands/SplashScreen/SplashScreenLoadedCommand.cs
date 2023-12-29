@@ -109,6 +109,12 @@ public sealed class SplashScreenLoadedCommand : CommandBase
                 StringResources.Status_LoadingCatalog));
 
             await _catalogCacheManager.LoadCatalogDocumentAsync();
+
+            viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
+                StringResources.Status_LoadingImages));
+
+            await _catalogCacheManager.LoadSiteImages();
+
             viewModel.AppStartupSucceed = true;
         }
         catch (Exception ex)
