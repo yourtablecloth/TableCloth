@@ -144,6 +144,26 @@ namespace TableCloth.Resources
             = $"선택하신 공동 인증서는 만료되었습니다. 다른 공동 인증서를 선택하거나, 새로운 공동 인증서로 교체 발급해야 합니다.";
     }
 
+    // 상태 알림 문자열들
+    partial class StringResources
+    {
+        internal static readonly string Status_ParsingCommandLine = "명령줄 분석 중...";
+
+        internal static readonly string Status_InitSentrySDK = "Sentry SDK 초기화 중...";
+
+        internal static readonly string Status_LoadingPreferences = "환경 설정 불러오는 중...";
+
+        internal static readonly string Status_EvaluatingRequirementsMet = "시스템 환경 확인 중...";
+
+        internal static readonly string Status_InitializingApplication = "애플리케이션 초기화 중...";
+
+        internal static readonly string Status_LoadingCatalog = "카탈로그 불러오는 중...";
+
+        internal static readonly string Status_InitializingFailed = "오류가 발생했습니다.";
+
+        internal static readonly string Status_Done = "실행 준비가 완료되었습니다.";
+    }
+
     // 비 사용자 인터페이스 문자열들
     partial class StringResources
     {
@@ -193,6 +213,9 @@ namespace TableCloth.Resources
     // 오류 메시지에 표시될 문자열들
     partial class StringResources
     {
+        internal static readonly string Info_Loading
+            = "잠시만 기다려 주세요.";
+
         internal static readonly string Info_UpdateRequired
             = "새 버전의 식탁보가 출시되었습니다.";
 

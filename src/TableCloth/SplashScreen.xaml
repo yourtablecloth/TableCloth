@@ -31,14 +31,14 @@
 
             <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Image Height="100" Margin="0,0,0,20" Source="/Resources/SandboxIcon.png"/>
-                <TextBlock Text="{StaticResource SplashScreen_Title}" FontSize="24" FontWeight="Bold" />
-                <TextBlock Text="{StaticResource SplashScreen_Version}" />
+                <TextBlock Text="{Binding AppTitle}" FontSize="24" FontWeight="Bold" />
+                <TextBlock Text="{Binding AppVersion}" />
             </StackPanel>
 
             <!-- Circular Progress Indicator -->
             <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <ProgressBar Height="12" IsIndeterminate="True" />
-                <TextBlock Text="{StaticResource SplashScreen_Loading}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                <TextBlock Text="{Binding Status}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
             </StackPanel>
         </Grid>
     </Border>

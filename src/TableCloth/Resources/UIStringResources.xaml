@@ -23,20 +23,6 @@
         동의합니다. 일주일 동안 이 화면을 보지 않겠습니다.
     </system:String>
 
-    <!-- SplashScreen.xaml -->
-    
-    <system:String x:Key="SplashScreen_Title">
-        식탁보
-    </system:String>
-
-    <system:String x:Key="SplashScreen_Version">
-        1.9.1.0
-    </system:String>
-
-    <system:String x:Key="SplashScreen_Loading">
-        잠시만 기다려 주세요.
-    </system:String>
-
     <!-- MainWindow.xaml -->
 
     <system:String x:Key="MainWindow_Title">

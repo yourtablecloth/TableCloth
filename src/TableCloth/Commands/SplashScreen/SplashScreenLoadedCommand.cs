@@ -39,6 +39,21 @@ public sealed class SplashScreenLoadedCommand : CommandBase
 
         try
         {
+            viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
+                StringResources.Status_ParsingCommandLine));
+
+            var parsedArgs = _commandLineParser.ParseFromArgv();
+
+            if (parsedArgs != null && parsedArgs.ShowCommandLineHelp)
+            {
+                viewModel.AppStartupSucceed = false;
+                _appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                return;
+            }
+
+            viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
+                StringResources.Status_InitSentrySDK));
+
             using var _ = SentrySdk.Init(o =>
             {
                 o.Dsn = StringResources.SentryDsn;
@@ -46,35 +61,40 @@ public sealed class SplashScreenLoadedCommand : CommandBase
                 o.TracesSampleRate = 1.0;
             });
 
+            viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
+                StringResources.Status_LoadingPreferences));
+
             var preferences = _preferencesManager.LoadPreferences();
             viewModel.V2UIOptedIn = preferences?.V2UIOptIn ?? true;
-            viewModel.ParsedArgument = _commandLineParser.ParseFromArgv();
+            viewModel.ParsedArgument = parsedArgs;
 
-            if (viewModel.ParsedArgument != null &&
-                viewModel.ParsedArgument.ShowCommandLineHelp)
-            {
-                _appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
-                return;
-            }
+            viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
+                StringResources.Status_EvaluatingRequirementsMet));
 
             if (!_appStartup.HasRequirementsMet(viewModel.Warnings, out Exception? failedReason, out bool isCritical))
             {
-                _appMessageBox.DisplayError(failedReason, isCritical);
-
                 if (isCritical)
-                    return;
+                    throw failedReason ?? new Exception(StringResources.Error_Unknown());
+
+                _appMessageBox.DisplayError(failedReason, isCritical);
             }
 
             if (viewModel.Warnings.Any())
                 _appMessageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, viewModel.Warnings), false);
 
+            viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
+                StringResources.Status_InitializingApplication));
+
             if (!_appStartup.Initialize(out failedReason, out isCritical))
             {
-                _appMessageBox.DisplayError(failedReason, isCritical);
-
                 if (isCritical)
-                    return;
+                    throw failedReason ?? new Exception(StringResources.Error_Unknown());
+
+                _appMessageBox.DisplayError(failedReason, isCritical);
             }
+
+            viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
+                StringResources.Status_LoadingCatalog));
 
             await _catalogCacheManager.LoadCatalogDocumentAsync();
             viewModel.AppStartupSucceed = true;
@@ -82,10 +102,18 @@ public sealed class SplashScreenLoadedCommand : CommandBase
         catch (Exception ex)
         {
             viewModel.AppStartupSucceed = false;
+            viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
+                StringResources.Status_InitializingFailed));
             _appMessageBox.DisplayError(ex, true);
         }
         finally
         {
+            if (viewModel.AppStartupSucceed)
+            {
+                viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
+                    StringResources.Status_Done));
+            }
+
             viewModel.NotifyInitialized(this, new DialogRequestEventArgs(viewModel.AppStartupSucceed));
         }
     }
