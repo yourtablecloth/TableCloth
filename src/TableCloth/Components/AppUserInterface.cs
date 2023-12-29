@@ -34,6 +34,9 @@ public sealed class AppUserInterface
     public DisclaimerWindow CreateDisclaimerWindow()
         => _serviceProvider.GetRequiredService<DisclaimerWindow>();
 
+    public SplashScreen CreateSplashScreen()
+        => _serviceProvider.GetRequiredService<SplashScreen>();
+
     public CatalogPage CreateCatalogPage(string searchKeyword)
         => new CatalogPage(CreateCatalogPageViewModel(searchKeyword));
 

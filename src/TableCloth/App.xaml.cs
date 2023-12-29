@@ -35,11 +35,14 @@ public partial class App : Application
 
     public IServiceProvider Services { get; }
 
+    private AppUserInterface? _appUserInterface;
     private SplashScreen? _splashScreen;
 
     private void Application_Startup(object sender, StartupEventArgs e)
     {
-        _splashScreen = Services.GetRequiredService<SplashScreen>();
+        _appUserInterface = Services.GetRequiredService<AppUserInterface>();
+
+        _splashScreen = _appUserInterface.CreateSplashScreen();
         _splashScreen.ViewModel.InitializeDone += ViewModel_InitializeDone;
         _splashScreen.Show();
     }
