@@ -81,6 +81,9 @@ namespace TableCloth.Resources
         internal static readonly string TitleText_Warning
             = $"{AppName} 경고";
 
+        internal static readonly string TitleText_Question
+            = $"{AppName} 확인";
+
         internal static string Get_AppVersion()
         {
             var executingAssembly = Assembly.GetExecutingAssembly();

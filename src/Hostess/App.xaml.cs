@@ -31,7 +31,9 @@ namespace Hostess
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            var sharedProperties = Services.GetService<SharedProperties>();
+            var services = App.Current.Services;
+            var appMessageBox = services.GetService<AppMessageBox>();
+            var sharedProperties = services.GetService<SharedProperties>();
 
             ServicePointManager.ServerCertificateValidationCallback += ValidateRemoteCertificate;
 
@@ -65,8 +67,7 @@ namespace Hostess
 
                         if (attemptCount == retryCount)
                         {
-                            MessageBox.Show(StringResources.HostessError_CatalogLoadFailure(ex), StringResources.TitleText_Error,
-                                MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                            appMessageBox.DisplayError(StringResources.HostessError_CatalogLoadFailure(ex), true);
                             Current.Shutdown(0);
                             return;
                         }
@@ -113,8 +114,7 @@ namespace Hostess
 
                 if (showHelp)
                 {
-                    MessageBox.Show(StringResources.TableCloth_Hostess_Switches_Help, StringResources.TitleText_Info,
-                        MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    appMessageBox.DisplayInfo(StringResources.TableCloth_Hostess_Switches_Help);
                     Current.Shutdown(0);
                     return;
                 }
@@ -127,8 +127,7 @@ namespace Hostess
 
                 if (!targetSites.Any())
                 {
-                    MessageBox.Show(StringResources.Hostess_No_Targets, StringResources.TitleText_Error,
-                        MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+                    appMessageBox.DisplayInfo(StringResources.Hostess_No_Targets);
 
                     Process.Start(new ProcessStartInfo("https://www.naver.com/")
                     {
@@ -142,7 +141,7 @@ namespace Hostess
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                appMessageBox.DisplayError(ex, true);
             }
         }
 
@@ -162,15 +161,16 @@ namespace Hostess
             }
         }
 
-        private static bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
+        private bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
         {
+            var services = App.Current.Services;
+            var appMessageBox = services.GetService<AppMessageBox>();
+
             // If the certificate is a valid, signed certificate, return true.
             if (error == SslPolicyErrors.None)
                 return true;
 
-            MessageBox.Show(StringResources.HostessError_X509CertError(cert, error), StringResources.TitleText_Error,
-                MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-
+            appMessageBox.DisplayError(StringResources.HostessError_X509CertError(cert, error), false);
             return false;
         }
 

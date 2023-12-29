@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -56,11 +57,14 @@ namespace Hostess
 
         private void VerifyWindowsContainerEnvironment()
         {
+            var services = App.Current.Services;
+            var appMessageBox = services.GetRequiredService<AppMessageBox>();
+
             if (!validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
             {
-                var message = (string)Application.Current.Resources["WarningForNonSandboxEnvironment"];
-                var title = (string)Application.Current.Resources["ErrorDialogTitle"];
-                var response = MessageBox.Show(this, message, title, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                var response = appMessageBox.DisplayQuestion(
+                    (string)Application.Current.Resources["WarningForNonSandboxEnvironment"],
+                    defaultAnswer: MessageBoxResult.No);
 
                 if (response != MessageBoxResult.Yes)
                     Environment.Exit(1);
@@ -114,6 +118,7 @@ namespace Hostess
             var services = App.Current.Services;
             var protectTermService = services.GetRequiredService<ProtectTermService>();
             var sharedProperties = services.GetRequiredService<SharedProperties>();
+            var appMessageBox = services.GetRequiredService<AppMessageBox>();
 
             var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             source.AddHook(WndProc);
@@ -135,28 +140,12 @@ namespace Hostess
             VerifyWindowsContainerEnvironment();
 
             try { protectTermService.PreventServiceProcessTermination("TermService"); }
-            catch (AggregateException aex)
-            {
-                MessageBox.Show(this, $"{aex.InnerException.Message}", StringResources.TitleText_Error,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, $"{ex.Message}", StringResources.TitleText_Error,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-            }
+            catch (AggregateException aex) { appMessageBox.DisplayError(aex.InnerException, false); }
+            catch (Exception ex) { appMessageBox.DisplayError(ex, false); }
 
             try { protectTermService.PreventServiceStop("TermService", Environment.UserName); }
-            catch (AggregateException aex)
-            {
-                MessageBox.Show(this, $"{aex.InnerException.Message}", StringResources.TitleText_Error,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(this, $"{ex.Message}", StringResources.TitleText_Error,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-            }
+            catch (AggregateException aex) { appMessageBox.DisplayError(aex.InnerException, false); }
+            catch (Exception ex) { appMessageBox.DisplayError(ex, false); }
 
             SetDesktopWallpaper();
 
@@ -233,6 +222,7 @@ namespace Hostess
         {
             var services = App.Current.Services;
             var sharedProperties = services.GetRequiredService<SharedProperties>();
+            var appMessageBox = services.GetRequiredService<AppMessageBox>();
 
             try
             {
@@ -300,7 +290,7 @@ namespace Hostess
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.ToString());
+                        appMessageBox.DisplayError(ex, false);
                     }
                 }
 
@@ -460,7 +450,7 @@ namespace Hostess
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                appMessageBox.DisplayError(ex, true);
             }
             finally
             {

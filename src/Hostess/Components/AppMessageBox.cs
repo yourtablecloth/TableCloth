@@ -97,5 +97,37 @@ namespace Hostess.Components
                 }),
                 new object[] { message, isCritical });
         }
+
+        public MessageBoxResult DisplayQuestion(string message, MessageBoxButton messageBoxButton = MessageBoxButton.YesNo, MessageBoxResult defaultAnswer = MessageBoxResult.Yes)
+        {
+            var dispatcher = Application.Current.Dispatcher;
+
+            if (dispatcher == null)
+                dispatcher = Dispatcher.CurrentDispatcher;
+
+            return (MessageBoxResult)dispatcher.Invoke(
+                new Func<string, MessageBoxButton, MessageBoxResult>((_message, _messageBoxButton) =>
+                {
+                    // owner 파라미터를 null 참조로 지정하더라도 Windows Forms 처럼 parent-less 메시지 박스를 만들어주지는 않음.
+                    // GH-121 fix
+                    var owner = Application.Current.MainWindow;
+
+                    if (owner != null)
+                    {
+                        return MessageBox.Show(
+                            owner, _message, StringResources.TitleText_Question,
+                            _messageBoxButton, MessageBoxImage.Question,
+                            defaultAnswer);
+                    }
+                    else
+                    {
+                        return MessageBox.Show(
+                            _message, StringResources.TitleText_Question,
+                            _messageBoxButton, MessageBoxImage.Question,
+                            defaultAnswer);
+                    }
+                }),
+                new object[] { message, messageBoxButton, });
+        }
     }
 }
