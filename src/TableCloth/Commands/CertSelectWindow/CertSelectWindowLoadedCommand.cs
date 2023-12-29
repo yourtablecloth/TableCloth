@@ -1,4 +1,7 @@
-﻿namespace TableCloth.Commands.CertSelectWindow;
+﻿using System;
+using TableCloth.ViewModels;
+
+namespace TableCloth.Commands.CertSelectWindow;
 
 public sealed class CertSelectWindowLoadedCommand : CommandBase
 {
@@ -12,6 +15,9 @@ public sealed class CertSelectWindowLoadedCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
+        if (parameter is not CertSelectWindowViewModel viewModel)
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
+
         if (_scanCertPairCommand.CanExecute(parameter))
             _scanCertPairCommand.Execute(parameter);
     }

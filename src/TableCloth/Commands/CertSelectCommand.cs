@@ -19,10 +19,8 @@ public sealed class CertSelectCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
-        var viewModel = parameter as ITableClothViewModel;
-
-        if (viewModel == null)
-            throw new ArgumentException(nameof(parameter));
+        if (parameter is not ITableClothViewModel viewModel)
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
         var certSelectWindow = _appUserInterface.CreateCertSelectWindow();
         var response = certSelectWindow.ShowDialog();

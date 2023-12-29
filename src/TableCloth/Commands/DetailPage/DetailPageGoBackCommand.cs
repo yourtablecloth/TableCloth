@@ -17,7 +17,7 @@ public sealed class DetailPageGoBackCommand : CommandBase
     public override void Execute(object? parameter)
     {
         if (parameter is not DetailPageViewModel /*viewModel*/)
-            throw new ArgumentException("Uncompatible parameter type.", nameof(parameter));
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
         _navigationService.NavigateToCatalog(string.Empty);
     }

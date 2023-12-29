@@ -37,7 +37,7 @@ public sealed class SplashScreenLoadedCommand : CommandBase
     public override async void Execute(object? parameter)
     {
         if (parameter is not SplashScreenViewModel viewModel)
-            throw new ArgumentException("Selected paramter is not a compatible object.", nameof(parameter));
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
         _visualThemeManager.ApplyAutoThemeChange(
             Application.Current.MainWindow);

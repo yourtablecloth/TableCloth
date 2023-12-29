@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using TableCloth.Components;
 using TableCloth.Models.Catalog;
+using TableCloth.ViewModels;
 using NavigationService = TableCloth.Components.NavigationService;
 
 namespace TableCloth.Commands.MainWindowV2;
@@ -29,6 +30,9 @@ public sealed class MainWindowV2LoadedCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
+        if (parameter is not MainWindowV2ViewModel viewModel)
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
+
         const string pageFrameName = "PageFrame";
 
         var mainWindow = Application.Current.MainWindow;

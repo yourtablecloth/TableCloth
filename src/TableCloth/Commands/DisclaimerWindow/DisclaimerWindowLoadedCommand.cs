@@ -7,10 +7,8 @@ public sealed class DisclaimerWindowLoadedCommand : CommandBase
 {
     public override void Execute(object? parameter)
     {
-        var viewModel = parameter as DisclaimerWindowViewModel;
-
-        if (viewModel == null)
-            throw new ArgumentException(nameof(parameter));
+        if (parameter is not DisclaimerWindowViewModel viewModel)
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
         viewModel.NotifyViewLoaded(this, EventArgs.Empty);
     }

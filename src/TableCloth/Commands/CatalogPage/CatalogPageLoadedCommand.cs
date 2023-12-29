@@ -24,7 +24,7 @@ public sealed class CatalogPageLoadedCommand : CommandBase
     public override void Execute(object? parameter)
     {
         if (parameter is not CatalogPageViewModel viewModel)
-            throw new ArgumentException(nameof(parameter));
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
         var doc = _resourceCacheManager.CatalogDocument;
         var services = doc.Services.OrderBy(service =>

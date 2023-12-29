@@ -7,11 +7,9 @@ public sealed class InputPasswordWindowLoadedCommand : CommandBase
 {
     public override void Execute(object? parameter)
     {
-        var inputPasswordWindowViewModel = parameter as InputPasswordWindowViewModel;
+        if (parameter is not InputPasswordWindowViewModel viewModel)
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
-        if (inputPasswordWindowViewModel == null)
-            throw new ArgumentException(nameof(inputPasswordWindowViewModel));
-
-        inputPasswordWindowViewModel.NotifyViewLoaded(this, EventArgs.Empty);
+        viewModel.NotifyViewLoaded(this, EventArgs.Empty);
     }
 }

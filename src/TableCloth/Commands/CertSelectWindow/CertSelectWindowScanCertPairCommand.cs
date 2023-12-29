@@ -17,10 +17,8 @@ public sealed class CertSelectWindowScanCertPairCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
-        var viewModel = parameter as CertSelectWindowViewModel;
-
-        if (viewModel == null)
-            throw new ArgumentException(nameof(parameter));
+        if (parameter is not CertSelectWindowViewModel viewModel)
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
         viewModel.SelectedCertPair = default;
         viewModel.CertPairs = _certPairScanner.ScanX509Pairs(

@@ -1,4 +1,6 @@
-﻿using TableCloth.Components;
+﻿using System;
+using TableCloth.Components;
+using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.MainWindowV2;
 
@@ -17,6 +19,9 @@ public sealed class MainWindowV2ClosedCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
+        if (parameter is not MainWindowV2ViewModel viewModel)
+            throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
+
         _sandboxCleanupManager.TryCleanup();
 
         if (_appRestartManager.ReserveRestart)

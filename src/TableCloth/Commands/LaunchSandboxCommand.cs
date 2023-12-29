@@ -22,9 +22,7 @@ public sealed class LaunchSandboxCommand : CommandBase
 
     public override void Execute(object? parameter)
     {
-        var viewModel = parameter as ITableClothViewModel;
-
-        if (viewModel == null)
+        if (parameter is not ITableClothViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
         var config = _configurationComposer.GetConfigurationFromViewModel(viewModel);
