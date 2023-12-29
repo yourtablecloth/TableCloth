@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace Hostess.Commands
 {
-    internal abstract class CommandBase : ICommand
+    public abstract class CommandBase : ICommand
     {
         private bool _canExecute = true;
 

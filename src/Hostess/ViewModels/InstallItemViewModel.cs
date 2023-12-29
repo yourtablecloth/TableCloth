@@ -1,13 +1,22 @@
 ﻿using Hostess.Commands;
 using System;
-using System.ComponentModel;
-using System.Windows.Input;
+using TableCloth.ViewModels;
 
 namespace Hostess.ViewModels
 {
     [Serializable]
-    public sealed class InstallItemViewModel : INotifyPropertyChanged
+    public sealed class InstallItemViewModel : ViewModelBase
     {
+        public InstallItemViewModel()
+        {
+            _showErrorMessageCommand = new ShowErrorMessageCommand();
+        }
+
+        private readonly ShowErrorMessageCommand _showErrorMessageCommand;
+
+        public ShowErrorMessageCommand ShowErrorMessage
+            => _showErrorMessageCommand;
+
         private InstallItemType _installItemType;
         private string _targetSiteName;
         private string _targetSiteUrl;
@@ -19,174 +28,65 @@ namespace Hostess.ViewModels
         private string _statusMessage;
         private string _errorMessage;
 
-        private readonly ICommand _showErrorMessageCommand = new ShowErrorMessageCommand();
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public InstallItemType InstallItemType
         {
             get => _installItemType;
-            set
-            {
-                if (_installItemType.Equals(value))
-                {
-                    return;
-                }
-
-                _installItemType = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstallItemType)));
-            }
+            set => SetProperty(ref _installItemType, value);
         }
 
         public string TargetSiteName
         {
             get => _targetSiteName;
-            set
-            {
-                if (string.Equals(_targetSiteName, value, StringComparison.Ordinal))
-                {
-                    return;
-                }
-
-                _targetSiteName = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TargetSiteName)));
-            }
+            set => SetProperty(ref _targetSiteName, value);
         }
 
         public string TargetSiteUrl
         {
             get => _targetSiteUrl;
-            set
-            {
-                if (string.Equals(_targetSiteUrl, value, StringComparison.Ordinal))
-                {
-                    return;
-                }
-
-                _targetSiteUrl = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TargetSiteUrl)));
-            }
+            set => SetProperty(ref _targetSiteUrl, value);
         }
 
         public string PackageName
         {
             get => _packageName;
-            set
-            {
-                if (string.Equals(_packageName, value, StringComparison.Ordinal))
-                {
-                    return;
-                }
-
-                _packageName = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PackageName)));
-            }
+            set => SetProperty(ref _packageName, value);
         }
 
         public string PackageUrl
         {
             get => _packageUrl;
-            set
-            {
-                if (string.Equals(_packageUrl, value, StringComparison.Ordinal))
-                {
-                    return;
-                }
-
-                _packageUrl = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PackageUrl)));
-            }
+            set => SetProperty(ref _packageUrl, value);
         }
 
         public string Arguments
         {
             get => _arguments;
-            set
-            {
-                if (string.Equals(_arguments, value, StringComparison.Ordinal))
-                {
-                    return;
-                }
-
-                _arguments = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Arguments)));
-            }
+            set => SetProperty(ref _arguments, value);
         }
 
         public string ScriptContent
         {
             get => _scriptContent;
-            set
-            {
-                if (string.Equals(_scriptContent, value, StringComparison.Ordinal))
-                {
-                    return;
-                }
-
-                _scriptContent = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScriptContent)));
-            }
+            set => SetProperty(ref _scriptContent, value);
         }
 
         public bool? Installed
         {
             get => _installed;
-            set
-            {
-                if (_installed == value)
-                {
-                    return;
-                }
-
-                _installed = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Installed)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StatusMessage)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ErrorMessage)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstallFlags)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowErrorMessageLink)));
-            }
+            set => SetProperty(ref _installed, value, new string[] { nameof(Installed), nameof(StatusMessage), nameof(ErrorMessage), nameof(InstallFlags), nameof(ShowErrorMessageLink), });
         }
 
         public string StatusMessage
         {
             get => _statusMessage;
-            set
-            {
-                if (_statusMessage == value)
-                {
-                    return;
-                }
-
-                _statusMessage = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Installed)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StatusMessage)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ErrorMessage)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstallFlags)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowErrorMessageLink)));
-            }
+            set => SetProperty(ref _statusMessage, value, new string[] { nameof(StatusMessage), nameof(Installed), nameof(ErrorMessage), nameof(InstallFlags), nameof(ShowErrorMessageLink), });
         }
 
         public string ErrorMessage
         {
             get => _errorMessage;
-            set
-            {
-                if (_errorMessage == value)
-                {
-                    return;
-                }
-
-                _errorMessage = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Installed)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StatusMessage)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ErrorMessage)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstallFlags)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowErrorMessageLink)));
-            }
+            set => SetProperty(ref _errorMessage, value, new string[] { nameof(ErrorMessage), nameof(StatusMessage), nameof(Installed), nameof(InstallFlags), nameof(ShowErrorMessageLink), });
         }
-
-        public ICommand ShowErrorMessage
-            => _showErrorMessageCommand;
 
         public bool ShowErrorMessageLink
             => !string.IsNullOrWhiteSpace(_errorMessage) && _installed.HasValue && !_installed.Value;

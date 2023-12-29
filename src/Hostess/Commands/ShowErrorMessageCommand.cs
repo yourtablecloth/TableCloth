@@ -5,7 +5,7 @@ using TableCloth.Resources;
 
 namespace Hostess.Commands
 {
-    internal sealed class ShowErrorMessageCommand : CommandBase
+    public sealed class ShowErrorMessageCommand : CommandBase
     {
         public override void Execute(object parameter)
         {
