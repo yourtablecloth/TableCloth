@@ -17,13 +17,15 @@ public sealed class SplashScreenLoadedCommand : CommandBase
         AppMessageBox appMessageBox,
         CommandLineParser commandLineParser,
         PreferencesManager preferencesManager,
-        CatalogCacheManager catalogCacheManager)
+        CatalogCacheManager catalogCacheManager,
+        VisualThemeManager visualThemeManager)
     {
         _appStartup = appStartup;
         _appMessageBox = appMessageBox;
         _commandLineParser = commandLineParser;
         _preferencesManager = preferencesManager;
         _catalogCacheManager = catalogCacheManager;
+        _visualThemeManager = visualThemeManager;
     }
 
     private readonly AppStartup _appStartup;
@@ -31,12 +33,17 @@ public sealed class SplashScreenLoadedCommand : CommandBase
     private readonly CommandLineParser _commandLineParser;
     private readonly PreferencesManager _preferencesManager;
     private readonly CatalogCacheManager _catalogCacheManager;
+    private readonly VisualThemeManager _visualThemeManager;
 
     public override async void Execute(object? parameter)
     {
         if (parameter is not SplashScreenViewModel viewModel)
             throw new ArgumentException("Selected paramter is not a compatible object.", nameof(parameter));
 
+        _visualThemeManager.ApplyAutoThemeChange(
+            Application.Current.MainWindow);
+
+        await Task.Delay(5000);
         try
         {
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(

@@ -9,8 +9,8 @@
         Title="Splash Screen" Height="400" Width="600"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None" AllowsTransparency="True"
-        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-        Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+        Style="{DynamicResource MainWindowStyle}"
+        MouseDown="Window_MouseDown"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
         d:DataContext="{d:DesignInstance Type=vm:SplashScreenViewModelForDesigner, IsDesignTimeCreatable=True}">
     <i:Interaction.Triggers>
@@ -22,7 +22,7 @@
             </i:InvokeCommandAction>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Border CornerRadius="5" Background="{DynamicResource MaterialDesignPaper}" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1">
+    <Border CornerRadius="5" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="2.0*"/>
