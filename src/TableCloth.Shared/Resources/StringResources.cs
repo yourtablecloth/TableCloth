@@ -562,7 +562,7 @@ ServiceID는 {CatalogUrl}을 확인해주세요.
   Internet Explorer 모드를 활성화합니다.
 
 {TableCloth_Switch_DryRun}
-  애플리케이션 패키지 설치나 바탕 화면 변경을 건너뜁니다.
+  (개발자용 기능) 애플리케이션 패키지 설치, 시스템 설정 변경을 건너뛰고 프로그램의 실행 과정만 살펴봅니다.
 
 {TableCloth_Switch_Help}
   이 도움말을 표시합니다.
