@@ -23,6 +23,10 @@
         이 프로그램은 요청받은 설치 프로그램들을 샌드 박스 안에 한번에 설치해주는 도구입니다. 설치하기 버튼을 누르면 설치가 시작됩니다.
     </system:String>
 
+    <system:String x:Key="DryRunInstructionMessage">
+        식탁보 자동 설치 프로그램이 Dry Run 모드로 실행 중입니다.
+    </system:String>
+
     <system:String x:Key="ShowDetailError">
         자세히 보기
     </system:String>

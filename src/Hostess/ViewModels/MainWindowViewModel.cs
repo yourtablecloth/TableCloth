@@ -45,8 +45,15 @@ namespace Hostess.ViewModels
         public void RequestClose(object sender)
             => CloseRequested?.Invoke(sender, EventArgs.Empty);
 
+        private bool _showDryRunNotification;
         private IList<InstallItemViewModel> _installItems
             = new ObservableCollection<InstallItemViewModel>();
+
+        public bool ShowDryRunNotification
+        {
+            get => _showDryRunNotification;
+            set => SetProperty(ref _showDryRunNotification, value);
+        }
 
         public IList<InstallItemViewModel> InstallItems
         {

@@ -28,14 +28,20 @@
             <ColumnDefinition Width="50*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition d:Height="45" Height="{Binding ShowDryRunNotification, Converter={StaticResource BooleanToGridRowHeightConverter}, ConverterParameter='45'}" />
             <RowDefinition Height="60"/>
             <RowDefinition Height="70"/>
             <RowDefinition Height="300*"/>
             <RowDefinition Height="55"/>
         </Grid.RowDefinitions>
-        <TextBlock Padding="10" TextWrapping="WrapWithOverflow" FontWeight="UltraBold" FontSize="20" Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" Foreground="{Binding Source={x:Static SystemColors.WindowBrush}}" Grid.ColumnSpan="2" Grid.Row="0" Text="{StaticResource AppTitle}" />
-        <TextBlock HorizontalAlignment="Stretch" Padding="10" TextWrapping="WrapWithOverflow" Grid.ColumnSpan="2" Grid.Row="1" Text="{StaticResource AppInstructionMessage}" />
-        <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding InstallItems}">
+        <Label Grid.Row="0" Grid.ColumnSpan="2" Background="{Binding Source={x:Static SystemColors.ActiveBorderBrush}}" Foreground="{Binding Source={x:Static SystemColors.ActiveCaptionTextBrush}}">
+            <Label.Content>
+                <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 0 0" Text="{StaticResource DryRunInstructionMessage}" TextWrapping="Wrap" />
+            </Label.Content>
+        </Label>
+        <TextBlock Padding="10" TextWrapping="WrapWithOverflow" FontWeight="UltraBold" FontSize="20" Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" Foreground="{Binding Source={x:Static SystemColors.WindowBrush}}" Grid.ColumnSpan="2" Grid.Row="1" Text="{StaticResource AppTitle}" />
+        <TextBlock HorizontalAlignment="Stretch" Padding="10" TextWrapping="WrapWithOverflow" Grid.ColumnSpan="2" Grid.Row="2" Text="{StaticResource AppInstructionMessage}" />
+        <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="3" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding InstallItems}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -52,14 +58,14 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0">
+        <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0">
             <Button Margin="10 0 0 0" Padding="5" Content="{StaticResource AboutButtonText}" Command="{Binding AboutThisAppCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>
             </Button>
         </WrapPanel>
-        <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1">
+        <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="5" Grid.Column="1">
             <Button Margin="0 0 10 0" Padding="5" Content="{StaticResource InstallButtonText}" Command="{Binding MainWindowInstallPackagesCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />

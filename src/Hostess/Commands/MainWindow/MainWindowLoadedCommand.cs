@@ -43,6 +43,8 @@ namespace Hostess.Commands.MainWindow
 
         public override void Execute(MainWindowViewModel viewModel)
         {
+            viewModel.ShowDryRunNotification = _sharedProperties.HasDryRunEnabled();
+
             _visualThemeManager.ApplyAutoThemeChange(
                 Application.Current.MainWindow);
 

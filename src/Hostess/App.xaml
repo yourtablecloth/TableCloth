@@ -5,6 +5,7 @@
              Startup="Application_Startup">
     <Application.Resources>
         <ResourceDictionary>
+            <converters:BooleanToGridRowHeightConverter x:Key="BooleanToGridRowHeightConverter" />
             <converters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
             <converters:StateToBrushConverter x:Key="stateToBrushConverter" />
             <ResourceDictionary.MergedDictionaries>
