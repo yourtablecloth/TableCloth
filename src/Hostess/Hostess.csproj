@@ -140,6 +140,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commands\AboutThisAppCommand.cs" />
+    <Compile Include="Commands\MainWindow\MainWindowInstallPackagesCommand.cs" />
+    <Compile Include="Commands\MainWindow\MainWindowLoadedCommand.cs" />
     <Compile Include="Commands\OpenAppHomepageCommand.cs" />
     <Compile Include="Commands\AboutWindow\AboutWindowCloseCommand.cs" />
     <Compile Include="Commands\AboutWindow\AboutWindowLoadedCommand.cs" />
@@ -147,6 +150,7 @@
     <Compile Include="Commands\PrecautionsWindow\PrecautionsWindowLoadedCommand.cs" />
     <Compile Include="Commands\ViewModelCommandBase.cs" />
     <Compile Include="Components\AppUserInterface.cs" />
+    <Compile Include="Components\VisualThemeManager.cs" />
     <Compile Include="Dialogs\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
@@ -160,6 +164,7 @@
     <Compile Include="Commands\ShowErrorMessageCommand.cs" />
     <Compile Include="Converters\StateToBrushConverter.cs" />
     <Compile Include="RichTextBoxHelper.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\PrecautionsWindowViewModel.cs" />
     <Page Include="Dialogs\AboutWindow.xaml">
       <SubType>Designer</SubType>

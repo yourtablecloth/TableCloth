@@ -1,5 +1,6 @@
 ﻿using Hostess.Commands;
 using Hostess.Commands.AboutWindow;
+using Hostess.Commands.MainWindow;
 using Hostess.Commands.PrecautionsWindow;
 using Hostess.Components;
 using Hostess.Dialogs;
@@ -192,12 +193,14 @@ namespace Hostess
                 .AddSingleton<AppUserInterface>()
                 .AddSingleton<LicenseDescriptor>()
                 .AddSingleton<ProtectTermService>()
-                .AddSingleton<SharedProperties>();
+                .AddSingleton<SharedProperties>()
+                .AddSingleton<VisualThemeManager>();
 
             // Shared Commands
             services
                 .AddSingleton<OpenAppHomepageCommand>()
-                .AddSingleton<ShowErrorMessageCommand>();
+                .AddSingleton<ShowErrorMessageCommand>()
+                .AddSingleton<AboutThisAppCommand>();
 
             // About Window
             services
@@ -210,6 +213,12 @@ namespace Hostess
                 .AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>()
                 .AddSingleton<PrecautionsWindowLoadedCommand>()
                 .AddSingleton<PrecautionsWindowCloseCommand>();
+
+            // Main Window
+            services
+                .AddWindow<MainWindow, MainWindowViewModel>()
+                .AddSingleton<MainWindowLoadedCommand>()
+                .AddSingleton<MainWindowInstallPackagesCommand>();
 
             return services.BuildServiceProvider();
         }
