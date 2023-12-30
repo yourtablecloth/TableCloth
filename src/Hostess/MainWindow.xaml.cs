@@ -192,7 +192,7 @@ namespace Hostess
 
             if (catalog.Services.Where(x => targets.Contains(x.Id)).Any(x => !string.IsNullOrWhiteSpace(x.CompatibilityNotes?.Trim())))
             {
-                var window = new PrecautionsWindow();
+                var window = services.GetRequiredService<PrecautionsWindow>();
                 window.ShowDialog();
             }
             else

@@ -1,5 +1,6 @@
 ﻿using Hostess.Commands;
 using Hostess.Commands.AboutWindow;
+using Hostess.Commands.PrecautionsWindow;
 using Hostess.Components;
 using Hostess.Dialogs;
 using Hostess.ViewModels;
@@ -188,6 +189,7 @@ namespace Hostess
             // Components
             services
                 .AddSingleton<AppMessageBox>()
+                .AddSingleton<AppUserInterface>()
                 .AddSingleton<LicenseDescriptor>()
                 .AddSingleton<ProtectTermService>()
                 .AddSingleton<SharedProperties>();
@@ -202,6 +204,12 @@ namespace Hostess
                 .AddWindow<AboutWindow, AboutWindowViewModel>()
                 .AddSingleton<AboutWindowLoadedCommand>()
                 .AddSingleton<AboutWindowCloseCommand>();
+
+            // Precautions Window
+            services
+                .AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>()
+                .AddSingleton<PrecautionsWindowLoadedCommand>()
+                .AddSingleton<PrecautionsWindowCloseCommand>();
 
             return services.BuildServiceProvider();
         }
