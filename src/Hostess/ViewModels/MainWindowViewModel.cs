@@ -3,7 +3,6 @@ using Hostess.Commands.MainWindow;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using TableCloth.Events;
 using TableCloth.ViewModels;
 
 namespace Hostess.ViewModels

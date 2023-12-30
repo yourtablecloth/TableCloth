@@ -1,5 +1,4 @@
-﻿using System;
-using TableCloth.Events;
+﻿using TableCloth.Events;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.InputPasswordWindow;

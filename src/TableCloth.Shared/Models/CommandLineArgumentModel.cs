@@ -18,7 +18,7 @@ namespace TableCloth.Models
             bool? enableMicrophone = default,
             bool? enableWebCam = default,
             bool? enablePrinters = default,
-            
+
             string
 #if !NETFX
             ?
@@ -64,13 +64,15 @@ namespace TableCloth.Models
 #if !NETFX
             ?
 #endif
-            CertPrivateKeyPath { get; private set; }
+            CertPrivateKeyPath
+        { get; private set; }
 
         public string
 #if !NETFX
             ?
 #endif
-            CertPublicKeyPath { get; private set; }
+            CertPublicKeyPath
+        { get; private set; }
 
         public bool? InstallEveryonesPrinter { get; private set; }
 

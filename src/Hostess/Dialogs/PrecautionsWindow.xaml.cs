@@ -1,13 +1,6 @@
-﻿using Hostess.Components;
-using Hostess.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Hostess.ViewModels;
 using System.Windows;
 using TableCloth.Events;
-using TableCloth.Models.Catalog;
-using TableCloth.Resources;
 
 namespace Hostess.Dialogs
 {

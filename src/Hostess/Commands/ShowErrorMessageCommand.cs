@@ -1,6 +1,5 @@
 ﻿using Hostess.Components;
 using Microsoft.Extensions.DependencyInjection;
-using System.Windows;
 using TableCloth.Resources;
 
 namespace Hostess.Commands

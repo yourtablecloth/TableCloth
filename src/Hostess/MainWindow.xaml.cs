@@ -1,7 +1,6 @@
 ﻿using Hostess.ViewModels;
 using System;
 using System.Windows;
-using TableCloth.Events;
 
 namespace Hostess
 {

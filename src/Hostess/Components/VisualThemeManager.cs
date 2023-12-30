@@ -1,9 +1,9 @@
-﻿using Microsoft.Win32;
+﻿using Hostess.Themes;
+using Microsoft.Win32;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using Hostess.Themes;
 using TableCloth;
 
 namespace Hostess.Components

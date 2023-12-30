@@ -1,5 +1,4 @@
-﻿using System;
-using TableCloth.Components;
+﻿using TableCloth.Components;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 

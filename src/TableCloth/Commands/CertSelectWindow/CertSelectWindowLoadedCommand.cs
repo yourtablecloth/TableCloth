@@ -1,5 +1,4 @@
-﻿using System;
-using TableCloth.ViewModels;
+﻿using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CertSelectWindow;
 
