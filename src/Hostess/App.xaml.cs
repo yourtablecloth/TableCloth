@@ -209,7 +209,6 @@ namespace Hostess
             // Shared Commands
             services
                 .AddSingleton<OpenAppHomepageCommand>()
-                .AddSingleton<ShowErrorMessageCommand>()
                 .AddSingleton<AboutThisAppCommand>();
 
             // About Window

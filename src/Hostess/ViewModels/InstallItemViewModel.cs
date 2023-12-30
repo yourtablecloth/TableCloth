@@ -7,16 +7,6 @@ namespace Hostess.ViewModels
     [Serializable]
     public sealed class InstallItemViewModel : ViewModelBase
     {
-        public InstallItemViewModel()
-        {
-            _showErrorMessageCommand = new ShowErrorMessageCommand();
-        }
-
-        private readonly ShowErrorMessageCommand _showErrorMessageCommand;
-
-        public ShowErrorMessageCommand ShowErrorMessage
-            => _showErrorMessageCommand;
-
         private InstallItemType _installItemType;
         private string _targetSiteName;
         private string _targetSiteUrl;
