@@ -49,11 +49,17 @@ namespace Hostess.Components
         public void InitWillInstallRaiDrive(bool value)
             => InitAppProperty(nameof(WillInstallRaiDrive), value ? Boolean.TrueString : Boolean.FalseString);
 
-        public bool GetHasIEModeEnabled()
-            => string.Equals(Boolean.TrueString, GetAppProperty<string>("HasIEModeEnabled"));
+        public bool HasIEModeEnabled()
+            => string.Equals(Boolean.TrueString, GetAppProperty<string>(nameof(HasIEModeEnabled)));
 
         public void InitHasIEModeEnabled(bool value)
-            => InitAppProperty("HasIEModeEnabled", value ? Boolean.TrueString : Boolean.FalseString);
+            => InitAppProperty(nameof(HasIEModeEnabled), value ? Boolean.TrueString : Boolean.FalseString);
+
+        public bool HasDryRunEnabled()
+            => string.Equals(Boolean.TrueString, GetAppProperty<string>(nameof(HasDryRunEnabled)));
+
+        public void InitHasDryRunEnabled(bool value)
+            => InitAppProperty(nameof(HasDryRunEnabled), value ? Boolean.TrueString : Boolean.FalseString);
 
         private TObject GetAppProperty<TObject>(string key)
             where TObject : class

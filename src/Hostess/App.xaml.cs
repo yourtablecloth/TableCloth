@@ -95,6 +95,7 @@ namespace Hostess
                 var installRaiDrive = true;
                 var hasIEModeEnabled = false;
                 var showHelp = false;
+                var hasDryRunEnabled = false;
 
                 var options = e.Args.Where(x => x.StartsWith(StringResources.TableCloth_Switch_Prefix, StringComparison.Ordinal)).ToArray();
                 foreach (var eachOption in options)
@@ -116,6 +117,9 @@ namespace Hostess
 
                     if (eachOption.StartsWith(StringResources.TableCloth_Switch_Help, StringComparison.Ordinal))
                         showHelp = true;
+
+                    if (eachOption.StartsWith(StringResources.TableCloth_Switch_DryRun, StringComparison.Ordinal))
+                        hasDryRunEnabled = true;
                 }
 
                 if (showHelp)
@@ -130,6 +134,7 @@ namespace Hostess
                 sharedProperties.InitWillInstallHancomOfficeViewer(installHancomOfficeViewer);
                 sharedProperties.InitWillInstallRaiDrive(installRaiDrive);
                 sharedProperties.InitHasIEModeEnabled(hasIEModeEnabled);
+                sharedProperties.InitHasDryRunEnabled(hasDryRunEnabled);
 
                 if (!targetSites.Any())
                 {

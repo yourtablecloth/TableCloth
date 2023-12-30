@@ -110,12 +110,12 @@ namespace Hostess.Commands.MainWindow
 
         private void VerifyWindowsContainerEnvironment()
         {
-            var services = App.Current.Services;
-            var appMessageBox = services.GetRequiredService<AppMessageBox>();
+            if (_sharedProperties.HasDryRunEnabled())
+                return;
 
             if (!_validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
             {
-                var response = appMessageBox.DisplayQuestion(
+                var response = _appMessageBox.DisplayQuestion(
                     (string)Application.Current.Resources["WarningForNonSandboxEnvironment"],
                     defaultAnswer: MessageBoxResult.No);
 
@@ -126,6 +126,9 @@ namespace Hostess.Commands.MainWindow
 
         private void TryProtectCriticalServices()
         {
+            if (_sharedProperties.HasDryRunEnabled())
+                return;
+
             try { _protectTermService.PreventServiceProcessTermination("TermService"); }
             catch (AggregateException aex) { _appMessageBox.DisplayError(aex.InnerException, false); }
             catch (Exception ex) { _appMessageBox.DisplayError(ex, false); }
@@ -137,6 +140,9 @@ namespace Hostess.Commands.MainWindow
 
         private void SetDesktopWallpaper()
         {
+            if (_sharedProperties.HasDryRunEnabled())
+                return;
+
             var picturesDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 
             if (!Directory.Exists(picturesDirectoryPath))
