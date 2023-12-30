@@ -1,6 +1,5 @@
 ﻿using Hostess.Components;
 using Hostess.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -47,10 +46,7 @@ namespace Hostess.Commands.MainWindow
             _visualThemeManager.ApplyAutoThemeChange(
                 Application.Current.MainWindow);
 
-            viewModel.Width = viewModel.MinWidth;
-            viewModel.Height = SystemParameters.PrimaryScreenHeight * 0.5;
-            viewModel.Top = (SystemParameters.PrimaryScreenHeight / 2) - (viewModel.Height / 2);
-            viewModel.Left = SystemParameters.PrimaryScreenWidth - viewModel.Width;
+            viewModel.NotifyWindowLoaded(this, EventArgs.Empty);
 
             VerifyWindowsContainerEnvironment();
             TryProtectCriticalServices();

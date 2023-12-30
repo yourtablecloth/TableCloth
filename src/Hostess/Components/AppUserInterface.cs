@@ -23,5 +23,8 @@ namespace Hostess.Components
 
         public PrecautionsWindow CreatePrecautionsWindow()
             => _serviceProvider.GetRequiredService<PrecautionsWindow>();
+
+        public MainWindow CreateMainWindow()
+            => _serviceProvider.GetRequiredService<MainWindow>();
     }
 }

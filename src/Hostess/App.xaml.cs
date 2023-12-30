@@ -149,6 +149,11 @@ namespace Hostess
                     Current.Shutdown(0);
                     return;
                 }
+
+                var appUserInterface = Services.GetRequiredService<AppUserInterface>();
+                var mainWindow = appUserInterface.CreateMainWindow();
+                Application.Current.MainWindow = mainWindow;
+                mainWindow.Show();
             }
             catch (Exception ex)
             {

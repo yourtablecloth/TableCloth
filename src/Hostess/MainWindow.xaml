@@ -11,7 +11,7 @@
         Style="{DynamicResource MainWindowStyle}"
         ResizeMode="CanResize"
         WindowStartupLocation="Manual" Top="0" Left="0"
-        Title="{StaticResource AppTitle}" Width="{Binding Width}" Height="{Binding Height}" MinWidth="{Binding MinWidth}" MinHeight="{Binding MinHeight}"
+        Title="{StaticResource AppTitle}" Width="320" Height="480" MinWidth="320" MinHeight="480"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">

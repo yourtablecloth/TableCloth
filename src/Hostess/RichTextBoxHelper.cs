@@ -27,7 +27,7 @@ namespace Hostess
 
                     var range = new TextRange(doc.ContentStart, doc.ContentEnd);
                     var memoryStream = new MemoryStream(TargetEncoding.GetBytes(xaml));
-                    range.Load(memoryStream, DataFormats.Xaml);
+                    range.Load(memoryStream, DataFormats.Text);
 
                     // Set the document
                     richTextBox.Document = doc;
@@ -38,7 +38,7 @@ namespace Hostess
                         if (richTextBox.Document == doc)
                         {
                             var buffer = new MemoryStream();
-                            range.Save(buffer, DataFormats.Xaml);
+                            range.Save(buffer, DataFormats.Text);
                             SetDocumentXaml(richTextBox, TargetEncoding.GetString(buffer.ToArray()));
                         }
                     };
