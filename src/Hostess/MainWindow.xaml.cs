@@ -24,9 +24,8 @@ namespace Hostess
             Left = SystemParameters.PrimaryScreenWidth - Width;
         }
 
-        private void ViewModel_CloseRequested(object sender, DialogRequestEventArgs e)
+        private void ViewModel_CloseRequested(object sender, EventArgs e)
         {
-            DialogResult = e.DialogResult;
             Close();
         }
     }

@@ -85,7 +85,7 @@ namespace Hostess.Commands.MainWindow
                     var urls = catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url);
                     TryOpenRequestedWebSites(urls);
 
-                    viewModel.RequestClose(this, true);
+                    viewModel.RequestClose(this);
                     return;
                 }
             }

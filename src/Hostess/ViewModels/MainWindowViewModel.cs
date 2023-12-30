@@ -38,13 +38,13 @@ namespace Hostess.ViewModels
             => _aboutThisAppCommand;
 
         public event EventHandler WindowLoaded;
-        public event EventHandler<DialogRequestEventArgs> CloseRequested;
+        public event EventHandler CloseRequested;
 
         public void NotifyWindowLoaded(object sender, EventArgs e)
             => WindowLoaded?.Invoke(sender, e);
 
-        public void RequestClose(object sender, bool? dialogResult)
-            => CloseRequested?.Invoke(sender, new DialogRequestEventArgs(dialogResult));
+        public void RequestClose(object sender)
+            => CloseRequested?.Invoke(sender, EventArgs.Empty);
 
         private IList<InstallItemViewModel> _installItems
             = new ObservableCollection<InstallItemViewModel>();
