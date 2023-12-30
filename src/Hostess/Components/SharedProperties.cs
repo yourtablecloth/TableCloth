@@ -19,12 +19,6 @@ namespace Hostess.Components
         public void InitCatalogLastModified(string value)
             => InitAppProperty("CatalogLastModified", value);
 
-        public string GetIEModeListLastModified()
-            => GetAppProperty<string>("IEModeListLastModified");
-
-        public void InitIEModeListLastModified(string value)
-            => InitAppProperty("IEModeListLastModified", value);
-
         public IEnumerable<string> GetInstallSites()
             => GetAppProperty<IEnumerable<string>>("InstallSites");
 
