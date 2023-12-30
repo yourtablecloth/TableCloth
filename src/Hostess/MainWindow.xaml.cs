@@ -208,13 +208,9 @@ namespace Hostess
             var services = App.Current.Services;
             var sharedProperties = services.GetRequiredService<SharedProperties>();
             var licenseDescriptor = services.GetRequiredService<LicenseDescriptor>();
+            var aboutWindowViewModel = services.GetRequiredService<AboutWindowViewModel>();
 
-            var aboutWindow = new AboutWindow()
-            {
-                CatalogDate = sharedProperties.GetCatalogLastModified(),
-                License = licenseDescriptor.GetLicenseDescriptions(),
-            };
-
+            var aboutWindow = services.GetRequiredService<AboutWindow>();
             aboutWindow.ShowDialog();
         }
 

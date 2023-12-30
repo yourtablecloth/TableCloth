@@ -1,4 +1,8 @@
-﻿using Hostess.Components;
+﻿using Hostess.Commands;
+using Hostess.Commands.AboutWindow;
+using Hostess.Components;
+using Hostess.Dialogs;
+using Hostess.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Diagnostics;
@@ -187,6 +191,17 @@ namespace Hostess
                 .AddSingleton<LicenseDescriptor>()
                 .AddSingleton<ProtectTermService>()
                 .AddSingleton<SharedProperties>();
+
+            // Shared Commands
+            services
+                .AddSingleton<OpenAppHomepageCommand>()
+                .AddSingleton<ShowErrorMessageCommand>();
+
+            // About Window
+            services
+                .AddWindow<AboutWindow, AboutWindowViewModel>()
+                .AddSingleton<AboutWindowLoadedCommand>()
+                .AddSingleton<AboutWindowCloseCommand>();
 
             return services.BuildServiceProvider();
         }
