@@ -162,7 +162,7 @@
     <Compile Include="Components\LicenseDescriptor.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Components\ProtectTermService.cs" />
+    <Compile Include="Components\ProtectCriticalServices.cs" />
     <Compile Include="Components\SharedProperties.cs" />
     <Compile Include="Converters\StateToBrushConverter.cs" />
     <Compile Include="RichTextBoxHelper.cs" />

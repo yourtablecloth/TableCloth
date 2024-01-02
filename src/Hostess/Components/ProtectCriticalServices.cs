@@ -12,7 +12,7 @@ namespace Hostess.Components
     // https://stackoverflow.com/questions/15771998/how-to-give-a-user-permission-to-start-and-stop-a-particular-service-using-c-sha
     // https://docs.microsoft.com/en-us/windows/win32/services/service-security-and-access-rights
 
-    public sealed class ProtectTermService
+    public sealed class ProtectCriticalServices
     {
         public void PreventServiceProcessTermination(string service)
         {

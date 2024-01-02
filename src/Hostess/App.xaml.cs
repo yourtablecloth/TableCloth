@@ -198,7 +198,7 @@ namespace Hostess
                 .AddSingleton<AppMessageBox>()
                 .AddSingleton<AppUserInterface>()
                 .AddSingleton<LicenseDescriptor>()
-                .AddSingleton<ProtectTermService>()
+                .AddSingleton<ProtectCriticalServices>()
                 .AddSingleton<SharedProperties>()
                 .AddSingleton<VisualThemeManager>()
                 .AddSingleton<SharedLocations>();

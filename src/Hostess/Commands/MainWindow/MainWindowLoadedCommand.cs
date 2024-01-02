@@ -15,14 +15,14 @@ namespace Hostess.Commands.MainWindow
     public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowViewModel>
     {
         public MainWindowLoadedCommand(
-            ProtectTermService protectTermServices,
+            ProtectCriticalServices protectTermServices,
             SharedProperties sharedProperties,
             AppMessageBox appMessageBox,
             AppUserInterface appUserInterface,
             VisualThemeManager visualThemeManager,
             SharedLocations sharedLocations)
         {
-            _protectTermService = protectTermServices;
+            _protectCriticalServices = protectTermServices;
             _sharedProperties = sharedProperties;
             _appMessageBox = appMessageBox;
             _appUserInterface = appUserInterface;
@@ -30,7 +30,7 @@ namespace Hostess.Commands.MainWindow
             _sharedLocations = sharedLocations;
         }
 
-        private readonly ProtectTermService _protectTermService;
+        private readonly ProtectCriticalServices _protectCriticalServices;
         private readonly SharedProperties _sharedProperties;
         private readonly AppMessageBox _appMessageBox;
         private readonly AppUserInterface _appUserInterface;
@@ -130,11 +130,11 @@ namespace Hostess.Commands.MainWindow
             if (_sharedProperties.HasDryRunEnabled())
                 return;
 
-            try { _protectTermService.PreventServiceProcessTermination("TermService"); }
+            try { _protectCriticalServices.PreventServiceProcessTermination("TermService"); }
             catch (AggregateException aex) { _appMessageBox.DisplayError(aex.InnerException, false); }
             catch (Exception ex) { _appMessageBox.DisplayError(ex, false); }
 
-            try { _protectTermService.PreventServiceStop("TermService", Environment.UserName); }
+            try { _protectCriticalServices.PreventServiceStop("TermService", Environment.UserName); }
             catch (AggregateException aex) { _appMessageBox.DisplayError(aex.InnerException, false); }
             catch (Exception ex) { _appMessageBox.DisplayError(ex, false); }
         }
