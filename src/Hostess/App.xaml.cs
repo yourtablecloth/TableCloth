@@ -204,7 +204,8 @@ namespace Hostess
                 .AddSingleton<LicenseDescriptor>()
                 .AddSingleton<ProtectTermService>()
                 .AddSingleton<SharedProperties>()
-                .AddSingleton<VisualThemeManager>();
+                .AddSingleton<VisualThemeManager>()
+                .AddSingleton<SharedLocations>();
 
             // Shared Commands
             services

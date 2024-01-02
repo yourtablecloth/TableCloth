@@ -19,13 +19,15 @@ namespace Hostess.Commands.MainWindow
             SharedProperties sharedProperties,
             AppMessageBox appMessageBox,
             AppUserInterface appUserInterface,
-            VisualThemeManager visualThemeManager)
+            VisualThemeManager visualThemeManager,
+            SharedLocations sharedLocations)
         {
             _protectTermService = protectTermServices;
             _sharedProperties = sharedProperties;
             _appMessageBox = appMessageBox;
             _appUserInterface = appUserInterface;
             _visualThemeManager = visualThemeManager;
+            _sharedLocations = sharedLocations;
         }
 
         private readonly ProtectTermService _protectTermService;
@@ -33,6 +35,7 @@ namespace Hostess.Commands.MainWindow
         private readonly AppMessageBox _appMessageBox;
         private readonly AppUserInterface _appUserInterface;
         private readonly VisualThemeManager _visualThemeManager;
+        private readonly SharedLocations _sharedLocations;
 
         private readonly string[] _validAccountNames = new string[]
         {
@@ -141,7 +144,7 @@ namespace Hostess.Commands.MainWindow
             if (_sharedProperties.HasDryRunEnabled())
                 return;
 
-            var picturesDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            var picturesDirectoryPath = _sharedLocations.GetPicturesDirectoryPath();
 
             if (!Directory.Exists(picturesDirectoryPath))
                 Directory.CreateDirectory(picturesDirectoryPath);

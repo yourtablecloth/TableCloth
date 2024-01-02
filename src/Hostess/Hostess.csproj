@@ -149,7 +149,9 @@
     <Compile Include="Commands\PrecautionsWindow\PrecautionsWindowCloseCommand.cs" />
     <Compile Include="Commands\PrecautionsWindow\PrecautionsWindowLoadedCommand.cs" />
     <Compile Include="Commands\ViewModelCommandBase.cs" />
+    <Compile Include="Components\AppStartup.cs" />
     <Compile Include="Components\AppUserInterface.cs" />
+    <Compile Include="Components\SharedLocations.cs" />
     <Compile Include="Components\VisualThemeManager.cs" />
     <Compile Include="Converters\BooleanToGridRowHeightConverter.cs" />
     <Compile Include="Dialogs\AboutWindow.xaml.cs">

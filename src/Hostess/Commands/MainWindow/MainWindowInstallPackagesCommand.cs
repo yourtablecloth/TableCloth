@@ -18,14 +18,17 @@ namespace Hostess.Commands.MainWindow
     {
         public MainWindowInstallPackagesCommand(
             SharedProperties sharedProperties,
-            AppMessageBox appMessageBox)
+            AppMessageBox appMessageBox,
+            SharedLocations sharedLocations)
         {
             _sharedProperties = sharedProperties;
             _appMessageBox = appMessageBox;
+            _sharedLocations = sharedLocations;
         }
 
         private readonly SharedProperties _sharedProperties;
         private readonly AppMessageBox _appMessageBox;
+        private readonly SharedLocations _sharedLocations;
 
         private bool _isRunning = false;
 
@@ -55,7 +58,7 @@ namespace Hostess.Commands.MainWindow
                         if (eachItem.InstallItemType == InstallItemType.DownloadAndInstall)
                             await ProcessDownloadAndInstall(eachItem, downloadFolderPath);
                         else if (eachItem.InstallItemType == InstallItemType.PowerShellScript)
-                            await ProcessDownloadAndInstall(eachItem, downloadFolderPath);
+                            await ProcessPowerShellScript(eachItem, downloadFolderPath);
                     }
                     catch (Exception ex)
                     {
@@ -116,23 +119,10 @@ namespace Hostess.Commands.MainWindow
                     }
 
                     // msedge.exe 파일 경로를 유추하고, Policy를 반영하기 위해 잠시 실행했다가 종료하는 동작을 추가
-                    var msedgeKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe", false);
                     var msedgePath = default(string);
 
-                    if (msedgeKey != null)
-                    {
-                        using (msedgeKey)
-                        {
-                            msedgePath = (string)msedgeKey.GetValue(null, null);
-                        }
-                    }
-
-                    if (!File.Exists(msedgePath))
-                    {
-                        msedgePath = Path.Combine(
-                            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-                            "Microsoft", "Edge", "Application", "msedge.exe");
-                    }
+                    if (!_sharedLocations.TryGetMicrosoftEdgeExecutableFilePath(out msedgePath))
+                        msedgePath = _sharedLocations.GetDefaultX86MicrosoftEdgeExecutableFilePath();
 
                     if (File.Exists(msedgePath))
                     {
@@ -229,9 +219,7 @@ namespace Hostess.Commands.MainWindow
                 File.Delete(tempFilePath);
 
             File.WriteAllText(tempFilePath, eachItem.ScriptContent, Encoding.Unicode);
-            var powershellPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.System),
-                @"WindowsPowerShell\v1.0\powershell.exe");
+            var powershellPath = _sharedLocations.GetDefaultPowerShellExecutableFilePath();
 
             if (!File.Exists(powershellPath))
                 throw new Exception(StringResources.Hostess_No_PowerShell_Error);
