@@ -26,21 +26,17 @@ public partial class App : Application
 {
     public App()
     {
-        Services = ConfigureServices();
-
+        Application.Current.InitServiceProvider(_serviceProvider = ConfigureServices());
         InitializeComponent();
     }
 
-    public new static App Current => (App)Application.Current;
-
-    public IServiceProvider Services { get; }
-
+    private IServiceProvider _serviceProvider;
     private AppUserInterface? _appUserInterface;
     private SplashScreen? _splashScreen;
 
     private void Application_Startup(object sender, StartupEventArgs e)
     {
-        _appUserInterface = Services.GetRequiredService<AppUserInterface>();
+        _appUserInterface = _serviceProvider.GetRequiredService<AppUserInterface>();
 
         _splashScreen = _appUserInterface.CreateSplashScreen();
         _splashScreen.ViewModel.InitializeDone += ViewModel_InitializeDone;
@@ -58,9 +54,9 @@ public partial class App : Application
         {
             var mainWindow = default(Window);
             if (_splashScreen.ViewModel.V2UIOptedIn)
-                mainWindow = Services.GetRequiredService<MainWindowV2>();
+                mainWindow = _serviceProvider.GetRequiredService<MainWindowV2>();
             else
-                mainWindow = Services.GetRequiredService<MainWindow>();
+                mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
 
             this.MainWindow = mainWindow;
             mainWindow.Show();

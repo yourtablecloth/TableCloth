@@ -58,6 +58,8 @@ namespace Hostess.Components
 
         public bool Initialize(out Exception failedReason, out bool isCritical)
         {
+            failedReason = null;
+            isCritical = false;
             return true;
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 using TableCloth.Components;
 
@@ -13,7 +14,10 @@ public class ServiceLogoConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (_resourceCacheManager == null)
-            _resourceCacheManager = App.Current.Services.GetRequiredService<ResourceCacheManager>();
+        {
+            var serviceProvider = Application.Current.GetServiceProvider();
+            _resourceCacheManager = serviceProvider.GetRequiredService<ResourceCacheManager>();
+        }
 
         return _resourceCacheManager.GetImage((string)value) ?? throw new ArgumentException(nameof(value));
     }
