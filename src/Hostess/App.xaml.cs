@@ -26,21 +26,21 @@ namespace Hostess
     {
         public App()
         {
-            InitializeComponent();
+            Application.Current.InitServiceProvider(_serviceProvider = ConfigureServices());
+            _appMessageBox = _serviceProvider.GetRequiredService<AppMessageBox>();
+            _sharedProperties = _serviceProvider.GetRequiredService<SharedProperties>();
+            _appUserInterface = _serviceProvider.GetRequiredService<AppUserInterface>();
 
-            Services = ConfigureServices();
+            InitializeComponent();
         }
 
-        public static new App Current => (App)Application.Current;
-
-        public IServiceProvider Services { get; }
-
+        private readonly IServiceProvider _serviceProvider;
+        private readonly AppMessageBox _appMessageBox;
+        private readonly SharedProperties _sharedProperties;
+        private readonly AppUserInterface _appUserInterface;
+        
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            var services = App.Current.Services;
-            var appMessageBox = services.GetService<AppMessageBox>();
-            var sharedProperties = services.GetService<SharedProperties>();
-
             ServicePointManager.ServerCertificateValidationCallback += ValidateRemoteCertificate;
 
             const int retryCount = 3;
@@ -73,21 +73,21 @@ namespace Hostess
 
                         if (attemptCount == retryCount)
                         {
-                            appMessageBox.DisplayError(StringResources.HostessError_CatalogLoadFailure(ex), true);
-                            Current.Shutdown(0);
+                            _appMessageBox.DisplayError(StringResources.HostessError_CatalogLoadFailure(ex), true);
+                            Application.Current.Shutdown(0);
                             return;
                         }
 
                         continue;
                     }
 
-                    sharedProperties.InitCatalogDocument(catalog);
-                    sharedProperties.InitCatalogLastModified(lastModifiedValue);
+                    _sharedProperties.InitCatalogDocument(catalog);
+                    _sharedProperties.InitCatalogLastModified(lastModifiedValue);
                     break;
                 }
 
                 var targetSites = e.Args.Where(x => !x.StartsWith(StringResources.TableCloth_Switch_Prefix, StringComparison.Ordinal)).ToArray();
-                sharedProperties.InitInstallSites(targetSites);
+                _sharedProperties.InitInstallSites(targetSites);
 
                 var installEveryonesPrinter = false;
                 var installAdobeReader = false;
@@ -124,21 +124,21 @@ namespace Hostess
 
                 if (showHelp)
                 {
-                    appMessageBox.DisplayInfo(StringResources.TableCloth_Hostess_Switches_Help);
-                    Current.Shutdown(0);
+                    _appMessageBox.DisplayInfo(StringResources.TableCloth_Hostess_Switches_Help);
+                    Application.Current.Shutdown(0);
                     return;
                 }
 
-                sharedProperties.InitWillInstallEveryonesPrinter(installEveryonesPrinter);
-                sharedProperties.InitWillInstallAdobeReader(installAdobeReader);
-                sharedProperties.InitWillInstallHancomOfficeViewer(installHancomOfficeViewer);
-                sharedProperties.InitWillInstallRaiDrive(installRaiDrive);
-                sharedProperties.InitHasIEModeEnabled(hasIEModeEnabled);
-                sharedProperties.InitHasDryRunEnabled(hasDryRunEnabled);
+                _sharedProperties.InitWillInstallEveryonesPrinter(installEveryonesPrinter);
+                _sharedProperties.InitWillInstallAdobeReader(installAdobeReader);
+                _sharedProperties.InitWillInstallHancomOfficeViewer(installHancomOfficeViewer);
+                _sharedProperties.InitWillInstallRaiDrive(installRaiDrive);
+                _sharedProperties.InitHasIEModeEnabled(hasIEModeEnabled);
+                _sharedProperties.InitHasDryRunEnabled(hasDryRunEnabled);
 
                 if (!targetSites.Any())
                 {
-                    appMessageBox.DisplayInfo(StringResources.Hostess_No_Targets);
+                    _appMessageBox.DisplayInfo(StringResources.Hostess_No_Targets);
 
                     Process.Start(new ProcessStartInfo("https://www.naver.com/")
                     {
@@ -146,18 +146,17 @@ namespace Hostess
                         WindowStyle = ProcessWindowStyle.Maximized,
                     });
 
-                    Current.Shutdown(0);
+                    Application.Current.Shutdown(0);
                     return;
                 }
 
-                var appUserInterface = Services.GetRequiredService<AppUserInterface>();
-                var mainWindow = appUserInterface.CreateMainWindow();
+                var mainWindow = _appUserInterface.CreateMainWindow();
                 Application.Current.MainWindow = mainWindow;
                 mainWindow.Show();
             }
             catch (Exception ex)
             {
-                appMessageBox.DisplayError(ex, true);
+                _appMessageBox.DisplayError(ex, true);
             }
         }
 
@@ -179,14 +178,11 @@ namespace Hostess
 
         private bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
         {
-            var services = App.Current.Services;
-            var appMessageBox = services.GetService<AppMessageBox>();
-
             // If the certificate is a valid, signed certificate, return true.
             if (error == SslPolicyErrors.None)
                 return true;
 
-            appMessageBox.DisplayError(StringResources.HostessError_X509CertError(cert, error), false);
+            _appMessageBox.DisplayError(StringResources.HostessError_X509CertError(cert, error), false);
             return false;
         }
 
