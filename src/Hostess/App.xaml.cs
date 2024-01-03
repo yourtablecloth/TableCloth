@@ -28,19 +28,19 @@ namespace Hostess
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
             var appMessageBox = _serviceProvider.GetRequiredService<AppMessageBox>();
-            var appStartup = _serviceProvider.GetRequiredService<AppStartup>();
-            var appUserInterface = _serviceProvider.GetRequiredService<AppUserInterface>();
             var commandLineArguments = _serviceProvider.GetRequiredService<CommandLineArguments>();
-
-            var warnings = new List<string>();
             var parsedArgs = commandLineArguments.Current;
 
-            if (parsedArgs != null && parsedArgs.ShowCommandLineHelp)
+            if (parsedArgs.ShowCommandLineHelp)
             {
                 appMessageBox.DisplayInfo(StringResources.TableCloth_Hostess_Switches_Help, MessageBoxButton.OK);
                 return;
             }
 
+            var appStartup = _serviceProvider.GetRequiredService<AppStartup>();
+            var appUserInterface = _serviceProvider.GetRequiredService<AppUserInterface>();
+
+            var warnings = new List<string>();
             var result = await appStartup.HasRequirementsMetAsync(warnings);
 
             if (!result.Succeed)
