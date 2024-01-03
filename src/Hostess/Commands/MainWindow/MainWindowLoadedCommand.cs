@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using TableCloth;
 using TableCloth.Models;
@@ -21,7 +22,8 @@ namespace Hostess.Commands.MainWindow
             AppMessageBox appMessageBox,
             AppUserInterface appUserInterface,
             VisualThemeManager visualThemeManager,
-            SharedLocations sharedLocations)
+            SharedLocations sharedLocations,
+            CommandLineArguments commandLineArguments)
         {
             _protectCriticalServices = protectTermServices;
             _sharedProperties = sharedProperties;
@@ -29,6 +31,7 @@ namespace Hostess.Commands.MainWindow
             _appUserInterface = appUserInterface;
             _visualThemeManager = visualThemeManager;
             _sharedLocations = sharedLocations;
+            _commandLineArguments = commandLineArguments;
         }
 
         private readonly ProtectCriticalServices _protectCriticalServices;
@@ -37,6 +40,7 @@ namespace Hostess.Commands.MainWindow
         private readonly AppUserInterface _appUserInterface;
         private readonly VisualThemeManager _visualThemeManager;
         private readonly SharedLocations _sharedLocations;
+        private readonly CommandLineArguments _commandLineArguments;
 
         private readonly string[] _validAccountNames = new string[]
         {
@@ -47,7 +51,7 @@ namespace Hostess.Commands.MainWindow
 
         public override void Execute(MainWindowViewModel viewModel)
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
             viewModel.ShowDryRunNotification = parsedArgs.DryRun;
 
             _visualThemeManager.ApplyAutoThemeChange(
@@ -113,7 +117,7 @@ namespace Hostess.Commands.MainWindow
 
         private void VerifyWindowsContainerEnvironment()
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
                 return;
@@ -131,7 +135,7 @@ namespace Hostess.Commands.MainWindow
 
         private void TryProtectCriticalServices()
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
                 return;
@@ -147,7 +151,7 @@ namespace Hostess.Commands.MainWindow
 
         private void SetDesktopWallpaper()
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
                 return;

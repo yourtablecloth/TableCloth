@@ -20,17 +20,20 @@ namespace Hostess.Components
         public AppStartup(
             AppMessageBox appMessageBox,
             SharedProperties sharedProperties,
-            AppUserInterface appUserInterface)
+            AppUserInterface appUserInterface,
+            CommandLineArguments commandLineArguments)
         {
             _appMessageBox = appMessageBox;
             _sharedProperties = sharedProperties;
             _appUserInterface = appUserInterface;
+            _commandLineArguments = commandLineArguments;
             _mutex = new Mutex(true, $"Global\\{GetType().FullName}", out this._isFirstInstance);
         }
 
         private readonly AppMessageBox _appMessageBox;
         private readonly SharedProperties _sharedProperties;
         private readonly AppUserInterface _appUserInterface;
+        private readonly CommandLineArguments _commandLineArguments;
 
         private bool _disposed;
         private readonly Mutex _mutex;
@@ -73,7 +76,7 @@ namespace Hostess.Components
 
         public bool Initialize(out Exception failedReason, out bool isCritical)
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
             ServicePointManager.ServerCertificateValidationCallback += ValidateRemoteCertificate;
 
             const int retryCount = 3;

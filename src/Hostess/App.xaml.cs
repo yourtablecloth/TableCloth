@@ -30,9 +30,10 @@ namespace Hostess
             var appMessageBox = _serviceProvider.GetRequiredService<AppMessageBox>();
             var appStartup = _serviceProvider.GetRequiredService<AppStartup>();
             var appUserInterface = _serviceProvider.GetRequiredService<AppUserInterface>();
+            var commandLineArguments = _serviceProvider.GetRequiredService<CommandLineArguments>();
 
             var warnings = new List<string>();
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = commandLineArguments.Current;
 
             if (parsedArgs != null && parsedArgs.ShowCommandLineHelp)
             {
@@ -80,7 +81,8 @@ namespace Hostess
                 .AddSingleton<SharedProperties>()
                 .AddSingleton<VisualThemeManager>()
                 .AddSingleton<SharedLocations>()
-                .AddSingleton<AppStartup>();
+                .AddSingleton<AppStartup>()
+                .AddSingleton<CommandLineArguments>();
 
             // Shared Commands
             services
@@ -104,6 +106,9 @@ namespace Hostess
                 .AddWindow<MainWindow, MainWindowViewModel>()
                 .AddSingleton<MainWindowLoadedCommand>()
                 .AddSingleton<MainWindowInstallPackagesCommand>();
+
+            // App
+            services.AddTransient(_ => Current);
 
             return services.BuildServiceProvider();
         }

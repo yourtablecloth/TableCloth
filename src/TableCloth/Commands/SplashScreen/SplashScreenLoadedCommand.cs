@@ -17,13 +17,15 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
         AppMessageBox appMessageBox,
         PreferencesManager preferencesManager,
         ResourceCacheManager resourceCacheManager,
-        VisualThemeManager visualThemeManager)
+        VisualThemeManager visualThemeManager,
+        CommandLineArguments commandLineArguments)
     {
         _appStartup = appStartup;
         _appMessageBox = appMessageBox;
         _preferencesManager = preferencesManager;
         _resourceCacheManager = resourceCacheManager;
         _visualThemeManager = visualThemeManager;
+        _commandLineArguments = commandLineArguments;
     }
 
     private readonly AppStartup _appStartup;
@@ -31,6 +33,7 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
     private readonly PreferencesManager _preferencesManager;
     private readonly ResourceCacheManager _resourceCacheManager;
     private readonly VisualThemeManager _visualThemeManager;
+    private readonly CommandLineArguments _commandLineArguments;
 
     public override async void Execute(SplashScreenViewModel viewModel)
     {
@@ -42,7 +45,7 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_ParsingCommandLine));
 
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs != null && parsedArgs.ShowCommandLineHelp)
             {

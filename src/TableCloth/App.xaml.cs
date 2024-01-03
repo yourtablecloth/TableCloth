@@ -26,7 +26,7 @@ public partial class App : Application
 {
     public App()
     {
-        Application.Current.InitServiceProvider(_serviceProvider = ConfigureServices());
+        Current.InitServiceProvider(_serviceProvider = ConfigureServices());
         InitializeComponent();
     }
 
@@ -94,7 +94,8 @@ public partial class App : Application
             .AddSingleton<VisualThemeManager>()
             .AddSingleton<AppMessageBox>()
             .AddSingleton<NavigationService>()
-            .AddSingleton<ShortcutCrerator>();
+            .AddSingleton<ShortcutCrerator>()
+            .AddSingleton<CommandLineArguments>();
 
         // Shared Commands
         services
@@ -164,6 +165,9 @@ public partial class App : Application
         services
             .AddWindow<SplashScreen, SplashScreenViewModel>()
             .AddSingleton<SplashScreenLoadedCommand>();
+
+        // App
+        services.AddTransient(_ => Current);
 
         return services.BuildServiceProvider();
     }

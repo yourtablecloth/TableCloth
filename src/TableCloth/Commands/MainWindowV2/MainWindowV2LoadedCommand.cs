@@ -13,24 +13,30 @@ namespace TableCloth.Commands.MainWindowV2;
 public sealed class MainWindowV2LoadedCommand : ViewModelCommandBase<MainWindowV2ViewModel>
 {
     public MainWindowV2LoadedCommand(
+        Application application,
         ResourceCacheManager resourceCacheManager,
         NavigationService navigationService,
-        VisualThemeManager visualThemeManager)
+        VisualThemeManager visualThemeManager,
+        CommandLineArguments commandLineArguments)
     {
+        _application = application;
         _resourceCacheManager = resourceCacheManager;
         _navigationService = navigationService;
         _visualThemeManager = visualThemeManager;
+        _commandLineArguments = commandLineArguments;
     }
 
+    private readonly Application _application;
     private readonly ResourceCacheManager _resourceCacheManager;
     private readonly NavigationService _navigationService;
     private readonly VisualThemeManager _visualThemeManager;
+    private readonly CommandLineArguments _commandLineArguments;
 
     public override void Execute(MainWindowV2ViewModel viewModel)
     {
         const string pageFrameName = "PageFrame";
 
-        var mainWindow = Application.Current.MainWindow;
+        var mainWindow = _application.MainWindow;
         var pageFrame = mainWindow.FindName(pageFrameName) as Frame;
 
         if (pageFrame == null)
@@ -39,7 +45,7 @@ public sealed class MainWindowV2LoadedCommand : ViewModelCommandBase<MainWindowV
         _navigationService.Initialize(pageFrame);
         _visualThemeManager.ApplyAutoThemeChange(mainWindow);
 
-        var parsedArg = CommandLineArgumentModel.ParseFromArgv();
+        var parsedArg = _commandLineArguments.Current;
         var services = _resourceCacheManager.CatalogDocument.Services;
 
         var commandLineSelectedService = default(CatalogInternetService);

@@ -90,21 +90,13 @@ namespace TableCloth.Models
 
         public bool DryRun { get; private set; }
 
-        public static CommandLineArgumentModel
-#if !NETFX
-            ?
-#endif
-            ParseFromArgv()
+        public static CommandLineArgumentModel ParseFromArgv()
             => Parse(Helpers.GetCommandLineArguments());
 
-        public static CommandLineArgumentModel
-#if !NETFX
-            ?
-#endif
-            Parse(string[] args)
+        public static CommandLineArgumentModel Parse(string[] args)
         {
             if (args.Length < 1)
-                return default;
+                return new CommandLineArgumentModel();
 
             var selectedServiceIds = new List<string>();
             var enableMicrophone = default(bool?);

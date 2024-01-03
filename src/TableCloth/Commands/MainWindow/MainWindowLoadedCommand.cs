@@ -23,7 +23,8 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
         AppMessageBox appMessageBox,
         AppRestartManager appRestartManager,
         ConfigurationComposer configurationComposer,
-        SandboxLauncher sandboxLauncher)
+        SandboxLauncher sandboxLauncher,
+        CommandLineArguments commandLineArguments)
     {
         _resourceCacheManager = resourceCacheManager;
         _appUserInterface = appUserInterface;
@@ -35,6 +36,7 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
         _appRestartManager = appRestartManager;
         _configurationComposer = configurationComposer;
         _sandboxLauncher = sandboxLauncher;
+        _commandLineArguments = commandLineArguments;
     }
 
     private readonly ResourceCacheManager _resourceCacheManager;
@@ -47,6 +49,7 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
     private readonly AppRestartManager _appRestartManager;
     private readonly ConfigurationComposer _configurationComposer;
     private readonly SandboxLauncher _sandboxLauncher;
+    private readonly CommandLineArguments _commandLineArguments;
 
     public override void Execute(MainWindowViewModel viewModel)
     {
@@ -126,7 +129,7 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
         var directoryPath = _sharedLocations.GetImageDirectoryPath();
 
         // Command Line Parse
-        var parsedArg = CommandLineArgumentModel.ParseFromArgv();
+        var parsedArg = _commandLineArguments.Current;
 
         if (parsedArg != null)
         {

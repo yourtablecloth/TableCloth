@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using TableCloth;
@@ -20,16 +21,19 @@ namespace Hostess.Commands.MainWindow
         public MainWindowInstallPackagesCommand(
             SharedProperties sharedProperties,
             AppMessageBox appMessageBox,
-            SharedLocations sharedLocations)
+            SharedLocations sharedLocations,
+            CommandLineArguments commandLineArguments)
         {
             _sharedProperties = sharedProperties;
             _appMessageBox = appMessageBox;
             _sharedLocations = sharedLocations;
+            _commandLineArguments = commandLineArguments;
         }
 
         private readonly SharedProperties _sharedProperties;
         private readonly AppMessageBox _appMessageBox;
         private readonly SharedLocations _sharedLocations;
+        private readonly CommandLineArguments _commandLineArguments;
 
         private bool _isRunning = false;
 
@@ -40,7 +44,7 @@ namespace Hostess.Commands.MainWindow
         {
             try
             {
-                var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+                var parsedArgs = _commandLineArguments.Current;
 
                 _isRunning = true;
                 var hasAnyFailure = false;
@@ -107,7 +111,7 @@ namespace Hostess.Commands.MainWindow
 
         private async Task EnableIEModeAsync()
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
                 return;
@@ -160,7 +164,7 @@ namespace Hostess.Commands.MainWindow
 
         private async Task ProcessDownloadAndInstall(InstallItemViewModel eachItem, string downloadFolderPath)
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
 
             eachItem.Installed = null;
             eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
@@ -216,7 +220,7 @@ namespace Hostess.Commands.MainWindow
 
         private async Task ProcessPowerShellScript(InstallItemViewModel eachItem, string downloadFolderPath)
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
 
             eachItem.Installed = null;
             eachItem.StatusMessage = StringResources.Hostess_Install_InProgress;
@@ -269,7 +273,7 @@ namespace Hostess.Commands.MainWindow
 
         private void TryInstallEveryonesPrinter()
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
                 return;
@@ -283,7 +287,7 @@ namespace Hostess.Commands.MainWindow
 
         private void TryInstallAdobeReader()
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
                 return;
@@ -297,7 +301,7 @@ namespace Hostess.Commands.MainWindow
 
         private void TryInstallHancomOfficeViewer()
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
                 return;
@@ -311,7 +315,7 @@ namespace Hostess.Commands.MainWindow
 
         private void TryInstallRaiDrive()
         {
-            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
                 return;
