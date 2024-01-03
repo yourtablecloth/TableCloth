@@ -3,17 +3,16 @@ using TableCloth.Components;
 
 namespace TableCloth.Test;
 
-public class ResourceResolverTest : IClassFixture<ContainerFixture>
+public sealed class ResourceResolverTest : IClassFixture<ContainerFixture>
 {
     public ResourceResolverTest(ContainerFixture fixture)
     {
-        serviceProvider = fixture.ServiceProvider;
-        resourceResolver = serviceProvider.GetRequiredService<ResourceResolver>() ??
-            throw new Exception("Cannot obtain resource resolver due to configuration");
+        _serviceProvider = fixture.Services;
+        _resourceResolver = _serviceProvider.GetRequiredService<ResourceResolver>();
     }
 
-    private IServiceProvider serviceProvider;
-    private ResourceResolver resourceResolver;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ResourceResolver _resourceResolver;
 
     [Fact]
     public async Task TestGetLatestVersion()
@@ -23,7 +22,7 @@ public class ResourceResolverTest : IClassFixture<ContainerFixture>
         const string repoName = "TableCloth";
 
         // Act
-        var result = await resourceResolver.GetLatestVersion(repoOwner, repoName);
+        var result = await _resourceResolver.GetLatestVersion(repoOwner, repoName);
 
         // Assert
         Assert.NotNull(result);
