@@ -4,7 +4,7 @@ using TableCloth.Resources;
 
 namespace TableCloth.Test;
 
-public class ContainerFixture
+public sealed class ContainerFixture
 {
     public ContainerFixture()
     {
