@@ -145,7 +145,7 @@ public partial class App : Application
         services
             .AddWindow<MainWindowV2, MainWindowV2ViewModel>()
             .AddSingleton<MainWindowV2LoadedCommand>()
-            .AddSingleton<MainWindowClosedCommand>();
+            .AddSingleton<MainWindowV2ClosedCommand>();
 
         // Catalog Page
         services

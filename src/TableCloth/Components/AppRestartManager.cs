@@ -26,9 +26,8 @@ public sealed class AppRestartManager
     public bool AskRestart()
         => _appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK);
 
-    public void RestartNow([CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+    public void RestartNow()
     {
-        _appMessageBox.DisplayInfo($"{file} - {member} - {line}");
         Process.Start(_sharedLocations.ExecutableFilePath, Helpers.GetCommandLineArguments());
         _application.Shutdown();
     }
