@@ -13,6 +13,7 @@ namespace TableCloth.Commands.SplashScreen;
 public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScreenViewModel>
 {
     public SplashScreenLoadedCommand(
+        Application application,
         AppStartup appStartup,
         AppMessageBox appMessageBox,
         PreferencesManager preferencesManager,
@@ -20,6 +21,7 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
         VisualThemeManager visualThemeManager,
         CommandLineArguments commandLineArguments)
     {
+        _application = application;
         _appStartup = appStartup;
         _appMessageBox = appMessageBox;
         _preferencesManager = preferencesManager;
@@ -28,6 +30,7 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
         _commandLineArguments = commandLineArguments;
     }
 
+    private readonly Application _application;
     private readonly AppStartup _appStartup;
     private readonly AppMessageBox _appMessageBox;
     private readonly PreferencesManager _preferencesManager;
@@ -80,12 +83,20 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_EvaluatingRequirementsMet));
 
-            if (!_appStartup.HasRequirementsMet(viewModel.Warnings, out Exception? failedReason, out bool isCritical))
-            {
-                if (isCritical)
-                    throw failedReason ?? new Exception(StringResources.Error_Unknown());
+            var result = await _appStartup.HasRequirementsMetAsync(viewModel.Warnings);
 
-                _appMessageBox.DisplayError(failedReason, isCritical);
+            if (!result.Succeed)
+            {
+                _appMessageBox.DisplayError(result.FailedReason, result.IsCritical);
+
+                if (result.IsCritical)
+                {
+#if DEBUG
+                    throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
+#else
+                    _application.Shutdown(-1);
+#endif
+                }
             }
 
             if (viewModel.Warnings.Any())
@@ -94,12 +105,20 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_InitializingApplication));
 
-            if (!_appStartup.Initialize(out failedReason, out isCritical))
-            {
-                if (isCritical)
-                    throw failedReason ?? new Exception(StringResources.Error_Unknown());
+            result = await _appStartup.InitializeAsync(viewModel.Warnings);
 
-                _appMessageBox.DisplayError(failedReason, isCritical);
+            if (!result.Succeed)
+            {
+                _appMessageBox.DisplayError(result.FailedReason, result.IsCritical);
+
+                if (result.IsCritical)
+                {
+#if DEBUG
+                    throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
+#else
+                    _application.Shutdown(-1);
+#endif
+                }
             }
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(

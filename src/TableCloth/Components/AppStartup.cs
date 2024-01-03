@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using TableCloth.Models;
 using TableCloth.Resources;
 
 namespace TableCloth.Components;
@@ -81,20 +82,22 @@ public sealed class AppStartup : IDisposable
         }
     }
 
-    public bool HasRequirementsMet(IList<string> warnings, out Exception? failedReason, out bool isCritical)
+    public async Task<ApplicationStartupResultModel> HasRequirementsMetAsync(IList<string> warnings)
     {
+        var result = default(ApplicationStartupResultModel);
+
         if (!File.Exists(_sharedLocations.HostessZipFilePath))
         {
-            failedReason = new FileNotFoundException(StringResources.Error_Hostess_Missing);
-            isCritical = true;
-            return false;
+            result = ApplicationStartupResultModel.FromErrorMessage(
+                StringResources.Error_Hostess_Missing, isCritical: true, providedWarnings: warnings);
+            return result;
         }
 
         if (!File.Exists(_sharedLocations.ImagesZipFilePath))
         {
-            failedReason = new FileNotFoundException(StringResources.Error_Images_Missing);
-            isCritical = true;
-            return false;
+            result = ApplicationStartupResultModel.FromErrorMessage(
+                StringResources.Error_Images_Missing, isCritical: true, providedWarnings: warnings);
+            return result;
         }
 
         // https://stackoverflow.com/questions/336633/how-to-detect-windows-64-bit-platform-with-net
@@ -105,9 +108,9 @@ public sealed class AppStartup : IDisposable
 
         if (!is64BitOperatingSystem)
         {
-            failedReason = new PlatformNotSupportedException(StringResources.Error_Windows_OS_Too_Old);
-            isCritical = true;
-            return false;
+            result = ApplicationStartupResultModel.FromErrorMessage(
+                StringResources.Error_Windows_OS_Too_Old, isCritical: true, providedWarnings: warnings);
+            return result;
         }
 
         using (var queryResult = new ManagementObjectSearcher("select HyperVisorPresent from Win32_ComputerSystem"))
@@ -119,11 +122,10 @@ public sealed class AppStartup : IDisposable
             {
 #if DEBUG
                 warnings.Add(StringResources.Error_HyperVisor_Missing);
-                isCritical = false;
 #else
-                failedReason = new PlatformNotSupportedException(StringResources.Error_HyperVisor_Missing);
-                isCritical = true;
-                return false;
+                result = ApplicationStartupResultModel.FromErrorMessage(
+                    StringResources.Error_HyperVisor_Missing, isCritical: true, providedWarnings: warnings);
+                return result;
 #endif
             }
         }
@@ -142,12 +144,11 @@ public sealed class AppStartup : IDisposable
             if (!File.Exists(dismExecPath))
             {
 #if DEBUG
-                isCritical = false;
                 warnings.Add(StringResources.Error_Windows_Dism_Missing);
 #else
-                failedReason = new PlatformNotSupportedException(StringResources.Error_Windows_Dism_Missing);
-                isCritical = true;
-                return false;
+                result = ApplicationStartupResultModel.FromErrorMessage(
+                    StringResources.Error_Windows_Dism_Missing, isCritical: true, providedWarnings: warnings);
+                return result;
 #endif
             }
             else
@@ -170,29 +171,28 @@ public sealed class AppStartup : IDisposable
                 if (process != null)
                     process.WaitForExit();
 
-                failedReason = new PlatformNotSupportedException(StringResources.Error_Restart_And_RunAgain);
-                isCritical = true;
-                return false;
+                result = ApplicationStartupResultModel.FromErrorMessage(
+                    StringResources.Error_Restart_And_RunAgain, isCritical: true, providedWarnings: warnings);
+                return result;
             }
         }
 
         if (!File.Exists(wsbExecPath))
         {
 #if DEBUG
-            isCritical = false;
             warnings.Add(StringResources.Error_Windows_Sandbox_Missing);
 #else
-            failedReason = new PlatformNotSupportedException(StringResources.Error_Windows_Sandbox_Missing);
-            isCritical = true;
-            return false;
+            result = ApplicationStartupResultModel.FromErrorMessage(
+                StringResources.Error_Windows_Sandbox_Missing, isCritical: true, providedWarnings: warnings);
+            return result;
 #endif
         }
 
         if (!this._isFirstInstance)
         {
-            failedReason = new ApplicationException(StringResources.Error_Already_TableCloth_Running);
-            isCritical = true;
-            return false;
+            result = ApplicationStartupResultModel.FromErrorMessage(
+                StringResources.Error_Already_TableCloth_Running, isCritical: true, providedWarnings: warnings);
+            return result;
         }
 
         var iePath = Path.Combine(
@@ -240,13 +240,15 @@ public sealed class AppStartup : IDisposable
             }
         }
 
-        failedReason = null;
-        isCritical = false;
-        return true;
+        result = ApplicationStartupResultModel.FromSucceedResult(providedWarnings: warnings);
+        return await Task.FromResult(result).ConfigureAwait(false);
     }
 
-    public bool Initialize(out Exception? failedReason, out bool isCritical)
+    public async Task<ApplicationStartupResultModel> InitializeAsync(
+        IList<string> warnings,
+        CancellationToken cancellationToken = default)
     {
+        var result = default(ApplicationStartupResultModel);
         var targetPath = _sharedLocations.AppDataDirectoryPath;
 
         if (!Directory.Exists(targetPath))
@@ -254,9 +256,9 @@ public sealed class AppStartup : IDisposable
             try { Directory.CreateDirectory(targetPath); }
             catch (Exception e)
             {
-                failedReason = new ApplicationException(StringResources.Error_Cannot_Create_AppDataDirectory(e), e);
-                isCritical = true;
-                return false;
+                result = ApplicationStartupResultModel.FromErrorMessage(
+                    StringResources.Error_Cannot_Create_AppDataDirectory(e), e, isCritical: true);
+                return result;
             }
         }
 
@@ -267,9 +269,9 @@ public sealed class AppStartup : IDisposable
             try { Directory.CreateDirectory(imageDirectoryPath); }
             catch (Exception e)
             {
-                failedReason = new ApplicationException(StringResources.Error_Cannot_Create_AppDataDirectory(e), e);
-                isCritical = true;
-                return false;
+                result = ApplicationStartupResultModel.FromErrorMessage(
+                    StringResources.Error_Cannot_Create_AppDataDirectory(e), e, isCritical: true);
+                return result;
             }
         }
 
@@ -288,7 +290,7 @@ public sealed class AppStartup : IDisposable
                         using (var outputStream = File.OpenWrite(destPath))
                         using (var eachStream = eachEntry.Open())
                         {
-                            eachStream.CopyTo(outputStream);
+                            await eachStream.CopyToAsync(outputStream, cancellationToken).ConfigureAwait(false);
                         }
                     }
                     catch (Exception e)
@@ -300,13 +302,12 @@ public sealed class AppStartup : IDisposable
         }
         catch (Exception e)
         {
-            failedReason = new ApplicationException(StringResources.Error_Cannot_Prepare_AppContents(e), e);
-            isCritical = true;
-            return false;
+            result = ApplicationStartupResultModel.FromErrorMessage(
+                StringResources.Error_Cannot_Prepare_AppContents(e), e, isCritical: true);
+            return result;
         }
 
-        failedReason = null;
-        isCritical = false;
-        return true;
+        result = ApplicationStartupResultModel.FromSucceedResult(providedWarnings: warnings);
+        return await Task.FromResult(result).ConfigureAwait(false);
     }
 }

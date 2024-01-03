@@ -11,19 +11,19 @@ namespace Hostess.Commands.PrecautionsWindow
     public sealed class PrecautionsWindowLoadedCommand : ViewModelCommandBase<PrecautionsWindowViewModel>
     {
         public PrecautionsWindowLoadedCommand(
-            SharedProperties sharedProperties,
+            ResourceCacheManager resourceCacheManager,
             CommandLineArguments commandLineArguments)
         {
-            _sharedProperties = sharedProperties;
+            _resourceCacheManager = resourceCacheManager;
             _commandLineArguments = commandLineArguments;
         }
 
-        private readonly SharedProperties _sharedProperties;
+        private readonly ResourceCacheManager _resourceCacheManager;
         private readonly CommandLineArguments _commandLineArguments;
 
         public override void Execute(PrecautionsWindowViewModel viewModel)
         {
-            var catalog = _sharedProperties.GetCatalogDocument();
+            var catalog = _resourceCacheManager.CatalogDocument;
             var parsedArgs = _commandLineArguments.Current;
             var targets = parsedArgs.SelectedServices;
 

@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using TableCloth.Models;
@@ -21,12 +22,14 @@ namespace Hostess.Components
             AppMessageBox appMessageBox,
             SharedProperties sharedProperties,
             AppUserInterface appUserInterface,
-            CommandLineArguments commandLineArguments)
+            CommandLineArguments commandLineArguments,
+            ResourceCacheManager resourceCacheManager)
         {
             _appMessageBox = appMessageBox;
             _sharedProperties = sharedProperties;
             _appUserInterface = appUserInterface;
             _commandLineArguments = commandLineArguments;
+            _resourceCacheManager = resourceCacheManager;
             _mutex = new Mutex(true, $"Global\\{GetType().FullName}", out this._isFirstInstance);
         }
 
@@ -34,6 +37,7 @@ namespace Hostess.Components
         private readonly SharedProperties _sharedProperties;
         private readonly AppUserInterface _appUserInterface;
         private readonly CommandLineArguments _commandLineArguments;
+        private readonly ResourceCacheManager _resourceCacheManager;
 
         private bool _disposed;
         private readonly Mutex _mutex;
@@ -60,68 +64,55 @@ namespace Hostess.Components
             _disposed = true;
         }
 
-        public bool HasRequirementsMet(IList<string> warnings, out Exception failedReason, out bool isCritical)
+        public async Task<ApplicationStartupResultModel> HasRequirementsMetAsync(IList<string> warnings)
         {
+            var result = default(ApplicationStartupResultModel);
+
             if (!this._isFirstInstance)
             {
-                failedReason = new ApplicationException(StringResources.Error_Already_TableCloth_Running);
-                isCritical = true;
-                return false;
+                result = ApplicationStartupResultModel.FromErrorMessage(
+                    StringResources.Error_Already_TableCloth_Running, isCritical: true, providedWarnings: warnings);
+                return result;
             }
 
-            failedReason = null;
-            isCritical = false;
-            return true;
+            result = ApplicationStartupResultModel.FromSucceedResult(providedWarnings: warnings);
+            return await Task.FromResult(result).ConfigureAwait(false);
         }
 
-        public bool Initialize(out Exception failedReason, out bool isCritical)
+        public async Task<ApplicationStartupResultModel> InitializeAsync(
+            IList<string> warnings,
+            CancellationToken cancellationToken = default)
         {
+            var result = default(ApplicationStartupResultModel);
             var parsedArgs = _commandLineArguments.Current;
             ServicePointManager.ServerCertificateValidationCallback += ValidateRemoteCertificate;
 
             const int retryCount = 3;
-
+            
             try
             {
                 for (int attemptCount = 1; attemptCount <= retryCount; attemptCount++)
                 {
-                    CatalogDocument catalog = null;
-                    string lastModifiedValue = null;
-
                     try
                     {
-                        using (var webClient = new WebClient())
-                        using (var catalogStream = webClient.OpenRead(StringResources.CatalogUrl))
-                        {
-                            lastModifiedValue = webClient.ResponseHeaders.Get("Last-Modified");
-                            catalog = DeserializeFromXml<CatalogDocument>(catalogStream);
-
-                            if (catalog == null)
-                            {
-                                failedReason = new XmlException(StringResources.HostessError_CatalogDeserilizationFailure);
-                                isCritical = true;
-                                return false;
-                            }
-                        }
+                        var document = await _resourceCacheManager.LoadCatalogDocumentAsync() ??
+                            throw new XmlException(StringResources.HostessError_CatalogDeserilizationFailure);
                     }
                     catch (Exception ex)
                     {
-                        catalog = null;
-                        Thread.Sleep(TimeSpan.FromSeconds(1.5d * attemptCount));
+                        await Task.Delay(TimeSpan.FromSeconds(1.5d * attemptCount)).ConfigureAwait(false);
 
                         if (attemptCount == retryCount)
                         {
-                            _appMessageBox.DisplayError(StringResources.HostessError_CatalogLoadFailure(ex), true);
-                            failedReason = ex;
-                            isCritical = true;
-                            return false;
+                            result = ApplicationStartupResultModel.FromErrorMessage(
+                                StringResources.HostessError_CatalogLoadFailure(ex), ex,
+                                isCritical: true, providedWarnings: warnings);
+                            return result;
                         }
 
                         continue;
                     }
 
-                    _sharedProperties.InitCatalogDocument(catalog);
-                    _sharedProperties.InitCatalogLastModified(lastModifiedValue);
                     break;
                 }
 
@@ -135,19 +126,18 @@ namespace Hostess.Components
                         WindowStyle = ProcessWindowStyle.Maximized,
                     });
 
-                    failedReason = null;
-                    isCritical = false;
-                    return false;
+                    result = ApplicationStartupResultModel.FromHaltedResult(providedWarnings: warnings);
+                    return result;
                 }
             }
             catch (Exception ex)
             {
                 _appMessageBox.DisplayError(ex, true);
+                return ApplicationStartupResultModel.FromException(ex, isCritical: true, providedWarnings: warnings);
             }
 
-            failedReason = null;
-            isCritical = false;
-            return true;
+            result = ApplicationStartupResultModel.FromSucceedResult(providedWarnings: warnings);
+            return await Task.FromResult(result).ConfigureAwait(false);
         }
 
         private T DeserializeFromXml<T>(Stream readableStream)

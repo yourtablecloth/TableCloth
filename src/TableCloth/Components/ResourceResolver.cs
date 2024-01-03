@@ -30,7 +30,7 @@ public sealed class ResourceResolver
     public DateTimeOffset? CatalogLastModified => _catalogLastModified;
 
     public async Task<CatalogDocument> DeserializeCatalogAsync(
-    CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default)
     {
         var httpClient = _httpClientFactory.CreateTableClothHttpClient();
         var uriBuilder = new UriBuilder(new Uri(StringResources.CatalogUrl, UriKind.Absolute));

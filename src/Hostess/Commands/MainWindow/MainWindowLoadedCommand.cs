@@ -17,16 +17,16 @@ namespace Hostess.Commands.MainWindow
     public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowViewModel>
     {
         public MainWindowLoadedCommand(
+            ResourceCacheManager resourceCacheManager,
             ProtectCriticalServices protectTermServices,
-            SharedProperties sharedProperties,
             AppMessageBox appMessageBox,
             AppUserInterface appUserInterface,
             VisualThemeManager visualThemeManager,
             SharedLocations sharedLocations,
             CommandLineArguments commandLineArguments)
         {
+            _resourceCacheManager = resourceCacheManager;
             _protectCriticalServices = protectTermServices;
-            _sharedProperties = sharedProperties;
             _appMessageBox = appMessageBox;
             _appUserInterface = appUserInterface;
             _visualThemeManager = visualThemeManager;
@@ -34,8 +34,8 @@ namespace Hostess.Commands.MainWindow
             _commandLineArguments = commandLineArguments;
         }
 
+        private readonly ResourceCacheManager _resourceCacheManager;
         private readonly ProtectCriticalServices _protectCriticalServices;
-        private readonly SharedProperties _sharedProperties;
         private readonly AppMessageBox _appMessageBox;
         private readonly AppUserInterface _appUserInterface;
         private readonly VisualThemeManager _visualThemeManager;
@@ -63,7 +63,7 @@ namespace Hostess.Commands.MainWindow
             TryProtectCriticalServices();
             SetDesktopWallpaper();
 
-            var catalog = _sharedProperties.GetCatalogDocument();
+            var catalog = _resourceCacheManager.CatalogDocument;
             var targets = parsedArgs.SelectedServices;
             var packages = new List<InstallItemViewModel>();
 

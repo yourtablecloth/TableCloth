@@ -25,7 +25,7 @@ namespace Hostess
 
         private readonly IServiceProvider _serviceProvider;
         
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private async void Application_Startup(object sender, StartupEventArgs e)
         {
             var appMessageBox = _serviceProvider.GetRequiredService<AppMessageBox>();
             var appStartup = _serviceProvider.GetRequiredService<AppStartup>();
@@ -41,23 +41,39 @@ namespace Hostess
                 return;
             }
 
-            if (!appStartup.HasRequirementsMet(warnings, out Exception failedReason, out bool isCritical))
-            {
-                if (isCritical)
-                    throw failedReason ?? new Exception(StringResources.Error_Unknown());
+            var result = await appStartup.HasRequirementsMetAsync(warnings);
 
-                appMessageBox.DisplayError(failedReason, isCritical);
+            if (!result.Succeed)
+            {
+                appMessageBox.DisplayError(result.FailedReason, result.IsCritical);
+
+                if (result.IsCritical)
+                {
+#if DEBUG
+                    throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
+#else
+                    Shutdown(-1);
+#endif
+                }
             }
 
             if (warnings.Any())
                 appMessageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, warnings), false);
 
-            if (!appStartup.Initialize(out failedReason, out isCritical))
-            {
-                if (isCritical)
-                    throw failedReason ?? new Exception(StringResources.Error_Unknown());
+            result = await appStartup.InitializeAsync(warnings);
 
-                appMessageBox.DisplayError(failedReason, isCritical);
+            if (!result.Succeed)
+            {
+                appMessageBox.DisplayError(result.FailedReason, result.IsCritical);
+
+                if (result.IsCritical)
+                {
+#if DEBUG
+                    throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
+#else
+                    Shutdown(-1);
+#endif
+                }
             }
 
             var mainWindow = appUserInterface.CreateMainWindow();
@@ -82,6 +98,8 @@ namespace Hostess
                 .AddSingleton<VisualThemeManager>()
                 .AddSingleton<SharedLocations>()
                 .AddSingleton<AppStartup>()
+                .AddSingleton<ResourceResolver>()
+                .AddSingleton<ResourceCacheManager>()
                 .AddSingleton<CommandLineArguments>();
 
             // Shared Commands

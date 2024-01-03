@@ -7,20 +7,20 @@ namespace Hostess.Commands.AboutWindow
     public sealed class AboutWindowLoadedCommand : ViewModelCommandBase<AboutWindowViewModel>
     {
         public AboutWindowLoadedCommand(
-            SharedProperties sharedProperties,
-            LicenseDescriptor licenseDescriptor)
+            LicenseDescriptor licenseDescriptor,
+            ResourceResolver resourceResolver)
         {
-            _sharedProperties = sharedProperties;
             _licenseDescriptor = licenseDescriptor;
+            _resourceResolver = resourceResolver;
         }
 
-        private readonly SharedProperties _sharedProperties;
         private readonly LicenseDescriptor _licenseDescriptor;
+        private readonly ResourceResolver _resourceResolver;
 
         public override void Execute(AboutWindowViewModel viewModel)
         {
             viewModel.AppVersion = StringResources.Get_AppVersion();
-            viewModel.CatalogVersion = _sharedProperties.GetCatalogLastModified();
+            viewModel.CatalogVersion = _resourceResolver.CatalogLastModified?.ToString() ?? StringResources.UnknownText;
             viewModel.LicenseDescription = _licenseDescriptor.GetLicenseDescriptions();
         }
     }

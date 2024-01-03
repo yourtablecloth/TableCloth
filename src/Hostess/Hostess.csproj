@@ -96,6 +96,9 @@
     <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.77\lib\net462\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.HttpUtility, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.HttpUtility.1.0.0.1\lib\net40\Mono.HttpUtility.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -152,6 +155,8 @@
     <Compile Include="Components\AppStartup.cs" />
     <Compile Include="Components\AppUserInterface.cs" />
     <Compile Include="Components\CommandLineArguments.cs" />
+    <Compile Include="Components\ResourceCacheManager.cs" />
+    <Compile Include="Components\ResourceResolver.cs" />
     <Compile Include="Components\SharedLocations.cs" />
     <Compile Include="Components\VisualThemeManager.cs" />
     <Compile Include="Converters\BooleanToGridRowHeightConverter.cs" />

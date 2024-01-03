@@ -19,18 +19,18 @@ namespace Hostess.Commands.MainWindow
     public sealed class MainWindowInstallPackagesCommand : ViewModelCommandBase<MainWindowViewModel>
     {
         public MainWindowInstallPackagesCommand(
-            SharedProperties sharedProperties,
+            ResourceCacheManager resourceCacheManager,
             AppMessageBox appMessageBox,
             SharedLocations sharedLocations,
             CommandLineArguments commandLineArguments)
         {
-            _sharedProperties = sharedProperties;
+            _resourceCacheManager = resourceCacheManager;
             _appMessageBox = appMessageBox;
             _sharedLocations = sharedLocations;
             _commandLineArguments = commandLineArguments;
         }
 
-        private readonly SharedProperties _sharedProperties;
+        private readonly ResourceCacheManager _resourceCacheManager;
         private readonly AppMessageBox _appMessageBox;
         private readonly SharedLocations _sharedLocations;
         private readonly CommandLineArguments _commandLineArguments;
@@ -54,7 +54,7 @@ namespace Hostess.Commands.MainWindow
                 if (!Directory.Exists(downloadFolderPath))
                     Directory.CreateDirectory(downloadFolderPath);
 
-                var catalog = _sharedProperties.GetCatalogDocument();
+                var catalog = _resourceCacheManager.CatalogDocument;
 
                 await EnableIEModeAsync();
 
