@@ -65,7 +65,7 @@ public partial class App : Application
         _splashScreen.Close();
     }
 
-    private IServiceProvider ConfigureServices()
+    private ServiceProvider ConfigureServices()
     {
         var services = new ServiceCollection();
 

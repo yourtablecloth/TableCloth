@@ -65,7 +65,7 @@ namespace Hostess
             mainWindow.Show();
         }
 
-        private IServiceProvider ConfigureServices()
+        private ServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection();
 
