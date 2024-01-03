@@ -14,6 +14,7 @@ namespace TableCloth.Commands.MainWindow;
 public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowViewModel>
 {
     public MainWindowLoadedCommand(
+        Application application,
         ResourceCacheManager resourceCacheManager,
         AppUserInterface appUserInterface,
         VisualThemeManager visualThemeManager,
@@ -26,6 +27,7 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
         SandboxLauncher sandboxLauncher,
         CommandLineArguments commandLineArguments)
     {
+        _application = application;
         _resourceCacheManager = resourceCacheManager;
         _appUserInterface = appUserInterface;
         _visualThemeManager = visualThemeManager;
@@ -39,6 +41,7 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
         _commandLineArguments = commandLineArguments;
     }
 
+    private readonly Application _application;
     private readonly ResourceCacheManager _resourceCacheManager;
     private readonly AppUserInterface _appUserInterface;
     private readonly VisualThemeManager _visualThemeManager;
@@ -53,8 +56,7 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
 
     public override void Execute(MainWindowViewModel viewModel)
     {
-        _visualThemeManager.ApplyAutoThemeChange(
-            Application.Current.MainWindow);
+        _visualThemeManager.ApplyAutoThemeChange(_application.MainWindow);
 
         var currentConfig = _preferencesManager.LoadPreferences();
 

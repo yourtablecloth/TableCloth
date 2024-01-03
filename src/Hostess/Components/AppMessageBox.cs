@@ -10,6 +10,14 @@ namespace Hostess.Components
     /// </summary>
     public sealed class AppMessageBox
     {
+        public AppMessageBox(
+            Application application)
+        {
+            _application = application;
+        }
+
+        private readonly Application _application;
+
         /// <summary>
         /// 정보를 안내하는 메시지 상자를 띄웁니다.
         /// </summary>
@@ -18,7 +26,7 @@ namespace Hostess.Components
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
         public MessageBoxResult DisplayInfo(string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
         {
-            var dispatcher = Application.Current.Dispatcher;
+            var dispatcher = _application.Dispatcher;
 
             if (dispatcher == null)
                 dispatcher = Dispatcher.CurrentDispatcher;
@@ -65,7 +73,7 @@ namespace Hostess.Components
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
         public MessageBoxResult DisplayError(string message, bool isCritical)
         {
-            var dispatcher = Application.Current.Dispatcher;
+            var dispatcher = _application.Dispatcher;
 
             if (dispatcher == null)
                 dispatcher = Dispatcher.CurrentDispatcher;
@@ -100,7 +108,7 @@ namespace Hostess.Components
 
         public MessageBoxResult DisplayQuestion(string message, MessageBoxButton messageBoxButton = MessageBoxButton.YesNo, MessageBoxResult defaultAnswer = MessageBoxResult.Yes)
         {
-            var dispatcher = Application.Current.Dispatcher;
+            var dispatcher = _application.Dispatcher;
 
             if (dispatcher == null)
                 dispatcher = Dispatcher.CurrentDispatcher;

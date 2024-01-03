@@ -15,19 +15,24 @@ public class AboutWindowViewModel : ViewModelBase
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public AboutWindowViewModel(
+        Application application,
         AboutWindowLoadedCommand aboutWindowLoadedCommand,
         OpenWebsiteCommand openWebsiteCommand,
         ShowSystemInfoCommand showSystemInfoCommand,
         CheckUpdatedVersionCommand checkUpdatedVersionCommand,
         OpenPrivacyPolicyCommand openPrivacyPolicyCommand)
     {
+        _application = application;
         _aboutWindowLoadedCommand = aboutWindowLoadedCommand;
         _openWebsiteCommand = openWebsiteCommand;
         _showSystemInfoCommand = showSystemInfoCommand;
         _checkUpdatedVersionCommand = checkUpdatedVersionCommand;
         _openPrivacyPolicyCommand = openPrivacyPolicyCommand;
+
+        _licenseDetails = (_application.Resources["AboutWindow_LoadingLicensesMessage"] as string) ?? string.Empty;
     }
 
+    private readonly Application _application;
     private readonly AboutWindowLoadedCommand _aboutWindowLoadedCommand;
     private readonly OpenWebsiteCommand _openWebsiteCommand;
     private readonly ShowSystemInfoCommand _showSystemInfoCommand;
@@ -36,7 +41,7 @@ public class AboutWindowViewModel : ViewModelBase
 
     private string _appVersion = string.Empty;
     private string _catalogDate = string.Empty;
-    private string _licenseDetails = (Application.Current.Resources["AboutWindow_LoadingLicensesMessage"] as string) ?? string.Empty;
+    private string _licenseDetails = string.Empty;
 
     public AboutWindowLoadedCommand AboutWindowLoadedCommand
         => _aboutWindowLoadedCommand;

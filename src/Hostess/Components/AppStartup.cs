@@ -20,13 +20,11 @@ namespace Hostess.Components
     {
         public AppStartup(
             AppMessageBox appMessageBox,
-            SharedProperties sharedProperties,
             AppUserInterface appUserInterface,
             CommandLineArguments commandLineArguments,
             ResourceCacheManager resourceCacheManager)
         {
             _appMessageBox = appMessageBox;
-            _sharedProperties = sharedProperties;
             _appUserInterface = appUserInterface;
             _commandLineArguments = commandLineArguments;
             _resourceCacheManager = resourceCacheManager;
@@ -34,7 +32,6 @@ namespace Hostess.Components
         }
 
         private readonly AppMessageBox _appMessageBox;
-        private readonly SharedProperties _sharedProperties;
         private readonly AppUserInterface _appUserInterface;
         private readonly CommandLineArguments _commandLineArguments;
         private readonly ResourceCacheManager _resourceCacheManager;

@@ -40,8 +40,7 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
 
     public override async void Execute(SplashScreenViewModel viewModel)
     {
-        _visualThemeManager.ApplyAutoThemeChange(
-            Application.Current.MainWindow);
+        _visualThemeManager.ApplyAutoThemeChange(_application.MainWindow);
 
         try
         {

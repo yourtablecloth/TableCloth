@@ -13,13 +13,16 @@ namespace TableCloth.Commands.CertSelectWindow;
 public sealed class CertSelectWindowManualCertLoadCommand : ViewModelCommandBase<CertSelectWindowViewModel>
 {
     public CertSelectWindowManualCertLoadCommand(
+        Application application,
         AppUserInterface appUserInterface,
         X509CertPairScanner certPairScanner)
     {
+        _application = application;
         _appUserInterface = appUserInterface;
         _certPairScanner = certPairScanner;
     }
 
+    private readonly Application _application;
     private readonly AppUserInterface _appUserInterface;
     private readonly X509CertPairScanner _certPairScanner;
 
@@ -31,13 +34,13 @@ public sealed class CertSelectWindowManualCertLoadCommand : ViewModelCommandBase
             CheckFileExists = true,
             CheckPathExists = true,
             DereferenceLinks = true,
-            Filter = (string)Application.Current.Resources["CertSelectWindow_FileOpenDialog_FilterText"],
+            Filter = (string)_application.Resources["CertSelectWindow_FileOpenDialog_FilterText"],
             FilterIndex = 0,
             InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             Multiselect = true,
             ReadOnlyChecked = true,
             ShowReadOnly = false,
-            Title = (string)Application.Current.Resources["CertSelectWindow_FileOpenDialog_Text"],
+            Title = (string)_application.Resources["CertSelectWindow_FileOpenDialog_Text"],
             ValidateNames = true,
         };
 

@@ -17,6 +17,7 @@ namespace Hostess.Commands.MainWindow
     public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowViewModel>
     {
         public MainWindowLoadedCommand(
+            Application application,
             ResourceCacheManager resourceCacheManager,
             ProtectCriticalServices protectTermServices,
             AppMessageBox appMessageBox,
@@ -25,6 +26,7 @@ namespace Hostess.Commands.MainWindow
             SharedLocations sharedLocations,
             CommandLineArguments commandLineArguments)
         {
+            _application = application;
             _resourceCacheManager = resourceCacheManager;
             _protectCriticalServices = protectTermServices;
             _appMessageBox = appMessageBox;
@@ -34,6 +36,7 @@ namespace Hostess.Commands.MainWindow
             _commandLineArguments = commandLineArguments;
         }
 
+        private readonly Application _application;
         private readonly ResourceCacheManager _resourceCacheManager;
         private readonly ProtectCriticalServices _protectCriticalServices;
         private readonly AppMessageBox _appMessageBox;
@@ -54,8 +57,7 @@ namespace Hostess.Commands.MainWindow
             var parsedArgs = _commandLineArguments.Current;
             viewModel.ShowDryRunNotification = parsedArgs.DryRun;
 
-            _visualThemeManager.ApplyAutoThemeChange(
-                Application.Current.MainWindow);
+            _visualThemeManager.ApplyAutoThemeChange(_application.MainWindow);
 
             viewModel.NotifyWindowLoaded(this, EventArgs.Empty);
 
@@ -125,7 +127,7 @@ namespace Hostess.Commands.MainWindow
             if (!_validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
             {
                 var response = _appMessageBox.DisplayQuestion(
-                    (string)Application.Current.Resources["WarningForNonSandboxEnvironment"],
+                    (string)_application.Resources["WarningForNonSandboxEnvironment"],
                     defaultAnswer: MessageBoxResult.No);
 
                 if (response != MessageBoxResult.Yes)
