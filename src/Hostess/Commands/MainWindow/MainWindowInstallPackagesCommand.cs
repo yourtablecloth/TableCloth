@@ -10,6 +10,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using TableCloth;
+using TableCloth.Models;
 using TableCloth.Resources;
 
 namespace Hostess.Commands.MainWindow
@@ -39,6 +40,8 @@ namespace Hostess.Commands.MainWindow
         {
             try
             {
+                var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+
                 _isRunning = true;
                 var hasAnyFailure = false;
 
@@ -72,19 +75,19 @@ namespace Hostess.Commands.MainWindow
 
                 if (!hasAnyFailure)
                 {
-                    if (_sharedProperties.WillInstallEveryonesPrinter())
+                    if (parsedArgs.InstallEveryonesPrinter ?? false)
                         TryInstallEveryonesPrinter();
 
-                    if (_sharedProperties.WillInstallAdobeReader())
+                    if (parsedArgs.InstallAdobeReader ?? false)
                         TryInstallAdobeReader();
 
-                    if (_sharedProperties.WillInstallHancomOfficeViewer())
+                    if (parsedArgs.InstallHancomOfficeViewer ?? false)
                         TryInstallHancomOfficeViewer();
 
-                    if (_sharedProperties.WillInstallRaiDrive())
+                    if (parsedArgs.InstallRaiDrive ?? false)
                         TryInstallRaiDrive();
 
-                    var targets = _sharedProperties.GetInstallSites();
+                    var targets = parsedArgs.SelectedServices;
                     var urls = catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url);
                     TryOpenRequestedWebSites(urls);
 
@@ -104,10 +107,12 @@ namespace Hostess.Commands.MainWindow
 
         private async Task EnableIEModeAsync()
         {
-            if (_sharedProperties.HasDryRunEnabled())
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+
+            if (parsedArgs.DryRun)
                 return;
 
-            if (_sharedProperties.HasIEModeEnabled())
+            if (parsedArgs.EnableInternetExplorerMode ?? false)
             {
                 try
                 {
@@ -155,6 +160,8 @@ namespace Hostess.Commands.MainWindow
 
         private async Task ProcessDownloadAndInstall(InstallItemViewModel eachItem, string downloadFolderPath)
         {
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+
             eachItem.Installed = null;
             eachItem.StatusMessage = StringResources.Hostess_Download_InProgress;
 
@@ -172,7 +179,7 @@ namespace Hostess.Commands.MainWindow
 
                 eachItem.StatusMessage = StringResources.Hostess_Install_InProgress;
 
-                if (_sharedProperties.HasDryRunEnabled())
+                if (parsedArgs.DryRun)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
                     eachItem.StatusMessage = StringResources.Hostess_Install_Succeed;
@@ -209,6 +216,8 @@ namespace Hostess.Commands.MainWindow
 
         private async Task ProcessPowerShellScript(InstallItemViewModel eachItem, string downloadFolderPath)
         {
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+
             eachItem.Installed = null;
             eachItem.StatusMessage = StringResources.Hostess_Install_InProgress;
 
@@ -224,7 +233,7 @@ namespace Hostess.Commands.MainWindow
             if (!File.Exists(powershellPath))
                 throw new Exception(StringResources.Hostess_No_PowerShell_Error);
 
-            if (_sharedProperties.HasDryRunEnabled())
+            if (parsedArgs.DryRun)
             {
                 await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
                 eachItem.StatusMessage = StringResources.Hostess_Install_Succeed;
@@ -260,7 +269,9 @@ namespace Hostess.Commands.MainWindow
 
         private void TryInstallEveryonesPrinter()
         {
-            if (_sharedProperties.HasDryRunEnabled())
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+
+            if (parsedArgs.DryRun)
                 return;
 
             Process.Start(new ProcessStartInfo(StringResources.EveryonesPrinterUrl)
@@ -272,7 +283,9 @@ namespace Hostess.Commands.MainWindow
 
         private void TryInstallAdobeReader()
         {
-            if (_sharedProperties.HasDryRunEnabled())
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+
+            if (parsedArgs.DryRun)
                 return;
 
             Process.Start(new ProcessStartInfo(StringResources.AdobeReaderUrl)
@@ -284,7 +297,9 @@ namespace Hostess.Commands.MainWindow
 
         private void TryInstallHancomOfficeViewer()
         {
-            if (_sharedProperties.HasDryRunEnabled())
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+
+            if (parsedArgs.DryRun)
                 return;
 
             Process.Start(new ProcessStartInfo(StringResources.HancomOfficeViewerUrl)
@@ -296,7 +311,9 @@ namespace Hostess.Commands.MainWindow
 
         private void TryInstallRaiDrive()
         {
-            if (_sharedProperties.HasDryRunEnabled())
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+
+            if (parsedArgs.DryRun)
                 return;
 
             Process.Start(new ProcessStartInfo(StringResources.RaiDriveUrl)

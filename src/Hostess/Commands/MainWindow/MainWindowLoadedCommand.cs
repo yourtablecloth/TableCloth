@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using TableCloth;
+using TableCloth.Models;
 using TableCloth.Resources;
 
 namespace Hostess.Commands.MainWindow
@@ -46,7 +47,8 @@ namespace Hostess.Commands.MainWindow
 
         public override void Execute(MainWindowViewModel viewModel)
         {
-            viewModel.ShowDryRunNotification = _sharedProperties.HasDryRunEnabled();
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            viewModel.ShowDryRunNotification = parsedArgs.DryRun;
 
             _visualThemeManager.ApplyAutoThemeChange(
                 Application.Current.MainWindow);
@@ -58,7 +60,7 @@ namespace Hostess.Commands.MainWindow
             SetDesktopWallpaper();
 
             var catalog = _sharedProperties.GetCatalogDocument();
-            var targets = _sharedProperties.GetInstallSites();
+            var targets = parsedArgs.SelectedServices;
             var packages = new List<InstallItemViewModel>();
 
             foreach (var eachTargetName in targets)
@@ -111,7 +113,9 @@ namespace Hostess.Commands.MainWindow
 
         private void VerifyWindowsContainerEnvironment()
         {
-            if (_sharedProperties.HasDryRunEnabled())
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+
+            if (parsedArgs.DryRun)
                 return;
 
             if (!_validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
@@ -127,7 +131,9 @@ namespace Hostess.Commands.MainWindow
 
         private void TryProtectCriticalServices()
         {
-            if (_sharedProperties.HasDryRunEnabled())
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+
+            if (parsedArgs.DryRun)
                 return;
 
             try { _protectCriticalServices.PreventServiceProcessTermination("TermService"); }
@@ -141,7 +147,9 @@ namespace Hostess.Commands.MainWindow
 
         private void SetDesktopWallpaper()
         {
-            if (_sharedProperties.HasDryRunEnabled())
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+
+            if (parsedArgs.DryRun)
                 return;
 
             var picturesDirectoryPath = _sharedLocations.GetPicturesDirectoryPath();

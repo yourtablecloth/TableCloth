@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using TableCloth.Models.Catalog;
 
@@ -18,48 +17,6 @@ namespace Hostess.Components
 
         public void InitCatalogLastModified(string value)
             => InitAppProperty("CatalogLastModified", value);
-
-        public IEnumerable<string> GetInstallSites()
-            => GetAppProperty<IEnumerable<string>>("InstallSites");
-
-        public void InitInstallSites(IEnumerable<string> value)
-            => InitAppProperty("InstallSites", value);
-
-        public bool WillInstallEveryonesPrinter()
-            => string.Equals(Boolean.TrueString, GetAppProperty<string>(nameof(WillInstallEveryonesPrinter)));
-
-        public void InitWillInstallEveryonesPrinter(bool value)
-            => InitAppProperty(nameof(WillInstallEveryonesPrinter), value ? Boolean.TrueString : Boolean.FalseString);
-
-        public bool WillInstallAdobeReader()
-            => string.Equals(Boolean.TrueString, GetAppProperty<string>(nameof(WillInstallAdobeReader)));
-
-        public void InitWillInstallAdobeReader(bool value)
-            => InitAppProperty(nameof(WillInstallAdobeReader), value ? Boolean.TrueString : Boolean.FalseString);
-
-        public bool WillInstallHancomOfficeViewer()
-            => string.Equals(Boolean.TrueString, GetAppProperty<string>(nameof(WillInstallHancomOfficeViewer)));
-
-        public void InitWillInstallHancomOfficeViewer(bool value)
-            => InitAppProperty(nameof(WillInstallHancomOfficeViewer), value ? Boolean.TrueString : Boolean.FalseString);
-
-        public bool WillInstallRaiDrive()
-            => string.Equals(Boolean.TrueString, GetAppProperty<string>(nameof(WillInstallRaiDrive)));
-
-        public void InitWillInstallRaiDrive(bool value)
-            => InitAppProperty(nameof(WillInstallRaiDrive), value ? Boolean.TrueString : Boolean.FalseString);
-
-        public bool HasIEModeEnabled()
-            => string.Equals(Boolean.TrueString, GetAppProperty<string>(nameof(HasIEModeEnabled)));
-
-        public void InitHasIEModeEnabled(bool value)
-            => InitAppProperty(nameof(HasIEModeEnabled), value ? Boolean.TrueString : Boolean.FalseString);
-
-        public bool HasDryRunEnabled()
-            => string.Equals(Boolean.TrueString, GetAppProperty<string>(nameof(HasDryRunEnabled)));
-
-        public void InitHasDryRunEnabled(bool value)
-            => InitAppProperty(nameof(HasDryRunEnabled), value ? Boolean.TrueString : Boolean.FalseString);
 
         private TObject GetAppProperty<TObject>(string key)
             where TObject : class

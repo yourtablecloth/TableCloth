@@ -3,6 +3,7 @@ using Hostess.ViewModels;
 using System;
 using System.Linq;
 using System.Text;
+using TableCloth.Models;
 using TableCloth.Resources;
 
 namespace Hostess.Commands.PrecautionsWindow
@@ -20,7 +21,10 @@ namespace Hostess.Commands.PrecautionsWindow
         public override void Execute(PrecautionsWindowViewModel viewModel)
         {
             var catalog = _sharedProperties.GetCatalogDocument();
-            var targets = _sharedProperties.GetInstallSites();
+
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
+            var targets = parsedArgs.SelectedServices;
+
             var buffer = new StringBuilder();
 
             foreach (var eachItem in catalog.Services.Where(x => targets.Contains(x.Id)))

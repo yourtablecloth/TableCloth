@@ -7,17 +7,10 @@ using Hostess.Dialogs;
 using Hostess.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Diagnostics;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using System.Windows;
-using System.Xml;
-using System.Xml.Serialization;
-using TableCloth.Models.Catalog;
+using TableCloth.Models;
 using TableCloth.Resources;
 
 namespace Hostess
@@ -26,164 +19,49 @@ namespace Hostess
     {
         public App()
         {
-            Application.Current.InitServiceProvider(_serviceProvider = ConfigureServices());
-            _appMessageBox = _serviceProvider.GetRequiredService<AppMessageBox>();
-            _sharedProperties = _serviceProvider.GetRequiredService<SharedProperties>();
-            _appUserInterface = _serviceProvider.GetRequiredService<AppUserInterface>();
-
+            Current.InitServiceProvider(_serviceProvider = ConfigureServices());
             InitializeComponent();
         }
 
         private readonly IServiceProvider _serviceProvider;
-        private readonly AppMessageBox _appMessageBox;
-        private readonly SharedProperties _sharedProperties;
-        private readonly AppUserInterface _appUserInterface;
         
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            ServicePointManager.ServerCertificateValidationCallback += ValidateRemoteCertificate;
+            var appMessageBox = _serviceProvider.GetRequiredService<AppMessageBox>();
+            var appStartup = _serviceProvider.GetRequiredService<AppStartup>();
+            var appUserInterface = _serviceProvider.GetRequiredService<AppUserInterface>();
 
-            const int retryCount = 3;
+            var warnings = new List<string>();
+            var parsedArgs = CommandLineArgumentModel.ParseFromArgv();
 
-            try
+            if (parsedArgs != null && parsedArgs.ShowCommandLineHelp)
             {
-                for (int attemptCount = 1; attemptCount <= retryCount; attemptCount++)
-                {
-                    CatalogDocument catalog = null;
-                    string lastModifiedValue = null;
-
-                    try
-                    {
-                        using (var webClient = new WebClient())
-                        using (var catalogStream = webClient.OpenRead(StringResources.CatalogUrl))
-                        {
-                            lastModifiedValue = webClient.ResponseHeaders.Get("Last-Modified");
-                            catalog = DeserializeFromXml<CatalogDocument>(catalogStream);
-
-                            if (catalog == null)
-                            {
-                                throw new XmlException(StringResources.HostessError_CatalogDeserilizationFailure);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        catalog = null;
-                        Thread.Sleep(TimeSpan.FromSeconds(1.5d * attemptCount));
-
-                        if (attemptCount == retryCount)
-                        {
-                            _appMessageBox.DisplayError(StringResources.HostessError_CatalogLoadFailure(ex), true);
-                            Application.Current.Shutdown(0);
-                            return;
-                        }
-
-                        continue;
-                    }
-
-                    _sharedProperties.InitCatalogDocument(catalog);
-                    _sharedProperties.InitCatalogLastModified(lastModifiedValue);
-                    break;
-                }
-
-                var targetSites = e.Args.Where(x => !x.StartsWith(StringResources.TableCloth_Switch_Prefix, StringComparison.Ordinal)).ToArray();
-                _sharedProperties.InitInstallSites(targetSites);
-
-                var installEveryonesPrinter = false;
-                var installAdobeReader = false;
-                var installHancomOfficeViewer = false;
-                var installRaiDrive = true;
-                var hasIEModeEnabled = false;
-                var showHelp = false;
-                var hasDryRunEnabled = false;
-
-                var options = e.Args.Where(x => x.StartsWith(StringResources.TableCloth_Switch_Prefix, StringComparison.Ordinal)).ToArray();
-                foreach (var eachOption in options)
-                {
-                    if (eachOption.StartsWith(StringResources.TableCloth_Switch_InstallEveryonesPrinter, StringComparison.Ordinal))
-                        installEveryonesPrinter = true;
-
-                    if (eachOption.StartsWith(StringResources.TableCloth_Switch_InstallAdobeReader, StringComparison.Ordinal))
-                        installAdobeReader = true;
-
-                    if (eachOption.StartsWith(StringResources.TableCloth_Switch_InstallHancomOfficeViewer, StringComparison.Ordinal))
-                        installHancomOfficeViewer = true;
-
-                    if (eachOption.StartsWith(StringResources.TableCloth_Switch_InstallRaiDrive, StringComparison.Ordinal))
-                        installRaiDrive = true;
-
-                    if (eachOption.StartsWith(StringResources.TableCloth_Switch_EnableIEMode, StringComparison.Ordinal))
-                        hasIEModeEnabled = true;
-
-                    if (eachOption.StartsWith(StringResources.TableCloth_Switch_Help, StringComparison.Ordinal))
-                        showHelp = true;
-
-                    if (eachOption.StartsWith(StringResources.TableCloth_Switch_DryRun, StringComparison.Ordinal))
-                        hasDryRunEnabled = true;
-                }
-
-                if (showHelp)
-                {
-                    _appMessageBox.DisplayInfo(StringResources.TableCloth_Hostess_Switches_Help);
-                    Application.Current.Shutdown(0);
-                    return;
-                }
-
-                _sharedProperties.InitWillInstallEveryonesPrinter(installEveryonesPrinter);
-                _sharedProperties.InitWillInstallAdobeReader(installAdobeReader);
-                _sharedProperties.InitWillInstallHancomOfficeViewer(installHancomOfficeViewer);
-                _sharedProperties.InitWillInstallRaiDrive(installRaiDrive);
-                _sharedProperties.InitHasIEModeEnabled(hasIEModeEnabled);
-                _sharedProperties.InitHasDryRunEnabled(hasDryRunEnabled);
-
-                if (!targetSites.Any())
-                {
-                    _appMessageBox.DisplayInfo(StringResources.Hostess_No_Targets);
-
-                    Process.Start(new ProcessStartInfo("https://www.naver.com/")
-                    {
-                        UseShellExecute = true,
-                        WindowStyle = ProcessWindowStyle.Maximized,
-                    });
-
-                    Application.Current.Shutdown(0);
-                    return;
-                }
-
-                var mainWindow = _appUserInterface.CreateMainWindow();
-                Application.Current.MainWindow = mainWindow;
-                mainWindow.Show();
+                appMessageBox.DisplayInfo(StringResources.TableCloth_Hostess_Switches_Help, MessageBoxButton.OK);
+                return;
             }
-            catch (Exception ex)
+
+            if (!appStartup.HasRequirementsMet(warnings, out Exception failedReason, out bool isCritical))
             {
-                _appMessageBox.DisplayError(ex, true);
+                if (isCritical)
+                    throw failedReason ?? new Exception(StringResources.Error_Unknown());
+
+                appMessageBox.DisplayError(failedReason, isCritical);
             }
-        }
 
-        private static T DeserializeFromXml<T>(Stream readableStream)
-            where T : class
-        {
-            var serializer = new XmlSerializer(typeof(T));
-            var xmlReaderSetting = new XmlReaderSettings()
-            {
-                XmlResolver = null,
-                DtdProcessing = DtdProcessing.Prohibit,
-            };
+            if (warnings.Any())
+                appMessageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, warnings), false);
 
-            using (var contentStream = XmlReader.Create(readableStream, xmlReaderSetting))
+            if (!appStartup.Initialize(out failedReason, out isCritical))
             {
-                return (T)serializer.Deserialize(contentStream);
+                if (isCritical)
+                    throw failedReason ?? new Exception(StringResources.Error_Unknown());
+
+                appMessageBox.DisplayError(failedReason, isCritical);
             }
-        }
 
-        private bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
-        {
-            // If the certificate is a valid, signed certificate, return true.
-            if (error == SslPolicyErrors.None)
-                return true;
-
-            _appMessageBox.DisplayError(StringResources.HostessError_X509CertError(cert, error), false);
-            return false;
+            var mainWindow = appUserInterface.CreateMainWindow();
+            Current.MainWindow = mainWindow;
+            mainWindow.Show();
         }
 
         private IServiceProvider ConfigureServices()
@@ -201,7 +79,8 @@ namespace Hostess
                 .AddSingleton<ProtectCriticalServices>()
                 .AddSingleton<SharedProperties>()
                 .AddSingleton<VisualThemeManager>()
-                .AddSingleton<SharedLocations>();
+                .AddSingleton<SharedLocations>()
+                .AddSingleton<AppStartup>();
 
             // Shared Commands
             services
