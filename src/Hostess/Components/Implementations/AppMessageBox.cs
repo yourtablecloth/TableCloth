@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Threading;
 using TableCloth.Resources;
 
 namespace Hostess.Components.Implementations
@@ -29,20 +28,10 @@ namespace Hostess.Components.Implementations
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
         public MessageBoxResult DisplayInfo(string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
         {
-            var dispatcher = _application.Dispatcher;
-
-            if (dispatcher == null)
-                dispatcher = Dispatcher.CurrentDispatcher;
-
-            return (MessageBoxResult)dispatcher.Invoke(
-                new Func<string, MessageBoxButton, MessageBoxResult>((_message, _messageBoxButton) =>
-                {
-                    return _messageBoxService.Show(
-                        _application.MainWindow, _message, StringResources.TitleText_Info,
-                        _messageBoxButton, MessageBoxImage.Information,
-                        MessageBoxResult.OK);
-                }),
-                new object[] { message, messageBoxButton, });
+            return _messageBoxService.Show(
+                _application.MainWindow, message, StringResources.TitleText_Info,
+                messageBoxButton, MessageBoxImage.Information,
+                MessageBoxResult.OK);
         }
 
         /// <summary>
@@ -62,44 +51,23 @@ namespace Hostess.Components.Implementations
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
         public MessageBoxResult DisplayError(string message, bool isCritical)
         {
-            var dispatcher = _application.Dispatcher;
+            if (string.IsNullOrWhiteSpace(message))
+                message = StringResources.Error_Unknown();
 
-            if (dispatcher == null)
-                dispatcher = Dispatcher.CurrentDispatcher;
+            var owner = Application.Current.MainWindow;
+            var title = isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning;
+            var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 
-            return (MessageBoxResult)dispatcher.Invoke(
-                new Func<string, bool, MessageBoxResult>((_message, _isCritical) =>
-                {
-                    if (string.IsNullOrWhiteSpace(_message))
-                        _message = StringResources.Error_Unknown();
-
-                    var owner = Application.Current.MainWindow;
-                    var title = _isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning;
-                    var image = _isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
-
-                    return _messageBoxService.Show(
-                        _application.MainWindow, _message, title, MessageBoxButton.OK,
-                        image, MessageBoxResult.OK);
-                }),
-                new object[] { message, isCritical });
+            return _messageBoxService.Show(
+                _application.MainWindow, message, title, MessageBoxButton.OK,
+                image, MessageBoxResult.OK);
         }
 
         public MessageBoxResult DisplayQuestion(string message, MessageBoxButton messageBoxButton = MessageBoxButton.YesNo, MessageBoxResult defaultAnswer = MessageBoxResult.Yes)
         {
-            var dispatcher = _application.Dispatcher;
-
-            if (dispatcher == null)
-                dispatcher = Dispatcher.CurrentDispatcher;
-
-            return (MessageBoxResult)dispatcher.Invoke(
-                new Func<string, MessageBoxButton, MessageBoxResult>((_message, _messageBoxButton) =>
-                {
-                    return _messageBoxService.Show(
-                        _application.MainWindow, _message, StringResources.TitleText_Question,
-                        _messageBoxButton, MessageBoxImage.Question,
-                        defaultAnswer);
-                }),
-                new object[] { message, messageBoxButton, });
+            return _messageBoxService.Show(
+                _application.MainWindow, message, StringResources.TitleText_Question,
+                messageBoxButton, MessageBoxImage.Question, defaultAnswer);
         }
     }
 }
