@@ -2,31 +2,6 @@
 
 namespace TableCloth.Test;
 
-/*
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using Moq.AutoMock;
-using System.Windows;
-
-using static Moq.It;
-
-public class AutoMoqTester
-{
-    [Fact]
-    public void Test()
-    {
-        var autoMocker = new AutoMocker();
-        autoMocker.Use<IAppMessageBox>(x => x.DisplayError(IsAny<string>(), IsAny<bool>()) == MessageBoxResult.OK);
-
-        var appMessageBox = autoMocker.Get<IAppMessageBox>();
-        var result = appMessageBox.DisplayError("Hello, World!", true);
-
-        autoMocker.Verify<IAppMessageBox, MessageBoxResult>(x => x.DisplayError(IsAny<string>(), true));
-        Assert.Equal(MessageBoxResult.OK, result);
-    }
-}
-*/
-
 public sealed class ResourceResolverTest : IClassFixture<ContainerFixture<ResourceResolverTest.Dependencies>>
 {
     public sealed record Dependencies(
@@ -40,14 +15,14 @@ public sealed class ResourceResolverTest : IClassFixture<ContainerFixture<Resour
     [Fact]
     public async Task TestGetLatestVersion()
     {
-        // Arrange
+        // Given
         const string repoOwner = "yourtablecloth";
         const string repoName = "TableCloth";
 
-        // Act
+        // When
         var result = await _dependencies.ResourceResolver.GetLatestVersion(repoOwner, repoName);
 
-        // Assert
+        // Then
         Assert.NotNull(result);
         Assert.NotEmpty(result);
     }
