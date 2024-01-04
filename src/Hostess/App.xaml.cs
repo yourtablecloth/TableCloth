@@ -91,6 +91,7 @@ namespace Hostess
             // Components
             services
                 .AddSingleton<AppMessageBox>()
+                .AddSingleton<MessageBoxService>()
                 .AddSingleton<AppUserInterface>()
                 .AddSingleton<LicenseDescriptor>()
                 .AddSingleton<ProtectCriticalServices>()

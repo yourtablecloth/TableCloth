@@ -11,12 +11,15 @@ namespace Hostess.Components
     public sealed class AppMessageBox
     {
         public AppMessageBox(
-            Application application)
+            Application application,
+            MessageBoxService messageBoxService)
         {
             _application = application;
+            _messageBoxService = messageBoxService;
         }
 
         private readonly Application _application;
+        private readonly MessageBoxService _messageBoxService;
 
         /// <summary>
         /// 정보를 안내하는 메시지 상자를 띄웁니다.
@@ -34,24 +37,10 @@ namespace Hostess.Components
             return (MessageBoxResult)dispatcher.Invoke(
                 new Func<string, MessageBoxButton, MessageBoxResult>((_message, _messageBoxButton) =>
                 {
-                    // owner 파라미터를 null 참조로 지정하더라도 Windows Forms 처럼 parent-less 메시지 박스를 만들어주지는 않음.
-                    // GH-121 fix
-                    var owner = Application.Current.MainWindow;
-
-                    if (owner != null)
-                    {
-                        return MessageBox.Show(
-                            owner, _message, StringResources.TitleText_Info,
-                            _messageBoxButton, MessageBoxImage.Information,
-                            MessageBoxResult.OK);
-                    }
-                    else
-                    {
-                        return MessageBox.Show(
-                            _message, StringResources.TitleText_Info,
-                            _messageBoxButton, MessageBoxImage.Information,
-                            MessageBoxResult.OK);
-                    }
+                    return _messageBoxService.Show(
+                        _application.MainWindow, _message, StringResources.TitleText_Info,
+                        _messageBoxButton, MessageBoxImage.Information,
+                        MessageBoxResult.OK);
                 }),
                 new object[] { message, messageBoxButton, });
         }
@@ -88,20 +77,9 @@ namespace Hostess.Components
                     var title = _isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning;
                     var image = _isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 
-                    // owner 파라미터를 null 참조로 지정하더라도 Windows Forms 처럼 parent-less 메시지 박스를 만들어주지는 않음.
-                    // GH-121 fix
-                    if (owner != null)
-                    {
-                        return MessageBox.Show(owner,
-                            _message, title, MessageBoxButton.OK,
-                            image, MessageBoxResult.OK);
-                    }
-                    else
-                    {
-                        return MessageBox.Show(
-                            _message, title, MessageBoxButton.OK,
-                            image, MessageBoxResult.OK);
-                    }
+                    return _messageBoxService.Show(
+                        _application.MainWindow, _message, title, MessageBoxButton.OK,
+                        image, MessageBoxResult.OK);
                 }),
                 new object[] { message, isCritical });
         }
@@ -116,24 +94,10 @@ namespace Hostess.Components
             return (MessageBoxResult)dispatcher.Invoke(
                 new Func<string, MessageBoxButton, MessageBoxResult>((_message, _messageBoxButton) =>
                 {
-                    // owner 파라미터를 null 참조로 지정하더라도 Windows Forms 처럼 parent-less 메시지 박스를 만들어주지는 않음.
-                    // GH-121 fix
-                    var owner = Application.Current.MainWindow;
-
-                    if (owner != null)
-                    {
-                        return MessageBox.Show(
-                            owner, _message, StringResources.TitleText_Question,
-                            _messageBoxButton, MessageBoxImage.Question,
-                            defaultAnswer);
-                    }
-                    else
-                    {
-                        return MessageBox.Show(
-                            _message, StringResources.TitleText_Question,
-                            _messageBoxButton, MessageBoxImage.Question,
-                            defaultAnswer);
-                    }
+                    return _messageBoxService.Show(
+                        _application.MainWindow, _message, StringResources.TitleText_Question,
+                        _messageBoxButton, MessageBoxImage.Question,
+                        defaultAnswer);
                 }),
                 new object[] { message, messageBoxButton, });
         }

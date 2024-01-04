@@ -11,12 +11,15 @@ namespace TableCloth.Components;
 public sealed class AppMessageBox
 {
     public AppMessageBox(
-        Application application)
+        Application application,
+        MessageBoxService messageBoxService)
     {
         _application = application;
+        _messageBoxService = messageBoxService;
     }
 
     private readonly Application _application;
+    private readonly MessageBoxService _messageBoxService;
 
     /// <summary>
     /// 정보를 안내하는 메시지 상자를 띄웁니다.
@@ -34,24 +37,10 @@ public sealed class AppMessageBox
         return (MessageBoxResult)dispatcher.Invoke(
             new Func<string, MessageBoxButton, MessageBoxResult>((message, messageBoxButton) =>
             {
-                // owner 파라미터를 null 참조로 지정하더라도 Windows Forms 처럼 parent-less 메시지 박스를 만들어주지는 않음.
-                // GH-121 fix
-                var owner = _application.MainWindow;
-
-                if (owner != null)
-                {
-                    return MessageBox.Show(
-                        owner, message, StringResources.TitleText_Info,
-                        messageBoxButton, MessageBoxImage.Information,
-                        MessageBoxResult.OK);
-                }
-                else
-                {
-                    return MessageBox.Show(
-                        message, StringResources.TitleText_Info,
-                        messageBoxButton, MessageBoxImage.Information,
-                        MessageBoxResult.OK);
-                }
+                return _messageBoxService.Show(
+                    _application.MainWindow, message, StringResources.TitleText_Info,
+                    messageBoxButton, MessageBoxImage.Information,
+                    MessageBoxResult.OK);
             }),
             new object[] { message, messageBoxButton, });
     }
@@ -88,20 +77,9 @@ public sealed class AppMessageBox
                 var title = isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning;
                 var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 
-                // owner 파라미터를 null 참조로 지정하더라도 Windows Forms 처럼 parent-less 메시지 박스를 만들어주지는 않음.
-                // GH-121 fix
-                if (owner != null)
-                {
-                    return MessageBox.Show(owner,
-                        message, title, MessageBoxButton.OK,
-                        image, MessageBoxResult.OK);
-                }
-                else
-                {
-                    return MessageBox.Show(
-                        message, title, MessageBoxButton.OK,
-                        image, MessageBoxResult.OK);
-                }
+                return _messageBoxService.Show(
+                    _application.MainWindow, message, title, MessageBoxButton.OK,
+                    image, MessageBoxResult.OK);
             }),
             new object?[] { message, isCritical });
     }

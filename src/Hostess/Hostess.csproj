@@ -155,6 +155,7 @@
     <Compile Include="Components\AppStartup.cs" />
     <Compile Include="Components\AppUserInterface.cs" />
     <Compile Include="Components\CommandLineArguments.cs" />
+    <Compile Include="Components\MessageBoxService.cs" />
     <Compile Include="Components\ResourceCacheManager.cs" />
     <Compile Include="Components\ResourceResolver.cs" />
     <Compile Include="Components\SharedLocations.cs" />

@@ -93,6 +93,7 @@ public partial class App : Application
             .AddSingleton<ConfigurationComposer>()
             .AddSingleton<VisualThemeManager>()
             .AddSingleton<AppMessageBox>()
+            .AddSingleton<MessageBoxService>()
             .AddSingleton<NavigationService>()
             .AddSingleton<ShortcutCrerator>()
             .AddSingleton<CommandLineArguments>();

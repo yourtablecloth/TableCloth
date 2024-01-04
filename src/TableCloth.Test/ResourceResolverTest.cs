@@ -1,7 +1,31 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using TableCloth.Components;
+﻿using TableCloth.Components;
 
 namespace TableCloth.Test;
+
+/*
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using Moq.AutoMock;
+using System.Windows;
+
+using static Moq.It;
+
+public class AutoMoqTester
+{
+    [Fact]
+    public void Test()
+    {
+        var autoMocker = new AutoMocker();
+        autoMocker.Use<IAppMessageBox>(x => x.DisplayError(IsAny<string>(), IsAny<bool>()) == MessageBoxResult.OK);
+
+        var appMessageBox = autoMocker.Get<IAppMessageBox>();
+        var result = appMessageBox.DisplayError("Hello, World!", true);
+
+        autoMocker.Verify<IAppMessageBox, MessageBoxResult>(x => x.DisplayError(IsAny<string>(), true));
+        Assert.Equal(MessageBoxResult.OK, result);
+    }
+}
+*/
 
 public sealed class ResourceResolverTest : IClassFixture<ContainerFixture<ResourceResolverTest.Dependencies>>
 {
