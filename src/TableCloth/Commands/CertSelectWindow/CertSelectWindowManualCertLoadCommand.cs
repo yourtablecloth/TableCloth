@@ -10,22 +10,11 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CertSelectWindow;
 
-public sealed class CertSelectWindowManualCertLoadCommand : ViewModelCommandBase<CertSelectWindowViewModel>
+public sealed class CertSelectWindowManualCertLoadCommand(
+    Application application,
+    IAppUserInterface appUserInterface,
+    IX509CertPairScanner certPairScanner) : ViewModelCommandBase<CertSelectWindowViewModel>
 {
-    public CertSelectWindowManualCertLoadCommand(
-        Application application,
-        IAppUserInterface appUserInterface,
-        IX509CertPairScanner certPairScanner)
-    {
-        _application = application;
-        _appUserInterface = appUserInterface;
-        _certPairScanner = certPairScanner;
-    }
-
-    private readonly Application _application;
-    private readonly IAppUserInterface _appUserInterface;
-    private readonly IX509CertPairScanner _certPairScanner;
-
     public override void Execute(CertSelectWindowViewModel viewModel)
     {
         var ofd = new OpenFileDialog()
@@ -34,13 +23,13 @@ public sealed class CertSelectWindowManualCertLoadCommand : ViewModelCommandBase
             CheckFileExists = true,
             CheckPathExists = true,
             DereferenceLinks = true,
-            Filter = (string)_application.Resources["CertSelectWindow_FileOpenDialog_FilterText"],
+            Filter = (string)application.Resources["CertSelectWindow_FileOpenDialog_FilterText"],
             FilterIndex = 0,
             InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             Multiselect = true,
             ReadOnlyChecked = true,
             ShowReadOnly = false,
-            Title = (string)_application.Resources["CertSelectWindow_FileOpenDialog_Text"],
+            Title = (string)application.Resources["CertSelectWindow_FileOpenDialog_Text"],
             ValidateNames = true,
         };
 
@@ -83,7 +72,7 @@ public sealed class CertSelectWindowManualCertLoadCommand : ViewModelCommandBase
         if (!File.Exists(signCertDerPath) && !File.Exists(signPriKeyPath))
             return;
 
-        viewModel.SelectedCertPair = _certPairScanner.CreateX509CertPair(signCertDerPath, signPriKeyPath);
+        viewModel.SelectedCertPair = certPairScanner.CreateX509CertPair(signCertDerPath, signPriKeyPath);
         viewModel.RequestClose(this, new DialogRequestEventArgs(viewModel.SelectedCertPair != null));
     }
 
@@ -92,7 +81,7 @@ public sealed class CertSelectWindowManualCertLoadCommand : ViewModelCommandBase
         if (string.IsNullOrWhiteSpace(pfxFilePath) || !File.Exists(pfxFilePath))
             return;
 
-        var inputWindow = _appUserInterface.CreateInputPasswordWindow();
+        var inputWindow = appUserInterface.CreateInputPasswordWindow();
         var inputWindowViewModel = inputWindow.ViewModel;
         inputWindowViewModel.PfxFilePath = pfxFilePath;
 

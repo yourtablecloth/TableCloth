@@ -4,23 +4,14 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.AboutWindow;
 
-public sealed class AboutWindowLoadedCommand : ViewModelCommandBase<AboutWindowViewModel>
+public sealed class AboutWindowLoadedCommand(
+    IResourceResolver resourceResolver,
+    ILicenseDescriptor licenseDescriptor) : ViewModelCommandBase<AboutWindowViewModel>
 {
-    public AboutWindowLoadedCommand(
-        IResourceResolver resourceResolver,
-        ILicenseDescriptor licenseDescriptor)
-    {
-        _resourceResolver = resourceResolver;
-        _licenseDescriptor = licenseDescriptor;
-    }
-
-    private readonly IResourceResolver _resourceResolver;
-    private readonly ILicenseDescriptor _licenseDescriptor;
-
     public override async void Execute(AboutWindowViewModel viewModel)
     {
         viewModel.AppVersion = StringResources.Get_AppVersion();
-        viewModel.CatalogDate = _resourceResolver.CatalogLastModified?.ToString("yyyy-MM-dd HH:mm:ss") ?? StringResources.UnknownText;
-        viewModel.LicenseDetails = await _licenseDescriptor.GetLicenseDescriptions();
+        viewModel.CatalogDate = resourceResolver.CatalogLastModified?.ToString("yyyy-MM-dd HH:mm:ss") ?? StringResources.UnknownText;
+        viewModel.LicenseDetails = await licenseDescriptor.GetLicenseDescriptions();
     }
 }

@@ -9,49 +9,30 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.SplashScreen;
 
-public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScreenViewModel>
+public sealed class SplashScreenLoadedCommand(
+    Application application,
+    IAppStartup appStartup,
+    IAppMessageBox appMessageBox,
+    IPreferencesManager preferencesManager,
+    IResourceCacheManager resourceCacheManager,
+    IVisualThemeManager visualThemeManager,
+    ICommandLineArguments commandLineArguments) : ViewModelCommandBase<SplashScreenViewModel>
 {
-    public SplashScreenLoadedCommand(
-        Application application,
-        IAppStartup appStartup,
-        IAppMessageBox appMessageBox,
-        IPreferencesManager preferencesManager,
-        IResourceCacheManager resourceCacheManager,
-        IVisualThemeManager visualThemeManager,
-        ICommandLineArguments commandLineArguments)
-    {
-        _application = application;
-        _appStartup = appStartup;
-        _appMessageBox = appMessageBox;
-        _preferencesManager = preferencesManager;
-        _resourceCacheManager = resourceCacheManager;
-        _visualThemeManager = visualThemeManager;
-        _commandLineArguments = commandLineArguments;
-    }
-
-    private readonly Application _application;
-    private readonly IAppStartup _appStartup;
-    private readonly IAppMessageBox _appMessageBox;
-    private readonly IPreferencesManager _preferencesManager;
-    private readonly IResourceCacheManager _resourceCacheManager;
-    private readonly IVisualThemeManager _visualThemeManager;
-    private readonly ICommandLineArguments _commandLineArguments;
-
     public override async void Execute(SplashScreenViewModel viewModel)
     {
-        _visualThemeManager.ApplyAutoThemeChange(_application.MainWindow);
+        visualThemeManager.ApplyAutoThemeChange(application.MainWindow);
 
         try
         {
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_ParsingCommandLine));
 
-            var parsedArgs = _commandLineArguments.Current;
+            var parsedArgs = commandLineArguments.Current;
 
             if (parsedArgs != null && parsedArgs.ShowCommandLineHelp)
             {
                 viewModel.AppStartupSucceed = false;
-                _appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
                 return;
             }
 
@@ -68,24 +49,24 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_LoadingPreferences));
 
-            var preferences = _preferencesManager.LoadPreferences();
+            var preferences = preferencesManager.LoadPreferences();
             viewModel.V2UIOptedIn = preferences?.V2UIOptIn ?? true;
             viewModel.ParsedArgument = parsedArgs;
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_CheckInternetConnection));
 
-            if (!await _appStartup.CheckForInternetConnectionAsync())
-                _appMessageBox.DisplayError(StringResources.Info_Offline, false);
+            if (!await appStartup.CheckForInternetConnectionAsync())
+                appMessageBox.DisplayError(StringResources.Info_Offline, false);
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_EvaluatingRequirementsMet));
 
-            var result = await _appStartup.HasRequirementsMetAsync(viewModel.Warnings);
+            var result = await appStartup.HasRequirementsMetAsync(viewModel.Warnings);
 
             if (!result.Succeed)
             {
-                _appMessageBox.DisplayError(result.FailedReason, result.IsCritical);
+                appMessageBox.DisplayError(result.FailedReason, result.IsCritical);
 
                 if (result.IsCritical)
                 {
@@ -98,16 +79,16 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
             }
 
             if (viewModel.Warnings.Any())
-                _appMessageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, viewModel.Warnings), false);
+                appMessageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, viewModel.Warnings), false);
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_InitializingApplication));
 
-            result = await _appStartup.InitializeAsync(viewModel.Warnings);
+            result = await appStartup.InitializeAsync(viewModel.Warnings);
 
             if (!result.Succeed)
             {
-                _appMessageBox.DisplayError(result.FailedReason, result.IsCritical);
+                appMessageBox.DisplayError(result.FailedReason, result.IsCritical);
 
                 if (result.IsCritical)
                 {
@@ -122,12 +103,12 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_LoadingCatalog));
 
-            await _resourceCacheManager.LoadCatalogDocumentAsync();
+            await resourceCacheManager.LoadCatalogDocumentAsync();
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_LoadingImages));
 
-            await _resourceCacheManager.LoadSiteImages();
+            await resourceCacheManager.LoadSiteImages();
 
             viewModel.AppStartupSucceed = true;
         }
@@ -136,7 +117,7 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
             viewModel.AppStartupSucceed = false;
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_InitializingFailed));
-            _appMessageBox.DisplayError(ex, true);
+            appMessageBox.DisplayError(ex, true);
         }
         finally
         {

@@ -6,16 +6,9 @@ using TableCloth.Resources;
 
 namespace TableCloth.Commands;
 
-public sealed class ShowSystemInfoCommand : CommandBase
+public sealed class ShowSystemInfoCommand(
+    IAppMessageBox appMessageBox) : CommandBase
 {
-    public ShowSystemInfoCommand(
-        IAppMessageBox appMessageBox)
-    {
-        _appMessageBox = appMessageBox;
-    }
-
-    private readonly IAppMessageBox _appMessageBox;
-
     public override void Execute(object? parameter)
     {
         var msinfoPath = Path.Combine(
@@ -24,7 +17,7 @@ public sealed class ShowSystemInfoCommand : CommandBase
 
         if (!File.Exists(msinfoPath))
         {
-            _appMessageBox.DisplayError(StringResources.Error_Cannot_Run_SysInfo, false);
+            appMessageBox.DisplayError(StringResources.Error_Cannot_Run_SysInfo, false);
             return;
         }
 

@@ -11,31 +11,22 @@ using TableCloth.Resources;
 
 namespace TableCloth.Components;
 
-public sealed class ResourceCacheManager : IResourceCacheManager
+public sealed class ResourceCacheManager(
+    ISharedLocations sharedLocations,
+    IResourceResolver resourceResolver) : IResourceCacheManager
 {
-    public ResourceCacheManager(
-        ISharedLocations sharedLocations,
-        IResourceResolver resourceResolver)
-    {
-        _sharedLocations = sharedLocations;
-        _resourceResolver = resourceResolver;
-    }
-
-    private readonly ISharedLocations _sharedLocations;
-    private readonly IResourceResolver _resourceResolver;
-
     private CatalogDocument? _catalogDocument;
     private Dictionary<string, ImageSource> _imageTable = new Dictionary<string, ImageSource>();
 
     public async Task<CatalogDocument> LoadCatalogDocumentAsync(CancellationToken cancellationToken = default)
-        => _catalogDocument = await _resourceResolver.DeserializeCatalogAsync(cancellationToken).ConfigureAwait(false);
+        => _catalogDocument = await resourceResolver.DeserializeCatalogAsync(cancellationToken).ConfigureAwait(false);
 
     public async Task LoadSiteImages(CancellationToken cancellationToken = default)
     {
         var services = CatalogDocument.Services;
-        var imageDirectoryPath = _sharedLocations.GetImageDirectoryPath();
+        var imageDirectoryPath = sharedLocations.GetImageDirectoryPath();
 
-        await _resourceResolver.LoadSiteImagesAsync(
+        await resourceResolver.LoadSiteImagesAsync(
             services, imageDirectoryPath, cancellationToken).ConfigureAwait(false);
 
         foreach (var eachSiteId in services.Select(x => x.Id))

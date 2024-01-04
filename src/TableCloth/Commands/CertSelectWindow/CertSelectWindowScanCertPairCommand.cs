@@ -4,21 +4,14 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CertSelectWindow;
 
-public sealed class CertSelectWindowScanCertPairCommand : ViewModelCommandBase<CertSelectWindowViewModel>
+public sealed class CertSelectWindowScanCertPairCommand(
+    IX509CertPairScanner certPairScanner) : ViewModelCommandBase<CertSelectWindowViewModel>
 {
-    public CertSelectWindowScanCertPairCommand(
-        IX509CertPairScanner certPairScanner)
-    {
-        _certPairScanner = certPairScanner;
-    }
-
-    private readonly IX509CertPairScanner _certPairScanner;
-
     public override void Execute(CertSelectWindowViewModel viewModel)
     {
         viewModel.SelectedCertPair = default;
-        viewModel.CertPairs = _certPairScanner.ScanX509Pairs(
-            _certPairScanner.GetCandidateDirectories()).ToList();
+        viewModel.CertPairs = certPairScanner.ScanX509Pairs(
+            certPairScanner.GetCandidateDirectories()).ToList();
 
         if (viewModel.CertPairs.Count == 1)
             viewModel.SelectedCertPair = viewModel.CertPairs.Single();

@@ -7,16 +7,9 @@ using System.Threading.Tasks;
 
 namespace TableCloth.Components;
 
-public sealed class LicenseDescriptor : ILicenseDescriptor
+public sealed class LicenseDescriptor(
+    IResourceResolver resourceResolver) : ILicenseDescriptor
 {
-    public LicenseDescriptor(
-        IResourceResolver resourceResolver)
-    {
-        _resourceResolver = resourceResolver;
-    }
-
-    private IResourceResolver _resourceResolver;
-
     private IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
     {
         var asm = Assembly.GetEntryAssembly()
@@ -76,7 +69,7 @@ public sealed class LicenseDescriptor : ILicenseDescriptor
                         if (!string.IsNullOrWhiteSpace(ownerPart) &&
                             !string.IsNullOrWhiteSpace(repoNamePart))
                         {
-                            var licenseDescription = await _resourceResolver.GetLicenseDescriptionForGitHub(ownerPart, repoNamePart).ConfigureAwait(false);
+                            var licenseDescription = await resourceResolver.GetLicenseDescriptionForGitHub(ownerPart, repoNamePart).ConfigureAwait(false);
                             if (licenseDescription != null)
                                 buffer.AppendLine($"OSS License: {licenseDescription}");
                         }

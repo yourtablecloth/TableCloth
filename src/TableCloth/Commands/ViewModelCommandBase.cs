@@ -5,10 +5,6 @@ namespace TableCloth.Commands;
 public abstract class ViewModelCommandBase<TViewModel> : CommandBase
     where TViewModel : class
 {
-    protected ViewModelCommandBase()
-    {
-    }
-
     public override void Execute(object? parameter)
     {
         if (parameter is not TViewModel viewModel)

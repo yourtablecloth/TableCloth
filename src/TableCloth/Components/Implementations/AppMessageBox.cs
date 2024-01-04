@@ -8,19 +8,10 @@ namespace TableCloth.Components;
 /// <summary>
 /// Windows Presentation Foundation의 메시지 상자 표시 기능을 구현합니다.
 /// </summary>
-public sealed class AppMessageBox : IAppMessageBox
+public sealed class AppMessageBox(
+    Application application,
+    IMessageBoxService messageBoxService) : IAppMessageBox
 {
-    public AppMessageBox(
-        Application application,
-        IMessageBoxService messageBoxService)
-    {
-        _application = application;
-        _messageBoxService = messageBoxService;
-    }
-
-    private readonly Application _application;
-    private readonly IMessageBoxService _messageBoxService;
-
     /// <summary>
     /// 정보를 안내하는 메시지 상자를 띄웁니다.
     /// </summary>
@@ -29,7 +20,7 @@ public sealed class AppMessageBox : IAppMessageBox
     /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
     public MessageBoxResult DisplayInfo(string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
     {
-        var dispatcher = _application.Dispatcher;
+        var dispatcher = application.Dispatcher;
 
         if (dispatcher == null)
             dispatcher = Dispatcher.CurrentDispatcher;
@@ -37,8 +28,8 @@ public sealed class AppMessageBox : IAppMessageBox
         return (MessageBoxResult)dispatcher.Invoke(
             new Func<string, MessageBoxButton, MessageBoxResult>((message, messageBoxButton) =>
             {
-                return _messageBoxService.Show(
-                    _application.MainWindow, message, StringResources.TitleText_Info,
+                return messageBoxService.Show(
+                    application.MainWindow, message, StringResources.TitleText_Info,
                     messageBoxButton, MessageBoxImage.Information,
                     MessageBoxResult.OK);
             }),
@@ -62,7 +53,7 @@ public sealed class AppMessageBox : IAppMessageBox
     /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
     public MessageBoxResult DisplayError(string? message, bool isCritical)
     {
-        var dispatcher = _application.Dispatcher;
+        var dispatcher = application.Dispatcher;
 
         if (dispatcher == null)
             dispatcher = Dispatcher.CurrentDispatcher;
@@ -73,12 +64,12 @@ public sealed class AppMessageBox : IAppMessageBox
                 if (string.IsNullOrWhiteSpace(message))
                     message = StringResources.Error_Unknown();
 
-                var owner = _application.MainWindow;
+                var owner = application.MainWindow;
                 var title = isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning;
                 var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 
-                return _messageBoxService.Show(
-                    _application.MainWindow, message, title, MessageBoxButton.OK,
+                return messageBoxService.Show(
+                    application.MainWindow, message, title, MessageBoxButton.OK,
                     image, MessageBoxResult.OK);
             }),
             new object?[] { message, isCritical });

@@ -5,24 +5,15 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.Shared;
 
-public sealed class CopyCommandLineCommand : ViewModelCommandBase<ITableClothViewModel>
+public sealed class CopyCommandLineCommand(
+    ICommandLineComposer commandLineComposer,
+    IAppMessageBox appMessageBox) : ViewModelCommandBase<ITableClothViewModel>
 {
-    public CopyCommandLineCommand(
-        ICommandLineComposer commandLineComposer,
-        IAppMessageBox appMessageBox)
-    {
-        _commandLineComposer = commandLineComposer;
-        _appMessageBox = appMessageBox;
-    }
-
-    private readonly ICommandLineComposer _commandLineComposer;
-    private readonly IAppMessageBox _appMessageBox;
-
     public override void Execute(ITableClothViewModel viewModel)
     {
-        var expression = _commandLineComposer.ComposeCommandLineExpression(viewModel, true);
+        var expression = commandLineComposer.ComposeCommandLineExpression(viewModel, true);
         Clipboard.SetText(expression);
 
-        _appMessageBox.DisplayInfo(StringResources.Info_CopyCommandLineSuccess, MessageBoxButton.OK);
+        appMessageBox.DisplayInfo(StringResources.Info_CopyCommandLineSuccess, MessageBoxButton.OK);
     }
 }

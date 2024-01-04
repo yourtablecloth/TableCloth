@@ -10,57 +10,26 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.MainWindow;
 
-public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowViewModel>
+public sealed class MainWindowLoadedCommand(
+    Application application,
+    IResourceCacheManager resourceCacheManager,
+    IAppUserInterface appUserInterface,
+    IVisualThemeManager visualThemeManager,
+    IPreferencesManager preferencesManager,
+    IX509CertPairScanner certPairScanner,
+    ISharedLocations sharedLocations,
+    IAppMessageBox appMessageBox,
+    IAppRestartManager appRestartManager,
+    IConfigurationComposer configurationComposer,
+    ISandboxLauncher sandboxLauncher,
+    ICommandLineArguments commandLineArguments) : ViewModelCommandBase<MainWindowViewModel>
 {
-    public MainWindowLoadedCommand(
-        Application application,
-        IResourceCacheManager resourceCacheManager,
-        IAppUserInterface appUserInterface,
-        IVisualThemeManager visualThemeManager,
-        IPreferencesManager preferencesManager,
-        IX509CertPairScanner certPairScanner,
-        ISharedLocations sharedLocations,
-        IAppMessageBox appMessageBox,
-        IAppRestartManager appRestartManager,
-        IConfigurationComposer configurationComposer,
-        ISandboxLauncher sandboxLauncher,
-        ICommandLineArguments commandLineArguments)
-    {
-        _application = application;
-        _resourceCacheManager = resourceCacheManager;
-        _appUserInterface = appUserInterface;
-        _visualThemeManager = visualThemeManager;
-        _preferencesManager = preferencesManager;
-        _certPairScanner = certPairScanner;
-        _sharedLocations = sharedLocations;
-        _appMessageBox = appMessageBox;
-        _appRestartManager = appRestartManager;
-        _configurationComposer = configurationComposer;
-        _sandboxLauncher = sandboxLauncher;
-        _commandLineArguments = commandLineArguments;
-    }
-
-    private readonly Application _application;
-    private readonly IResourceCacheManager _resourceCacheManager;
-    private readonly IAppUserInterface _appUserInterface;
-    private readonly IVisualThemeManager _visualThemeManager;
-    private readonly IPreferencesManager _preferencesManager;
-    private readonly IX509CertPairScanner _certPairScanner;
-    private readonly ISharedLocations _sharedLocations;
-    private readonly IAppMessageBox _appMessageBox;
-    private readonly IAppRestartManager _appRestartManager;
-    private readonly IConfigurationComposer _configurationComposer;
-    private readonly ISandboxLauncher _sandboxLauncher;
-    private readonly ICommandLineArguments _commandLineArguments;
-
     public override void Execute(MainWindowViewModel viewModel)
     {
-        _visualThemeManager.ApplyAutoThemeChange(_application.MainWindow);
+        visualThemeManager.ApplyAutoThemeChange(application.MainWindow);
 
-        var currentConfig = _preferencesManager.LoadPreferences();
-
-        if (currentConfig == null)
-            currentConfig = _preferencesManager.GetDefaultPreferences();
+        var currentConfig = preferencesManager.LoadPreferences()
+            ?? preferencesManager.GetDefaultPreferences();
 
         viewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
         viewModel.V2UIOptIn = currentConfig.V2UIOptIn;
@@ -74,7 +43,7 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
         viewModel.EnableInternetExplorerMode = currentConfig.EnableInternetExplorerMode;
         viewModel.LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
-        var foundCandidate = _certPairScanner.ScanX509Pairs(_certPairScanner.GetCandidateDirectories()).FirstOrDefault();
+        var foundCandidate = certPairScanner.ScanX509Pairs(certPairScanner.GetCandidateDirectories()).FirstOrDefault();
 
         if (foundCandidate != null)
         {
@@ -86,14 +55,14 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
 
         if (viewModel.ShouldNotifyDisclaimer)
         {
-            var disclaimerWindow = _appUserInterface.CreateDisclaimerWindow();
+            var disclaimerWindow = appUserInterface.CreateDisclaimerWindow();
             var result = disclaimerWindow.ShowDialog();
 
             if (result.HasValue && result.Value)
                 viewModel.LastDisclaimerAgreedTime = DateTime.UtcNow;
         }
 
-        var doc = _resourceCacheManager.CatalogDocument;
+        var doc = resourceCacheManager.CatalogDocument;
         var services = doc.Services;
         viewModel.Services = services;
 
@@ -127,23 +96,23 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
             };
         }
 
-        var directoryPath = _sharedLocations.GetImageDirectoryPath();
+        var directoryPath = sharedLocations.GetImageDirectoryPath();
 
         // Command Line Parse
-        var parsedArg = _commandLineArguments.Current;
+        var parsedArg = commandLineArguments.Current;
 
         if (parsedArg != null)
         {
             if (parsedArg.ShowCommandLineHelp)
             {
-                _appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
                 return;
             }
 
             if (parsedArg.SelectedServices.Count() > 0)
             {
-                var config = _configurationComposer.GetConfigurationFromArgumentModel(parsedArg);
-                _sandboxLauncher.RunSandbox(config);
+                var config = configurationComposer.GetConfigurationFromArgumentModel(parsedArg);
+                sandboxLauncher.RunSandbox(config);
             }
         }
     }
@@ -153,28 +122,28 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
         if (sender is not MainWindowViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));
 
-        var currentConfig = _preferencesManager.LoadPreferences();
+        var currentConfig = preferencesManager.LoadPreferences();
 
         if (currentConfig == null)
-            currentConfig = _preferencesManager.GetDefaultPreferences();
+            currentConfig = preferencesManager.GetDefaultPreferences();
 
         switch (e.PropertyName)
         {
             case nameof(MainWindowViewModel.EnableLogAutoCollecting):
                 currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
-                if (_appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                if (appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                 {
-                    _appRestartManager.ReserveRestart();
-                    _appRestartManager.RestartNow();
+                    appRestartManager.ReserveRestart();
+                    appRestartManager.RestartNow();
                 }
                 break;
 
             case nameof(MainWindowViewModel.V2UIOptIn):
                 currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
-                if (_appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                if (appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                 {
-                    _appRestartManager.ReserveRestart();
-                    _appRestartManager.RestartNow();
+                    appRestartManager.ReserveRestart();
+                    appRestartManager.RestartNow();
                 }
                 break;
 
@@ -218,6 +187,6 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
                 return;
         }
 
-        _preferencesManager.SavePreferences(currentConfig);
+        preferencesManager.SavePreferences(currentConfig);
     }
 }

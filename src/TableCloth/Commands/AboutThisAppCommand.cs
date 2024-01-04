@@ -2,19 +2,12 @@
 
 namespace TableCloth.Commands;
 
-public sealed class AboutThisAppCommand : CommandBase
+public sealed class AboutThisAppCommand(
+    IAppUserInterface appUserInterface) : CommandBase
 {
-    public AboutThisAppCommand(
-        IAppUserInterface appUserInterface)
-    {
-        _appUserInterface = appUserInterface;
-    }
-
-    private readonly IAppUserInterface _appUserInterface;
-
     public override void Execute(object? parameter)
     {
-        var aboutWindow = _appUserInterface.CreateAboutWindow();
+        var aboutWindow = appUserInterface.CreateAboutWindow();
         aboutWindow.ShowDialog();
     }
 }

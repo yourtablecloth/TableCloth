@@ -7,35 +7,20 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.MainWindowV2;
 
-public sealed class MainWindowV2LoadedCommand : ViewModelCommandBase<MainWindowV2ViewModel>
+public sealed class MainWindowV2LoadedCommand(
+    Application application,
+    IResourceCacheManager resourceCacheManager,
+    INavigationService navigationService,
+    IVisualThemeManager visualThemeManager,
+    ICommandLineArguments commandLineArguments) : ViewModelCommandBase<MainWindowV2ViewModel>
 {
-    public MainWindowV2LoadedCommand(
-        Application application,
-        IResourceCacheManager resourceCacheManager,
-        INavigationService navigationService,
-        IVisualThemeManager visualThemeManager,
-        ICommandLineArguments commandLineArguments)
-    {
-        _application = application;
-        _resourceCacheManager = resourceCacheManager;
-        _navigationService = navigationService;
-        _visualThemeManager = visualThemeManager;
-        _commandLineArguments = commandLineArguments;
-    }
-
-    private readonly Application _application;
-    private readonly IResourceCacheManager _resourceCacheManager;
-    private readonly INavigationService _navigationService;
-    private readonly IVisualThemeManager _visualThemeManager;
-    private readonly ICommandLineArguments _commandLineArguments;
-
     public override void Execute(MainWindowV2ViewModel viewModel)
     {
-        var mainWindow = _application.MainWindow;
-        _visualThemeManager.ApplyAutoThemeChange(mainWindow);
+        var mainWindow = application.MainWindow;
+        visualThemeManager.ApplyAutoThemeChange(mainWindow);
 
-        var parsedArg = _commandLineArguments.Current;
-        var services = _resourceCacheManager.CatalogDocument.Services;
+        var parsedArg = commandLineArguments.Current;
+        var services = resourceCacheManager.CatalogDocument.Services;
 
         var commandLineSelectedService = default(CatalogInternetService);
         if (parsedArg != null && parsedArg.SelectedServices.Count() > 0)
@@ -46,8 +31,8 @@ public sealed class MainWindowV2LoadedCommand : ViewModelCommandBase<MainWindowV
         }
 
         if (commandLineSelectedService != null)
-            _navigationService.NavigateToDetail(commandLineSelectedService, parsedArg);
+            navigationService.NavigateToDetail(commandLineSelectedService, parsedArg);
         else
-            _navigationService.NavigateToCatalog(string.Empty);
+            navigationService.NavigateToCatalog(string.Empty);
     }
 }

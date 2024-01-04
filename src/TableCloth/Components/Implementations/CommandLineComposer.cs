@@ -5,19 +5,12 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Components;
 
-public sealed class CommandLineComposer : ICommandLineComposer
+public sealed class CommandLineComposer(
+    ISharedLocations sharedLocations) : ICommandLineComposer
 {
-    public CommandLineComposer(
-        ISharedLocations sharedLocations)
-    {
-        this.sharedLocations = sharedLocations;
-    }
-
-    private readonly ISharedLocations sharedLocations;
-
     public string ComposeCommandLineExpression(ITableClothViewModel viewModel, bool allowMultipleItems)
     {
-        var targetFilePath = this.sharedLocations.ExecutableFilePath;
+        var targetFilePath = sharedLocations.ExecutableFilePath;
         var args = this.ComposeCommandLineArguments(viewModel, allowMultipleItems);
         return $"\"{targetFilePath}\" {args}";
     }

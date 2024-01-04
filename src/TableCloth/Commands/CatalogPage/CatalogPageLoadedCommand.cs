@@ -8,22 +8,15 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CatalogPage;
 
-public sealed class CatalogPageLoadedCommand : ViewModelCommandBase<CatalogPageViewModel>
+public sealed class CatalogPageLoadedCommand(
+    IResourceCacheManager resourceCacheManager) : ViewModelCommandBase<CatalogPageViewModel>
 {
-    public CatalogPageLoadedCommand(
-        IResourceCacheManager resourceCacheManager)
-    {
-        _resourceCacheManager = resourceCacheManager;
-    }
-
-    private readonly IResourceCacheManager _resourceCacheManager;
-
     private static readonly PropertyGroupDescription GroupDescription =
         new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
 
     public override void Execute(CatalogPageViewModel viewModel)
     {
-        var doc = _resourceCacheManager.CatalogDocument;
+        var doc = resourceCacheManager.CatalogDocument;
         var services = doc.Services.OrderBy(service =>
         {
             var fieldInfo = typeof(CatalogInternetServiceCategory).GetField(service.Category.ToString());

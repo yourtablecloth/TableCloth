@@ -11,36 +11,21 @@ using TableCloth.Resources;
 
 namespace TableCloth.Components;
 
-public sealed class SandboxLauncher : ISandboxLauncher
+public sealed class SandboxLauncher(
+    IAppMessageBox appMessageBox,
+    ISharedLocations sharedLocations,
+    ISandboxBuilder sandboxBuilder,
+    ISandboxCleanupManager sandboxCleanupManager,
+    IConfigurationComposer configurationComposer,
+    ILogger<SandboxLauncher> logger) : ISandboxLauncher
 {
-    public SandboxLauncher(
-        IAppMessageBox appMessageBox,
-        ISharedLocations sharedLocations,
-        ISandboxBuilder sandboxBuilder,
-        ISandboxCleanupManager sandboxCleanupManager,
-        IConfigurationComposer configurationComposer,
-        ILogger<SandboxLauncher> logger)
-    {
-        _appMessageBox = appMessageBox;
-        _sharedLocations = sharedLocations;
-        _sandboxBuilder = sandboxBuilder;
-        _sandboxCleanupManager = sandboxCleanupManager;
-        _configurationComposer = configurationComposer;
-        _logger = logger;
-    }
-
-    private readonly IAppMessageBox _appMessageBox;
-    private readonly ISharedLocations _sharedLocations;
-    private readonly ISandboxBuilder _sandboxBuilder;
-    private readonly ISandboxCleanupManager _sandboxCleanupManager;
-    private readonly IConfigurationComposer _configurationComposer;
-    private readonly ILogger _logger;
+    private readonly ILogger _logger = logger;
 
     public void RunSandbox(TableClothConfiguration config)
     {
         if (Helpers.GetSandboxRunningState())
         {
-            _appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_Already_Running, false);
+            appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_Already_Running, false);
             return;
         }
 
@@ -50,26 +35,26 @@ public sealed class SandboxLauncher : ISandboxLauncher
             var expireWindow = StringResources.Cert_ExpireWindow;
 
             if (now < config.CertPair.NotBefore)
-                _appMessageBox.DisplayError(StringResources.Error_Cert_MayTooEarly(now, config.CertPair.NotBefore), false);
+                appMessageBox.DisplayError(StringResources.Error_Cert_MayTooEarly(now, config.CertPair.NotBefore), false);
 
             if (now > config.CertPair.NotAfter)
-                _appMessageBox.DisplayError(StringResources.Error_Cert_Expired, false);
+                appMessageBox.DisplayError(StringResources.Error_Cert_Expired, false);
             else if (now > config.CertPair.NotAfter.Add(expireWindow))
-                _appMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(now, config.CertPair.NotAfter, expireWindow));
+                appMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(now, config.CertPair.NotAfter, expireWindow));
         }
 
-        var tempPath = _sharedLocations.GetTempPath();
+        var tempPath = sharedLocations.GetTempPath();
         var excludedFolderList = new List<SandboxMappedFolder>();
-        var wsbFilePath = _sandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
+        var wsbFilePath = sandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
 
         if (excludedFolderList.Any())
-            _appMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
+            appMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
 
-        _sandboxCleanupManager.SetWorkingDirectory(tempPath);
+        sandboxCleanupManager.SetWorkingDirectory(tempPath);
 
         if (!ValidateSandboxSpecFile(wsbFilePath, out string? reason))
         {
-            _appMessageBox.DisplayError(reason, true);
+            appMessageBox.DisplayError(reason, true);
             return;
         }
 
@@ -90,7 +75,7 @@ public sealed class SandboxLauncher : ISandboxLauncher
         if (!process.Start())
         {
             process.Dispose();
-            _appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_CanNotStart, true);
+            appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_CanNotStart, true);
         }
     }
 

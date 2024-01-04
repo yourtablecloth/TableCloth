@@ -16,15 +16,9 @@ using TableCloth.Resources;
 
 namespace TableCloth.Components;
 
-public sealed class ResourceResolver : IResourceResolver
+public sealed class ResourceResolver(
+    IHttpClientFactory httpClientFactory) : IResourceResolver
 {
-    public ResourceResolver(IHttpClientFactory httpClientFactory)
-    {
-        _httpClientFactory = httpClientFactory;
-    }
-
-    private readonly IHttpClientFactory _httpClientFactory;
-
     private DateTimeOffset? _catalogLastModified = default;
 
     public DateTimeOffset? CatalogLastModified => _catalogLastModified;
@@ -32,7 +26,7 @@ public sealed class ResourceResolver : IResourceResolver
     public async Task<CatalogDocument> DeserializeCatalogAsync(
         CancellationToken cancellationToken = default)
     {
-        var httpClient = _httpClientFactory.CreateTableClothHttpClient();
+        var httpClient = httpClientFactory.CreateTableClothHttpClient();
         var uriBuilder = new UriBuilder(new Uri(StringResources.CatalogUrl, UriKind.Absolute));
 
         var queryKeyValues = HttpUtility.ParseQueryString(uriBuilder.Query);
@@ -66,7 +60,7 @@ public sealed class ResourceResolver : IResourceResolver
     public async Task<string?> GetLatestVersion(string owner, string repoName)
     {
         var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
-        var httpClient = _httpClientFactory.CreateTableClothHttpClient();
+        var httpClient = httpClientFactory.CreateTableClothHttpClient();
 
         using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
         var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
@@ -76,7 +70,7 @@ public sealed class ResourceResolver : IResourceResolver
     public async Task<Uri> GetDownloadUrl(string owner, string repoName)
     {
         var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
-        var httpClient = _httpClientFactory.CreateTableClothHttpClient();
+        var httpClient = httpClientFactory.CreateTableClothHttpClient();
 
         using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
         var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
@@ -90,7 +84,7 @@ public sealed class ResourceResolver : IResourceResolver
     public async Task<string?> GetLicenseDescriptionForGitHub(string owner, string repoName)
     {
         var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
-        var httpClient = _httpClientFactory.CreateTableClothHttpClient();
+        var httpClient = httpClientFactory.CreateTableClothHttpClient();
 
         using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
         var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
@@ -105,7 +99,7 @@ public sealed class ResourceResolver : IResourceResolver
         if (!Directory.Exists(imageDirectoryPath))
             Directory.CreateDirectory(imageDirectoryPath);
 
-        var httpClient = this._httpClientFactory.CreateTableClothHttpClient();
+        var httpClient = httpClientFactory.CreateTableClothHttpClient();
 
         foreach (var eachSite in services)
         {

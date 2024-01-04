@@ -6,19 +6,10 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.InputPasswordWindow;
 
-public sealed class InputPasswordWindowConfirmCommand : ViewModelCommandBase<InputPasswordWindowViewModel>
+public sealed class InputPasswordWindowConfirmCommand(
+    IX509CertPairScanner certPairScanner,
+    IAppMessageBox appMessageBox) : ViewModelCommandBase<InputPasswordWindowViewModel>
 {
-    public InputPasswordWindowConfirmCommand(
-        IX509CertPairScanner certPairScanner,
-        IAppMessageBox appMessageBox)
-    {
-        _certPairScanner = certPairScanner;
-        _appMessageBox = appMessageBox;
-    }
-
-    private readonly IX509CertPairScanner _certPairScanner;
-    private readonly IAppMessageBox _appMessageBox;
-
     public override void Execute(InputPasswordWindowViewModel viewModel)
     {
         try
@@ -26,7 +17,7 @@ public sealed class InputPasswordWindowConfirmCommand : ViewModelCommandBase<Inp
             if (viewModel.PfxFilePath == null)
                 throw new InvalidOperationException(StringResources.Error_Cannot_Find_PfxFile);
 
-            var certPair = _certPairScanner.CreateX509Cert(viewModel.PfxFilePath, viewModel.Password);
+            var certPair = certPairScanner.CreateX509Cert(viewModel.PfxFilePath, viewModel.Password);
 
             if (certPair != null)
                 viewModel.ValidatedCertPair = certPair;
@@ -35,7 +26,7 @@ public sealed class InputPasswordWindowConfirmCommand : ViewModelCommandBase<Inp
         }
         catch (Exception ex)
         {
-            _appMessageBox.DisplayError(ex, false);
+            appMessageBox.DisplayError(ex, false);
         }
     }
 }

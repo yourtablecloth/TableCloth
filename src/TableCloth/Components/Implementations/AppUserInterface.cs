@@ -9,40 +9,31 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Components;
 
-public sealed class AppUserInterface : IAppUserInterface
+public sealed class AppUserInterface(
+    IServiceProvider serviceProvider,
+    IResourceCacheManager resourceCacheManager) : IAppUserInterface
 {
-    public AppUserInterface(
-        IServiceProvider serviceProvider,
-        IResourceCacheManager resourceCacheManager)
-    {
-        _serviceProvider = serviceProvider;
-        _resourceCacheManager = resourceCacheManager;
-    }
-
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IResourceCacheManager _resourceCacheManager;
-
     public AboutWindow CreateAboutWindow()
-        => _serviceProvider.GetRequiredService<AboutWindow>();
+        => serviceProvider.GetRequiredService<AboutWindow>();
 
     public CertSelectWindow CreateCertSelectWindow()
-        => _serviceProvider.GetRequiredService<CertSelectWindow>();
+        => serviceProvider.GetRequiredService<CertSelectWindow>();
 
     public InputPasswordWindow CreateInputPasswordWindow()
-        => _serviceProvider.GetRequiredService<InputPasswordWindow>();
+        => serviceProvider.GetRequiredService<InputPasswordWindow>();
 
     public DisclaimerWindow CreateDisclaimerWindow()
-        => _serviceProvider.GetRequiredService<DisclaimerWindow>();
+        => serviceProvider.GetRequiredService<DisclaimerWindow>();
 
     public SplashScreen CreateSplashScreen()
-        => _serviceProvider.GetRequiredService<SplashScreen>();
+        => serviceProvider.GetRequiredService<SplashScreen>();
 
     public CatalogPage CreateCatalogPage(string searchKeyword)
         => new CatalogPage(CreateCatalogPageViewModel(searchKeyword));
 
     public CatalogPageViewModel CreateCatalogPageViewModel(string searchKeyword)
     {
-        var viewModel = _serviceProvider.GetRequiredService<CatalogPageViewModel>();
+        var viewModel = serviceProvider.GetRequiredService<CatalogPageViewModel>();
         viewModel.SearchKeyword = searchKeyword;
         return viewModel;
     }
@@ -56,13 +47,13 @@ public sealed class AppUserInterface : IAppUserInterface
         CatalogInternetService selectedService,
         CommandLineArgumentModel? commandLineArgumentModel)
     {
-        var viewModel = _serviceProvider.GetRequiredService<DetailPageViewModel>();
+        var viewModel = serviceProvider.GetRequiredService<DetailPageViewModel>();
         viewModel.SelectedService = selectedService;
         viewModel.CommandLineArgumentModel = commandLineArgumentModel;
 
         if (viewModel.CommandLineArgumentModel != null)
         {
-            var commandLineSelectedService = _resourceCacheManager.CatalogDocument?.Services
+            var commandLineSelectedService = resourceCacheManager.CatalogDocument?.Services
                 .Where(x => viewModel.CommandLineArgumentModel.SelectedServices.Contains(x.Id))
                 .FirstOrDefault();
 

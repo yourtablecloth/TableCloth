@@ -7,23 +7,16 @@ using TableCloth.Models.Configuration;
 
 namespace TableCloth.Components;
 
-public sealed class PreferencesManager : IPreferencesManager
+public sealed class PreferencesManager(
+    ISharedLocations sharedLocations,
+    ILogger<PreferencesManager> logger) : IPreferencesManager
 {
-    public PreferencesManager(
-        ISharedLocations sharedLocations,
-        ILogger<PreferencesManager> logger)
-    {
-        _sharedLocations = sharedLocations;
-        _logger = logger;
-    }
-
-    private readonly ISharedLocations _sharedLocations;
-    private readonly ILogger _logger;
+    private readonly ILogger _logger = logger;
 
     public PreferenceSettings? LoadPreferences()
     {
         var defaultSettings = GetDefaultPreferences();
-        var prefFilePath = _sharedLocations.PreferencesFilePath;
+        var prefFilePath = sharedLocations.PreferencesFilePath;
 
         if (!File.Exists(prefFilePath))
             return defaultSettings;
@@ -55,7 +48,7 @@ public sealed class PreferencesManager : IPreferencesManager
         if (preferences == null)
             preferences = defaultPreferences;
 
-        var prefFilePath = _sharedLocations.PreferencesFilePath;
+        var prefFilePath = sharedLocations.PreferencesFilePath;
         var json = JsonSerializer.Serialize(preferences, new JsonSerializerOptions() { AllowTrailingCommas = true, WriteIndented = true, });
         File.WriteAllText(prefFilePath, json, new UTF8Encoding(false));
     }

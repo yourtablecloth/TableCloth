@@ -2,18 +2,11 @@
 
 namespace TableCloth.Commands.MainWindow;
 
-public sealed class MainWindowClosedCommand : CommandBase
+public sealed class MainWindowClosedCommand(
+    ISandboxCleanupManager sandboxCleanupManager) : CommandBase
 {
-    public MainWindowClosedCommand(
-        ISandboxCleanupManager sandboxCleanupManager)
-    {
-        _sandboxCleanupManager = sandboxCleanupManager;
-    }
-
-    private readonly ISandboxCleanupManager _sandboxCleanupManager;
-
     public override void Execute(object? parameter)
     {
-        _sandboxCleanupManager.TryCleanup();
+        sandboxCleanupManager.TryCleanup();
     }
 }

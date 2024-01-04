@@ -6,25 +6,14 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Components;
 
-public sealed class ShortcutCrerator : IShortcutCrerator
+public sealed class ShortcutCrerator(
+    ICommandLineComposer commandLineComposer,
+    ISharedLocations sharedLocations,
+    IAppMessageBox appMessageBox) : IShortcutCrerator
 {
-    public ShortcutCrerator(
-        ICommandLineComposer commandLineComposer,
-        ISharedLocations sharedLocations,
-        IAppMessageBox appMessageBox)
-    {
-        _commandLineComposer = commandLineComposer;
-        _sharedLocations = sharedLocations;
-        _appMessageBox = appMessageBox;
-    }
-
-    private readonly ICommandLineComposer _commandLineComposer;
-    private readonly ISharedLocations _sharedLocations;
-    private readonly IAppMessageBox _appMessageBox;
-
     public void CreateShortcut(ITableClothViewModel viewModel)
     {
-        var targetPath = _sharedLocations.ExecutableFilePath;
+        var targetPath = sharedLocations.ExecutableFilePath;
         var linkName = StringResources.AppName;
 
         var firstSite = viewModel.SelectedServices.FirstOrDefault();
@@ -35,7 +24,7 @@ public sealed class ShortcutCrerator : IShortcutCrerator
             linkName = firstSite.DisplayName;
 
             iconFilePath = Path.Combine(
-                _sharedLocations.GetImageDirectoryPath(),
+                sharedLocations.GetImageDirectoryPath(),
                 $"{firstSite.Id}.ico");
 
             if (!File.Exists(iconFilePath))
@@ -60,15 +49,15 @@ public sealed class ShortcutCrerator : IShortcutCrerator
             if (iconFilePath != null && File.Exists(iconFilePath))
                 shortcut.IconLocation = iconFilePath;
 
-            shortcut.Arguments = _commandLineComposer.ComposeCommandLineArguments(viewModel, false);
+            shortcut.Arguments = commandLineComposer.ComposeCommandLineArguments(viewModel, false);
             shortcut.Save();
         }
         catch
         {
-            _appMessageBox.DisplayInfo(StringResources.Error_ShortcutFailed);
+            appMessageBox.DisplayInfo(StringResources.Error_ShortcutFailed);
             return;
         }
 
-        _appMessageBox.DisplayInfo(StringResources.Info_ShortcutSuccess);
+        appMessageBox.DisplayInfo(StringResources.Info_ShortcutSuccess);
     }
 }

@@ -8,16 +8,9 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Components;
 
-public sealed class ConfigurationComposer : IConfigurationComposer
+public sealed class ConfigurationComposer(
+    IResourceCacheManager resourceCacheManager) : IConfigurationComposer
 {
-    public ConfigurationComposer(
-        IResourceCacheManager resourceCacheManager)
-    {
-        _resourceCacheManager = resourceCacheManager;
-    }
-
-    private readonly IResourceCacheManager _resourceCacheManager;
-
     public TableClothConfiguration GetConfigurationFromViewModel(ITableClothViewModel viewModel)
     {
         var selectedCert = viewModel.SelectedCertFile;
@@ -59,7 +52,7 @@ public sealed class ConfigurationComposer : IConfigurationComposer
             certPrivateKeyData.Length > 0)
             certPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
 
-        var selectedServices = _resourceCacheManager.CatalogDocument?.Services
+        var selectedServices = resourceCacheManager.CatalogDocument?.Services
             .Where(x => argumentModel.SelectedServices.Contains(x.Id))
             ?? Enumerable.Empty<CatalogInternetService>();
 
