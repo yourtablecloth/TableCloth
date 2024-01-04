@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TableCloth.Components;
+using TableCloth.Test.Fixtures;
 
 namespace TableCloth.Test;
 
-public sealed class ResourceResolverTest : IClassFixture<ContainerFixture>
+public sealed class ResourceResolverTest : IClassFixture<DefaultContainerFixture>
 {
-    public ResourceResolverTest(ContainerFixture fixture)
+    public ResourceResolverTest(DefaultContainerFixture fixture)
     {
         _serviceProvider = fixture.Services;
         _resourceResolver = _serviceProvider.GetRequiredService<ResourceResolver>();
