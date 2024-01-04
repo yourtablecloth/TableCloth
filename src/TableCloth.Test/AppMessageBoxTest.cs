@@ -1,10 +1,4 @@
-﻿using TableCloth.Components;
-
-namespace TableCloth.Test;
-using Moq.AutoMock;
-using System.Windows;
-
-using static Moq.It;
+﻿namespace TableCloth.Test;
 
 public class AppMessageBoxTest
 {
