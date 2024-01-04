@@ -34,15 +34,7 @@ public sealed class MainWindowV2LoadedCommand : ViewModelCommandBase<MainWindowV
 
     public override void Execute(MainWindowV2ViewModel viewModel)
     {
-        const string pageFrameName = "PageFrame";
-
         var mainWindow = _application.MainWindow;
-        var pageFrame = mainWindow.FindName(pageFrameName) as Frame;
-
-        if (pageFrame == null)
-            throw new Exception($"There is no frame control named as '{pageFrame}'.");
-
-        _navigationService.Initialize(pageFrame);
         _visualThemeManager.ApplyAutoThemeChange(mainWindow);
 
         var parsedArg = _commandLineArguments.Current;

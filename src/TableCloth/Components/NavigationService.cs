@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
@@ -7,38 +8,45 @@ namespace TableCloth.Components;
 
 public sealed class NavigationService
 {
-    private readonly AppUserInterface _appUserInterface;
-
-    private Frame? _frame = default;
-
     public NavigationService(
+        Application application,
         AppUserInterface appUserInterface)
     {
+        _application = application;
         _appUserInterface = appUserInterface;
     }
 
-    public void Initialize(Frame frame)
+    private readonly Application _application;
+    private readonly AppUserInterface _appUserInterface;
+
+    public string GetPageFrameControlName()
+        => nameof(MainWindowV2.PageFrame);
+
+    public Frame FindNavigationFrameFromMainWindow()
     {
-        _frame = frame ?? throw new ArgumentNullException(nameof(frame));
+        var frameName = GetPageFrameControlName();
+        var mainWindow = _application.MainWindow;
+        var pageFrame = mainWindow.FindName(frameName) as Frame;
+
+        if (pageFrame == null)
+            throw new Exception($"There is no frame control named as '{pageFrame}'.");
+
+        return pageFrame;
     }
 
     public bool NavigateToCatalog(string searchKeyword)
     {
-        if (_frame == default)
-            throw new InvalidOperationException($"You should initialize {nameof(NavigationService)} before use.");
-
+        var frame = FindNavigationFrameFromMainWindow();
         var page = _appUserInterface.CreateCatalogPage(searchKeyword);
-        return _frame.Navigate(page);
+        return frame.Navigate(page);
     }
 
     public bool NavigateToDetail(
         CatalogInternetService selectedService,
         CommandLineArgumentModel? commandLineArgumentModel)
     {
-        if (_frame == default)
-            throw new InvalidOperationException($"You should initialize {nameof(NavigationService)} before use.");
-
+        var frame = FindNavigationFrameFromMainWindow();
         var page = _appUserInterface.CreateDetailPage(selectedService, commandLineArgumentModel);
-        return _frame.Navigate(page);
+        return frame.Navigate(page);
     }
 }
