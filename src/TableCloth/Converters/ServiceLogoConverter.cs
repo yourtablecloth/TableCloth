@@ -9,14 +9,14 @@ namespace TableCloth.Converters;
 
 public class ServiceLogoConverter : IValueConverter
 {
-    private ResourceCacheManager? _resourceCacheManager;
+    private IResourceCacheManager? _resourceCacheManager;
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (_resourceCacheManager == null)
         {
             var serviceProvider = Application.Current.GetServiceProvider();
-            _resourceCacheManager = serviceProvider.GetRequiredService<ResourceCacheManager>();
+            _resourceCacheManager = serviceProvider.GetRequiredService<IResourceCacheManager>();
         }
 
         return _resourceCacheManager.GetImage((string)value) ?? throw new ArgumentException(nameof(value));

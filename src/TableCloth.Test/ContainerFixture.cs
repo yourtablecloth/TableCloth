@@ -43,25 +43,25 @@ public class ContainerFixture<TConsumer>
 
         // Add Components
         services
-            .AddSingleton<AppUserInterface>()
-            .AddSingleton<SharedLocations>()
-            .AddSingleton<PreferencesManager>()
-            .AddSingleton<X509CertPairScanner>()
-            .AddSingleton<ResourceCacheManager>()
-            .AddSingleton<SandboxBuilder>()
-            .AddSingleton<SandboxLauncher>()
-            .AddSingleton<SandboxCleanupManager>()
-            .AddSingleton<AppStartup>()
-            .AddSingleton<ResourceResolver>()
-            .AddSingleton<LicenseDescriptor>()
-            .AddSingleton<AppRestartManager>()
-            .AddSingleton<CommandLineComposer>()
-            .AddSingleton<ConfigurationComposer>()
-            .AddSingleton<VisualThemeManager>()
-            .AddSingleton<AppMessageBox>()
-            .AddSingleton<NavigationService>()
-            .AddSingleton<ShortcutCrerator>()
-            .AddSingleton<CommandLineArguments>();
+            .AddSingleton<IAppUserInterface, AppUserInterface>()
+            .AddSingleton<ISharedLocations, SharedLocations>()
+            .AddSingleton<IPreferencesManager, PreferencesManager>()
+            .AddSingleton<IX509CertPairScanner, X509CertPairScanner>()
+            .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
+            .AddSingleton<ISandboxBuilder, SandboxBuilder>()
+            .AddSingleton<ISandboxLauncher, SandboxLauncher>()
+            .AddSingleton<ISandboxCleanupManager, SandboxCleanupManager>()
+            .AddSingleton<IAppStartup, AppStartup>()
+            .AddSingleton<IResourceResolver, ResourceResolver>()
+            .AddSingleton<ILicenseDescriptor, LicenseDescriptor>()
+            .AddSingleton<IAppRestartManager, AppRestartManager>()
+            .AddSingleton<ICommandLineComposer, CommandLineComposer>()
+            .AddSingleton<IConfigurationComposer, ConfigurationComposer>()
+            .AddSingleton<IVisualThemeManager, VisualThemeManager>()
+            .AddSingleton<IAppMessageBox, AppMessageBox>()
+            .AddSingleton<INavigationService, NavigationService>()
+            .AddSingleton<IShortcutCrerator, ShortcutCrerator>()
+            .AddSingleton<ICommandLineArguments, CommandLineArguments>();
 
         // Shared Commands
         services

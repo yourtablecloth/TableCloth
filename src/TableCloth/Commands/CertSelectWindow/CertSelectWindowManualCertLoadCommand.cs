@@ -14,8 +14,8 @@ public sealed class CertSelectWindowManualCertLoadCommand : ViewModelCommandBase
 {
     public CertSelectWindowManualCertLoadCommand(
         Application application,
-        AppUserInterface appUserInterface,
-        X509CertPairScanner certPairScanner)
+        IAppUserInterface appUserInterface,
+        IX509CertPairScanner certPairScanner)
     {
         _application = application;
         _appUserInterface = appUserInterface;
@@ -23,8 +23,8 @@ public sealed class CertSelectWindowManualCertLoadCommand : ViewModelCommandBase
     }
 
     private readonly Application _application;
-    private readonly AppUserInterface _appUserInterface;
-    private readonly X509CertPairScanner _certPairScanner;
+    private readonly IAppUserInterface _appUserInterface;
+    private readonly IX509CertPairScanner _certPairScanner;
 
     public override void Execute(CertSelectWindowViewModel viewModel)
     {

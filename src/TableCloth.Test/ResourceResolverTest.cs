@@ -30,7 +30,7 @@ public class AutoMoqTester
 public sealed class ResourceResolverTest : IClassFixture<ContainerFixture<ResourceResolverTest.Dependencies>>
 {
     public sealed record Dependencies(
-        ResourceResolver ResourceResolver);
+        IResourceResolver ResourceResolver);
 
     public ResourceResolverTest(ContainerFixture<Dependencies> fixture)
         => _dependencies = fixture.GetConsumer();

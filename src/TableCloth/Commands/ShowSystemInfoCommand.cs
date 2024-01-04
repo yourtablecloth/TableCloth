@@ -9,12 +9,12 @@ namespace TableCloth.Commands;
 public sealed class ShowSystemInfoCommand : CommandBase
 {
     public ShowSystemInfoCommand(
-        AppMessageBox appMessageBox)
+        IAppMessageBox appMessageBox)
     {
         _appMessageBox = appMessageBox;
     }
 
-    private readonly AppMessageBox _appMessageBox;
+    private readonly IAppMessageBox _appMessageBox;
 
     public override void Execute(object? parameter)
     {

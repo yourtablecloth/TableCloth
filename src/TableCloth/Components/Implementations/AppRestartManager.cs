@@ -1,16 +1,15 @@
 ﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using TableCloth.Resources;
 
 namespace TableCloth.Components;
 
-public sealed class AppRestartManager
+public sealed class AppRestartManager : IAppRestartManager
 {
     public AppRestartManager(
         Application application,
-        AppMessageBox appMessageBox,
-        SharedLocations sharedLocations)
+        IAppMessageBox appMessageBox,
+        ISharedLocations sharedLocations)
     {
         _application = application;
         _appMessageBox = appMessageBox;
@@ -18,10 +17,10 @@ public sealed class AppRestartManager
     }
 
     private readonly Application _application;
-    private readonly AppMessageBox _appMessageBox;
-    private readonly SharedLocations _sharedLocations;
+    private readonly IAppMessageBox _appMessageBox;
+    private readonly ISharedLocations _sharedLocations;
 
-    public bool ReserveRestart { get; set; }
+    private bool _restartReserved;
 
     public bool AskRestart()
         => _appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK);
@@ -31,4 +30,10 @@ public sealed class AppRestartManager
         Process.Start(_sharedLocations.ExecutableFilePath, Helpers.GetCommandLineArguments());
         _application.Shutdown();
     }
+
+    public void ReserveRestart()
+        => _restartReserved = true;
+
+    public bool IsRestartReserved()
+        => _restartReserved;
 }

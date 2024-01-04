@@ -10,14 +10,14 @@ namespace TableCloth.Commands.DetailPage;
 public sealed class DetailPageLoadedCommand : ViewModelCommandBase<DetailPageViewModel>
 {
     public DetailPageLoadedCommand(
-        ResourceCacheManager resourceCacheManager,
-        PreferencesManager preferencesManager,
-        X509CertPairScanner certPairScanner,
-        AppRestartManager appRestartManager,
-        AppUserInterface appUserInterface,
-        SharedLocations sharedLocations,
-        ConfigurationComposer configurationComposer,
-        SandboxLauncher sandboxLauncher)
+        IResourceCacheManager resourceCacheManager,
+        IPreferencesManager preferencesManager,
+        IX509CertPairScanner certPairScanner,
+        IAppRestartManager appRestartManager,
+        IAppUserInterface appUserInterface,
+        ISharedLocations sharedLocations,
+        IConfigurationComposer configurationComposer,
+        ISandboxLauncher sandboxLauncher)
     {
         _resourceCacheManager = resourceCacheManager;
         _preferencesManager = preferencesManager;
@@ -29,14 +29,14 @@ public sealed class DetailPageLoadedCommand : ViewModelCommandBase<DetailPageVie
         _sandboxLauncher = sandboxLauncher;
     }
 
-    private readonly ResourceCacheManager _resourceCacheManager;
-    private readonly PreferencesManager _preferencesManager;
-    private readonly X509CertPairScanner _certPairScanner;
-    private readonly AppRestartManager _appRestartManager;
-    private readonly AppUserInterface _appUserInterface;
-    private readonly SharedLocations _sharedLocations;
-    private readonly ConfigurationComposer _configurationComposer;
-    private readonly SandboxLauncher _sandboxLauncher;
+    private readonly IResourceCacheManager _resourceCacheManager;
+    private readonly IPreferencesManager _preferencesManager;
+    private readonly IX509CertPairScanner _certPairScanner;
+    private readonly IAppRestartManager _appRestartManager;
+    private readonly IAppUserInterface _appUserInterface;
+    private readonly ISharedLocations _sharedLocations;
+    private readonly IConfigurationComposer _configurationComposer;
+    private readonly ISandboxLauncher _sandboxLauncher;
 
     public override void Execute(DetailPageViewModel viewModel)
     {
@@ -113,7 +113,7 @@ public sealed class DetailPageLoadedCommand : ViewModelCommandBase<DetailPageVie
                 currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
                 if (_appRestartManager.AskRestart())
                 {
-                    _appRestartManager.ReserveRestart = true;
+                    _appRestartManager.ReserveRestart();
                     viewModel.RequestClose(sender, e);
                 }
                 break;
@@ -122,7 +122,7 @@ public sealed class DetailPageLoadedCommand : ViewModelCommandBase<DetailPageVie
                 currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
                 if (_appRestartManager.AskRestart())
                 {
-                    _appRestartManager.ReserveRestart = true;
+                    _appRestartManager.ReserveRestart();
                     viewModel.RequestClose(sender, e);
                 }
                 break;

@@ -7,12 +7,12 @@ namespace TableCloth.Commands.CertSelectWindow;
 public sealed class CertSelectWindowScanCertPairCommand : ViewModelCommandBase<CertSelectWindowViewModel>
 {
     public CertSelectWindowScanCertPairCommand(
-        X509CertPairScanner certPairScanner)
+        IX509CertPairScanner certPairScanner)
     {
         _certPairScanner = certPairScanner;
     }
 
-    private readonly X509CertPairScanner _certPairScanner;
+    private readonly IX509CertPairScanner _certPairScanner;
 
     public override void Execute(CertSelectWindowViewModel viewModel)
     {

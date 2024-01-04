@@ -9,15 +9,15 @@ namespace TableCloth.Commands.InputPasswordWindow;
 public sealed class InputPasswordWindowConfirmCommand : ViewModelCommandBase<InputPasswordWindowViewModel>
 {
     public InputPasswordWindowConfirmCommand(
-        X509CertPairScanner certPairScanner,
-        AppMessageBox appMessageBox)
+        IX509CertPairScanner certPairScanner,
+        IAppMessageBox appMessageBox)
     {
         _certPairScanner = certPairScanner;
         _appMessageBox = appMessageBox;
     }
 
-    private readonly X509CertPairScanner _certPairScanner;
-    private readonly AppMessageBox _appMessageBox;
+    private readonly IX509CertPairScanner _certPairScanner;
+    private readonly IAppMessageBox _appMessageBox;
 
     public override void Execute(InputPasswordWindowViewModel viewModel)
     {

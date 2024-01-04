@@ -14,12 +14,12 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
 {
     public SplashScreenLoadedCommand(
         Application application,
-        AppStartup appStartup,
-        AppMessageBox appMessageBox,
-        PreferencesManager preferencesManager,
-        ResourceCacheManager resourceCacheManager,
-        VisualThemeManager visualThemeManager,
-        CommandLineArguments commandLineArguments)
+        IAppStartup appStartup,
+        IAppMessageBox appMessageBox,
+        IPreferencesManager preferencesManager,
+        IResourceCacheManager resourceCacheManager,
+        IVisualThemeManager visualThemeManager,
+        ICommandLineArguments commandLineArguments)
     {
         _application = application;
         _appStartup = appStartup;
@@ -31,12 +31,12 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
     }
 
     private readonly Application _application;
-    private readonly AppStartup _appStartup;
-    private readonly AppMessageBox _appMessageBox;
-    private readonly PreferencesManager _preferencesManager;
-    private readonly ResourceCacheManager _resourceCacheManager;
-    private readonly VisualThemeManager _visualThemeManager;
-    private readonly CommandLineArguments _commandLineArguments;
+    private readonly IAppStartup _appStartup;
+    private readonly IAppMessageBox _appMessageBox;
+    private readonly IPreferencesManager _preferencesManager;
+    private readonly IResourceCacheManager _resourceCacheManager;
+    private readonly IVisualThemeManager _visualThemeManager;
+    private readonly ICommandLineArguments _commandLineArguments;
 
     public override async void Execute(SplashScreenViewModel viewModel)
     {
@@ -76,7 +76,7 @@ public sealed class SplashScreenLoadedCommand : ViewModelCommandBase<SplashScree
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
                 StringResources.Status_CheckInternetConnection));
 
-            if (!await _appStartup.CheckForInternetConnection())
+            if (!await _appStartup.CheckForInternetConnectionAsync())
                 _appMessageBox.DisplayError(StringResources.Info_Offline, false);
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(

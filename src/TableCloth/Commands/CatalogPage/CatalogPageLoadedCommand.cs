@@ -11,12 +11,12 @@ namespace TableCloth.Commands.CatalogPage;
 public sealed class CatalogPageLoadedCommand : ViewModelCommandBase<CatalogPageViewModel>
 {
     public CatalogPageLoadedCommand(
-        ResourceCacheManager resourceCacheManager)
+        IResourceCacheManager resourceCacheManager)
     {
         _resourceCacheManager = resourceCacheManager;
     }
 
-    private readonly ResourceCacheManager _resourceCacheManager;
+    private readonly IResourceCacheManager _resourceCacheManager;
 
     private static readonly PropertyGroupDescription GroupDescription =
         new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));

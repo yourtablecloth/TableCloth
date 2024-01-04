@@ -65,7 +65,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Components\LicenseDescriptor.cs">
+    <Compile Update="Components\Implementations\LicenseDescriptor.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">

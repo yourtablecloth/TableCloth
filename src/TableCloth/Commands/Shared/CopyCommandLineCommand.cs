@@ -8,15 +8,15 @@ namespace TableCloth.Commands.Shared;
 public sealed class CopyCommandLineCommand : ViewModelCommandBase<ITableClothViewModel>
 {
     public CopyCommandLineCommand(
-        CommandLineComposer commandLineComposer,
-        AppMessageBox appMessageBox)
+        ICommandLineComposer commandLineComposer,
+        IAppMessageBox appMessageBox)
     {
         _commandLineComposer = commandLineComposer;
         _appMessageBox = appMessageBox;
     }
 
-    private readonly CommandLineComposer _commandLineComposer;
-    private readonly AppMessageBox _appMessageBox;
+    private readonly ICommandLineComposer _commandLineComposer;
+    private readonly IAppMessageBox _appMessageBox;
 
     public override void Execute(ITableClothViewModel viewModel)
     {

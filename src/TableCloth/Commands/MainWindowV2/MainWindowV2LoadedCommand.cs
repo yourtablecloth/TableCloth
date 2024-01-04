@@ -6,7 +6,6 @@ using TableCloth.Components;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
-using NavigationService = TableCloth.Components.NavigationService;
 
 namespace TableCloth.Commands.MainWindowV2;
 
@@ -14,10 +13,10 @@ public sealed class MainWindowV2LoadedCommand : ViewModelCommandBase<MainWindowV
 {
     public MainWindowV2LoadedCommand(
         Application application,
-        ResourceCacheManager resourceCacheManager,
-        NavigationService navigationService,
-        VisualThemeManager visualThemeManager,
-        CommandLineArguments commandLineArguments)
+        IResourceCacheManager resourceCacheManager,
+        INavigationService navigationService,
+        IVisualThemeManager visualThemeManager,
+        ICommandLineArguments commandLineArguments)
     {
         _application = application;
         _resourceCacheManager = resourceCacheManager;
@@ -27,10 +26,10 @@ public sealed class MainWindowV2LoadedCommand : ViewModelCommandBase<MainWindowV
     }
 
     private readonly Application _application;
-    private readonly ResourceCacheManager _resourceCacheManager;
-    private readonly NavigationService _navigationService;
-    private readonly VisualThemeManager _visualThemeManager;
-    private readonly CommandLineArguments _commandLineArguments;
+    private readonly IResourceCacheManager _resourceCacheManager;
+    private readonly INavigationService _navigationService;
+    private readonly IVisualThemeManager _visualThemeManager;
+    private readonly ICommandLineArguments _commandLineArguments;
 
     public override void Execute(MainWindowV2ViewModel viewModel)
     {

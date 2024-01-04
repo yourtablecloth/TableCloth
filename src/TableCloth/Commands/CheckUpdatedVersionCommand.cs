@@ -8,15 +8,15 @@ namespace TableCloth.Commands;
 public sealed class CheckUpdatedVersionCommand : CommandBase
 {
     public CheckUpdatedVersionCommand(
-        ResourceResolver resourceResolver,
-        AppMessageBox appMessageBox)
+        IResourceResolver resourceResolver,
+        IAppMessageBox appMessageBox)
     {
         _resourceResolver = resourceResolver;
         _appMessageBox = appMessageBox;
     }
 
-    private readonly ResourceResolver _resourceResolver;
-    private readonly AppMessageBox _appMessageBox;
+    private readonly IResourceResolver _resourceResolver;
+    private readonly IAppMessageBox _appMessageBox;
 
     public override async void Execute(object? parameter)
     {

@@ -6,12 +6,12 @@ namespace TableCloth.Commands.DetailPage;
 public sealed class DetailPageGoBackCommand : ViewModelCommandBase<DetailPageViewModel>
 {
     public DetailPageGoBackCommand(
-        NavigationService navigationService)
+        INavigationService navigationService)
     {
         _navigationService = navigationService;
     }
 
-    private readonly NavigationService _navigationService;
+    private readonly INavigationService _navigationService;
 
     public override void Execute(DetailPageViewModel viewModel)
         => _navigationService.NavigateToCatalog(string.Empty);

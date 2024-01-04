@@ -6,12 +6,12 @@ namespace TableCloth.Commands.Shared;
 public sealed class CreateShortcutCommand : ViewModelCommandBase<ITableClothViewModel>
 {
     public CreateShortcutCommand(
-        ShortcutCrerator shortcutCrerator)
+        IShortcutCrerator shortcutCrerator)
     {
         _shortcutCreator = shortcutCrerator;
     }
 
-    private readonly ShortcutCrerator _shortcutCreator;
+    private readonly IShortcutCrerator _shortcutCreator;
 
     public override void Execute(ITableClothViewModel viewModel)
         => _shortcutCreator.CreateShortcut(viewModel);

@@ -6,15 +6,12 @@ namespace TableCloth.Commands.Shared;
 public sealed class CertSelectCommand : ViewModelCommandBase<ITableClothViewModel>
 {
     public CertSelectCommand(
-        AppUserInterface appUserInterface)
+        IAppUserInterface appUserInterface)
     {
         _appUserInterface = appUserInterface;
     }
 
-    private readonly AppUserInterface _appUserInterface;
-
-    public AppUserInterface AppUserInterface
-        => _appUserInterface;
+    private readonly IAppUserInterface _appUserInterface;
 
     public override void Execute(ITableClothViewModel viewModel)
     {

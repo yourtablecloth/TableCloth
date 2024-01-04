@@ -15,17 +15,17 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
 {
     public MainWindowLoadedCommand(
         Application application,
-        ResourceCacheManager resourceCacheManager,
-        AppUserInterface appUserInterface,
-        VisualThemeManager visualThemeManager,
-        PreferencesManager preferencesManager,
-        X509CertPairScanner certPairScanner,
-        SharedLocations sharedLocations,
-        AppMessageBox appMessageBox,
-        AppRestartManager appRestartManager,
-        ConfigurationComposer configurationComposer,
-        SandboxLauncher sandboxLauncher,
-        CommandLineArguments commandLineArguments)
+        IResourceCacheManager resourceCacheManager,
+        IAppUserInterface appUserInterface,
+        IVisualThemeManager visualThemeManager,
+        IPreferencesManager preferencesManager,
+        IX509CertPairScanner certPairScanner,
+        ISharedLocations sharedLocations,
+        IAppMessageBox appMessageBox,
+        IAppRestartManager appRestartManager,
+        IConfigurationComposer configurationComposer,
+        ISandboxLauncher sandboxLauncher,
+        ICommandLineArguments commandLineArguments)
     {
         _application = application;
         _resourceCacheManager = resourceCacheManager;
@@ -42,17 +42,17 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
     }
 
     private readonly Application _application;
-    private readonly ResourceCacheManager _resourceCacheManager;
-    private readonly AppUserInterface _appUserInterface;
-    private readonly VisualThemeManager _visualThemeManager;
-    private readonly PreferencesManager _preferencesManager;
-    private readonly X509CertPairScanner _certPairScanner;
-    private readonly SharedLocations _sharedLocations;
-    private readonly AppMessageBox _appMessageBox;
-    private readonly AppRestartManager _appRestartManager;
-    private readonly ConfigurationComposer _configurationComposer;
-    private readonly SandboxLauncher _sandboxLauncher;
-    private readonly CommandLineArguments _commandLineArguments;
+    private readonly IResourceCacheManager _resourceCacheManager;
+    private readonly IAppUserInterface _appUserInterface;
+    private readonly IVisualThemeManager _visualThemeManager;
+    private readonly IPreferencesManager _preferencesManager;
+    private readonly IX509CertPairScanner _certPairScanner;
+    private readonly ISharedLocations _sharedLocations;
+    private readonly IAppMessageBox _appMessageBox;
+    private readonly IAppRestartManager _appRestartManager;
+    private readonly IConfigurationComposer _configurationComposer;
+    private readonly ISandboxLauncher _sandboxLauncher;
+    private readonly ICommandLineArguments _commandLineArguments;
 
     public override void Execute(MainWindowViewModel viewModel)
     {
@@ -165,7 +165,7 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
                 currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
                 if (_appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                 {
-                    _appRestartManager.ReserveRestart = true;
+                    _appRestartManager.ReserveRestart();
                     _appRestartManager.RestartNow();
                 }
                 break;
@@ -174,7 +174,7 @@ public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowVie
                 currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
                 if (_appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                 {
-                    _appRestartManager.ReserveRestart = true;
+                    _appRestartManager.ReserveRestart();
                     _appRestartManager.RestartNow();
                 }
                 break;

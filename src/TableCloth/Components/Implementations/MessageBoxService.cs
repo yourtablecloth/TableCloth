@@ -2,7 +2,7 @@
 
 namespace TableCloth.Components;
 
-public sealed class MessageBoxService
+public sealed class MessageBoxService : IMessageBoxService
 {
     public MessageBoxService(
         Application application)

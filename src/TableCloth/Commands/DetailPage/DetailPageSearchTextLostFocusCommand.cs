@@ -6,12 +6,12 @@ namespace TableCloth.Commands.DetailPage;
 public sealed class DetailPageSearchTextLostFocusCommand : ViewModelCommandBase<DetailPageViewModel>
 {
     public DetailPageSearchTextLostFocusCommand(
-        NavigationService navigationService)
+        INavigationService navigationService)
     {
         _navigationService = navigationService;
     }
 
-    private readonly NavigationService _navigationService;
+    private readonly INavigationService _navigationService;
 
     public override void Execute(DetailPageViewModel viewModel)
         => _navigationService.NavigateToCatalog(viewModel.SearchKeyword);

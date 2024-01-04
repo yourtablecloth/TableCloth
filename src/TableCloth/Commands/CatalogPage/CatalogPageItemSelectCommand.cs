@@ -6,12 +6,12 @@ namespace TableCloth.Commands.CatalogPage;
 public sealed class CatalogPageItemSelectCommand : ViewModelCommandBase<CatalogPageViewModel>
 {
     public CatalogPageItemSelectCommand(
-        NavigationService navigationService)
+        INavigationService navigationService)
     {
         _navigationService = navigationService;
     }
 
-    private readonly NavigationService _navigationService;
+    private readonly INavigationService _navigationService;
 
     public override void Execute(CatalogPageViewModel viewModel)
     {

@@ -5,13 +5,12 @@ namespace TableCloth.Commands.MainWindow;
 public sealed class MainWindowClosedCommand : CommandBase
 {
     public MainWindowClosedCommand(
-        SandboxCleanupManager sandboxCleanupManager,
-        AppRestartManager appRestartManager)
+        ISandboxCleanupManager sandboxCleanupManager)
     {
         _sandboxCleanupManager = sandboxCleanupManager;
     }
 
-    private readonly SandboxCleanupManager _sandboxCleanupManager;
+    private readonly ISandboxCleanupManager _sandboxCleanupManager;
 
     public override void Execute(object? parameter)
     {

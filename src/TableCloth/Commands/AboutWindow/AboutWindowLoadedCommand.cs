@@ -7,15 +7,15 @@ namespace TableCloth.Commands.AboutWindow;
 public sealed class AboutWindowLoadedCommand : ViewModelCommandBase<AboutWindowViewModel>
 {
     public AboutWindowLoadedCommand(
-        ResourceResolver resourceResolver,
-        LicenseDescriptor licenseDescriptor)
+        IResourceResolver resourceResolver,
+        ILicenseDescriptor licenseDescriptor)
     {
         _resourceResolver = resourceResolver;
         _licenseDescriptor = licenseDescriptor;
     }
 
-    private readonly ResourceResolver _resourceResolver;
-    private readonly LicenseDescriptor _licenseDescriptor;
+    private readonly IResourceResolver _resourceResolver;
+    private readonly ILicenseDescriptor _licenseDescriptor;
 
     public override async void Execute(AboutWindowViewModel viewModel)
     {
