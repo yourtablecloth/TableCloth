@@ -11,9 +11,9 @@ using TableCloth.Resources;
 
 using MonoHttpUtility = Mono.Web.HttpUtility;
 
-namespace Hostess.Components
+namespace Hostess.Components.Implementations
 {
-    public sealed class ResourceResolver
+    public sealed class ResourceResolver : IResourceResolver
     {
         public ResourceResolver(IHttpClientFactory httpClientFactory)
         {

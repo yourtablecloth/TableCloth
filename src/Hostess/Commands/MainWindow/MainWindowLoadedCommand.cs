@@ -18,17 +18,17 @@ namespace Hostess.Commands.MainWindow
     {
         public MainWindowLoadedCommand(
             Application application,
-            ResourceCacheManager resourceCacheManager,
-            ProtectCriticalServices protectTermServices,
-            AppMessageBox appMessageBox,
-            AppUserInterface appUserInterface,
-            VisualThemeManager visualThemeManager,
-            SharedLocations sharedLocations,
-            CommandLineArguments commandLineArguments)
+            IResourceCacheManager resourceCacheManager,
+            ICriticalServiceProtector criticalServiceProtector,
+            IAppMessageBox appMessageBox,
+            IAppUserInterface appUserInterface,
+            IVisualThemeManager visualThemeManager,
+            ISharedLocations sharedLocations,
+            ICommandLineArguments commandLineArguments)
         {
             _application = application;
             _resourceCacheManager = resourceCacheManager;
-            _protectCriticalServices = protectTermServices;
+            _criticalServiceProtector = criticalServiceProtector;
             _appMessageBox = appMessageBox;
             _appUserInterface = appUserInterface;
             _visualThemeManager = visualThemeManager;
@@ -37,13 +37,13 @@ namespace Hostess.Commands.MainWindow
         }
 
         private readonly Application _application;
-        private readonly ResourceCacheManager _resourceCacheManager;
-        private readonly ProtectCriticalServices _protectCriticalServices;
-        private readonly AppMessageBox _appMessageBox;
-        private readonly AppUserInterface _appUserInterface;
-        private readonly VisualThemeManager _visualThemeManager;
-        private readonly SharedLocations _sharedLocations;
-        private readonly CommandLineArguments _commandLineArguments;
+        private readonly IResourceCacheManager _resourceCacheManager;
+        private readonly ICriticalServiceProtector _criticalServiceProtector;
+        private readonly IAppMessageBox _appMessageBox;
+        private readonly IAppUserInterface _appUserInterface;
+        private readonly IVisualThemeManager _visualThemeManager;
+        private readonly ISharedLocations _sharedLocations;
+        private readonly ICommandLineArguments _commandLineArguments;
 
         private readonly string[] _validAccountNames = new string[]
         {
@@ -142,11 +142,11 @@ namespace Hostess.Commands.MainWindow
             if (parsedArgs.DryRun)
                 return;
 
-            try { _protectCriticalServices.PreventServiceProcessTermination("TermService"); }
+            try { _criticalServiceProtector.PreventServiceProcessTermination("TermService"); }
             catch (AggregateException aex) { _appMessageBox.DisplayError(aex.InnerException, false); }
             catch (Exception ex) { _appMessageBox.DisplayError(ex, false); }
 
-            try { _protectCriticalServices.PreventServiceStop("TermService", Environment.UserName); }
+            try { _criticalServiceProtector.PreventServiceStop("TermService", Environment.UserName); }
             catch (AggregateException aex) { _appMessageBox.DisplayError(aex.InnerException, false); }
             catch (Exception ex) { _appMessageBox.DisplayError(ex, false); }
         }

@@ -11,15 +11,15 @@ namespace Hostess.Commands.PrecautionsWindow
     public sealed class PrecautionsWindowLoadedCommand : ViewModelCommandBase<PrecautionsWindowViewModel>
     {
         public PrecautionsWindowLoadedCommand(
-            ResourceCacheManager resourceCacheManager,
-            CommandLineArguments commandLineArguments)
+            IResourceCacheManager resourceCacheManager,
+            ICommandLineArguments commandLineArguments)
         {
             _resourceCacheManager = resourceCacheManager;
             _commandLineArguments = commandLineArguments;
         }
 
-        private readonly ResourceCacheManager _resourceCacheManager;
-        private readonly CommandLineArguments _commandLineArguments;
+        private readonly IResourceCacheManager _resourceCacheManager;
+        private readonly ICommandLineArguments _commandLineArguments;
 
         public override void Execute(PrecautionsWindowViewModel viewModel)
         {

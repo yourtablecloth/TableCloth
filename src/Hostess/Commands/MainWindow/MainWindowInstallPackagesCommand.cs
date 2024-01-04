@@ -19,10 +19,10 @@ namespace Hostess.Commands.MainWindow
     public sealed class MainWindowInstallPackagesCommand : ViewModelCommandBase<MainWindowViewModel>
     {
         public MainWindowInstallPackagesCommand(
-            ResourceCacheManager resourceCacheManager,
-            AppMessageBox appMessageBox,
-            SharedLocations sharedLocations,
-            CommandLineArguments commandLineArguments)
+            IResourceCacheManager resourceCacheManager,
+            IAppMessageBox appMessageBox,
+            ISharedLocations sharedLocations,
+            ICommandLineArguments commandLineArguments)
         {
             _resourceCacheManager = resourceCacheManager;
             _appMessageBox = appMessageBox;
@@ -30,10 +30,10 @@ namespace Hostess.Commands.MainWindow
             _commandLineArguments = commandLineArguments;
         }
 
-        private readonly ResourceCacheManager _resourceCacheManager;
-        private readonly AppMessageBox _appMessageBox;
-        private readonly SharedLocations _sharedLocations;
-        private readonly CommandLineArguments _commandLineArguments;
+        private readonly IResourceCacheManager _resourceCacheManager;
+        private readonly IAppMessageBox _appMessageBox;
+        private readonly ISharedLocations _sharedLocations;
+        private readonly ICommandLineArguments _commandLineArguments;
 
         private bool _isRunning = false;
 

@@ -3,6 +3,7 @@ using Hostess.Commands.AboutWindow;
 using Hostess.Commands.MainWindow;
 using Hostess.Commands.PrecautionsWindow;
 using Hostess.Components;
+using Hostess.Components.Implementations;
 using Hostess.Dialogs;
 using Hostess.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,8 +28,8 @@ namespace Hostess
         
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
-            var appMessageBox = _serviceProvider.GetRequiredService<AppMessageBox>();
-            var commandLineArguments = _serviceProvider.GetRequiredService<CommandLineArguments>();
+            var appMessageBox = _serviceProvider.GetRequiredService<IAppMessageBox>();
+            var commandLineArguments = _serviceProvider.GetRequiredService<ICommandLineArguments>();
             var parsedArgs = commandLineArguments.Current;
 
             if (parsedArgs.ShowCommandLineHelp)
@@ -37,8 +38,8 @@ namespace Hostess
                 return;
             }
 
-            var appStartup = _serviceProvider.GetRequiredService<AppStartup>();
-            var appUserInterface = _serviceProvider.GetRequiredService<AppUserInterface>();
+            var appStartup = _serviceProvider.GetRequiredService<IAppStartup>();
+            var appUserInterface = _serviceProvider.GetRequiredService<IAppUserInterface>();
 
             var warnings = new List<string>();
             var result = await appStartup.HasRequirementsMetAsync(warnings);
@@ -90,17 +91,17 @@ namespace Hostess
 
             // Components
             services
-                .AddSingleton<AppMessageBox>()
-                .AddSingleton<MessageBoxService>()
-                .AddSingleton<AppUserInterface>()
-                .AddSingleton<LicenseDescriptor>()
-                .AddSingleton<ProtectCriticalServices>()
-                .AddSingleton<VisualThemeManager>()
-                .AddSingleton<SharedLocations>()
-                .AddSingleton<AppStartup>()
-                .AddSingleton<ResourceResolver>()
-                .AddSingleton<ResourceCacheManager>()
-                .AddSingleton<CommandLineArguments>();
+                .AddSingleton<IAppMessageBox, AppMessageBox>()
+                .AddSingleton<IMessageBoxService, MessageBoxService>()
+                .AddSingleton<IAppUserInterface, AppUserInterface>()
+                .AddSingleton<ILicenseDescriptor, LicenseDescriptor>()
+                .AddSingleton<ICriticalServiceProtector, CriticalServiceProtector>()
+                .AddSingleton<IVisualThemeManager, VisualThemeManager>()
+                .AddSingleton<ISharedLocations, SharedLocations>()
+                .AddSingleton<IAppStartup, AppStartup>()
+                .AddSingleton<IResourceResolver, ResourceResolver>()
+                .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
+                .AddSingleton<ICommandLineArguments, CommandLineArguments>();
 
             // Shared Commands
             services

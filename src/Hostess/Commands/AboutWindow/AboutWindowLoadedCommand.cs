@@ -7,15 +7,15 @@ namespace Hostess.Commands.AboutWindow
     public sealed class AboutWindowLoadedCommand : ViewModelCommandBase<AboutWindowViewModel>
     {
         public AboutWindowLoadedCommand(
-            LicenseDescriptor licenseDescriptor,
-            ResourceResolver resourceResolver)
+            ILicenseDescriptor licenseDescriptor,
+            IResourceResolver resourceResolver)
         {
             _licenseDescriptor = licenseDescriptor;
             _resourceResolver = resourceResolver;
         }
 
-        private readonly LicenseDescriptor _licenseDescriptor;
-        private readonly ResourceResolver _resourceResolver;
+        private readonly ILicenseDescriptor _licenseDescriptor;
+        private readonly IResourceResolver _resourceResolver;
 
         public override void Execute(AboutWindowViewModel viewModel)
         {

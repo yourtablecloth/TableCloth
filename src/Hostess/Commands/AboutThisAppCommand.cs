@@ -5,12 +5,12 @@ namespace Hostess.Commands
     public sealed class AboutThisAppCommand : CommandBase
     {
         public AboutThisAppCommand(
-            AppUserInterface appUserInterface)
+            IAppUserInterface appUserInterface)
         {
             _appUserInterface = appUserInterface;
         }
 
-        private readonly AppUserInterface _appUserInterface;
+        private readonly IAppUserInterface _appUserInterface;
 
         public override void Execute(object parameter)
         {

@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 
-namespace Hostess.Components
+namespace Hostess.Components.Implementations
 {
-    public sealed class MessageBoxService
+    public sealed class MessageBoxService : IMessageBoxService
     {
         public MessageBoxService(
             Application application)

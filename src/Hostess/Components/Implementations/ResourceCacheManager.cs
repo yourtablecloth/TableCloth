@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
-namespace Hostess.Components
+namespace Hostess.Components.Implementations
 {
-    public sealed class ResourceCacheManager
+    public sealed class ResourceCacheManager : IResourceCacheManager
     {
         public ResourceCacheManager(
-            ResourceResolver resourceResolver)
+            IResourceResolver resourceResolver)
         {
             _resourceResolver = resourceResolver;
         }
 
-        private readonly ResourceResolver _resourceResolver;
+        private readonly IResourceResolver _resourceResolver;
 
         private CatalogDocument _catalogDocument;
 
