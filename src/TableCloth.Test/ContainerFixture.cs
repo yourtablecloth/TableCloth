@@ -17,20 +17,21 @@ using TableCloth.Pages;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Test.Fixtures;
+namespace TableCloth.Test;
 
-public abstract class ContainerFixtureBase
+public class ContainerFixture<TConsumer>
+    where TConsumer : class
 {
-    public ContainerFixtureBase()
+    public ContainerFixture()
     {
         Services = ConfigureServices();
     }
 
+    public TConsumer GetConsumer() => Services.GetRequiredService<TConsumer>();
+
     public IServiceProvider Services { get; private set; }
 
-    protected virtual void OnConfigureServices(ServiceCollection services) { }
-
-    private ServiceProvider ConfigureServices()
+    protected virtual ServiceProvider ConfigureServices()
     {
         var services = new ServiceCollection();
 
@@ -131,8 +132,8 @@ public abstract class ContainerFixtureBase
             .AddWindow<SplashScreen, SplashScreenViewModel>()
             .AddSingleton<SplashScreenLoadedCommand>();
 
-        // Overrides
-        OnConfigureServices(services);
+        // Consumer Type
+        services.AddTransient<TConsumer>();
 
         return services.BuildServiceProvider();
     }

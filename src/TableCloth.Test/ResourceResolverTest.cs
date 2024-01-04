@@ -1,19 +1,17 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TableCloth.Components;
-using TableCloth.Test.Fixtures;
 
 namespace TableCloth.Test;
 
-public sealed class ResourceResolverTest : IClassFixture<DefaultContainerFixture>
+public sealed class ResourceResolverTest : IClassFixture<ContainerFixture<ResourceResolverTest.Dependencies>>
 {
-    public ResourceResolverTest(DefaultContainerFixture fixture)
-    {
-        _serviceProvider = fixture.Services;
-        _resourceResolver = _serviceProvider.GetRequiredService<ResourceResolver>();
-    }
+    public sealed record Dependencies(
+        ResourceResolver ResourceResolver);
 
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ResourceResolver _resourceResolver;
+    public ResourceResolverTest(ContainerFixture<Dependencies> fixture)
+        => _dependencies = fixture.GetConsumer();
+
+    private readonly Dependencies _dependencies;
 
     [Fact]
     public async Task TestGetLatestVersion()
@@ -23,7 +21,7 @@ public sealed class ResourceResolverTest : IClassFixture<DefaultContainerFixture
         const string repoName = "TableCloth";
 
         // Act
-        var result = await _resourceResolver.GetLatestVersion(repoOwner, repoName);
+        var result = await _dependencies.ResourceResolver.GetLatestVersion(repoOwner, repoName);
 
         // Assert
         Assert.NotNull(result);
