@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using TableCloth.Components;
-using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
 

@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using TableCloth.Models;
-using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
 namespace Hostess.Components.Implementations

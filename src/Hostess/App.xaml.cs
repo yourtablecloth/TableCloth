@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using TableCloth.Models;
 using TableCloth.Resources;
 
 namespace Hostess
@@ -25,7 +24,7 @@ namespace Hostess
         }
 
         private readonly IServiceProvider _serviceProvider;
-        
+
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
             var appMessageBox = _serviceProvider.GetRequiredService<IAppMessageBox>();

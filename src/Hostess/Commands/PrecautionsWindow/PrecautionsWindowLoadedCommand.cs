@@ -3,7 +3,6 @@ using Hostess.ViewModels;
 using System;
 using System.Linq;
 using System.Text;
-using TableCloth.Models;
 using TableCloth.Resources;
 
 namespace Hostess.Commands.PrecautionsWindow

@@ -1,5 +1,4 @@
-﻿using Hostess.Commands;
-using System;
+﻿using System;
 using TableCloth.ViewModels;
 
 namespace Hostess.ViewModels

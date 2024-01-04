@@ -75,7 +75,8 @@ namespace TableCloth.Models
 #if !NETFX
             ?
 #endif
-            FailedReason { get; }
+            FailedReason
+        { get; }
 
         public bool IsCritical { get; } = false;
     }

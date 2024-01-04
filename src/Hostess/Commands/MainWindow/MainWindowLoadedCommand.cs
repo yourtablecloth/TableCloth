@@ -6,10 +6,8 @@ using System.Collections.ObjectModel;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows;
 using TableCloth;
-using TableCloth.Models;
 using TableCloth.Resources;
 
 namespace Hostess.Commands.MainWindow
