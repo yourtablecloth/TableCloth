@@ -81,6 +81,47 @@ namespace TableCloth.SpecFlow.Features
             this.TestTearDown();
         }
         
+        [Xunit.SkippableFactAttribute(DisplayName="카탈로그 문서를 불러온다.")]
+        [Xunit.TraitAttribute("FeatureTitle", "ResourceResolver")]
+        [Xunit.TraitAttribute("Description", "카탈로그 문서를 불러온다.")]
+        public virtual void 카탈로그문서를불러온다_()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("카탈로그 문서를 불러온다.", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 7
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 8
+testRunner.When("a.a. 카탈로그 문서를 불러오는 함수를 호출하면", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "만일");
+#line hidden
+#line 9
+testRunner.Then("a.b. 카탈로그 문서에 1개 이상의 사이트 정보가 들어있다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
+#line hidden
+#line 10
+testRunner.And("a.c. 마지막으로 카탈로그를 불러온 날짜와 시간 정보를 확인할 수 있다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
         [Xunit.SkippableFactAttribute(DisplayName="프로그램의 최신 정보를 가져온다.")]
         [Xunit.TraitAttribute("FeatureTitle", "ResourceResolver")]
         [Xunit.TraitAttribute("Description", "프로그램의 최신 정보를 가져온다.")]
@@ -89,7 +130,7 @@ namespace TableCloth.SpecFlow.Features
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("프로그램의 최신 정보를 가져온다.", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 7
+#line 12
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -115,55 +156,14 @@ this.ScenarioInitialize(scenarioInfo);
                 table4.AddRow(new string[] {
                             "yourtablecloth",
                             "TableCloth"});
-#line 8
-testRunner.Given("다음의 리포지터리에서 정보를 가져오려 한다.", ((string)(null)), table4, "먼저");
-#line hidden
-#line 11
-testRunner.When("버전 정보를 가져오는 함수를 호출하면", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "만일");
-#line hidden
-#line 12
-testRunner.Then("GitHub에 출시한 최신 버전 정보를 반환한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="카탈로그 문서를 불러온다.")]
-        [Xunit.TraitAttribute("FeatureTitle", "ResourceResolver")]
-        [Xunit.TraitAttribute("Description", "카탈로그 문서를 불러온다.")]
-        public virtual void 카탈로그문서를불러온다_()
-        {
-            string[] tagsOfScenario = ((string[])(null));
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("카탈로그 문서를 불러온다.", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 14
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            bool isScenarioIgnored = default(bool);
-            bool isFeatureIgnored = default(bool);
-            if ((tagsOfScenario != null))
-            {
-                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
-            }
-            if ((this._featureTags != null))
-            {
-                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
-            }
-            if ((isScenarioIgnored || isFeatureIgnored))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 15
-testRunner.When("카탈로그 문서를 불러오는 함수를 호출하면", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "만일");
+#line 13
+testRunner.Given("b.a. 다음의 리포지터리에서 정보를 가져오려 한다.", ((string)(null)), table4, "먼저");
 #line hidden
 #line 16
-testRunner.Then("카탈로그 문서에 1개 이상의 사이트 정보가 들어있다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
+testRunner.When("b.b. 버전 정보를 가져오는 함수를 호출하면", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "만일");
 #line hidden
 #line 17
-testRunner.And("마지막으로 카탈로그를 불러온 날짜와 시간 정보를 확인할 수 있다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
+testRunner.Then("b.c. GitHub에 출시한 최신 버전 정보를 반환한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
 #line hidden
             }
             this.ScenarioCleanup();

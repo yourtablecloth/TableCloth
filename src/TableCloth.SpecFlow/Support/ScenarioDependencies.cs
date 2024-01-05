@@ -19,6 +19,8 @@ namespace TableCloth.SpecFlow.Support;
 
 public static class ScenarioDependencies
 {
+    public static Application SharedApplication => Application.Current ?? new Application();
+
     [ScenarioDependencies]
     public static IServiceCollection CreateServices()
     {
