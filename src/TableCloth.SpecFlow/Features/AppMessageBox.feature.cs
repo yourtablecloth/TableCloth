@@ -40,7 +40,7 @@ namespace TableCloth.SpecFlow.Features
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("ko-KR"), "Features", "AppMessageBox", "용도와 목적이 미리 정해진 메시지 박스 컴포넌트입니다.", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("ko-KR"), "Features", "AppMessageBox", "용도와 목적이 미리 정해진 메시지 박스를 생성할 수 있도록 돕는 컴포넌트입니다.", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -186,22 +186,19 @@ testRunner.Given("b.a. 다음과 같이 메시지 박스에 나타낼 문자열�
 testRunner.And("b.b. 기능 동작에 필요한 내부 컴포넌트들이 Mockup으로 설정되어 있다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
 #line hidden
 #line 24
-testRunner.Then("b.c. 나중에 시스템 메시지 박스의 아이콘이 오류를 나타내는 아이콘으로 표시되었는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
+testRunner.And("b.c. 나중에 심각도 수준 지정에 따라 아이콘의 모양이 다르게 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
 #line hidden
 #line 25
-testRunner.And("b.d. 나중에 심각도 수준 지정에 따라 아이콘의 모양이 다르게 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
+testRunner.And("b.d. 나중에 창 제목과 본문이 설정한대로 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
 #line hidden
 #line 26
-testRunner.And("b.e. 나중에 창 제목과 본문이 설정한대로 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
+testRunner.And("b.e. 나중에 버튼은 확인 버튼만 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
 #line hidden
 #line 27
-testRunner.And("b.f. 나중에 버튼은 확인 버튼만 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
+testRunner.When("b.f. 오류 표시를 위한 메시지 박스를 띄우는 메서드를 호출하면", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "만일");
 #line hidden
 #line 28
-testRunner.When("b.g. 오류 표시를 위한 메시지 박스를 띄우는 메서드를 호출하면", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "만일");
-#line hidden
-#line 29
-testRunner.Then("b.h. 의도한 대로 작동했는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
+testRunner.Then("b.g. 의도한 대로 작동했는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -215,7 +212,7 @@ testRunner.Then("b.h. 의도한 대로 작동했는지 확인한다.", ((string)
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("c. 예외가 발생하면 관련된 내용을 나타내기 위한 메시지 박스를 띄우려 한다.", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 31
+#line 30
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -247,29 +244,26 @@ this.ScenarioInitialize(scenarioInfo);
                             "심각",
                             "식탁보 오류",
                             "이 메시지는 테스트 메시지입니다. 무시하셔도 괜찮습니다. 심각도: 심각"});
-#line 32
+#line 31
 testRunner.Given("c.a. 다음과 같이 메시지 박스에 나타낼 문자열을 사용하여 예외 개체를 준비한다.", ((string)(null)), table3, "먼저");
 #line hidden
-#line 36
+#line 35
 testRunner.And("c.b. 기능 동작에 필요한 내부 컴포넌트들이 Mockup으로 설정되어 있다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
 #line hidden
+#line 36
+testRunner.And("c.c. 나중에 심각도 수준 지정에 따라 아이콘의 모양이 다르게 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
+#line hidden
 #line 37
-testRunner.Then("c.c. 나중에 시스템 메시지 박스의 아이콘이 오류를 나타내는 아이콘으로 표시되었는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
+testRunner.And("c.d. 나중에 창 제목과 본문이 설정한대로 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
 #line hidden
 #line 38
-testRunner.And("c.d. 나중에 심각도 수준 지정에 따라 아이콘의 모양이 다르게 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
+testRunner.And("c.e. 나중에 버튼은 확인 버튼만 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
 #line hidden
 #line 39
-testRunner.And("c.e. 나중에 창 제목과 본문이 설정한대로 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
+testRunner.When("c.f. 예외 정보 표시를 위한 메시지 박스를 띄우는 메서드를 호출하면", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "만일");
 #line hidden
 #line 40
-testRunner.And("c.f. 나중에 버튼은 확인 버튼만 나타났는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
-#line hidden
-#line 41
-testRunner.When("c.g. 예외 정보 표시를 위한 메시지 박스를 띄우는 메서드를 호출하면", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "만일");
-#line hidden
-#line 42
-testRunner.Then("c.h. 의도한 대로 작동했는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
+testRunner.Then("c.g. 의도한 대로 작동했는지 확인한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
 #line hidden
             }
             this.ScenarioCleanup();

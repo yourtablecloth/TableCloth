@@ -1,10 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0-windows10.0.18362</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Platforms>x64;ARM64</Platforms>
+	<UseWPF>True</UseWPF>
+    <Description>Keep your computer clean!</Description>
+    <Company>rkttu.com</Company>
+    <Product>TableCloth</Product>
+    <ProductName>TableCloth</ProductName>
+    <Copyright>(c) rkttu.com, 2021</Copyright>
+    <Version>1.9.1.0</Version>
+    <PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>TableCloth</PackageTags>
+    <SignAssembly>False</SignAssembly>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<Deterministic>true</Deterministic>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+
   </PropertyGroup>
 
   <ItemGroup>

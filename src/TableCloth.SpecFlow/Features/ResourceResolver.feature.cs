@@ -40,8 +40,7 @@ namespace TableCloth.SpecFlow.Features
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("ko-KR"), "Features", "ResourceResolver", "기능에 대한 간단한 설명을 이곳에 남깁니다.\r\n한국어 문법 참고 - https://velog.io/@clarekang/cucumber-kr-int" +
-                    "roduce", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("ko-KR"), "Features", "ResourceResolver", "원격지 서버에 있는 문서나 이미지, 파일을 다운로드하거나 정보를 가져오는 것과 관련된 동작을 담당하는 기능을 모아둔 컴포넌트입니다.", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -81,15 +80,15 @@ namespace TableCloth.SpecFlow.Features
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="카탈로그 문서를 불러온다.")]
+        [Xunit.SkippableFactAttribute(DisplayName="a. 카탈로그 문서를 불러온다.")]
         [Xunit.TraitAttribute("FeatureTitle", "ResourceResolver")]
-        [Xunit.TraitAttribute("Description", "카탈로그 문서를 불러온다.")]
-        public virtual void 카탈로그문서를불러온다_()
+        [Xunit.TraitAttribute("Description", "a. 카탈로그 문서를 불러온다.")]
+        public virtual void A_카탈로그문서를불러온다_()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("카탈로그 문서를 불러온다.", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 7
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("a. 카탈로그 문서를 불러온다.", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 6
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -109,28 +108,28 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 8
+#line 7
 testRunner.When("a.a. 카탈로그 문서를 불러오는 함수를 호출하면", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "만일");
 #line hidden
-#line 9
+#line 8
 testRunner.Then("a.b. 카탈로그 문서에 1개 이상의 사이트 정보가 들어있다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
 #line hidden
-#line 10
+#line 9
 testRunner.And("a.c. 마지막으로 카탈로그를 불러온 날짜와 시간 정보를 확인할 수 있다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그리고");
 #line hidden
             }
             this.ScenarioCleanup();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="프로그램의 최신 정보를 가져온다.")]
+        [Xunit.SkippableFactAttribute(DisplayName="b. 프로그램의 최신 정보를 가져온다.")]
         [Xunit.TraitAttribute("FeatureTitle", "ResourceResolver")]
-        [Xunit.TraitAttribute("Description", "프로그램의 최신 정보를 가져온다.")]
-        public virtual void 프로그램의최신정보를가져온다_()
+        [Xunit.TraitAttribute("Description", "b. 프로그램의 최신 정보를 가져온다.")]
+        public virtual void B_프로그램의최신정보를가져온다_()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("프로그램의 최신 정보를 가져온다.", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 12
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("b. 프로그램의 최신 정보를 가져온다.", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 11
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -156,13 +155,13 @@ this.ScenarioInitialize(scenarioInfo);
                 table4.AddRow(new string[] {
                             "yourtablecloth",
                             "TableCloth"});
-#line 13
+#line 12
 testRunner.Given("b.a. 다음의 리포지터리에서 정보를 가져오려 한다.", ((string)(null)), table4, "먼저");
 #line hidden
-#line 16
+#line 15
 testRunner.When("b.b. 버전 정보를 가져오는 함수를 호출하면", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "만일");
 #line hidden
-#line 17
+#line 16
 testRunner.Then("b.c. GitHub에 출시한 최신 버전 정보를 반환한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
 #line hidden
             }
