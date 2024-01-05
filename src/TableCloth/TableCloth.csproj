@@ -41,6 +41,7 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="TableCloth.Test" />
+		<InternalsVisibleTo Include="TableCloth.SpecFlow" />
 	</ItemGroup>
 
   <ItemGroup>
