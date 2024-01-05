@@ -4,6 +4,7 @@
     <TargetFramework>net8.0-windows10.0.18362</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>x64;ARM64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
