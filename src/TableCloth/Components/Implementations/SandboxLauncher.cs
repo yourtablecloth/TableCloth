@@ -16,7 +16,6 @@ public sealed class SandboxLauncher(
     ISharedLocations sharedLocations,
     ISandboxBuilder sandboxBuilder,
     ISandboxCleanupManager sandboxCleanupManager,
-    IConfigurationComposer configurationComposer,
     ILogger<SandboxLauncher> logger) : ISandboxLauncher
 {
     private readonly ILogger _logger = logger;

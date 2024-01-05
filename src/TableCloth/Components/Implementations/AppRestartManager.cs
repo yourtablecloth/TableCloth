@@ -17,7 +17,7 @@ public sealed class AppRestartManager(
     public void RestartNow()
     {
         Process.Start(sharedLocations.ExecutableFilePath, Helpers.GetCommandLineArguments());
-        application.Shutdown();
+        application.Shutdown(CodeResources.ExitCode_Succeed);
     }
 
     public void ReserveRestart()

@@ -73,7 +73,7 @@ public sealed class SplashScreenLoadedCommand(
 #if DEBUG
                     throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
 #else
-                    _application.Shutdown(-1);
+                    application.Shutdown(CodeResources.ExitCode_SystemError);
 #endif
                 }
             }
@@ -95,7 +95,7 @@ public sealed class SplashScreenLoadedCommand(
 #if DEBUG
                     throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
 #else
-                    _application.Shutdown(-1);
+                    application.Shutdown(CodeResources.ExitCode_SystemError);
 #endif
                 }
             }

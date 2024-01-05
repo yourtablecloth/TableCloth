@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\WindowsSandbox\SandboxConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WindowsSandbox\SandboxMappedFolder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NativeMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Resources\CodeResources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\StringResources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ViewModelBase.cs" />
