@@ -168,6 +168,53 @@ testRunner.Then("b.c. GitHub에 출시한 최신 버전 정보를 반환한다."
             this.ScenarioCleanup();
         }
         
+        [Xunit.SkippableFactAttribute(DisplayName="c. 프로그램의 다운로드 URL을 가져온다.")]
+        [Xunit.TraitAttribute("FeatureTitle", "ResourceResolver")]
+        [Xunit.TraitAttribute("Description", "c. 프로그램의 다운로드 URL을 가져온다.")]
+        public virtual void C_프로그램의다운로드URL을가져온다_()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("c. 프로그램의 다운로드 URL을 가져온다.", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 18
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                            "소유자 이름",
+                            "리포지터리 이름"});
+                table5.AddRow(new string[] {
+                            "yourtablecloth",
+                            "TableCloth"});
+#line 19
+testRunner.Given("c.a. 다음의 리포지터리에서 정보를 가져오려 한다.", ((string)(null)), table5, "먼저");
+#line hidden
+#line 22
+testRunner.When("c.b. 다운로드 URL을 가져오는 함수를 호출하면", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "만일");
+#line hidden
+#line 23
+testRunner.Then("c.c. GitHub에서 최신 버전의 리소스를 다운로드할 수 있는 URL을 반환한다.", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "그러면");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
         [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
         [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
         public class FixtureData : System.IDisposable
