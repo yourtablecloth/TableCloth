@@ -7,7 +7,11 @@ using TableCloth.Models.Catalog;
 namespace TableCloth.ViewModels;
 
 [Obsolete("This class is reserved for design-time usage.", false)]
-public class CatalogPageViewModelForDesigner : CatalogPageViewModel { }
+public class CatalogPageViewModelForDesigner : CatalogPageViewModel
+{
+    public IList<CatalogInternetService> ServicesForDesigner
+        => DesignTimeCatalog.DesignTimeCatalogDocument.Services;
+}
 
 public class CatalogPageViewModel : ViewModelBase
 {

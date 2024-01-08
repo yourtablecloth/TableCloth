@@ -57,7 +57,7 @@
                         <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
                             <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="96" >
                                 <Border x:Name="border" BorderBrush="{x:Null}" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="2.5"/>
-                                <StackPanel HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
+                                <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                     <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                 </StackPanel>
                             </Grid>
@@ -216,7 +216,7 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <ListView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" SelectedItem="{Binding Path='SelectedService'}" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" PreviewMouseDown="SiteCatalog_PreviewMouseDown">
+        <ListView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" SelectedItem="{Binding Path='SelectedService'}" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" PreviewMouseDown="SiteCatalog_PreviewMouseDown" d:Visibility="Visible" d:ItemsSource="{Binding ServicesForDesigner}">
             <ListView.InputBindings>
                 <KeyBinding Key="Return" Command="{Binding CatalogPageItemSelectCommand}">
                     <KeyBinding.CommandParameter>
@@ -252,7 +252,7 @@
                             <RowDefinition Height="48*" />
                         </Grid.RowDefinitions>
                         <Grid.ToolTip>
-                            <TextBlock Text="{Binding DisplayName}" TextWrapping="NoWrap" TextTrimming="None"/>
+                            <TextBlock Text="{Binding DisplayName}" d:Text="{Binding DisplayName}" TextWrapping="NoWrap" TextTrimming="None"/>
                         </Grid.ToolTip>
                         <Image Grid.Row="0" x:Name="Icon" Source="{Binding Id, Mode=OneWay, Converter={StaticResource ServiceLogoConverter}}" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
                         <TextBlock Grid.Row="2" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
@@ -263,7 +263,7 @@
                 <GroupStyle/>
             </ListView.GroupStyle>
         </ListView>
-        <StackPanel Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical">
+        <StackPanel Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical" d:Visibility="Hidden">
             <Label VerticalAlignment="Top" HorizontalAlignment="Center" Content="{StaticResource MainWindow_SelectSiteLabelText_Alt2}" />
             <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{StaticResource MainWindow_ReloadCatalog}" Command="{Binding AppRestartCommand}">
                 <Button.CommandParameter>

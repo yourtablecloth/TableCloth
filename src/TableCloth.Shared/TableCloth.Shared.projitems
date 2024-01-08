@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogInternetService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogInternetServiceCategory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogPackageInformation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\DesignTimeCatalog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\EnumDisplayOrderAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\IEModeListDocument.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\IEModeSite.cs" />
