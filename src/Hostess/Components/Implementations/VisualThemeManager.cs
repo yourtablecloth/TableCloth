@@ -34,7 +34,7 @@ namespace Hostess.Components.Implementations
                 {
                     if (personalizeKey.GetValueKind("AppsUseLightTheme") == RegistryValueKind.DWord)
                     {
-                        return personalizeKey.GetValue<int>("AppsUseLightTheme", 1) > 0;
+                        return GetValue<int>(personalizeKey, "AppsUseLightTheme", 1) > 0;
                     }
                 }
             }
@@ -62,6 +62,14 @@ namespace Hostess.Components.Implementations
             }
 
             return IntPtr.Zero;
+        }
+
+        private TValue GetValue<TValue>(RegistryKey registryKey, string name,
+            TValue defaultValue = default, RegistryValueOptions options = default)
+            where TValue : struct
+        {
+            var value = registryKey.GetValue(name, defaultValue, options) as TValue?;
+            return value.HasValue ? value.Value : defaultValue;
         }
     }
 }
