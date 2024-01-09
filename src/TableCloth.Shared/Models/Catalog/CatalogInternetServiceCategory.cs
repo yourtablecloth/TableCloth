@@ -15,7 +15,6 @@ namespace TableCloth.Models.Catalog
         /// </summary>
         [XmlEnum(nameof(Other))]
         [EnumDisplayOrder(8)]
-        [EnumDisplayName(StringResources.DisplayName_Other)]
         Other = 0,
 
         /// <summary>
@@ -23,7 +22,6 @@ namespace TableCloth.Models.Catalog
         /// </summary>
         [XmlEnum(nameof(Banking))]
         [EnumDisplayOrder(1)]
-        [EnumDisplayName(StringResources.DisplayName_Banking)]
         Banking,
 
         /// <summary>
@@ -31,7 +29,6 @@ namespace TableCloth.Models.Catalog
         /// </summary>
         [XmlEnum(nameof(Financing))]
         [EnumDisplayOrder(2)]
-        [EnumDisplayName(StringResources.DisplayName_Financing)]
         Financing,
 
         /// <summary>
@@ -39,7 +36,6 @@ namespace TableCloth.Models.Catalog
         /// </summary>
         [XmlEnum(nameof(Security))]
         [EnumDisplayOrder(3)]
-        [EnumDisplayName(StringResources.DisplayName_Security)]
         Security,
 
         /// <summary>
@@ -47,7 +43,6 @@ namespace TableCloth.Models.Catalog
         /// </summary>
         [XmlEnum(nameof(Insurance))]
         [EnumDisplayOrder(4)]
-        [EnumDisplayName(StringResources.DisplayName_Insurance)]
         Insurance,
 
         /// <summary>
@@ -55,7 +50,6 @@ namespace TableCloth.Models.Catalog
         /// </summary>
         [XmlEnum(nameof(CreditCard))]
         [EnumDisplayOrder(5)]
-        [EnumDisplayName(StringResources.DisplayName_CreditCard)]
         CreditCard,
 
         /// <summary>
@@ -63,7 +57,6 @@ namespace TableCloth.Models.Catalog
         /// </summary>
         [XmlEnum(nameof(Government))]
         [EnumDisplayOrder(6)]
-        [EnumDisplayName(StringResources.DisplayName_Government)]
         Government,
 
         /// <summary>
@@ -71,7 +64,6 @@ namespace TableCloth.Models.Catalog
         /// </summary>
         [XmlEnum(nameof(Education))]
         [EnumDisplayOrder(7)]
-        [EnumDisplayName(StringResources.DisplayName_Education)]
         Education,
     }
 }

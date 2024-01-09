@@ -117,64 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AdobeReaderUrl" xml:space="preserve">
-    <value>https://get.adobe.com/kr/reader/</value>
+  <data name="TableCloth_Log_CannotParseWsbFile_ProhibitTranslation" xml:space="preserve">
+    <value>Cannot parse WSB file `{0}`. The file content may corrupted or invalid.</value>
   </data>
-  <data name="AppCommentText" xml:space="preserve">
-    <value>식탁보 - 컴퓨터를 깨끗하게 사용하세요!</value>
+  <data name="TableCloth_Log_DirectoryEnumFail_ProhibitTranslation" xml:space="preserve">
+    <value>Directory enumeration failed - {0} (Reason: {1})</value>
   </data>
-  <data name="AppCopyright" xml:space="preserve">
-    <value>(c) 2021 남정현</value>
+  <data name="TableCloth_Log_HostFolderNotExists_ProhibitTranslation" xml:space="preserve">
+    <value>The path `{0}` of the host folder listed in the WSB file does not exist on the host.</value>
   </data>
-  <data name="AppInfoUrl" xml:space="preserve">
-    <value>https://yourtablecloth.app</value>
-  </data>
-  <data name="AppName" xml:space="preserve">
-    <value>식탁보</value>
-  </data>
-  <data name="AppPublisher" xml:space="preserve">
-    <value>식탁보 프로젝트</value>
-  </data>
-  <data name="AppUpdateInfoUrl" xml:space="preserve">
-    <value>https://github.com/yourtablecloth/TableCloth/releases</value>
-  </data>
-  <data name="DisplayName_Banking" xml:space="preserve">
-    <value>뱅킹</value>
-  </data>
-  <data name="DisplayName_CreditCard" xml:space="preserve">
-    <value>신용 카드</value>
-  </data>
-  <data name="DisplayName_Education" xml:space="preserve">
-    <value>교육</value>
-  </data>
-  <data name="DisplayName_Financing" xml:space="preserve">
-    <value>대출/금융</value>
-  </data>
-  <data name="DisplayName_Government" xml:space="preserve">
-    <value>공공</value>
-  </data>
-  <data name="DisplayName_Insurance" xml:space="preserve">
-    <value>보험</value>
-  </data>
-  <data name="DisplayName_Other" xml:space="preserve">
-    <value>기타</value>
-  </data>
-  <data name="DisplayName_Security" xml:space="preserve">
-    <value>증권/투자</value>
-  </data>
-  <data name="EveryonesPrinterUrl" xml:space="preserve">
-    <value>https://modu-print.com/</value>
-  </data>
-  <data name="HancomOfficeViewerUrl" xml:space="preserve">
-    <value>https://www.hancom.com/cs_center/csDownload.do</value>
-  </data>
-  <data name="PrivacyPolicyUrl" xml:space="preserve">
-    <value>https://yourtablecloth.app/privacy</value>
-  </data>
-  <data name="RaiDriveUrl" xml:space="preserve">
-    <value>https://www.raidrive.com/download</value>
-  </data>
-  <data name="UnknownText" xml:space="preserve">
-    <value>알 수 없음</value>
+  <data name="TableCloth_Log_WsbFileCreateFail_ProhibitTranslation" xml:space="preserve">
+    <value>WSB file `{0}` was not created.</value>
   </data>
 </root>

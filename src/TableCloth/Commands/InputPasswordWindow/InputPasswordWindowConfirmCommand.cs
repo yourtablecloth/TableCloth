@@ -15,7 +15,7 @@ public sealed class InputPasswordWindowConfirmCommand(
         try
         {
             if (viewModel.PfxFilePath == null)
-                throw new InvalidOperationException(StringResources.Error_Cannot_Find_PfxFile);
+                throw new InvalidOperationException(ErrorStrings.Error_Cannot_Find_PfxFile);
 
             var certPair = certPairScanner.CreateX509Cert(viewModel.PfxFilePath, viewModel.Password);
 

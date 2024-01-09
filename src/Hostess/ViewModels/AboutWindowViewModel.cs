@@ -41,8 +41,8 @@ namespace Hostess.ViewModels
         public OpenAppHomepageCommand OpenAppHomepageCommand
             => _openAppHomepageCommand;
 
-        private string _appVersion = StringResources.UnknownText;
-        private string _catalogVersion = StringResources.UnknownText;
+        private string _appVersion = CommonStrings.UnknownText;
+        private string _catalogVersion = CommonStrings.UnknownText;
         private string _licenseDescription = default;
         private string _appHomepageUrl = default;
 

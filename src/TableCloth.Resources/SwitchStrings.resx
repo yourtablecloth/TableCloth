@@ -117,64 +117,58 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AdobeReaderUrl" xml:space="preserve">
-    <value>https://get.adobe.com/kr/reader/</value>
+  <data name="TableCloth_Switch_CertPrivateKey_Help" xml:space="preserve">
+    <value>인증서 비밀 키 파일 경로를 지정합니다.</value>
   </data>
-  <data name="AppCommentText" xml:space="preserve">
-    <value>식탁보 - 컴퓨터를 깨끗하게 사용하세요!</value>
+  <data name="TableCloth_Switch_CertPublicKey_Help" xml:space="preserve">
+    <value>인증서 공개 키 파일 경로를 지정합니다.</value>
   </data>
-  <data name="AppCopyright" xml:space="preserve">
-    <value>(c) 2021 남정현</value>
+  <data name="TableCloth_Switch_DryRun_Help" xml:space="preserve">
+    <value>(개발자용 기능) 애플리케이션 패키지 설치, 시스템 설정 변경을 건너뛰고 프로그램의 실행 과정만 살펴봅니다.</value>
   </data>
-  <data name="AppInfoUrl" xml:space="preserve">
-    <value>https://yourtablecloth.app</value>
+  <data name="TableCloth_Switch_EnableCamera_Help" xml:space="preserve">
+    <value>비디오 입력 사용하기 기능을 켭니다.</value>
   </data>
-  <data name="AppName" xml:space="preserve">
-    <value>식탁보</value>
+  <data name="TableCloth_Switch_EnableCert_Help" xml:space="preserve">
+    <value>인증서를 기능을 켭니다.</value>
   </data>
-  <data name="AppPublisher" xml:space="preserve">
-    <value>식탁보 프로젝트</value>
+  <data name="TableCloth_Switch_EnableIEMode_Help" xml:space="preserve">
+    <value>Internet Explorer 모드를 활성화합니다.</value>
   </data>
-  <data name="AppUpdateInfoUrl" xml:space="preserve">
-    <value>https://github.com/yourtablecloth/TableCloth/releases</value>
+  <data name="TableCloth_Switch_EnableMicrophone_Help" xml:space="preserve">
+    <value>오디오 입력 사용하기 기능을 켭니다.</value>
   </data>
-  <data name="DisplayName_Banking" xml:space="preserve">
-    <value>뱅킹</value>
+  <data name="TableCloth_Switch_EnablePrinter_Help" xml:space="preserve">
+    <value>프린터 공유하기 기능을 켭니다.</value>
   </data>
-  <data name="DisplayName_CreditCard" xml:space="preserve">
-    <value>신용 카드</value>
+  <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
+    <value>이 도움말을 표시합니다.</value>
   </data>
-  <data name="DisplayName_Education" xml:space="preserve">
-    <value>교육</value>
+  <data name="TableCloth_Switch_InstallAdobeReader_Help" xml:space="preserve">
+    <value>Adobe Reader 설치를 샌드박스 시작 후 실행합니다.</value>
   </data>
-  <data name="DisplayName_Financing" xml:space="preserve">
-    <value>대출/금융</value>
+  <data name="TableCloth_Switch_InstallEveryonesPrinter_Help" xml:space="preserve">
+    <value>모두의 프린터 설치를 샌드박스 시작 후 실행합니다.</value>
   </data>
-  <data name="DisplayName_Government" xml:space="preserve">
-    <value>공공</value>
+  <data name="TableCloth_Switch_InstallHancomOfficeViewer_Help" xml:space="preserve">
+    <value>한컴오피스 뷰어 설치를 샌드박스 시작 후 실행합니다.</value>
   </data>
-  <data name="DisplayName_Insurance" xml:space="preserve">
-    <value>보험</value>
+  <data name="TableCloth_Switch_InstallRaiDrive_Help" xml:space="preserve">
+    <value>RaiDrive 설치를 샌드박스 시작 후 실행합니다.</value>
   </data>
-  <data name="DisplayName_Other" xml:space="preserve">
-    <value>기타</value>
+  <data name="TableCloth_Switch_OptionList_Begin" xml:space="preserve">
+    <value>옵션: </value>
   </data>
-  <data name="DisplayName_Security" xml:space="preserve">
-    <value>증권/투자</value>
+  <data name="TableCloth_Switch_Option_Arg" xml:space="preserve">
+    <value>&lt;옵션&gt;</value>
   </data>
-  <data name="EveryonesPrinterUrl" xml:space="preserve">
-    <value>https://modu-print.com/</value>
+  <data name="TableCloth_Switch_PrivateKeyFilePath_Arg" xml:space="preserve">
+    <value>&lt;파일 경로&gt;</value>
   </data>
-  <data name="HancomOfficeViewerUrl" xml:space="preserve">
-    <value>https://www.hancom.com/cs_center/csDownload.do</value>
+  <data name="TableCloth_Switch_PublicKeyFilePath_Arg" xml:space="preserve">
+    <value>&lt;파일 경로&gt;</value>
   </data>
-  <data name="PrivacyPolicyUrl" xml:space="preserve">
-    <value>https://yourtablecloth.app/privacy</value>
-  </data>
-  <data name="RaiDriveUrl" xml:space="preserve">
-    <value>https://www.raidrive.com/download</value>
-  </data>
-  <data name="UnknownText" xml:space="preserve">
-    <value>알 수 없음</value>
+  <data name="TableCloth_Switch_ServiceID_Help" xml:space="preserve">
+    <value>ServiceID는 {0}을 확인해주세요.</value>
   </data>
 </root>

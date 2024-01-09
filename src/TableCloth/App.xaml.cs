@@ -72,7 +72,7 @@ public partial class App : Application
         services.AddLogging(c => c.AddSerilog(dispose: true));
 
         // Add HTTP Service
-        services.AddHttpClient(nameof(TableCloth), c => c.DefaultRequestHeaders.Add("User-Agent", StringResources.UserAgentText));
+        services.AddHttpClient(nameof(TableCloth), c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
 
         // Add Components
         services

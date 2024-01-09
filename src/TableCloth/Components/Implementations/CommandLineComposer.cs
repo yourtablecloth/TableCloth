@@ -20,23 +20,23 @@ public sealed class CommandLineComposer(
         var options = new List<string>();
 
         if (viewModel.EnableMicrophone)
-            options.Add(StringResources.TableCloth_Switch_EnableMicrophone);
+            options.Add(ConstantStrings.TableCloth_Switch_EnableMicrophone);
         if (viewModel.EnableWebCam)
-            options.Add(StringResources.TableCloth_Switch_EnableCamera);
+            options.Add(ConstantStrings.TableCloth_Switch_EnableCamera);
         if (viewModel.EnablePrinters)
-            options.Add(StringResources.TableCloth_Switch_EnablePrinter);
+            options.Add(ConstantStrings.TableCloth_Switch_EnablePrinter);
         if (viewModel.InstallEveryonesPrinter)
-            options.Add(StringResources.TableCloth_Switch_InstallEveryonesPrinter);
+            options.Add(ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter);
         if (viewModel.InstallAdobeReader)
-            options.Add(StringResources.TableCloth_Switch_InstallAdobeReader);
+            options.Add(ConstantStrings.TableCloth_Switch_InstallAdobeReader);
         if (viewModel.InstallHancomOfficeViewer)
-            options.Add(StringResources.TableCloth_Switch_InstallHancomOfficeViewer);
+            options.Add(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer);
         if (viewModel.InstallRaiDrive)
-            options.Add(StringResources.TableCloth_Switch_InstallRaiDrive);
+            options.Add(ConstantStrings.TableCloth_Switch_InstallRaiDrive);
         if (viewModel.EnableInternetExplorerMode)
-            options.Add(StringResources.TableCloth_Switch_EnableIEMode);
+            options.Add(ConstantStrings.TableCloth_Switch_EnableIEMode);
         if (viewModel.MapNpkiCert)
-            options.Add(StringResources.Tablecloth_Switch_EnableCert);
+            options.Add(ConstantStrings.TableCloth_Switch_EnableCert);
 
         var firstSite = viewModel.SelectedServices.FirstOrDefault();
 

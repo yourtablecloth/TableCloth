@@ -67,7 +67,7 @@ namespace Hostess.Components.Implementations
             if (!this._isFirstInstance)
             {
                 result = ApplicationStartupResultModel.FromErrorMessage(
-                    StringResources.Error_Already_TableCloth_Running, isCritical: true, providedWarnings: warnings);
+                    ErrorStrings.Error_Already_TableCloth_Running, isCritical: true, providedWarnings: warnings);
                 return result;
             }
 
@@ -92,7 +92,7 @@ namespace Hostess.Components.Implementations
                     try
                     {
                         var document = await _resourceCacheManager.LoadCatalogDocumentAsync() ??
-                            throw new XmlException(StringResources.HostessError_CatalogDeserilizationFailure);
+                            throw new XmlException(HostessStrings.HostessError_CatalogDeserilizationFailure);
                     }
                     catch (Exception ex)
                     {
@@ -114,9 +114,9 @@ namespace Hostess.Components.Implementations
 
                 if (!parsedArgs.SelectedServices.Any())
                 {
-                    _appMessageBox.DisplayInfo(StringResources.Hostess_No_Targets);
+                    _appMessageBox.DisplayInfo(HostessStrings.Hostess_No_Targets);
 
-                    Process.Start(new ProcessStartInfo("https://www.naver.com/")
+                    Process.Start(new ProcessStartInfo(ConstantStrings.Hostess_DefaultUrl)
                     {
                         UseShellExecute = true,
                         WindowStyle = ProcessWindowStyle.Maximized,

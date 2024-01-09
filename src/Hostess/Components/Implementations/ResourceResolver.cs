@@ -30,15 +30,15 @@ namespace Hostess.Components.Implementations
             CancellationToken cancellationToken = default)
         {
             var httpClient = _httpClientFactory.CreateTableClothHttpClient();
-            var uriBuilder = new UriBuilder(new Uri(StringResources.CatalogUrl, UriKind.Absolute));
+            var uriBuilder = new UriBuilder(new Uri(ConstantStrings.CatalogUrl, UriKind.Absolute));
 
             var queryKeyValues = MonoHttpUtility.ParseQueryString(uriBuilder.Query);
-            queryKeyValues["ts"] = DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
+            queryKeyValues[ConstantStrings.QueryString_Timestamp_Key] = DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
             uriBuilder.Query = queryKeyValues.ToString();
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, uriBuilder.Uri);
             httpRequest.Headers.CacheControl = new CacheControlHeaderValue() { NoCache = true, NoStore = true, };
-            httpRequest.Headers.UserAgent.TryParseAdd(StringResources.UserAgentText);
+            httpRequest.Headers.UserAgent.TryParseAdd(ConstantStrings.UserAgentText);
 
             var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             _catalogLastModified = httpResponse.Content.Headers.LastModified;

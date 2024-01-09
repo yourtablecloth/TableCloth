@@ -17,7 +17,7 @@ public sealed class ShowSystemInfoCommand(
 
         if (!File.Exists(msinfoPath))
         {
-            appMessageBox.DisplayError(StringResources.Error_Cannot_Run_SysInfo, false);
+            appMessageBox.DisplayError(ErrorStrings.Error_Cannot_Run_SysInfo, false);
             return;
         }
 

@@ -32,7 +32,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)NativeMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ViewModelBase.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\EnumDisplayNameAttribute.cs" />
-  </ItemGroup>
 </Project>

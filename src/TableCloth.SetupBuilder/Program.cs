@@ -27,7 +27,7 @@ namespace TableCloth.SetupBuilder
                 (
                     mainExecutableFile = new WixSharpFile($@"{inputDirectory}\TableCloth.exe",
                     (
-                        mainShortcut = new FileShortcut(StringResources.AppName, @"%ProgramMenu%")
+                        mainShortcut = new FileShortcut(CommonStrings.AppName, @"%ProgramMenu%")
                     ))
                 ))
             ));
@@ -47,8 +47,8 @@ namespace TableCloth.SetupBuilder
             var pfxPassword = args.ElementAtOrDefault(2);
 
             var ignorePfx =
-                string.Equals(StringResources.TableCloth_Switch_IgnoreSwitch, pfxFilePath, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(StringResources.TableCloth_Switch_IgnoreSwitch, pfxPassword, StringComparison.OrdinalIgnoreCase);
+                string.Equals(ConstantStrings.TableCloth_Switch_IgnoreSwitch, pfxFilePath, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(ConstantStrings.TableCloth_Switch_IgnoreSwitch, pfxPassword, StringComparison.OrdinalIgnoreCase);
 
             var iconFilePath = args.ElementAtOrDefault(3);
 
@@ -93,7 +93,7 @@ namespace TableCloth.SetupBuilder
             project.UI = WUI.WixUI_Minimal;
             project.InstallScope = InstallScope.perUser;
 #if DEBUG
-            project.Name = $"{StringResources.AppName} (Debug Version)";
+            project.Name = $"{CommonStrings.AppName} (Debug Version)";
             project.GUID = Guid.Parse("21AD9E55-CC53-4B64-9770-BFA3432DD7D3");
             project.UpgradeCode = Guid.Parse("93316BF0-E965-49AD-A6A1-049AFD551459");
 #else
@@ -109,12 +109,12 @@ namespace TableCloth.SetupBuilder
                 project.ControlPanelInfo.ProductIcon = iconFilePath;
             }
 
-            project.ControlPanelInfo.UrlInfoAbout = StringResources.AppInfoUrl;
-            project.ControlPanelInfo.UrlUpdateInfo = StringResources.AppUpdateInfoUrl;
-            project.ControlPanelInfo.HelpLink = StringResources.AppInfoUrl;
-            project.ControlPanelInfo.Comments = StringResources.AppCommentTextForWixAndStore;
-            project.ControlPanelInfo.Manufacturer = StringResources.AppPublisherForWixAndStore;
-            project.ControlPanelInfo.Contact = StringResources.AppContactForWixAndStore;
+            project.ControlPanelInfo.UrlInfoAbout = CommonStrings.AppInfoUrl;
+            project.ControlPanelInfo.UrlUpdateInfo = CommonStrings.AppUpdateInfoUrl;
+            project.ControlPanelInfo.HelpLink = CommonStrings.AppInfoUrl;
+            project.ControlPanelInfo.Comments = ConstantStrings.AppCommentTextForWixAndStore;
+            project.ControlPanelInfo.Manufacturer = ConstantStrings.AppPublisherForWixAndStore;
+            project.ControlPanelInfo.Contact = ConstantStrings.AppContactForWixAndStore;
             project.ControlPanelInfo.NoModify = true;
 
             if (!ignorePfx)
@@ -129,7 +129,7 @@ namespace TableCloth.SetupBuilder
                         MaxTimeUrlRetry = 3,
                         TimeUrl = new Uri("http://timestamp.digicert.com", UriKind.Absolute),
                         UrlRetrySleep = 1,
-                        Description = StringResources.AppCopyright,
+                        Description = CommonStrings.AppCopyright,
                         HashAlgorithm = HashAlgorithmType.sha256,
                     };
                 }

@@ -97,15 +97,15 @@ namespace TableCloth.Models.Catalog
             {
                 switch (Category)
                 {
-                    case CatalogInternetServiceCategory.Banking: return StringResources.DisplayName_Banking;
-                    case CatalogInternetServiceCategory.CreditCard: return StringResources.DisplayName_CreditCard;
-                    case CatalogInternetServiceCategory.Education: return StringResources.DisplayName_Education;
-                    case CatalogInternetServiceCategory.Financing: return StringResources.DisplayName_Financing;
-                    case CatalogInternetServiceCategory.Government: return StringResources.DisplayName_Government;
-                    case CatalogInternetServiceCategory.Security: return StringResources.DisplayName_Security;
-                    case CatalogInternetServiceCategory.Insurance: return StringResources.DisplayName_Insurance;
+                    case CatalogInternetServiceCategory.Banking: return CommonStrings.DisplayName_Banking;
+                    case CatalogInternetServiceCategory.CreditCard: return CommonStrings.DisplayName_CreditCard;
+                    case CatalogInternetServiceCategory.Education: return CommonStrings.DisplayName_Education;
+                    case CatalogInternetServiceCategory.Financing: return CommonStrings.DisplayName_Financing;
+                    case CatalogInternetServiceCategory.Government: return CommonStrings.DisplayName_Government;
+                    case CatalogInternetServiceCategory.Security: return CommonStrings.DisplayName_Security;
+                    case CatalogInternetServiceCategory.Insurance: return CommonStrings.DisplayName_Insurance;
                     case CatalogInternetServiceCategory.Other:
-                    default: return StringResources.DisplayName_Other;
+                    default: return CommonStrings.DisplayName_Other;
                 }
             }
         }

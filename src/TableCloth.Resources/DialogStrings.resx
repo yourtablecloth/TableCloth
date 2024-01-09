@@ -117,64 +117,64 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AdobeReaderUrl" xml:space="preserve">
-    <value>https://get.adobe.com/kr/reader/</value>
+  <data name="Cert_Availability_Available" xml:space="preserve">
+    <value>사용 가능</value>
   </data>
-  <data name="AppCommentText" xml:space="preserve">
-    <value>식탁보 - 컴퓨터를 깨끗하게 사용하세요!</value>
+  <data name="Cert_Availability_Expired" xml:space="preserve">
+    <value>만료됨</value>
   </data>
-  <data name="AppCopyright" xml:space="preserve">
-    <value>(c) 2021 남정현</value>
+  <data name="Cert_Availability_ExpireSoon" xml:space="preserve">
+    <value>{0}일 후 만료</value>
   </data>
-  <data name="AppInfoUrl" xml:space="preserve">
-    <value>https://yourtablecloth.app</value>
+  <data name="Cert_Availability_MayTooEarly" xml:space="preserve">
+    <value>{0}일 후 사용 가능</value>
   </data>
-  <data name="AppName" xml:space="preserve">
-    <value>식탁보</value>
+  <data name="Script_InstructionMessage" xml:space="preserve">
+    <value>지금부터 {0}개 프로그램의 설치 과정이 시작됩니다. 모든 프로그램의 설치가 끝나면 자동으로 {1} 홈페이지가 열립니다.</value>
   </data>
-  <data name="AppPublisher" xml:space="preserve">
-    <value>식탁보 프로젝트</value>
+  <data name="Script_InstructionTitleText" xml:space="preserve">
+    <value>안내</value>
   </data>
-  <data name="AppUpdateInfoUrl" xml:space="preserve">
-    <value>https://github.com/yourtablecloth/TableCloth/releases</value>
+  <data name="Status_CheckInternetConnection" xml:space="preserve">
+    <value>인터넷 연결 상태 확인 중...</value>
   </data>
-  <data name="DisplayName_Banking" xml:space="preserve">
-    <value>뱅킹</value>
+  <data name="Status_Done" xml:space="preserve">
+    <value>실행 준비가 완료되었습니다.</value>
   </data>
-  <data name="DisplayName_CreditCard" xml:space="preserve">
-    <value>신용 카드</value>
+  <data name="Status_EvaluatingRequirementsMet" xml:space="preserve">
+    <value>시스템 환경 확인 중...</value>
   </data>
-  <data name="DisplayName_Education" xml:space="preserve">
-    <value>교육</value>
+  <data name="Status_InitializingApplication" xml:space="preserve">
+    <value>애플리케이션 초기화 중...</value>
   </data>
-  <data name="DisplayName_Financing" xml:space="preserve">
-    <value>대출/금융</value>
+  <data name="Status_InitializingFailed" xml:space="preserve">
+    <value>오류가 발생했습니다.</value>
   </data>
-  <data name="DisplayName_Government" xml:space="preserve">
-    <value>공공</value>
+  <data name="Status_InitSentrySDK" xml:space="preserve">
+    <value>Sentry SDK 초기화 중...</value>
   </data>
-  <data name="DisplayName_Insurance" xml:space="preserve">
-    <value>보험</value>
+  <data name="Status_LoadingCatalog" xml:space="preserve">
+    <value>카탈로그 불러오는 중...</value>
   </data>
-  <data name="DisplayName_Other" xml:space="preserve">
-    <value>기타</value>
+  <data name="Status_LoadingImages" xml:space="preserve">
+    <value>이미지 불러오는 중...</value>
   </data>
-  <data name="DisplayName_Security" xml:space="preserve">
-    <value>증권/투자</value>
+  <data name="Status_LoadingPreferences" xml:space="preserve">
+    <value>환경 설정 불러오는 중...</value>
   </data>
-  <data name="EveryonesPrinterUrl" xml:space="preserve">
-    <value>https://modu-print.com/</value>
+  <data name="Status_ParsingCommandLine" xml:space="preserve">
+    <value>명령줄 분석 중...</value>
   </data>
-  <data name="HancomOfficeViewerUrl" xml:space="preserve">
-    <value>https://www.hancom.com/cs_center/csDownload.do</value>
+  <data name="TitleText_Error" xml:space="preserve">
+    <value>{0} 오류</value>
   </data>
-  <data name="PrivacyPolicyUrl" xml:space="preserve">
-    <value>https://yourtablecloth.app/privacy</value>
+  <data name="TitleText_Info" xml:space="preserve">
+    <value>{0} 정보</value>
   </data>
-  <data name="RaiDriveUrl" xml:space="preserve">
-    <value>https://www.raidrive.com/download</value>
+  <data name="TitleText_Question" xml:space="preserve">
+    <value>{0} 확인</value>
   </data>
-  <data name="UnknownText" xml:space="preserve">
-    <value>알 수 없음</value>
+  <data name="TitleText_Warning" xml:space="preserve">
+    <value>{0} 경고</value>
   </data>
 </root>

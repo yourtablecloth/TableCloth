@@ -6,5 +6,5 @@ namespace TableCloth.Commands;
 public sealed class OpenWebsiteCommand : CommandBase
 {
     public override void Execute(object? parameter)
-        => Process.Start(new ProcessStartInfo(StringResources.AppInfoUrl) { UseShellExecute = true });
+        => Process.Start(new ProcessStartInfo(CommonStrings.AppInfoUrl) { UseShellExecute = true });
 }

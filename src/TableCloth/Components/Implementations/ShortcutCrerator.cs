@@ -14,7 +14,7 @@ public sealed class ShortcutCrerator(
     public void CreateShortcut(ITableClothViewModel viewModel)
     {
         var targetPath = sharedLocations.ExecutableFilePath;
-        var linkName = StringResources.AppName;
+        var linkName = CommonStrings.AppName;
 
         var firstSite = viewModel.SelectedServices.FirstOrDefault();
         var iconFilePath = default(string);
@@ -54,10 +54,10 @@ public sealed class ShortcutCrerator(
         }
         catch
         {
-            appMessageBox.DisplayInfo(StringResources.Error_ShortcutFailed);
+            appMessageBox.DisplayInfo(ErrorStrings.Error_ShortcutFailed);
             return;
         }
 
-        appMessageBox.DisplayInfo(StringResources.Info_ShortcutSuccess);
+        appMessageBox.DisplayInfo(InfoStrings.Info_ShortcutSuccess);
     }
 }

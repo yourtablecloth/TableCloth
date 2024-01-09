@@ -115,33 +115,33 @@ namespace TableCloth.Models
 
             for (var i = 0; i < args.Length; i++)
             {
-                if (!args[i].StartsWith(StringResources.TableCloth_Switch_Prefix))
+                if (!args[i].StartsWith(ConstantStrings.TableCloth_Switch_Prefix))
                     selectedServiceIds.Add(args[i]);
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableMicrophone, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_EnableMicrophone, StringComparison.OrdinalIgnoreCase))
                     enableMicrophone = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableCamera, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_EnableCamera, StringComparison.OrdinalIgnoreCase))
                     enableWebCam = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnablePrinter, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_EnablePrinter, StringComparison.OrdinalIgnoreCase))
                     enablePrinters = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_CertPrivateKey, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_CertPrivateKey, StringComparison.OrdinalIgnoreCase))
                     certPrivateKeyPath = args[Math.Min(args.Length - 1, ++i)];
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_CertPublicKey, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_CertPublicKey, StringComparison.OrdinalIgnoreCase))
                     certPublicKeyPath = args[Math.Min(args.Length - 1, ++i)];
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallEveryonesPrinter, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter, StringComparison.OrdinalIgnoreCase))
                     installEveryonesPrinter = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallAdobeReader, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_InstallAdobeReader, StringComparison.OrdinalIgnoreCase))
                     installAdobeReader = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallHancomOfficeViewer, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer, StringComparison.OrdinalIgnoreCase))
                     installHancomOfficeViewer = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_InstallRaiDrive, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_InstallRaiDrive, StringComparison.OrdinalIgnoreCase))
                     installRaiDrive = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_EnableIEMode, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_EnableIEMode, StringComparison.OrdinalIgnoreCase))
                     enableInternetExplorerMode = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_DryRun, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_DryRun, StringComparison.OrdinalIgnoreCase))
                     dryRun = true;
-                else if (string.Equals(args[i], StringResources.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase))
                     showCommandLineHelp = true;
-                else if (string.Equals(args[i], StringResources.Tablecloth_Switch_EnableCert, StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_EnableCert, StringComparison.OrdinalIgnoreCase))
                     enableCert = true;
             }
 

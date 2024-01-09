@@ -89,14 +89,14 @@ public sealed class AppStartup : IAppStartup
         if (!File.Exists(_sharedLocations.HostessZipFilePath))
         {
             result = ApplicationStartupResultModel.FromErrorMessage(
-                StringResources.Error_Hostess_Missing, isCritical: true, providedWarnings: warnings);
+                ErrorStrings.Error_Hostess_Missing, isCritical: true, providedWarnings: warnings);
             return result;
         }
 
         if (!File.Exists(_sharedLocations.ImagesZipFilePath))
         {
             result = ApplicationStartupResultModel.FromErrorMessage(
-                StringResources.Error_Images_Missing, isCritical: true, providedWarnings: warnings);
+                ErrorStrings.Error_Images_Missing, isCritical: true, providedWarnings: warnings);
             return result;
         }
 
@@ -109,7 +109,7 @@ public sealed class AppStartup : IAppStartup
         if (!is64BitOperatingSystem)
         {
             result = ApplicationStartupResultModel.FromErrorMessage(
-                StringResources.Error_Windows_OS_Too_Old, isCritical: true, providedWarnings: warnings);
+                ErrorStrings.Error_Windows_OS_Too_Old, isCritical: true, providedWarnings: warnings);
             return result;
         }
 
@@ -121,7 +121,7 @@ public sealed class AppStartup : IAppStartup
             if (!hyperVisorPresent.HasValue || !hyperVisorPresent.Value)
             {
 #if DEBUG
-                warnings.Add(StringResources.Error_HyperVisor_Missing);
+                warnings.Add(ErrorStrings.Error_HyperVisor_Missing);
 #else
                 result = ApplicationStartupResultModel.FromErrorMessage(
                     StringResources.Error_HyperVisor_Missing, isCritical: true, providedWarnings: warnings);
@@ -144,7 +144,7 @@ public sealed class AppStartup : IAppStartup
             if (!File.Exists(dismExecPath))
             {
 #if DEBUG
-                warnings.Add(StringResources.Error_Windows_Dism_Missing);
+                warnings.Add(ErrorStrings.Error_Windows_Dism_Missing);
 #else
                 result = ApplicationStartupResultModel.FromErrorMessage(
                     StringResources.Error_Windows_Dism_Missing, isCritical: true, providedWarnings: warnings);
@@ -172,7 +172,7 @@ public sealed class AppStartup : IAppStartup
                     process.WaitForExit();
 
                 result = ApplicationStartupResultModel.FromErrorMessage(
-                    StringResources.Error_Restart_And_RunAgain, isCritical: true, providedWarnings: warnings);
+                    ErrorStrings.Error_Restart_And_RunAgain, isCritical: true, providedWarnings: warnings);
                 return result;
             }
         }
@@ -180,7 +180,7 @@ public sealed class AppStartup : IAppStartup
         if (!File.Exists(wsbExecPath))
         {
 #if DEBUG
-            warnings.Add(StringResources.Error_Windows_Sandbox_Missing);
+            warnings.Add(ErrorStrings.Error_Windows_Sandbox_Missing);
 #else
             result = ApplicationStartupResultModel.FromErrorMessage(
                 StringResources.Error_Windows_Sandbox_Missing, isCritical: true, providedWarnings: warnings);
@@ -191,7 +191,7 @@ public sealed class AppStartup : IAppStartup
         if (!this._isFirstInstance)
         {
             result = ApplicationStartupResultModel.FromErrorMessage(
-                StringResources.Error_Already_TableCloth_Running, isCritical: true, providedWarnings: warnings);
+                ErrorStrings.Error_Already_TableCloth_Running, isCritical: true, providedWarnings: warnings);
             return result;
         }
 
@@ -201,7 +201,7 @@ public sealed class AppStartup : IAppStartup
 
         if (!File.Exists(iePath))
         {
-            warnings.Add(StringResources.Error_IEMode_NotAvailable);
+            warnings.Add(ErrorStrings.Error_IEMode_NotAvailable);
         }
 
         var osvi = new NativeMethods.OSVERSIONINFOEXW()
@@ -232,11 +232,11 @@ public sealed class AppStartup : IAppStartup
                 osvi.dwMajorVersion, osvi.dwMinorVersion,
                 osvi.wServicePackMajor, osvi.wServicePackMinor,
                 out NativeMethods.OSEdition productType))
-                warnings.Add(StringResources.Error_Cannot_Invoke_GetProductInfo);
+                warnings.Add(ErrorStrings.Error_Cannot_Invoke_GetProductInfo);
             else
             {
                 if (Array.IndexOf(supportedOSEditions, productType) < 0)
-                    warnings.Add(StringResources.Error_SandboxMightNotAvailable);
+                    warnings.Add(ErrorStrings.Error_SandboxMightNotAvailable);
             }
         }
 

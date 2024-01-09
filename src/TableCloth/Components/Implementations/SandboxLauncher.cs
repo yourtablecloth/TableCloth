@@ -24,7 +24,7 @@ public sealed class SandboxLauncher(
     {
         if (Helpers.GetSandboxRunningState())
         {
-            appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_Already_Running, false);
+            appMessageBox.DisplayError(ErrorStrings.Error_Windows_Sandbox_Already_Running, false);
             return;
         }
 
@@ -37,7 +37,7 @@ public sealed class SandboxLauncher(
                 appMessageBox.DisplayError(StringResources.Error_Cert_MayTooEarly(now, config.CertPair.NotBefore), false);
 
             if (now > config.CertPair.NotAfter)
-                appMessageBox.DisplayError(StringResources.Error_Cert_Expired, false);
+                appMessageBox.DisplayError(ErrorStrings.Error_Cert_Expired, false);
             else if (now > config.CertPair.NotAfter.Add(expireWindow))
                 appMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(now, config.CertPair.NotAfter, expireWindow));
         }
@@ -74,7 +74,7 @@ public sealed class SandboxLauncher(
         if (!process.Start())
         {
             process.Dispose();
-            appMessageBox.DisplayError(StringResources.Error_Windows_Sandbox_CanNotStart, true);
+            appMessageBox.DisplayError(ErrorStrings.Error_Windows_Sandbox_CanNotStart, true);
         }
     }
 

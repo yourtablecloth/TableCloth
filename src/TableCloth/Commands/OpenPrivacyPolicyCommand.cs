@@ -6,5 +6,5 @@ namespace TableCloth.Commands;
 public sealed class OpenPrivacyPolicyCommand : CommandBase
 {
     public override void Execute(object? parameter)
-        => Process.Start(new ProcessStartInfo(StringResources.PrivacyPolicyUrl) { UseShellExecute = true });
+        => Process.Start(new ProcessStartInfo(CommonStrings.PrivacyPolicyUrl) { UseShellExecute = true });
 }

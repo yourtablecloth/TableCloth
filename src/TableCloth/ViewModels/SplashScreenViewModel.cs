@@ -36,9 +36,9 @@ public class SplashScreenViewModel : ViewModelBase
     public SplashScreenLoadedCommand SplashScreenLoadedCommand
         => _splashScreenLoadedCommand;
 
-    private string _appTitle = StringResources.AppName;
+    private string _appTitle = CommonStrings.AppName;
     private string _appVersion = Helpers.GetAppVersion();
-    private string _status = StringResources.Info_Loading;
+    private string _status = InfoStrings.Info_Loading;
     private bool _appStartupSucceed = false;
     private bool _v2UIOptedIn = true;
     private IList<string> _passedArguments = new string[] { };

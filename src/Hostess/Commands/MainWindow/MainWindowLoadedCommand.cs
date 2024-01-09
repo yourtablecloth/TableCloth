@@ -96,7 +96,7 @@ namespace Hostess.Commands.MainWindow
                         InstallItemType = InstallItemType.PowerShellScript,
                         TargetSiteName = targetService.DisplayName,
                         TargetSiteUrl = targetService.Url,
-                        PackageName = StringResources.Hostess_CustomScript_Title,
+                        PackageName = HostessStrings.Hostess_CustomScript_Title,
                         ScriptContent = bootstrapData,
                     });
                 }

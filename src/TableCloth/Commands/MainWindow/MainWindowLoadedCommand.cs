@@ -131,7 +131,7 @@ public sealed class MainWindowLoadedCommand(
         {
             case nameof(MainWindowViewModel.EnableLogAutoCollecting):
                 currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
-                if (appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                if (appMessageBox.DisplayInfo(AskStrings.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                 {
                     appRestartManager.ReserveRestart();
                     appRestartManager.RestartNow();
@@ -140,7 +140,7 @@ public sealed class MainWindowLoadedCommand(
 
             case nameof(MainWindowViewModel.V2UIOptIn):
                 currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
-                if (appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
+                if (appMessageBox.DisplayInfo(AskStrings.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK))
                 {
                     appRestartManager.ReserveRestart();
                     appRestartManager.RestartNow();

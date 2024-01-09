@@ -117,64 +117,111 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AdobeReaderUrl" xml:space="preserve">
-    <value>https://get.adobe.com/kr/reader/</value>
+  <data name="AppCommentTextForWixAndStore" xml:space="preserve">
+    <value>TableCloth - Keep your computer clean!</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="AppCommentText" xml:space="preserve">
-    <value>식탁보 - 컴퓨터를 깨끗하게 사용하세요!</value>
-  </data>
-  <data name="AppCopyright" xml:space="preserve">
-    <value>(c) 2021 남정현</value>
-  </data>
-  <data name="AppInfoUrl" xml:space="preserve">
+  <data name="AppContactForWixAndStore" xml:space="preserve">
     <value>https://yourtablecloth.app</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="AppName" xml:space="preserve">
-    <value>식탁보</value>
+  <data name="AppNameForWixAndStore" xml:space="preserve">
+    <value>TableCloth</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="AppPublisher" xml:space="preserve">
-    <value>식탁보 프로젝트</value>
+  <data name="AppPublisherForWixAndStore" xml:space="preserve">
+    <value>TableCloth Project</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="AppUpdateInfoUrl" xml:space="preserve">
-    <value>https://github.com/yourtablecloth/TableCloth/releases</value>
+  <data name="CatalogUrl" xml:space="preserve">
+    <value>https://yourtablecloth.app/TableClothCatalog/Catalog.xml</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="DisplayName_Banking" xml:space="preserve">
-    <value>뱅킹</value>
+  <data name="GitHub_Domain" xml:space="preserve">
+    <value>github.com</value>
   </data>
-  <data name="DisplayName_CreditCard" xml:space="preserve">
-    <value>신용 카드</value>
+  <data name="Hostess_DefaultUrl" xml:space="preserve">
+    <value>https://www.naver.com/</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="DisplayName_Education" xml:space="preserve">
-    <value>교육</value>
+  <data name="IEModePolicyXmlUrl" xml:space="preserve">
+    <value>https://yourtablecloth.app/TableClothCatalog/sites.xml</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="DisplayName_Financing" xml:space="preserve">
-    <value>대출/금융</value>
+  <data name="ImageUrlPrefix" xml:space="preserve">
+    <value>https://yourtablecloth.app/TableClothCatalog/images</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="DisplayName_Government" xml:space="preserve">
-    <value>공공</value>
+  <data name="QueryString_Timestamp_Key" xml:space="preserve">
+    <value>ts</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="DisplayName_Insurance" xml:space="preserve">
-    <value>보험</value>
+  <data name="SentryDsn" xml:space="preserve">
+    <value>https://785e3f46849c403bb6c323d7a9eaad91@o77541.ingest.sentry.io/5915832</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="DisplayName_Other" xml:space="preserve">
-    <value>기타</value>
+  <data name="TableCloth_Switch_CertPrivateKey" xml:space="preserve">
+    <value>--cert-private-key</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="DisplayName_Security" xml:space="preserve">
-    <value>증권/투자</value>
+  <data name="TableCloth_Switch_CertPublicKey" xml:space="preserve">
+    <value>--cert-public-key</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="EveryonesPrinterUrl" xml:space="preserve">
-    <value>https://modu-print.com/</value>
+  <data name="TableCloth_Switch_DryRun" xml:space="preserve">
+    <value>--dry-run</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="HancomOfficeViewerUrl" xml:space="preserve">
-    <value>https://www.hancom.com/cs_center/csDownload.do</value>
+  <data name="TableCloth_Switch_EnableCamera" xml:space="preserve">
+    <value>--enable-camera</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="PrivacyPolicyUrl" xml:space="preserve">
-    <value>https://yourtablecloth.app/privacy</value>
+  <data name="TableCloth_Switch_EnableCert" xml:space="preserve">
+    <value>--enable-cert</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="RaiDriveUrl" xml:space="preserve">
-    <value>https://www.raidrive.com/download</value>
+  <data name="TableCloth_Switch_EnableIEMode" xml:space="preserve">
+    <value>--enable-ie-mode</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="UnknownText" xml:space="preserve">
-    <value>알 수 없음</value>
+  <data name="TableCloth_Switch_EnableMicrophone" xml:space="preserve">
+    <value>--enable-microphone</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
+  <data name="TableCloth_Switch_EnablePrinter" xml:space="preserve">
+    <value>--enable-printer</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
+  <data name="TableCloth_Switch_Help" xml:space="preserve">
+    <value>--help</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
+  <data name="TableCloth_Switch_IgnoreSwitch" xml:space="preserve">
+    <value>--ignore--</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
+  <data name="TableCloth_Switch_InstallAdobeReader" xml:space="preserve">
+    <value>--install-adobe-reader</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
+  <data name="TableCloth_Switch_InstallEveryonesPrinter" xml:space="preserve">
+    <value>--install-everyones-printer</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
+  <data name="TableCloth_Switch_InstallHancomOfficeViewer" xml:space="preserve">
+    <value>--install-hancom-office-viewer</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
+  <data name="TableCloth_Switch_InstallRaiDrive" xml:space="preserve">
+    <value>--install-rai-drive</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
+  <data name="TableCloth_Switch_Prefix" xml:space="preserve">
+    <value>--</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
+  <data name="UserAgentText" xml:space="preserve">
+    <value>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
 </root>

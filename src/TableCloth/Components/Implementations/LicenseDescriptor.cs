@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using TableCloth.Resources;
 
 namespace TableCloth.Components;
 
@@ -13,7 +15,7 @@ public sealed class LicenseDescriptor(
     private IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
     {
         var asm = Assembly.GetEntryAssembly()
-            ?? throw new Exception("Cannot obtain entry assembly information.");
+            ?? throw new Exception(ErrorStrings.Error_Cannot_Obtain_Assembly);
 
         var bclPublicKeyTokens = new byte[][] {
             new byte[] { 0xb0, 0x3f, 0x5f, 0x7f, 0x11, 0xd5, 0x0a, 0x3a, },
@@ -60,7 +62,7 @@ public sealed class LicenseDescriptor(
                 try
                 {
                     if (Uri.TryCreate(asmRepoUrl, UriKind.Absolute, out var parsedAsmRepoUrl) &&
-                        string.Equals("github.com", parsedAsmRepoUrl.Host, StringComparison.OrdinalIgnoreCase))
+                        string.Equals(ConstantStrings.GitHub_Domain, parsedAsmRepoUrl.Host, StringComparison.OrdinalIgnoreCase))
                     {
                         var parts = parsedAsmRepoUrl.GetComponents(UriComponents.Path, UriFormat.UriEscaped).Split('/');
                         var ownerPart = parts.ElementAtOrDefault(0);

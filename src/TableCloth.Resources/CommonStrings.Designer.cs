@@ -22,7 +22,7 @@ namespace TableCloth.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class CommonStrings {
+    public class CommonStrings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace TableCloth.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TableCloth.Resources.CommonStrings", typeof(CommonStrings).Assembly);
@@ -51,7 +51,7 @@ namespace TableCloth.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace TableCloth.Resources {
         /// <summary>
         ///   Looks up a localized string similar to https://get.adobe.com/kr/reader/.
         /// </summary>
-        internal static string AdobeReaderUrl {
+        public static string AdobeReaderUrl {
             get {
                 return ResourceManager.GetString("AdobeReaderUrl", resourceCulture);
             }
@@ -72,34 +72,16 @@ namespace TableCloth.Resources {
         /// <summary>
         ///   Looks up a localized string similar to 식탁보 - 컴퓨터를 깨끗하게 사용하세요!.
         /// </summary>
-        internal static string AppCommentText {
+        public static string AppCommentText {
             get {
                 return ResourceManager.GetString("AppCommentText", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TableCloth - Keep your computer clean!.
-        /// </summary>
-        internal static string AppCommentTextForWixAndStore {
-            get {
-                return ResourceManager.GetString("AppCommentTextForWixAndStore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to https://yourtablecloth.app.
-        /// </summary>
-        internal static string AppContactForWixAndStore {
-            get {
-                return ResourceManager.GetString("AppContactForWixAndStore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to (c) 2021 남정현.
         /// </summary>
-        internal static string AppCopyright {
+        public static string AppCopyright {
             get {
                 return ResourceManager.GetString("AppCopyright", resourceCulture);
             }
@@ -108,7 +90,7 @@ namespace TableCloth.Resources {
         /// <summary>
         ///   Looks up a localized string similar to https://yourtablecloth.app.
         /// </summary>
-        internal static string AppInfoUrl {
+        public static string AppInfoUrl {
             get {
                 return ResourceManager.GetString("AppInfoUrl", resourceCulture);
             }
@@ -117,61 +99,106 @@ namespace TableCloth.Resources {
         /// <summary>
         ///   Looks up a localized string similar to 식탁보.
         /// </summary>
-        internal static string AppName {
+        public static string AppName {
             get {
                 return ResourceManager.GetString("AppName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TableCloth.
-        /// </summary>
-        internal static string AppNameForWixAndStore {
-            get {
-                return ResourceManager.GetString("AppNameForWixAndStore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 식탁보 프로젝트.
         /// </summary>
-        internal static string AppPublisher {
+        public static string AppPublisher {
             get {
                 return ResourceManager.GetString("AppPublisher", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TableCloth Project.
-        /// </summary>
-        internal static string AppPublisherForWixAndStore {
-            get {
-                return ResourceManager.GetString("AppPublisherForWixAndStore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to https://github.com/yourtablecloth/TableCloth/releases.
         /// </summary>
-        internal static string AppUpdateInfoUrl {
+        public static string AppUpdateInfoUrl {
             get {
                 return ResourceManager.GetString("AppUpdateInfoUrl", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://yourtablecloth.app/TableClothCatalog/Catalog.xml.
+        ///   Looks up a localized string similar to 뱅킹.
         /// </summary>
-        internal static string CatalogUrl {
+        public static string DisplayName_Banking {
             get {
-                return ResourceManager.GetString("CatalogUrl", resourceCulture);
+                return ResourceManager.GetString("DisplayName_Banking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 신용 카드.
+        /// </summary>
+        public static string DisplayName_CreditCard {
+            get {
+                return ResourceManager.GetString("DisplayName_CreditCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 교육.
+        /// </summary>
+        public static string DisplayName_Education {
+            get {
+                return ResourceManager.GetString("DisplayName_Education", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 대출/금융.
+        /// </summary>
+        public static string DisplayName_Financing {
+            get {
+                return ResourceManager.GetString("DisplayName_Financing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 공공.
+        /// </summary>
+        public static string DisplayName_Government {
+            get {
+                return ResourceManager.GetString("DisplayName_Government", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 보험.
+        /// </summary>
+        public static string DisplayName_Insurance {
+            get {
+                return ResourceManager.GetString("DisplayName_Insurance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 기타.
+        /// </summary>
+        public static string DisplayName_Other {
+            get {
+                return ResourceManager.GetString("DisplayName_Other", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 증권/투자.
+        /// </summary>
+        public static string DisplayName_Security {
+            get {
+                return ResourceManager.GetString("DisplayName_Security", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to https://modu-print.com/.
         /// </summary>
-        internal static string EveryonesPrinterUrl {
+        public static string EveryonesPrinterUrl {
             get {
                 return ResourceManager.GetString("EveryonesPrinterUrl", resourceCulture);
             }
@@ -180,34 +207,16 @@ namespace TableCloth.Resources {
         /// <summary>
         ///   Looks up a localized string similar to https://www.hancom.com/cs_center/csDownload.do.
         /// </summary>
-        internal static string HancomOfficeViewerUrl {
+        public static string HancomOfficeViewerUrl {
             get {
                 return ResourceManager.GetString("HancomOfficeViewerUrl", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://yourtablecloth.app/TableClothCatalog/sites.xml.
-        /// </summary>
-        internal static string IEModePolicyXmlUrl {
-            get {
-                return ResourceManager.GetString("IEModePolicyXmlUrl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to https://yourtablecloth.app/TableClothCatalog/images.
-        /// </summary>
-        internal static string ImageUrlPrefix {
-            get {
-                return ResourceManager.GetString("ImageUrlPrefix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to https://yourtablecloth.app/privacy.
         /// </summary>
-        internal static string PrivacyPolicyUrl {
+        public static string PrivacyPolicyUrl {
             get {
                 return ResourceManager.GetString("PrivacyPolicyUrl", resourceCulture);
             }
@@ -216,27 +225,18 @@ namespace TableCloth.Resources {
         /// <summary>
         ///   Looks up a localized string similar to https://www.raidrive.com/download.
         /// </summary>
-        internal static string RaiDriveUrl {
+        public static string RaiDriveUrl {
             get {
                 return ResourceManager.GetString("RaiDriveUrl", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://785e3f46849c403bb6c323d7a9eaad91@o77541.ingest.sentry.io/5915832.
+        ///   Looks up a localized string similar to 알 수 없음.
         /// </summary>
-        internal static string SentryDsn {
+        public static string UnknownText {
             get {
-                return ResourceManager.GetString("SentryDsn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36.
-        /// </summary>
-        internal static string UserAgentText {
-            get {
-                return ResourceManager.GetString("UserAgentText", resourceCulture);
+                return ResourceManager.GetString("UnknownText", resourceCulture);
             }
         }
     }

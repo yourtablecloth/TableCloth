@@ -130,19 +130,19 @@ del /f /q ""{providedCertFilePath}""
         var switches = new List<string>();
 
         if (tableClothConfiguration.InstallEveryonesPrinter)
-            switches.Add(StringResources.TableCloth_Switch_InstallEveryonesPrinter);
+            switches.Add(ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter);
 
         if (tableClothConfiguration.InstallAdobeReader)
-            switches.Add(StringResources.TableCloth_Switch_InstallAdobeReader);
+            switches.Add(ConstantStrings.TableCloth_Switch_InstallAdobeReader);
 
         if (tableClothConfiguration.InstallHancomOfficeViewer)
-            switches.Add(StringResources.TableCloth_Switch_InstallHancomOfficeViewer);
+            switches.Add(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer);
 
         if (tableClothConfiguration.InstallRaiDrive)
-            switches.Add(StringResources.TableCloth_Switch_InstallRaiDrive);
+            switches.Add(ConstantStrings.TableCloth_Switch_InstallRaiDrive);
 
         if (tableClothConfiguration.EnableInternetExplorerMode)
-            switches.Add(StringResources.TableCloth_Switch_EnableIEMode);
+            switches.Add(ConstantStrings.TableCloth_Switch_EnableIEMode);
 
         var serviceIdList = (tableClothConfiguration.Services ?? Enumerable.Empty<CatalogInternetService>())
             .Select(x => x.Id).Distinct();

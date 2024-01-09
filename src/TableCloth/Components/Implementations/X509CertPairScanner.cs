@@ -93,10 +93,10 @@ public sealed class X509CertPairScanner : IX509CertPairScanner
     public X509CertPair CreateX509CertPair(string derFilePath, string keyFilePath)
     {
         if (!File.Exists(derFilePath))
-            throw new FileNotFoundException(StringResources.Error_Cannot_Find_CertFile, derFilePath);
+            throw new FileNotFoundException(ErrorStrings.Error_Cannot_Find_CertFile, derFilePath);
 
         if (!File.Exists(keyFilePath))
-            throw new FileNotFoundException(StringResources.Error_Cannot_Find_KeyFile, keyFilePath);
+            throw new FileNotFoundException(ErrorStrings.Error_Cannot_Find_KeyFile, keyFilePath);
 
         return new X509CertPair(
             File.ReadAllBytes(derFilePath),
@@ -106,7 +106,7 @@ public sealed class X509CertPairScanner : IX509CertPairScanner
     public X509CertPair CreateX509Cert(string pfxFilePath, SecureString password)
     {
         if (!File.Exists(pfxFilePath))
-            throw new FileNotFoundException(StringResources.Error_Cannot_Find_PfxFile, pfxFilePath);
+            throw new FileNotFoundException(ErrorStrings.Error_Cannot_Find_PfxFile, pfxFilePath);
 
         var copiedPassword = CertPrivateKeyHelper.CopyFromSecureString(password);
 

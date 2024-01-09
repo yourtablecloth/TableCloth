@@ -14,12 +14,12 @@ public sealed class CreateShortcutCommand(
     {
         if (viewModel.SelectedServices.Count() < 1)
         {
-            appMessageBox.DisplayError(StringResources.Error_ShortcutNoSiteSelected, false);
+            appMessageBox.DisplayError(ErrorStrings.Error_ShortcutNoSiteSelected, false);
             return;
         }
 
         if (viewModel.SelectedServices.Count() > 1)
-            appMessageBox.DisplayInfo(StringResources.Info_WillCreateSingleSiteShortcut);
+            appMessageBox.DisplayInfo(InfoStrings.Info_WillCreateSingleSiteShortcut);
 
         shortcutCrerator.CreateShortcut(viewModel);
     }

@@ -21,7 +21,7 @@ namespace Hostess.Commands.AboutWindow
         public override void Execute(AboutWindowViewModel viewModel)
         {
             viewModel.AppVersion = Helpers.GetAppVersion();
-            viewModel.CatalogVersion = _resourceResolver.CatalogLastModified?.ToString() ?? StringResources.UnknownText;
+            viewModel.CatalogVersion = _resourceResolver.CatalogLastModified?.ToString() ?? CommonStrings.UnknownText;
             viewModel.LicenseDescription = _licenseDescriptor.GetLicenseDescriptions();
         }
     }

@@ -20,7 +20,7 @@ public sealed class CheckUpdatedVersionCommand(
             if (Version.TryParse(await resourceResolver.GetLatestVersion(owner, repo), out var parsedVersion) &&
                 thisVersion != null && parsedVersion > thisVersion)
             {
-                appMessageBox.DisplayInfo(StringResources.Info_UpdateRequired);
+                appMessageBox.DisplayInfo(InfoStrings.Info_UpdateRequired);
                 var targetUrl = await resourceResolver.GetDownloadUrl(owner, repo);
                 var psi = new ProcessStartInfo(targetUrl.AbsoluteUri) { UseShellExecute = true, };
                 Process.Start(psi);
@@ -29,6 +29,6 @@ public sealed class CheckUpdatedVersionCommand(
         }
         catch { }
 
-        appMessageBox.DisplayInfo(StringResources.Info_UpdateNotRequired);
+        appMessageBox.DisplayInfo(InfoStrings.Info_UpdateNotRequired);
     }
 }

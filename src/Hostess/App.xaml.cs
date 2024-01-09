@@ -86,7 +86,7 @@ namespace Hostess
             var services = new ServiceCollection();
 
             // Add HTTP Service
-            services.AddHttpClient(nameof(Hostess), c => c.DefaultRequestHeaders.Add("User-Agent", StringResources.UserAgentText));
+            services.AddHttpClient(nameof(Hostess), c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
 
             // Components
             services

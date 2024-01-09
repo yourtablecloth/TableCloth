@@ -29,7 +29,7 @@ namespace Hostess.Components.Implementations
         public MessageBoxResult DisplayInfo(string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
         {
             return _messageBoxService.Show(
-                _application.MainWindow, message, StringResources.TitleText_Info,
+                _application.MainWindow, message, DialogStrings.TitleText_Info,
                 messageBoxButton, MessageBoxImage.Information,
                 MessageBoxResult.OK);
         }

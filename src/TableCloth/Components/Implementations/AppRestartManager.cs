@@ -12,7 +12,7 @@ public sealed class AppRestartManager(
     private bool _restartReserved;
 
     public bool AskRestart()
-        => appMessageBox.DisplayInfo(StringResources.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK);
+        => appMessageBox.DisplayInfo(AskStrings.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK);
 
     public void RestartNow()
     {

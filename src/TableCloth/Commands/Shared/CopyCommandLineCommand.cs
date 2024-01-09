@@ -14,6 +14,6 @@ public sealed class CopyCommandLineCommand(
         var expression = commandLineComposer.ComposeCommandLineExpression(viewModel, true);
         Clipboard.SetText(expression);
 
-        appMessageBox.DisplayInfo(StringResources.Info_CopyCommandLineSuccess, MessageBoxButton.OK);
+        appMessageBox.DisplayInfo(InfoStrings.Info_CopyCommandLineSuccess, MessageBoxButton.OK);
     }
 }

@@ -25,7 +25,7 @@ public sealed class SplashScreenLoadedCommand(
         try
         {
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
-                StringResources.Status_ParsingCommandLine));
+                DialogStrings.Status_ParsingCommandLine));
 
             var parsedArgs = commandLineArguments.Current;
 
@@ -37,30 +37,30 @@ public sealed class SplashScreenLoadedCommand(
             }
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
-                StringResources.Status_InitSentrySDK));
+                DialogStrings.Status_InitSentrySDK));
 
             using var _ = SentrySdk.Init(o =>
             {
-                o.Dsn = StringResources.SentryDsn;
+                o.Dsn = ConstantStrings.SentryDsn;
                 o.Debug = true;
                 o.TracesSampleRate = 1.0;
             });
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
-                StringResources.Status_LoadingPreferences));
+                DialogStrings.Status_LoadingPreferences));
 
             var preferences = preferencesManager.LoadPreferences();
             viewModel.V2UIOptedIn = preferences?.V2UIOptIn ?? true;
             viewModel.ParsedArgument = parsedArgs;
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
-                StringResources.Status_CheckInternetConnection));
+                DialogStrings.Status_CheckInternetConnection));
 
             if (!await appStartup.CheckForInternetConnectionAsync())
-                appMessageBox.DisplayError(StringResources.Info_Offline, false);
+                appMessageBox.DisplayError(ErrorStrings.Error_Offline, false);
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
-                StringResources.Status_EvaluatingRequirementsMet));
+                DialogStrings.Status_EvaluatingRequirementsMet));
 
             var result = await appStartup.HasRequirementsMetAsync(viewModel.Warnings);
 
@@ -82,7 +82,7 @@ public sealed class SplashScreenLoadedCommand(
                 appMessageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, viewModel.Warnings), false);
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
-                StringResources.Status_InitializingApplication));
+                DialogStrings.Status_InitializingApplication));
 
             result = await appStartup.InitializeAsync(viewModel.Warnings);
 
@@ -101,12 +101,12 @@ public sealed class SplashScreenLoadedCommand(
             }
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
-                StringResources.Status_LoadingCatalog));
+                DialogStrings.Status_LoadingCatalog));
 
             await resourceCacheManager.LoadCatalogDocumentAsync();
 
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
-                StringResources.Status_LoadingImages));
+                DialogStrings.Status_LoadingImages));
 
             await resourceCacheManager.LoadSiteImages();
 
@@ -116,7 +116,7 @@ public sealed class SplashScreenLoadedCommand(
         {
             viewModel.AppStartupSucceed = false;
             viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
-                StringResources.Status_InitializingFailed));
+                DialogStrings.Status_InitializingFailed));
             appMessageBox.DisplayError(ex, true);
         }
         finally
@@ -124,7 +124,7 @@ public sealed class SplashScreenLoadedCommand(
             if (viewModel.AppStartupSucceed)
             {
                 viewModel.NotifyStatusUpdate(this, new StatusUpdateRequestEventArgs(
-                    StringResources.Status_Done));
+                    DialogStrings.Status_Done));
             }
 
             viewModel.NotifyInitialized(this, new DialogRequestEventArgs(viewModel.AppStartupSucceed));

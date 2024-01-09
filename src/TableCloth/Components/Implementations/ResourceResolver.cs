@@ -27,15 +27,15 @@ public sealed class ResourceResolver(
         CancellationToken cancellationToken = default)
     {
         var httpClient = httpClientFactory.CreateTableClothHttpClient();
-        var uriBuilder = new UriBuilder(new Uri(StringResources.CatalogUrl, UriKind.Absolute));
+        var uriBuilder = new UriBuilder(new Uri(ConstantStrings.CatalogUrl, UriKind.Absolute));
 
         var queryKeyValues = HttpUtility.ParseQueryString(uriBuilder.Query);
-        queryKeyValues["ts"] = DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
+        queryKeyValues[ConstantStrings.QueryString_Timestamp_Key] = DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
         uriBuilder.Query = queryKeyValues.ToString();
 
         var httpRequest = new HttpRequestMessage(HttpMethod.Get, uriBuilder.Uri);
         httpRequest.Headers.CacheControl = new CacheControlHeaderValue() { NoCache = true, NoStore = true, };
-        httpRequest.Headers.UserAgent.TryParseAdd(StringResources.UserAgentText);
+        httpRequest.Headers.UserAgent.TryParseAdd(ConstantStrings.UserAgentText);
 
         var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
         _catalogLastModified = httpResponse.Content.Headers.LastModified;
@@ -109,7 +109,7 @@ public sealed class ResourceResolver(
             {
                 try
                 {
-                    var targetUrl = $"{StringResources.ImageUrlPrefix}/{eachSite.Category}/{eachSite.Id}.png";
+                    var targetUrl = $"{ConstantStrings.ImageUrlPrefix}/{eachSite.Category}/{eachSite.Id}.png";
                     var imageStream = await httpClient.GetStreamAsync(targetUrl, cancellationToken).ConfigureAwait(false);
 
                     using var fileStream = File.OpenWrite(targetFilePath);
