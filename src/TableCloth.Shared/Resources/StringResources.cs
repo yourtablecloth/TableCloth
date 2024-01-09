@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Security;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using TableCloth.Models.Catalog;
 
 namespace TableCloth.Resources
 {
@@ -83,43 +77,6 @@ namespace TableCloth.Resources
 
         internal static readonly string TitleText_Question
             = $"{AppName} 확인";
-
-        internal static string Get_AppVersion()
-        {
-            var executingAssembly = Assembly.GetExecutingAssembly();
-            var versionInfo = executingAssembly.GetName().Version?.ToString() ?? "Unknown";
-
-            try
-            {
-                var resourceNames = executingAssembly.GetManifestResourceNames();
-                var commitTextFileName = resourceNames.Where(x => x.EndsWith("commit.txt", StringComparison.Ordinal)).FirstOrDefault();
-
-                if (commitTextFileName != null)
-                {
-                    var resourceStream = executingAssembly.GetManifestResourceStream(commitTextFileName);
-                    var commitId = string.Empty;
-
-                    if (resourceStream == null)
-                        commitId = "Unknown Commit ID";
-                    else
-                    {
-                        using (resourceStream)
-                        {
-                            var streamReader = new StreamReader(resourceStream, new UTF8Encoding(false), true);
-                            commitId = streamReader.ReadToEnd().Trim();
-
-                            if (commitId.Length > 8)
-                                commitId = commitId.Substring(0, 8);
-
-                            versionInfo = $"{versionInfo}, #{commitId.Substring(0, 8)}";
-                        }
-                    }
-                }
-            }
-            catch { }
-
-            return versionInfo;
-        }
     }
 
     // 공동 인증서 관련 문자열들
@@ -175,46 +132,6 @@ namespace TableCloth.Resources
     partial class StringResources
     {
         internal static readonly string UnknownText = "알 수 없음";
-
-        internal static string InternetService_DisplayText(CatalogInternetService svc)
-        {
-            var defaultString = $"{svc.DisplayName} - {svc.Url}";
-            var pkgs = svc.Packages;
-
-            var hasCompatNotes = !string.IsNullOrWhiteSpace(svc.CompatibilityNotes);
-
-            if (hasCompatNotes)
-                defaultString = $"*{defaultString}";
-
-            if (pkgs != null && pkgs.Count > 0)
-                defaultString = $"{defaultString} (총 {svc.PackageCountForDisplay}개 프로그램 설치)";
-
-            return defaultString;
-        }
-
-        internal static string InternetServiceCategory_DisplayText(CatalogInternetServiceCategory? value)
-        {
-            switch (value)
-            {
-                case CatalogInternetServiceCategory.Banking:
-                    return "뱅킹";
-                case CatalogInternetServiceCategory.CreditCard:
-                    return "신용 카드";
-                case CatalogInternetServiceCategory.Education:
-                    return "교육";
-                case CatalogInternetServiceCategory.Financing:
-                    return "대출/금융";
-                case CatalogInternetServiceCategory.Government:
-                    return "공공";
-                case CatalogInternetServiceCategory.Security:
-                    return "증권/투자";
-                case CatalogInternetServiceCategory.Insurance:
-                    return "보험";
-                case CatalogInternetServiceCategory.Other:
-                default:
-                    return "기타";
-            }
-        }
     }
 
     // 오류 메시지에 표시될 문자열들
@@ -285,10 +202,12 @@ namespace TableCloth.Resources
 
         internal static string Error_HostFolder_Unavailable(IEnumerable<string> unavailableDirectories)
         {
-            var directoryList = string.Join(Environment.NewLine, unavailableDirectories.Select(x => $"- {x}"));
+            var buffer = new StringBuilder();
+            foreach (var eachUnavailableDirectory in unavailableDirectories)
+                buffer.AppendLine(string.Format("- {0}", eachUnavailableDirectory));
+
             return "다음의 디렉터리를 이 컴퓨터에서 찾을 수 없어 샌드박스에서 연결할 때 제외합니다." + Environment.NewLine +
-                Environment.NewLine +
-                $"{directoryList}";
+                Environment.NewLine + buffer.ToString();
         }
 
         internal static readonly string Error_Windows_Explorer_Missing
@@ -456,11 +375,11 @@ namespace TableCloth.Resources
             return message;
         }
 
-        internal static string HostessError_X509CertError(X509Certificate cert, SslPolicyErrors error)
+        internal static string HostessError_X509CertError(string certSubject, string errorCode)
         {
             return String.Format(
                 "원격 웹 사이트와의 통신 도중 X509 인증서 오류가 발생했습니다. 인증서 주체는 {0}이며, 발생한 오류 코드는 {1} 입니다.",
-                cert.Subject, error.ToString());
+                certSubject, errorCode);
         }
 
         internal static string HostessError_PackageInstallFailure(string errorMessage)

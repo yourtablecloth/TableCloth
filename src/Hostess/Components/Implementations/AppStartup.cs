@@ -158,7 +158,7 @@ namespace Hostess.Components.Implementations
             if (error == SslPolicyErrors.None)
                 return true;
 
-            _appMessageBox.DisplayError(StringResources.HostessError_X509CertError(cert, error), false);
+            _appMessageBox.DisplayError(StringResources.HostessError_X509CertError(cert.Subject, error.ToString()), false);
             return false;
         }
     }

@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 
 namespace TableCloth
 {
@@ -26,6 +28,43 @@ namespace TableCloth
             };
 
             Process.Start(psi);
+        }
+
+        public static string GetAppVersion()
+        {
+            var executingAssembly = Assembly.GetExecutingAssembly();
+            var versionInfo = executingAssembly.GetName().Version?.ToString() ?? "Unknown";
+
+            try
+            {
+                var resourceNames = executingAssembly.GetManifestResourceNames();
+                var commitTextFileName = resourceNames.Where(x => x.EndsWith("commit.txt", StringComparison.Ordinal)).FirstOrDefault();
+
+                if (commitTextFileName != null)
+                {
+                    var resourceStream = executingAssembly.GetManifestResourceStream(commitTextFileName);
+                    var commitId = string.Empty;
+
+                    if (resourceStream == null)
+                        commitId = "Unknown Commit ID";
+                    else
+                    {
+                        using (resourceStream)
+                        {
+                            var streamReader = new StreamReader(resourceStream, new UTF8Encoding(false), true);
+                            commitId = streamReader.ReadToEnd().Trim();
+
+                            if (commitId.Length > 8)
+                                commitId = commitId.Substring(0, 8);
+
+                            versionInfo = $"{versionInfo}, #{commitId.Substring(0, 8)}";
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            return versionInfo;
         }
     }
 }

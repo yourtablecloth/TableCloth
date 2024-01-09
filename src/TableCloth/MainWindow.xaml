@@ -101,7 +101,7 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
-                                        <Image x:Name="Icon" Width="{Binding ListViewIconSize}" Height="{Binding ListViewIconSize}" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" Margin="0 0 10 0" RenderOptions.BitmapScalingMode="Fant" />
+                                        <Image x:Name="Icon" Width="16" Height="16" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}" Margin="0 0 10 0" RenderOptions.BitmapScalingMode="Fant" />
                                         <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </DataTemplate>
@@ -111,7 +111,7 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
-                                        <Rectangle Height="{Binding ListViewIconSize}" Fill="Transparent" />
+                                        <Rectangle Height="16" Fill="Transparent" />
                                         <TextBlock Text="{Binding CategoryDisplayName}" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </DataTemplate>
@@ -121,7 +121,7 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
-                                        <Rectangle Height="{Binding ListViewIconSize}" Fill="Transparent" />
+                                        <Rectangle Height="16" Fill="Transparent" />
                                         <TextBlock Text="{Binding PackageCountForDisplay}" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </DataTemplate>
@@ -131,7 +131,7 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
-                                        <Rectangle Height="{Binding ListViewIconSize}" Fill="Transparent" />
+                                        <Rectangle Height="16" Fill="Transparent" />
                                         <TextBlock Text="{Binding Url}" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </DataTemplate>

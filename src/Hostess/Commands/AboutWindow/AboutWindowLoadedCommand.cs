@@ -1,5 +1,6 @@
 ﻿using Hostess.Components;
 using Hostess.ViewModels;
+using TableCloth;
 using TableCloth.Resources;
 
 namespace Hostess.Commands.AboutWindow
@@ -19,7 +20,7 @@ namespace Hostess.Commands.AboutWindow
 
         public override void Execute(AboutWindowViewModel viewModel)
         {
-            viewModel.AppVersion = StringResources.Get_AppVersion();
+            viewModel.AppVersion = Helpers.GetAppVersion();
             viewModel.CatalogVersion = _resourceResolver.CatalogLastModified?.ToString() ?? StringResources.UnknownText;
             viewModel.LicenseDescription = _licenseDescriptor.GetLicenseDescriptions();
         }

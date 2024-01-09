@@ -92,7 +92,23 @@ namespace TableCloth.Models.Catalog
         /// </remarks>
         [XmlIgnore]
         public string CategoryDisplayName
-            => StringResources.InternetServiceCategory_DisplayText(Category);
+        {
+            get
+            {
+                switch (Category)
+                {
+                    case CatalogInternetServiceCategory.Banking: return StringResources.DisplayName_Banking;
+                    case CatalogInternetServiceCategory.CreditCard: return StringResources.DisplayName_CreditCard;
+                    case CatalogInternetServiceCategory.Education: return StringResources.DisplayName_Education;
+                    case CatalogInternetServiceCategory.Financing: return StringResources.DisplayName_Financing;
+                    case CatalogInternetServiceCategory.Government: return StringResources.DisplayName_Government;
+                    case CatalogInternetServiceCategory.Security: return StringResources.DisplayName_Security;
+                    case CatalogInternetServiceCategory.Insurance: return StringResources.DisplayName_Insurance;
+                    case CatalogInternetServiceCategory.Other:
+                    default: return StringResources.DisplayName_Other;
+                }
+            }
+        }
 
         /// <summary>
         /// 설치해야 하는 소프트웨어의 숫자를 가져옵니다.
@@ -113,28 +129,23 @@ namespace TableCloth.Models.Catalog
         }
 
         /// <summary>
-        /// 리스트 뷰에 표시될 아이콘의 상대적 크기 값을 가져옵니다.
-        /// </summary>
-        /// <remarks>
-        /// 이 속성은 실제 XML 데이터를 이용하여 값을 만드는 계산된 속성입니다.
-        /// </remarks>
-        [XmlIgnore]
-        public int ListViewIconSize => 16;
-
-        /// <summary>
-        /// 리스트 뷰에 표시될 아이콘의 상대적 크기 값을 가져옵니다.
-        /// </summary>
-        /// <remarks>
-        /// 이 속성은 실제 XML 데이터를 이용하여 값을 만드는 계산된 속성입니다.
-        /// </remarks>
-        [XmlIgnore]
-        public int ListViewItemSize => 48;
-
-        /// <summary>
         /// 이 개체의 정보를 문자열로 가져옵니다.
         /// </summary>
         /// <returns>사용자가 이해할 수 있는 형태의 문자열이 반환됩니다.</returns>
         public override string ToString()
-            => StringResources.InternetService_DisplayText(this);
+        {
+            var defaultString = $"{DisplayName} - {Url}";
+            var pkgs = Packages;
+
+            var hasCompatNotes = !string.IsNullOrWhiteSpace(CompatibilityNotes);
+
+            if (hasCompatNotes)
+                defaultString = $"*{defaultString}";
+
+            if (pkgs != null && pkgs.Count > 0)
+                defaultString = $"{defaultString} (총 {PackageCountForDisplay}개 프로그램 설치)";
+
+            return defaultString;
+        }
     }
 }
