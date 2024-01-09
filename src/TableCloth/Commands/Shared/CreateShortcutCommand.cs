@@ -7,7 +7,7 @@ namespace TableCloth.Commands.Shared;
 
 public sealed class CreateShortcutCommand(
     IShortcutCrerator shortcutCrerator,
-    AppMessageBox appMessageBox) : ViewModelCommandBase<ITableClothViewModel>
+    IAppMessageBox appMessageBox) : ViewModelCommandBase<ITableClothViewModel>
 {
 
     public override void Execute(ITableClothViewModel viewModel)
