@@ -383,6 +383,12 @@ namespace TableCloth.Resources
 
         internal static readonly string Info_CopyCommandLineSuccess =
             "자동화 작업 실행 시 사용할 수 있는 명령어를 클립보드에 복사했습니다.";
+
+        internal static readonly string Error_ShortcutNoSiteSelected =
+            "선택된 웹 사이트가 없어 바로 가기를 생성할 수 없습니다.";
+
+        internal static readonly string Info_WillCreateSingleSiteShortcut =
+            "바로 가기에 지정할 수 있는 최대 명령어 길이 제한으로 처음 선택한 사이트만 바로 가기로 만듭니다.";
     }
 
     // 스크립트 내에서 사용되는 문자열들
