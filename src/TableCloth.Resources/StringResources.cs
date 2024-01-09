@@ -8,58 +8,45 @@ namespace TableCloth.Resources
     // 공통 문자열들
     public static partial class StringResources
     {
-        public static readonly string AppName = "식탁보";
+        public static string AppName => CommonStrings.AppName;
 
-        public static readonly string AppCopyright = "(c) 2021 남정현";
+        public static string AppCopyright => CommonStrings.AppCopyright;
 
-        public static readonly string AppPublisher = "식탁보 프로젝트";
+        public static string AppPublisher => CommonStrings.AppPublisher;
 
-        public static readonly string AppCommentText = "식탁보 - 컴퓨터를 깨끗하게 사용하세요!";
+        public static string AppCommentText => CommonStrings.AppCommentText;
 
-        public static readonly string AppNameForWixAndStore = "TableCloth";
+        public static string AppNameForWixAndStore => CommonStrings.AppNameForWixAndStore;
 
-        public static readonly string AppPublisherForWixAndStore = "TableCloth Project";
+        public static string AppPublisherForWixAndStore => CommonStrings.AppPublisherForWixAndStore;
 
-        public static readonly string AppCommentTextForWixAndStore = "TableCloth - Keep your computer clean!";
+        public static string AppCommentTextForWixAndStore => CommonStrings.AppCommentTextForWixAndStore;
 
-        public static readonly string AppContactForWixAndStore =
-            "https://yourtablecloth.app";
+        public static string AppContactForWixAndStore => CommonStrings.AppContactForWixAndStore;
 
-        public static readonly string AppInfoUrl =
-            "https://yourtablecloth.app";
+        public static string AppInfoUrl => CommonStrings.AppInfoUrl;
 
-        public static readonly string PrivacyPolicyUrl =
-            "https://yourtablecloth.app/privacy";
+        public static string PrivacyPolicyUrl => CommonStrings.PrivacyPolicyUrl;
 
-        public static readonly string IEModePolicyXmlUrl =
-            "https://yourtablecloth.app/TableClothCatalog/sites.xml";
+        public static string IEModePolicyXmlUrl => CommonStrings.IEModePolicyXmlUrl;
 
-        public static readonly string AppUpdateInfoUrl =
-            "https://github.com/yourtablecloth/TableCloth/releases";
+        public static string AppUpdateInfoUrl => CommonStrings.AppUpdateInfoUrl;
 
-        public static readonly string CatalogUrl =
-            "https://yourtablecloth.app/TableClothCatalog/Catalog.xml";
+        public static string CatalogUrl => CommonStrings.CatalogUrl;
 
-        public static readonly string ImageUrlPrefix =
-            "https://yourtablecloth.app/TableClothCatalog/images";
+        public static string ImageUrlPrefix => CommonStrings.ImageUrlPrefix;
 
-        public static readonly string SentryDsn =
-            "https://785e3f46849c403bb6c323d7a9eaad91@o77541.ingest.sentry.io/5915832";
+        public static string SentryDsn => CommonStrings.SentryDsn;
 
-        public static readonly string UserAgentText =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36";
+        public static string UserAgentText => CommonStrings.UserAgentText;
 
-        public static readonly string EveryonesPrinterUrl =
-            "https://modu-print.com/";
+        public static string EveryonesPrinterUrl => CommonStrings.UserAgentText;
 
-        public static readonly string AdobeReaderUrl =
-            "https://get.adobe.com/kr/reader/";
+        public static string AdobeReaderUrl => CommonStrings.AdobeReaderUrl;
 
-        public static readonly string HancomOfficeViewerUrl =
-            "https://www.hancom.com/cs_center/csDownload.do";
+        public static string HancomOfficeViewerUrl => CommonStrings.ImageUrlPrefix;
 
-        public static readonly string RaiDriveUrl =
-            "https://www.raidrive.com/download";
+        public static string RaiDriveUrl => CommonStrings.ImageUrlPrefix;
     }
 #pragma warning disable IDE0040, IDE0066
 
