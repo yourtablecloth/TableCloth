@@ -178,7 +178,7 @@
             <ColumnDefinition Width="80*" />
             <ColumnDefinition Width="30*" />
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="8 0 0 0" FontWeight="Bold" TextWrapping="Wrap" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{x:Static res:UIStringResources.CatalogPage_Instruction}" />
+        <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="8 0 8 0" FontWeight="Bold" TextWrapping="Wrap" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{x:Static res:UIStringResources.CatalogPage_Instruction}" d:Visibility="Visible" />
         <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Margin="2" IsEnabled="{Binding HasServices}">
             <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Banking}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Banking}" Content="{x:Static res:CommonStrings.DisplayName_Banking}" />
             <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Financing}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Financing}" Content="{x:Static res:CommonStrings.DisplayName_Financing}" />
