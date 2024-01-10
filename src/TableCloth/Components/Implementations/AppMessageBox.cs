@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using TableCloth.Resources;
 
@@ -11,6 +12,10 @@ public sealed class AppMessageBox(
     Application application,
     IMessageBoxService messageBoxService) : IAppMessageBox
 {
+    // https://stackoverflow.com/questions/2038879/refer-to-active-window-in-wpf
+    private Window? GetActiveWindow()
+        => application.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive);
+
     /// <summary>
     /// 정보를 안내하는 메시지 상자를 띄웁니다.
     /// </summary>
@@ -20,7 +25,7 @@ public sealed class AppMessageBox(
     public MessageBoxResult DisplayInfo(string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
     {
         return messageBoxService.Show(
-            application.MainWindow, message, UIStringResources.TitleText_Info,
+            GetActiveWindow(), message, UIStringResources.TitleText_Info,
             messageBoxButton, MessageBoxImage.Information,
             MessageBoxResult.OK);
     }
@@ -45,12 +50,11 @@ public sealed class AppMessageBox(
         if (string.IsNullOrWhiteSpace(message))
             message = StringResources.Error_Unknown();
 
-        var owner = application.MainWindow;
         var title = isCritical ? UIStringResources.TitleText_Error : UIStringResources.TitleText_Warning;
         var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 
         return messageBoxService.Show(
-            application.MainWindow, message, title, MessageBoxButton.OK,
+            GetActiveWindow(), message, title, MessageBoxButton.OK,
             image, MessageBoxResult.OK);
     }
 }
