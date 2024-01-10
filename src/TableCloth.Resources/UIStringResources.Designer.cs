@@ -61,7 +61,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 프로그램 버전.
+        ///   Looks up a localized string similar to Program Version.
         /// </summary>
         public static string AboutWindow_AppVersionText {
             get {
@@ -70,7 +70,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 카탈로그 버전.
+        ///   Looks up a localized string similar to Catalog Version.
         /// </summary>
         public static string AboutWindow_CatalogDateText {
             get {
@@ -79,7 +79,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 라이선스 정보를 확인 중입니다..
+        ///   Looks up a localized string similar to Retrieving license information..
         /// </summary>
         public static string AboutWindow_LoadingLicensesMessage {
             get {
@@ -88,7 +88,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 프로그램 정보.
+        ///   Looks up a localized string similar to About This Program.
         /// </summary>
         public static string AboutWindow_Title {
             get {
@@ -97,7 +97,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 프로그램 정보.
+        ///   Looks up a localized string similar to About.
         /// </summary>
         public static string Button_AboutButton {
             get {
@@ -106,7 +106,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 프로그램 다시 실행.
+        ///   Looks up a localized string similar to Restart.
         /// </summary>
         public static string Button_AppRestartButton {
             get {
@@ -115,7 +115,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 찾아보기....
+        ///   Looks up a localized string similar to Browse....
         /// </summary>
         public static string Button_BrowseButton {
             get {
@@ -124,7 +124,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 취소.
+        ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Button_CancelButton {
             get {
@@ -133,7 +133,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 업데이트 확인.
+        ///   Looks up a localized string similar to Check Update.
         /// </summary>
         public static string Button_CheckUpdateButton {
             get {
@@ -142,7 +142,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 닫기.
+        ///   Looks up a localized string similar to Close.
         /// </summary>
         public static string Button_CloseButton {
             get {
@@ -151,7 +151,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PFX 파일로 변환하기.
+        ///   Looks up a localized string similar to Convert to PFX.
         /// </summary>
         public static string Button_ConvertToPfxButton {
             get {
@@ -160,7 +160,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 명령줄 복사하기.
+        ///   Looks up a localized string similar to Copy Commandline.
         /// </summary>
         public static string Button_CopyCommandLineButton {
             get {
@@ -169,7 +169,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 바로 가기 만들기.
+        ///   Looks up a localized string similar to Create a Shortcut.
         /// </summary>
         public static string Button_CreateShortcutButton {
             get {
@@ -178,7 +178,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 설치하기.
+        ///   Looks up a localized string similar to Install.
         /// </summary>
         public static string Button_InstallButton {
             get {
@@ -187,7 +187,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 실행하기.
+        ///   Looks up a localized string similar to Launch.
         /// </summary>
         public static string Button_LaunchButton {
             get {
@@ -196,7 +196,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 기존 공동 인증서 파일 가져오기.
+        ///   Looks up a localized string similar to Import Certificates.
         /// </summary>
         public static string Button_MapNpkiCertButton {
             get {
@@ -205,7 +205,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 확인.
+        ///   Looks up a localized string similar to OK.
         /// </summary>
         public static string Button_OkayButton {
             get {
@@ -214,7 +214,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 홈페이지.
+        ///   Looks up a localized string similar to Website.
         /// </summary>
         public static string Button_OpenHomepageButton {
             get {
@@ -223,7 +223,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 개인 정보 처리 방침.
+        ///   Looks up a localized string similar to Privacy Policy.
         /// </summary>
         public static string Button_PrivacyLink {
             get {
@@ -232,7 +232,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 새로 고침.
+        ///   Looks up a localized string similar to Refresh.
         /// </summary>
         public static string Button_RefreshButton {
             get {
@@ -241,7 +241,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 시스템 정보.
+        ///   Looks up a localized string similar to System Information.
         /// </summary>
         public static string Button_ShowSysInfoButton {
             get {
@@ -250,7 +250,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 접속하려는 웹 사이트를 선택하거나, 우측 상단의 검색창에서 검색어를 입력하세요..
+        ///   Looks up a localized string similar to Select the website you want to access, or enter a search term in the search bar in the upper-right corner..
         /// </summary>
         public static string CatalogPage_Instruction {
             get {
@@ -259,7 +259,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}개.
+        ///   Looks up a localized string similar to {0}.
         /// </summary>
         public static string CatalogPage_ItemCountLabel {
             get {
@@ -268,7 +268,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 인터넷 뱅킹 서비스 선택.
+        ///   Looks up a localized string similar to Select a service.
         /// </summary>
         public static string CatalogPage_Title {
             get {
@@ -277,7 +277,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 사용 가능.
+        ///   Looks up a localized string similar to Available.
         /// </summary>
         public static string Cert_Availability_Available {
             get {
@@ -286,7 +286,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 만료됨.
+        ///   Looks up a localized string similar to Expired.
         /// </summary>
         public static string Cert_Availability_Expired {
             get {
@@ -295,7 +295,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}일 후 만료.
+        ///   Looks up a localized string similar to Expires in {0} days.
         /// </summary>
         public static string Cert_Availability_ExpireSoon {
             get {
@@ -304,7 +304,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}일 후 사용 가능.
+        ///   Looks up a localized string similar to Available in {0} days.
         /// </summary>
         public static string Cert_Availability_MayTooEarly {
             get {
@@ -313,7 +313,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 사용 가능 여부.
+        ///   Looks up a localized string similar to Availability.
         /// </summary>
         public static string CertSelectWindow_CertList_Available {
             get {
@@ -322,7 +322,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 소유자.
+        ///   Looks up a localized string similar to Owner.
         /// </summary>
         public static string CertSelectWindow_CertList_CommonName {
             get {
@@ -331,7 +331,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 국가.
+        ///   Looks up a localized string similar to Country.
         /// </summary>
         public static string CertSelectWindow_CertList_CountryName {
             get {
@@ -340,7 +340,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 발급기관.
+        ///   Looks up a localized string similar to Organization.
         /// </summary>
         public static string CertSelectWindow_CertList_Organization {
             get {
@@ -349,7 +349,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 기관.
+        ///   Looks up a localized string similar to Organizational Unit.
         /// </summary>
         public static string CertSelectWindow_CertList_OrganizationalUnits {
             get {
@@ -358,7 +358,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 공동 인증서 파일 (signCert.der;signPri.key)|signCert.der;signPri.key|공동 인증서 파일 (*.pfx;*.p12)|*.pfx;*.p12.
+        ///   Looks up a localized string similar to Public Certificate File (signCert.der;signPri.key)|signCert.der;signPri.key|Public Certificate File (*.pfx;*.p12)|*.pfx;*.p12.
         /// </summary>
         public static string CertSelectWindow_FileOpenDialog_FilterText {
             get {
@@ -367,7 +367,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 공동 인증서 파일 (signCert.der, signPri.key, *.pfx, *.p12) 열기.
+        ///   Looks up a localized string similar to Open the certificate files (signCert.der, signPri.key, *.pfx, *.p12).
         /// </summary>
         public static string CertSelectWindow_FileOpenDialog_Text {
             get {
@@ -376,7 +376,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 검색된 공동 인증서가 다음과 같습니다. 다음 중 하나를 선택해주세요..
+        ///   Looks up a localized string similar to The following certificates were found, please select one of them..
         /// </summary>
         public static string CertSelectWindow_InstructionLabel {
             get {
@@ -385,7 +385,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 원하는 공동 인증서가 없다면, 직접 공동 인증서 찾기 버튼을 눌러서 직접 DER 파일과 KEY 파일 한 쌍, 혹은 PFX 파일을 찾아주세요..
+        ///   Looks up a localized string similar to If you don&apos;t see the certificate you&apos;re looking for, click the Find Joint Certificate button to manually find the DER file and KEY file pair, or PFX file..
         /// </summary>
         public static string CertSelectWindow_ManualInstructionLabelText {
             get {
@@ -394,7 +394,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 직접 공동 인증서 찾기....
+        ///   Looks up a localized string similar to Select a certificate....
         /// </summary>
         public static string CertSelectWindow_OpenNpkiCertButton {
             get {
@@ -403,7 +403,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 검색된 공동 인증서 선택.
+        ///   Looks up a localized string similar to Select the certificate.
         /// </summary>
         public static string CertSelectWindow_Title {
             get {
@@ -412,7 +412,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 샌드박스 실행 후 설치될 소프트웨어 개수: {0}개.
+        ///   Looks up a localized string similar to Number of software to be installed after sandbox run: {0}.
         /// </summary>
         public static string DetailPage_PackageCountDisplayLabel {
             get {
@@ -421,7 +421,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 홈페이지 주소: {0}.
+        ///   Looks up a localized string similar to Homepage address: {0}.
         /// </summary>
         public static string DetailPage_UrlLabel {
             get {
@@ -430,7 +430,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 동의합니다. 일주일 동안 이 화면을 보지 않겠습니다..
+        ///   Looks up a localized string similar to I agree. I won&apos;t look at this screen for a week..
         /// </summary>
         public static string DisclaimerWindow_AgreeButtonText {
             get {
@@ -439,9 +439,9 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보를 사용 중 발생하는 개인, 기업, 기관의 금전 손실, 세금 신고 누락 등을 비롯한 어떠한 장애나 손해에 대해서는 사용자 본인에게 책임이 있습니다.
+        ///   Looks up a localized string similar to You are responsible for any failure or damage to any person, business, or organization that occurs while using Tableau, including loss of money, missed tax returns, etc.
         ///
-        ///가상 환경이 아닌 실제 컴퓨터 환경에서 실행되어야 손해나 피해가 발생하지 않는 작업은 식탁보를 이용하지 않고 실제 PC 환경에서 사용하는 것을 권장합니다..
+        ///We recommend that you do not use TableCloth for tasks that cannot be performed in a virtual environment and should be performed in a physical PC environment to prevent damage or harm..
         /// </summary>
         public static string DisclaimerWindow_Content {
             get {
@@ -450,7 +450,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 꼭 읽어주세요..
+        ///   Looks up a localized string similar to Be sure to read it..
         /// </summary>
         public static string DisclaimerWindow_Readme {
             get {
@@ -459,7 +459,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 사용 시 주의 사항.
+        ///   Looks up a localized string similar to Precautions for using TableCloth.
         /// </summary>
         public static string DisclaimerWindow_Title {
             get {
@@ -468,7 +468,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 이 프로그램은 요청받은 설치 프로그램들을 샌드 박스 안에 한번에 설치해주는 도구입니다. 설치하기 버튼을 누르면 설치가 시작됩니다..
+        ///   Looks up a localized string similar to This program is a tool that installs the requested installers into the sandbox at once. Press the Install button to start the installation..
         /// </summary>
         public static string Hostess_AppInstructionMessage {
             get {
@@ -477,7 +477,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 자동 설치 프로그램.
+        ///   Looks up a localized string similar to TableCloth Auto-Installer.
         /// </summary>
         public static string Hostess_AppTitle {
             get {
@@ -486,7 +486,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 별도 설치 스크립트.
+        ///   Looks up a localized string similar to Separate installation script.
         /// </summary>
         public static string Hostess_CustomScript_Title {
             get {
@@ -495,7 +495,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 다운로드 중....
+        ///   Looks up a localized string similar to Downloading....
         /// </summary>
         public static string Hostess_Download_InProgress {
             get {
@@ -504,7 +504,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 자동 설치 프로그램이 Dry Run 모드로 실행 중입니다..
+        ///   Looks up a localized string similar to The tablecloth auto-installer is running in dry run mode..
         /// </summary>
         public static string Hostess_DryRunInstructionMessage {
             get {
@@ -513,7 +513,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 설치 실패.
+        ///   Looks up a localized string similar to Fail.
         /// </summary>
         public static string Hostess_Install_Failed {
             get {
@@ -522,7 +522,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 설치하는 중....
+        ///   Looks up a localized string similar to Installing....
         /// </summary>
         public static string Hostess_Install_InProgress {
             get {
@@ -531,7 +531,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 설치 완료.
+        ///   Looks up a localized string similar to Done.
         /// </summary>
         public static string Hostess_Install_Succeed {
             get {
@@ -540,7 +540,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 이용하려는 웹 사이트 아이디가 지정되지 않았습니다. 샌드박스는 지금부터 사용하실 수 있어요..
+        ///   Looks up a localized string similar to The website ID you want to use is not specified. The sandbox is now available for use..
         /// </summary>
         public static string Hostess_No_Targets {
             get {
@@ -549,7 +549,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 주의 사항.
+        ///   Looks up a localized string similar to Caveats.
         /// </summary>
         public static string Hostess_PrecautionWindowText {
             get {
@@ -558,7 +558,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 자세히 보기.
+        ///   Looks up a localized string similar to Read more.
         /// </summary>
         public static string Hostess_ShowDetailError {
             get {
@@ -567,7 +567,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 사이트 이용 시 주의 사항.
+        ///   Looks up a localized string similar to Precautions for using the site.
         /// </summary>
         public static string Hostess_Warning_Title {
             get {
@@ -576,7 +576,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 입력하시는 암호는 프로그램 내부에서만 사용되고 폐기됩니다..
+        ///   Looks up a localized string similar to The password you enter is only used inside the program and is discarded..
         /// </summary>
         public static string InputPasswordWindow_Disclaimer {
             get {
@@ -585,7 +585,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PFX 인증서를 DER과 KEY로 변환해서 전달하기 위해 비밀 번호 입력이 필요합니다..
+        ///   Looks up a localized string similar to A passphrase is required to convert the PFX certificate to a DER and KEY for delivery..
         /// </summary>
         public static string InputPasswordWindow_Instruction {
             get {
@@ -594,7 +594,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PFX 인증서 파일 경로: {0}.
+        ///   Looks up a localized string similar to PFX Certificate File Path: {0}.
         /// </summary>
         public static string InputPasswordWindow_PfxPathPrefix {
             get {
@@ -603,7 +603,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PFX 인증서 변환을 위한 비밀 번호 입력.
+        ///   Looks up a localized string similar to Enter the password to convert the PFX certificate.
         /// </summary>
         public static string InputPasswordWindow_Title {
             get {
@@ -612,7 +612,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 분류.
+        ///   Looks up a localized string similar to Category.
         /// </summary>
         public static string MainWindow_Column_Category {
             get {
@@ -621,7 +621,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 필요 소프트웨어 개수.
+        ///   Looks up a localized string similar to Number of software required.
         /// </summary>
         public static string MainWindow_Column_PackageCount {
             get {
@@ -630,7 +630,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 웹 사이트 이름.
+        ///   Looks up a localized string similar to Website Name.
         /// </summary>
         public static string MainWindow_Column_SiteName {
             get {
@@ -639,7 +639,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 웹 사이트 주소.
+        ///   Looks up a localized string similar to Website Address.
         /// </summary>
         public static string MainWindow_Column_SiteUrl {
             get {
@@ -648,7 +648,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 그냥 실행해주세요..
+        ///   Looks up a localized string similar to Just run it..
         /// </summary>
         public static string MainWindow_JustRunItemText {
             get {
@@ -657,7 +657,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 원하는 옵션을 선택해주세요..
+        ///   Looks up a localized string similar to Select your preferred option..
         /// </summary>
         public static string MainWindow_SelectOptionsLabelText {
             get {
@@ -666,7 +666,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 위에서 접속할 사이트들을 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요..
+        ///   Looks up a localized string similar to Select the sites you want to access on the tablecloth. The site will automatically install the necessary programs for you..
         /// </summary>
         public static string MainWindow_SelectSiteLabelText {
             get {
@@ -675,7 +675,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 카탈로그 파일을 가져오지 못했어요! 그래도 샌드박스는 대신 실행해드려요..
+        ///   Looks up a localized string similar to The program didn&apos;t get the catalog file! But we&apos;ll run the sandbox for you..
         /// </summary>
         public static string MainWindow_SelectSiteLabelText_Alt {
             get {
@@ -684,7 +684,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 카탈로그 파일을 가져오지 못했어요!.
+        ///   Looks up a localized string similar to Failed to import the catalog file!.
         /// </summary>
         public static string MainWindow_SelectSiteLabelText_Alt2 {
             get {
@@ -693,7 +693,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 - 컴퓨터를 깨끗하게 사용하세요!.
+        ///   Looks up a localized string similar to TableCloth - Keep your computer clean!.
         /// </summary>
         public static string MainWindow_Title {
             get {
@@ -702,7 +702,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 부가 기능.
+        ///   Looks up a localized string similar to Add-ons.
         /// </summary>
         public static string Option_Addons {
             get {
@@ -711,7 +711,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 기본 설정.
+        ///   Looks up a localized string similar to Basic Preferences.
         /// </summary>
         public static string Option_BasicPreferences {
             get {
@@ -720,7 +720,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adobe Reader 설치하기.
+        ///   Looks up a localized string similar to Install Adobe Reader.
         /// </summary>
         public static string Option_InstallAdobeReader {
             get {
@@ -729,7 +729,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 모두의 프린터 설치하기.
+        ///   Looks up a localized string similar to Install Everyones Printer.
         /// </summary>
         public static string Option_InstallEveryonesPrinter {
             get {
@@ -738,7 +738,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 한컴오피스 뷰어 설치하기.
+        ///   Looks up a localized string similar to Install Hancom Office Viewer.
         /// </summary>
         public static string Option_InstallHancomOfficeViewer {
             get {
@@ -747,7 +747,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RaiDrive 설치하기.
+        ///   Looks up a localized string similar to Install RaiDrive.
         /// </summary>
         public static string Option_InstallRaiDrive {
             get {
@@ -756,7 +756,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 아래 옵션에서 새로운 버전의 식탁보 프로그램에 도입될 예정인 기능을 켜고 끌 수 있습니다..
+        ///   Looks up a localized string similar to The options below allow you to turn on and off features that will be introduced in the new version of the tablecloth program..
         /// </summary>
         public static string Option_LabDescriptionText {
             get {
@@ -765,7 +765,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 실험실.
+        ///   Looks up a localized string similar to Experimentals.
         /// </summary>
         public static string Option_LabPreferences {
             get {
@@ -774,7 +774,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 새로운 사용자 인터페이스 사용.
+        ///   Looks up a localized string similar to Using the new user interface.
         /// </summary>
         public static string Option_NewUIOptIn {
             get {
@@ -783,7 +783,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보는 Sentry.io 서비스를 통하여 식탁보 프로그램 실행 도중 발생한 오류 정보를 익명으로 수집합니다. 만약 데이터 보내기를 원하지 않으시면 아래 체크 박스를 선택 해제하신 후 식탁보를 다시 실행해주세요..
+        ///   Looks up a localized string similar to TableCloth uses the Sentry.io service to anonymously collect information about errors that occur during the execution of the Tablecloth program. If you do not want to send data, please uncheck the box below and run Tablecloth again..
         /// </summary>
         public static string Option_TelemetryDescriptionText {
             get {
@@ -792,7 +792,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 기능 개선을 위한 정보 수집.
+        ///   Looks up a localized string similar to Collecting information to improve features.
         /// </summary>
         public static string Option_TelemetryPreferences {
             get {
@@ -801,7 +801,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 오류 로그 자동 수집.
+        ///   Looks up a localized string similar to Automatically collect TableCloth error logs.
         /// </summary>
         public static string Option_UseAutoLogCollecting {
             get {
@@ -810,7 +810,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internet Explorer 호환성 모드 사용.
+        ///   Looks up a localized string similar to Enable Internet Explorer compatibility mode.
         /// </summary>
         public static string Option_UseIEModeCompatList {
             get {
@@ -819,7 +819,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 오디오 입력 사용하기 - 개인 정보 노출에 주의하세요!.
+        ///   Looks up a localized string similar to Using audio input - be careful about revealing personal information!.
         /// </summary>
         public static string Option_UseMicrophoneCheckboxText {
             get {
@@ -828,7 +828,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 프린터 같이 사용하기.
+        ///   Looks up a localized string similar to Using with printers.
         /// </summary>
         public static string Option_UsePrinterCheckboxText {
             get {
@@ -837,7 +837,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 비디오 입력 사용하기 - 개인 정보 노출에 주의하세요!.
+        ///   Looks up a localized string similar to Using video input - be careful about exposing personal information!.
         /// </summary>
         public static string Option_UseWebCameraCheckboxText {
             get {
@@ -846,7 +846,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 검색 키워드 입력 (예: 신한, 보험).
+        ///   Looks up a localized string similar to Enter a search keyword (e.g., Shinhan).
         /// </summary>
         public static string SearchFilter_Watermark {
             get {
@@ -855,7 +855,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 인터넷 연결 상태 확인 중....
+        ///   Looks up a localized string similar to Checking internet connection....
         /// </summary>
         public static string Status_CheckInternetConnection {
             get {
@@ -864,7 +864,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 실행 준비가 완료되었습니다..
+        ///   Looks up a localized string similar to You&apos;re ready to run..
         /// </summary>
         public static string Status_Done {
             get {
@@ -873,7 +873,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 시스템 환경 확인 중....
+        ///   Looks up a localized string similar to Checking system environment....
         /// </summary>
         public static string Status_EvaluatingRequirementsMet {
             get {
@@ -882,7 +882,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 애플리케이션 초기화 중....
+        ///   Looks up a localized string similar to Initializing the application....
         /// </summary>
         public static string Status_InitializingApplication {
             get {
@@ -891,7 +891,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 오류가 발생했습니다..
+        ///   Looks up a localized string similar to An error occurred..
         /// </summary>
         public static string Status_InitializingFailed {
             get {
@@ -900,7 +900,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sentry SDK 초기화 중....
+        ///   Looks up a localized string similar to Initializing Sentry SDK....
         /// </summary>
         public static string Status_InitSentrySDK {
             get {
@@ -909,7 +909,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 카탈로그 불러오는 중....
+        ///   Looks up a localized string similar to Loading catalog....
         /// </summary>
         public static string Status_LoadingCatalog {
             get {
@@ -918,7 +918,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 이미지 불러오는 중....
+        ///   Looks up a localized string similar to Loading images....
         /// </summary>
         public static string Status_LoadingImages {
             get {
@@ -927,7 +927,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 환경 설정 불러오는 중....
+        ///   Looks up a localized string similar to Loading preferences....
         /// </summary>
         public static string Status_LoadingPreferences {
             get {
@@ -936,7 +936,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 명령줄 분석 중....
+        ///   Looks up a localized string similar to Analyzing the command line....
         /// </summary>
         public static string Status_ParsingCommandLine {
             get {
@@ -945,7 +945,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 잠시만 기다려 주세요..
+        ///   Looks up a localized string similar to Please wait a second....
         /// </summary>
         public static string Status_PleaseWait {
             get {
@@ -954,7 +954,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 오류.
+        ///   Looks up a localized string similar to TableCloth Error.
         /// </summary>
         public static string TitleText_Error {
             get {
@@ -963,7 +963,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 정보.
+        ///   Looks up a localized string similar to TableCloth Info.
         /// </summary>
         public static string TitleText_Info {
             get {
@@ -972,7 +972,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 확인.
+        ///   Looks up a localized string similar to TableCloth Question.
         /// </summary>
         public static string TitleText_Question {
             get {
@@ -981,7 +981,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 경고.
+        ///   Looks up a localized string similar to TableCloth Warning.
         /// </summary>
         public static string TitleText_Warning {
             get {

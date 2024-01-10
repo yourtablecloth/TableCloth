@@ -61,7 +61,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 이미 식탁보 프로그램이 실행되고 있어요..
+        ///   Looks up a localized string similar to The TableCloth program is already running..
         /// </summary>
         public static string Error_Already_TableCloth_Running {
             get {
@@ -70,7 +70,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 애플리케이션 데이터 저장을 위한 디렉터리를 만들지 못했습니다..
+        ///   Looks up a localized string similar to Failed to create a directory for storing application data..
         /// </summary>
         public static string Error_Cannot_Create_AppDataDirectory_Message_1 {
             get {
@@ -79,7 +79,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 참고로, 발생했던 오류는 다음과 같습니다 - {0}.
+        ///   Looks up a localized string similar to For reference, here&apos;s the error occurred - {0}.
         /// </summary>
         public static string Error_Cannot_Create_AppDataDirectory_Message_2 {
             get {
@@ -88,7 +88,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 카탈로그 파일을 내려받지 못했습니다..
+        ///   Looks up a localized string similar to The catalog file was not downloaded..
         /// </summary>
         public static string Error_Cannot_Download_Catalog_Message_1 {
             get {
@@ -97,7 +97,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 참고로, 발생했던 오류는 다음과 같습니다 - {0}.
+        ///   Looks up a localized string similar to For reference, here&apos;s the error occurred - {0}.
         /// </summary>
         public static string Error_Cannot_Download_Catalog_Message_2 {
             get {
@@ -106,7 +106,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 공동 인증서 정보 파일 (.der) 파일을 찾을 수 없습니다..
+        ///   Looks up a localized string similar to The certificate information file (.der) file was not found..
         /// </summary>
         public static string Error_Cannot_Find_CertFile {
             get {
@@ -115,7 +115,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 공동 인증서 개인 키 파일 (.key) 파일을 찾을 수 없습니다..
+        ///   Looks up a localized string similar to The certificate private key file (.key) file was not found..
         /// </summary>
         public static string Error_Cannot_Find_KeyFile {
             get {
@@ -124,7 +124,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 공동 인증서 파일 (.pfx 또는 .p12) 파일을 찾을 수 없습니다..
+        ///   Looks up a localized string similar to The certificate file (.pfx or .p12) file was not found..
         /// </summary>
         public static string Error_Cannot_Find_PfxFile {
             get {
@@ -133,7 +133,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 윈도우 OS 제품 정보 조회 API를 호출했지만, 정보를 가져올 수 없습니다..
+        ///   Looks up a localized string similar to The application called the Windows OS product information lookup API, but was unable to get the information..
         /// </summary>
         public static string Error_Cannot_Invoke_GetProductInfo {
             get {
@@ -142,7 +142,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 윈도우 OS 버전 정보 조회 API를 호출했지만, 다음의 오류 코드와 함께 실패했습니다 - {0:X8}.
+        ///   Looks up a localized string similar to The call to the Get Windows OS version information API failed with the following error code - {0:X8}.
         /// </summary>
         public static string Error_Cannot_Invoke_GetVersionEx {
             get {
@@ -151,7 +151,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 어셈블리 정보를 가져올 수 없습니다..
+        ///   Looks up a localized string similar to Unable to get assembly information..
         /// </summary>
         public static string Error_Cannot_Obtain_Assembly {
             get {
@@ -160,7 +160,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 애플리케이션 콘텐츠 생성 작업을 진행하지 못했습니다..
+        ///   Looks up a localized string similar to The application content creation task failed..
         /// </summary>
         public static string Error_Cannot_Prepare_AppContents_Message_1 {
             get {
@@ -169,7 +169,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 참고로, 발생했던 오류는 다음과 같습니다 - {0}.
+        ///   Looks up a localized string similar to For reference, here&apos;s the error occurred - {0}.
         /// </summary>
         public static string Error_Cannot_Prepare_AppContents_Message_2 {
             get {
@@ -178,7 +178,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 시스템 정보 유틸리티를 실행할 수 없습니다..
+        ///   Looks up a localized string similar to The application can&apos;t run the System Information utility..
         /// </summary>
         public static string Error_Cannot_Run_SysInfo {
             get {
@@ -187,7 +187,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Catalog.xml 파일의 형식이 프로그램이 기대하는 형식과 다른 것 같습니다..
+        ///   Looks up a localized string similar to The format of the Catalog.xml file seems to be different from what the program expects..
         /// </summary>
         public static string Error_CatalogDeserilizationFailure {
             get {
@@ -196,7 +196,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 원격 웹 사이트로부터 Catalog.xml 파일을 불러올 수 없어 설치를 계속 진행할 수 없습니다..
+        ///   Looks up a localized string similar to The program can&apos;t proceed with the installation because the Catalog.xml file can&apos;t be loaded from a remote website..
         /// </summary>
         public static string Error_CatalogLoadFailure_Message_1 {
             get {
@@ -205,7 +205,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 참고로, 발생했던 오류는 다음과 같습니다 - {0}.
+        ///   Looks up a localized string similar to For reference, here&apos;s the error occurred - {0}.
         /// </summary>
         public static string Error_CatalogLoadFailure_Message_2 {
             get {
@@ -214,7 +214,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 선택하신 공동 인증서는 만료되었습니다. 다른 공동 인증서를 선택하거나, 새로운 공동 인증서로 교체 발급해야 합니다..
+        ///   Looks up a localized string similar to The certificate you selected has expired. You&apos;ll need to select a different public certificate, or replace it with a new public certificate..
         /// </summary>
         public static string Error_Cert_Expired {
             get {
@@ -223,7 +223,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}일 후에 만료됩니다. 새로운 공동 인증서로 교체가 필요합니다..
+        ///   Looks up a localized string similar to Expires in {0} days. It needs to be replaced with a new joint certificate..
         /// </summary>
         public static string Error_Cert_ExpireSoon {
             get {
@@ -232,7 +232,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 선택하신 공동 인증서는 {0}일 후부터 사용 가능합니다..
+        ///   Looks up a localized string similar to The certificate you selected will be available in {0} days..
         /// </summary>
         public static string Error_Cert_MayTooEarly {
             get {
@@ -241,7 +241,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 샌드박스 자동 설치 프로그램 파일을 찾을 수 없습니다. 프로그램을 다시 설치해주세요..
+        ///   Looks up a localized string similar to The sandbox auto-installer file was not found, please reinstall the program..
         /// </summary>
         public static string Error_Hostess_Missing {
             get {
@@ -250,7 +250,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 다음의 디렉터리를 이 컴퓨터에서 찾을 수 없어 샌드박스에서 연결할 때 제외합니다..
+        ///   Looks up a localized string similar to The following directories are not found on this computer and will not be mounted when connecting from the sandbox..
         /// </summary>
         public static string Error_HostFolder_Unavailable {
             get {
@@ -268,7 +268,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 시스템 가상화 기능 지원 여부를 확인할 수 없습니다. 윈도우 샌드박스가 정상적으로 실행되지 않을 가능성이 있습니다..
+        ///   Looks up a localized string similar to Unable to confirm support for system virtualization features, Windows Sandbox may not run properly..
         /// </summary>
         public static string Error_HyperVisor_Missing {
             get {
@@ -277,7 +277,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Microsoft Edge 브라우저 안에서 인터넷 익스플로러 모드를 활성화해야 호환성 문제를 피할 수 있습니다. 인터넷 익스플로러를 시스템 구성 요소 추가/제거를 통해 활성화해주세요..
+        ///   Looks up a localized string similar to Internet Explorer mode must be enabled within the Microsoft Edge browser to avoid compatibility issues. Please enable Internet Explorer via Add/Remove System Components..
         /// </summary>
         public static string Error_IEMode_NotAvailable {
             get {
@@ -286,7 +286,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 기본 이미지와 아이콘 리소스 파일을 찾을 수 없습니다. 프로그램을 다시 설치해주세요..
+        ///   Looks up a localized string similar to The default image and icon resource files were not found, please reinstall the program..
         /// </summary>
         public static string Error_Images_Missing {
             get {
@@ -295,7 +295,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Windows PowerShell 실행 파일을 찾을 수 없어 설치 스크립트를 실행할 수 없습니다..
+        ///   Looks up a localized string similar to The installation script could not be run because the Windows PowerShell executable file was not found..
         /// </summary>
         public static string Error_No_WindowsPowerShell {
             get {
@@ -304,7 +304,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 시스템이 인터넷과 연결되지 않은 것 같습니다. 모든 기능을 사용하려면 인터넷에 연결한 후 식탁보 프로그램을 다시 실행해 주세요..
+        ///   Looks up a localized string similar to It looks like your system is not connected to the internet, please connect to the internet and run the tablecloth program again for full functionality..
         /// </summary>
         public static string Error_Offline {
             get {
@@ -313,9 +313,9 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 공동 인증서 정보 파일 (der)과 공동 인증서 개인 키 파일 (key)을 각각 하나씩 선택해주세요.
+        ///   Looks up a localized string similar to Select one joint certificate information file (DER) and one joint certificate private key file (KEY).
         ///
-        ///Ctrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 빈 공간을 드래그하면 여러 파일을 선택할 수 있어요..
+        ///You can select multiple files by holding down the Ctrl or Shift key, or by dragging an empty space in the file selection window..
         /// </summary>
         public static string Error_OpenDerAndKey_Simultaneously {
             get {
@@ -324,7 +324,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 패키지 설치 프로그램을 시작하지 못했습니다..
+        ///   Looks up a localized string similar to The package installer failed to start..
         /// </summary>
         public static string Error_Package_CanNotStart {
             get {
@@ -333,7 +333,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 패키지를 설치하는 도중 오류가 발생했습니다..
+        ///   Looks up a localized string similar to An error occurred while installing the package..
         /// </summary>
         public static string Error_PackageInstallFailure_Message_1 {
             get {
@@ -342,7 +342,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 그러나 원인을 파악하지 못했습니다..
+        ///   Looks up a localized string similar to However, we were unable to determine the cause..
         /// </summary>
         public static string Error_PackageInstallFailure_Message_2 {
             get {
@@ -351,7 +351,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 윈도우 샌드박스를 설치한 후에는 시스템을 다시 시작해야 할 수 있습니다. 필요한 경우 시스템을 다시 시작하고, 식탁보를 다시 실행해주시기 바랍니다..
+        ///   Looks up a localized string similar to After installing Windows Sandbox, you may need to restart your system. If necessary, restart your system and run TableCloth again..
         /// </summary>
         public static string Error_Restart_And_RunAgain {
             get {
@@ -360,7 +360,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 검색된 제품 정보에 따르면, 윈도우 샌드박스 기능이 지원되지 않는 버전의 운영 체제를 사용 중인 것 같습니다..
+        ///   Looks up a localized string similar to Based on the product information retrieved, it appears that you are using a version of the operating system that does not support the Windows Sandbox feature..
         /// </summary>
         public static string Error_SandboxMightNotAvailable {
             get {
@@ -369,7 +369,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 바로 가기 생성에 실패했습니다..
+        ///   Looks up a localized string similar to Shortcut creation failed..
         /// </summary>
         public static string Error_ShortcutFailed {
             get {
@@ -378,7 +378,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 선택된 웹 사이트가 없어 바로 가기를 생성할 수 없습니다..
+        ///   Looks up a localized string similar to You can&apos;t create a shortcut because there is no website selected..
         /// </summary>
         public static string Error_ShortcutNoSiteSelected {
             get {
@@ -387,7 +387,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 예기치 않은 오류가 발생했습니다. (파일: {0} (행: {1}), 멤버: {2}).
+        ///   Looks up a localized string similar to An unexpected error occurred: (File: {0} (Row: {1}), Member: {2}).
         /// </summary>
         public static string Error_Unknown {
             get {
@@ -396,7 +396,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DISM.exe 유틸리티를 찾을 수 없어 식탁보가 Windows 샌드박스 설치 대리 실행을 진행할 수 없습니다. 윈도우 기능 켜기/끄기에서 윈도우 샌드박스를 활성화하는 것을 시도해볼 수 있습니다..
+        ///   Looks up a localized string similar to TableCloth can&apos;t proceed with the Windows Sandbox installation surrogate because the DISM.exe utility was not found. You can try enabling Windows Sandbox in Turn Windows Features On/Off..
         /// </summary>
         public static string Error_Windows_Dism_Missing {
             get {
@@ -405,7 +405,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 윈도우 탐색기 프로그램을 시작할 수 없습니다..
+        ///   Looks up a localized string similar to The application can&apos;t start the Windows Explorer program..
         /// </summary>
         public static string Error_Windows_Explorer_CanNotStart {
             get {
@@ -414,7 +414,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 윈도우 탐색기 프로그램을 찾을 수 없습니다..
+        ///   Looks up a localized string similar to The Windows Explorer program was not found..
         /// </summary>
         public static string Error_Windows_Explorer_Missing {
             get {
@@ -423,7 +423,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 실행하고 있는 운영 체제는 윈도우 샌드박스 기능을 지원하지 않는 오래된 버전의 운영 체제 같습니다. 윈도우 10 이상으로 업그레이드 해주세요..
+        ///   Looks up a localized string similar to The operating system you are running appears to be an older version of an operating system that does not support the Windows Sandbox feature. Please upgrade to Windows 10 or later..
         /// </summary>
         public static string Error_Windows_OS_Too_Old {
             get {
@@ -432,7 +432,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보를 통해서 윈도우 샌드박스를 실행하고 있는 것 같습니다. 사용을 마친 후 윈도우 샌드박스를 먼저 종료해주세요..
+        ///   Looks up a localized string similar to It looks like you&apos;re running Windows Sandbox through the TableCloth, please exit Windows Sandbox first when you&apos;re done using it..
         /// </summary>
         public static string Error_Windows_Sandbox_Already_Running {
             get {
@@ -441,7 +441,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 샌드박스 프로그램을 실행하지 못했습니다..
+        ///   Looks up a localized string similar to Failed to run the sandbox program..
         /// </summary>
         public static string Error_Windows_Sandbox_CanNotStart {
             get {
@@ -450,7 +450,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 윈도우 샌드박스가 설치되어있지 않은 것 같습니다! 윈도우 기능 켜기/끄기에서 윈도우 샌드박스를 활성화해주세요..
+        ///   Looks up a localized string similar to It looks like you don&apos;t have Windows Sandbox installed! Please enable Windows Sandbox in Turn Windows Features On/Off..
         /// </summary>
         public static string Error_Windows_Sandbox_Missing {
             get {
@@ -459,7 +459,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 원격 웹 사이트와의 통신 도중 X509 인증서 오류가 발생했습니다. 인증서 주체는 {0}이며, 발생한 오류 코드는 {1} 입니다..
+        ///   Looks up a localized string similar to An X509 certificate error occurred during communication with a remote website. The certificate subject is {0}, and the error code encountered is {1}..
         /// </summary>
         public static string Error_X509CertError {
             get {

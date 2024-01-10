@@ -117,59 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="TableCloth_Switch_CertPrivateKey_Help" xml:space="preserve">
-    <value>Specifies the path to the certificate secret key file.</value>
+  <data name="Info_CopyCommandLineSuccess" xml:space="preserve">
+    <value>You've copied commands to the clipboard that you can use when running automation tasks.</value>
   </data>
-  <data name="TableCloth_Switch_CertPublicKey_Help" xml:space="preserve">
-    <value>Specify the path to the certificate public key file.</value>
+  <data name="Info_ShortcutSuccess" xml:space="preserve">
+    <value>You've created a shortcut on your desktop.</value>
   </data>
-  <data name="TableCloth_Switch_DryRun_Help" xml:space="preserve">
-    <value>(Features for developers) Skip installing application packages, changing system settings, and just watch the program run.</value>
-    <comment>This item is used by Hostess.</comment>
+  <data name="Info_UpdateNotRequired" xml:space="preserve">
+    <value>You are using the latest version of TableCloth.</value>
   </data>
-  <data name="TableCloth_Switch_EnableCamera_Help" xml:space="preserve">
-    <value>Turn on the Use video input feature.</value>
+  <data name="Info_UpdateRequired" xml:space="preserve">
+    <value>A new version of TableCloth has been released.</value>
   </data>
-  <data name="TableCloth_Switch_EnableCert_Help" xml:space="preserve">
-    <value>Turn on certificates as a feature.</value>
-  </data>
-  <data name="TableCloth_Switch_EnableIEMode_Help" xml:space="preserve">
-    <value>Enable Internet Explorer mode.</value>
-  </data>
-  <data name="TableCloth_Switch_EnableMicrophone_Help" xml:space="preserve">
-    <value>Turn on the Use audio input feature.</value>
-  </data>
-  <data name="TableCloth_Switch_EnablePrinter_Help" xml:space="preserve">
-    <value>Turn on printer sharing.</value>
-  </data>
-  <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
-    <value>Show this help.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallAdobeReader_Help" xml:space="preserve">
-    <value>Run the Adobe Reader installation after starting the sandbox.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallEveryonesPrinter_Help" xml:space="preserve">
-    <value>Run the Everyone's Printer installation after starting the sandbox.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallHancomOfficeViewer_Help" xml:space="preserve">
-    <value>Run the Hancom Office Viewer installation after starting the sandbox.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallRaiDrive_Help" xml:space="preserve">
-    <value>Run the RaiDrive installation after starting the sandbox.</value>
-  </data>
-  <data name="TableCloth_Switch_OptionList_Begin" xml:space="preserve">
-    <value>Options: </value>
-  </data>
-  <data name="TableCloth_Switch_Option_Arg" xml:space="preserve">
-    <value>&lt;Option&gt;</value>
-  </data>
-  <data name="TableCloth_Switch_PrivateKeyFilePath_Arg" xml:space="preserve">
-    <value>&lt;File Path&gt;</value>
-  </data>
-  <data name="TableCloth_Switch_PublicKeyFilePath_Arg" xml:space="preserve">
-    <value>&lt;File Path&gt;</value>
-  </data>
-  <data name="TableCloth_Switch_ServiceID_Help" xml:space="preserve">
-    <value>Please check {0} for the ServiceID.</value>
+  <data name="Info_WillCreateSingleSiteShortcut" xml:space="preserve">
+    <value>Because of the maximum command length limit that can be specified for a shortcut, only the first selected site is made a shortcut.</value>
   </data>
 </root>

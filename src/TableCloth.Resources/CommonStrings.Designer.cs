@@ -70,7 +70,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 - 컴퓨터를 깨끗하게 사용하세요!.
+        ///   Looks up a localized string similar to TableCloth - Keep your computer clean!.
         /// </summary>
         public static string AppCommentText {
             get {
@@ -79,7 +79,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (c) 2021 남정현.
+        ///   Looks up a localized string similar to (c) 2021 Jung Hyun, Nam.
         /// </summary>
         public static string AppCopyright {
             get {
@@ -97,7 +97,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보.
+        ///   Looks up a localized string similar to TableCloth.
         /// </summary>
         public static string AppName {
             get {
@@ -106,7 +106,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 프로젝트.
+        ///   Looks up a localized string similar to TableCloth Project.
         /// </summary>
         public static string AppPublisher {
             get {
@@ -124,7 +124,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 뱅킹.
+        ///   Looks up a localized string similar to Banking.
         /// </summary>
         public static string DisplayName_Banking {
             get {
@@ -133,7 +133,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 신용 카드.
+        ///   Looks up a localized string similar to Credit Card.
         /// </summary>
         public static string DisplayName_CreditCard {
             get {
@@ -142,7 +142,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 교육.
+        ///   Looks up a localized string similar to Education.
         /// </summary>
         public static string DisplayName_Education {
             get {
@@ -151,7 +151,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 대출/금융.
+        ///   Looks up a localized string similar to Loans/Finance.
         /// </summary>
         public static string DisplayName_Financing {
             get {
@@ -160,7 +160,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 공공.
+        ///   Looks up a localized string similar to Government.
         /// </summary>
         public static string DisplayName_Government {
             get {
@@ -169,7 +169,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 보험.
+        ///   Looks up a localized string similar to Insurance.
         /// </summary>
         public static string DisplayName_Insurance {
             get {
@@ -178,7 +178,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 기타.
+        ///   Looks up a localized string similar to Other.
         /// </summary>
         public static string DisplayName_Other {
             get {
@@ -187,7 +187,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 증권/투자.
+        ///   Looks up a localized string similar to Securities/Investments.
         /// </summary>
         public static string DisplayName_Security {
             get {
@@ -241,7 +241,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 알 수 없음.
+        ///   Looks up a localized string similar to Unknown.
         /// </summary>
         public static string UnknownText {
             get {

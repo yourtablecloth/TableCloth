@@ -117,59 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="TableCloth_Switch_CertPrivateKey_Help" xml:space="preserve">
-    <value>Specifies the path to the certificate secret key file.</value>
+  <data name="TableCloth_Log_CannotParseWsbFile_ProhibitTranslation" xml:space="preserve">
+    <value>WSB 파일 `{0}` 구문 분석이 실패했습니다. 파일 내용이 손상되었거나 유효하지 않을 수 있습니다.</value>
   </data>
-  <data name="TableCloth_Switch_CertPublicKey_Help" xml:space="preserve">
-    <value>Specify the path to the certificate public key file.</value>
+  <data name="TableCloth_Log_DirectoryEnumFail_ProhibitTranslation" xml:space="preserve">
+    <value>디렉터리 열거 실패 - {0} (이유: {1})</value>
   </data>
-  <data name="TableCloth_Switch_DryRun_Help" xml:space="preserve">
-    <value>(Features for developers) Skip installing application packages, changing system settings, and just watch the program run.</value>
-    <comment>This item is used by Hostess.</comment>
+  <data name="TableCloth_Log_HostFolderNotExists_ProhibitTranslation" xml:space="preserve">
+    <value>WSB 파일에 나열된 호스트 폴더의 경로 `{0}` 확인 결과 호스트에 존재하지 않습니다.</value>
   </data>
-  <data name="TableCloth_Switch_EnableCamera_Help" xml:space="preserve">
-    <value>Turn on the Use video input feature.</value>
-  </data>
-  <data name="TableCloth_Switch_EnableCert_Help" xml:space="preserve">
-    <value>Turn on certificates as a feature.</value>
-  </data>
-  <data name="TableCloth_Switch_EnableIEMode_Help" xml:space="preserve">
-    <value>Enable Internet Explorer mode.</value>
-  </data>
-  <data name="TableCloth_Switch_EnableMicrophone_Help" xml:space="preserve">
-    <value>Turn on the Use audio input feature.</value>
-  </data>
-  <data name="TableCloth_Switch_EnablePrinter_Help" xml:space="preserve">
-    <value>Turn on printer sharing.</value>
-  </data>
-  <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
-    <value>Show this help.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallAdobeReader_Help" xml:space="preserve">
-    <value>Run the Adobe Reader installation after starting the sandbox.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallEveryonesPrinter_Help" xml:space="preserve">
-    <value>Run the Everyone's Printer installation after starting the sandbox.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallHancomOfficeViewer_Help" xml:space="preserve">
-    <value>Run the Hancom Office Viewer installation after starting the sandbox.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallRaiDrive_Help" xml:space="preserve">
-    <value>Run the RaiDrive installation after starting the sandbox.</value>
-  </data>
-  <data name="TableCloth_Switch_OptionList_Begin" xml:space="preserve">
-    <value>Options: </value>
-  </data>
-  <data name="TableCloth_Switch_Option_Arg" xml:space="preserve">
-    <value>&lt;Option&gt;</value>
-  </data>
-  <data name="TableCloth_Switch_PrivateKeyFilePath_Arg" xml:space="preserve">
-    <value>&lt;File Path&gt;</value>
-  </data>
-  <data name="TableCloth_Switch_PublicKeyFilePath_Arg" xml:space="preserve">
-    <value>&lt;File Path&gt;</value>
-  </data>
-  <data name="TableCloth_Switch_ServiceID_Help" xml:space="preserve">
-    <value>Please check {0} for the ServiceID.</value>
+  <data name="TableCloth_Log_WsbFileCreateFail_ProhibitTranslation" xml:space="preserve">
+    <value>WSB 파일 `{0}` 생성이 실패했습니다.</value>
   </data>
 </root>

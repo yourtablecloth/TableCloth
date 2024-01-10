@@ -121,46 +121,46 @@
     <value>https://get.adobe.com/kr/reader/</value>
   </data>
   <data name="AppCommentText" xml:space="preserve">
-    <value>식탁보 - 컴퓨터를 깨끗하게 사용하세요!</value>
+    <value>TableCloth - Keep your computer clean!</value>
   </data>
   <data name="AppCopyright" xml:space="preserve">
-    <value>(c) 2021 남정현</value>
+    <value>(c) 2021 Jung Hyun, Nam</value>
   </data>
   <data name="AppInfoUrl" xml:space="preserve">
     <value>https://yourtablecloth.app</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>식탁보</value>
+    <value>TableCloth</value>
   </data>
   <data name="AppPublisher" xml:space="preserve">
-    <value>식탁보 프로젝트</value>
+    <value>TableCloth Project</value>
   </data>
   <data name="AppUpdateInfoUrl" xml:space="preserve">
     <value>https://github.com/yourtablecloth/TableCloth/releases</value>
   </data>
   <data name="DisplayName_Banking" xml:space="preserve">
-    <value>뱅킹</value>
+    <value>Banking</value>
   </data>
   <data name="DisplayName_CreditCard" xml:space="preserve">
-    <value>신용 카드</value>
+    <value>Credit Card</value>
   </data>
   <data name="DisplayName_Education" xml:space="preserve">
-    <value>교육</value>
+    <value>Education</value>
   </data>
   <data name="DisplayName_Financing" xml:space="preserve">
-    <value>대출/금융</value>
+    <value>Loans/Finance</value>
   </data>
   <data name="DisplayName_Government" xml:space="preserve">
-    <value>공공</value>
+    <value>Government</value>
   </data>
   <data name="DisplayName_Insurance" xml:space="preserve">
-    <value>보험</value>
+    <value>Insurance</value>
   </data>
   <data name="DisplayName_Other" xml:space="preserve">
-    <value>기타</value>
+    <value>Other</value>
   </data>
   <data name="DisplayName_Security" xml:space="preserve">
-    <value>증권/투자</value>
+    <value>Securities/Investments</value>
   </data>
   <data name="EveryonesPrinterUrl" xml:space="preserve">
     <value>https://modu-print.com/</value>
@@ -178,6 +178,6 @@
     <value>https://www.naver.com/</value>
   </data>
   <data name="UnknownText" xml:space="preserve">
-    <value>알 수 없음</value>
+    <value>Unknown</value>
   </data>
 </root>

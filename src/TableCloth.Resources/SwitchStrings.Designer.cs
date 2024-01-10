@@ -61,7 +61,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 인증서 비밀 키 파일 경로를 지정합니다..
+        ///   Looks up a localized string similar to Specifies the path to the certificate secret key file..
         /// </summary>
         public static string TableCloth_Switch_CertPrivateKey_Help {
             get {
@@ -70,7 +70,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 인증서 공개 키 파일 경로를 지정합니다..
+        ///   Looks up a localized string similar to Specify the path to the certificate public key file..
         /// </summary>
         public static string TableCloth_Switch_CertPublicKey_Help {
             get {
@@ -79,7 +79,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (개발자용 기능) 애플리케이션 패키지 설치, 시스템 설정 변경을 건너뛰고 프로그램의 실행 과정만 살펴봅니다..
+        ///   Looks up a localized string similar to (Features for developers) Skip installing application packages, changing system settings, and just watch the program run..
         /// </summary>
         public static string TableCloth_Switch_DryRun_Help {
             get {
@@ -88,7 +88,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 비디오 입력 사용하기 기능을 켭니다..
+        ///   Looks up a localized string similar to Turn on the Use video input feature..
         /// </summary>
         public static string TableCloth_Switch_EnableCamera_Help {
             get {
@@ -97,7 +97,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 인증서를 기능을 켭니다..
+        ///   Looks up a localized string similar to Turn on certificates as a feature..
         /// </summary>
         public static string TableCloth_Switch_EnableCert_Help {
             get {
@@ -106,7 +106,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internet Explorer 모드를 활성화합니다..
+        ///   Looks up a localized string similar to Enable Internet Explorer mode..
         /// </summary>
         public static string TableCloth_Switch_EnableIEMode_Help {
             get {
@@ -115,7 +115,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 오디오 입력 사용하기 기능을 켭니다..
+        ///   Looks up a localized string similar to Turn on the Use audio input feature..
         /// </summary>
         public static string TableCloth_Switch_EnableMicrophone_Help {
             get {
@@ -124,7 +124,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 프린터 공유하기 기능을 켭니다..
+        ///   Looks up a localized string similar to Turn on printer sharing..
         /// </summary>
         public static string TableCloth_Switch_EnablePrinter_Help {
             get {
@@ -133,7 +133,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 이 도움말을 표시합니다..
+        ///   Looks up a localized string similar to Show this help..
         /// </summary>
         public static string TableCloth_Switch_Help_Help {
             get {
@@ -142,7 +142,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adobe Reader 설치를 샌드박스 시작 후 실행합니다..
+        ///   Looks up a localized string similar to Run the Adobe Reader installation after starting the sandbox..
         /// </summary>
         public static string TableCloth_Switch_InstallAdobeReader_Help {
             get {
@@ -151,7 +151,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 모두의 프린터 설치를 샌드박스 시작 후 실행합니다..
+        ///   Looks up a localized string similar to Run the Everyone&apos;s Printer installation after starting the sandbox..
         /// </summary>
         public static string TableCloth_Switch_InstallEveryonesPrinter_Help {
             get {
@@ -160,7 +160,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 한컴오피스 뷰어 설치를 샌드박스 시작 후 실행합니다..
+        ///   Looks up a localized string similar to Run the Hancom Office Viewer installation after starting the sandbox..
         /// </summary>
         public static string TableCloth_Switch_InstallHancomOfficeViewer_Help {
             get {
@@ -169,7 +169,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RaiDrive 설치를 샌드박스 시작 후 실행합니다..
+        ///   Looks up a localized string similar to Run the RaiDrive installation after starting the sandbox..
         /// </summary>
         public static string TableCloth_Switch_InstallRaiDrive_Help {
             get {
@@ -178,7 +178,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;옵션&gt;.
+        ///   Looks up a localized string similar to &lt;Option&gt;.
         /// </summary>
         public static string TableCloth_Switch_Option_Arg {
             get {
@@ -187,7 +187,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 옵션: .
+        ///   Looks up a localized string similar to Options: .
         /// </summary>
         public static string TableCloth_Switch_OptionList_Begin {
             get {
@@ -196,7 +196,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;파일 경로&gt;.
+        ///   Looks up a localized string similar to &lt;File Path&gt;.
         /// </summary>
         public static string TableCloth_Switch_PrivateKeyFilePath_Arg {
             get {
@@ -205,7 +205,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;파일 경로&gt;.
+        ///   Looks up a localized string similar to &lt;File Path&gt;.
         /// </summary>
         public static string TableCloth_Switch_PublicKeyFilePath_Arg {
             get {
@@ -214,7 +214,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ServiceID는 {0}을 확인해주세요..
+        ///   Looks up a localized string similar to Please check {0} for the ServiceID..
         /// </summary>
         public static string TableCloth_Switch_ServiceID_Help {
             get {
