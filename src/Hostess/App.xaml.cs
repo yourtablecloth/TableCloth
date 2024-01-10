@@ -7,6 +7,8 @@ using Hostess.Components.Implementations;
 using Hostess.Dialogs;
 using Hostess.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,16 +21,24 @@ namespace Hostess
     {
         public App()
         {
-            Current.InitServiceProvider(_serviceProvider = ConfigureServices());
+            _host = new HostBuilder()
+                .ConfigureLogging(logging =>
+                {
+                    logging.AddConsole();
+                })
+                .ConfigureServices(ConfigureServices)
+                .Build();
+
+            Current.InitServiceProvider(_host.Services);
             InitializeComponent();
         }
 
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IHost _host;
 
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
-            var appMessageBox = _serviceProvider.GetRequiredService<IAppMessageBox>();
-            var commandLineArguments = _serviceProvider.GetRequiredService<ICommandLineArguments>();
+            var appMessageBox = _host.Services.GetRequiredService<IAppMessageBox>();
+            var commandLineArguments = _host.Services.GetRequiredService<ICommandLineArguments>();
             var parsedArgs = commandLineArguments.Current;
 
             if (parsedArgs.ShowCommandLineHelp)
@@ -37,8 +47,8 @@ namespace Hostess
                 return;
             }
 
-            var appStartup = _serviceProvider.GetRequiredService<IAppStartup>();
-            var appUserInterface = _serviceProvider.GetRequiredService<IAppUserInterface>();
+            var appStartup = _host.Services.GetRequiredService<IAppStartup>();
+            var appUserInterface = _host.Services.GetRequiredService<IAppUserInterface>();
 
             var warnings = new List<string>();
             var result = await appStartup.HasRequirementsMetAsync(warnings);
@@ -81,10 +91,8 @@ namespace Hostess
             mainWindow.Show();
         }
 
-        private ServiceProvider ConfigureServices()
+        private void ConfigureServices(IServiceCollection services)
         {
-            var services = new ServiceCollection();
-
             // Add HTTP Service
             services.AddHttpClient(nameof(Hostess), c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
 
@@ -127,8 +135,6 @@ namespace Hostess
 
             // App
             services.AddTransient(_ => Current);
-
-            return services.BuildServiceProvider();
         }
     }
 }

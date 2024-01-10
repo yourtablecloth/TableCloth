@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Windows;
@@ -26,16 +28,27 @@ public partial class App : Application
 {
     public App()
     {
-        Current.InitServiceProvider(_serviceProvider = ConfigureServices());
+        _host = new HostBuilder()
+            .ConfigureLogging(logging =>
+            {
+                logging
+                    .AddSerilog(dispose: true)
+                    .AddConsole();
+            })
+            .ConfigureServices(ConfigureServices)
+            .Build();
+
+        Current.InitServiceProvider(_host.Services);
         InitializeComponent();
     }
 
-    private IServiceProvider _serviceProvider;
+    private readonly IHost _host;
+
     private SplashScreen? _splashScreen;
 
     private void Application_Startup(object sender, StartupEventArgs e)
     {
-        var appUserInterface = _serviceProvider.GetRequiredService<IAppUserInterface>();
+        var appUserInterface = _host.Services.GetRequiredService<IAppUserInterface>();
 
         _splashScreen = appUserInterface.CreateSplashScreen();
         _splashScreen.ViewModel.InitializeDone += ViewModel_InitializeDone;
@@ -53,9 +66,9 @@ public partial class App : Application
         {
             var mainWindow = default(Window);
             if (_splashScreen.ViewModel.V2UIOptedIn)
-                mainWindow = _serviceProvider.GetRequiredService<MainWindowV2>();
+                mainWindow = _host.Services.GetRequiredService<MainWindowV2>();
             else
-                mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+                mainWindow = _host.Services.GetRequiredService<MainWindow>();
 
             this.MainWindow = mainWindow;
             mainWindow.Show();
@@ -64,13 +77,8 @@ public partial class App : Application
         _splashScreen.Close();
     }
 
-    private ServiceProvider ConfigureServices()
+    private void ConfigureServices(IServiceCollection services)
     {
-        var services = new ServiceCollection();
-
-        // Add Logging Service
-        services.AddLogging(c => c.AddSerilog(dispose: true));
-
         // Add HTTP Service
         services.AddHttpClient(nameof(TableCloth), c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
 
@@ -168,7 +176,5 @@ public partial class App : Application
 
         // App
         services.AddTransient(_ => Current);
-
-        return services.BuildServiceProvider();
     }
 }
