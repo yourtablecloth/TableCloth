@@ -9,7 +9,11 @@ using TableCloth.Models.Configuration;
 namespace TableCloth.ViewModels;
 
 [Obsolete("This class is reserved for design-time usage.", false)]
-public class MainWindowViewModelForDesigner : MainWindowViewModel { }
+public class MainWindowViewModelForDesigner : MainWindowViewModel
+{
+    public IList<CatalogInternetService> ServicesForDesigner
+        => DesignTimeCatalog.DesignTimeCatalogDocument.Services;
+}
 
 public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
 {

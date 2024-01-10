@@ -7,22 +7,6 @@ namespace TableCloth.Resources
 {
     public static partial class StringResources { }
 
-    // 공통 대화 상자 제목들
-    partial class StringResources
-    {
-        public static string TitleText_Info
-            => string.Format(UIStringResources.TitleText_Info, CommonStrings.AppName);
-
-        public static string TitleText_Error
-            => string.Format(UIStringResources.TitleText_Error, CommonStrings.AppName);
-
-        public static string TitleText_Warning
-            => string.Format(UIStringResources.TitleText_Warning, CommonStrings.AppName);
-
-        public static string TitleText_Question
-            => string.Format(UIStringResources.TitleText_Question, CommonStrings.AppName);
-    }
-
     // 공동 인증서 관련 문자열들
     partial class StringResources
     {
@@ -122,13 +106,6 @@ namespace TableCloth.Resources
 
             return message;
         }
-    }
-
-    // 스크립트 내에서 사용되는 문자열들
-    partial class StringResources
-    {
-        public static string Script_InstructionMessage(int packageTotalCount, string siteNameList)
-            => string.Format(UIStringResources.Script_InstructionMessage, packageTotalCount, siteNameList);
     }
 
     // 호스트 프로그램의 오류 메시지 문자열들

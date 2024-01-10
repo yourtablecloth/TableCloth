@@ -233,7 +233,7 @@ namespace Hostess.Commands.MainWindow
             var powershellPath = _sharedLocations.GetDefaultPowerShellExecutableFilePath();
 
             if (!File.Exists(powershellPath))
-                throw new Exception(UIStringResources.Hostess_No_PowerShell_Error);
+                throw new Exception(ErrorStrings.Error_No_WindowsPowerShell);
 
             if (parsedArgs.DryRun)
             {

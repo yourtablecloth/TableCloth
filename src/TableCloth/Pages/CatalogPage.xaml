@@ -189,7 +189,7 @@
             <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Education}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Education}" Content="{x:Static res:CommonStrings.DisplayName_Education}" />
             <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Other}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Other}" Content="{x:Static res:CommonStrings.DisplayName_Other}" />
         </StackPanel>
-        <Button Grid.Row="2" Grid.Column="0" Margin="4" Content="{x:Static res:UIStringResources.CatalogPage_AboutButton}" x:Name="AboutButton" Command="{Binding AboutThisAppCommand}">
+        <Button Grid.Row="2" Grid.Column="0" Margin="4" Content="{x:Static res:UIStringResources.Button_AboutButton}" x:Name="AboutButton" Command="{Binding AboutThisAppCommand}">
             <Button.CommandParameter>
                 <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
             </Button.CommandParameter>
@@ -200,7 +200,7 @@
                     <Style.Resources>
                         <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                             <VisualBrush.Visual>
-                                <Label Content="{x:Static res:UIStringResources.MainWindowV2_SearchFilter_Watermark}" Foreground="LightGray" />
+                                <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="LightGray" />
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </Style.Resources>
@@ -264,7 +264,7 @@
         </ListView>
         <StackPanel Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical" d:Visibility="Hidden">
             <Label VerticalAlignment="Top" HorizontalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_SelectSiteLabelText_Alt2}" />
-            <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{x:Static res:UIStringResources.MainWindow_ReloadCatalog}" Command="{Binding AppRestartCommand}">
+            <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{x:Static res:UIStringResources.Button_AppRestartButton}" Command="{Binding AppRestartCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                 </Button.CommandParameter>

@@ -55,7 +55,7 @@ namespace Hostess.Components.Implementations
                 message = StringResources.Error_Unknown();
 
             var owner = Application.Current.MainWindow;
-            var title = isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning;
+            var title = isCritical ? UIStringResources.TitleText_Error : UIStringResources.TitleText_Warning;
             var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 
             return _messageBoxService.Show(
@@ -66,7 +66,7 @@ namespace Hostess.Components.Implementations
         public MessageBoxResult DisplayQuestion(string message, MessageBoxButton messageBoxButton = MessageBoxButton.YesNo, MessageBoxResult defaultAnswer = MessageBoxResult.Yes)
         {
             return _messageBoxService.Show(
-                _application.MainWindow, message, StringResources.TitleText_Question,
+                _application.MainWindow, message, UIStringResources.TitleText_Question,
                 messageBoxButton, MessageBoxImage.Question, defaultAnswer);
         }
     }

@@ -20,7 +20,7 @@ public sealed class AppMessageBox(
     public MessageBoxResult DisplayInfo(string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
     {
         return messageBoxService.Show(
-            application.MainWindow, message, StringResources.TitleText_Info,
+            application.MainWindow, message, UIStringResources.TitleText_Info,
             messageBoxButton, MessageBoxImage.Information,
             MessageBoxResult.OK);
     }
@@ -46,7 +46,7 @@ public sealed class AppMessageBox(
             message = StringResources.Error_Unknown();
 
         var owner = application.MainWindow;
-        var title = isCritical ? StringResources.TitleText_Error : StringResources.TitleText_Warning;
+        var title = isCritical ? UIStringResources.TitleText_Error : UIStringResources.TitleText_Warning;
         var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 
         return messageBoxService.Show(

@@ -125,7 +125,7 @@ namespace Hostess.Commands.MainWindow
             if (!_validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
             {
                 var response = _appMessageBox.DisplayQuestion(
-                    UIStringResources.Hostess_WarningForNonSandboxEnvironment,
+                    AskStrings.Ask_WarningForNonSandboxEnvironment,
                     defaultAnswer: MessageBoxResult.No);
 
                 if (response != MessageBoxResult.Yes)

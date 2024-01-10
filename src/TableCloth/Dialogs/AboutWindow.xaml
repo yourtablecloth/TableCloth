@@ -45,29 +45,29 @@
             <TextBox x:Name="LicenseDetails" Margin="0 10 0 10" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" TextWrapping="WrapWithOverflow" Text="{Binding LicenseDetails}" />
         </Grid>
         <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Orientation="Horizontal">
-            <Button x:Name="OpenWebsiteButton" Padding="10 1 10 1" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.AboutWindow_OpenHomepageButton}" Command="{Binding OpenWebsiteCommand}">
+            <Button x:Name="OpenWebsiteButton" Padding="10 1 10 1" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}" Command="{Binding OpenWebsiteCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>
             </Button>
-            <Button x:Name="ShowSysInfo" Padding="10 1 10 1" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.AboutWindow_ShowSysInfoButtonText}" Command="{Binding ShowSystemInfoCommand}">
+            <Button x:Name="ShowSysInfo" Padding="10 1 10 1" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.Button_ShowSysInfoButton}" Command="{Binding ShowSystemInfoCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>
             </Button>
-            <Button x:Name="CheckUpdate" Padding="10 1 10 1" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.AboutWindow_CheckUpdateButtonText}" Command="{Binding CheckUpdatedVersionCommand}">
+            <Button x:Name="CheckUpdate" Padding="10 1 10 1" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.Button_CheckUpdateButton}" Command="{Binding CheckUpdatedVersionCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>
             </Button>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button x:Name="OpenPrivacyPolicyButton" Padding="10 1 10 1" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.AboutWindow_PrivacyLinkText}" Command="{Binding OpenPrivacyPolicyCommand}">
+            <Button x:Name="OpenPrivacyPolicyButton" Padding="10 1 10 1" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.Button_PrivacyLink}" Command="{Binding OpenPrivacyPolicyCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>
             </Button>
-            <Button x:Name="OkayButton" Padding="10 1 10 1" Content="{x:Static res:UIStringResources.AboutWindow_OkayButton}" IsDefault="True" Click="OkayButton_Click" />
+            <Button x:Name="OkayButton" Padding="10 1 10 1" Content="{x:Static res:UIStringResources.Button_OkayButton}" IsDefault="True" Click="OkayButton_Click" />
         </StackPanel>
     </Grid>
 </Window>

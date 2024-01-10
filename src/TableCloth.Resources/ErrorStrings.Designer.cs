@@ -295,6 +295,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Windows PowerShell 실행 파일을 찾을 수 없어 설치 스크립트를 실행할 수 없습니다..
+        /// </summary>
+        public static string Error_No_WindowsPowerShell {
+            get {
+                return ResourceManager.GetString("Error_No_WindowsPowerShell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 시스템이 인터넷과 연결되지 않은 것 같습니다. 모든 기능을 사용하려면 인터넷에 연결한 후 식탁보 프로그램을 다시 실행해 주세요..
         /// </summary>
         public static string Error_Offline {

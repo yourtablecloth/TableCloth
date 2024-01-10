@@ -121,4 +121,7 @@
     <value>설정이 반영되려면 식탁보 프로그램을 다시 시작해야 합니다.
 지금 다시 시작하시겠습니까?</value>
   </data>
+  <data name="Ask_WarningForNonSandboxEnvironment" xml:space="preserve">
+    <value>지금 이 프로그램이 실행되는 환경은 윈도우 샌드박스 환경이 아닌 것 같습니다. 그래도 계속 실행하시겠습니까?</value>
+  </data>
 </root>

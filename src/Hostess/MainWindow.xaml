@@ -59,14 +59,14 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0">
-            <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Hostess_AboutButtonText}" Command="{Binding AboutThisAppCommand}">
+            <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_AboutButton}" Command="{Binding AboutThisAppCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>
             </Button>
         </WrapPanel>
         <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="5" Grid.Column="1">
-            <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Hostess_InstallButtonText}" Command="{Binding MainWindowInstallPackagesCommand}">
+            <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Button_InstallButton}" Command="{Binding MainWindowInstallPackagesCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>

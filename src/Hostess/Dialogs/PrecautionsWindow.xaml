@@ -32,7 +32,7 @@
         <TextBlock Padding="10" TextWrapping="WrapWithOverflow" FontWeight="UltraBold" FontSize="20" Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" Foreground="{Binding Source={x:Static SystemColors.WindowBrush}}" Grid.ColumnSpan="2" Grid.Row="0" Text="{x:Static res:UIStringResources.Hostess_PrecautionWindowText}" />
         <RichTextBox Grid.Row="1" Margin="10" local:RichTextBoxHelper.DocumentXaml="{Binding CautionContent}" />
         <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="2">
-            <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Hostess_CloseButtonText}" Command="{Binding PrecautionsWindowCloseCommand}">
+            <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Button_CloseButton}" Command="{Binding PrecautionsWindowCloseCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>

@@ -79,56 +79,11 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 업데이트 확인.
-        /// </summary>
-        public static string AboutWindow_CheckUpdateButtonText {
-            get {
-                return ResourceManager.GetString("AboutWindow_CheckUpdateButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 라이선스 정보를 확인 중입니다..
         /// </summary>
         public static string AboutWindow_LoadingLicensesMessage {
             get {
                 return ResourceManager.GetString("AboutWindow_LoadingLicensesMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 확인.
-        /// </summary>
-        public static string AboutWindow_OkayButton {
-            get {
-                return ResourceManager.GetString("AboutWindow_OkayButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 홈페이지.
-        /// </summary>
-        public static string AboutWindow_OpenHomepageButton {
-            get {
-                return ResourceManager.GetString("AboutWindow_OpenHomepageButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 개인 정보 처리 방침.
-        /// </summary>
-        public static string AboutWindow_PrivacyLinkText {
-            get {
-                return ResourceManager.GetString("AboutWindow_PrivacyLinkText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 시스템 정보.
-        /// </summary>
-        public static string AboutWindow_ShowSysInfoButtonText {
-            get {
-                return ResourceManager.GetString("AboutWindow_ShowSysInfoButtonText", resourceCulture);
             }
         }
         
@@ -142,11 +97,155 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보에 대하여....
+        ///   Looks up a localized string similar to 프로그램 정보.
         /// </summary>
-        public static string CatalogPage_AboutButton {
+        public static string Button_AboutButton {
             get {
-                return ResourceManager.GetString("CatalogPage_AboutButton", resourceCulture);
+                return ResourceManager.GetString("Button_AboutButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 프로그램 다시 실행.
+        /// </summary>
+        public static string Button_AppRestartButton {
+            get {
+                return ResourceManager.GetString("Button_AppRestartButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 찾아보기....
+        /// </summary>
+        public static string Button_BrowseButton {
+            get {
+                return ResourceManager.GetString("Button_BrowseButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 취소.
+        /// </summary>
+        public static string Button_CancelButton {
+            get {
+                return ResourceManager.GetString("Button_CancelButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 업데이트 확인.
+        /// </summary>
+        public static string Button_CheckUpdateButton {
+            get {
+                return ResourceManager.GetString("Button_CheckUpdateButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 닫기.
+        /// </summary>
+        public static string Button_CloseButton {
+            get {
+                return ResourceManager.GetString("Button_CloseButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PFX 파일로 변환하기.
+        /// </summary>
+        public static string Button_ConvertToPfxButton {
+            get {
+                return ResourceManager.GetString("Button_ConvertToPfxButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 명령줄 복사하기.
+        /// </summary>
+        public static string Button_CopyCommandLineButton {
+            get {
+                return ResourceManager.GetString("Button_CopyCommandLineButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 바로 가기 만들기.
+        /// </summary>
+        public static string Button_CreateShortcutButton {
+            get {
+                return ResourceManager.GetString("Button_CreateShortcutButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 설치하기.
+        /// </summary>
+        public static string Button_InstallButton {
+            get {
+                return ResourceManager.GetString("Button_InstallButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 실행하기.
+        /// </summary>
+        public static string Button_LaunchButton {
+            get {
+                return ResourceManager.GetString("Button_LaunchButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 기존 공동 인증서 파일 가져오기.
+        /// </summary>
+        public static string Button_MapNpkiCertButton {
+            get {
+                return ResourceManager.GetString("Button_MapNpkiCertButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 확인.
+        /// </summary>
+        public static string Button_OkayButton {
+            get {
+                return ResourceManager.GetString("Button_OkayButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 홈페이지.
+        /// </summary>
+        public static string Button_OpenHomepageButton {
+            get {
+                return ResourceManager.GetString("Button_OpenHomepageButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 개인 정보 처리 방침.
+        /// </summary>
+        public static string Button_PrivacyLink {
+            get {
+                return ResourceManager.GetString("Button_PrivacyLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 새로 고침.
+        /// </summary>
+        public static string Button_RefreshButton {
+            get {
+                return ResourceManager.GetString("Button_RefreshButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 시스템 정보.
+        /// </summary>
+        public static string Button_ShowSysInfoButton {
+            get {
+                return ResourceManager.GetString("Button_ShowSysInfoButton", resourceCulture);
             }
         }
         
@@ -214,15 +313,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 취소.
-        /// </summary>
-        public static string CertSelectWindow_CancelButtonText {
-            get {
-                return ResourceManager.GetString("CertSelectWindow_CancelButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 사용 가능 여부.
         /// </summary>
         public static string CertSelectWindow_CertList_Available {
@@ -268,15 +358,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PFX 파일로 변환하기.
-        /// </summary>
-        public static string CertSelectWindow_ConvertToPfxButtonText {
-            get {
-                return ResourceManager.GetString("CertSelectWindow_ConvertToPfxButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 공동 인증서 파일 (signCert.der;signPri.key)|signCert.der;signPri.key|공동 인증서 파일 (*.pfx;*.p12)|*.pfx;*.p12.
         /// </summary>
         public static string CertSelectWindow_FileOpenDialog_FilterText {
@@ -313,29 +394,11 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 확인.
-        /// </summary>
-        public static string CertSelectWindow_OkayButtonText {
-            get {
-                return ResourceManager.GetString("CertSelectWindow_OkayButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 직접 공동 인증서 찾기....
         /// </summary>
         public static string CertSelectWindow_OpenNpkiCertButton {
             get {
                 return ResourceManager.GetString("CertSelectWindow_OpenNpkiCertButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 새로 고침.
-        /// </summary>
-        public static string CertSelectWindow_RefreshButtonText {
-            get {
-                return ResourceManager.GetString("CertSelectWindow_RefreshButtonText", resourceCulture);
             }
         }
         
@@ -349,96 +412,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 찾아보기....
-        /// </summary>
-        public static string DetailPage_BrowseButtonText {
-            get {
-                return ResourceManager.GetString("DetailPage_BrowseButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 명령줄 복사하기.
-        /// </summary>
-        public static string DetailPage_CopyCommandLineButton {
-            get {
-                return ResourceManager.GetString("DetailPage_CopyCommandLineButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 바로 가기 만들기.
-        /// </summary>
-        public static string DetailPage_CreateShortcutButton {
-            get {
-                return ResourceManager.GetString("DetailPage_CreateShortcutButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Adobe Reader 설치하기.
-        /// </summary>
-        public static string DetailPage_InstallAdobeReader {
-            get {
-                return ResourceManager.GetString("DetailPage_InstallAdobeReader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 모두의 프린터 설치하기.
-        /// </summary>
-        public static string DetailPage_InstallEveryonesPrinter {
-            get {
-                return ResourceManager.GetString("DetailPage_InstallEveryonesPrinter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 한컴오피스 뷰어 설치하기.
-        /// </summary>
-        public static string DetailPage_InstallHancomOfficeViewer {
-            get {
-                return ResourceManager.GetString("DetailPage_InstallHancomOfficeViewer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to RaiDrive 설치하기.
-        /// </summary>
-        public static string DetailPage_InstallRaiDrive {
-            get {
-                return ResourceManager.GetString("DetailPage_InstallRaiDrive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 아래 옵션에서 새로운 버전의 식탁보 프로그램에 도입될 예정인 기능을 켜고 끌 수 있습니다..
-        /// </summary>
-        public static string DetailPage_LabDescriptionText {
-            get {
-                return ResourceManager.GetString("DetailPage_LabDescriptionText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 실행하기.
-        /// </summary>
-        public static string DetailPage_LaunchButton {
-            get {
-                return ResourceManager.GetString("DetailPage_LaunchButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 기존 공동 인증서 파일 가져오기.
-        /// </summary>
-        public static string DetailPage_MapNpkiCertButtonText {
-            get {
-                return ResourceManager.GetString("DetailPage_MapNpkiCertButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 샌드박스 실행 후 설치될 소프트웨어 개수: {0}개.
         /// </summary>
         public static string DetailPage_PackageCountDisplayLabel {
@@ -448,83 +421,11 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보는 Sentry.io 서비스를 통하여 식탁보 프로그램 실행 도중 발생한 오류 정보를 익명으로 수집합니다. 만약 데이터 보내기를 원하지 않으시면 아래 체크 박스를 선택 해제하신 후 식탁보를 다시 실행해주세요..
-        /// </summary>
-        public static string DetailPage_TelemetryDescriptionText {
-            get {
-                return ResourceManager.GetString("DetailPage_TelemetryDescriptionText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 기능 개선을 위한 정보 수집.
-        /// </summary>
-        public static string DetailPage_TelemetryPreferences {
-            get {
-                return ResourceManager.GetString("DetailPage_TelemetryPreferences", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 홈페이지 주소: {0}.
         /// </summary>
         public static string DetailPage_UrlLabel {
             get {
                 return ResourceManager.GetString("DetailPage_UrlLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 식탁보 오류 로그 자동 수집.
-        /// </summary>
-        public static string DetailPage_UseAutoLogCollecting {
-            get {
-                return ResourceManager.GetString("DetailPage_UseAutoLogCollecting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Internet Explorer 호환성 모드 사용.
-        /// </summary>
-        public static string DetailPage_UseIEModeCompatList {
-            get {
-                return ResourceManager.GetString("DetailPage_UseIEModeCompatList", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 오디오 입력 사용하기 - 개인 정보 노출에 주의하세요!.
-        /// </summary>
-        public static string DetailPage_UseMicrophoneCheckboxText {
-            get {
-                return ResourceManager.GetString("DetailPage_UseMicrophoneCheckboxText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 프린터 같이 사용하기.
-        /// </summary>
-        public static string DetailPage_UsePrinterCheckboxText {
-            get {
-                return ResourceManager.GetString("DetailPage_UsePrinterCheckboxText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 비디오 입력 사용하기 - 개인 정보 노출에 주의하세요!.
-        /// </summary>
-        public static string DetailPage_UseWebCameraCheckboxText {
-            get {
-                return ResourceManager.GetString("DetailPage_UseWebCameraCheckboxText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 새로운 사용자 인터페이스 사용.
-        /// </summary>
-        public static string DetailPage_V2UIOptIn {
-            get {
-                return ResourceManager.GetString("DetailPage_V2UIOptIn", resourceCulture);
             }
         }
         
@@ -567,15 +468,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 프로그램 정보.
-        /// </summary>
-        public static string Hostess_AboutButtonText {
-            get {
-                return ResourceManager.GetString("Hostess_AboutButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 이 프로그램은 요청받은 설치 프로그램들을 샌드 박스 안에 한번에 설치해주는 도구입니다. 설치하기 버튼을 누르면 설치가 시작됩니다..
         /// </summary>
         public static string Hostess_AppInstructionMessage {
@@ -590,15 +482,6 @@ namespace TableCloth.Resources {
         public static string Hostess_AppTitle {
             get {
                 return ResourceManager.GetString("Hostess_AppTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 닫기.
-        /// </summary>
-        public static string Hostess_CloseButtonText {
-            get {
-                return ResourceManager.GetString("Hostess_CloseButtonText", resourceCulture);
             }
         }
         
@@ -630,15 +513,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 오류.
-        /// </summary>
-        public static string Hostess_ErrorDialogTitle {
-            get {
-                return ResourceManager.GetString("Hostess_ErrorDialogTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 설치 실패.
         /// </summary>
         public static string Hostess_Install_Failed {
@@ -666,24 +540,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 설치하기.
-        /// </summary>
-        public static string Hostess_InstallButtonText {
-            get {
-                return ResourceManager.GetString("Hostess_InstallButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Windows PowerShell 실행 파일을 찾을 수 없어 설치 스크립트를 실행할 수 없습니다..
-        /// </summary>
-        public static string Hostess_No_PowerShell_Error {
-            get {
-                return ResourceManager.GetString("Hostess_No_PowerShell_Error", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 이용하려는 웹 사이트 아이디가 지정되지 않았습니다. 샌드박스는 지금부터 사용하실 수 있어요..
         /// </summary>
         public static string Hostess_No_Targets {
@@ -698,15 +554,6 @@ namespace TableCloth.Resources {
         public static string Hostess_PrecautionWindowText {
             get {
                 return ResourceManager.GetString("Hostess_PrecautionWindowText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 질문.
-        /// </summary>
-        public static string Hostess_QuestionDialogTitle {
-            get {
-                return ResourceManager.GetString("Hostess_QuestionDialogTitle", resourceCulture);
             }
         }
         
@@ -729,24 +576,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 지금 이 프로그램이 실행되는 환경은 윈도우 샌드박스 환경이 아닌 것 같습니다. 그래도 계속 실행하시겠습니까?.
-        /// </summary>
-        public static string Hostess_WarningForNonSandboxEnvironment {
-            get {
-                return ResourceManager.GetString("Hostess_WarningForNonSandboxEnvironment", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 취소.
-        /// </summary>
-        public static string InputPasswordWindow_CancelButton {
-            get {
-                return ResourceManager.GetString("InputPasswordWindow_CancelButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 입력하시는 암호는 프로그램 내부에서만 사용되고 폐기됩니다..
         /// </summary>
         public static string InputPasswordWindow_Disclaimer {
@@ -765,15 +594,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 확인.
-        /// </summary>
-        public static string InputPasswordWindow_OkayButton {
-            get {
-                return ResourceManager.GetString("InputPasswordWindow_OkayButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to PFX 인증서 파일 경로: {0}.
         /// </summary>
         public static string InputPasswordWindow_PfxPathPrefix {
@@ -788,51 +608,6 @@ namespace TableCloth.Resources {
         public static string InputPasswordWindow_Title {
             get {
                 return ResourceManager.GetString("InputPasswordWindow_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 정보.
-        /// </summary>
-        public static string MainWindow_AboutButtonText {
-            get {
-                return ResourceManager.GetString("MainWindow_AboutButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 부가 기능.
-        /// </summary>
-        public static string MainWindow_Addons {
-            get {
-                return ResourceManager.GetString("MainWindow_Addons", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 기본 설정.
-        /// </summary>
-        public static string MainWindow_BasicPreferences {
-            get {
-                return ResourceManager.GetString("MainWindow_BasicPreferences", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 찾아보기....
-        /// </summary>
-        public static string MainWindow_BrowseButtonText {
-            get {
-                return ResourceManager.GetString("MainWindow_BrowseButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 닫기.
-        /// </summary>
-        public static string MainWindow_CloseButtonText {
-            get {
-                return ResourceManager.GetString("MainWindow_CloseButtonText", resourceCulture);
             }
         }
         
@@ -873,101 +648,11 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adobe Reader 설치하기.
-        /// </summary>
-        public static string MainWindow_InstallAdobeReader {
-            get {
-                return ResourceManager.GetString("MainWindow_InstallAdobeReader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 모두의 프린터 설치하기.
-        /// </summary>
-        public static string MainWindow_InstallEveryonesPrinter {
-            get {
-                return ResourceManager.GetString("MainWindow_InstallEveryonesPrinter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 한컴오피스 뷰어 설치하기.
-        /// </summary>
-        public static string MainWindow_InstallHancomOfficeViewer {
-            get {
-                return ResourceManager.GetString("MainWindow_InstallHancomOfficeViewer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to RaiDrive 설치하기.
-        /// </summary>
-        public static string MainWindow_InstallRaiDrive {
-            get {
-                return ResourceManager.GetString("MainWindow_InstallRaiDrive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 그냥 실행해주세요..
         /// </summary>
         public static string MainWindow_JustRunItemText {
             get {
                 return ResourceManager.GetString("MainWindow_JustRunItemText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 아래 옵션에서 새로운 버전의 식탁보 프로그램에 도입될 예정인 기능을 켜고 끌 수 있습니다..
-        /// </summary>
-        public static string MainWindow_LabDescriptionText {
-            get {
-                return ResourceManager.GetString("MainWindow_LabDescriptionText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 실험실.
-        /// </summary>
-        public static string MainWindow_LabPreferences {
-            get {
-                return ResourceManager.GetString("MainWindow_LabPreferences", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 샌드박스 실행.
-        /// </summary>
-        public static string MainWindow_LaunchSandboxButtonText {
-            get {
-                return ResourceManager.GetString("MainWindow_LaunchSandboxButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 기존 공동 인증서 파일 가져오기.
-        /// </summary>
-        public static string MainWindow_MapNpkiCertButtonText {
-            get {
-                return ResourceManager.GetString("MainWindow_MapNpkiCertButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 다시 불러오기 (프로그램 다시 실행).
-        /// </summary>
-        public static string MainWindow_ReloadCatalog {
-            get {
-                return ResourceManager.GetString("MainWindow_ReloadCatalog", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 찾고 싶은 웹 사이트의 이름, 분류, 도메인 주소를 입력하세요. (예: 신한, 보험, iros).
-        /// </summary>
-        public static string MainWindow_SearchFilter_Watermark {
-            get {
-                return ResourceManager.GetString("MainWindow_SearchFilter_Watermark", resourceCulture);
             }
         }
         
@@ -1008,33 +693,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 바로 가기 만들기.
-        /// </summary>
-        public static string MainWindow_ShortcutButtonText {
-            get {
-                return ResourceManager.GetString("MainWindow_ShortcutButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 식탁보는 Sentry.io 서비스를 통하여 식탁보 프로그램 실행 도중 발생한 오류 정보를 익명으로 수집합니다. 만약 데이터 보내기를 원하지 않으시면 아래 체크 박스를 선택 해제하신 후 식탁보를 다시 실행해주세요..
-        /// </summary>
-        public static string MainWindow_TelemetryDescriptionText {
-            get {
-                return ResourceManager.GetString("MainWindow_TelemetryDescriptionText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 기능 개선을 위한 정보 수집.
-        /// </summary>
-        public static string MainWindow_TelemetryPreferences {
-            get {
-                return ResourceManager.GetString("MainWindow_TelemetryPreferences", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 식탁보 - 컴퓨터를 깨끗하게 사용하세요!.
         /// </summary>
         public static string MainWindow_Title {
@@ -1044,92 +702,155 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 식탁보 오류 로그 자동 수집.
+        ///   Looks up a localized string similar to 부가 기능.
         /// </summary>
-        public static string MainWindow_UseAutoLogCollecting {
+        public static string Option_Addons {
             get {
-                return ResourceManager.GetString("MainWindow_UseAutoLogCollecting", resourceCulture);
+                return ResourceManager.GetString("Option_Addons", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Internet Explorer 호환성 모드 사용.
+        ///   Looks up a localized string similar to 기본 설정.
         /// </summary>
-        public static string MainWindow_UseIEModeCompatList {
+        public static string Option_BasicPreferences {
             get {
-                return ResourceManager.GetString("MainWindow_UseIEModeCompatList", resourceCulture);
+                return ResourceManager.GetString("Option_BasicPreferences", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 오디오 입력 사용하기 - 개인 정보 노출에 주의하세요!.
+        ///   Looks up a localized string similar to Adobe Reader 설치하기.
         /// </summary>
-        public static string MainWindow_UseMicrophoneCheckboxText {
+        public static string Option_InstallAdobeReader {
             get {
-                return ResourceManager.GetString("MainWindow_UseMicrophoneCheckboxText", resourceCulture);
+                return ResourceManager.GetString("Option_InstallAdobeReader", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 프린터 같이 사용하기.
+        ///   Looks up a localized string similar to 모두의 프린터 설치하기.
         /// </summary>
-        public static string MainWindow_UsePrinterCheckboxText {
+        public static string Option_InstallEveryonesPrinter {
             get {
-                return ResourceManager.GetString("MainWindow_UsePrinterCheckboxText", resourceCulture);
+                return ResourceManager.GetString("Option_InstallEveryonesPrinter", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 비디오 입력 사용하기 - 개인 정보 노출에 주의하세요!.
+        ///   Looks up a localized string similar to 한컴오피스 뷰어 설치하기.
         /// </summary>
-        public static string MainWindow_UseWebCameraCheckboxText {
+        public static string Option_InstallHancomOfficeViewer {
             get {
-                return ResourceManager.GetString("MainWindow_UseWebCameraCheckboxText", resourceCulture);
+                return ResourceManager.GetString("Option_InstallHancomOfficeViewer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RaiDrive 설치하기.
+        /// </summary>
+        public static string Option_InstallRaiDrive {
+            get {
+                return ResourceManager.GetString("Option_InstallRaiDrive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 아래 옵션에서 새로운 버전의 식탁보 프로그램에 도입될 예정인 기능을 켜고 끌 수 있습니다..
+        /// </summary>
+        public static string Option_LabDescriptionText {
+            get {
+                return ResourceManager.GetString("Option_LabDescriptionText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 실험실.
+        /// </summary>
+        public static string Option_LabPreferences {
+            get {
+                return ResourceManager.GetString("Option_LabPreferences", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 새로운 사용자 인터페이스 사용.
         /// </summary>
-        public static string MainWindow_V2UIOptIn {
+        public static string Option_NewUIOptIn {
             get {
-                return ResourceManager.GetString("MainWindow_V2UIOptIn", resourceCulture);
+                return ResourceManager.GetString("Option_NewUIOptIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 식탁보는 Sentry.io 서비스를 통하여 식탁보 프로그램 실행 도중 발생한 오류 정보를 익명으로 수집합니다. 만약 데이터 보내기를 원하지 않으시면 아래 체크 박스를 선택 해제하신 후 식탁보를 다시 실행해주세요..
+        /// </summary>
+        public static string Option_TelemetryDescriptionText {
+            get {
+                return ResourceManager.GetString("Option_TelemetryDescriptionText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 기능 개선을 위한 정보 수집.
+        /// </summary>
+        public static string Option_TelemetryPreferences {
+            get {
+                return ResourceManager.GetString("Option_TelemetryPreferences", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 식탁보 오류 로그 자동 수집.
+        /// </summary>
+        public static string Option_UseAutoLogCollecting {
+            get {
+                return ResourceManager.GetString("Option_UseAutoLogCollecting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internet Explorer 호환성 모드 사용.
+        /// </summary>
+        public static string Option_UseIEModeCompatList {
+            get {
+                return ResourceManager.GetString("Option_UseIEModeCompatList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 오디오 입력 사용하기 - 개인 정보 노출에 주의하세요!.
+        /// </summary>
+        public static string Option_UseMicrophoneCheckboxText {
+            get {
+                return ResourceManager.GetString("Option_UseMicrophoneCheckboxText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 프린터 같이 사용하기.
+        /// </summary>
+        public static string Option_UsePrinterCheckboxText {
+            get {
+                return ResourceManager.GetString("Option_UsePrinterCheckboxText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 비디오 입력 사용하기 - 개인 정보 노출에 주의하세요!.
+        /// </summary>
+        public static string Option_UseWebCameraCheckboxText {
+            get {
+                return ResourceManager.GetString("Option_UseWebCameraCheckboxText", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 검색 키워드 입력 (예: 신한, 보험).
         /// </summary>
-        public static string MainWindowV2_SearchFilter_Watermark {
+        public static string SearchFilter_Watermark {
             get {
-                return ResourceManager.GetString("MainWindowV2_SearchFilter_Watermark", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 식탁보 - 컴퓨터를 깨끗하게 사용하세요!.
-        /// </summary>
-        public static string MainWindowV2_Title {
-            get {
-                return ResourceManager.GetString("MainWindowV2_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 지금부터 {0}개 프로그램의 설치 과정이 시작됩니다. 모든 프로그램의 설치가 끝나면 자동으로 {1} 홈페이지가 열립니다..
-        /// </summary>
-        public static string Script_InstructionMessage {
-            get {
-                return ResourceManager.GetString("Script_InstructionMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 안내.
-        /// </summary>
-        public static string Script_InstructionTitleText {
-            get {
-                return ResourceManager.GetString("Script_InstructionTitleText", resourceCulture);
+                return ResourceManager.GetString("SearchFilter_Watermark", resourceCulture);
             }
         }
         
@@ -1233,7 +954,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} 오류.
+        ///   Looks up a localized string similar to 식탁보 오류.
         /// </summary>
         public static string TitleText_Error {
             get {
@@ -1242,7 +963,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} 정보.
+        ///   Looks up a localized string similar to 식탁보 정보.
         /// </summary>
         public static string TitleText_Info {
             get {
@@ -1251,7 +972,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} 확인.
+        ///   Looks up a localized string similar to 식탁보 확인.
         /// </summary>
         public static string TitleText_Question {
             get {
@@ -1260,7 +981,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} 경고.
+        ///   Looks up a localized string similar to 식탁보 경고.
         /// </summary>
         public static string TitleText_Warning {
             get {

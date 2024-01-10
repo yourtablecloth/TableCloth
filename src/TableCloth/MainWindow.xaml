@@ -59,15 +59,15 @@
                 <RowDefinition Height="50*" x:Name="OptionRow" />
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" VerticalAlignment="Top" Margin="0 5 0 0" Content="{x:Static res:UIStringResources.MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <Label Grid.Row="0" VerticalAlignment="Top" Margin="0 5 0 0" Content="{x:Static res:UIStringResources.MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" d:Visibility="Visible" />
 
-            <TextBox Grid.Row="1" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 0 0 10" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}">
+            <TextBox Grid.Row="1" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 0 0 10" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" d:Visibility="Visible">
                 <TextBox.Style>
                     <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                         <Style.Resources>
                             <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                                 <VisualBrush.Visual>
-                                    <Label Content="{x:Static res:UIStringResources.MainWindow_SearchFilter_Watermark}" Foreground="LightGray" />
+                                    <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="LightGray" />
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Style.Resources>
@@ -86,15 +86,15 @@
                 </TextBox.Style>
             </TextBox>
 
-            <StackPanel Grid.Row="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical">
+            <StackPanel Grid.Row="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical" d:Visibility="Hidden">
                 <Label VerticalAlignment="Top" HorizontalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_SelectSiteLabelText_Alt}" />
-                <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{x:Static res:UIStringResources.MainWindow_ReloadCatalog}" Command="{Binding AppRestartCommand}">
+                <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{x:Static res:UIStringResources.Button_AppRestartButton}" Command="{Binding AppRestartCommand}">
                     <Button.CommandParameter>
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                     </Button.CommandParameter>
                 </Button>
             </StackPanel>
-            <ListView Grid.Row="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" SelectionChanged="SiteList_SelectionChanged" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
+            <ListView Grid.Row="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" SelectionChanged="SiteList_SelectionChanged" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler" d:Visibility="Visible" d:ItemsSource="{Binding ServicesForDesigner}">
                 <ListView.View>
                     <GridView>
                         <controls:ExtendedGridViewColumn Header="{x:Static res:UIStringResources.MainWindow_Column_SiteName}" BindingPath="DisplayName" Width="180">
@@ -143,7 +143,7 @@
 
             <Label Grid.Row="3" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_SelectOptionsLabelText}" />
             <TabControl Grid.Row="4">
-                <TabItem Header="{x:Static res:UIStringResources.MainWindow_BasicPreferences}">
+                <TabItem Header="{x:Static res:UIStringResources.Option_BasicPreferences}">
                     <Grid Margin="4">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30" />
@@ -153,8 +153,8 @@
                             <RowDefinition Height="30" />
                         </Grid.RowDefinitions>
                         <WrapPanel Grid.Row="0" VerticalAlignment="Center" Orientation="Horizontal">
-                            <CheckBox VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
-                            <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{x:Static res:UIStringResources.MainWindow_BrowseButtonText}" Command="{Binding CertSelectCommand}" IsEnabled="{Binding Path='MapNpkiCert'}">
+                            <CheckBox VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Button_MapNpkiCertButton}" IsChecked="{Binding Path='MapNpkiCert'}" />
+                            <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{x:Static res:UIStringResources.Button_BrowseButton}" Command="{Binding CertSelectCommand}" IsEnabled="{Binding Path='MapNpkiCert'}">
                                 <Button.CommandParameter>
                                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                                 </Button.CommandParameter>
@@ -162,12 +162,12 @@
                         </WrapPanel>
                         <Label Grid.Row="1" VerticalAlignment="Stretch" Margin="0 5 0 0" Content="{Binding Path='SelectedCertFile'}"  IsEnabled="{Binding Path='MapNpkiCert'}">
                         </Label>
-                        <CheckBox Grid.Row="2" VerticalAlignment="Center" FontWeight="Bold" Content="{x:Static res:UIStringResources.MainWindow_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
-                        <CheckBox Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold" Content="{x:Static res:UIStringResources.MainWindow_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
-                        <CheckBox Grid.Row="4" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
+                        <CheckBox Grid.Row="2" VerticalAlignment="Center" FontWeight="Bold" Content="{x:Static res:UIStringResources.Option_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
+                        <CheckBox Grid.Row="3" VerticalAlignment="Center" FontWeight="Bold" Content="{x:Static res:UIStringResources.Option_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
+                        <CheckBox Grid.Row="4" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
                     </Grid>
                 </TabItem>
-                <TabItem Header="{x:Static res:UIStringResources.MainWindow_Addons}">
+                <TabItem Header="{x:Static res:UIStringResources.Option_Addons}">
                     <Grid Margin="4">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30" />
@@ -176,33 +176,33 @@
                             <RowDefinition Height="30" />
                             <RowDefinition Height="30" />
                         </Grid.RowDefinitions>
-                        <CheckBox Grid.Row="0" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_InstallEveryonesPrinter}" IsChecked="{Binding Path='InstallEveryonesPrinter'}" />
-                        <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_InstallAdobeReader}" IsChecked="{Binding Path='InstallAdobeReader'}" />
-                        <CheckBox Grid.Row="2" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_InstallHancomOfficeViewer}" IsChecked="{Binding Path='InstallHancomOfficeViewer'}" />
-                        <CheckBox Grid.Row="3" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_InstallRaiDrive}" IsChecked="{Binding Path='InstallRaiDrive'}" />
-                        <CheckBox Grid.Row="4" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
+                        <CheckBox Grid.Row="0" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_InstallEveryonesPrinter}" IsChecked="{Binding Path='InstallEveryonesPrinter'}" />
+                        <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_InstallAdobeReader}" IsChecked="{Binding Path='InstallAdobeReader'}" />
+                        <CheckBox Grid.Row="2" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_InstallHancomOfficeViewer}" IsChecked="{Binding Path='InstallHancomOfficeViewer'}" />
+                        <CheckBox Grid.Row="3" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_InstallRaiDrive}" IsChecked="{Binding Path='InstallRaiDrive'}" />
+                        <CheckBox Grid.Row="4" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
                     </Grid>
                 </TabItem>
-                <TabItem Header="{x:Static res:UIStringResources.MainWindow_LabPreferences}">
-                    <Grid Margin="4">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="50" />
-                            <RowDefinition Height="30" />
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="5" Text="{x:Static res:UIStringResources.MainWindow_LabDescriptionText}" />
-                        <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_V2UIOptIn}" IsChecked="{Binding Path='V2UIOptIn'}" />
-                    </Grid>
-                </TabItem>
-                <TabItem Header="{x:Static res:UIStringResources.MainWindow_TelemetryPreferences}">
+                <TabItem Header="{x:Static res:UIStringResources.Option_LabPreferences}">
                     <Grid Margin="4">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="50" />
                             <RowDefinition Height="30" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="5" Text="{x:Static res:UIStringResources.MainWindow_TelemetryDescriptionText}" />
-                        <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
+                        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="5" Text="{x:Static res:UIStringResources.Option_LabDescriptionText}" />
+                        <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_NewUIOptIn}" IsChecked="{Binding Path='V2UIOptIn'}" />
+                    </Grid>
+                </TabItem>
+                <TabItem Header="{x:Static res:UIStringResources.Option_TelemetryPreferences}">
+                    <Grid Margin="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="30" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="5" Text="{x:Static res:UIStringResources.Option_TelemetryDescriptionText}" />
+                        <CheckBox Grid.Row="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
                     </Grid>
                 </TabItem>
 
@@ -216,7 +216,7 @@
             </Grid.ColumnDefinitions>
 
             <WrapPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left" Margin="10">
-                <Button x:Name="AboutButton" Content="{x:Static res:UIStringResources.MainWindow_AboutButtonText}" Padding="5" Margin="0 0 0 0" Command="{Binding AboutThisAppCommand}">
+                <Button x:Name="AboutButton" Content="{x:Static res:UIStringResources.Button_AboutButton}" Padding="5" Margin="0 0 0 0" Command="{Binding AboutThisAppCommand}">
                     <Button.CommandParameter>
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                     </Button.CommandParameter>
@@ -224,17 +224,17 @@
             </WrapPanel>
 
             <WrapPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
-                <Button x:Name="ShortcutButton" Content="{x:Static res:UIStringResources.MainWindow_ShortcutButtonText}" Padding="5" Margin="0 0 10 0" Command="{Binding CreateShortcutCommand}">
+                <Button x:Name="ShortcutButton" Content="{x:Static res:UIStringResources.Button_CreateShortcutButton}" Padding="5" Margin="0 0 10 0" Command="{Binding CreateShortcutCommand}">
                     <Button.CommandParameter>
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                     </Button.CommandParameter>
                 </Button>
-                <Button x:Name="LaunchSandboxButton" Content="{x:Static res:UIStringResources.MainWindow_LaunchSandboxButtonText}" Padding="5" Margin="0 0 10 0" Command="{Binding LaunchSandboxCommand}">
+                <Button x:Name="LaunchSandboxButton" Content="{x:Static res:UIStringResources.Button_LaunchButton}" Padding="5" Margin="0 0 10 0" Command="{Binding LaunchSandboxCommand}">
                     <Button.CommandParameter>
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                     </Button.CommandParameter>
                 </Button>
-                <Button x:Name="CloseButton" Content="{x:Static res:UIStringResources.MainWindow_CloseButtonText}" Padding="5" Margin="0 0 0 0" Click="CloseButton_Click"></Button>
+                <Button x:Name="CloseButton" Content="{x:Static res:UIStringResources.Button_CloseButton}" Padding="5" Margin="0 0 0 0" Click="CloseButton_Click"></Button>
             </WrapPanel>
         </Grid>
     </Grid>

@@ -69,5 +69,14 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("Ask_RestartRequired", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 지금 이 프로그램이 실행되는 환경은 윈도우 샌드박스 환경이 아닌 것 같습니다. 그래도 계속 실행하시겠습니까?.
+        /// </summary>
+        public static string Ask_WarningForNonSandboxEnvironment {
+            get {
+                return ResourceManager.GetString("Ask_WarningForNonSandboxEnvironment", resourceCulture);
+            }
+        }
     }
 }

@@ -67,13 +67,13 @@
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
                 <!--
-                <Button x:Name="ConvertToPfxButton" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.CertSelectWindow_ConvertToPfxButtonText}" Padding="5">
+                <Button x:Name="ConvertToPfxButton" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Button_ConvertToPfxButton}" Padding="5">
                     <Button.CommandParameter>
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                     </Button.CommandParameter>
                 </Button>
                 -->
-                <Button x:Name="RefreshCertPairsButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.CertSelectWindow_RefreshButtonText}" Command="{Binding CertSelectWindowScanCertPairCommand}" Padding="5">
+                <Button x:Name="RefreshCertPairsButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Button_RefreshButton}" Command="{Binding CertSelectWindowScanCertPairCommand}" Padding="5">
                     <Button.CommandParameter>
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                     </Button.CommandParameter>
@@ -97,8 +97,8 @@
             </WrapPanel>
 
             <WrapPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Margin="10">
-                <Button x:Name="OkayButton" Content="{x:Static res:UIStringResources.CertSelectWindow_OkayButtonText}" Padding="5" Margin="0 0 10 0" IsDefault="True" />
-                <Button x:Name="CancelButton" Content="{x:Static res:UIStringResources.CertSelectWindow_CancelButtonText}" Padding="5" Margin="0 0 0 0" IsCancel="True" />
+                <Button x:Name="OkayButton" Content="{x:Static res:UIStringResources.Button_OkayButton}" Padding="5" Margin="0 0 10 0" IsDefault="True" />
+                <Button x:Name="CancelButton" Content="{x:Static res:UIStringResources.Button_CancelButton}" Padding="5" Margin="0 0 0 0" IsCancel="True" />
             </WrapPanel>
         </Grid>
     </Grid>
