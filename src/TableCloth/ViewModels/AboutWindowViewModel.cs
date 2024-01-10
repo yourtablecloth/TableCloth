@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
 using TableCloth.Resources;
@@ -16,14 +15,12 @@ public class AboutWindowViewModel : ViewModelBase
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public AboutWindowViewModel(
-        Application application,
         AboutWindowLoadedCommand aboutWindowLoadedCommand,
         OpenWebsiteCommand openWebsiteCommand,
         ShowSystemInfoCommand showSystemInfoCommand,
         CheckUpdatedVersionCommand checkUpdatedVersionCommand,
         OpenPrivacyPolicyCommand openPrivacyPolicyCommand)
     {
-        _application = application;
         _aboutWindowLoadedCommand = aboutWindowLoadedCommand;
         _openWebsiteCommand = openWebsiteCommand;
         _showSystemInfoCommand = showSystemInfoCommand;
@@ -33,7 +30,6 @@ public class AboutWindowViewModel : ViewModelBase
         _licenseDetails = UIStringResources.AboutWindow_LoadingLicensesMessage;
     }
 
-    private readonly Application _application;
     private readonly AboutWindowLoadedCommand _aboutWindowLoadedCommand;
     private readonly OpenWebsiteCommand _openWebsiteCommand;
     private readonly ShowSystemInfoCommand _showSystemInfoCommand;
