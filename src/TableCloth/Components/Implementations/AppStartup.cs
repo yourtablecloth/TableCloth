@@ -124,7 +124,7 @@ public sealed class AppStartup : IAppStartup
                 warnings.Add(ErrorStrings.Error_HyperVisor_Missing);
 #else
                 result = ApplicationStartupResultModel.FromErrorMessage(
-                    StringResources.Error_HyperVisor_Missing, isCritical: true, providedWarnings: warnings);
+                    ErrorStrings.Error_HyperVisor_Missing, isCritical: true, providedWarnings: warnings);
                 return result;
 #endif
             }
@@ -147,7 +147,7 @@ public sealed class AppStartup : IAppStartup
                 warnings.Add(ErrorStrings.Error_Windows_Dism_Missing);
 #else
                 result = ApplicationStartupResultModel.FromErrorMessage(
-                    StringResources.Error_Windows_Dism_Missing, isCritical: true, providedWarnings: warnings);
+                    ErrorStrings.Error_Windows_Dism_Missing, isCritical: true, providedWarnings: warnings);
                 return result;
 #endif
             }
@@ -183,7 +183,7 @@ public sealed class AppStartup : IAppStartup
             warnings.Add(ErrorStrings.Error_Windows_Sandbox_Missing);
 #else
             result = ApplicationStartupResultModel.FromErrorMessage(
-                StringResources.Error_Windows_Sandbox_Missing, isCritical: true, providedWarnings: warnings);
+                ErrorStrings.Error_Windows_Sandbox_Missing, isCritical: true, providedWarnings: warnings);
             return result;
 #endif
         }

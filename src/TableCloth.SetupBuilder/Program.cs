@@ -97,7 +97,7 @@ namespace TableCloth.SetupBuilder
             project.GUID = Guid.Parse("21AD9E55-CC53-4B64-9770-BFA3432DD7D3");
             project.UpgradeCode = Guid.Parse("93316BF0-E965-49AD-A6A1-049AFD551459");
 #else
-            project.Name = StringResources.AppNameForWixAndStore;
+            project.Name = ConstantStrings.AppNameForWixAndStore;
             project.GUID = Guid.Parse("1D7A2F0E-550D-452B-B69C-585F87C23A5B");
             project.UpgradeCode = Guid.Parse("C63DF133-51A9-4139-BD31-EDC025C7EB51");
 #endif // DEBUG
