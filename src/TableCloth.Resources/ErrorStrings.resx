@@ -175,7 +175,7 @@
     <value>The certificate you selected has expired. You'll need to select a different public certificate, or replace it with a new public certificate.</value>
   </data>
   <data name="Error_Cert_ExpireSoon" xml:space="preserve">
-    <value>Expires in {0} days. It needs to be replaced with a new joint certificate.</value>
+    <value>Expires in {0} days. It needs to be replaced with a new certificate.</value>
   </data>
   <data name="Error_Cert_MayTooEarly" xml:space="preserve">
     <value>The certificate you selected will be available in {0} days.</value>
@@ -202,10 +202,10 @@
     <value>The installation script could not be run because the Windows PowerShell executable file was not found.</value>
   </data>
   <data name="Error_Offline" xml:space="preserve">
-    <value>It looks like your system is not connected to the internet, please connect to the internet and run the tablecloth program again for full functionality.</value>
+    <value>It looks like your system is not connected to the internet, please connect to the internet and run the TableCloth program again for full functionality.</value>
   </data>
   <data name="Error_OpenDerAndKey_Simultaneously" xml:space="preserve">
-    <value>Select one joint certificate information file (DER) and one joint certificate private key file (KEY).
+    <value>Select one certificate information file (DER) and one certificate private key file (KEY).
 
 You can select multiple files by holding down the Ctrl or Shift key, or by dragging an empty space in the file selection window.</value>
   </data>

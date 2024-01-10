@@ -504,7 +504,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The tablecloth auto-installer is running in dry run mode..
+        ///   Looks up a localized string similar to The TableCloth auto-installer is running in dry run mode..
         /// </summary>
         public static string Hostess_DryRunInstructionMessage {
             get {
@@ -756,7 +756,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The options below allow you to turn on and off features that will be introduced in the new version of the tablecloth program..
+        ///   Looks up a localized string similar to The options below allow you to turn on and off features that will be introduced in the new version of the TableCloth program..
         /// </summary>
         public static string Option_LabDescriptionText {
             get {

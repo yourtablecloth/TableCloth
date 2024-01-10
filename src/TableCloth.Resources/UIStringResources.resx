@@ -267,7 +267,7 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
     <value>Downloading...</value>
   </data>
   <data name="Hostess_DryRunInstructionMessage" xml:space="preserve">
-    <value>The tablecloth auto-installer is running in dry run mode.</value>
+    <value>The TableCloth auto-installer is running in dry run mode.</value>
   </data>
   <data name="Hostess_Install_Failed" xml:space="preserve">
     <value>Fail</value>
@@ -351,7 +351,7 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
     <value>Install RaiDrive</value>
   </data>
   <data name="Option_LabDescriptionText" xml:space="preserve">
-    <value>The options below allow you to turn on and off features that will be introduced in the new version of the tablecloth program.</value>
+    <value>The options below allow you to turn on and off features that will be introduced in the new version of the TableCloth program.</value>
   </data>
   <data name="Option_LabPreferences" xml:space="preserve">
     <value>Experimentals</value>

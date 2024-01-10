@@ -223,7 +223,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Expires in {0} days. It needs to be replaced with a new joint certificate..
+        ///   Looks up a localized string similar to Expires in {0} days. It needs to be replaced with a new certificate..
         /// </summary>
         public static string Error_Cert_ExpireSoon {
             get {
@@ -304,7 +304,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It looks like your system is not connected to the internet, please connect to the internet and run the tablecloth program again for full functionality..
+        ///   Looks up a localized string similar to It looks like your system is not connected to the internet, please connect to the internet and run the TableCloth program again for full functionality..
         /// </summary>
         public static string Error_Offline {
             get {
@@ -313,7 +313,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select one joint certificate information file (DER) and one joint certificate private key file (KEY).
+        ///   Looks up a localized string similar to Select one certificate information file (DER) and one certificate private key file (KEY).
         ///
         ///You can select multiple files by holding down the Ctrl or Shift key, or by dragging an empty space in the file selection window..
         /// </summary>
