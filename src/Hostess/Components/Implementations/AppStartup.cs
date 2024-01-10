@@ -92,7 +92,7 @@ namespace Hostess.Components.Implementations
                     try
                     {
                         var document = await _resourceCacheManager.LoadCatalogDocumentAsync() ??
-                            throw new XmlException(HostessStrings.HostessError_CatalogDeserilizationFailure);
+                            throw new XmlException(ErrorStrings.Error_CatalogDeserilizationFailure);
                     }
                     catch (Exception ex)
                     {
@@ -101,7 +101,7 @@ namespace Hostess.Components.Implementations
                         if (attemptCount == retryCount)
                         {
                             result = ApplicationStartupResultModel.FromErrorMessage(
-                                StringResources.HostessError_CatalogLoadFailure(ex), ex,
+                                StringResources.Error_CatalogLoadFailure(ex), ex,
                                 isCritical: true, providedWarnings: warnings);
                             return result;
                         }
@@ -114,9 +114,9 @@ namespace Hostess.Components.Implementations
 
                 if (!parsedArgs.SelectedServices.Any())
                 {
-                    _appMessageBox.DisplayInfo(HostessStrings.Hostess_No_Targets);
+                    _appMessageBox.DisplayInfo(UIStringResources.Hostess_No_Targets);
 
-                    Process.Start(new ProcessStartInfo(ConstantStrings.Hostess_DefaultUrl)
+                    Process.Start(new ProcessStartInfo(CommonStrings.UnboundHomeUrl)
                     {
                         UseShellExecute = true,
                         WindowStyle = ProcessWindowStyle.Maximized,
@@ -158,7 +158,7 @@ namespace Hostess.Components.Implementations
             if (error == SslPolicyErrors.None)
                 return true;
 
-            _appMessageBox.DisplayError(StringResources.HostessError_X509CertError(cert.Subject, error.ToString()), false);
+            _appMessageBox.DisplayError(StringResources.Error_X509CertError(cert.Subject, error.ToString()), false);
             return false;
         }
     }

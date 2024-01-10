@@ -30,7 +30,7 @@ namespace Hostess.Commands.PrecautionsWindow
 
             foreach (var eachItem in catalog.Services.Where(x => targets.Contains(x.Id)))
             {
-                buffer.AppendLine($"[{eachItem.DisplayName} {HostessStrings.Hostess_Warning_Title}]");
+                buffer.AppendLine($"[{eachItem.DisplayName} {UIStringResources.Hostess_Warning_Title}]");
                 buffer.AppendLine(eachItem.CompatibilityNotes);
             }
 

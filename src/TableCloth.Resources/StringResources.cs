@@ -7,22 +7,20 @@ namespace TableCloth.Resources
 {
     public static partial class StringResources { }
 
-#pragma warning disable IDE0040, IDE0066
-
     // 공통 대화 상자 제목들
     partial class StringResources
     {
         public static string TitleText_Info
-            => string.Format(DialogStrings.TitleText_Info, CommonStrings.AppName);
+            => string.Format(UIStringResources.TitleText_Info, CommonStrings.AppName);
 
         public static string TitleText_Error
-            => string.Format(DialogStrings.TitleText_Error, CommonStrings.AppName);
+            => string.Format(UIStringResources.TitleText_Error, CommonStrings.AppName);
 
         public static string TitleText_Warning
-            => string.Format(DialogStrings.TitleText_Warning, CommonStrings.AppName);
+            => string.Format(UIStringResources.TitleText_Warning, CommonStrings.AppName);
 
         public static string TitleText_Question
-            => string.Format(DialogStrings.TitleText_Question, CommonStrings.AppName);
+            => string.Format(UIStringResources.TitleText_Question, CommonStrings.AppName);
     }
 
     // 공동 인증서 관련 문자열들
@@ -31,10 +29,10 @@ namespace TableCloth.Resources
         public static readonly TimeSpan Cert_ExpireWindow = TimeSpan.FromDays(-3d);
 
         public static string Cert_Availability_MayTooEarly(DateTime now, DateTime notBefore)
-            => string.Format(DialogStrings.Cert_Availability_MayTooEarly, (int)Math.Truncate((notBefore - now).TotalDays));
+            => string.Format(UIStringResources.Cert_Availability_MayTooEarly, (int)Math.Truncate((notBefore - now).TotalDays));
 
         public static string Cert_Availability_ExpireSoon(DateTime now, DateTime notAfter, TimeSpan expireWindow)
-            => string.Format(DialogStrings.Cert_Availability_ExpireSoon, (int)Math.Truncate((now - (notAfter - expireWindow)).TotalDays));
+            => string.Format(UIStringResources.Cert_Availability_ExpireSoon, (int)Math.Truncate((now - (notAfter - expireWindow)).TotalDays));
 
         public static string Error_Cert_MayTooEarly(DateTime now, DateTime notBefore)
             => string.Format(ErrorStrings.Error_Cert_MayTooEarly, (int)Math.Truncate((notBefore - now).TotalDays));
@@ -130,41 +128,38 @@ namespace TableCloth.Resources
     partial class StringResources
     {
         public static string Script_InstructionMessage(int packageTotalCount, string siteNameList)
-            => string.Format(DialogStrings.Script_InstructionMessage, packageTotalCount, siteNameList);
+            => string.Format(UIStringResources.Script_InstructionMessage, packageTotalCount, siteNameList);
     }
 
     // 호스트 프로그램의 오류 메시지 문자열들
     partial class StringResources
     {
-        public static string HostessError_CatalogLoadFailure(Exception
+        public static string Error_CatalogLoadFailure(Exception
 #if !NETFX
             ?
 #endif
             ex)
         {
             if (ex is AggregateException ae)
-                return HostessError_CatalogLoadFailure(ae?.InnerException);
+                return Error_CatalogLoadFailure(ae?.InnerException);
 
-            var message = HostessStrings.HostessError_CatalogLoadFailure_Message_1;
+            var message = ErrorStrings.Error_CatalogLoadFailure_Message_1;
 
             if (ex != null)
             {
                 message = string.Concat(message, Environment.NewLine +
                     Environment.NewLine +
-                    string.Format(HostessStrings.HostessError_CatalogLoadFailure_Message_2, ex.Message));
+                    string.Format(ErrorStrings.Error_CatalogLoadFailure_Message_2, ex.Message));
             }
 
             return message;
         }
 
-        public static string HostessError_X509CertError(string certSubject, string errorCode)
-            => string.Format(HostessStrings.HostessError_X509CertError, certSubject, errorCode);
+        public static string Error_X509CertError(string certSubject, string errorCode)
+            => string.Format(ErrorStrings.Error_X509CertError, certSubject, errorCode);
 
-        public static string HostessError_PackageInstallFailure(string errorMessage)
-            => string.Format(HostessStrings.HostessError_PackageInstallFailure_Message_1, (string.IsNullOrWhiteSpace(errorMessage) ? HostessStrings.HostessError_PackageInstallFailure_Message_2 : errorMessage));
-
-        public static string HostessError_Package_CanNotStart
-            => HostessStrings.HostessError_Package_CanNotStart;
+        public static string Error_PackageInstallFailure(string errorMessage)
+            => string.Format(ErrorStrings.Error_PackageInstallFailure_Message_1, (string.IsNullOrWhiteSpace(errorMessage) ? ErrorStrings.Error_PackageInstallFailure_Message_2 : errorMessage));
     }
 
     // 호스트 프로그램에서 사용할 스위치
@@ -275,5 +270,4 @@ namespace TableCloth.Resources
             return unwrappedException?.Message ?? CommonStrings.UnknownText;
         }
     }
-#pragma warning restore IDE0040, IDE0066
 }

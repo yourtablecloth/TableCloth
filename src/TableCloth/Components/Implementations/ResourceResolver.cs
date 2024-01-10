@@ -52,7 +52,7 @@ public sealed class ResourceResolver(
         var document = serializer.Deserialize(contentStream) as CatalogDocument;
 
         if (document == null)
-            throw new Exception(StringResources.HostessError_CatalogLoadFailure(null));
+            throw new Exception(StringResources.Error_CatalogLoadFailure(null));
 
         return document;
     }

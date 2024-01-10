@@ -187,6 +187,33 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Catalog.xml 파일의 형식이 프로그램이 기대하는 형식과 다른 것 같습니다..
+        /// </summary>
+        public static string Error_CatalogDeserilizationFailure {
+            get {
+                return ResourceManager.GetString("Error_CatalogDeserilizationFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 원격 웹 사이트로부터 Catalog.xml 파일을 불러올 수 없어 설치를 계속 진행할 수 없습니다..
+        /// </summary>
+        public static string Error_CatalogLoadFailure_Message_1 {
+            get {
+                return ResourceManager.GetString("Error_CatalogLoadFailure_Message_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 참고로, 발생했던 오류는 다음과 같습니다 - {0}.
+        /// </summary>
+        public static string Error_CatalogLoadFailure_Message_2 {
+            get {
+                return ResourceManager.GetString("Error_CatalogLoadFailure_Message_2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 선택하신 공동 인증서는 만료되었습니다. 다른 공동 인증서를 선택하거나, 새로운 공동 인증서로 교체 발급해야 합니다..
         /// </summary>
         public static string Error_Cert_Expired {
@@ -284,6 +311,33 @@ namespace TableCloth.Resources {
         public static string Error_OpenDerAndKey_Simultaneously {
             get {
                 return ResourceManager.GetString("Error_OpenDerAndKey_Simultaneously", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 패키지 설치 프로그램을 시작하지 못했습니다..
+        /// </summary>
+        public static string Error_Package_CanNotStart {
+            get {
+                return ResourceManager.GetString("Error_Package_CanNotStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 패키지를 설치하는 도중 오류가 발생했습니다..
+        /// </summary>
+        public static string Error_PackageInstallFailure_Message_1 {
+            get {
+                return ResourceManager.GetString("Error_PackageInstallFailure_Message_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 그러나 원인을 파악하지 못했습니다..
+        /// </summary>
+        public static string Error_PackageInstallFailure_Message_2 {
+            get {
+                return ResourceManager.GetString("Error_PackageInstallFailure_Message_2", resourceCulture);
             }
         }
         
@@ -392,6 +446,15 @@ namespace TableCloth.Resources {
         public static string Error_Windows_Sandbox_Missing {
             get {
                 return ResourceManager.GetString("Error_Windows_Sandbox_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 원격 웹 사이트와의 통신 도중 X509 인증서 오류가 발생했습니다. 인증서 주체는 {0}이며, 발생한 오류 코드는 {1} 입니다..
+        /// </summary>
+        public static string Error_X509CertError {
+            get {
+                return ResourceManager.GetString("Error_X509CertError", resourceCulture);
             }
         }
     }

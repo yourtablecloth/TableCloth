@@ -125,11 +125,11 @@ namespace TableCloth.Models.Configuration
                     return StringResources.Cert_Availability_MayTooEarly(now, NotBefore);
 
                 if (now > NotAfter)
-                    return DialogStrings.Cert_Availability_Expired;
+                    return UIStringResources.Cert_Availability_Expired;
                 else if (now > NotAfter.Add(expireWindow))
                     return StringResources.Cert_Availability_ExpireSoon(now, NotAfter, expireWindow);
 
-                return DialogStrings.Cert_Availability_Available;
+                return UIStringResources.Cert_Availability_Available;
             }
         }
 

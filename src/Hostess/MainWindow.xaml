@@ -5,13 +5,13 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:Hostess.ViewModels"
-        xmlns:local="clr-namespace:Hostess"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
         Style="{DynamicResource MainWindowStyle}"
         ResizeMode="CanResize"
         WindowStartupLocation="Manual" Top="0" Left="0"
-        Title="{StaticResource AppTitle}" Width="320" Height="480" MinWidth="320" MinHeight="480"
+        Title="{x:Static res:UIStringResources.Hostess_AppTitle}" Width="320" Height="480" MinWidth="320" MinHeight="480"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -36,11 +36,11 @@
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Grid.ColumnSpan="2" Background="{Binding Source={x:Static SystemColors.ActiveBorderBrush}}" Foreground="{Binding Source={x:Static SystemColors.ActiveCaptionTextBrush}}">
             <Label.Content>
-                <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 0 0" Text="{StaticResource DryRunInstructionMessage}" TextWrapping="Wrap" />
+                <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 0 0" Text="{x:Static res:UIStringResources.Hostess_DryRunInstructionMessage}" TextWrapping="Wrap" />
             </Label.Content>
         </Label>
-        <TextBlock Padding="10" TextWrapping="WrapWithOverflow" FontWeight="UltraBold" FontSize="20" Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" Foreground="{Binding Source={x:Static SystemColors.WindowBrush}}" Grid.ColumnSpan="2" Grid.Row="1" Text="{StaticResource AppTitle}" />
-        <TextBlock HorizontalAlignment="Stretch" Padding="10" TextWrapping="WrapWithOverflow" Grid.ColumnSpan="2" Grid.Row="2" Text="{StaticResource AppInstructionMessage}" />
+        <TextBlock Padding="10" TextWrapping="WrapWithOverflow" FontWeight="UltraBold" FontSize="20" Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" Foreground="{Binding Source={x:Static SystemColors.WindowBrush}}" Grid.ColumnSpan="2" Grid.Row="1" Text="{x:Static res:UIStringResources.Hostess_AppTitle}" />
+        <TextBlock HorizontalAlignment="Stretch" Padding="10" TextWrapping="WrapWithOverflow" Grid.ColumnSpan="2" Grid.Row="2" Text="{x:Static res:UIStringResources.Hostess_AppInstructionMessage}" />
         <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="3" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding InstallItems}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -51,7 +51,7 @@
                         <TextBlock Text="{Binding Path='StatusMessage'}" Margin="0 0 5 0" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" />
                         <TextBlock Margin="0 0 5 0" Visibility="{Binding Path='ShowErrorMessageLink', Converter={StaticResource booleanToVisibilityConverter}}">
                             <Hyperlink Command="{Binding Path='ShowErrorMessage'}" CommandParameter="{Binding Path='ErrorMessage'}">
-                                <TextBlock Text="{StaticResource ShowDetailError}" />
+                                <TextBlock Text="{x:Static res:UIStringResources.Hostess_ShowDetailError}" />
                             </Hyperlink>
                         </TextBlock>
                     </StackPanel>
@@ -59,14 +59,14 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0">
-            <Button Margin="10 0 0 0" Padding="5" Content="{StaticResource AboutButtonText}" Command="{Binding AboutThisAppCommand}">
+            <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Hostess_AboutButtonText}" Command="{Binding AboutThisAppCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>
             </Button>
         </WrapPanel>
         <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="5" Grid.Column="1">
-            <Button Margin="0 0 10 0" Padding="5" Content="{StaticResource InstallButtonText}" Command="{Binding MainWindowInstallPackagesCommand}">
+            <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Hostess_InstallButtonText}" Command="{Binding MainWindowInstallPackagesCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>

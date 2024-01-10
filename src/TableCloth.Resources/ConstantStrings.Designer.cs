@@ -115,15 +115,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://www.naver.com/.
-        /// </summary>
-        public static string Hostess_DefaultUrl {
-            get {
-                return ResourceManager.GetString("Hostess_DefaultUrl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to https://yourtablecloth.app/TableClothCatalog/sites.xml.
         /// </summary>
         public static string IEModePolicyXmlUrl {

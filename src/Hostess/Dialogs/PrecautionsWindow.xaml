@@ -6,12 +6,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:Hostess.ViewModels"
         xmlns:local="clr-namespace:Hostess"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:PrecautionsWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
         Style="{DynamicResource MainWindowStyle}"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
-        Title="{StaticResource PrecautionWindowText}" Width="640" Height="480"
+        Title="{x:Static res:UIStringResources.Hostess_PrecautionWindowText}" Width="640" Height="480"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -28,10 +29,10 @@
             <RowDefinition Height="360*"/>
             <RowDefinition Height="55"/>
         </Grid.RowDefinitions>
-        <TextBlock Padding="10" TextWrapping="WrapWithOverflow" FontWeight="UltraBold" FontSize="20" Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" Foreground="{Binding Source={x:Static SystemColors.WindowBrush}}" Grid.ColumnSpan="2" Grid.Row="0" Text="{StaticResource PrecautionWindowText}" />
+        <TextBlock Padding="10" TextWrapping="WrapWithOverflow" FontWeight="UltraBold" FontSize="20" Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" Foreground="{Binding Source={x:Static SystemColors.WindowBrush}}" Grid.ColumnSpan="2" Grid.Row="0" Text="{x:Static res:UIStringResources.Hostess_PrecautionWindowText}" />
         <RichTextBox Grid.Row="1" Margin="10" local:RichTextBoxHelper.DocumentXaml="{Binding CautionContent}" />
         <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="2">
-            <Button Margin="0 0 10 0" Padding="5" Content="{StaticResource CloseButtonText}" Command="{Binding PrecautionsWindowCloseCommand}">
+            <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Hostess_CloseButtonText}" Command="{Binding PrecautionsWindowCloseCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>

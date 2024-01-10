@@ -139,9 +139,6 @@
   </data>
   <data name="GitHub_Domain" xml:space="preserve">
     <value>github.com</value>
-  </data>
-  <data name="Hostess_DefaultUrl" xml:space="preserve">
-    <value>https://www.naver.com/</value>
     <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
   <data name="IEModePolicyXmlUrl" xml:space="preserve">

@@ -68,7 +68,7 @@ namespace Hostess.Commands.MainWindow
                     catch (Exception ex)
                     {
                         hasAnyFailure = true;
-                        eachItem.StatusMessage = HostessStrings.Hostess_Install_Failed;
+                        eachItem.StatusMessage = UIStringResources.Hostess_Install_Failed;
                         eachItem.Installed = false;
                         eachItem.ErrorMessage = ex is AggregateException exception ? exception.InnerException.Message : ex.Message;
                         await Task.Delay(100);
@@ -165,7 +165,7 @@ namespace Hostess.Commands.MainWindow
             var parsedArgs = _commandLineArguments.Current;
 
             eachItem.Installed = null;
-            eachItem.StatusMessage = HostessStrings.Hostess_Download_InProgress;
+            eachItem.StatusMessage = UIStringResources.Hostess_Download_InProgress;
 
             var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
             var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
@@ -179,12 +179,12 @@ namespace Hostess.Commands.MainWindow
                 webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko");
                 await webClient.DownloadFileTaskAsync(eachItem.PackageUrl, tempFilePath).ConfigureAwait(false);
 
-                eachItem.StatusMessage = HostessStrings.Hostess_Install_InProgress;
+                eachItem.StatusMessage = UIStringResources.Hostess_Install_InProgress;
 
                 if (parsedArgs.DryRun)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
-                    eachItem.StatusMessage = HostessStrings.Hostess_Install_Succeed;
+                    eachItem.StatusMessage = UIStringResources.Hostess_Install_Succeed;
                     eachItem.Installed = true;
                     eachItem.ErrorMessage = null;
                     return;
@@ -206,10 +206,10 @@ namespace Hostess.Commands.MainWindow
                     };
 
                     if (!process.Start())
-                        throw new ApplicationException(StringResources.HostessError_Package_CanNotStart);
+                        throw new ApplicationException(ErrorStrings.Error_Package_CanNotStart);
 
                     await cpSource.Task.ConfigureAwait(false);
-                    eachItem.StatusMessage = HostessStrings.Hostess_Install_Succeed;
+                    eachItem.StatusMessage = UIStringResources.Hostess_Install_Succeed;
                     eachItem.Installed = true;
                     eachItem.ErrorMessage = null;
                 }
@@ -221,7 +221,7 @@ namespace Hostess.Commands.MainWindow
             var parsedArgs = _commandLineArguments.Current;
 
             eachItem.Installed = null;
-            eachItem.StatusMessage = HostessStrings.Hostess_Install_InProgress;
+            eachItem.StatusMessage = UIStringResources.Hostess_Install_InProgress;
 
             var tempFileName = $"bootstrap_{Guid.NewGuid():n}.ps1";
             var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
@@ -233,12 +233,12 @@ namespace Hostess.Commands.MainWindow
             var powershellPath = _sharedLocations.GetDefaultPowerShellExecutableFilePath();
 
             if (!File.Exists(powershellPath))
-                throw new Exception(HostessStrings.Hostess_No_PowerShell_Error);
+                throw new Exception(UIStringResources.Hostess_No_PowerShell_Error);
 
             if (parsedArgs.DryRun)
             {
                 await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
-                eachItem.StatusMessage = HostessStrings.Hostess_Install_Succeed;
+                eachItem.StatusMessage = UIStringResources.Hostess_Install_Succeed;
                 eachItem.Installed = true;
                 eachItem.ErrorMessage = null;
                 return;
@@ -260,10 +260,10 @@ namespace Hostess.Commands.MainWindow
                 };
 
                 if (!process.Start())
-                    throw new ApplicationException(StringResources.HostessError_Package_CanNotStart);
+                    throw new ApplicationException(ErrorStrings.Error_Package_CanNotStart);
 
                 await cpSource.Task.ConfigureAwait(false);
-                eachItem.StatusMessage = HostessStrings.Hostess_Install_Succeed;
+                eachItem.StatusMessage = UIStringResources.Hostess_Install_Succeed;
                 eachItem.Installed = true;
                 eachItem.ErrorMessage = null;
             }

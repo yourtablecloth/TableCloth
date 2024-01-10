@@ -96,7 +96,7 @@ namespace Hostess.Commands.MainWindow
                         InstallItemType = InstallItemType.PowerShellScript,
                         TargetSiteName = targetService.DisplayName,
                         TargetSiteUrl = targetService.Url,
-                        PackageName = HostessStrings.Hostess_CustomScript_Title,
+                        PackageName = UIStringResources.Hostess_CustomScript_Title,
                         ScriptContent = bootstrapData,
                     });
                 }
@@ -125,7 +125,7 @@ namespace Hostess.Commands.MainWindow
             if (!_validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
             {
                 var response = _appMessageBox.DisplayQuestion(
-                    (string)_application.Resources["WarningForNonSandboxEnvironment"],
+                    UIStringResources.Hostess_WarningForNonSandboxEnvironment,
                     defaultAnswer: MessageBoxResult.No);
 
                 if (response != MessageBoxResult.Yes)

@@ -6,12 +6,12 @@ using System.Linq;
 using System.Windows;
 using TableCloth.Components;
 using TableCloth.Events;
+using TableCloth.Resources;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CertSelectWindow;
 
 public sealed class CertSelectWindowManualCertLoadCommand(
-    Application application,
     IAppUserInterface appUserInterface,
     IX509CertPairScanner certPairScanner) : ViewModelCommandBase<CertSelectWindowViewModel>
 {
@@ -23,13 +23,13 @@ public sealed class CertSelectWindowManualCertLoadCommand(
             CheckFileExists = true,
             CheckPathExists = true,
             DereferenceLinks = true,
-            Filter = (string)application.Resources["CertSelectWindow_FileOpenDialog_FilterText"],
+            Filter = UIStringResources.CertSelectWindow_FileOpenDialog_FilterText,
             FilterIndex = 0,
             InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             Multiselect = true,
             ReadOnlyChecked = true,
             ShowReadOnly = false,
-            Title = (string)application.Resources["CertSelectWindow_FileOpenDialog_Text"],
+            Title = UIStringResources.CertSelectWindow_FileOpenDialog_Text,
             ValidateNames = true,
         };
 

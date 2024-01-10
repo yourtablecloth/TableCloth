@@ -1,0 +1,532 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AboutWindow_AppVersionText" xml:space="preserve">
+    <value>프로그램 버전</value>
+  </data>
+  <data name="AboutWindow_CatalogDateText" xml:space="preserve">
+    <value>카탈로그 버전</value>
+  </data>
+  <data name="AboutWindow_CheckUpdateButtonText" xml:space="preserve">
+    <value>업데이트 확인</value>
+  </data>
+  <data name="AboutWindow_LoadingLicensesMessage" xml:space="preserve">
+    <value>라이선스 정보를 확인 중입니다.</value>
+  </data>
+  <data name="AboutWindow_OkayButton" xml:space="preserve">
+    <value>확인</value>
+  </data>
+  <data name="AboutWindow_OpenHomepageButton" xml:space="preserve">
+    <value>홈페이지</value>
+  </data>
+  <data name="AboutWindow_PrivacyLinkText" xml:space="preserve">
+    <value>개인 정보 처리 방침</value>
+  </data>
+  <data name="AboutWindow_ShowSysInfoButtonText" xml:space="preserve">
+    <value>시스템 정보</value>
+  </data>
+  <data name="AboutWindow_Title" xml:space="preserve">
+    <value>프로그램 정보</value>
+  </data>
+  <data name="CatalogPage_AboutButton" xml:space="preserve">
+    <value>식탁보에 대하여...</value>
+  </data>
+  <data name="CatalogPage_Instruction" xml:space="preserve">
+    <value>접속하려는 웹 사이트를 선택하거나, 우측 상단의 검색창에서 검색어를 입력하세요.</value>
+  </data>
+  <data name="CatalogPage_ItemCountLabel" xml:space="preserve">
+    <value>{0}개</value>
+  </data>
+  <data name="CatalogPage_Title" xml:space="preserve">
+    <value>인터넷 뱅킹 서비스 선택</value>
+  </data>
+  <data name="CertSelectWindow_CancelButtonText" xml:space="preserve">
+    <value>취소</value>
+  </data>
+  <data name="CertSelectWindow_CertList_Available" xml:space="preserve">
+    <value>사용 가능 여부</value>
+  </data>
+  <data name="CertSelectWindow_CertList_CommonName" xml:space="preserve">
+    <value>소유자</value>
+  </data>
+  <data name="CertSelectWindow_CertList_CountryName" xml:space="preserve">
+    <value>국가</value>
+  </data>
+  <data name="CertSelectWindow_CertList_Organization" xml:space="preserve">
+    <value>발급기관</value>
+  </data>
+  <data name="CertSelectWindow_CertList_OrganizationalUnits" xml:space="preserve">
+    <value>기관</value>
+  </data>
+  <data name="CertSelectWindow_ConvertToPfxButtonText" xml:space="preserve">
+    <value>PFX 파일로 변환하기</value>
+  </data>
+  <data name="CertSelectWindow_FileOpenDialog_FilterText" xml:space="preserve">
+    <value>공동 인증서 파일 (signCert.der;signPri.key)|signCert.der;signPri.key|공동 인증서 파일 (*.pfx;*.p12)|*.pfx;*.p12</value>
+  </data>
+  <data name="CertSelectWindow_FileOpenDialog_Text" xml:space="preserve">
+    <value>공동 인증서 파일 (signCert.der, signPri.key, *.pfx, *.p12) 열기</value>
+  </data>
+  <data name="CertSelectWindow_InstructionLabel" xml:space="preserve">
+    <value>검색된 공동 인증서가 다음과 같습니다. 다음 중 하나를 선택해주세요.</value>
+  </data>
+  <data name="CertSelectWindow_ManualInstructionLabelText" xml:space="preserve">
+    <value>원하는 공동 인증서가 없다면, 직접 공동 인증서 찾기 버튼을 눌러서 직접 DER 파일과 KEY 파일 한 쌍, 혹은 PFX 파일을 찾아주세요.</value>
+  </data>
+  <data name="CertSelectWindow_OkayButtonText" xml:space="preserve">
+    <value>확인</value>
+  </data>
+  <data name="CertSelectWindow_OpenNpkiCertButton" xml:space="preserve">
+    <value>직접 공동 인증서 찾기...</value>
+  </data>
+  <data name="CertSelectWindow_RefreshButtonText" xml:space="preserve">
+    <value>새로 고침</value>
+  </data>
+  <data name="CertSelectWindow_Title" xml:space="preserve">
+    <value>검색된 공동 인증서 선택</value>
+  </data>
+  <data name="Cert_Availability_Available" xml:space="preserve">
+    <value>사용 가능</value>
+  </data>
+  <data name="Cert_Availability_Expired" xml:space="preserve">
+    <value>만료됨</value>
+  </data>
+  <data name="Cert_Availability_ExpireSoon" xml:space="preserve">
+    <value>{0}일 후 만료</value>
+  </data>
+  <data name="Cert_Availability_MayTooEarly" xml:space="preserve">
+    <value>{0}일 후 사용 가능</value>
+  </data>
+  <data name="DetailPage_BrowseButtonText" xml:space="preserve">
+    <value>찾아보기...</value>
+  </data>
+  <data name="DetailPage_CopyCommandLineButton" xml:space="preserve">
+    <value>명령줄 복사하기</value>
+  </data>
+  <data name="DetailPage_CreateShortcutButton" xml:space="preserve">
+    <value>바로 가기 만들기</value>
+  </data>
+  <data name="DetailPage_InstallAdobeReader" xml:space="preserve">
+    <value>Adobe Reader 설치하기</value>
+  </data>
+  <data name="DetailPage_InstallEveryonesPrinter" xml:space="preserve">
+    <value>모두의 프린터 설치하기</value>
+  </data>
+  <data name="DetailPage_InstallHancomOfficeViewer" xml:space="preserve">
+    <value>한컴오피스 뷰어 설치하기</value>
+  </data>
+  <data name="DetailPage_InstallRaiDrive" xml:space="preserve">
+    <value>RaiDrive 설치하기</value>
+  </data>
+  <data name="DetailPage_LabDescriptionText" xml:space="preserve">
+    <value>아래 옵션에서 새로운 버전의 식탁보 프로그램에 도입될 예정인 기능을 켜고 끌 수 있습니다.</value>
+  </data>
+  <data name="DetailPage_LaunchButton" xml:space="preserve">
+    <value>실행하기</value>
+  </data>
+  <data name="DetailPage_MapNpkiCertButtonText" xml:space="preserve">
+    <value>기존 공동 인증서 파일 가져오기</value>
+  </data>
+  <data name="DetailPage_PackageCountDisplayLabel" xml:space="preserve">
+    <value>샌드박스 실행 후 설치될 소프트웨어 개수: {0}개</value>
+  </data>
+  <data name="DetailPage_TelemetryDescriptionText" xml:space="preserve">
+    <value>식탁보는 Sentry.io 서비스를 통하여 식탁보 프로그램 실행 도중 발생한 오류 정보를 익명으로 수집합니다. 만약 데이터 보내기를 원하지 않으시면 아래 체크 박스를 선택 해제하신 후 식탁보를 다시 실행해주세요.</value>
+  </data>
+  <data name="DetailPage_TelemetryPreferences" xml:space="preserve">
+    <value>기능 개선을 위한 정보 수집</value>
+  </data>
+  <data name="DetailPage_UrlLabel" xml:space="preserve">
+    <value>홈페이지 주소: {0}</value>
+  </data>
+  <data name="DetailPage_UseAutoLogCollecting" xml:space="preserve">
+    <value>식탁보 오류 로그 자동 수집</value>
+  </data>
+  <data name="DetailPage_UseIEModeCompatList" xml:space="preserve">
+    <value>Internet Explorer 호환성 모드 사용</value>
+  </data>
+  <data name="DetailPage_UseMicrophoneCheckboxText" xml:space="preserve">
+    <value>오디오 입력 사용하기 - 개인 정보 노출에 주의하세요!</value>
+  </data>
+  <data name="DetailPage_UsePrinterCheckboxText" xml:space="preserve">
+    <value>프린터 같이 사용하기</value>
+  </data>
+  <data name="DetailPage_UseWebCameraCheckboxText" xml:space="preserve">
+    <value>비디오 입력 사용하기 - 개인 정보 노출에 주의하세요!</value>
+  </data>
+  <data name="DetailPage_V2UIOptIn" xml:space="preserve">
+    <value>새로운 사용자 인터페이스 사용</value>
+  </data>
+  <data name="DisclaimerWindow_AgreeButtonText" xml:space="preserve">
+    <value>동의합니다. 일주일 동안 이 화면을 보지 않겠습니다.</value>
+  </data>
+  <data name="DisclaimerWindow_Content" xml:space="preserve">
+    <value>식탁보를 사용 중 발생하는 개인, 기업, 기관의 금전 손실, 세금 신고 누락 등을 비롯한 어떠한 장애나 손해에 대해서는 사용자 본인에게 책임이 있습니다.
+
+가상 환경이 아닌 실제 컴퓨터 환경에서 실행되어야 손해나 피해가 발생하지 않는 작업은 식탁보를 이용하지 않고 실제 PC 환경에서 사용하는 것을 권장합니다.</value>
+  </data>
+  <data name="DisclaimerWindow_Readme" xml:space="preserve">
+    <value>꼭 읽어주세요.</value>
+  </data>
+  <data name="DisclaimerWindow_Title" xml:space="preserve">
+    <value>식탁보 사용 시 주의 사항</value>
+  </data>
+  <data name="Hostess_AboutButtonText" xml:space="preserve">
+    <value>프로그램 정보</value>
+  </data>
+  <data name="Hostess_AppInstructionMessage" xml:space="preserve">
+    <value>이 프로그램은 요청받은 설치 프로그램들을 샌드 박스 안에 한번에 설치해주는 도구입니다. 설치하기 버튼을 누르면 설치가 시작됩니다.</value>
+  </data>
+  <data name="Hostess_AppTitle" xml:space="preserve">
+    <value>식탁보 자동 설치 프로그램</value>
+  </data>
+  <data name="Hostess_CloseButtonText" xml:space="preserve">
+    <value>닫기</value>
+  </data>
+  <data name="Hostess_CustomScript_Title" xml:space="preserve">
+    <value>별도 설치 스크립트</value>
+    <comment>This item is used by Hostess.</comment>
+  </data>
+  <data name="Hostess_Download_InProgress" xml:space="preserve">
+    <value>다운로드 중...</value>
+    <comment>This item is used by Hostess.</comment>
+  </data>
+  <data name="Hostess_DryRunInstructionMessage" xml:space="preserve">
+    <value>식탁보 자동 설치 프로그램이 Dry Run 모드로 실행 중입니다.</value>
+  </data>
+  <data name="Hostess_ErrorDialogTitle" xml:space="preserve">
+    <value>오류</value>
+  </data>
+  <data name="Hostess_InstallButtonText" xml:space="preserve">
+    <value>설치하기</value>
+  </data>
+  <data name="Hostess_Install_Failed" xml:space="preserve">
+    <value>설치 실패</value>
+    <comment>This item is used by Hostess.</comment>
+  </data>
+  <data name="Hostess_Install_InProgress" xml:space="preserve">
+    <value>설치하는 중...</value>
+    <comment>This item is used by Hostess.</comment>
+  </data>
+  <data name="Hostess_Install_Succeed" xml:space="preserve">
+    <value>설치 완료</value>
+    <comment>This item is used by Hostess.</comment>
+  </data>
+  <data name="Hostess_No_PowerShell_Error" xml:space="preserve">
+    <value>Windows PowerShell 실행 파일을 찾을 수 없어 설치 스크립트를 실행할 수 없습니다.</value>
+    <comment>This item is used by Hostess.</comment>
+  </data>
+  <data name="Hostess_No_Targets" xml:space="preserve">
+    <value>이용하려는 웹 사이트 아이디가 지정되지 않았습니다. 샌드박스는 지금부터 사용하실 수 있어요.</value>
+    <comment>This item is used by Hostess.</comment>
+  </data>
+  <data name="Hostess_PrecautionWindowText" xml:space="preserve">
+    <value>주의 사항</value>
+  </data>
+  <data name="Hostess_QuestionDialogTitle" xml:space="preserve">
+    <value>질문</value>
+  </data>
+  <data name="Hostess_ShowDetailError" xml:space="preserve">
+    <value>자세히 보기</value>
+  </data>
+  <data name="Hostess_WarningForNonSandboxEnvironment" xml:space="preserve">
+    <value>지금 이 프로그램이 실행되는 환경은 윈도우 샌드박스 환경이 아닌 것 같습니다. 그래도 계속 실행하시겠습니까?</value>
+  </data>
+  <data name="Hostess_Warning_Title" xml:space="preserve">
+    <value>사이트 이용 시 주의 사항</value>
+    <comment>This item is used by Hostess.</comment>
+  </data>
+  <data name="InputPasswordWindow_CancelButton" xml:space="preserve">
+    <value>취소</value>
+  </data>
+  <data name="InputPasswordWindow_Disclaimer" xml:space="preserve">
+    <value>입력하시는 암호는 프로그램 내부에서만 사용되고 폐기됩니다.</value>
+  </data>
+  <data name="InputPasswordWindow_Instruction" xml:space="preserve">
+    <value>PFX 인증서를 DER과 KEY로 변환해서 전달하기 위해 비밀 번호 입력이 필요합니다.</value>
+  </data>
+  <data name="InputPasswordWindow_OkayButton" xml:space="preserve">
+    <value>확인</value>
+  </data>
+  <data name="InputPasswordWindow_PfxPathPrefix" xml:space="preserve">
+    <value>PFX 인증서 파일 경로: {0}</value>
+  </data>
+  <data name="InputPasswordWindow_Title" xml:space="preserve">
+    <value>PFX 인증서 변환을 위한 비밀 번호 입력</value>
+  </data>
+  <data name="MainWindowV2_SearchFilter_Watermark" xml:space="preserve">
+    <value>검색 키워드 입력 (예: 신한, 보험)</value>
+  </data>
+  <data name="MainWindowV2_Title" xml:space="preserve">
+    <value>식탁보 - 컴퓨터를 깨끗하게 사용하세요!</value>
+  </data>
+  <data name="MainWindow_AboutButtonText" xml:space="preserve">
+    <value>정보</value>
+  </data>
+  <data name="MainWindow_Addons" xml:space="preserve">
+    <value>부가 기능</value>
+  </data>
+  <data name="MainWindow_BasicPreferences" xml:space="preserve">
+    <value>기본 설정</value>
+  </data>
+  <data name="MainWindow_BrowseButtonText" xml:space="preserve">
+    <value>찾아보기...</value>
+  </data>
+  <data name="MainWindow_CloseButtonText" xml:space="preserve">
+    <value>닫기</value>
+  </data>
+  <data name="MainWindow_Column_Category" xml:space="preserve">
+    <value>분류</value>
+  </data>
+  <data name="MainWindow_Column_PackageCount" xml:space="preserve">
+    <value>필요 소프트웨어 개수</value>
+  </data>
+  <data name="MainWindow_Column_SiteName" xml:space="preserve">
+    <value>웹 사이트 이름</value>
+  </data>
+  <data name="MainWindow_Column_SiteUrl" xml:space="preserve">
+    <value>웹 사이트 주소</value>
+  </data>
+  <data name="MainWindow_InstallAdobeReader" xml:space="preserve">
+    <value>Adobe Reader 설치하기</value>
+  </data>
+  <data name="MainWindow_InstallEveryonesPrinter" xml:space="preserve">
+    <value>모두의 프린터 설치하기</value>
+  </data>
+  <data name="MainWindow_InstallHancomOfficeViewer" xml:space="preserve">
+    <value>한컴오피스 뷰어 설치하기</value>
+  </data>
+  <data name="MainWindow_InstallRaiDrive" xml:space="preserve">
+    <value>RaiDrive 설치하기</value>
+  </data>
+  <data name="MainWindow_JustRunItemText" xml:space="preserve">
+    <value>그냥 실행해주세요.</value>
+  </data>
+  <data name="MainWindow_LabDescriptionText" xml:space="preserve">
+    <value>아래 옵션에서 새로운 버전의 식탁보 프로그램에 도입될 예정인 기능을 켜고 끌 수 있습니다.</value>
+  </data>
+  <data name="MainWindow_LabPreferences" xml:space="preserve">
+    <value>실험실</value>
+  </data>
+  <data name="MainWindow_LaunchSandboxButtonText" xml:space="preserve">
+    <value>샌드박스 실행</value>
+  </data>
+  <data name="MainWindow_MapNpkiCertButtonText" xml:space="preserve">
+    <value>기존 공동 인증서 파일 가져오기</value>
+  </data>
+  <data name="MainWindow_ReloadCatalog" xml:space="preserve">
+    <value>다시 불러오기 (프로그램 다시 실행)</value>
+  </data>
+  <data name="MainWindow_SearchFilter_Watermark" xml:space="preserve">
+    <value>찾고 싶은 웹 사이트의 이름, 분류, 도메인 주소를 입력하세요. (예: 신한, 보험, iros)</value>
+  </data>
+  <data name="MainWindow_SelectOptionsLabelText" xml:space="preserve">
+    <value>원하는 옵션을 선택해주세요.</value>
+  </data>
+  <data name="MainWindow_SelectSiteLabelText" xml:space="preserve">
+    <value>식탁보 위에서 접속할 사이트들을 선택해주세요. 사이트에서 필요한 프로그램들을 자동으로 설치해드려요.</value>
+  </data>
+  <data name="MainWindow_SelectSiteLabelText_Alt" xml:space="preserve">
+    <value>카탈로그 파일을 가져오지 못했어요! 그래도 샌드박스는 대신 실행해드려요.</value>
+  </data>
+  <data name="MainWindow_SelectSiteLabelText_Alt2" xml:space="preserve">
+    <value>카탈로그 파일을 가져오지 못했어요!</value>
+  </data>
+  <data name="MainWindow_ShortcutButtonText" xml:space="preserve">
+    <value>바로 가기 만들기</value>
+  </data>
+  <data name="MainWindow_TelemetryDescriptionText" xml:space="preserve">
+    <value>식탁보는 Sentry.io 서비스를 통하여 식탁보 프로그램 실행 도중 발생한 오류 정보를 익명으로 수집합니다. 만약 데이터 보내기를 원하지 않으시면 아래 체크 박스를 선택 해제하신 후 식탁보를 다시 실행해주세요.</value>
+  </data>
+  <data name="MainWindow_TelemetryPreferences" xml:space="preserve">
+    <value>기능 개선을 위한 정보 수집</value>
+  </data>
+  <data name="MainWindow_Title" xml:space="preserve">
+    <value>식탁보 - 컴퓨터를 깨끗하게 사용하세요!</value>
+  </data>
+  <data name="MainWindow_UseAutoLogCollecting" xml:space="preserve">
+    <value>식탁보 오류 로그 자동 수집</value>
+  </data>
+  <data name="MainWindow_UseIEModeCompatList" xml:space="preserve">
+    <value>Internet Explorer 호환성 모드 사용</value>
+  </data>
+  <data name="MainWindow_UseMicrophoneCheckboxText" xml:space="preserve">
+    <value>오디오 입력 사용하기 - 개인 정보 노출에 주의하세요!</value>
+  </data>
+  <data name="MainWindow_UsePrinterCheckboxText" xml:space="preserve">
+    <value>프린터 같이 사용하기</value>
+  </data>
+  <data name="MainWindow_UseWebCameraCheckboxText" xml:space="preserve">
+    <value>비디오 입력 사용하기 - 개인 정보 노출에 주의하세요!</value>
+  </data>
+  <data name="MainWindow_V2UIOptIn" xml:space="preserve">
+    <value>새로운 사용자 인터페이스 사용</value>
+  </data>
+  <data name="Script_InstructionMessage" xml:space="preserve">
+    <value>지금부터 {0}개 프로그램의 설치 과정이 시작됩니다. 모든 프로그램의 설치가 끝나면 자동으로 {1} 홈페이지가 열립니다.</value>
+  </data>
+  <data name="Script_InstructionTitleText" xml:space="preserve">
+    <value>안내</value>
+  </data>
+  <data name="Status_CheckInternetConnection" xml:space="preserve">
+    <value>인터넷 연결 상태 확인 중...</value>
+  </data>
+  <data name="Status_Done" xml:space="preserve">
+    <value>실행 준비가 완료되었습니다.</value>
+  </data>
+  <data name="Status_EvaluatingRequirementsMet" xml:space="preserve">
+    <value>시스템 환경 확인 중...</value>
+  </data>
+  <data name="Status_InitializingApplication" xml:space="preserve">
+    <value>애플리케이션 초기화 중...</value>
+  </data>
+  <data name="Status_InitializingFailed" xml:space="preserve">
+    <value>오류가 발생했습니다.</value>
+  </data>
+  <data name="Status_InitSentrySDK" xml:space="preserve">
+    <value>Sentry SDK 초기화 중...</value>
+  </data>
+  <data name="Status_LoadingCatalog" xml:space="preserve">
+    <value>카탈로그 불러오는 중...</value>
+  </data>
+  <data name="Status_LoadingImages" xml:space="preserve">
+    <value>이미지 불러오는 중...</value>
+  </data>
+  <data name="Status_LoadingPreferences" xml:space="preserve">
+    <value>환경 설정 불러오는 중...</value>
+  </data>
+  <data name="Status_ParsingCommandLine" xml:space="preserve">
+    <value>명령줄 분석 중...</value>
+  </data>
+  <data name="Status_PleaseWait" xml:space="preserve">
+    <value>잠시만 기다려 주세요.</value>
+  </data>
+  <data name="TitleText_Error" xml:space="preserve">
+    <value>{0} 오류</value>
+  </data>
+  <data name="TitleText_Info" xml:space="preserve">
+    <value>{0} 정보</value>
+  </data>
+  <data name="TitleText_Question" xml:space="preserve">
+    <value>{0} 확인</value>
+  </data>
+  <data name="TitleText_Warning" xml:space="preserve">
+    <value>{0} 경고</value>
+  </data>
+</root>

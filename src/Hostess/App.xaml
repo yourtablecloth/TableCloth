@@ -10,7 +10,6 @@
             <converters:StateToBrushConverter x:Key="stateToBrushConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary x:Uid="Theme" Source="/PresentationFramework.Aero2, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, ProcessorArchitecture=MSIL;component/themes/aero2.normalcolor.xaml" />
-                <ResourceDictionary Source="Resources/UIStringResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

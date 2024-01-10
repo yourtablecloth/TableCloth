@@ -5,11 +5,11 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:Hostess.ViewModels"
-        xmlns:local="clr-namespace:Hostess"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:AboutWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
         Style="{DynamicResource MainWindowStyle}"
-        Title="{StaticResource AboutWindow_Title}" Width="640" Height="480" MinWidth="320" MinHeight="240">
+        Title="{x:Static res:UIStringResources.AboutWindow_Title}" Width="640" Height="480" MinWidth="320" MinHeight="240">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding AboutWindowLoadedCommand}">
@@ -38,21 +38,21 @@
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="100*"/>
             </Grid.RowDefinitions>
-            <Label Content="{StaticResource AboutWindow_AppVersionText}" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" />
+            <Label Content="{x:Static res:UIStringResources.AboutWindow_AppVersionText}" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" />
             <Label Grid.Column="1" Grid.Row="0" Content="{Binding AppVersion}" />
-            <Label Content="{StaticResource AboutWindow_CatalogDateText}" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1" />
+            <Label Content="{x:Static res:UIStringResources.AboutWindow_CatalogDateText}" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1" />
             <Label Grid.Column="1" Grid.Row="1" Content="{Binding CatalogVersion}" />
             <TextBox Margin="0 10 0 10" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" TextWrapping="WrapWithOverflow" Text="{Binding LicenseDescription}" />
         </Grid>
         <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
-            <Button Padding="10 1 10 1" Command="{Binding OpenAppHomepageCommand}" Content="{StaticResource AboutWindow_OpenHomepageButton}">
+            <Button Padding="10 1 10 1" Command="{Binding OpenAppHomepageCommand}" Content="{x:Static res:UIStringResources.AboutWindow_OpenHomepageButton}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>
             </Button>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
-            <Button Padding="10 1 10 1" Command="{Binding AboutWindowCloseCommand}" Content="{StaticResource AboutWindow_OkayButton}">
+            <Button Padding="10 1 10 1" Command="{Binding AboutWindowCloseCommand}" Content="{x:Static res:UIStringResources.AboutWindow_OkayButton}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>

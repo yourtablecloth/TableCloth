@@ -22,6 +22,6 @@ namespace Hostess.Components.Implementations
             => _catalogDocument = await _resourceResolver.DeserializeCatalogAsync(cancellationToken).ConfigureAwait(false);
 
         public CatalogDocument CatalogDocument
-            => _catalogDocument ?? throw new InvalidOperationException(StringResources.HostessError_CatalogLoadFailure(null));
+            => _catalogDocument ?? throw new InvalidOperationException(StringResources.Error_CatalogLoadFailure(null));
     }
 }

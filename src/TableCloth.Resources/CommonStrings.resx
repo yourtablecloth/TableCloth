@@ -174,6 +174,9 @@
   <data name="RaiDriveUrl" xml:space="preserve">
     <value>https://www.raidrive.com/download</value>
   </data>
+  <data name="UnboundHomeUrl" xml:space="preserve">
+    <value>https://www.naver.com/</value>
+  </data>
   <data name="UnknownText" xml:space="preserve">
     <value>알 수 없음</value>
   </data>

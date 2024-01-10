@@ -5,11 +5,11 @@
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:vm="clr-namespace:TableCloth.ViewModels"
-      xmlns:local="clr-namespace:TableCloth"
+      xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
       mc:Ignorable="d" 
       d:DesignHeight="900" d:DesignWidth="800"
       Title="DetailPage" 
-      d:DataContext="{d:DesignInstance Type=vm:DetailPageViewModel, IsDesignTimeCreatable=True}">
+      d:DataContext="{d:DesignInstance Type=vm:DetailPageViewModelForDesigner, IsDesignTimeCreatable=True}">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding DetailPageLoadedCommand}">
@@ -77,7 +77,7 @@
                         <Style.Resources>
                             <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                                 <VisualBrush.Visual>
-                                    <Label Content="{StaticResource MainWindowV2_SearchFilter_Watermark}" Foreground="LightGray" />
+                                    <Label Content="{x:Static res:UIStringResources.MainWindowV2_SearchFilter_Watermark}" Foreground="LightGray" />
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Style.Resources>
@@ -110,30 +110,30 @@
                     </Grid.RowDefinitions>
                     <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="8" Source="{Binding ServiceLogo}" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Margin="8" Text="{Binding DisplayName}" FontSize="36" Grid.RowSpan="2" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
-                    <Button x:Name="LaunchButton" Grid.Row="1" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_LaunchButton}" Command="{Binding LaunchSandboxCommand}">
+                    <Button x:Name="LaunchButton" Grid.Row="1" Grid.Column="2" Margin="8" Content="{x:Static res:UIStringResources.DetailPage_LaunchButton}" Command="{Binding LaunchSandboxCommand}">
                         <Button.CommandParameter>
                             <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                         </Button.CommandParameter>
                     </Button>
-                    <Button x:Name="CreateShortcutButton" Grid.Row="2" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_CreateShortcutButton}" Command="{Binding CreateShortcutCommand}">
+                    <Button x:Name="CreateShortcutButton" Grid.Row="2" Grid.Column="2" Margin="8" Content="{x:Static res:UIStringResources.DetailPage_CreateShortcutButton}" Command="{Binding CreateShortcutCommand}">
                         <Button.CommandParameter>
                             <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                         </Button.CommandParameter>
                     </Button>
-                    <Button x:Name="CopyCommandLineButton" Grid.Row="3" Grid.Column="2" Margin="8" Content="{StaticResource DetailPage_CopyCommandLineButton}" Command="{Binding CopyCommandLineCommand}">
+                    <Button x:Name="CopyCommandLineButton" Grid.Row="3" Grid.Column="2" Margin="8" Content="{x:Static res:UIStringResources.DetailPage_CopyCommandLineButton}" Command="{Binding CopyCommandLineCommand}">
                         <Button.CommandParameter>
                             <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                         </Button.CommandParameter>
                     </Button>
                     <TextBlock Grid.Row="2" Grid.Column="1" Margin="8">
                         <Hyperlink Command="{Binding DetailPageOpenHomepageLinkCommand}">
-                            <TextBlock Text="{Binding Url, StringFormat={StaticResource DetailPage_UrlLabel}}" />
+                            <TextBlock Text="{Binding Url, StringFormat={x:Static res:UIStringResources.DetailPage_UrlLabel}}" />
                             <Hyperlink.CommandParameter>
                                 <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                             </Hyperlink.CommandParameter>
                         </Hyperlink>
                     </TextBlock>
-                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="8" Text="{Binding PackageCountForDisplay, StringFormat={StaticResource DetailPage_PackageCountDisplayLabel}}" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="8" Text="{Binding PackageCountForDisplay, StringFormat={x:Static res:UIStringResources.DetailPage_PackageCountDisplayLabel}}" />
                     <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CompatibilityNotes}" Margin="8" TextWrapping="Wrap" Foreground="Red" FontWeight="Bold" />
                 </Grid>
                 <Grid Margin="8">
@@ -149,8 +149,8 @@
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
                     <WrapPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
-                        <CheckBox VerticalAlignment="Center" Content="{StaticResource DetailPage_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
-                        <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{StaticResource DetailPage_BrowseButtonText}" Command="{Binding CertSelectCommand}" IsEnabled="{Binding Path='MapNpkiCert'}">
+                        <CheckBox VerticalAlignment="Center" Content="{x:Static res:UIStringResources.DetailPage_MapNpkiCertButtonText}" IsChecked="{Binding Path='MapNpkiCert'}" />
+                        <Button x:Name="BrowseButton" VerticalAlignment="Center" Margin="10 0 0 0" Content="{x:Static res:UIStringResources.DetailPage_BrowseButtonText}" Command="{Binding CertSelectCommand}" IsEnabled="{Binding Path='MapNpkiCert'}">
                             <Button.CommandParameter>
                                 <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                             </Button.CommandParameter>
@@ -158,9 +158,9 @@
                     </WrapPanel>
                     <Label Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" Margin="0 5 0 0" Content="{Binding Path='SelectedCertFile'}"  IsEnabled="{Binding Path='MapNpkiCert'}">
                     </Label>
-                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource DetailPage_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
-                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{StaticResource DetailPage_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
-                    <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{x:Static res:UIStringResources.DetailPage_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
+                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{x:Static res:UIStringResources.DetailPage_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
+                    <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.DetailPage_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />
                 </Grid>
                 <Grid Margin="8">
                     <Grid.ColumnDefinitions>
@@ -174,11 +174,11 @@
                         <RowDefinition Height="30" />
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
-                    <CheckBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_InstallEveryonesPrinter}" IsChecked="{Binding Path='InstallEveryonesPrinter'}" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_InstallAdobeReader}" IsChecked="{Binding Path='InstallAdobeReader'}" />
-                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_InstallHancomOfficeViewer}" IsChecked="{Binding Path='InstallHancomOfficeViewer'}" />
-                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_InstallRaiDrive}" IsChecked="{Binding Path='InstallRaiDrive'}" />
-                    <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
+                    <CheckBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.DetailPage_InstallEveryonesPrinter}" IsChecked="{Binding Path='InstallEveryonesPrinter'}" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.DetailPage_InstallAdobeReader}" IsChecked="{Binding Path='InstallAdobeReader'}" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.DetailPage_InstallHancomOfficeViewer}" IsChecked="{Binding Path='InstallHancomOfficeViewer'}" />
+                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.DetailPage_InstallRaiDrive}" IsChecked="{Binding Path='InstallRaiDrive'}" />
+                    <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.DetailPage_UseIEModeCompatList}" IsChecked="{Binding Path='EnableInternetExplorerMode'}" />
                 </Grid>
                 <Grid Margin="8">
                     <Grid.ColumnDefinitions>
@@ -190,8 +190,8 @@
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{StaticResource DetailPage_LabDescriptionText}" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_V2UIOptIn}" IsChecked="{Binding Path='V2UIOptIn'}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{x:Static res:UIStringResources.DetailPage_LabDescriptionText}" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.DetailPage_V2UIOptIn}" IsChecked="{Binding Path='V2UIOptIn'}" />
                 </Grid>
                 <Grid Margin="8">
                     <Grid.ColumnDefinitions>
@@ -202,8 +202,8 @@
                         <RowDefinition Height="50" />
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{StaticResource DetailPage_TelemetryDescriptionText}" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{StaticResource DetailPage_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{x:Static res:UIStringResources.DetailPage_TelemetryDescriptionText}" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.DetailPage_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
                 </Grid>
             </StackPanel>
         </ScrollViewer>

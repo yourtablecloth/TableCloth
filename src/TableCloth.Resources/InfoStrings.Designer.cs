@@ -70,15 +70,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 잠시만 기다려 주세요..
-        /// </summary>
-        public static string Info_Loading {
-            get {
-                return ResourceManager.GetString("Info_Loading", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 바탕 화면에 바로 가기를 생성했습니다..
         /// </summary>
         public static string Info_ShortcutSuccess {

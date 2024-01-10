@@ -2,6 +2,7 @@
 using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
+using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
 
@@ -29,7 +30,7 @@ public class AboutWindowViewModel : ViewModelBase
         _checkUpdatedVersionCommand = checkUpdatedVersionCommand;
         _openPrivacyPolicyCommand = openPrivacyPolicyCommand;
 
-        _licenseDetails = (_application.Resources["AboutWindow_LoadingLicensesMessage"] as string) ?? string.Empty;
+        _licenseDetails = UIStringResources.AboutWindow_LoadingLicensesMessage;
     }
 
     private readonly Application _application;

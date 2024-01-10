@@ -5,6 +5,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:TableCloth.ViewModels"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         xmlns:xrpb="http://XamlRadialProgressBar/DotNet"
         mc:Ignorable="d"
         Title="Splash Screen" Height="400" Width="600"
@@ -32,8 +33,8 @@
 
             <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Image Height="100" Margin="0,0,0,20" Source="/Resources/SandboxIcon.png"/>
-                <TextBlock Text="{Binding AppTitle}" FontSize="24" FontWeight="Bold" />
-                <TextBlock Text="{Binding AppVersion}" />
+                <TextBlock Text="{x:Static res:CommonStrings.AppName}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
+                <TextBlock Text="{Binding AppVersion}" TextAlignment="Center" />
             </StackPanel>
 
             <!-- Circular Progress Indicator -->

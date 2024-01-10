@@ -36,20 +36,13 @@ public class SplashScreenViewModel : ViewModelBase
     public SplashScreenLoadedCommand SplashScreenLoadedCommand
         => _splashScreenLoadedCommand;
 
-    private string _appTitle = CommonStrings.AppName;
     private string _appVersion = Helpers.GetAppVersion();
-    private string _status = InfoStrings.Info_Loading;
+    private string _status = UIStringResources.Status_PleaseWait;
     private bool _appStartupSucceed = false;
     private bool _v2UIOptedIn = true;
     private IList<string> _passedArguments = new string[] { };
     private CommandLineArgumentModel? _parsedArgument;
     private IList<string> _warnings = new List<string>();
-
-    public string AppTitle
-    {
-        get => _appTitle;
-        set => SetProperty(ref _appTitle, value);
-    }
 
     public string AppVersion
     {

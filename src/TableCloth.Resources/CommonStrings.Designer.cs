@@ -232,6 +232,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to https://www.naver.com/.
+        /// </summary>
+        public static string UnboundHomeUrl {
+            get {
+                return ResourceManager.GetString("UnboundHomeUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 알 수 없음.
         /// </summary>
         public static string UnknownText {
