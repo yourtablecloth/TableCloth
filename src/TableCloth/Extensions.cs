@@ -11,10 +11,9 @@ internal static class Extensions
 {
     public static HttpClient CreateTableClothHttpClient(this IHttpClientFactory httpClientFactory)
     {
-        if (httpClientFactory == null)
-            throw new ArgumentNullException(nameof(httpClientFactory));
-
-        return httpClientFactory.CreateClient(nameof(TableCloth));
+        return httpClientFactory == null
+            ? throw new ArgumentNullException(nameof(httpClientFactory))
+            : httpClientFactory.CreateClient(nameof(TableCloth));
     }
 
     public static void AddCommands(this IServiceCollection services, params Type[] commandTypes)
@@ -79,7 +78,7 @@ internal static class Extensions
             return false;
 
         var parent = (FrameworkElement)targetElement.Parent;
-        while (parent != null && parent is IInputElement && !((IInputElement)parent).Focusable)
+        while (parent != null && parent is IInputElement element && !element.Focusable)
             parent = (FrameworkElement)parent.Parent;
 
         var scope = FocusManager.GetFocusScope(targetElement);

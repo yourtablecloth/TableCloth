@@ -312,7 +312,7 @@ public static class Program
             false);
     }
 
-    private static IEnumerable<SandboxMappedFolder> ParseFolderMappingArguments(IEnumerable<string> parts)
+    private static List<SandboxMappedFolder> ParseFolderMappingArguments(IEnumerable<string> parts)
     {
         var results = new List<SandboxMappedFolder>();
         var splitted = new List<List<string>>();
@@ -323,7 +323,7 @@ public static class Program
             if (string.Equals(eachFragment, "/", StringComparison.Ordinal))
             {
                 splitted.Add(list);
-                list = new List<string>();
+                list = [];
                 continue;
             }
 
@@ -337,7 +337,7 @@ public static class Program
 
             foreach (var eachChunk in eachParts.Chunk(2))
             {
-                if (eachChunk.Count() < 2)
+                if (eachChunk.Length < 2)
                     continue;
 
                 switch (eachChunk.ElementAtOrDefault(0))

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Xml.Serialization;
-using TableCloth.Resources;
 
 namespace TableCloth.Models.Catalog
 {

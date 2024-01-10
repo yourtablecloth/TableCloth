@@ -47,6 +47,6 @@ public sealed class CommandLineComposer(
             foreach (var eachSite in viewModel.SelectedServices.Skip(1).ToList())
                 options.Add(eachSite.Id);
 
-        return string.Join(' ', options.ToArray());
+        return string.Join(' ', [.. options]);
     }
 }

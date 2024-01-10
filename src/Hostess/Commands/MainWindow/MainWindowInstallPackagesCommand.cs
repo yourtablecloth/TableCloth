@@ -126,9 +126,7 @@ namespace Hostess.Commands.MainWindow
                     }
 
                     // msedge.exe 파일 경로를 유추하고, Policy를 반영하기 위해 잠시 실행했다가 종료하는 동작을 추가
-                    var msedgePath = default(string);
-
-                    if (!_sharedLocations.TryGetMicrosoftEdgeExecutableFilePath(out msedgePath))
+                    if (!_sharedLocations.TryGetMicrosoftEdgeExecutableFilePath(out var msedgePath))
                         msedgePath = _sharedLocations.GetDefaultX86MicrosoftEdgeExecutableFilePath();
 
                     if (File.Exists(msedgePath))

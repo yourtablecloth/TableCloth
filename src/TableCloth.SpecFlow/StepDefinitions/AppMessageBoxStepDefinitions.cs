@@ -1,8 +1,4 @@
-﻿using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using Moq;
-using Moq.AutoMock;
-using System.Windows.Controls;
-using System.Windows.Input;
+﻿using Moq;
 using TableCloth.Resources;
 using TableCloth.SpecFlow.Support;
 
@@ -135,7 +131,7 @@ partial class AppMessageBoxStepDefinitions
         _bdCritMocker.Use(ScenarioDependencies.SharedApplication);
 
         _beCritMocker = new AutoMocker(MockBehavior.Loose);
-        _beCritMocker.Use(ScenarioDependencies.SharedApplication); 
+        _beCritMocker.Use(ScenarioDependencies.SharedApplication);
     }
 
     [Given(@"b\.c\. 나중에 심각도 수준 지정에 따라 아이콘의 모양이 다르게 나타났는지 확인한다\.")]

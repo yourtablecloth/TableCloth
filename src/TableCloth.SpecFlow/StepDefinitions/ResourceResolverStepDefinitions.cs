@@ -1,11 +1,11 @@
 ﻿using TableCloth.Models.Catalog;
-using TableCloth.SpecFlow.Support;
 
 namespace TableCloth.SpecFlow.StepDefinitions;
 
 [Binding]
 public partial class ResourceResolverStepDefinitions(
-    IResourceResolver resourceResolver) { }
+    IResourceResolver resourceResolver)
+{ }
 
 partial class ResourceResolverStepDefinitions
 {

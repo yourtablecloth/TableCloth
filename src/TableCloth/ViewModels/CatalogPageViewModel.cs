@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TableCloth.Commands;
 using TableCloth.Commands.CatalogPage;
 using TableCloth.Models.Catalog;
+using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
 

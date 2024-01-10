@@ -14,7 +14,7 @@ public sealed class MessageBoxService(
         owner, string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon, MessageBoxResult defaultResult, MessageBoxOptions options = default)
     {
         var dispatcher = application.Dispatcher ?? Dispatcher.CurrentDispatcher;
-        
+
         if (owner == null)
             owner = application.MainWindow;
 
