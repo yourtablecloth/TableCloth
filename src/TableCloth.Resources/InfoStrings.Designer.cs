@@ -61,7 +61,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 자동화 작업 실행 시 사용할 수 있는 명령어를 클립보드에 복사했습니다..
+        ///   Looks up a localized string similar to You&apos;ve copied commands to the clipboard that you can use when running automation tasks..
         /// </summary>
         public static string Info_CopyCommandLineSuccess {
             get {
@@ -70,7 +70,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 바탕 화면에 바로 가기를 생성했습니다..
+        ///   Looks up a localized string similar to You&apos;ve created a shortcut on your desktop..
         /// </summary>
         public static string Info_ShortcutSuccess {
             get {
@@ -79,7 +79,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 최신 버전의 식탁보를 사용 중입니다..
+        ///   Looks up a localized string similar to You are using the latest version of TableCloth..
         /// </summary>
         public static string Info_UpdateNotRequired {
             get {
@@ -88,7 +88,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 새 버전의 식탁보가 출시되었습니다..
+        ///   Looks up a localized string similar to A new version of TableCloth has been released..
         /// </summary>
         public static string Info_UpdateRequired {
             get {
@@ -97,7 +97,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 바로 가기에 지정할 수 있는 최대 명령어 길이 제한으로 처음 선택한 사이트만 바로 가기로 만듭니다..
+        ///   Looks up a localized string similar to Because of the maximum command length limit that can be specified for a shortcut, only the first selected site is made a shortcut..
         /// </summary>
         public static string Info_WillCreateSingleSiteShortcut {
             get {

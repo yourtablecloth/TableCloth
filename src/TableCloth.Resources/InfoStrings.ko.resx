@@ -118,18 +118,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Info_CopyCommandLineSuccess" xml:space="preserve">
-    <value>You've copied commands to the clipboard that you can use when running automation tasks.</value>
+    <value>자동화 작업 실행 시 사용할 수 있는 명령어를 클립보드에 복사했습니다.</value>
   </data>
   <data name="Info_ShortcutSuccess" xml:space="preserve">
-    <value>You've created a shortcut on your desktop.</value>
+    <value>바탕 화면에 바로 가기를 생성했습니다.</value>
   </data>
   <data name="Info_UpdateNotRequired" xml:space="preserve">
-    <value>You are using the latest version of TableCloth.</value>
+    <value>최신 버전의 식탁보를 사용 중입니다.</value>
   </data>
   <data name="Info_UpdateRequired" xml:space="preserve">
-    <value>A new version of TableCloth has been released.</value>
+    <value>새 버전의 식탁보가 출시되었습니다.</value>
   </data>
   <data name="Info_WillCreateSingleSiteShortcut" xml:space="preserve">
-    <value>Because of the maximum command length limit that can be specified for a shortcut, only the first selected site is made a shortcut.</value>
+    <value>바로 가기에 지정할 수 있는 최대 명령어 길이 제한으로 처음 선택한 사이트만 바로 가기로 만듭니다.</value>
   </data>
 </root>
