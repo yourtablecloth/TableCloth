@@ -10,6 +10,7 @@ namespace TableCloth.Models
     public sealed class CommandLineArgumentModel
     {
         public CommandLineArgumentModel(
+            string[] rawArguments,
             string[]
 #if !NETFX
             ?
@@ -39,6 +40,7 @@ namespace TableCloth.Models
             bool showCommandLineHelp = default,
             bool dryRun = default)
         {
+            RawArguments = rawArguments;
             SelectedServices = selectedServices ?? Enumerable.Empty<string>();
             EnableMicrophone = enableMicrophone;
             EnableWebCam = enableWebCam;
@@ -53,6 +55,8 @@ namespace TableCloth.Models
             ShowCommandLineHelp = showCommandLineHelp;
             DryRun = dryRun;
         }
+
+        public string[] RawArguments { get; private set; }
 
         public bool? EnableMicrophone { get; private set; }
 
@@ -90,13 +94,61 @@ namespace TableCloth.Models
 
         public bool DryRun { get; private set; }
 
+        public override string ToString()
+        {
+            var options = new List<string>();
+
+            if (ShowCommandLineHelp)
+                options.Add(ConstantStrings.TableCloth_Switch_Help);
+            else
+            {
+                if (EnableMicrophone.HasValue && EnableMicrophone.Value)
+                    options.Add(ConstantStrings.TableCloth_Switch_EnableMicrophone);
+                if (EnableWebCam.HasValue && EnableWebCam.Value)
+                    options.Add(ConstantStrings.TableCloth_Switch_EnableCamera);
+                if (EnablePrinters.HasValue && EnablePrinters.Value)
+                    options.Add(ConstantStrings.TableCloth_Switch_EnablePrinter);
+
+                if (!string.IsNullOrWhiteSpace(CertPublicKeyPath))
+                {
+                    options.Add(ConstantStrings.TableCloth_Switch_CertPublicKey);
+                    options.Add(CertPublicKeyPath);
+                }
+
+                if (!string.IsNullOrWhiteSpace(CertPrivateKeyPath))
+                {
+                    options.Add(ConstantStrings.TableCloth_Switch_CertPrivateKey);
+                    options.Add(CertPrivateKeyPath);
+                }
+
+                if (InstallEveryonesPrinter.HasValue && InstallEveryonesPrinter.Value)
+                    options.Add(ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter);
+                if (InstallAdobeReader.HasValue && InstallAdobeReader.Value)
+                    options.Add(ConstantStrings.TableCloth_Switch_InstallAdobeReader);
+                if (InstallHancomOfficeViewer.HasValue && InstallHancomOfficeViewer.Value)
+                    options.Add(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer);
+                if (InstallRaiDrive.HasValue && InstallRaiDrive.Value)
+                    options.Add(ConstantStrings.TableCloth_Switch_InstallRaiDrive);
+                if (EnableInternetExplorerMode.HasValue && EnableInternetExplorerMode.Value)
+                    options.Add(ConstantStrings.TableCloth_Switch_EnableIEMode);
+
+                if (DryRun)
+                    options.Add(ConstantStrings.TableCloth_Switch_DryRun);
+
+                foreach (var eachSite in SelectedServices)
+                    options.Add(eachSite);
+            }
+
+            return string.Join(" ", options.ToArray());
+        }
+
         public static CommandLineArgumentModel ParseFromArgv()
             => Parse(Helpers.GetCommandLineArguments());
 
         public static CommandLineArgumentModel Parse(string[] args)
         {
             if (args.Length < 1)
-                return new CommandLineArgumentModel();
+                return new CommandLineArgumentModel(args);
 
             var selectedServiceIds = new List<string>();
             var enableMicrophone = default(bool?);
@@ -165,6 +217,7 @@ namespace TableCloth.Models
             }
 
             return new CommandLineArgumentModel(
+                rawArguments: args,
                 selectedServices: selectedServiceIds?.ToArray() ?? new string[] { },
                 enableMicrophone: enableMicrophone,
                 enableWebCam: enableWebCam,

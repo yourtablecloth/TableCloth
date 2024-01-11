@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
+using TableCloth.Commands;
 using TableCloth.Commands.DetailPage;
 using TableCloth.Commands.Shared;
 using TableCloth.Models;
@@ -27,7 +28,8 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
         LaunchSandboxCommand launchSandboxCommand,
         CreateShortcutCommand createShortcutCommand,
         CopyCommandLineCommand copyCommandLineCommand,
-        CertSelectCommand certSelectCommand)
+        CertSelectCommand certSelectCommand,
+        ShowDebugInfoCommand showDebugInfoCommand)
     {
         _detailPageLoadedCommand = detailPageLoadedCommand;
         _detailPageSearchTextLostFocusCommand = detailPageSearchTextLostFocusCommand;
@@ -37,6 +39,7 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
         _createShortcutCommand = createShortcutCommand;
         _copyCommandLineCommand = copyCommandLineCommand;
         _certSelectCommand = certSelectCommand;
+        _showDebugInfoCommand = showDebugInfoCommand;
     }
 
     public event EventHandler? CloseRequested;
@@ -52,6 +55,7 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     private readonly CreateShortcutCommand _createShortcutCommand;
     private readonly CopyCommandLineCommand _copyCommandLineCommand;
     private readonly CertSelectCommand _certSelectCommand;
+    private readonly ShowDebugInfoCommand _showDebugInfoCommand;
 
     public DetailPageLoadedCommand DetailPageLoadedCommand
         => _detailPageLoadedCommand;
@@ -76,6 +80,9 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
 
     public CertSelectCommand CertSelectCommand
         => _certSelectCommand;
+
+    public ShowDebugInfoCommand ShowDebugInfoCommand
+        => _showDebugInfoCommand;
 
     private CatalogInternetService? _selectedService;
 
@@ -107,6 +114,9 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
 
     public int? PackageCountForDisplay
         => _selectedService?.PackageCountForDisplay;
+
+    public bool DebugMode
+        => Helpers.IsDevelopmentBuild;
 
     private CommandLineArgumentModel? _commandLineArgumentModel;
     private ImageSource? _serviceLogo;

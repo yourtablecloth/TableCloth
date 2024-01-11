@@ -3,6 +3,7 @@ using Hostess.Commands.MainWindow;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using TableCloth;
 using TableCloth.ViewModels;
 
 namespace Hostess.ViewModels
@@ -16,16 +17,19 @@ namespace Hostess.ViewModels
         public MainWindowViewModel(
             MainWindowLoadedCommand mainWindowLoadedCommand,
             MainWindowInstallPackagesCommand mainWindowInstallPackagesCommand,
-            AboutThisAppCommand aboutThisAppCommand)
+            AboutThisAppCommand aboutThisAppCommand,
+            ShowDebugInfoCommand showDebugInfoCommand)
         {
             _mainWindowLoadedCommand = mainWindowLoadedCommand;
             _mainWindowInstallPackagesCommand = mainWindowInstallPackagesCommand;
             _aboutThisAppCommand = aboutThisAppCommand;
+            _showDebugInfoCommand = showDebugInfoCommand;
         }
 
         private readonly MainWindowLoadedCommand _mainWindowLoadedCommand;
         private readonly MainWindowInstallPackagesCommand _mainWindowInstallPackagesCommand;
         private readonly AboutThisAppCommand _aboutThisAppCommand;
+        private readonly ShowDebugInfoCommand _showDebugInfoCommand;
 
         public MainWindowLoadedCommand MainWindowLoadedCommand
             => _mainWindowLoadedCommand;
@@ -35,6 +39,12 @@ namespace Hostess.ViewModels
 
         public AboutThisAppCommand AboutThisAppCommand
             => _aboutThisAppCommand;
+
+        public ShowDebugInfoCommand ShowDebugInfoCommand
+            => _showDebugInfoCommand;
+
+        public bool DebugMode
+            => Helpers.IsDevelopmentBuild;
 
         public event EventHandler WindowLoaded;
         public event EventHandler CloseRequested;

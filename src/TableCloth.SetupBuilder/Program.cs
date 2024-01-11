@@ -92,15 +92,20 @@ namespace TableCloth.SetupBuilder
             project.Language = "ko-KR";
             project.UI = WUI.WixUI_Minimal;
             project.InstallScope = InstallScope.perUser;
-#if DEBUG
-            project.Name = $"{CommonStrings.AppName} (Debug Version)";
-            project.GUID = Guid.Parse("21AD9E55-CC53-4B64-9770-BFA3432DD7D3");
-            project.UpgradeCode = Guid.Parse("93316BF0-E965-49AD-A6A1-049AFD551459");
-#else
-            project.Name = ConstantStrings.AppNameForWixAndStore;
-            project.GUID = Guid.Parse("1D7A2F0E-550D-452B-B69C-585F87C23A5B");
-            project.UpgradeCode = Guid.Parse("C63DF133-51A9-4139-BD31-EDC025C7EB51");
-#endif // DEBUG
+
+            if (Helpers.IsDevelopmentBuild)
+            {
+                project.Name = $"{CommonStrings.AppName} (Debug Version)";
+                project.GUID = Guid.Parse("21AD9E55-CC53-4B64-9770-BFA3432DD7D3");
+                project.UpgradeCode = Guid.Parse("93316BF0-E965-49AD-A6A1-049AFD551459");
+            }
+            else
+            {
+                project.Name = ConstantStrings.AppNameForWixAndStore;
+                project.GUID = Guid.Parse("1D7A2F0E-550D-452B-B69C-585F87C23A5B");
+                project.UpgradeCode = Guid.Parse("C63DF133-51A9-4139-BD31-EDC025C7EB51");
+            }
+
             project.Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 
             if (!string.IsNullOrWhiteSpace(iconFilePath) &&

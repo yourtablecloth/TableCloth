@@ -129,6 +129,9 @@
   <data name="AboutWindow_Title" xml:space="preserve">
     <value>프로그램 정보</value>
   </data>
+  <data name="Build_Debug" xml:space="preserve">
+    <value>개발 목적 전용 빌드입니다.</value>
+  </data>
   <data name="Button_AboutButton" xml:space="preserve">
     <value>프로그램 정보</value>
   </data>
@@ -155,6 +158,9 @@
   </data>
   <data name="Button_CreateShortcutButton" xml:space="preserve">
     <value>바로 가기 만들기</value>
+  </data>
+  <data name="Button_DebugButton" xml:space="preserve">
+    <value>디버그</value>
   </data>
   <data name="Button_InstallButton" xml:space="preserve">
     <value>설치하기</value>

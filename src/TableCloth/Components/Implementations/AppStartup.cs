@@ -120,13 +120,14 @@ public sealed class AppStartup : IAppStartup
 
             if (!hyperVisorPresent.HasValue || !hyperVisorPresent.Value)
             {
-#if DEBUG
-                warnings.Add(ErrorStrings.Error_HyperVisor_Missing);
-#else
-                result = ApplicationStartupResultModel.FromErrorMessage(
-                    ErrorStrings.Error_HyperVisor_Missing, isCritical: true, providedWarnings: warnings);
-                return result;
-#endif
+                if (Helpers.IsDevelopmentBuild)
+                    warnings.Add(ErrorStrings.Error_HyperVisor_Missing);
+                else
+                {
+                    result = ApplicationStartupResultModel.FromErrorMessage(
+                        ErrorStrings.Error_HyperVisor_Missing, isCritical: true, providedWarnings: warnings);
+                    return result;
+                }
             }
         }
 
@@ -143,13 +144,14 @@ public sealed class AppStartup : IAppStartup
 
             if (!File.Exists(dismExecPath))
             {
-#if DEBUG
-                warnings.Add(ErrorStrings.Error_Windows_Dism_Missing);
-#else
-                result = ApplicationStartupResultModel.FromErrorMessage(
-                    ErrorStrings.Error_Windows_Dism_Missing, isCritical: true, providedWarnings: warnings);
-                return result;
-#endif
+                if (Helpers.IsDevelopmentBuild)
+                    warnings.Add(ErrorStrings.Error_Windows_Dism_Missing);
+                else
+                {
+                    result = ApplicationStartupResultModel.FromErrorMessage(
+                        ErrorStrings.Error_Windows_Dism_Missing, isCritical: true, providedWarnings: warnings);
+                    return result;
+                }
             }
             else
             {
@@ -179,13 +181,14 @@ public sealed class AppStartup : IAppStartup
 
         if (!File.Exists(wsbExecPath))
         {
-#if DEBUG
-            warnings.Add(ErrorStrings.Error_Windows_Sandbox_Missing);
-#else
-            result = ApplicationStartupResultModel.FromErrorMessage(
-                ErrorStrings.Error_Windows_Sandbox_Missing, isCritical: true, providedWarnings: warnings);
-            return result;
-#endif
+            if (Helpers.IsDevelopmentBuild)
+                warnings.Add(ErrorStrings.Error_Windows_Sandbox_Missing);
+            else
+            {
+                result = ApplicationStartupResultModel.FromErrorMessage(
+                    ErrorStrings.Error_Windows_Sandbox_Missing, isCritical: true, providedWarnings: warnings);
+                return result;
+            }
         }
 
         if (!this._isFirstInstance)

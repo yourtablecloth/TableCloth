@@ -112,7 +112,8 @@ public partial class App : Application
             .AddSingleton<CertSelectCommand>()
             .AddSingleton<AppRestartCommand>()
             .AddSingleton<CopyCommandLineCommand>()
-            .AddSingleton<AboutThisAppCommand>();
+            .AddSingleton<AboutThisAppCommand>()
+            .AddSingleton<ShowDebugInfoCommand>();
 
         // Disclaimer Window
         services

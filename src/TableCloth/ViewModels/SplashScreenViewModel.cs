@@ -50,6 +50,12 @@ public class SplashScreenViewModel : ViewModelBase
         set => SetProperty(ref _appVersion, value);
     }
 
+    public string BuildNote
+        => Helpers.IsDevelopmentBuild ? UIStringResources.Build_Debug : string.Empty;
+
+    public bool DebugMode
+        => Helpers.IsDevelopmentBuild;
+
     public string Status
     {
         get => _status;

@@ -29,6 +29,7 @@ public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
         CreateShortcutCommand createShortcutCommand,
         AppRestartCommand appRestartCommand,
         AboutThisAppCommand aboutThisAppCommand,
+        ShowDebugInfoCommand showDebugInfoCommand,
         CertSelectCommand certSelectCommand)
     {
         _mainWindowLoadedCommand = mainWindowLoadedCommand;
@@ -37,6 +38,7 @@ public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
         _createShortcutCommand = createShortcutCommand;
         _appRestartCommand = appRestartCommand;
         _aboutThisAppCommand = aboutThisAppCommand;
+        _showDebugInfoCommand = showDebugInfoCommand;
         _certSelectCommand = certSelectCommand;
     }
 
@@ -46,6 +48,7 @@ public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
     private readonly CreateShortcutCommand _createShortcutCommand;
     private readonly AppRestartCommand _appRestartCommand;
     private readonly AboutThisAppCommand _aboutThisAppCommand;
+    private readonly ShowDebugInfoCommand _showDebugInfoCommand;
     private readonly CertSelectCommand _certSelectCommand;
 
     private string _filterText = string.Empty;
@@ -83,8 +86,14 @@ public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
     public AboutThisAppCommand AboutThisAppCommand
         => _aboutThisAppCommand;
 
+    public ShowDebugInfoCommand ShowDebugInfoCommand
+        => _showDebugInfoCommand;
+
     public CertSelectCommand CertSelectCommand
         => _certSelectCommand;
+
+    public bool DebugMode
+        => Helpers.IsDevelopmentBuild;
 
     public string FilterText
     {

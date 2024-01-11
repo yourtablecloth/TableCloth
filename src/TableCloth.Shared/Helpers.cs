@@ -7,8 +7,16 @@ using System.Text;
 
 namespace TableCloth
 {
-    internal static class Helpers
+    public static class Helpers
     {
+        public static bool IsDevelopmentBuild =>
+#if DEBUG
+            true
+#else
+            false
+#endif
+            ;
+
         public static string[] GetCommandLineArguments()
             => Environment.GetCommandLineArgs().Skip(1).ToArray();
 

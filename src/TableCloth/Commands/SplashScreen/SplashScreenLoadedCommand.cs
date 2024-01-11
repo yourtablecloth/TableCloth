@@ -70,11 +70,10 @@ public sealed class SplashScreenLoadedCommand(
 
                 if (result.IsCritical)
                 {
-#if DEBUG
-                    throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
-#else
-                    application.Shutdown(CodeResources.ExitCode_SystemError);
-#endif
+                    if (Helpers.IsDevelopmentBuild)
+                        throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
+                    else
+                        application.Shutdown(CodeResources.ExitCode_SystemError);
                 }
             }
 
@@ -92,11 +91,10 @@ public sealed class SplashScreenLoadedCommand(
 
                 if (result.IsCritical)
                 {
-#if DEBUG
-                    throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
-#else
-                    application.Shutdown(CodeResources.ExitCode_SystemError);
-#endif
+                    if (Helpers.IsDevelopmentBuild)
+                        throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
+                    else
+                        application.Shutdown(CodeResources.ExitCode_SystemError);
                 }
             }
 

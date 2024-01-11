@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using TableCloth;
 using TableCloth.Resources;
 
 namespace Hostess
@@ -59,11 +60,10 @@ namespace Hostess
 
                 if (result.IsCritical)
                 {
-#if DEBUG
-                    throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
-#else
-                    Shutdown(-1);
-#endif
+                    if (Helpers.IsDevelopmentBuild)
+                        throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
+                    else
+                        Shutdown(-1);
                 }
             }
 
@@ -78,11 +78,10 @@ namespace Hostess
 
                 if (result.IsCritical)
                 {
-#if DEBUG
-                    throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
-#else
-                    Shutdown(-1);
-#endif
+                    if (Helpers.IsDevelopmentBuild)
+                        throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());        
+                    else
+                        Shutdown(-1);
                 }
             }
 
@@ -113,7 +112,8 @@ namespace Hostess
             // Shared Commands
             services
                 .AddSingleton<OpenAppHomepageCommand>()
-                .AddSingleton<AboutThisAppCommand>();
+                .AddSingleton<AboutThisAppCommand>()
+                .AddSingleton<ShowDebugInfoCommand>();
 
             // About Window
             services

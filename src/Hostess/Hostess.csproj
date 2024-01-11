@@ -218,6 +218,7 @@
     <Compile Include="Commands\AboutWindow\AboutWindowLoadedCommand.cs" />
     <Compile Include="Commands\PrecautionsWindow\PrecautionsWindowCloseCommand.cs" />
     <Compile Include="Commands\PrecautionsWindow\PrecautionsWindowLoadedCommand.cs" />
+    <Compile Include="Commands\ShowDebugInfoCommand.cs" />
     <Compile Include="Commands\ViewModelCommandBase.cs" />
     <Compile Include="Components\Implementations\AppStartup.cs" />
     <Compile Include="Components\Implementations\AppUserInterface.cs" />

@@ -24,18 +24,21 @@ public class CatalogPageViewModel : ViewModelBase
         CatalogPageLoadedCommand catalogPageLoadedCommand,
         CatalogPageItemSelectCommand catalogPageItemSelectCommand,
         AppRestartCommand appRestartCommand,
-        AboutThisAppCommand aboutThisAppCommand)
+        AboutThisAppCommand aboutThisAppCommand,
+        ShowDebugInfoCommand showDebugInfoCommand)
     {
         _catalogPageLoadedCommand = catalogPageLoadedCommand;
         _catalogPageItemSelectCommand = catalogPageItemSelectCommand;
         _appRestartCommand = appRestartCommand;
         _aboutThisAppCommand = aboutThisAppCommand;
+        _showDebugInfoCommand = showDebugInfoCommand;
     }
 
     private readonly CatalogPageLoadedCommand _catalogPageLoadedCommand;
     private readonly CatalogPageItemSelectCommand _catalogPageItemSelectCommand;
     private readonly AppRestartCommand _appRestartCommand;
     private readonly AboutThisAppCommand _aboutThisAppCommand;
+    private readonly ShowDebugInfoCommand _showDebugInfoCommand;
 
     private CatalogInternetService? _selectedService;
     private string _searchKeyword = string.Empty;
@@ -52,6 +55,12 @@ public class CatalogPageViewModel : ViewModelBase
 
     public AboutThisAppCommand AboutThisAppCommand
         => _aboutThisAppCommand;
+
+    public ShowDebugInfoCommand ShowDebugInfoCommand
+        => _showDebugInfoCommand;
+
+    public bool DebugMode
+        => Helpers.IsDevelopmentBuild;
 
     public CatalogInternetService? SelectedService
     {

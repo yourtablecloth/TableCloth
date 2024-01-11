@@ -35,6 +35,7 @@
                 <Image Height="100" Margin="0,0,0,20" Source="/Resources/SandboxIcon.png"/>
                 <TextBlock Text="{x:Static res:CommonStrings.AppName}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
                 <TextBlock Text="{Binding AppVersion}" TextAlignment="Center" />
+                <TextBlock Text="{Binding BuildNote}" TextAlignment="Center" Visibility="{Binding DebugMode, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </StackPanel>
 
             <!-- Circular Progress Indicator -->

@@ -246,5 +246,33 @@ namespace TableCloth.Resources
 
             return unwrappedException?.Message ?? CommonStrings.UnknownText;
         }
+
+        public static string AlternateIfWhitespaceString(string
+#if !NETFX
+            ?
+#endif
+            content,
+            string
+#if !NETFX
+            ?
+#endif
+            alternateText = default)
+            => (string.IsNullOrWhiteSpace(content) ? (string.IsNullOrWhiteSpace(alternateText) ? CommonStrings.UnknownText : alternateText) : content);
+
+        public static string TableCloth_DebugInformation(
+            string processName,
+            string rawCommandLine,
+            string parsedCommandLine)
+        {
+            return $@"
+=================
+Debug Information
+=================
+
+* Process name: {AlternateIfWhitespaceString(processName)}
+* Raw Commandline: {AlternateIfWhitespaceString(rawCommandLine, "(none)")}
+* Parsed Commandline: {AlternateIfWhitespaceString(parsedCommandLine, "(none)")}
+".TrimStart();
+        }
     }
 }

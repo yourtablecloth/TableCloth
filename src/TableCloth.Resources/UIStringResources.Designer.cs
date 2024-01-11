@@ -97,6 +97,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This build is for development purposes only..
+        /// </summary>
+        public static string Build_Debug {
+            get {
+                return ResourceManager.GetString("Build_Debug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to About.
         /// </summary>
         public static string Button_AboutButton {
@@ -174,6 +183,15 @@ namespace TableCloth.Resources {
         public static string Button_CreateShortcutButton {
             get {
                 return ResourceManager.GetString("Button_CreateShortcutButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Debug.
+        /// </summary>
+        public static string Button_DebugButton {
+            get {
+                return ResourceManager.GetString("Button_DebugButton", resourceCulture);
             }
         }
         

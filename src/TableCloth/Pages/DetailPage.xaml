@@ -62,6 +62,11 @@
                     <Image Source="{StaticResource BackButtonImage}" />
                 </Button.Content>
             </Button>
+            <Button Grid.Column="1" Width="100" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 10 0" Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Visibility="{Binding DebugMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Button.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                </Button.CommandParameter>
+            </Button>
             <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding SearchKeyword}" Width="Auto" Margin="8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" PreviewKeyUp="SiteCatalogFilter_PreviewKeyUp">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="LostFocus">
