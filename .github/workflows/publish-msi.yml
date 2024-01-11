@@ -17,6 +17,7 @@ jobs:
       Solution_Name: src\TableCloth.sln
       Hostess_Project_Path: src\Hostess\Hostess.csproj
       ResourceBuilder_Project_Path: src\TableCloth.ResourceBuilder\TableCloth.ResourceBuilder.csproj
+      Test_Project_Path: src\TableCloth.SpecFlow\TableCloth.SpecFlow.csproj
       Loom_Project_Path: src\Loom\Loom.csproj
       TableCloth_Project_Directory: src\TableCloth
       TableCloth_Project_Path: src\TableCloth\TableCloth.csproj
@@ -30,7 +31,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: true
-        #token: ${{ secrets.TABLECLOTH_GITHUB_PAT }}
 
     # Install the .NET Core workload
     - name: Install .NET Core
@@ -71,10 +71,10 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     # Execute all unit tests in the solution
-    #- name: Execute unit tests
-    #  run: dotnet test -c:$env:Configuration
-    #  env:
-    #    Configuration: ${{ matrix.configuration }}
+    - name: Execute unit tests
+      run: dotnet test $env:Test_Project_Path -r win-${{ env.Platform }} -c:$env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
 
     # Publish TableCloth project
     - name: Build TableCloth project
