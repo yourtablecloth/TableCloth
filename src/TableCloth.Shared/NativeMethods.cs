@@ -2,11 +2,39 @@
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.AccessControl;
+using System.Text;
 
 namespace TableCloth
 {
     [SuppressUnmanagedCodeSecurity]
     internal static partial class NativeMethods { }
+
+    partial class NativeMethods
+    {
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern int GetCurrentPackageFullName(ref int packageFullNameLength, StringBuilder packageFullName);
+
+        public static bool TryGetApplicationPackagedAsMSIX(out string
+#if !NETFX
+            ?
+#endif
+            packageFullName)
+        {
+            var length = 0;
+            var result = GetCurrentPackageFullName(ref length, null);
+
+            if (result == ERROR_INSUFFICIENT_BUFFER)
+            {
+                var buffer = new StringBuilder(length);
+                result = GetCurrentPackageFullName(ref length, buffer);
+                packageFullName = buffer.ToString();
+                return result == 0;
+            }
+
+            packageFullName = null;
+            return false;
+        }
+    }
 
     partial class NativeMethods
     {

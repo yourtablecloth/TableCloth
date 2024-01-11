@@ -1,5 +1,6 @@
 ﻿using Hostess.Components;
 using System.Diagnostics;
+using TableCloth;
 using TableCloth.Resources;
 
 namespace Hostess.Commands
@@ -22,7 +23,8 @@ namespace Hostess.Commands
             _appMessageBox.DisplayInfo(StringResources.TableCloth_DebugInformation(
                 Process.GetCurrentProcess().ProcessName,
                 string.Join(" ", _commandLineArguments.Current.RawArguments),
-                _commandLineArguments.Current.ToString())
+                _commandLineArguments.Current.ToString(),
+                Helpers.AppxPackageName)
             );
         }
     }

@@ -262,7 +262,8 @@ namespace TableCloth.Resources
         public static string TableCloth_DebugInformation(
             string processName,
             string rawCommandLine,
-            string parsedCommandLine)
+            string parsedCommandLine,
+            string appxPackageName)
         {
             return $@"
 =================
@@ -272,6 +273,7 @@ Debug Information
 * Process name: {AlternateIfWhitespaceString(processName)}
 * Raw Commandline: {AlternateIfWhitespaceString(rawCommandLine, "(none)")}
 * Parsed Commandline: {AlternateIfWhitespaceString(parsedCommandLine, "(none)")}
+* Appx Package Name: {AlternateIfWhitespaceString(appxPackageName, "(none)")}
 ".TrimStart();
         }
     }
