@@ -112,7 +112,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "창 제목",
                             "본문"});
                 table1.AddRow(new string[] {
-                            "식탁보 정보",
+                            "TableCloth Info",
                             "이 메시지는 테스트 메시지입니다. 무시하셔도 괜찮습니다."});
 #line 8
 testRunner.Given("a.a. 다음과 같이 메시지 박스에 나타낼 문자열을 준비한다.", ((string)(null)), table1, "먼저");
@@ -173,11 +173,11 @@ this.ScenarioInitialize(scenarioInfo);
                             "본문"});
                 table2.AddRow(new string[] {
                             "일반",
-                            "식탁보 경고",
+                            "TableCloth Warning",
                             "이 메시지는 테스트 메시지입니다. 무시하셔도 괜찮습니다. 심각도: 일반"});
                 table2.AddRow(new string[] {
                             "심각",
-                            "식탁보 오류",
+                            "TableCloth Error",
                             "이 메시지는 테스트 메시지입니다. 무시하셔도 괜찮습니다. 심각도: 심각"});
 #line 19
 testRunner.Given("b.a. 다음과 같이 메시지 박스에 나타낼 문자열을 준비한다.", ((string)(null)), table2, "먼저");
@@ -238,11 +238,11 @@ this.ScenarioInitialize(scenarioInfo);
                             "본문"});
                 table3.AddRow(new string[] {
                             "일반",
-                            "식탁보 경고",
+                            "TableCloth Warning",
                             "이 메시지는 테스트 메시지입니다. 무시하셔도 괜찮습니다. 심각도: 일반"});
                 table3.AddRow(new string[] {
                             "심각",
-                            "식탁보 오류",
+                            "TableCloth Error",
                             "이 메시지는 테스트 메시지입니다. 무시하셔도 괜찮습니다. 심각도: 심각"});
 #line 31
 testRunner.Given("c.a. 다음과 같이 메시지 박스에 나타낼 문자열을 사용하여 예외 개체를 준비한다.", ((string)(null)), table3, "먼저");
