@@ -126,16 +126,16 @@ jobs:
       with:
         name: MSI Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
         path: TableCloth.msi
-        if-no-files-found: warn
+        if-no-files-found: error
         retention-days: 5
 
     # Upload the AppX packages: https://github.com/actions/upload-artifact
     - name: Upload build artifacts (AppX Packages)
       uses: actions/upload-artifact@v3
       with:
-        name: MSI Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
+        name: AppX Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
         path: ${{ env.Wap_Project_Directory }}\AppPackages
-        if-no-files-found: warn
+        if-no-files-found: error
         retention-days: 5
 
     # Upload the zip package: https://github.com/actions/upload-artifact
