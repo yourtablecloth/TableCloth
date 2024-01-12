@@ -44,11 +44,7 @@ namespace TableCloth.Resources
                 Environment.NewLine + buffer.ToString();
         }
 
-        public static string Error_Cannot_Download_Catalog(Exception
-#if !NETFX
-            ?
-#endif
-            ex)
+        public static string Error_Cannot_Download_Catalog(Exception ex)
         {
             if (ex is AggregateException ae)
                 return Error_Cannot_Download_Catalog(ae?.InnerException);
@@ -65,11 +61,7 @@ namespace TableCloth.Resources
             return message;
         }
 
-        public static string Error_Cannot_Create_AppDataDirectory(Exception
-#if !NETFX
-            ?
-#endif
-            ex)
+        public static string Error_Cannot_Create_AppDataDirectory(Exception ex)
         {
             if (ex is AggregateException ae)
                 return Error_Cannot_Create_AppDataDirectory(ae?.InnerException);
@@ -86,11 +78,7 @@ namespace TableCloth.Resources
             return message;
         }
 
-        public static string Error_Cannot_Prepare_AppContents(Exception
-#if !NETFX
-            ?
-#endif
-            ex)
+        public static string Error_Cannot_Prepare_AppContents(Exception ex)
         {
             if (ex is AggregateException ae)
                 return Error_Cannot_Prepare_AppContents(ae?.InnerException);
@@ -111,11 +99,7 @@ namespace TableCloth.Resources
     // 호스트 프로그램의 오류 메시지 문자열들
     partial class StringResources
     {
-        public static string Error_CatalogLoadFailure(Exception
-#if !NETFX
-            ?
-#endif
-            ex)
+        public static string Error_CatalogLoadFailure(Exception ex)
         {
             if (ex is AggregateException ae)
                 return Error_CatalogLoadFailure(ae?.InnerException);
@@ -223,21 +207,13 @@ namespace TableCloth.Resources
         public static string TableCloth_Log_CannotParseWsbFile_ProhibitTranslation(string wsbFilePath)
             => string.Format(LogStrings.TableCloth_Log_CannotParseWsbFile_ProhibitTranslation, wsbFilePath);
 
-        public static string TableCloth_Log_HostFolderNotExists_ProhibitTranslation(string
-#if !NETFX
-            ?
-#endif
-            hostFolderPath)
+        public static string TableCloth_Log_HostFolderNotExists_ProhibitTranslation(string hostFolderPath)
             => string.Format(LogStrings.TableCloth_Log_HostFolderNotExists_ProhibitTranslation, hostFolderPath);
 
         public static string TableCloth_Log_DirectoryEnumFail_ProhibitTranslation(string targetPath, Exception reason)
             => string.Format(LogStrings.TableCloth_Log_DirectoryEnumFail_ProhibitTranslation, targetPath, TableCloth_UnwrapException(reason));
 
-        public static string TableCloth_UnwrapException(Exception
-#if !NETFX
-            ?
-#endif
-            failureReason)
+        public static string TableCloth_UnwrapException(Exception failureReason)
         {
             var unwrappedException = failureReason;
 
@@ -247,16 +223,7 @@ namespace TableCloth.Resources
             return unwrappedException?.Message ?? CommonStrings.UnknownText;
         }
 
-        public static string AlternateIfWhitespaceString(string
-#if !NETFX
-            ?
-#endif
-            content,
-            string
-#if !NETFX
-            ?
-#endif
-            alternateText = default)
+        public static string AlternateIfWhitespaceString(string content, string alternateText = default)
             => (string.IsNullOrWhiteSpace(content) ? (string.IsNullOrWhiteSpace(alternateText) ? CommonStrings.UnknownText : alternateText) : content);
 
         public static string TableCloth_DebugInformation(

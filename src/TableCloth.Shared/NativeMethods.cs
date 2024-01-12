@@ -12,7 +12,11 @@ namespace TableCloth
     partial class NativeMethods
     {
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern int GetCurrentPackageFullName(ref int packageFullNameLength, StringBuilder packageFullName);
+        private static extern int GetCurrentPackageFullName(ref int packageFullNameLength, StringBuilder
+#if !NETFX
+            ?
+#endif
+            packageFullName);
 
         public static bool TryGetApplicationPackagedAsMSIX(out string
 #if !NETFX

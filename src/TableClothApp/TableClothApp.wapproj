@@ -68,6 +68,7 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Loom\Loom.csproj" />
     <ProjectReference Include="..\TableCloth\TableCloth.csproj" />
   </ItemGroup>
   <ItemGroup>
