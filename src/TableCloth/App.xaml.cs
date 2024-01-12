@@ -16,6 +16,7 @@ using TableCloth.Commands.MainWindowV2;
 using TableCloth.Commands.Shared;
 using TableCloth.Commands.SplashScreen;
 using TableCloth.Components;
+using TableCloth.Components.Implementations;
 using TableCloth.Dialogs;
 using TableCloth.Events;
 using TableCloth.Pages;
@@ -81,6 +82,18 @@ public partial class App : Application
     {
         // Add HTTP Service
         services.AddHttpClient(nameof(TableCloth), c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
+
+        // Add Components (Conditional)
+        if (Helpers.IsAppxInstallation)
+        {
+            services
+                .AddSingleton<IAppUpdateManager, MicrosoftStoreAppUpdateManager>();
+        }
+        else
+        {
+            services
+                .AddSingleton<IAppUpdateManager, StandaloneAppUpdateManager>();
+        }
 
         // Add Components
         services

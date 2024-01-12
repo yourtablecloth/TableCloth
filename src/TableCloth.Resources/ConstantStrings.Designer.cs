@@ -133,6 +133,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 9N46Z3N6T2VR.
+        /// </summary>
+        public static string MicrosoftStore_ProductId {
+            get {
+                return ResourceManager.GetString("MicrosoftStore_ProductId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ts.
         /// </summary>
         public static string QueryString_Timestamp_Key {

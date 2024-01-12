@@ -6,29 +6,20 @@ using TableCloth.Resources;
 namespace TableCloth.Commands;
 
 public sealed class CheckUpdatedVersionCommand(
-    IResourceResolver resourceResolver,
+    IAppUpdateManager appUpdateManager,
     IAppMessageBox appMessageBox) : CommandBase
 {
     public override async void Execute(object? parameter)
     {
-        try
+        var targetUrl = await appUpdateManager.QueryNewVersionDownloadUrl();
+
+        if (!string.IsNullOrWhiteSpace(targetUrl))
         {
-            var owner = "yourtablecloth";
-            var repo = "TableCloth";
-            var thisVersion = GetType().Assembly.GetName().Version;
-
-            if (Version.TryParse(await resourceResolver.GetLatestVersion(owner, repo), out var parsedVersion) &&
-                thisVersion != null && parsedVersion > thisVersion)
-            {
-                appMessageBox.DisplayInfo(InfoStrings.Info_UpdateRequired);
-                var targetUrl = await resourceResolver.GetDownloadUrl(owner, repo);
-                var psi = new ProcessStartInfo(targetUrl.AbsoluteUri) { UseShellExecute = true, };
-                Process.Start(psi);
-                return;
-            }
+            appMessageBox.DisplayInfo(InfoStrings.Info_UpdateRequired);
+            var psi = new ProcessStartInfo(targetUrl) { UseShellExecute = true, };
+            Process.Start(psi);
         }
-        catch { }
-
-        appMessageBox.DisplayInfo(InfoStrings.Info_UpdateNotRequired);
+        else
+            appMessageBox.DisplayInfo(InfoStrings.Info_UpdateNotRequired);
     }
 }
