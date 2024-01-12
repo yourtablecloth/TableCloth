@@ -241,6 +241,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Windows Command Line Interpreter (cmd.exe) could not be found..
+        /// </summary>
+        public static string Error_CommandLineInterpreter_Missing {
+            get {
+                return ResourceManager.GetString("Error_CommandLineInterpreter_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The sandbox auto-installer file was not found, please reinstall the program..
         /// </summary>
         public static string Error_Hostess_Missing {

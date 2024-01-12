@@ -180,6 +180,9 @@
   <data name="Error_Cert_MayTooEarly" xml:space="preserve">
     <value>The certificate you selected will be available in {0} days.</value>
   </data>
+  <data name="Error_CommandLineInterpreter_Missing" xml:space="preserve">
+    <value>Windows Command Line Interpreter (cmd.exe) could not be found.</value>
+  </data>
   <data name="Error_Hostess_Missing" xml:space="preserve">
     <value>The sandbox auto-installer file was not found, please reinstall the program.</value>
   </data>

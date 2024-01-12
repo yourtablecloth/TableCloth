@@ -22,6 +22,26 @@ public sealed class SandboxLauncher(
 
     public void RunSandbox(TableClothConfiguration config)
     {
+        var comSpecPath = Helpers.GetDefaultCommandLineInterpreterPath();
+
+        if (!File.Exists(comSpecPath))
+        {
+            appMessageBox.DisplayError(ErrorStrings.Error_CommandLineInterpreter_Missing, true);
+
+            if (!Helpers.IsDevelopmentBuild)
+                return;
+        }
+
+        var wsbExecPath = Helpers.GetDefaultWindowsSandboxPath();
+
+        if (!File.Exists(wsbExecPath))
+        {
+            appMessageBox.DisplayError(ErrorStrings.Error_Windows_Sandbox_Missing, true);
+
+            if (!Helpers.IsDevelopmentBuild)
+                return;
+        }
+
         if (Helpers.GetSandboxRunningState())
         {
             appMessageBox.DisplayError(ErrorStrings.Error_Windows_Sandbox_Already_Running, false);
@@ -57,14 +77,10 @@ public sealed class SandboxLauncher(
             return;
         }
 
-        var comSpecPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.System),
-            "cmd.exe");
-
         var process = new Process()
         {
             EnableRaisingEvents = true,
-            StartInfo = new ProcessStartInfo(comSpecPath, "/c start \"\" \"" + wsbFilePath + "\"")
+            StartInfo = new ProcessStartInfo(comSpecPath, "/c start \"\" \"" + wsbExecPath + "\" \"" + wsbFilePath + "\"")
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,

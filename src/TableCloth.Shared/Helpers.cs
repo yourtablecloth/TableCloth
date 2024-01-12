@@ -82,5 +82,11 @@ namespace TableCloth
 
             return versionInfo;
         }
+
+        public static string GetDefaultCommandLineInterpreterPath()
+            => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "cmd.exe");
+
+        public static string GetDefaultWindowsSandboxPath()
+            => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsSandbox.exe");
     }
 }
