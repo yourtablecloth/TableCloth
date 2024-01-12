@@ -6,8 +6,8 @@ jobs:
   build:
     strategy:
       matrix:
-        configuration: [Debug]
-        platform: [x64] # Windows-AArch64 build machine is not available currently on GitHub (as of Aug, 2022)
+        configuration: [Debug, Release]
+        platform: [x64]
 
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     runs-on: windows-2022
@@ -23,6 +23,8 @@ jobs:
       Setup_Project_Name: TableCloth.SetupBuilder
       Setup_Project_Directory: src\TableCloth.SetupBuilder
       Setup_Project_Path: src\TableCloth.SetupBuilder\TableCloth.SetupBuilder.csproj
+      Wap_Project_Directory: src\TableClothApp
+      Wap_Project_Path: src\TableClothApp\TableClothApp.wapproj
       Platform: ${{ matrix.platform }}
 
     steps:
@@ -112,12 +114,27 @@ jobs:
         dir $IconFilePath -ErrorAction Continue
         . $SetupBuilderFullPath $InputDirPath '--ignore--' '--ignore--' $IconFilePath
 
+    # Build MSIXBUNDLE package
+    - name: Run MSIXBUNDLE package
+      run: msbuild $env:Wap_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:UapAppxPackageBuildMode=StoreUpload /p:AppxBundle=Always /m
+      env:
+        Configuration: ${{ matrix.configuration }}
+
     # Upload the MSI package: https://github.com/actions/upload-artifact
-    - name: Upload build artifacts
+    - name: Upload build artifacts (MSI)
       uses: actions/upload-artifact@v3
       with:
         name: MSI Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
         path: TableCloth.msi
+        if-no-files-found: warn
+        retention-days: 5
+
+    # Upload the AppX packages: https://github.com/actions/upload-artifact
+    - name: Upload build artifacts (AppX Packages)
+      uses: actions/upload-artifact@v3
+      with:
+        name: MSI Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
+        path: ${{ env.Wap_Project_Directory }}\AppPackages
         if-no-files-found: warn
         retention-days: 5
 
