@@ -18,16 +18,22 @@ public class CertSelectWindowViewModel : ViewModelBase
     public CertSelectWindowViewModel(
         CertSelectWindowScanCertPairCommand certSelectWindowScanCertPairCommand,
         CertSelectWindowLoadedCommand certSelectWindowLoadedCommand,
-        CertSelectWindowManualCertLoadCommand certSelectWindowManualCertLoadCommand)
+        CertSelectWindowManualCertLoadCommand certSelectWindowManualCertLoadCommand,
+        CertSelectWindowRequestConfirmCommand certSelectWindowRequestConfirmCommand,
+        CertSelectWindowRequestCancelCommand certSelectWindowRequestCancelCommand)
     {
         _certSelectWindowScanCertPairCommand = certSelectWindowScanCertPairCommand;
         _certSelectWindowLoadedCommand = certSelectWindowLoadedCommand;
         _certSelectManualCertLoadCommand = certSelectWindowManualCertLoadCommand;
+        _certSelectWindowRequestConfirmCommand = certSelectWindowRequestConfirmCommand;
+        _certSelectWindowRequestCancelCommand = certSelectWindowRequestCancelCommand;
     }
 
     private readonly CertSelectWindowScanCertPairCommand _certSelectWindowScanCertPairCommand;
     private readonly CertSelectWindowLoadedCommand _certSelectWindowLoadedCommand;
     private readonly CertSelectWindowManualCertLoadCommand _certSelectManualCertLoadCommand;
+    private readonly CertSelectWindowRequestConfirmCommand _certSelectWindowRequestConfirmCommand;
+    private readonly CertSelectWindowRequestCancelCommand _certSelectWindowRequestCancelCommand;
 
     private List<X509CertPair> _certPairs = new List<X509CertPair>();
     private X509CertPair? _selectedCertPair;
@@ -46,6 +52,12 @@ public class CertSelectWindowViewModel : ViewModelBase
 
     public CertSelectWindowManualCertLoadCommand CertSelectWindowManualCertLoadCommand
         => _certSelectManualCertLoadCommand;
+
+    public CertSelectWindowRequestConfirmCommand CertSelectWindowRequestConfirmCommand
+        => _certSelectWindowRequestConfirmCommand;
+
+    public CertSelectWindowRequestCancelCommand CertSelectWindowRequestCancelCommand
+        => _certSelectWindowRequestCancelCommand;
 
     public List<X509CertPair> CertPairs
     {

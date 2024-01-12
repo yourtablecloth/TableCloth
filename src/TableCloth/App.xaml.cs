@@ -155,7 +155,9 @@ public partial class App : Application
             .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
             .AddSingleton<CertSelectWindowScanCertPairCommand>()
             .AddSingleton<CertSelectWindowLoadedCommand>()
-            .AddSingleton<CertSelectWindowManualCertLoadCommand>();
+            .AddSingleton<CertSelectWindowManualCertLoadCommand>()
+            .AddSingleton<CertSelectWindowRequestConfirmCommand>()
+            .AddSingleton<CertSelectWindowRequestCancelCommand>();
 
         // Main Window
         services
