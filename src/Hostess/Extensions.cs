@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Windows;
+using TableCloth.Models.Catalog;
 
 namespace Hostess
 {
@@ -47,5 +50,8 @@ namespace Hostess
 
             application.Properties[key] = serviceProvider;
         }
+
+        public static bool HasAnyCompatNotes(this CatalogDocument catalog, IEnumerable<string> targets)
+            => catalog.Services.Where(x => targets.Contains(x.Id)).Any(x => !string.IsNullOrWhiteSpace(x.CompatibilityNotes?.Trim()));
     }
 }

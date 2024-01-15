@@ -230,9 +230,12 @@
     <Compile Include="Components\ILicenseDescriptor.cs" />
     <Compile Include="Components\IMessageBoxService.cs" />
     <Compile Include="Components\ICriticalServiceProtector.cs" />
+    <Compile Include="Components\Implementations\StepsComposer.cs" />
     <Compile Include="Components\IResourceCacheManager.cs" />
     <Compile Include="Components\IResourceResolver.cs" />
     <Compile Include="Components\ISharedLocations.cs" />
+    <Compile Include="Components\IStepsComposer.cs" />
+    <Compile Include="Components\IStepsPlayer.cs" />
     <Compile Include="Components\IVisualThemeManager.cs" />
     <Compile Include="Components\Implementations\MessageBoxService.cs" />
     <Compile Include="Components\Implementations\ResourceCacheManager.cs" />
