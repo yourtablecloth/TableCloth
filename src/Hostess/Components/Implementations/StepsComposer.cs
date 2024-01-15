@@ -38,8 +38,6 @@ namespace Hostess.Components.Implementations
 
         private readonly string[] _validAccountNames = new string[]
         {
-            "ContainerAdministrator",
-            "ContainerUser",
             "WDAGUtilityAccount",
         };
 
