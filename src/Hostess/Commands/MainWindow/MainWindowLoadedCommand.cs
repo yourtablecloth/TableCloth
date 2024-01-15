@@ -72,9 +72,7 @@ namespace Hostess.Commands.MainWindow
                 var targetService = catalog.Services.FirstOrDefault(x => string.Equals(eachTargetName, x.Id, StringComparison.Ordinal));
 
                 if (targetService == null)
-                {
                     continue;
-                }
 
                 packages.AddRange(targetService.Packages.Select(eachPackage => new InstallItemViewModel()
                 {
@@ -100,6 +98,66 @@ namespace Hostess.Commands.MainWindow
                         ScriptContent = bootstrapData,
                     });
                 }
+            }
+
+            if (parsedArgs.InstallAdobeReader.HasValue &&
+                parsedArgs.InstallAdobeReader.Value)
+            {
+                packages.Add(new InstallItemViewModel()
+                {
+                    InstallItemType = InstallItemType.OpenWebSite,
+                    TargetSiteName = UIStringResources.Option_Addin,
+                    TargetSiteUrl = CommonStrings.AppInfoUrl,
+                    PackageName = UIStringResources.Option_InstallAdobeReader,
+                    PackageUrl = CommonStrings.AdobeReaderUrl,
+                    Arguments = string.Empty,
+                    ScriptContent = string.Empty,
+                });
+            }
+
+            if (parsedArgs.InstallEveryonesPrinter.HasValue &&
+                parsedArgs.InstallEveryonesPrinter.Value)
+            {
+                packages.Add(new InstallItemViewModel()
+                {
+                    InstallItemType = InstallItemType.OpenWebSite,
+                    TargetSiteName = UIStringResources.Option_Addin,
+                    TargetSiteUrl = CommonStrings.AppInfoUrl,
+                    PackageName = UIStringResources.Option_InstallEveryonesPrinter,
+                    PackageUrl = CommonStrings.EveryonesPrinterUrl,
+                    Arguments = string.Empty,
+                    ScriptContent = string.Empty,
+                });
+            }
+
+            if (parsedArgs.InstallHancomOfficeViewer.HasValue &&
+                parsedArgs.InstallHancomOfficeViewer.Value)
+            {
+                packages.Add(new InstallItemViewModel()
+                {
+                    InstallItemType = InstallItemType.OpenWebSite,
+                    TargetSiteName = UIStringResources.Option_Addin,
+                    TargetSiteUrl = CommonStrings.AppInfoUrl,
+                    PackageName = UIStringResources.Option_InstallHancomOfficeViewer,
+                    PackageUrl = CommonStrings.HancomOfficeViewerUrl,
+                    Arguments = string.Empty,
+                    ScriptContent = string.Empty,
+                });
+            }
+
+            if (parsedArgs.InstallRaiDrive.HasValue &&
+                parsedArgs.InstallRaiDrive.Value)
+            {
+                packages.Add(new InstallItemViewModel()
+                {
+                    InstallItemType = InstallItemType.OpenWebSite,
+                    TargetSiteName = UIStringResources.Option_Addin,
+                    TargetSiteUrl = CommonStrings.AppInfoUrl,
+                    PackageName = UIStringResources.Option_InstallRaiDrive,
+                    PackageUrl = CommonStrings.RaiDriveUrl,
+                    Arguments = string.Empty,
+                    ScriptContent = string.Empty,
+                });
             }
 
             viewModel.InstallItems = new ObservableCollection<InstallItemViewModel>(packages);

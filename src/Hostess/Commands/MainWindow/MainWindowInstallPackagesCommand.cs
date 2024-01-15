@@ -64,6 +64,8 @@ namespace Hostess.Commands.MainWindow
                             await ProcessDownloadAndInstall(eachItem, downloadFolderPath);
                         else if (eachItem.InstallItemType == InstallItemType.PowerShellScript)
                             await ProcessPowerShellScript(eachItem, downloadFolderPath);
+                        else if (eachItem.InstallItemType == InstallItemType.OpenWebSite)
+                            TryOpenRequestedWebSites(new string[] { eachItem.PackageUrl, });
                     }
                     catch (Exception ex)
                     {
@@ -77,18 +79,6 @@ namespace Hostess.Commands.MainWindow
 
                 if (!hasAnyFailure)
                 {
-                    if (parsedArgs.InstallEveryonesPrinter ?? false)
-                        TryInstallEveryonesPrinter();
-
-                    if (parsedArgs.InstallAdobeReader ?? false)
-                        TryInstallAdobeReader();
-
-                    if (parsedArgs.InstallHancomOfficeViewer ?? false)
-                        TryInstallHancomOfficeViewer();
-
-                    if (parsedArgs.InstallRaiDrive ?? false)
-                        TryInstallRaiDrive();
-
                     var targets = parsedArgs.SelectedServices;
                     var urls = catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url);
                     TryOpenRequestedWebSites(urls);
@@ -265,62 +255,6 @@ namespace Hostess.Commands.MainWindow
                 eachItem.Installed = true;
                 eachItem.ErrorMessage = null;
             }
-        }
-
-        private void TryInstallEveryonesPrinter()
-        {
-            var parsedArgs = _commandLineArguments.Current;
-
-            if (parsedArgs.DryRun)
-                return;
-
-            Process.Start(new ProcessStartInfo(CommonStrings.EveryonesPrinterUrl)
-            {
-                UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Maximized,
-            });
-        }
-
-        private void TryInstallAdobeReader()
-        {
-            var parsedArgs = _commandLineArguments.Current;
-
-            if (parsedArgs.DryRun)
-                return;
-
-            Process.Start(new ProcessStartInfo(CommonStrings.AdobeReaderUrl)
-            {
-                UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Maximized,
-            });
-        }
-
-        private void TryInstallHancomOfficeViewer()
-        {
-            var parsedArgs = _commandLineArguments.Current;
-
-            if (parsedArgs.DryRun)
-                return;
-
-            Process.Start(new ProcessStartInfo(CommonStrings.HancomOfficeViewerUrl)
-            {
-                UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Maximized,
-            });
-        }
-
-        private void TryInstallRaiDrive()
-        {
-            var parsedArgs = _commandLineArguments.Current;
-
-            if (parsedArgs.DryRun)
-                return;
-
-            Process.Start(new ProcessStartInfo(CommonStrings.RaiDriveUrl)
-            {
-                UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Maximized,
-            });
         }
 
         private void TryOpenRequestedWebSites(IEnumerable<string> webSiteUrls)

@@ -338,6 +338,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="MainWindow_Title" xml:space="preserve">
     <value>TableCloth - Keep your computer clean!</value>
   </data>
+  <data name="Option_Addin" xml:space="preserve">
+    <value>Add-in</value>
+  </data>
   <data name="Option_Addons" xml:space="preserve">
     <value>Add-ons</value>
   </data>

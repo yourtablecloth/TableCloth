@@ -7,5 +7,6 @@ namespace Hostess.ViewModels
     {
         DownloadAndInstall = 0,
         PowerShellScript,
+        OpenWebSite,
     }
 }

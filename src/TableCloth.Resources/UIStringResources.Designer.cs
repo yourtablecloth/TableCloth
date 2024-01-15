@@ -720,6 +720,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add-in.
+        /// </summary>
+        public static string Option_Addin {
+            get {
+                return ResourceManager.GetString("Option_Addin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add-ons.
         /// </summary>
         public static string Option_Addons {
