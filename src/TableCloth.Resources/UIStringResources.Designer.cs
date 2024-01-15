@@ -630,6 +630,51 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enabling Internet Explorer Mode.
+        /// </summary>
+        public static string Install_EnableIEMode {
+            get {
+                return ResourceManager.GetString("Install_EnableIEMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preparing Environment.
+        /// </summary>
+        public static string Install_PrepareEnvironment {
+            get {
+                return ResourceManager.GetString("Install_PrepareEnvironment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Setting Desktop Wallpaper.
+        /// </summary>
+        public static string Install_SetDesktopWallpaper {
+            get {
+                return ResourceManager.GetString("Install_SetDesktopWallpaper", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Try Protecting Critical Services.
+        /// </summary>
+        public static string Install_TryProtectCriticalServices {
+            get {
+                return ResourceManager.GetString("Install_TryProtectCriticalServices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verifying Environment.
+        /// </summary>
+        public static string Install_VerifyEnvironment {
+            get {
+                return ResourceManager.GetString("Install_VerifyEnvironment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Category.
         /// </summary>
         public static string MainWindow_Column_Category {
@@ -806,6 +851,15 @@ namespace TableCloth.Resources {
         public static string Option_NewUIOptIn {
             get {
                 return ResourceManager.GetString("Option_NewUIOptIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prerequisites.
+        /// </summary>
+        public static string Option_Prerequisites {
+            get {
+                return ResourceManager.GetString("Option_Prerequisites", resourceCulture);
             }
         }
         

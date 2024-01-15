@@ -1,11 +1,14 @@
 ﻿using Hostess.Components;
 using Hostess.ViewModels;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using TableCloth;
 using TableCloth.Resources;
@@ -59,13 +62,53 @@ namespace Hostess.Commands.MainWindow
 
             viewModel.NotifyWindowLoaded(this, EventArgs.Empty);
 
-            VerifyWindowsContainerEnvironment();
-            TryProtectCriticalServices();
-            SetDesktopWallpaper();
-
             var catalog = _resourceCacheManager.CatalogDocument;
             var targets = parsedArgs.SelectedServices;
-            var packages = new List<InstallItemViewModel>();
+
+            var packages = new List<InstallItemViewModel>
+            {
+                new InstallItemViewModel()
+                {
+                    InstallItemType = InstallItemType.CustomAction,
+                    TargetSiteName = UIStringResources.Option_Prerequisites,
+                    PackageName = UIStringResources.Install_VerifyEnvironment,
+                    CustomAction = VerifyWindowsContainerEnvironment,
+                },
+                new InstallItemViewModel()
+                {
+                    InstallItemType = InstallItemType.CustomAction,
+                    TargetSiteName = UIStringResources.Option_Prerequisites,
+                    PackageName = UIStringResources.Install_PrepareEnvironment,
+                    CustomAction = PrepareDirectoriesAsync,
+                },
+                new InstallItemViewModel()
+                {
+                    InstallItemType = InstallItemType.CustomAction,
+                    TargetSiteName = UIStringResources.Option_Prerequisites,
+                    PackageName = UIStringResources.Install_TryProtectCriticalServices,
+                    CustomAction = TryProtectCriticalServices,
+                },
+                new InstallItemViewModel()
+                {
+                    InstallItemType = InstallItemType.CustomAction,
+                    TargetSiteName = UIStringResources.Option_Prerequisites,
+                    PackageName = UIStringResources.Install_SetDesktopWallpaper,
+                    CustomAction = SetDesktopWallpaper,
+                },
+            };
+
+            if (parsedArgs.EnableInternetExplorerMode.HasValue &&
+                parsedArgs.EnableInternetExplorerMode.Value)
+            {
+                packages.Add(new InstallItemViewModel()
+                {
+                    InstallItemType = InstallItemType.CustomAction,
+                    TargetSiteName = UIStringResources.Option_Prerequisites,
+                    PackageName = UIStringResources.Install_EnableIEMode,
+                    CustomAction = EnableIEModeAsync,
+                });
+            }
+
 
             foreach (var eachTargetName in targets)
             {
@@ -122,11 +165,8 @@ namespace Hostess.Commands.MainWindow
                 {
                     InstallItemType = InstallItemType.OpenWebSite,
                     TargetSiteName = UIStringResources.Option_Addin,
-                    TargetSiteUrl = CommonStrings.AppInfoUrl,
                     PackageName = UIStringResources.Option_InstallEveryonesPrinter,
                     PackageUrl = CommonStrings.EveryonesPrinterUrl,
-                    Arguments = string.Empty,
-                    ScriptContent = string.Empty,
                 });
             }
 
@@ -137,11 +177,8 @@ namespace Hostess.Commands.MainWindow
                 {
                     InstallItemType = InstallItemType.OpenWebSite,
                     TargetSiteName = UIStringResources.Option_Addin,
-                    TargetSiteUrl = CommonStrings.AppInfoUrl,
                     PackageName = UIStringResources.Option_InstallHancomOfficeViewer,
                     PackageUrl = CommonStrings.HancomOfficeViewerUrl,
-                    Arguments = string.Empty,
-                    ScriptContent = string.Empty,
                 });
             }
 
@@ -152,11 +189,8 @@ namespace Hostess.Commands.MainWindow
                 {
                     InstallItemType = InstallItemType.OpenWebSite,
                     TargetSiteName = UIStringResources.Option_Addin,
-                    TargetSiteUrl = CommonStrings.AppInfoUrl,
                     PackageName = UIStringResources.Option_InstallRaiDrive,
                     PackageUrl = CommonStrings.RaiDriveUrl,
-                    Arguments = string.Empty,
-                    ScriptContent = string.Empty,
                 });
             }
 
@@ -173,12 +207,78 @@ namespace Hostess.Commands.MainWindow
             }
         }
 
-        private void VerifyWindowsContainerEnvironment()
+        private async Task PrepareDirectoriesAsync(InstallItemViewModel viewModel)
         {
             var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
                 return;
+            }
+
+            var downloadFolderPath = _sharedLocations.GetDownloadDirectoryPath();
+
+            if (!Directory.Exists(downloadFolderPath))
+                Directory.CreateDirectory(downloadFolderPath);
+        }
+
+        private async Task EnableIEModeAsync(InstallItemViewModel viewModel)
+        {
+            var parsedArgs = _commandLineArguments.Current;
+
+            if (parsedArgs.DryRun)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
+                return;
+            }
+
+            if (parsedArgs.EnableInternetExplorerMode ?? false)
+            {
+                // HKLM\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1, InternetExplorerIntegrationSiteList (REG_SZ)
+                using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
+                {
+                    ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
+                    ieModeKey.SetValue("InternetExplorerIntegrationSiteList", ConstantStrings.IEModePolicyXmlUrl, RegistryValueKind.String);
+                }
+
+                // msedge.exe 파일 경로를 유추하고, Policy를 반영하기 위해 잠시 실행했다가 종료하는 동작을 추가
+                if (!_sharedLocations.TryGetMicrosoftEdgeExecutableFilePath(out var msedgePath))
+                    msedgePath = _sharedLocations.GetDefaultX86MicrosoftEdgeExecutableFilePath();
+
+                if (File.Exists(msedgePath))
+                {
+                    var msedgePsi = new ProcessStartInfo(msedgePath, "about:blank")
+                    {
+                        UseShellExecute = false,
+                        WindowStyle = ProcessWindowStyle.Minimized,
+                    };
+
+                    using (var msedgeProcess = Process.Start(msedgePsi))
+                    {
+                        var tcs = new TaskCompletionSource<int>();
+                        msedgeProcess.EnableRaisingEvents = true;
+                        msedgeProcess.Exited += (_sender, _e) =>
+                        {
+                            tcs.SetResult(msedgeProcess.ExitCode);
+                        };
+                        await Task.Delay(TimeSpan.FromSeconds(1.5d)).ConfigureAwait(false);
+                        msedgeProcess.CloseMainWindow();
+                        await tcs.Task.ConfigureAwait(false);
+                    }
+                }
+            }
+        }
+
+        private async Task VerifyWindowsContainerEnvironment(InstallItemViewModel viewModel)
+        {
+            var parsedArgs = _commandLineArguments.Current;
+
+            if (parsedArgs.DryRun)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
+                return;
+            }
 
             if (!_validAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
             {
@@ -191,12 +291,15 @@ namespace Hostess.Commands.MainWindow
             }
         }
 
-        private void TryProtectCriticalServices()
+        private async Task TryProtectCriticalServices(InstallItemViewModel viewModel)
         {
             var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
                 return;
+            }
 
             try { _criticalServiceProtector.PreventServiceProcessTermination("TermService"); }
             catch (AggregateException aex) { _appMessageBox.DisplayError(aex.InnerException, false); }
@@ -207,12 +310,15 @@ namespace Hostess.Commands.MainWindow
             catch (Exception ex) { _appMessageBox.DisplayError(ex, false); }
         }
 
-        private void SetDesktopWallpaper()
+        private async Task SetDesktopWallpaper(InstallItemViewModel viewModel)
         {
             var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
                 return;
+            }
 
             var picturesDirectoryPath = _sharedLocations.GetPicturesDirectoryPath();
 

@@ -308,6 +308,21 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="InputPasswordWindow_Title" xml:space="preserve">
     <value>Enter the password to convert the PFX certificate</value>
   </data>
+  <data name="Install_EnableIEMode" xml:space="preserve">
+    <value>Enabling Internet Explorer Mode</value>
+  </data>
+  <data name="Install_PrepareEnvironment" xml:space="preserve">
+    <value>Preparing Environment</value>
+  </data>
+  <data name="Install_SetDesktopWallpaper" xml:space="preserve">
+    <value>Setting Desktop Wallpaper</value>
+  </data>
+  <data name="Install_TryProtectCriticalServices" xml:space="preserve">
+    <value>Try Protecting Critical Services</value>
+  </data>
+  <data name="Install_VerifyEnvironment" xml:space="preserve">
+    <value>Verifying Environment</value>
+  </data>
   <data name="MainWindow_Column_Category" xml:space="preserve">
     <value>Category</value>
   </data>
@@ -367,6 +382,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   </data>
   <data name="Option_NewUIOptIn" xml:space="preserve">
     <value>Using the new user interface</value>
+  </data>
+  <data name="Option_Prerequisites" xml:space="preserve">
+    <value>Prerequisites</value>
   </data>
   <data name="Option_TelemetryDescriptionText" xml:space="preserve">
     <value>TableCloth uses the Sentry.io service to anonymously collect information about errors that occur during the execution of the Tablecloth program. If you do not want to send data, please uncheck the box below and run Tablecloth again.</value>

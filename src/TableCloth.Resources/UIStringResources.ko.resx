@@ -308,6 +308,21 @@
   <data name="InputPasswordWindow_Title" xml:space="preserve">
     <value>PFX 인증서 변환을 위한 비밀 번호 입력</value>
   </data>
+  <data name="Install_EnableIEMode" xml:space="preserve">
+    <value>Internet Explorer 모드 지원 활성화</value>
+  </data>
+  <data name="Install_PrepareEnvironment" xml:space="preserve">
+    <value>환경 준비 중</value>
+  </data>
+  <data name="Install_SetDesktopWallpaper" xml:space="preserve">
+    <value>바탕 화면 변경</value>
+  </data>
+  <data name="Install_TryProtectCriticalServices" xml:space="preserve">
+    <value>중요 서비스 보호 시도</value>
+  </data>
+  <data name="Install_VerifyEnvironment" xml:space="preserve">
+    <value>환경 확인</value>
+  </data>
   <data name="MainWindow_Column_Category" xml:space="preserve">
     <value>분류</value>
   </data>
@@ -367,6 +382,9 @@
   </data>
   <data name="Option_NewUIOptIn" xml:space="preserve">
     <value>새로운 사용자 인터페이스 사용</value>
+  </data>
+  <data name="Option_Prerequisites" xml:space="preserve">
+    <value>사전 작업</value>
   </data>
   <data name="Option_TelemetryDescriptionText" xml:space="preserve">
     <value>식탁보는 Sentry.io 서비스를 통하여 식탁보 프로그램 실행 도중 발생한 오류 정보를 익명으로 수집합니다. 만약 데이터 보내기를 원하지 않으시면 아래 체크 박스를 선택 해제하신 후 식탁보를 다시 실행해주세요.</value>

@@ -93,5 +93,12 @@ namespace TableCloth
 
         public static string GetDefaultWindowsSandboxPath()
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsSandbox.exe");
+
+        public static readonly string[] ValidAccountNames = new string[]
+        {
+            "ContainerAdministrator",
+            "ContainerUser",
+            "WDAGUtilityAccount",
+        };
     }
 }
