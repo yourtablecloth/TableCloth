@@ -56,7 +56,7 @@ namespace Hostess.Components.Implementations
                     InstallItemType = InstallItemType.CustomAction,
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_VerifyEnvironment,
-                    CustomAction = VerifyWindowsContainerEnvironment,
+                    CustomAction = VerifyWindowsContainerEnvironmentAsync,
                 },
                 new InstallItemViewModel()
                 {
@@ -70,14 +70,14 @@ namespace Hostess.Components.Implementations
                     InstallItemType = InstallItemType.CustomAction,
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_TryProtectCriticalServices,
-                    CustomAction = TryProtectCriticalServices,
+                    CustomAction = TryProtectCriticalServicesAsync,
                 },
                 new InstallItemViewModel()
                 {
                     InstallItemType = InstallItemType.CustomAction,
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_SetDesktopWallpaper,
-                    CustomAction = SetDesktopWallpaper,
+                    CustomAction = SetDesktopWallpaperAsync,
                 },
             };
 
@@ -243,7 +243,7 @@ namespace Hostess.Components.Implementations
             }
         }
 
-        private async Task VerifyWindowsContainerEnvironment(InstallItemViewModel viewModel)
+        private async Task VerifyWindowsContainerEnvironmentAsync(InstallItemViewModel viewModel)
         {
             var parsedArgs = _commandLineArguments.Current;
 
@@ -264,7 +264,7 @@ namespace Hostess.Components.Implementations
             }
         }
 
-        private async Task TryProtectCriticalServices(InstallItemViewModel viewModel)
+        private async Task TryProtectCriticalServicesAsync(InstallItemViewModel viewModel)
         {
             var parsedArgs = _commandLineArguments.Current;
 
@@ -283,7 +283,7 @@ namespace Hostess.Components.Implementations
             catch (Exception ex) { _appMessageBox.DisplayError(ex, false); }
         }
 
-        private async Task SetDesktopWallpaper(InstallItemViewModel viewModel)
+        private async Task SetDesktopWallpaperAsync(InstallItemViewModel viewModel)
         {
             var parsedArgs = _commandLineArguments.Current;
 

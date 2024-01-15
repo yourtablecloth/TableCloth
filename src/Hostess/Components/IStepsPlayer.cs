@@ -1,10 +1,17 @@
 ﻿using Hostess.ViewModels;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Hostess.Components
 {
     public interface IStepsPlayer
     {
-        bool PlaySteps(IEnumerable<InstallItemViewModel> composedSteps);
+        bool IsRunning { get; }
+
+        Task<bool> PlayStepsAsync(
+            IEnumerable<InstallItemViewModel> composedSteps,
+            bool dryRun,
+            CancellationToken cancellationToken = default);
     }
 }

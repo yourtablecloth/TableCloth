@@ -108,7 +108,8 @@ namespace Hostess
                 .AddSingleton<IResourceResolver, ResourceResolver>()
                 .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
                 .AddSingleton<ICommandLineArguments, CommandLineArguments>()
-                .AddSingleton<IStepsComposer, StepsComposer>();
+                .AddSingleton<IStepsComposer, StepsComposer>()
+                .AddSingleton<IStepsPlayer, StepsPlayer>();
 
             // Shared Commands
             services

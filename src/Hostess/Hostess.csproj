@@ -231,6 +231,7 @@
     <Compile Include="Components\IMessageBoxService.cs" />
     <Compile Include="Components\ICriticalServiceProtector.cs" />
     <Compile Include="Components\Implementations\StepsComposer.cs" />
+    <Compile Include="Components\Implementations\StepsPlayer.cs" />
     <Compile Include="Components\IResourceCacheManager.cs" />
     <Compile Include="Components\IResourceResolver.cs" />
     <Compile Include="Components\ISharedLocations.cs" />
