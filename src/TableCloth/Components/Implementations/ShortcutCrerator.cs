@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using TableCloth.Interop.WshRuntimeLibrary;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
@@ -14,14 +15,14 @@ public sealed class ShortcutCrerator(
     public void CreateShortcut(ITableClothViewModel viewModel)
     {
         var targetPath = sharedLocations.ExecutableFilePath;
-        var linkName = CommonStrings.AppName;
+        var linkName = ConstantStrings.AppNameForWixAndStore;
 
         var firstSite = viewModel.SelectedServices.FirstOrDefault();
         var iconFilePath = default(string);
 
         if (firstSite != null)
         {
-            linkName = firstSite.DisplayName;
+            linkName = firstSite.Id;
 
             iconFilePath = Path.Combine(
                 sharedLocations.GetImageDirectoryPath(),
@@ -34,16 +35,10 @@ public sealed class ShortcutCrerator(
         var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         var fullPath = Path.Combine(desktopPath, linkName + ".lnk");
 
-        for (int i = 1; File.Exists(fullPath); ++i)
-            fullPath = Path.Combine(desktopPath, linkName + $" ({i}).lnk");
-
         try
         {
-            var shellType = Type.GetTypeFromProgID("WScript.Shell")
-                ?? throw new Exception("Cannot obtain WScript.Shell object type information.");
-            var shell = Activator.CreateInstance(shellType)
-                ?? throw new Exception("Cannot obtain WScript.Shell object instance.");
-            dynamic shortcut = ((dynamic)shell).CreateShortcut(fullPath);
+            var shell = new WshShell();
+            var shortcut = (WshShortcut)shell.CreateShortcut(fullPath);
             shortcut.TargetPath = targetPath;
 
             if (iconFilePath != null && File.Exists(iconFilePath))
@@ -52,11 +47,14 @@ public sealed class ShortcutCrerator(
             shortcut.Arguments = commandLineComposer.ComposeCommandLineArguments(viewModel, false);
             shortcut.Save();
         }
-        catch
+        catch (Exception ex)
         {
-            appMessageBox.DisplayInfo(ErrorStrings.Error_ShortcutFailed);
-            return;
+            appMessageBox.DisplayError(ex, false);
         }
+
+        // Workaround - CJK 문자열을 CreateShortcut 호출 시 지정하지 못하는 문제 우회
+        if (firstSite != null)
+            File.Move(fullPath, Path.Combine(desktopPath, firstSite.DisplayName + ".lnk"));
 
         appMessageBox.DisplayInfo(InfoStrings.Info_ShortcutSuccess);
     }
