@@ -15,15 +15,16 @@ public class AppMessageBoxTest
     {
         // given
         var appMessageBox = _testHost.Services.GetRequiredService<IAppMessageBox>();
-        var mock = _testHost.Services.GetRequiredService<Mock<IMessageBoxService>>();
+        var message = "Test";
 
         // when
-        appMessageBox.DisplayInfo("Test");
+        appMessageBox.DisplayInfo(message);
 
         // then
-        mock.Verify(x => x.Show(
+        var messageBoxServiceMock = _testHost.Services.GetRequiredMock<IMessageBoxService>();
+        messageBoxServiceMock.Verify(x => x.Show(
             IsAny<Window>(),
-            IsNotNull<string>(),
+            message,
             UIStringResources.TitleText_Info,
             IsAny<MessageBoxButton>(),
             MessageBoxImage.Information,

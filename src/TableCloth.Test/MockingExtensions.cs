@@ -23,4 +23,11 @@ internal static class MockingExtensions
 
         return services;
     }
+
+    public static Mock<TService> GetRequiredMock<TService>(
+        this IServiceProvider serviceProvider)
+        where TService : class
+    {
+        return serviceProvider.GetRequiredService<Mock<TService>>();
+    }
 }
