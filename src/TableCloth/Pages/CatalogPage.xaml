@@ -244,25 +244,27 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Width="48" Height="96">
-                        <Grid.InputBindings>
+                    <ContentControl>
+                        <ContentControl.InputBindings>
                             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding RelativeSource={RelativeSource AncestorType=Page, Mode=FindAncestor}, Path=DataContext.CatalogPageItemSelectCommand }">
                                 <MouseBinding.CommandParameter>
                                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                                 </MouseBinding.CommandParameter>
                             </MouseBinding>
-                        </Grid.InputBindings>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="50*" />
-                            <RowDefinition Height="2*" />
-                            <RowDefinition Height="48*" />
-                        </Grid.RowDefinitions>
-                        <Grid.ToolTip>
-                            <TextBlock Text="{Binding DisplayName}" d:Text="{Binding DisplayName}" TextWrapping="NoWrap" TextTrimming="None"/>
-                        </Grid.ToolTip>
-                        <Image Grid.Row="0" x:Name="Icon" Source="{Binding Id, Mode=OneWay, Converter={StaticResource ServiceLogoConverter}}" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
-                        <TextBlock Grid.Row="2" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
-                    </Grid>
+                        </ContentControl.InputBindings>
+                        <Grid Width="48" Height="96">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50*" />
+                                <RowDefinition Height="2*" />
+                                <RowDefinition Height="48*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ToolTip>
+                                <TextBlock Text="{Binding DisplayName}" d:Text="{Binding DisplayName}" TextWrapping="NoWrap" TextTrimming="None"/>
+                            </Grid.ToolTip>
+                            <Image Grid.Row="0" x:Name="Icon" Source="{Binding Id, Mode=OneWay, Converter={StaticResource ServiceLogoConverter}}" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
+                            <TextBlock Grid.Row="2" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
+                        </Grid>
+                    </ContentControl>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.GroupStyle>
