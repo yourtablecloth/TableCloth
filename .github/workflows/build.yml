@@ -16,7 +16,7 @@ jobs:
       Solution_Name: src\TableCloth.sln
       Hostess_Project_Path: src\Hostess\Hostess.csproj
       ResourceBuilder_Project_Path: src\TableCloth.ResourceBuilder\TableCloth.ResourceBuilder.csproj
-      Test_Project_Path: src\TableCloth.SpecFlow\TableCloth.SpecFlow.csproj
+      Test_Project_Path: src\TableCloth.Test\TableCloth.Test.csproj
       Loom_Project_Path: src\Loom\Loom.csproj
       TableCloth_Project_Directory: src\TableCloth
       TableCloth_Project_Path: src\TableCloth\TableCloth.csproj

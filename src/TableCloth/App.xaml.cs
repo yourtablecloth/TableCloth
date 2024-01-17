@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -27,58 +28,28 @@ namespace TableCloth;
 
 public partial class App : Application
 {
-    public App()
+    public static IHostBuilder CreateHostBuilder(
+        string[]? args = default,
+        Action<IConfigurationBuilder>? configurationBuilderOverride = default,
+        Action<ILoggingBuilder>? loggingBuilderOverride = default,
+        Action<IServiceCollection>? servicesBuilderOverride = default)
     {
-        _host = new HostBuilder()
-            .ConfigureLogging(logging =>
-            {
-                logging
-                    .AddSerilog(dispose: true)
-                    .AddConsole();
-            })
-            .ConfigureServices(ConfigureServices)
-            .Build();
-
-        Current.InitServiceProvider(_host.Services);
-        InitializeComponent();
+        return Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration(ConfigureAppConfiguration + configurationBuilderOverride)
+            .ConfigureLogging(ConfigureLogging + loggingBuilderOverride)
+            .ConfigureServices(ConfigureServices + servicesBuilderOverride);
     }
 
-    private readonly IHost _host;
-
-    private SplashScreen? _splashScreen;
-
-    private void Application_Startup(object sender, StartupEventArgs e)
+    private static void ConfigureAppConfiguration(IConfigurationBuilder configure)
     {
-        var appUserInterface = _host.Services.GetRequiredService<IAppUserInterface>();
-
-        _splashScreen = appUserInterface.CreateSplashScreen();
-        _splashScreen.ViewModel.InitializeDone += ViewModel_InitializeDone;
-        _splashScreen.Show();
     }
 
-    private void ViewModel_InitializeDone(object? sender, DialogRequestEventArgs e)
-    {
-        if (_splashScreen == null)
-            return;
+    private static void ConfigureLogging(ILoggingBuilder logging)
+        => logging
+            .AddSerilog(dispose: true)
+            .AddConsole();
 
-        _splashScreen.Hide();
-
-        if (e.DialogResult.HasValue && e.DialogResult.Value)
-        {
-            var mainWindow = default(Window);
-            if (_splashScreen.ViewModel.V2UIOptedIn)
-                mainWindow = _host.Services.GetRequiredService<MainWindowV2>();
-            else
-                mainWindow = _host.Services.GetRequiredService<MainWindow>();
-
-            this.MainWindow = mainWindow;
-            mainWindow.Show();
-        }
-
-        _splashScreen.Close();
-    }
-
-    private void ConfigureServices(IServiceCollection services)
+    private static void ConfigureServices(IServiceCollection services)
     {
         // Add HTTP Service
         services.AddHttpClient(nameof(TableCloth), c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
@@ -192,5 +163,49 @@ public partial class App : Application
 
         // App
         services.AddTransient(_ => Current);
+    }
+
+    public App()
+    {
+        InitializeComponent();
+    }
+
+    private IHost? _host;
+    private SplashScreen? _splashScreen;
+
+    private void Application_Startup(object sender, StartupEventArgs e)
+    {
+        _host = CreateHostBuilder(e.Args).Build();
+        Current.InitServiceProvider(_host.Services);
+
+        var appUserInterface = _host.Services.GetRequiredService<IAppUserInterface>();
+        _splashScreen = appUserInterface.CreateSplashScreen();
+        _splashScreen.ViewModel.InitializeDone += ViewModel_InitializeDone;
+        _splashScreen.Show();
+    }
+
+    private void ViewModel_InitializeDone(object? sender, DialogRequestEventArgs e)
+    {
+        if (_host == null)
+            throw new Exception("Host initialization not done.");
+
+        if (_splashScreen == null)
+            return;
+
+        _splashScreen.Hide();
+
+        if (e.DialogResult.HasValue && e.DialogResult.Value)
+        {
+            var mainWindow = default(Window);
+            if (_splashScreen.ViewModel.V2UIOptedIn)
+                mainWindow = _host.Services.GetRequiredService<MainWindowV2>();
+            else
+                mainWindow = _host.Services.GetRequiredService<MainWindow>();
+
+            this.MainWindow = mainWindow;
+            mainWindow.Show();
+        }
+
+        _splashScreen.Close();
     }
 }
