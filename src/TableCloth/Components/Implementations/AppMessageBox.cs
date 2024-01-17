@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 using TableCloth.Resources;
 
 namespace TableCloth.Components;
@@ -14,7 +15,11 @@ public sealed class AppMessageBox(
 {
     // https://stackoverflow.com/questions/2038879/refer-to-active-window-in-wpf
     private Window? GetActiveWindow()
-        => application.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive);
+    {
+        return application.Dispatcher.Invoke(() =>
+            application.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive)
+        );
+    }
 
     /// <summary>
     /// 정보를 안내하는 메시지 상자를 띄웁니다.
@@ -24,10 +29,13 @@ public sealed class AppMessageBox(
     /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
     public MessageBoxResult DisplayInfo(string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
     {
-        return messageBoxService.Show(
-            GetActiveWindow(), message, UIStringResources.TitleText_Info,
-            messageBoxButton, MessageBoxImage.Information,
-            MessageBoxResult.OK);
+        return application.Dispatcher.Invoke(() =>
+        {
+            return messageBoxService.Show(
+                GetActiveWindow(), message, UIStringResources.TitleText_Info,
+                messageBoxButton, MessageBoxImage.Information,
+                MessageBoxResult.OK);
+        });
     }
 
     /// <summary>
@@ -53,8 +61,11 @@ public sealed class AppMessageBox(
         var title = isCritical ? UIStringResources.TitleText_Error : UIStringResources.TitleText_Warning;
         var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 
-        return messageBoxService.Show(
-            GetActiveWindow(), message, title, MessageBoxButton.OK,
-            image, MessageBoxResult.OK);
+        return application.Dispatcher.Invoke(() =>
+        {
+            return messageBoxService.Show(
+                GetActiveWindow(), message, title, MessageBoxButton.OK,
+                image, MessageBoxResult.OK);
+        });
     }
 }
