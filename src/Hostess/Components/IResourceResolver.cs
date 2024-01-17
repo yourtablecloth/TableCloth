@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 
 namespace Hostess.Components
@@ -9,6 +10,6 @@ namespace Hostess.Components
     {
         DateTimeOffset? CatalogLastModified { get; }
 
-        Task<CatalogDocument> DeserializeCatalogAsync(CancellationToken cancellationToken = default);
+        Task<ApiInvokeResult<CatalogDocument>> DeserializeCatalogAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -19,7 +19,14 @@ public sealed class ResourceCacheManager(
     private Dictionary<string, ImageSource> _imageTable = new Dictionary<string, ImageSource>();
 
     public async Task<CatalogDocument> LoadCatalogDocumentAsync(CancellationToken cancellationToken = default)
-        => _catalogDocument = await resourceResolver.DeserializeCatalogAsync(cancellationToken).ConfigureAwait(false);
+    {
+        var doc = await resourceResolver.DeserializeCatalogAsync(cancellationToken).ConfigureAwait(false);
+
+        if (doc.Result == null)
+            throw new Exception("Cannot load catalog document from remote source.");
+
+        return _catalogDocument = doc.Result;
+    }
 
     public async Task LoadSiteImages(CancellationToken cancellationToken = default)
     {

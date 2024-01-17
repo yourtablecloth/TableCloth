@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using TableCloth.Models;
 
 namespace TableCloth.Components.Implementations;
 
@@ -9,7 +10,7 @@ public sealed class StandaloneAppUpdateManager(
     private readonly string owner = "yourtablecloth";
     private readonly string repo = "TableCloth";
 
-    public async Task<string?> QueryNewVersionDownloadUrl()
+    public async Task<ApiInvokeResult<Uri?>> QueryNewVersionDownloadUrl()
     {
         var thisVersion = typeof(IAppUpdateManager).Assembly.GetName().Version;
         var latestVersion = await resourceResolver.GetLatestVersion(owner, repo).ConfigureAwait(false);
@@ -18,7 +19,7 @@ public sealed class StandaloneAppUpdateManager(
             thisVersion != null && parsedVersion > thisVersion)
         {
             var targetUrl = await resourceResolver.GetDownloadUrl(owner, repo).ConfigureAwait(false);
-            return targetUrl.AbsoluteUri;
+            return targetUrl;
         }
         else
             return default;

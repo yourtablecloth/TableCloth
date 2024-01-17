@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
@@ -26,7 +27,7 @@ namespace Hostess.Components.Implementations
 
         public DateTimeOffset? CatalogLastModified => _catalogLastModified;
 
-        public async Task<CatalogDocument> DeserializeCatalogAsync(
+        public async Task<ApiInvokeResult<CatalogDocument>> DeserializeCatalogAsync(
             CancellationToken cancellationToken = default)
         {
             var httpClient = _httpClientFactory.CreateTableClothHttpClient();

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
 using System.Xml.Serialization;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
@@ -23,72 +24,100 @@ public sealed class ResourceResolver(
 
     public DateTimeOffset? CatalogLastModified => _catalogLastModified;
 
-    public async Task<CatalogDocument> DeserializeCatalogAsync(
+    public async Task<ApiInvokeResult<CatalogDocument?>> DeserializeCatalogAsync(
         CancellationToken cancellationToken = default)
     {
-        var httpClient = httpClientFactory.CreateTableClothHttpClient();
-        var uriBuilder = new UriBuilder(new Uri(ConstantStrings.CatalogUrl, UriKind.Absolute));
-
-        var queryKeyValues = HttpUtility.ParseQueryString(uriBuilder.Query);
-        queryKeyValues[ConstantStrings.QueryString_Timestamp_Key] = DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
-        uriBuilder.Query = queryKeyValues.ToString();
-
-        var httpRequest = new HttpRequestMessage(HttpMethod.Get, uriBuilder.Uri);
-        httpRequest.Headers.CacheControl = new CacheControlHeaderValue() { NoCache = true, NoStore = true, };
-        httpRequest.Headers.UserAgent.TryParseAdd(ConstantStrings.UserAgentText);
-
-        var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-        _catalogLastModified = httpResponse.Content.Headers.LastModified;
-
-        using var catalogStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-        var serializer = new XmlSerializer(typeof(CatalogDocument));
-        var xmlReaderSetting = new XmlReaderSettings()
+        try
         {
-            XmlResolver = null,
-            DtdProcessing = DtdProcessing.Prohibit,
-        };
+            var httpClient = httpClientFactory.CreateTableClothHttpClient();
+            var uriBuilder = new UriBuilder(new Uri(ConstantStrings.CatalogUrl, UriKind.Absolute));
 
-        using var contentStream = XmlReader.Create(catalogStream, xmlReaderSetting);
-        var document = serializer.Deserialize(contentStream) as CatalogDocument;
+            var queryKeyValues = HttpUtility.ParseQueryString(uriBuilder.Query);
+            queryKeyValues[ConstantStrings.QueryString_Timestamp_Key] = DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
+            uriBuilder.Query = queryKeyValues.ToString();
 
-        if (document == null)
-            throw new Exception(StringResources.Error_CatalogLoadFailure(null));
+            var httpRequest = new HttpRequestMessage(HttpMethod.Get, uriBuilder.Uri);
+            httpRequest.Headers.CacheControl = new CacheControlHeaderValue() { NoCache = true, NoStore = true, };
+            httpRequest.Headers.UserAgent.TryParseAdd(ConstantStrings.UserAgentText);
 
-        return document;
+            var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            _catalogLastModified = httpResponse.Content.Headers.LastModified;
+
+            using var catalogStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+            var serializer = new XmlSerializer(typeof(CatalogDocument));
+            var xmlReaderSetting = new XmlReaderSettings()
+            {
+                XmlResolver = null,
+                DtdProcessing = DtdProcessing.Prohibit,
+            };
+
+            using var contentStream = XmlReader.Create(catalogStream, xmlReaderSetting);
+            var document = serializer.Deserialize(contentStream) as CatalogDocument;
+
+            if (document == null)
+                throw new Exception(StringResources.Error_CatalogLoadFailure(null));
+
+            return document;
+        }
+        catch (Exception ex)
+        {
+            return new ApiInvokeResult<CatalogDocument?>(ex);
+        }
     }
 
-    public async Task<string?> GetLatestVersion(string owner, string repoName)
+    public async Task<ApiInvokeResult<string?>> GetLatestVersion(string owner, string repoName)
     {
-        var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
-        var httpClient = httpClientFactory.CreateTableClothHttpClient();
+        try
+        {
+            var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
+            var httpClient = httpClientFactory.CreateTableClothHttpClient();
 
-        using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
-        var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
-        return jsonDocument.RootElement.GetProperty("tag_name").GetString()?.TrimStart('v');
+            using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
+            var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
+            return jsonDocument.RootElement.GetProperty("tag_name").GetString()?.TrimStart('v');
+        }
+        catch (Exception ex)
+        {
+            return new ApiInvokeResult<string?>(ex);
+        }
     }
 
-    public async Task<Uri> GetDownloadUrl(string owner, string repoName)
+    public async Task<ApiInvokeResult<Uri?>> GetDownloadUrl(string owner, string repoName)
     {
-        var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
-        var httpClient = httpClientFactory.CreateTableClothHttpClient();
+        try
+        {
+            var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
+            var httpClient = httpClientFactory.CreateTableClothHttpClient();
 
-        using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
-        var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
+            using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
+            var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
 
-        if (Uri.TryCreate(jsonDocument.RootElement.GetProperty("html_url").GetString(), UriKind.Absolute, out var result))
-            return result;
-        else
-            return new Uri($"https://github.com/{owner}/{repoName}/releases", UriKind.Absolute);
+            if (Uri.TryCreate(jsonDocument.RootElement.GetProperty("html_url").GetString(), UriKind.Absolute, out var result))
+                return result;
+            else
+                return new Uri($"https://github.com/{owner}/{repoName}/releases", UriKind.Absolute);
+        }
+        catch (Exception ex)
+        {
+            return new ApiInvokeResult<Uri?>(ex);
+        }
     }
 
-    public async Task<string?> GetLicenseDescriptionForGitHub(string owner, string repoName)
+    public async Task<ApiInvokeResult<string?>> GetLicenseDescriptionForGitHub(string owner, string repoName)
     {
-        var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
-        var httpClient = httpClientFactory.CreateTableClothHttpClient();
+        try
+        {
+            var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
+            var httpClient = httpClientFactory.CreateTableClothHttpClient();
 
-        using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
-        var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
-        return jsonDocument.RootElement.GetProperty("license").GetProperty("name").GetString();
+            using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
+            var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
+            return jsonDocument.RootElement.GetProperty("license").GetProperty("name").GetString();
+        }
+        catch (Exception ex)
+        {
+            return new ApiInvokeResult<string?>(ex);
+        }
     }
 
     public async Task LoadSiteImagesAsync(

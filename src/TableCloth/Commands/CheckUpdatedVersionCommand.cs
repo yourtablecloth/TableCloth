@@ -13,10 +13,16 @@ public sealed class CheckUpdatedVersionCommand(
     {
         var targetUrl = await appUpdateManager.QueryNewVersionDownloadUrl();
 
-        if (!string.IsNullOrWhiteSpace(targetUrl))
+        if (targetUrl.ThrownException != null)
+        {
+            appMessageBox.DisplayError(targetUrl.ThrownException, false);
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(targetUrl.Result?.AbsoluteUri))
         {
             appMessageBox.DisplayInfo(InfoStrings.Info_UpdateRequired);
-            var psi = new ProcessStartInfo(targetUrl) { UseShellExecute = true, };
+            var psi = new ProcessStartInfo(targetUrl.Result.AbsoluteUri) { UseShellExecute = true, };
             Process.Start(psi);
         }
         else
