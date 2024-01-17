@@ -2,22 +2,19 @@ using TableCloth.Components;
 
 namespace TableCloth.Test;
 
-public class AppMessageBoxTest
+public class AppMessageBoxTest : ApplicationContextTest
 {
-    /*
     public AppMessageBoxTest()
     {
         _testHost = TableClothApp.CreateHostBuilder(
             servicesBuilderOverride: services => services
-                .RemoveAll<Application>()
-                .AddSingleton<Application>(_ => new TableClothApp())
                 .ReplaceWithMock<IMessageBoxService>()
             ).Build();
     }
 
     private readonly IHost _testHost;
 
-    [StaFact]
+    [WpfFact]
     public void AppMessageBox_DisplayInfo()
     {
         // given
@@ -40,7 +37,7 @@ public class AppMessageBoxTest
         );
     }
 
-    [StaFact]
+    [WpfFact]
     public void AppMessageBox_DisplayError_NonCritical()
     {
         // given
@@ -64,7 +61,7 @@ public class AppMessageBoxTest
         );
     }
 
-    [StaFact]
+    [WpfFact]
     public void AppMessageBox_DisplayError_Critical()
     {
         // given
@@ -87,5 +84,4 @@ public class AppMessageBoxTest
             IsAny<MessageBoxOptions>())
         );
     }
-    */
 }
