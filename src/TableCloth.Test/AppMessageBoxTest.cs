@@ -6,7 +6,7 @@ public class AppMessageBoxTest
 {
     private readonly IHost _testHost = TableClothApp.CreateHostBuilder(
         servicesBuilderOverride: services => services
-            .ProvideApplication<Application>()
+            .ProvideApplication()
             .ReplaceWithMock<IMessageBoxService>()
         ).Build();
 
@@ -14,19 +14,19 @@ public class AppMessageBoxTest
     public void AppMessageBox_DisplayInfo()
     {
         // given
-        var appMessageBox = _testHost.Services.GetRequiredService<IAppMessageBox>();
+        var sut = _testHost.Services.GetRequiredService<IAppMessageBox>();
         var message = "Test";
 
         // when
-        appMessageBox.DisplayInfo(message);
+        sut.DisplayInfo(message);
 
         // then
-        var messageBoxServiceMock = _testHost.Services.GetRequiredMock<IMessageBoxService>();
-        messageBoxServiceMock.Verify(x => x.Show(
+        var mock = _testHost.Services.GetRequiredMock<IMessageBoxService>();
+        mock.Verify(x => x.Show(
             IsAny<Window>(),
             message,
             UIStringResources.TitleText_Info,
-            IsAny<MessageBoxButton>(),
+            MessageBoxButton.OK,
             MessageBoxImage.Information,
             MessageBoxResult.OK,
             IsAny<MessageBoxOptions>())

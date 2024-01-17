@@ -2,10 +2,12 @@
 
 internal static class MockingExtensions
 {
-    public static IServiceCollection ProvideApplication<TApplication>(
+    private static readonly Lazy<Application> _appFactory =
+        new Lazy<Application>(() => new Application(), false);
+
+    public static IServiceCollection ProvideApplication(
         this IServiceCollection services)
-        where TApplication : Application, new()
-        => services.AddTransient<TApplication>(_ => new TApplication());
+        => services.AddSingleton(_ => _appFactory.Value);
 
     public static IServiceCollection ReplaceWithMock<TService>(
         this IServiceCollection services,
