@@ -1,8 +1,10 @@
-﻿using TableCloth.ViewModels;
+﻿using System.Threading.Tasks;
+using System.Threading;
+using TableCloth.ViewModels;
 
 namespace TableCloth.Components;
 
 public interface IShortcutCrerator
 {
-    void CreateShortcut(ITableClothViewModel viewModel);
+    Task<string?> CreateShortcutAsync(ITableClothViewModel viewModel, CancellationToken cancellationToken = default);
 }

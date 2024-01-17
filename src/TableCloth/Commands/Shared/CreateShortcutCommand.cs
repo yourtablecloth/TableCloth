@@ -10,7 +10,7 @@ public sealed class CreateShortcutCommand(
     IAppMessageBox appMessageBox) : ViewModelCommandBase<ITableClothViewModel>
 {
 
-    public override void Execute(ITableClothViewModel viewModel)
+    public override async void Execute(ITableClothViewModel viewModel)
     {
         if (viewModel.SelectedServices.Count() < 1)
         {
@@ -21,6 +21,6 @@ public sealed class CreateShortcutCommand(
         if (viewModel.SelectedServices.Count() > 1)
             appMessageBox.DisplayInfo(InfoStrings.Info_WillCreateSingleSiteShortcut);
 
-        shortcutCrerator.CreateShortcut(viewModel);
+        await shortcutCrerator.CreateShortcutAsync(viewModel);
     }
 }

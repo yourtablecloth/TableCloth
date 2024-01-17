@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using TableCloth.Interop.WshRuntimeLibrary;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
@@ -12,17 +13,17 @@ public sealed class ShortcutCrerator(
     ISharedLocations sharedLocations,
     IAppMessageBox appMessageBox) : IShortcutCrerator
 {
-    public void CreateShortcut(ITableClothViewModel viewModel)
+    public async Task<string?> CreateShortcutAsync(ITableClothViewModel viewModel, CancellationToken cancellationToken = default)
     {
         var targetPath = sharedLocations.ExecutableFilePath;
-        var linkName = ConstantStrings.AppNameForWixAndStore;
+        var linkName = CommonStrings.AppName;
 
         var firstSite = viewModel.SelectedServices.FirstOrDefault();
         var iconFilePath = default(string);
 
         if (firstSite != null)
         {
-            linkName = firstSite.Id;
+            linkName = firstSite.DisplayName;
 
             iconFilePath = Path.Combine(
                 sharedLocations.GetImageDirectoryPath(),
@@ -32,30 +33,43 @@ public sealed class ShortcutCrerator(
                 iconFilePath = null;
         }
 
-        var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        var fullPath = Path.Combine(desktopPath, linkName + ".lnk");
+        var shortcutDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        var shortcutFileName = linkName + ".lnk";
+
+        var shortcutFilePath = Path.Combine(shortcutDirectoryPath, shortcutFileName);
+        await File.WriteAllBytesAsync(shortcutFilePath, new byte[0], cancellationToken).ConfigureAwait(false);
 
         try
         {
-            var shell = new WshShell();
-            var shortcut = (WshShortcut)shell.CreateShortcut(fullPath);
-            shortcut.TargetPath = targetPath;
+            // https://stackoverflow.com/questions/13542005/create-shortcut-with-unicode-character
+            // WshRuntimeLibrary의 경우 유니코드 문자열로 바로 가기 아이콘을 만들지 못하는 버그가 있음.
+            var shellType = Type.GetTypeFromProgID("Shell.Application")
+                ?? throw new Exception("Cannot obtain Shell.Application type.");
+
+            dynamic shell = Activator.CreateInstance(shellType)
+                ?? throw new Exception("Cannot create instance of Shell.Application.");
+
+            dynamic folder = shell.NameSpace(shortcutDirectoryPath);
+            dynamic folderItem = folder.Items().Item(shortcutFileName);
+            dynamic shortcut = folderItem.GetLink;
+
+            shortcut.Path = targetPath;
 
             if (iconFilePath != null && File.Exists(iconFilePath))
-                shortcut.IconLocation = iconFilePath;
+                shortcut.SetIconLocation(iconFilePath, 0);
 
             shortcut.Arguments = commandLineComposer.ComposeCommandLineArguments(viewModel, false);
+            shortcut.Description = $"{linkName}";
+            shortcut.WorkingDirectory = Path.GetDirectoryName(targetPath);
             shortcut.Save();
+
+            appMessageBox.DisplayInfo(InfoStrings.Info_ShortcutSuccess);
+            return shortcutFilePath;
         }
         catch (Exception ex)
         {
             appMessageBox.DisplayError(ex, false);
+            return default;
         }
-
-        // Workaround - CJK 문자열을 CreateShortcut 호출 시 지정하지 못하는 문제 우회
-        if (firstSite != null)
-            File.Move(fullPath, Path.Combine(desktopPath, firstSite.DisplayName + ".lnk"));
-
-        appMessageBox.DisplayInfo(InfoStrings.Info_ShortcutSuccess);
     }
 }
