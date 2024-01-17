@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Navigation;
 
 namespace Hostess
 {
@@ -12,11 +15,11 @@ namespace Hostess
     {
         static RichTextBoxHelper()
         {
-            TargetEncoding = Encoding.UTF8;
+            TargetEncoding = new UTF8Encoding(false);
 
             var metadata = new FrameworkPropertyMetadata
             {
-                BindsTwoWayByDefault = true,
+                BindsTwoWayByDefault = false,
                 PropertyChangedCallback = (_d, _e) =>
                 {
                     var richTextBox = (RichTextBox)_d;
@@ -31,6 +34,29 @@ namespace Hostess
 
                     // Set the document
                     richTextBox.Document = doc;
+
+                    // https://www.codeproject.com/Questions/226402/wpf-richtext-box-detect-hyperlink
+                    var pointer = doc.ContentStart;
+
+                    while (pointer != null)
+                    {
+                        if (pointer.GetPointerContext(LogicalDirection.Forward) == TextPointerContext.Text)
+                        {
+                            var textRun = pointer.GetTextInRun(LogicalDirection.Forward);
+                            var matches = Regex.Matches(textRun, @"((https://|http://|ftp://|mailto:)[^\s]+)");
+
+                            foreach (Match match in matches)
+                            {
+                                var start = pointer.GetPositionAtOffset(match.Index);
+                                var end = start.GetPositionAtOffset(match.Length);
+                                var hyperlink = new Hyperlink(start, end);
+                                hyperlink.NavigateUri = new Uri(match.Value);
+                                hyperlink.RequestNavigate += Hyperlink_RequestNavigate;
+                            }
+                        }
+
+                        pointer = pointer.GetNextContextPosition(LogicalDirection.Forward);
+                    }
 
                     // When the document changes update the source
                     range.Changed += (__sender, __e) =>
@@ -50,6 +76,12 @@ namespace Hostess
                 typeof(RichTextBoxHelper), metadata);
         }
 
+        private static void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true, });
+            e.Handled = true;
+        }
+
         public static readonly string DocumentXamlPropertyName = "DocumentXaml";
 
         public static string GetDocumentXaml(DependencyObject obj)
@@ -61,10 +93,5 @@ namespace Hostess
         public static readonly DependencyProperty DocumentXamlProperty;
 
         private static readonly Encoding TargetEncoding;
-
-        private static void TextRange_Changed(object __sender, EventArgs __e)
-        {
-
-        }
     }
 }
