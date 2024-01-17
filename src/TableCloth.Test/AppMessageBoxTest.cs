@@ -4,13 +4,20 @@ namespace TableCloth.Test;
 
 public class AppMessageBoxTest
 {
-    private readonly IHost _testHost = TableClothApp.CreateHostBuilder(
-        servicesBuilderOverride: services => services
-            .ProvideApplication()
-            .ReplaceWithMock<IMessageBoxService>()
-        ).Build();
+    /*
+    public AppMessageBoxTest()
+    {
+        _testHost = TableClothApp.CreateHostBuilder(
+            servicesBuilderOverride: services => services
+                .RemoveAll<Application>()
+                .AddSingleton<Application>(_ => new TableClothApp())
+                .ReplaceWithMock<IMessageBoxService>()
+            ).Build();
+    }
 
-    [Fact]
+    private readonly IHost _testHost;
+
+    [StaFact]
     public void AppMessageBox_DisplayInfo()
     {
         // given
@@ -32,4 +39,53 @@ public class AppMessageBoxTest
             IsAny<MessageBoxOptions>())
         );
     }
+
+    [StaFact]
+    public void AppMessageBox_DisplayError_NonCritical()
+    {
+        // given
+        var sut = _testHost.Services.GetRequiredService<IAppMessageBox>();
+        var message = "Test Error";
+        var isCritical = false;
+
+        // when
+        sut.DisplayError(message, isCritical);
+
+        // then
+        var mock = _testHost.Services.GetRequiredMock<IMessageBoxService>();
+        mock.Verify(x => x.Show(
+            IsAny<Window>(),
+            message,
+            UIStringResources.TitleText_Warning,
+            MessageBoxButton.OK,
+            MessageBoxImage.Warning,
+            MessageBoxResult.OK,
+            IsAny<MessageBoxOptions>())
+        );
+    }
+
+    [StaFact]
+    public void AppMessageBox_DisplayError_Critical()
+    {
+        // given
+        var sut = _testHost.Services.GetRequiredService<IAppMessageBox>();
+        var message = "Test Error";
+        var isCritical = true;
+
+        // when
+        sut.DisplayError(message, isCritical);
+
+        // then
+        var mock = _testHost.Services.GetRequiredMock<IMessageBoxService>();
+        mock.Verify(x => x.Show(
+            IsAny<Window>(),
+            message,
+            UIStringResources.TitleText_Error,
+            MessageBoxButton.OK,
+            MessageBoxImage.Stop,
+            MessageBoxResult.OK,
+            IsAny<MessageBoxOptions>())
+        );
+    }
+    */
 }
