@@ -177,7 +177,7 @@ public partial class App : Application
         InitializeComponent();
     }
 
-    private IHost? _host;
+    private readonly IHost _host;
     private SplashScreen? _splashScreen;
 
     private void Application_Startup(object sender, StartupEventArgs e)

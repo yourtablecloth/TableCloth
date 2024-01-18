@@ -22,13 +22,13 @@ public sealed class MessageBoxService(
         {
             return (MessageBoxResult)applicationService.DispatchInvoke(
                 new Func<Window, string, string, MessageBoxButton, MessageBoxImage, MessageBoxResult, MessageBoxOptions, MessageBoxResult>(MessageBox.Show),
-                new object[] { owner, messageBoxText, caption, button, icon, defaultResult, options });
+                new object[] { owner, messageBoxText, caption, button, icon, defaultResult, options })!;
         }
         else
         {
             return (MessageBoxResult)applicationService.DispatchInvoke(
                 new Func<string, string, MessageBoxButton, MessageBoxImage, MessageBoxResult, MessageBoxOptions, MessageBoxResult>(MessageBox.Show),
-                new object[] { messageBoxText, caption, button, icon, defaultResult, options });
+                new object[] { messageBoxText, caption, button, icon, defaultResult, options })!;
         }
     }
 }

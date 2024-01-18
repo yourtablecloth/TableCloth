@@ -26,7 +26,7 @@ public sealed class AppMessageBox(
                 applicationService.GetActiveWindow(), message, UIStringResources.TitleText_Info,
                 messageBoxButton, MessageBoxImage.Information,
                 MessageBoxResult.OK);
-        }, new object[] { } );
+        }, new object[] { } )!;
     }
 
     /// <summary>
@@ -57,6 +57,6 @@ public sealed class AppMessageBox(
             return messageBoxService.Show(
                 applicationService.GetActiveWindow(), message, title, MessageBoxButton.OK,
                 image, MessageBoxResult.OK);
-        }, new object[] { });
+        }, new object[] { })!;
     }
 }
