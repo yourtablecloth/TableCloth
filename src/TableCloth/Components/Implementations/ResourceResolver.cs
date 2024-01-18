@@ -5,12 +5,11 @@ using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using System.Xml;
-using System.Xml.Serialization;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
@@ -18,6 +17,7 @@ using TableCloth.Resources;
 namespace TableCloth.Components;
 
 public sealed class ResourceResolver(
+    ICatalogDeserializer catalogDeserializer,
     IHttpClientFactory httpClientFactory) : IResourceResolver
 {
     private DateTimeOffset? _catalogLastModified = default;
@@ -44,15 +44,7 @@ public sealed class ResourceResolver(
             _catalogLastModified = httpResponse.Content.Headers.LastModified;
 
             using var catalogStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-            var serializer = new XmlSerializer(typeof(CatalogDocument));
-            var xmlReaderSetting = new XmlReaderSettings()
-            {
-                XmlResolver = null,
-                DtdProcessing = DtdProcessing.Prohibit,
-            };
-
-            using var contentStream = XmlReader.Create(catalogStream, xmlReaderSetting);
-            var document = serializer.Deserialize(contentStream) as CatalogDocument;
+            var document = catalogDeserializer.Deserialize(catalogStream, new UTF8Encoding(false));
 
             if (document == null)
                 throw new Exception(StringResources.Error_CatalogLoadFailure(null));
