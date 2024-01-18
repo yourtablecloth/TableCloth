@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 using TableCloth.Resources;
@@ -19,7 +20,7 @@ namespace TableCloth.Models.Catalog
         public string Id { get; set; } = string.Empty;
 
         /// <summary>
-        /// 사용자에게 표시되는 이름
+        /// 사용자에게 표시되는 이름 - 기본
         /// </summary>
         [XmlAttribute("DisplayName")]
         public string DisplayName { get; set; } = string.Empty;
