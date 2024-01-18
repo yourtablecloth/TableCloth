@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
+using System.Linq;
 using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
@@ -88,7 +89,8 @@ public partial class App : Application
             .AddSingleton<INavigationService, NavigationService>()
             .AddSingleton<IShortcutCrerator, ShortcutCrerator>()
             .AddSingleton<ICommandLineArguments, CommandLineArguments>()
-            .AddSingleton<IApplicationService, ApplicationService>();
+            .AddSingleton<IApplicationService, ApplicationService>()
+            .AddSingleton<ICatalogDeserializer, CatalogDeserializer>();
 
         // Shared Commands
         services
@@ -168,6 +170,10 @@ public partial class App : Application
 
     public App()
     {
+        var args = Environment.GetCommandLineArgs().Skip(1).ToArray();
+        _host = CreateHostBuilder(args).Build();
+        Current.InitServiceProvider(_host.Services);
+
         InitializeComponent();
     }
 
@@ -176,9 +182,6 @@ public partial class App : Application
 
     private void Application_Startup(object sender, StartupEventArgs e)
     {
-        _host = CreateHostBuilder(e.Args).Build();
-        Current.InitServiceProvider(_host.Services);
-
         var appUserInterface = _host.Services.GetRequiredService<IAppUserInterface>();
         _splashScreen = appUserInterface.CreateSplashScreen();
         _splashScreen.ViewModel.InitializeDone += ViewModel_InitializeDone;
