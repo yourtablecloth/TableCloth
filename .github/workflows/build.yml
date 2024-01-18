@@ -29,19 +29,19 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         submodules: true
 
     # Install the .NET Core workload
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
 
     # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v1.1
 
     # Setup NuGet CLI
     - name: Setup NuGet CLI
@@ -122,7 +122,7 @@ jobs:
 
     # Upload the MSI package: https://github.com/actions/upload-artifact
     - name: Upload build artifacts (MSI)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: MSI Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
         path: TableCloth.msi
@@ -131,7 +131,7 @@ jobs:
 
     # Upload the AppX packages: https://github.com/actions/upload-artifact
     - name: Upload build artifacts (AppX Packages)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: AppX Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
         path: ${{ env.Wap_Project_Directory }}\AppPackages
@@ -140,7 +140,7 @@ jobs:
 
     # Upload the zip package: https://github.com/actions/upload-artifact
     - name: Upload build artifacts (Loom CLI)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Loom CLI (${{ matrix.platform }}, ${{ matrix.configuration }})
         path: src\Loom\bin\${{ env.Platform }}\${{ matrix.configuration }}\net8.0\win-${{ env.Platform }}\publish\Loom.exe
