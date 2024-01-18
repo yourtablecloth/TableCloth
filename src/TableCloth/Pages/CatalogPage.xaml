@@ -201,7 +201,7 @@
                 </Button.CommandParameter>
             </Button>
         </UniformGrid>
-        <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding SearchKeyword}" Width="Auto" Margin="0 8 8 8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" d:Visibility="Visible">
+        <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}" Width="Auto" Margin="0 8 8 8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" d:Visibility="Visible">
             <TextBox.Style>
                 <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                     <Style.Resources>
