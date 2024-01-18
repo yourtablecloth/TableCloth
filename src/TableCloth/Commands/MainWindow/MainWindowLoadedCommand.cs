@@ -11,10 +11,9 @@ using TableCloth.ViewModels;
 namespace TableCloth.Commands.MainWindow;
 
 public sealed class MainWindowLoadedCommand(
-    Application application,
+    IApplicationService applicationService,
     IResourceCacheManager resourceCacheManager,
     IAppUserInterface appUserInterface,
-    IVisualThemeManager visualThemeManager,
     IPreferencesManager preferencesManager,
     IX509CertPairScanner certPairScanner,
     ISharedLocations sharedLocations,
@@ -26,7 +25,7 @@ public sealed class MainWindowLoadedCommand(
 {
     public override void Execute(MainWindowViewModel viewModel)
     {
-        visualThemeManager.ApplyAutoThemeChange(application.MainWindow);
+        applicationService.ApplyCosmeticChangeToMainWindow();
 
         var currentConfig = preferencesManager.LoadPreferences()
             ?? preferencesManager.GetDefaultPreferences();

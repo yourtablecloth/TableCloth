@@ -220,6 +220,8 @@
     <Compile Include="Commands\PrecautionsWindow\PrecautionsWindowLoadedCommand.cs" />
     <Compile Include="Commands\ShowDebugInfoCommand.cs" />
     <Compile Include="Commands\ViewModelCommandBase.cs" />
+    <Compile Include="Components\IApplicationService.cs" />
+    <Compile Include="Components\Implementations\ApplicationService.cs" />
     <Compile Include="Components\Implementations\AppStartup.cs" />
     <Compile Include="Components\Implementations\AppUserInterface.cs" />
     <Compile Include="Components\Implementations\CommandLineArguments.cs" />

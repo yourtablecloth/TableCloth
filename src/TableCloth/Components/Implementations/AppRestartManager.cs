@@ -5,7 +5,7 @@ using TableCloth.Resources;
 namespace TableCloth.Components;
 
 public sealed class AppRestartManager(
-    Application application,
+    IApplicationService applicationService,
     IAppMessageBox appMessageBox,
     ISharedLocations sharedLocations) : IAppRestartManager
 {
@@ -17,7 +17,7 @@ public sealed class AppRestartManager(
     public void RestartNow()
     {
         Process.Start(sharedLocations.ExecutableFilePath, Helpers.GetCommandLineArguments());
-        application.Shutdown(CodeResources.ExitCode_Succeed);
+        applicationService.Shutdown(CodeResources.ExitCode_Succeed);
     }
 
     public void ReserveRestart()

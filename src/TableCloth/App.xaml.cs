@@ -87,7 +87,8 @@ public partial class App : Application
             .AddSingleton<IMessageBoxService, MessageBoxService>()
             .AddSingleton<INavigationService, NavigationService>()
             .AddSingleton<IShortcutCrerator, ShortcutCrerator>()
-            .AddSingleton<ICommandLineArguments, CommandLineArguments>();
+            .AddSingleton<ICommandLineArguments, CommandLineArguments>()
+            .AddSingleton<IApplicationService, ApplicationService>();
 
         // Shared Commands
         services

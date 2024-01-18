@@ -8,16 +8,14 @@ using TableCloth.ViewModels;
 namespace TableCloth.Commands.MainWindowV2;
 
 public sealed class MainWindowV2LoadedCommand(
-    Application application,
+    IApplicationService applicationService,
     IResourceCacheManager resourceCacheManager,
     INavigationService navigationService,
-    IVisualThemeManager visualThemeManager,
     ICommandLineArguments commandLineArguments) : ViewModelCommandBase<MainWindowV2ViewModel>
 {
     public override void Execute(MainWindowV2ViewModel viewModel)
     {
-        var mainWindow = application.MainWindow;
-        visualThemeManager.ApplyAutoThemeChange(mainWindow);
+        applicationService.ApplyCosmeticChangeToMainWindow();
 
         var parsedArg = commandLineArguments.Current;
         var services = resourceCacheManager.CatalogDocument.Services;

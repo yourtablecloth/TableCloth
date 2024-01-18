@@ -2,12 +2,13 @@ using TableCloth.Components;
 
 namespace TableCloth.Test;
 
-public class AppMessageBoxTest : ApplicationContextTest
+public class AppMessageBoxTest
 {
     public AppMessageBoxTest()
     {
         _testHost = TableClothApp.CreateHostBuilder(
             servicesBuilderOverride: services => services
+                .ProvideMockupApplication()
                 .ReplaceWithMock<IMessageBoxService>()
             ).Build();
     }

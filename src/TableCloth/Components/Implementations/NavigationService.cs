@@ -7,7 +7,7 @@ using TableCloth.Models.Catalog;
 namespace TableCloth.Components;
 
 public sealed class NavigationService(
-    Application application,
+    IApplicationService applicationService,
     IAppUserInterface appUserInterface) : INavigationService
 {
     public string GetPageFrameControlName()
@@ -16,8 +16,8 @@ public sealed class NavigationService(
     public Frame FindNavigationFrameFromMainWindow()
     {
         var frameName = GetPageFrameControlName();
-        var mainWindow = application.MainWindow;
-        var pageFrame = mainWindow.FindName(frameName) as Frame;
+        var mainWindow = applicationService.GetMainWindow();
+        var pageFrame = mainWindow!.FindName(frameName) as Frame;
 
         if (pageFrame == null)
             throw new Exception($"There is no frame control named as '{pageFrame}'.");

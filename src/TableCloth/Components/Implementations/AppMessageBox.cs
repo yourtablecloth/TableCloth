@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Threading;
 using TableCloth.Resources;
 
 namespace TableCloth.Components;
@@ -10,17 +9,9 @@ namespace TableCloth.Components;
 /// Windows Presentation Foundation의 메시지 상자 표시 기능을 구현합니다.
 /// </summary>
 public sealed class AppMessageBox(
-    Application application,
+    IApplicationService applicationService,
     IMessageBoxService messageBoxService) : IAppMessageBox
 {
-    // https://stackoverflow.com/questions/2038879/refer-to-active-window-in-wpf
-    private Window? GetActiveWindow()
-    {
-        return application.Dispatcher.Invoke(() =>
-            application.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive)
-        );
-    }
-
     /// <summary>
     /// 정보를 안내하는 메시지 상자를 띄웁니다.
     /// </summary>
@@ -29,13 +20,13 @@ public sealed class AppMessageBox(
     /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
     public MessageBoxResult DisplayInfo(string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
     {
-        return application.Dispatcher.Invoke(() =>
+        return (MessageBoxResult)applicationService.DispatchInvoke(() =>
         {
             return messageBoxService.Show(
-                GetActiveWindow(), message, UIStringResources.TitleText_Info,
+                applicationService.GetActiveWindow(), message, UIStringResources.TitleText_Info,
                 messageBoxButton, MessageBoxImage.Information,
                 MessageBoxResult.OK);
-        });
+        }, new object[] { } );
     }
 
     /// <summary>
@@ -61,11 +52,11 @@ public sealed class AppMessageBox(
         var title = isCritical ? UIStringResources.TitleText_Error : UIStringResources.TitleText_Warning;
         var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 
-        return application.Dispatcher.Invoke(() =>
+        return (MessageBoxResult)applicationService.DispatchInvoke(() =>
         {
             return messageBoxService.Show(
-                GetActiveWindow(), message, title, MessageBoxButton.OK,
+                applicationService.GetActiveWindow(), message, title, MessageBoxButton.OK,
                 image, MessageBoxResult.OK);
-        });
+        }, new object[] { });
     }
 }

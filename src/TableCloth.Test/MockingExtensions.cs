@@ -1,10 +1,23 @@
-﻿namespace TableCloth.Test;
+﻿using TableCloth.Components;
+
+namespace TableCloth.Test;
 
 internal static class MockingExtensions
 {
+    public static IServiceCollection ProvideMockupApplication(
+        this IServiceCollection services)
+    {
+        return services.ReplaceWithMock<IApplicationService>(mock =>
+        {
+            mock
+                .Setup(x => x.DispatchInvoke(IsAny<Delegate>(), IsAny<object?[]>()))
+                .Returns<Delegate, object[]>((_delegate, _args) => _delegate.DynamicInvoke(_args));
+        });
+    }
+
     public static IServiceCollection ReplaceWithMock<TService>(
         this IServiceCollection services,
-        Action<Mock>? mockSetup = default)
+        Action<Mock<TService>>? mockSetup = default)
         where TService : class
     {
         services.RemoveAll<Mock<TService>>();

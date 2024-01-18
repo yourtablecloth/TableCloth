@@ -10,14 +10,14 @@ namespace Hostess.Components.Implementations
     public sealed class AppMessageBox : IAppMessageBox
     {
         public AppMessageBox(
-            Application application,
+            IApplicationService applicationService,
             IMessageBoxService messageBoxService)
         {
-            _application = application;
+            _applicationService = applicationService;
             _messageBoxService = messageBoxService;
         }
 
-        private readonly Application _application;
+        private readonly IApplicationService _applicationService;
         private readonly IMessageBoxService _messageBoxService;
 
         /// <summary>
@@ -28,10 +28,13 @@ namespace Hostess.Components.Implementations
         /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
         public MessageBoxResult DisplayInfo(string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK)
         {
-            return _messageBoxService.Show(
-                _application.MainWindow, message, UIStringResources.TitleText_Info,
-                messageBoxButton, MessageBoxImage.Information,
-                MessageBoxResult.OK);
+            return (MessageBoxResult)_applicationService.DispatchInvoke(new Func<MessageBoxResult>(() =>
+            {
+                return _messageBoxService.Show(
+                    _applicationService.GetMainWindow(), message, UIStringResources.TitleText_Info,
+                    messageBoxButton, MessageBoxImage.Information,
+                    MessageBoxResult.OK);
+            }), new object[] { });
         }
 
         /// <summary>
@@ -58,16 +61,22 @@ namespace Hostess.Components.Implementations
             var title = isCritical ? UIStringResources.TitleText_Error : UIStringResources.TitleText_Warning;
             var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 
-            return _messageBoxService.Show(
-                _application.MainWindow, message, title, MessageBoxButton.OK,
-                image, MessageBoxResult.OK);
+            return (MessageBoxResult)_applicationService.DispatchInvoke(new Func<MessageBoxResult>(() =>
+            {
+                return _messageBoxService.Show(
+                    _applicationService.GetMainWindow(), message, title, MessageBoxButton.OK,
+                    image, MessageBoxResult.OK);
+            }), new object[] {});
         }
 
         public MessageBoxResult DisplayQuestion(string message, MessageBoxButton messageBoxButton = MessageBoxButton.YesNo, MessageBoxResult defaultAnswer = MessageBoxResult.Yes)
         {
-            return _messageBoxService.Show(
-                _application.MainWindow, message, UIStringResources.TitleText_Question,
-                messageBoxButton, MessageBoxImage.Question, defaultAnswer);
+            return (MessageBoxResult)_applicationService.DispatchInvoke(new Func<MessageBoxResult>(() =>
+            {
+                return _messageBoxService.Show(
+                    _applicationService.GetMainWindow(), message, UIStringResources.TitleText_Question,
+                    messageBoxButton, MessageBoxImage.Question, defaultAnswer);
+            }), new object[] { });
         }
     }
 }

@@ -10,17 +10,16 @@ using TableCloth.ViewModels;
 namespace TableCloth.Commands.SplashScreen;
 
 public sealed class SplashScreenLoadedCommand(
-    Application application,
+    IApplicationService applicationService,
     IAppStartup appStartup,
     IAppMessageBox appMessageBox,
     IPreferencesManager preferencesManager,
     IResourceCacheManager resourceCacheManager,
-    IVisualThemeManager visualThemeManager,
     ICommandLineArguments commandLineArguments) : ViewModelCommandBase<SplashScreenViewModel>
 {
     public override async void Execute(SplashScreenViewModel viewModel)
     {
-        visualThemeManager.ApplyAutoThemeChange(application.MainWindow);
+        applicationService.ApplyCosmeticChangeToMainWindow();
 
         try
         {
@@ -73,7 +72,7 @@ public sealed class SplashScreenLoadedCommand(
                     if (Helpers.IsDevelopmentBuild)
                         throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
                     else
-                        application.Shutdown(CodeResources.ExitCode_SystemError);
+                        applicationService.Shutdown(CodeResources.ExitCode_SystemError);
                 }
             }
 
@@ -94,7 +93,7 @@ public sealed class SplashScreenLoadedCommand(
                     if (Helpers.IsDevelopmentBuild)
                         throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
                     else
-                        application.Shutdown(CodeResources.ExitCode_SystemError);
+                        applicationService.Shutdown(CodeResources.ExitCode_SystemError);
                 }
             }
 
