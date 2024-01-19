@@ -42,3 +42,6 @@ foreach ($EachKey in $KeyTests) {
         }
     }
 }
+
+Write-Host "Please copy the part of the content above that contains errors and report it to the contributor."
+Pause
