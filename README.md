@@ -5,7 +5,7 @@
 * [한국어 소개](README.md)
 * [영어 (English) 소개](README.EN.md)
 
-[![식탁보 프로젝트 빌드 상황](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/publish-msi.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
+[![식탁보 프로젝트 빌드 상황](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/build.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
 [![식탁보 최신 버전 다운로드](https://img.shields.io/github/v/release/yourtablecloth/tablecloth)](https://github.com/yourtablecloth/TableCloth/releases)
 [![Microsoft Store](https://img.shields.io/badge/microsoft_store-v1.8.0.0-blue)](https://www.microsoft.com/store/productid/9N46Z3N6T2VR)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
