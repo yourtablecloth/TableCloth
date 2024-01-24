@@ -23,7 +23,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\EnumDisplayOrderAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\IEModeListDocument.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\IEModeSite.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\PackageCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CommandLineArgumentModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\PreferenceSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\TableClothConfiguration.cs" />
