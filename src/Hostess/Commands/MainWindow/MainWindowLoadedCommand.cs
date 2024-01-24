@@ -31,7 +31,7 @@ namespace Hostess.Commands.MainWindow
         private readonly ICommandLineArguments _commandLineArguments;
         private readonly IStepsComposer _stepsComposer;
 
-        public override void Execute(MainWindowViewModel viewModel)
+        public override async void Execute(MainWindowViewModel viewModel)
         {
             _visualThemeManager.ApplyAutoThemeChange(_application.MainWindow);
 
@@ -40,7 +40,8 @@ namespace Hostess.Commands.MainWindow
             var targets = parsedArgs.SelectedServices;
 
             viewModel.ShowDryRunNotification = parsedArgs.DryRun;
-            viewModel.NotifyWindowLoaded(this, EventArgs.Empty);
+            
+            await viewModel.NotifyWindowLoadedAsync(this, EventArgs.Empty);
 
             var packages = _stepsComposer.ComposeSteps();
             viewModel.InstallItems = new ObservableCollection<InstallItemViewModel>(packages);

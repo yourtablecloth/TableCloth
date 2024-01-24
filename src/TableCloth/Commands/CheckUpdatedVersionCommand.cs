@@ -11,7 +11,7 @@ public sealed class CheckUpdatedVersionCommand(
 {
     public override async void Execute(object? parameter)
     {
-        var targetUrl = await appUpdateManager.QueryNewVersionDownloadUrl();
+        var targetUrl = await appUpdateManager.QueryNewVersionDownloadUrlAsync();
 
         if (targetUrl.ThrownException != null)
         {

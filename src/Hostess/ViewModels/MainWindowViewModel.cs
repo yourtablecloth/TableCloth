@@ -3,6 +3,8 @@ using Hostess.Commands.MainWindow;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth;
 using TableCloth.ViewModels;
 
@@ -15,21 +17,27 @@ namespace Hostess.ViewModels
         protected MainWindowViewModel() { }
 
         public MainWindowViewModel(
+            ShowErrorMessageCommand showErrorMessageCommand,
             MainWindowLoadedCommand mainWindowLoadedCommand,
             MainWindowInstallPackagesCommand mainWindowInstallPackagesCommand,
             AboutThisAppCommand aboutThisAppCommand,
             ShowDebugInfoCommand showDebugInfoCommand)
         {
+            _showErrorMessageCommand = showErrorMessageCommand;
             _mainWindowLoadedCommand = mainWindowLoadedCommand;
             _mainWindowInstallPackagesCommand = mainWindowInstallPackagesCommand;
             _aboutThisAppCommand = aboutThisAppCommand;
             _showDebugInfoCommand = showDebugInfoCommand;
         }
 
+        private readonly ShowErrorMessageCommand _showErrorMessageCommand;
         private readonly MainWindowLoadedCommand _mainWindowLoadedCommand;
         private readonly MainWindowInstallPackagesCommand _mainWindowInstallPackagesCommand;
         private readonly AboutThisAppCommand _aboutThisAppCommand;
         private readonly ShowDebugInfoCommand _showDebugInfoCommand;
+
+        public ShowErrorMessageCommand ShowErrorMessageCommand
+            => _showErrorMessageCommand;
 
         public MainWindowLoadedCommand MainWindowLoadedCommand
             => _mainWindowLoadedCommand;
@@ -49,11 +57,11 @@ namespace Hostess.ViewModels
         public event EventHandler WindowLoaded;
         public event EventHandler CloseRequested;
 
-        public void NotifyWindowLoaded(object sender, EventArgs e)
-            => WindowLoaded?.Invoke(sender, e);
+        public async Task NotifyWindowLoadedAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
+            => await TaskFactory.StartNew(() => WindowLoaded?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-        public void RequestClose(object sender)
-            => CloseRequested?.Invoke(sender, EventArgs.Empty);
+        public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
+            => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
         private bool _showDryRunNotification;
         private IList<InstallItemViewModel> _installItems

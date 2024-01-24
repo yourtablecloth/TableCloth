@@ -10,7 +10,7 @@ public sealed class InputPasswordWindowConfirmCommand(
     IX509CertPairScanner certPairScanner,
     IAppMessageBox appMessageBox) : ViewModelCommandBase<InputPasswordWindowViewModel>
 {
-    public override void Execute(InputPasswordWindowViewModel viewModel)
+    public override async void Execute(InputPasswordWindowViewModel viewModel)
     {
         try
         {
@@ -22,7 +22,7 @@ public sealed class InputPasswordWindowConfirmCommand(
             if (certPair != null)
                 viewModel.ValidatedCertPair = certPair;
 
-            viewModel.RequestClose(this, new DialogRequestEventArgs(true));
+            await viewModel.RequestCloseAsync(this, new DialogRequestEventArgs(true));
         }
         catch (Exception ex)
         {

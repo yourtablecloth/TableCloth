@@ -60,7 +60,7 @@ namespace Hostess.Components.Implementations
             _disposed = true;
         }
 
-        public async Task<ApplicationStartupResultModel> HasRequirementsMetAsync(IList<string> warnings)
+        public async Task<ApplicationStartupResultModel> HasRequirementsMetAsync(IList<string> warnings, CancellationToken cancellationToken = default)
         {
             var result = default(ApplicationStartupResultModel);
 
@@ -91,12 +91,12 @@ namespace Hostess.Components.Implementations
                 {
                     try
                     {
-                        var document = await _resourceCacheManager.LoadCatalogDocumentAsync() ??
+                        var document = await _resourceCacheManager.LoadCatalogDocumentAsync(cancellationToken) ??
                             throw new XmlException(ErrorStrings.Error_CatalogDeserilizationFailure);
                     }
                     catch (Exception ex)
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(1.5d * attemptCount)).ConfigureAwait(false);
+                        await Task.Delay(TimeSpan.FromSeconds(1.5d * attemptCount), cancellationToken).ConfigureAwait(false);
 
                         if (attemptCount == retryCount)
                         {

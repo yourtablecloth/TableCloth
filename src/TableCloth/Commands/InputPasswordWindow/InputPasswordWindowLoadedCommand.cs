@@ -5,6 +5,6 @@ namespace TableCloth.Commands.InputPasswordWindow;
 
 public sealed class InputPasswordWindowLoadedCommand : ViewModelCommandBase<InputPasswordWindowViewModel>
 {
-    public override void Execute(InputPasswordWindowViewModel viewModel)
-        => viewModel.NotifyViewLoaded(this, EventArgs.Empty);
+    public override async void Execute(InputPasswordWindowViewModel viewModel)
+        => await viewModel.NotifyViewLoadedAsync(this, EventArgs.Empty);
 }

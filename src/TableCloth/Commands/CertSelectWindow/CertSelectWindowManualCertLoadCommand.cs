@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Components;
 using TableCloth.Events;
 using TableCloth.Resources;
@@ -14,7 +16,7 @@ public sealed class CertSelectWindowManualCertLoadCommand(
     IAppUserInterface appUserInterface,
     IX509CertPairScanner certPairScanner) : ViewModelCommandBase<CertSelectWindowViewModel>
 {
-    public override void Execute(CertSelectWindowViewModel viewModel)
+    public override async void Execute(CertSelectWindowViewModel viewModel)
     {
         var ofd = new OpenFileDialog()
         {
@@ -52,13 +54,13 @@ public sealed class CertSelectWindowManualCertLoadCommand(
         if (response.HasValue && response.Value)
         {
             if (ofd.FilterIndex == 1)
-                LoadCertPair(viewModel, ofd.FileNames.FirstOrDefault());
+                await LoadCertPairAsync(viewModel, ofd.FileNames.FirstOrDefault());
             else if (ofd.FilterIndex == 2)
-                LoadPfxCert(viewModel, ofd.FileNames.FirstOrDefault());
+                await LoadPfxCertAsync(viewModel, ofd.FileNames.FirstOrDefault());
         }
     }
 
-    private void LoadCertPair(CertSelectWindowViewModel viewModel, string? firstFilePath)
+    private async Task LoadCertPairAsync(CertSelectWindowViewModel viewModel, string? firstFilePath, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(firstFilePath) || !File.Exists(firstFilePath))
             return;
@@ -72,10 +74,10 @@ public sealed class CertSelectWindowManualCertLoadCommand(
             return;
 
         viewModel.SelectedCertPair = certPairScanner.CreateX509CertPair(signCertDerPath, signPriKeyPath);
-        viewModel.RequestClose(this, new DialogRequestEventArgs(viewModel.SelectedCertPair != null));
+        await viewModel.RequestCloseAsync(this, new DialogRequestEventArgs(viewModel.SelectedCertPair != null), cancellationToken).ConfigureAwait(false);
     }
 
-    private void LoadPfxCert(CertSelectWindowViewModel viewModel, string? pfxFilePath)
+    private async Task LoadPfxCertAsync(CertSelectWindowViewModel viewModel, string? pfxFilePath, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(pfxFilePath) || !File.Exists(pfxFilePath))
             return;
@@ -90,6 +92,6 @@ public sealed class CertSelectWindowManualCertLoadCommand(
             return;
 
         viewModel.SelectedCertPair = inputWindowViewModel.ValidatedCertPair;
-        viewModel.RequestClose(this, new DialogRequestEventArgs(viewModel.SelectedCertPair != null));
+        await viewModel.RequestCloseAsync(this, new DialogRequestEventArgs(viewModel.SelectedCertPair != null), cancellationToken).ConfigureAwait(false);
     }
 }

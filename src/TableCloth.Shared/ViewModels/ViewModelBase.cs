@@ -1,11 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace TableCloth.ViewModels
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
+        private readonly TaskFactory _taskFactory =
+            new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext());
+
+        protected TaskFactory TaskFactory => _taskFactory;
+
         public event PropertyChangedEventHandler
 #if !NETFX
             ?

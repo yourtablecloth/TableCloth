@@ -1,5 +1,7 @@
 ﻿using Hostess.Commands.PrecautionsWindow;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Events;
 using TableCloth.ViewModels;
 
@@ -30,8 +32,8 @@ namespace Hostess.ViewModels
 
         public event EventHandler<DialogRequestEventArgs> CloseRequested;
 
-        public void RequestClose(object sender, bool? dialogResult)
-            => CloseRequested?.Invoke(sender, new DialogRequestEventArgs(dialogResult));
+        public async Task RequestCloseAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
+            => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
         private string _cautionContent;
 

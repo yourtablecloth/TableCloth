@@ -1,6 +1,8 @@
 ﻿using Hostess.Commands;
 using Hostess.Commands.AboutWindow;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Events;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
@@ -25,8 +27,8 @@ namespace Hostess.ViewModels
 
         public event EventHandler<DialogRequestEventArgs> CloseRequested;
 
-        public void RequestClose(object sender, bool? dialogResult)
-            => CloseRequested?.Invoke(sender, new DialogRequestEventArgs(dialogResult));
+        public async Task RequestCloseAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
+            => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
         private readonly AboutWindowLoadedCommand _aboutWindowLoadedCommand;
         private readonly AboutWindowCloseCommand _aboutWindowCloseCommand;

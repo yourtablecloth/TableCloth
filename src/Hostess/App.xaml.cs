@@ -93,7 +93,16 @@ namespace Hostess
         private void ConfigureServices(IServiceCollection services)
         {
             // Add HTTP Service
-            services.AddHttpClient(nameof(Hostess), c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
+            services.AddHttpClient(
+                nameof(ConstantStrings.UserAgentText),
+                c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
+            services.AddHttpClient(
+                nameof(ConstantStrings.OldUserAgentText),
+                c =>
+                {
+                    c.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml");
+                    c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.OldUserAgentText);
+                });
 
             // Components
             services
@@ -135,6 +144,10 @@ namespace Hostess
                 .AddWindow<MainWindow, MainWindowViewModel>()
                 .AddSingleton<MainWindowLoadedCommand>()
                 .AddSingleton<MainWindowInstallPackagesCommand>();
+
+            // InstallItem
+            services
+                .AddSingleton<ShowErrorMessageCommand>();
 
             // App
             services.AddTransient(_ => Current);

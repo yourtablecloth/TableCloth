@@ -17,7 +17,7 @@ public sealed class DetailPageLoadedCommand(
     IConfigurationComposer configurationComposer,
     ISandboxLauncher sandboxLauncher) : ViewModelCommandBase<DetailPageViewModel>
 {
-    public override void Execute(DetailPageViewModel viewModel)
+    public override async void Execute(DetailPageViewModel viewModel)
     {
         if (viewModel.SelectedService == null)
             return;
@@ -27,7 +27,7 @@ public sealed class DetailPageLoadedCommand(
         var selectedService = services?.Where(x => string.Equals(x.Id, selectedServiceId, StringComparison.Ordinal)).FirstOrDefault();
         viewModel.SelectedService = selectedService;
 
-        var currentConfig = preferencesManager.LoadPreferences();
+        var currentConfig = await preferencesManager.LoadPreferencesAsync();
 
         if (currentConfig == null)
             currentConfig = preferencesManager.GetDefaultPreferences();
@@ -72,16 +72,16 @@ public sealed class DetailPageLoadedCommand(
             viewModel.CommandLineArgumentModel.SelectedServices.Count() > 0)
         {
             var config = configurationComposer.GetConfigurationFromArgumentModel(viewModel.CommandLineArgumentModel);
-            sandboxLauncher.RunSandbox(config);
+            await sandboxLauncher.RunSandboxAsync(config);
         }
     }
 
-    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (sender is not DetailPageViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));
 
-        var currentConfig = preferencesManager.LoadPreferences();
+        var currentConfig = await preferencesManager.LoadPreferencesAsync();
 
         if (currentConfig == null)
             currentConfig = preferencesManager.GetDefaultPreferences();
@@ -93,7 +93,7 @@ public sealed class DetailPageLoadedCommand(
                 if (appRestartManager.AskRestart())
                 {
                     appRestartManager.ReserveRestart();
-                    viewModel.RequestClose(sender, e);
+                    await viewModel.RequestCloseAsync(sender, e);
                 }
                 break;
 
@@ -102,7 +102,7 @@ public sealed class DetailPageLoadedCommand(
                 if (appRestartManager.AskRestart())
                 {
                     appRestartManager.ReserveRestart();
-                    viewModel.RequestClose(sender, e);
+                    await viewModel.RequestCloseAsync(sender, e);
                 }
                 break;
 
@@ -146,6 +146,6 @@ public sealed class DetailPageLoadedCommand(
                 return;
         }
 
-        preferencesManager.SavePreferences(currentConfig);
+        await preferencesManager.SavePreferencesAsync(currentConfig);
     }
 }

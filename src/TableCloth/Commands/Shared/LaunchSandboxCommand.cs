@@ -10,6 +10,6 @@ public sealed class LaunchSandboxCommand(
     protected override bool EvaluateCanExecute()
         => !Helpers.GetSandboxRunningState();
 
-    public override void Execute(ITableClothViewModel viewModel)
-        => sandboxLauncher.RunSandbox(configurationComposer.GetConfigurationFromViewModel(viewModel));
+    public override async void Execute(ITableClothViewModel viewModel)
+        => await sandboxLauncher.RunSandboxAsync(configurationComposer.GetConfigurationFromViewModel(viewModel));
 }

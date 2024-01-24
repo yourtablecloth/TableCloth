@@ -211,6 +211,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Commands\AboutThisAppCommand.cs" />
+    <Compile Include="Commands\MainWindow\ShowErrorMessageCommand.cs" />
     <Compile Include="Commands\MainWindow\MainWindowInstallPackagesCommand.cs" />
     <Compile Include="Commands\MainWindow\MainWindowLoadedCommand.cs" />
     <Compile Include="Commands\OpenAppHomepageCommand.cs" />

@@ -28,7 +28,7 @@ public sealed class ResourceCacheManager(
         return _catalogDocument = doc.Result;
     }
 
-    public async Task LoadSiteImages(CancellationToken cancellationToken = default)
+    public async Task LoadSiteImagesAsync(CancellationToken cancellationToken = default)
     {
         var services = CatalogDocument.Services;
         var imageDirectoryPath = sharedLocations.GetImageDirectoryPath();

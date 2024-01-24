@@ -51,7 +51,8 @@
                         <TextBlock Text="{Binding Path='PackageName'}" Margin="0 0 5 0" />
                         <TextBlock Text="{Binding Path='StatusMessage'}" Margin="0 0 5 0" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" />
                         <TextBlock Margin="0 0 5 0" Visibility="{Binding Path='ShowErrorMessageLink', Converter={StaticResource booleanToVisibilityConverter}}">
-                            <Hyperlink Command="{Binding Path='ShowErrorMessage'}" CommandParameter="{Binding Path='ErrorMessage'}">
+                            <!-- To Do: Command Binding Failed -->
+                            <Hyperlink Command="{Binding Path='ShowErrorMessageCommand', RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" CommandParameter="{Binding Path='ErrorMessage'}">
                                 <TextBlock Text="{x:Static res:UIStringResources.Hostess_ShowDetailError}" />
                             </Hyperlink>
                         </TextBlock>

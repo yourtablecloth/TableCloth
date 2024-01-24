@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
@@ -20,7 +22,7 @@ public sealed class SandboxLauncher(
 {
     private readonly ILogger _logger = logger;
 
-    public void RunSandbox(TableClothConfiguration config)
+    public async Task RunSandboxAsync(TableClothConfiguration config, CancellationToken cancellationToken = default)
     {
         var comSpecPath = Helpers.GetDefaultCommandLineInterpreterPath();
 
@@ -64,7 +66,9 @@ public sealed class SandboxLauncher(
 
         var tempPath = sharedLocations.GetTempPath();
         var excludedFolderList = new List<SandboxMappedFolder>();
-        var wsbFilePath = sandboxBuilder.GenerateSandboxConfiguration(tempPath, config, excludedFolderList);
+        var wsbFilePath = await sandboxBuilder.GenerateSandboxConfigurationAsync(
+            tempPath, config, excludedFolderList, cancellationToken)
+            .ConfigureAwait(false);
 
         if (excludedFolderList.Any())
             appMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);

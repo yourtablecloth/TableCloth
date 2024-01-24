@@ -3,6 +3,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Models.Configuration;
 
 namespace TableCloth.Components;
@@ -13,7 +15,7 @@ public sealed class PreferencesManager(
 {
     private readonly ILogger _logger = logger;
 
-    public PreferenceSettings? LoadPreferences()
+    public async Task<PreferenceSettings?> LoadPreferencesAsync(CancellationToken cancellationToken = default)
     {
         var defaultSettings = GetDefaultPreferences();
         var prefFilePath = sharedLocations.PreferencesFilePath;
@@ -25,9 +27,11 @@ public sealed class PreferencesManager(
 
         try
         {
-            settings = JsonSerializer.Deserialize<PreferenceSettings>(
-                File.ReadAllText(prefFilePath),
-                new JsonSerializerOptions() { AllowTrailingCommas = true, });
+            using var stream = File.OpenRead(prefFilePath);
+            settings = await JsonSerializer.DeserializeAsync<PreferenceSettings>(
+                stream,
+                new JsonSerializerOptions() { AllowTrailingCommas = true, },
+                cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -41,7 +45,7 @@ public sealed class PreferencesManager(
     public PreferenceSettings GetDefaultPreferences()
         => new PreferenceSettings();
 
-    public void SavePreferences(PreferenceSettings preferences)
+    public async Task SavePreferencesAsync(PreferenceSettings preferences, CancellationToken cancellationToken = default)
     {
         var defaultPreferences = GetDefaultPreferences();
 
@@ -49,7 +53,10 @@ public sealed class PreferencesManager(
             preferences = defaultPreferences;
 
         var prefFilePath = sharedLocations.PreferencesFilePath;
-        var json = JsonSerializer.Serialize(preferences, new JsonSerializerOptions() { AllowTrailingCommas = true, WriteIndented = true, });
-        File.WriteAllText(prefFilePath, json, new UTF8Encoding(false));
+
+        using var stream = File.OpenWrite(prefFilePath);
+        await JsonSerializer.SerializeAsync(stream, preferences,
+            new JsonSerializerOptions() { AllowTrailingCommas = true, WriteIndented = true, },
+            cancellationToken);
     }
 }

@@ -153,6 +153,10 @@
     <value>9N46Z3N6T2VR</value>
     <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
+  <data name="OldUserAgentText" xml:space="preserve">
+    <value>Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
   <data name="QueryString_Timestamp_Key" xml:space="preserve">
     <value>ts</value>
     <comment>(Important) Please do not translate this item without intend.</comment>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Resources;
 
@@ -33,7 +34,8 @@ public sealed class LicenseDescriptor(
         return refList;
     }
 
-    public async Task<string> GetLicenseDescriptions()
+    public async Task<string> GetLicenseDescriptionsAsync(
+        CancellationToken cancellationToken = default)
     {
         var buffer = new StringBuilder();
 
@@ -70,7 +72,7 @@ public sealed class LicenseDescriptor(
                         if (!string.IsNullOrWhiteSpace(ownerPart) &&
                             !string.IsNullOrWhiteSpace(repoNamePart))
                         {
-                            var licenseDescription = await resourceResolver.GetLicenseDescriptionForGitHub(ownerPart, repoNamePart).ConfigureAwait(false);
+                            var licenseDescription = await resourceResolver.GetLicenseDescriptionForGitHubAsync(ownerPart, repoNamePart, cancellationToken).ConfigureAwait(false);
                             if (licenseDescription != null)
                                 buffer.AppendLine($"OSS License: {licenseDescription}");
                         }

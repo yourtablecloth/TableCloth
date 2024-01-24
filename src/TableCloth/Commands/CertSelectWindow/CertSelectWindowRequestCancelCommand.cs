@@ -5,6 +5,6 @@ namespace TableCloth.Commands.CertSelectWindow;
 
 public sealed class CertSelectWindowRequestCancelCommand : ViewModelCommandBase<CertSelectWindowViewModel>
 {
-    public override void Execute(CertSelectWindowViewModel viewModel)
-        => viewModel.RequestClose(this, new DialogRequestEventArgs(false));
+    public override async void Execute(CertSelectWindowViewModel viewModel)
+        => await viewModel.RequestCloseAsync(this, new DialogRequestEventArgs(false));
 }

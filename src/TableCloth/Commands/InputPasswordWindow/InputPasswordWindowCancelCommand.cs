@@ -5,9 +5,9 @@ namespace TableCloth.Commands.InputPasswordWindow;
 
 public sealed class InputPasswordWindowCancelCommand : ViewModelCommandBase<InputPasswordWindowViewModel>
 {
-    public override void Execute(InputPasswordWindowViewModel viewModel)
+    public override async void Execute(InputPasswordWindowViewModel viewModel)
     {
         viewModel.ValidatedCertPair = null;
-        viewModel.RequestClose(this, new DialogRequestEventArgs(false));
+        await viewModel.RequestCloseAsync(this, new DialogRequestEventArgs(false));
     }
 }

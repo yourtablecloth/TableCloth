@@ -12,6 +12,6 @@ public sealed class AboutWindowLoadedCommand(
     {
         viewModel.AppVersion = Helpers.GetAppVersion();
         viewModel.CatalogDate = resourceResolver.CatalogLastModified?.ToString("yyyy-MM-dd HH:mm:ss") ?? CommonStrings.UnknownText;
-        viewModel.LicenseDetails = await licenseDescriptor.GetLicenseDescriptions();
+        viewModel.LicenseDetails = await licenseDescriptor.GetLicenseDescriptionsAsync();
     }
 }

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,20 +17,20 @@ namespace Hostess.Components.Implementations
     {
         public StepsPlayer(
             IResourceCacheManager resourceCacheManager,
-            IAppMessageBox appMessageBox,
             ISharedLocations sharedLocations,
-            ICommandLineArguments commandLineArguments)
+            ICommandLineArguments commandLineArguments,
+            IHttpClientFactory httpClientFactory)
         {
             _resourceCacheManager = resourceCacheManager;
-            _appMessageBox = appMessageBox;
             _sharedLocations = sharedLocations;
             _commandLineArguments = commandLineArguments;
+            _httpClientFactory = httpClientFactory;
         }
 
         private readonly IResourceCacheManager _resourceCacheManager;
-        private readonly IAppMessageBox _appMessageBox;
         private readonly ISharedLocations _sharedLocations;
         private readonly ICommandLineArguments _commandLineArguments;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         public bool IsRunning { get; private set; }
 
@@ -48,13 +49,13 @@ namespace Hostess.Components.Implementations
                 try
                 {
                     if (eachItem.InstallItemType == InstallItemType.DownloadAndInstall)
-                        await ProcessDownloadAndInstallAsync(eachItem);
+                        await ProcessDownloadAndInstallAsync(eachItem, cancellationToken).ConfigureAwait(false);
                     else if (eachItem.InstallItemType == InstallItemType.PowerShellScript)
-                        await ProcessPowerShellScriptAsync(eachItem);
+                        await ProcessPowerShellScriptAsync(eachItem, cancellationToken).ConfigureAwait(false);
                     else if (eachItem.InstallItemType == InstallItemType.OpenWebSite)
-                        await OpenAddInWebSiteAsync(eachItem);
+                        await OpenAddInWebSiteAsync(eachItem, cancellationToken).ConfigureAwait(false);
                     else if (eachItem.InstallItemType == InstallItemType.CustomAction)
-                        await eachItem.CustomAction?.Invoke(eachItem);
+                        await eachItem.CustomAction.Invoke(eachItem, cancellationToken).ConfigureAwait(false);
 
                     eachItem.StatusMessage = UIStringResources.Hostess_Install_Succeed;
                     eachItem.Installed = true;
@@ -66,7 +67,7 @@ namespace Hostess.Components.Implementations
                     eachItem.StatusMessage = UIStringResources.Hostess_Install_Failed;
                     eachItem.Installed = false;
                     eachItem.ErrorMessage = ex is AggregateException exception ? exception.InnerException.Message : ex.Message;
-                    await Task.Delay(100);
+                    await Task.Delay(TimeSpan.FromMilliseconds(100d), cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -78,13 +79,14 @@ namespace Hostess.Components.Implementations
                 var targets = parsedArgs.SelectedServices;
 
                 foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
-                    await OpenRequestedWebSite(eachUrl);
+                    await OpenRequestedWebSiteAsync(eachUrl, cancellationToken).ConfigureAwait(false);
             }
 
             return hasAnyFailure;
         }
 
-        private async Task ProcessDownloadAndInstallAsync(InstallItemViewModel eachItem)
+        private async Task ProcessDownloadAndInstallAsync(InstallItemViewModel eachItem,
+            CancellationToken cancellationToken = default)
         {
             var parsedArgs = _commandLineArguments.Current;
 
@@ -98,17 +100,17 @@ namespace Hostess.Components.Implementations
             if (File.Exists(tempFilePath))
                 File.Delete(tempFilePath);
 
-            using (var webClient = new WebClient())
+            var httpClient = _httpClientFactory.CreateInternetExplorerMimickedHttpClient();
+            using (Stream
+                remoteStream = await httpClient.GetStreamAsync(eachItem.PackageUrl).ConfigureAwait(false),
+                fileStream = File.OpenWrite(tempFilePath))
             {
-                webClient.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml");
-                webClient.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko");
-                await webClient.DownloadFileTaskAsync(eachItem.PackageUrl, tempFilePath).ConfigureAwait(false);
-
+                await remoteStream.CopyToAsync(fileStream, 81920, cancellationToken).ConfigureAwait(false);
                 eachItem.StatusMessage = UIStringResources.Hostess_Install_InProgress;
 
                 if (parsedArgs.DryRun)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
                     return;
                 }
 
@@ -135,7 +137,8 @@ namespace Hostess.Components.Implementations
             }
         }
 
-        private async Task ProcessPowerShellScriptAsync(InstallItemViewModel eachItem)
+        private async Task ProcessPowerShellScriptAsync(InstallItemViewModel eachItem,
+            CancellationToken cancellationToken = default)
         {
             var parsedArgs = _commandLineArguments.Current;
 
@@ -157,7 +160,7 @@ namespace Hostess.Components.Implementations
 
             if (parsedArgs.DryRun)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
                 return;
             }
 
@@ -183,13 +186,14 @@ namespace Hostess.Components.Implementations
             }
         }
 
-        private async Task OpenAddInWebSiteAsync(InstallItemViewModel viewModel)
+        private async Task OpenAddInWebSiteAsync(InstallItemViewModel viewModel,
+            CancellationToken cancellationToken = default)
         {
             var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
                 return;
             }
 
@@ -200,13 +204,14 @@ namespace Hostess.Components.Implementations
             });
         }
 
-        private async Task OpenRequestedWebSite(string targetUrl)
+        private async Task OpenRequestedWebSiteAsync(string targetUrl,
+            CancellationToken cancellationToken = default)
         {
             var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
                 return;
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Models;
 using TableCloth.Resources;
@@ -8,10 +9,11 @@ namespace TableCloth.Components.Implementations;
 
 public sealed class MicrosoftStoreAppUpdateManager : IAppUpdateManager
 {
-    public async Task<ApiInvokeResult<Uri?>> QueryNewVersionDownloadUrl()
+    public async Task<ApiInvokeResult<Uri?>> QueryNewVersionDownloadUrlAsync(
+        CancellationToken cancellationToken = default)
     {
         var storeContext = StoreContext.GetDefault();
-        var updates = await storeContext.GetAppAndOptionalStorePackageUpdatesAsync().AsTask().ConfigureAwait(false);
+        var updates = await storeContext.GetAppAndOptionalStorePackageUpdatesAsync().AsTask(cancellationToken).ConfigureAwait(false);
 
         if (updates.Count > 0)
         {

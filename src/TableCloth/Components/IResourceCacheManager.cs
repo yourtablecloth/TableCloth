@@ -11,5 +11,5 @@ public interface IResourceCacheManager
 
     ImageSource? GetImage(string siteId);
     Task<CatalogDocument> LoadCatalogDocumentAsync(CancellationToken cancellationToken = default);
-    Task LoadSiteImages(CancellationToken cancellationToken = default);
+    Task LoadSiteImagesAsync(CancellationToken cancellationToken = default);
 }

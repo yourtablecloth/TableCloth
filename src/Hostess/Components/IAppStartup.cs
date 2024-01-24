@@ -8,7 +8,7 @@ namespace Hostess.Components
 {
     public interface IAppStartup : IDisposable
     {
-        Task<ApplicationStartupResultModel> HasRequirementsMetAsync(IList<string> warnings);
+        Task<ApplicationStartupResultModel> HasRequirementsMetAsync(IList<string> warnings, CancellationToken cancellationToken = default);
         Task<ApplicationStartupResultModel> InitializeAsync(IList<string> warnings, CancellationToken cancellationToken = default);
     }
 }

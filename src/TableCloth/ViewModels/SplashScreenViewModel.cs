@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Commands.SplashScreen;
 using TableCloth.Events;
 using TableCloth.Models;
@@ -25,11 +27,11 @@ public class SplashScreenViewModel : ViewModelBase
     public event EventHandler<StatusUpdateRequestEventArgs>? StatusUpdate;
     public event EventHandler<DialogRequestEventArgs>? InitializeDone;
 
-    public void NotifyStatusUpdate(object sender, StatusUpdateRequestEventArgs e)
-        => this.StatusUpdate?.Invoke(sender, e);
+    public async Task NotifyStatusUpdateAsync(object sender, StatusUpdateRequestEventArgs e, CancellationToken cancellationToken = default)
+        => await TaskFactory.StartNew(() => StatusUpdate?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    public void NotifyInitialized(object sender, DialogRequestEventArgs e)
-        => this.InitializeDone?.Invoke(sender, e);
+    public async Task NotifyInitializedAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
+        => await TaskFactory.StartNew(() => InitializeDone?.Invoke(sender, e), cancellationToken);
 
     private readonly SplashScreenLoadedCommand _splashScreenLoadedCommand;
 

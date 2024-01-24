@@ -142,6 +142,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko.
+        /// </summary>
+        public static string OldUserAgentText {
+            get {
+                return ResourceManager.GetString("OldUserAgentText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ts.
         /// </summary>
         public static string QueryString_Timestamp_Key {

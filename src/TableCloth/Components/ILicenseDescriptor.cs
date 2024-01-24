@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace TableCloth.Components;
 
 public interface ILicenseDescriptor
 {
-    Task<string> GetLicenseDescriptions();
+    Task<string> GetLicenseDescriptionsAsync(CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.ViewModels;
 
@@ -17,7 +18,8 @@ namespace Hostess.ViewModels
         private bool? _installed;
         private string _statusMessage;
         private string _errorMessage;
-        private Func<InstallItemViewModel, Task> _customAction;
+        private Func<InstallItemViewModel, CancellationToken, Task> _customAction =
+            (viewModel, cancellationToken) => Task.CompletedTask;
 
         public InstallItemType InstallItemType
         {
@@ -79,10 +81,10 @@ namespace Hostess.ViewModels
             set => SetProperty(ref _errorMessage, value, new string[] { nameof(ErrorMessage), nameof(StatusMessage), nameof(Installed), nameof(InstallFlags), nameof(ShowErrorMessageLink), });
         }
 
-        public Func<InstallItemViewModel, Task> CustomAction
+        public Func<InstallItemViewModel, CancellationToken, Task> CustomAction
         {
             get => _customAction;
-            set => SetProperty(ref _customAction, value);
+            set => SetProperty(ref _customAction, value ?? new Func<InstallItemViewModel, CancellationToken, Task>((viewModel, cancellationToken) => Task.CompletedTask));
         }
 
         public bool ShowErrorMessageLink

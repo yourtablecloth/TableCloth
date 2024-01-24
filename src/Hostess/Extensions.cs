@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Windows;
 using TableCloth.Models.Catalog;
+using TableCloth.Resources;
 
 namespace Hostess
 {
@@ -15,7 +16,15 @@ namespace Hostess
             if (httpClientFactory == null)
                 throw new ArgumentNullException(nameof(httpClientFactory));
 
-            return httpClientFactory.CreateClient(nameof(TableCloth));
+            return httpClientFactory.CreateClient(nameof(ConstantStrings.UserAgentText));
+        }
+
+        public static HttpClient CreateInternetExplorerMimickedHttpClient(this IHttpClientFactory httpClientFactory)
+        {
+            if (httpClientFactory == null)
+                throw new ArgumentNullException(nameof(httpClientFactory));
+
+            return httpClientFactory.CreateClient(nameof(ConstantStrings.OldUserAgentText));
         }
 
         public static IServiceCollection AddWindow<TWindow, TViewModel>(this IServiceCollection services,

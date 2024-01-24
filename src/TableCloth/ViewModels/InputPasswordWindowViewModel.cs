@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Security;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Commands.InputPasswordWindow;
 using TableCloth.Events;
 using TableCloth.Models.Configuration;
@@ -29,14 +31,14 @@ public class InputPasswordWindowViewModel : ViewModelBase
     public event EventHandler<DialogRequestEventArgs>? CloseRequested;
     public event EventHandler? RetryPasswordInputRequested;
 
-    public void NotifyViewLoaded(object? sender, EventArgs e)
-        => ViewLoaded?.Invoke(sender, e);
+    public async Task NotifyViewLoadedAsync(object? sender, EventArgs e, CancellationToken cancellationToken = default)
+        => await TaskFactory.StartNew(() => ViewLoaded?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    public void RequestClose(object sender, DialogRequestEventArgs e)
-        => CloseRequested?.Invoke(sender, e);
+    public async Task RequestCloseAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
+        => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    public void RequestRetryPasswordInput(object sender, EventArgs e)
-        => RetryPasswordInputRequested?.Invoke(sender, e);
+    public async Task RequestRetryPasswordInputAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
+        => await TaskFactory.StartNew(() => RetryPasswordInputRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     private readonly InputPasswordWindowLoadedCommand _inputPasswordWindowLoadedCommand;
     private readonly InputPasswordWindowConfirmCommand _inputPasswordWindowConfirmCommand;

@@ -82,7 +82,8 @@ public sealed class AppStartup : IAppStartup
         }
     }
 
-    public async Task<ApplicationStartupResultModel> HasRequirementsMetAsync(IList<string> warnings)
+    public async Task<ApplicationStartupResultModel> HasRequirementsMetAsync(IList<string> warnings,
+        CancellationToken cancellationToken = default)
     {
         var result = default(ApplicationStartupResultModel);
 

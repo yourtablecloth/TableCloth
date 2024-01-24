@@ -5,6 +5,6 @@ namespace TableCloth.Commands.DisclaimerWindow;
 
 public sealed class DisclaimerWindowAcknowledgeCommand : ViewModelCommandBase<DisclaimerWindowViewModel>
 {
-    public override void Execute(DisclaimerWindowViewModel viewModel)
-        => viewModel.NotifyDisclaimerAcknowledged(this, EventArgs.Empty);
+    public override async void Execute(DisclaimerWindowViewModel viewModel)
+        => await viewModel.NotifyDisclaimerAcknowledgedAsync(this, EventArgs.Empty);
 }

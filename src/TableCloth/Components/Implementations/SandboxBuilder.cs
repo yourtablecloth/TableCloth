@@ -4,6 +4,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using TableCloth.Models.Catalog;
@@ -31,7 +33,11 @@ public sealed class SandboxBuilder(
         return Path.Join(_wdagUtilityAccountPath, candidatePath);
     }
 
-    public string GenerateSandboxConfiguration(string outputDirectory, TableClothConfiguration tableClothConfiguration, IList<SandboxMappedFolder> excludedDirectories)
+    public async Task<string> GenerateSandboxConfigurationAsync(
+        string outputDirectory,
+        TableClothConfiguration tableClothConfiguration,
+        IList<SandboxMappedFolder> excludedDirectories,
+        CancellationToken cancellationToken = default)
     {
         if (tableClothConfiguration == null)
             throw new ArgumentNullException(nameof(tableClothConfiguration));
@@ -49,18 +55,22 @@ public sealed class SandboxBuilder(
 
         var batchFileContent = GenerateSandboxStartupScript(tableClothConfiguration);
         var batchFilePath = Path.Combine(assetsDirectory, "StartupScript.cmd");
-        File.WriteAllText(batchFilePath, batchFileContent, Encoding.Default);
+        await File.WriteAllTextAsync(batchFilePath, batchFileContent, Encoding.Default, cancellationToken).ConfigureAwait(false);
 
         tableClothConfiguration.AssetsDirectoryPath = assetsDirectory;
 
         var wsbFilePath = Path.Combine(outputDirectory, "InternetBankingSandbox.wsb");
-        var serializedXml = SerializeSandboxSpec(BootstrapSandboxConfiguration(tableClothConfiguration), excludedDirectories);
-        File.WriteAllText(wsbFilePath, serializedXml);
+        var serializedXml = SerializeSandboxSpec(
+            await BootstrapSandboxConfigurationAsync(tableClothConfiguration, cancellationToken).ConfigureAwait(false),
+            excludedDirectories);
+        await File.WriteAllTextAsync(wsbFilePath, serializedXml, cancellationToken).ConfigureAwait(false);
 
         return wsbFilePath;
     }
 
-    private SandboxConfiguration BootstrapSandboxConfiguration(TableClothConfiguration tableClothConfig)
+    private async Task<SandboxConfiguration> BootstrapSandboxConfigurationAsync(
+        TableClothConfiguration tableClothConfig,
+        CancellationToken cancellationToken = default)
     {
         const string Enable = "Enable";
         const string Disable = "Disable";
@@ -92,8 +102,8 @@ public sealed class SandboxBuilder(
             var destDerFilePath = Path.Combine(certAssetsDirectoryPath, "signCert.der");
             var destKeyFileName = Path.Combine(certAssetsDirectoryPath, "signPri.key");
 
-            File.WriteAllBytes(destDerFilePath, tableClothConfig.CertPair.PublicKey);
-            File.WriteAllBytes(destKeyFileName, tableClothConfig.CertPair.PrivateKey);
+            await File.WriteAllBytesAsync(destDerFilePath, tableClothConfig.CertPair.PublicKey, cancellationToken).ConfigureAwait(false);
+            await File.WriteAllBytesAsync(destKeyFileName, tableClothConfig.CertPair.PrivateKey, cancellationToken).ConfigureAwait(false);
 
             sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
             {

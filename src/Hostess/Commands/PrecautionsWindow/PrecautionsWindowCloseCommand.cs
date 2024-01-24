@@ -1,10 +1,11 @@
 ﻿using Hostess.ViewModels;
+using TableCloth.Events;
 
 namespace Hostess.Commands.PrecautionsWindow
 {
     public sealed class PrecautionsWindowCloseCommand : ViewModelCommandBase<PrecautionsWindowViewModel>
     {
-        public override void Execute(PrecautionsWindowViewModel viewModel)
-            => viewModel.RequestClose(this, true);
+        public override async void Execute(PrecautionsWindowViewModel viewModel)
+            => await viewModel.RequestCloseAsync(this, new DialogRequestEventArgs(true));
     }
 }

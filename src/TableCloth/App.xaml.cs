@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Linq;
+using System.Net;
 using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
@@ -53,7 +54,16 @@ public partial class App : Application
     private static void ConfigureServices(IServiceCollection services)
     {
         // Add HTTP Service
-        services.AddHttpClient(nameof(TableCloth), c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
+        services.AddHttpClient(
+            nameof(ConstantStrings.UserAgentText),
+            c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
+        services.AddHttpClient(
+            nameof(ConstantStrings.OldUserAgentText),
+            c =>
+            {
+                c.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml");
+                c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.OldUserAgentText);
+            });
 
         // Add Components (Conditional)
         if (Helpers.IsAppxInstallation)

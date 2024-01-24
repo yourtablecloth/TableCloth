@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using TableCloth.Commands;
 using TableCloth.Commands.DetailPage;
@@ -44,8 +46,8 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
 
     public event EventHandler? CloseRequested;
 
-    public void RequestClose(object sender, EventArgs e)
-        => CloseRequested?.Invoke(sender, e);
+    public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
+        => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     private readonly DetailPageLoadedCommand _detailPageLoadedCommand;
     private readonly DetailPageSearchTextLostFocusCommand _detailPageSearchTextLostFocusCommand;

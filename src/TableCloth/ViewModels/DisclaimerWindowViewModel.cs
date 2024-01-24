@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Commands.DisclaimerWindow;
 
 namespace TableCloth.ViewModels;
@@ -23,11 +25,11 @@ public class DisclaimerWindowViewModel : ViewModelBase
     public event EventHandler? ViewLoaded;
     public event EventHandler? DisclaimerAcknowledged;
 
-    public void NotifyViewLoaded(object? sender, EventArgs e)
-        => ViewLoaded?.Invoke(sender, e);
+    public async Task NotifyViewLoadedAsync(object? sender, EventArgs e, CancellationToken cancellationToken = default)
+        => await TaskFactory.StartNew(() => ViewLoaded?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    public void NotifyDisclaimerAcknowledged(object? sender, EventArgs e)
-        => DisclaimerAcknowledged?.Invoke(sender, e);
+    public async Task NotifyDisclaimerAcknowledgedAsync(object? sender, EventArgs e, CancellationToken cancellationToken = default)
+        => await TaskFactory.StartNew(() => DisclaimerAcknowledged?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     private readonly DisclaimerWindowLoadedCommand _disclaimerWindowLoadedCommand;
     private readonly DisclaimerWindowAcknowledgeCommand _disclaimerWindowAcknowledgeCommand;

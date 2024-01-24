@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using TableCloth;
@@ -178,13 +179,14 @@ namespace Hostess.Components.Implementations
             return packages;
         }
 
-        private async Task PrepareDirectoriesAsync(InstallItemViewModel viewModel)
+        private async Task PrepareDirectoriesAsync(InstallItemViewModel viewModel,
+            CancellationToken cancellationToken = default)
         {
             var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
                 return;
             }
 
@@ -194,13 +196,14 @@ namespace Hostess.Components.Implementations
                 Directory.CreateDirectory(downloadFolderPath);
         }
 
-        private async Task EnableIEModeAsync(InstallItemViewModel viewModel)
+        private async Task EnableIEModeAsync(InstallItemViewModel viewModel,
+            CancellationToken cancellationToken = default)
         {
             var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
                 return;
             }
 
@@ -233,7 +236,7 @@ namespace Hostess.Components.Implementations
                         {
                             tcs.SetResult(msedgeProcess.ExitCode);
                         };
-                        await Task.Delay(TimeSpan.FromSeconds(1.5d)).ConfigureAwait(false);
+                        await Task.Delay(TimeSpan.FromSeconds(1.5d), cancellationToken).ConfigureAwait(false);
                         msedgeProcess.CloseMainWindow();
                         await tcs.Task.ConfigureAwait(false);
                     }
@@ -241,13 +244,14 @@ namespace Hostess.Components.Implementations
             }
         }
 
-        private async Task VerifyWindowsContainerEnvironmentAsync(InstallItemViewModel viewModel)
+        private async Task VerifyWindowsContainerEnvironmentAsync(InstallItemViewModel viewModel,
+            CancellationToken cancellationToken = default)
         {
             var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
                 return;
             }
 
@@ -262,13 +266,14 @@ namespace Hostess.Components.Implementations
             }
         }
 
-        private async Task TryProtectCriticalServicesAsync(InstallItemViewModel viewModel)
+        private async Task TryProtectCriticalServicesAsync(InstallItemViewModel viewModel,
+            CancellationToken cancellationToken = default)
         {
             var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
                 return;
             }
 
@@ -281,13 +286,14 @@ namespace Hostess.Components.Implementations
             catch (Exception ex) { _appMessageBox.DisplayError(ex, false); }
         }
 
-        private async Task SetDesktopWallpaperAsync(InstallItemViewModel viewModel)
+        private async Task SetDesktopWallpaperAsync(InstallItemViewModel viewModel,
+            CancellationToken cancellationToken = default)
         {
             var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1d)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
                 return;
             }
 

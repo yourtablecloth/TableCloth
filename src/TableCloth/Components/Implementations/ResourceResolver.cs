@@ -57,15 +57,15 @@ public sealed class ResourceResolver(
         }
     }
 
-    public async Task<ApiInvokeResult<string?>> GetLatestVersion(string owner, string repoName)
+    public async Task<ApiInvokeResult<string?>> GetLatestVersionAsync(string owner, string repoName, CancellationToken cancellationToken = default)
     {
         try
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
             var httpClient = httpClientFactory.CreateTableClothHttpClient();
 
-            using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
-            var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
+            using var licenseDescription = await httpClient.GetStreamAsync(targetUri, cancellationToken).ConfigureAwait(false);
+            var jsonDocument = await JsonDocument.ParseAsync(licenseDescription, cancellationToken: cancellationToken).ConfigureAwait(false);
             return jsonDocument.RootElement.GetProperty("tag_name").GetString()?.TrimStart('v');
         }
         catch (Exception ex)
@@ -74,15 +74,15 @@ public sealed class ResourceResolver(
         }
     }
 
-    public async Task<ApiInvokeResult<Uri?>> GetDownloadUrl(string owner, string repoName)
+    public async Task<ApiInvokeResult<Uri?>> GetReleaseDownloadUrlAsync(string owner, string repoName, CancellationToken cancellationToken = default)
     {
         try
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
             var httpClient = httpClientFactory.CreateTableClothHttpClient();
 
-            using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
-            var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
+            using var licenseDescription = await httpClient.GetStreamAsync(targetUri, cancellationToken).ConfigureAwait(false);
+            var jsonDocument = await JsonDocument.ParseAsync(licenseDescription, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             if (Uri.TryCreate(jsonDocument.RootElement.GetProperty("html_url").GetString(), UriKind.Absolute, out var result))
                 return result;
@@ -95,15 +95,15 @@ public sealed class ResourceResolver(
         }
     }
 
-    public async Task<ApiInvokeResult<string?>> GetLicenseDescriptionForGitHub(string owner, string repoName)
+    public async Task<ApiInvokeResult<string?>> GetLicenseDescriptionForGitHubAsync(string owner, string repoName, CancellationToken cancellationToken = default)
     {
         try
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
             var httpClient = httpClientFactory.CreateTableClothHttpClient();
 
-            using var licenseDescription = await httpClient.GetStreamAsync(targetUri).ConfigureAwait(false);
-            var jsonDocument = await JsonDocument.ParseAsync(licenseDescription).ConfigureAwait(false);
+            using var licenseDescription = await httpClient.GetStreamAsync(targetUri, cancellationToken).ConfigureAwait(false);
+            var jsonDocument = await JsonDocument.ParseAsync(licenseDescription, cancellationToken: cancellationToken).ConfigureAwait(false);
             return jsonDocument.RootElement.GetProperty("license").GetProperty("name").GetString();
         }
         catch (Exception ex)

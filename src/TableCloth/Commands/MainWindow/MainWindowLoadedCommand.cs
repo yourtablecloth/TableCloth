@@ -23,11 +23,11 @@ public sealed class MainWindowLoadedCommand(
     ISandboxLauncher sandboxLauncher,
     ICommandLineArguments commandLineArguments) : ViewModelCommandBase<MainWindowViewModel>
 {
-    public override void Execute(MainWindowViewModel viewModel)
+    public override async void Execute(MainWindowViewModel viewModel)
     {
         applicationService.ApplyCosmeticChangeToMainWindow();
 
-        var currentConfig = preferencesManager.LoadPreferences()
+        var currentConfig = await preferencesManager.LoadPreferencesAsync()
             ?? preferencesManager.GetDefaultPreferences();
 
         viewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
@@ -111,17 +111,17 @@ public sealed class MainWindowLoadedCommand(
             if (parsedArg.SelectedServices.Count() > 0)
             {
                 var config = configurationComposer.GetConfigurationFromArgumentModel(parsedArg);
-                sandboxLauncher.RunSandbox(config);
+                await sandboxLauncher.RunSandboxAsync(config);
             }
         }
     }
 
-    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (sender is not MainWindowViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));
 
-        var currentConfig = preferencesManager.LoadPreferences();
+        var currentConfig = await preferencesManager.LoadPreferencesAsync();
 
         if (currentConfig == null)
             currentConfig = preferencesManager.GetDefaultPreferences();
@@ -186,6 +186,6 @@ public sealed class MainWindowLoadedCommand(
                 return;
         }
 
-        preferencesManager.SavePreferences(currentConfig);
+        await preferencesManager.SavePreferencesAsync(currentConfig);
     }
 }

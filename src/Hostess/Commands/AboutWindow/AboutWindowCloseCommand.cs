@@ -1,10 +1,11 @@
 ﻿using Hostess.ViewModels;
+using TableCloth.Events;
 
 namespace Hostess.Commands.AboutWindow
 {
     public sealed class AboutWindowCloseCommand : ViewModelCommandBase<AboutWindowViewModel>
     {
-        public override void Execute(AboutWindowViewModel viewModel)
-            => viewModel.RequestClose(this, default);
+        public override async void Execute(AboutWindowViewModel viewModel)
+            => await viewModel.RequestCloseAsync(this, new DialogRequestEventArgs(default));
     }
 }

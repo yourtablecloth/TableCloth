@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using TableCloth.Commands.CertSelectWindow;
 using TableCloth.Events;
 using TableCloth.Models.Configuration;
@@ -40,9 +42,8 @@ public class CertSelectWindowViewModel : ViewModelBase
 
     public event EventHandler<DialogRequestEventArgs>? CloseRequested;
 
-    public void RequestClose(object sender, DialogRequestEventArgs e)
-        => this.CloseRequested?.Invoke(sender, e);
-
+    public async Task RequestCloseAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
+        => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     public CertSelectWindowScanCertPairCommand CertSelectWindowScanCertPairCommand
         => _certSelectWindowScanCertPairCommand;

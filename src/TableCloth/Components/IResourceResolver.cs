@@ -12,8 +12,8 @@ public interface IResourceResolver
     DateTimeOffset? CatalogLastModified { get; }
 
     Task<ApiInvokeResult<CatalogDocument?>> DeserializeCatalogAsync(CancellationToken cancellationToken = default);
-    Task<ApiInvokeResult<Uri?>> GetDownloadUrl(string owner, string repoName);
-    Task<ApiInvokeResult<string?>> GetLatestVersion(string owner, string repoName);
-    Task<ApiInvokeResult<string?>> GetLicenseDescriptionForGitHub(string owner, string repoName);
+    Task<ApiInvokeResult<Uri?>> GetReleaseDownloadUrlAsync(string owner, string repoName, CancellationToken cancellationToken = default);
+    Task<ApiInvokeResult<string?>> GetLatestVersionAsync(string owner, string repoName, CancellationToken cancellationToken = default);
+    Task<ApiInvokeResult<string?>> GetLicenseDescriptionForGitHubAsync(string owner, string repoName, CancellationToken cancellationToken = default);
     Task LoadSiteImagesAsync(IEnumerable<CatalogInternetService> services, string imageDirectoryPath, CancellationToken cancellationToken = default);
 }

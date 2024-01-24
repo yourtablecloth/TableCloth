@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using TableCloth.Resources;
 
 namespace TableCloth;
 
@@ -13,7 +14,14 @@ internal static class Extensions
     {
         return httpClientFactory == null
             ? throw new ArgumentNullException(nameof(httpClientFactory))
-            : httpClientFactory.CreateClient(nameof(TableCloth));
+            : httpClientFactory.CreateClient(nameof(ConstantStrings.UserAgentText));
+    }
+
+    public static HttpClient CreateInternetExplorerMimickedHttpClient(this IHttpClientFactory httpClientFactory)
+    {
+        return httpClientFactory == null
+            ? throw new ArgumentNullException(nameof(httpClientFactory))
+            : httpClientFactory.CreateClient(nameof(ConstantStrings.OldUserAgentText));
     }
 
     public static void AddCommands(this IServiceCollection services, params Type[] commandTypes)
