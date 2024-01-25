@@ -405,6 +405,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The application can&apos;t run the AhnLab Safe Transaction configuration utility..
+        /// </summary>
+        public static string Error_StSessConfig_CanNotStart {
+            get {
+                return ResourceManager.GetString("Error_StSessConfig_CanNotStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An unexpected error occurred: (File: {0} (Row: {1}), Member: {2}).
         /// </summary>
         public static string Error_Unknown {

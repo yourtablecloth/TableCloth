@@ -81,15 +81,7 @@ public sealed class SandboxLauncher(
             return;
         }
 
-        var process = new Process()
-        {
-            EnableRaisingEvents = true,
-            StartInfo = new ProcessStartInfo(comSpecPath, "/c start \"\" \"" + wsbExecPath + "\" \"" + wsbFilePath + "\"")
-            {
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            },
-        };
+        var process = Helpers.CreateRunProcess(comSpecPath, wsbExecPath, wsbFilePath);
 
         if (!process.Start())
         {

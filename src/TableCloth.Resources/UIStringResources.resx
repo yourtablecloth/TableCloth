@@ -129,6 +129,9 @@
   <data name="AboutWindow_Title" xml:space="preserve">
     <value>About This Program</value>
   </data>
+  <data name="Await_ConfigASTx" xml:space="preserve">
+    <value>Once you've finalized your settings, hit the OK button.</value>
+  </data>
   <data name="Build_Debug" xml:space="preserve">
     <value>This build is for development purposes only.</value>
   </data>
@@ -314,6 +317,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="InputPasswordWindow_Title" xml:space="preserve">
     <value>Enter the password to convert the PFX certificate</value>
   </data>
+  <data name="Install_ConfigASTx" xml:space="preserve">
+    <value>Config AhnLab Safe Transaction</value>
+  </data>
   <data name="Install_EnableIEMode" xml:space="preserve">
     <value>Enabling Internet Explorer Mode</value>
   </data>
@@ -328,6 +334,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   </data>
   <data name="Install_VerifyEnvironment" xml:space="preserve">
     <value>Verifying Environment</value>
+  </data>
+  <data name="Instruction_ConfigASTx" xml:space="preserve">
+    <value>AhnLab Safe Transaction needs to turn off the remote access blocking feature to continue running Windows Sandbox. Please uncheck the Block Remote Access checkbox on the screen and click the Close button.</value>
   </data>
   <data name="MainWindow_Column_Category" xml:space="preserve">
     <value>Category</value>
@@ -367,6 +376,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   </data>
   <data name="Option_BasicPreferences" xml:space="preserve">
     <value>Basic Preferences</value>
+  </data>
+  <data name="Option_Config" xml:space="preserve">
+    <value>Post Config</value>
   </data>
   <data name="Option_InstallAdobeReader" xml:space="preserve">
     <value>Install Adobe Reader</value>

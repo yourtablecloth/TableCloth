@@ -97,6 +97,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Once you&apos;ve finalized your settings, hit the OK button..
+        /// </summary>
+        public static string Await_ConfigASTx {
+            get {
+                return ResourceManager.GetString("Await_ConfigASTx", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This build is for development purposes only..
         /// </summary>
         public static string Build_Debug {
@@ -648,6 +657,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Config AhnLab Safe Transaction.
+        /// </summary>
+        public static string Install_ConfigASTx {
+            get {
+                return ResourceManager.GetString("Install_ConfigASTx", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enabling Internet Explorer Mode.
         /// </summary>
         public static string Install_EnableIEMode {
@@ -689,6 +707,15 @@ namespace TableCloth.Resources {
         public static string Install_VerifyEnvironment {
             get {
                 return ResourceManager.GetString("Install_VerifyEnvironment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to AhnLab Safe Transaction needs to turn off the remote access blocking feature to continue running Windows Sandbox. Please uncheck the Block Remote Access checkbox on the screen and click the Close button..
+        /// </summary>
+        public static string Instruction_ConfigASTx {
+            get {
+                return ResourceManager.GetString("Instruction_ConfigASTx", resourceCulture);
             }
         }
         
@@ -806,6 +833,15 @@ namespace TableCloth.Resources {
         public static string Option_BasicPreferences {
             get {
                 return ResourceManager.GetString("Option_BasicPreferences", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Post Config.
+        /// </summary>
+        public static string Option_Config {
+            get {
+                return ResourceManager.GetString("Option_Config", resourceCulture);
             }
         }
         

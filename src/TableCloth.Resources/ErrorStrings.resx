@@ -239,6 +239,10 @@ You can select multiple files by holding down the Ctrl or Shift key, or by dragg
   <data name="Error_ShortcutNoSiteSelected" xml:space="preserve">
     <value>You can't create a shortcut because there is no website selected.</value>
   </data>
+  <data name="Error_StSessConfig_CanNotStart" xml:space="preserve">
+    <value>The application can't run the AhnLab Safe Transaction configuration utility.</value>
+    <comment>This item is used by Hostess.</comment>
+  </data>
   <data name="Error_Unknown" xml:space="preserve">
     <value>An unexpected error occurred: (File: {0} (Row: {1}), Member: {2})</value>
   </data>

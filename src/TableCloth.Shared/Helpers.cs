@@ -95,6 +95,18 @@ namespace TableCloth
         public static string GetDefaultCommandLineInterpreterPath()
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "cmd.exe");
 
+        public static Process CreateRunProcess(string comSpecPath, string targetExecutablePath, string arguments)
+            => new Process()
+            {
+                EnableRaisingEvents = true,
+                StartInfo = new ProcessStartInfo(comSpecPath,
+                    "/c start \"\" \"" + targetExecutablePath + "\" \"" + arguments + "\"")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                },
+            };
+
         public static string GetDefaultWindowsSandboxPath()
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsSandbox.exe");
 

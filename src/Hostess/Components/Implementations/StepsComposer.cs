@@ -124,6 +124,14 @@ namespace Hostess.Components.Implementations
                 }
             }
 
+            packages.Add(new InstallItemViewModel()
+            {
+                InstallItemType = InstallItemType.CustomAction,
+                TargetSiteName = UIStringResources.Option_Config,
+                PackageName = UIStringResources.Install_ConfigASTx,
+                CustomAction = ConfigASTxAsync,
+            });
+
             if (parsedArgs.InstallAdobeReader.HasValue &&
                 parsedArgs.InstallAdobeReader.Value)
             {
@@ -240,6 +248,41 @@ namespace Hostess.Components.Implementations
                         await tcs.Task.ConfigureAwait(false);
                     }
                 }
+            }
+        }
+
+        private async Task ConfigASTxAsync(InstallItemViewModel viewModel,
+            CancellationToken cancellationToken = default)
+        {
+            var parsedArgs = _commandLineArguments.Current;
+
+            if (parsedArgs.DryRun)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
+            var stSessPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                "AhnLab", "Safe Transaction", "StSess.exe");
+
+            if (!File.Exists(stSessPath))
+                return;
+
+            var comSpecPath = Helpers.GetDefaultCommandLineInterpreterPath();
+
+            if (!File.Exists(comSpecPath))
+                throw new Exception(ErrorStrings.Error_CommandLineInterpreter_Missing);
+
+            // To Do: 상세한 설명을 담은 UI를 제작할 필요가 있음.
+            _appMessageBox.DisplayInfo(UIStringResources.Instruction_ConfigASTx);
+
+            using (var process = Helpers.CreateRunProcess(comSpecPath, stSessPath, "/config"))
+            {
+                if (!process.Start())
+                    throw new Exception(ErrorStrings.Error_StSessConfig_CanNotStart);
+                else
+                    _appMessageBox.DisplayInfo(UIStringResources.Await_ConfigASTx);
             }
         }
 

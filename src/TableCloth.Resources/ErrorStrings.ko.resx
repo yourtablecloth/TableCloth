@@ -239,6 +239,10 @@ Ctrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 
   <data name="Error_ShortcutNoSiteSelected" xml:space="preserve">
     <value>선택된 웹 사이트가 없어 바로 가기를 생성할 수 없습니다.</value>
   </data>
+  <data name="Error_StSessConfig_CanNotStart" xml:space="preserve">
+    <value>AhnLab Safe Transaction 설정 프로그램을 시작할 수 없습니다.</value>
+    <comment>This item is used by Hostess.</comment>
+  </data>
   <data name="Error_Unknown" xml:space="preserve">
     <value>예기치 않은 오류가 발생했습니다. (파일: {0} (행: {1}), 멤버: {2})</value>
   </data>
