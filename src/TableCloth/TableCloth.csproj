@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
 	<TargetFramework>net8.0-windows10.0.18362.0</TargetFramework>
-    <StartupObject>TableCloth.App</StartupObject>
+    <StartupObject>TableCloth.Program</StartupObject>
     <ApplicationIcon>App.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
@@ -60,7 +60,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Include="App.xaml" />
+	  <ApplicationDefinition Remove="App.xaml" />
+	  <Page Include="App.xaml" />
   </ItemGroup>
 
   <ItemGroup>
