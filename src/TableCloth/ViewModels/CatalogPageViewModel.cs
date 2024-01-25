@@ -11,7 +11,7 @@ namespace TableCloth.ViewModels;
 public class CatalogPageViewModelForDesigner : CatalogPageViewModel
 {
     public IList<CatalogInternetService> ServicesForDesigner
-        => DesignTimeCatalog.DesignTimeCatalogDocument.Services;
+        => DesignTimeResources.DesignTimeCatalogDocument.Services;
 }
 
 public class CatalogPageViewModel : ViewModelBase

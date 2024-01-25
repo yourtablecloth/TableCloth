@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using TableCloth.Models.Catalog;
+using TableCloth.Models.Configuration;
 
 namespace TableCloth.Resources
 {
-    internal static class DesignTimeCatalog
+    internal static class DesignTimeResources
     {
 #pragma warning disable IDE0090 // Use 'new(...)'
         private static readonly Random randomizer = new Random();
 #pragma warning restore IDE0090 // Use 'new(...)'
+
+        public static readonly IList<X509CertPair> DesignTimeCertPairs = GenerateDesignTimeCertPairs().ToList();
 
         public static readonly CatalogDocument DesignTimeCatalogDocument = GenerateDesignTimeCatalogDocument();
 
@@ -18,6 +21,20 @@ namespace TableCloth.Resources
         public const int DefaultMinimum = 3;
 
         public const int DefaultMaximum = 12;
+
+        public static IEnumerable<X509CertPair> GenerateDesignTimeCertPairs()
+        {
+            var now = DateTime.Now;
+
+            var expired = new X509CertPairForDesigner(
+                "James", now.AddYears(-2), now.AddYears(-1), "ACME Corp.", "A Bank", "KR");
+            var current = new X509CertPairForDesigner(
+                "Mary", now.AddDays(-1d), now.AddYears(1), "ABCD Corp.", "B Bank", "KR");
+            var future = new X509CertPairForDesigner(
+                "William", now.AddYears(3), now.AddYears(10), "Future Corp.", "C Bank", "KR");
+
+            return new[] { expired, current, future };
+        }
 
         public static bool? ConvertToTriState(int index)
         {

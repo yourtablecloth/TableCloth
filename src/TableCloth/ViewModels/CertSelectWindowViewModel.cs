@@ -5,11 +5,16 @@ using System.Threading.Tasks;
 using TableCloth.Commands.CertSelectWindow;
 using TableCloth.Events;
 using TableCloth.Models.Configuration;
+using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
 
 [Obsolete("This class is reserved for design-time usage.", false)]
-public class CertSelectWindowViewModelForDesigner : CertSelectWindowViewModel { }
+public class CertSelectWindowViewModelForDesigner : CertSelectWindowViewModel
+{
+    public IList<X509CertPair> CertPairsForDesigner
+        => DesignTimeResources.DesignTimeCertPairs;
+}
 
 public class CertSelectWindowViewModel : ViewModelBase
 {

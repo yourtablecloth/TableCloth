@@ -6,11 +6,34 @@ using TableCloth.Resources;
 
 namespace TableCloth.Models.Configuration
 {
+    public sealed class X509CertPairForDesigner : X509CertPair
+    {
+        public X509CertPairForDesigner(
+            string commonName,
+            DateTime beginDate,
+            DateTime endDate,
+            string organizationalUnit,
+            string organization,
+            string countryName)
+        {
+            CommonName = commonName;
+            NotBefore = beginDate;
+            NotAfter = endDate;
+            OrganizationalUnit = organizationalUnit;
+            Organization = organization;
+            CountryName = countryName;
+        }
+    }
+
     public class X509CertPair
     {
 #pragma warning disable IDE0300 // Simplify collection initialization
         private static readonly char[] Separators = new char[] { ',', };
 #pragma warning restore IDE0300 // Simplify collection initialization
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        protected X509CertPair() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public X509CertPair(byte[] publicKey, byte[] privateKey)
         {
@@ -90,29 +113,29 @@ namespace TableCloth.Models.Configuration
             ?
 #endif
             CommonName
-        { get; }
+        { get; protected set; }
         public IEnumerable<string> OrganizationalUnits { get; }
         public string
 #if !NETFX
             ?
 #endif
             OrganizationalUnit
-        { get; }
+        { get; protected set; }
         public string
 #if !NETFX
             ?
 #endif
             Organization
-        { get; }
+        { get; protected set; }
         public string
 #if !NETFX
             ?
 #endif
             CountryName
-        { get; }
+        { get; protected set; }
 
-        public DateTime NotAfter { get; }
-        public DateTime NotBefore { get; }
+        public DateTime NotAfter { get; protected set; }
+        public DateTime NotBefore { get; protected set; }
 
         public bool IsValid
             => NotBefore <= DateTime.Now && DateTime.Now <= NotAfter;

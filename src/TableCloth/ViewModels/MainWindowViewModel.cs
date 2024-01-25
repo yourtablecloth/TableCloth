@@ -13,7 +13,7 @@ namespace TableCloth.ViewModels;
 public class MainWindowViewModelForDesigner : MainWindowViewModel
 {
     public IList<CatalogInternetService> ServicesForDesigner
-        => DesignTimeCatalog.DesignTimeCatalogDocument.Services;
+        => DesignTimeResources.DesignTimeCatalogDocument.Services;
 }
 
 public class MainWindowViewModel : ViewModelBase, ITableClothViewModel

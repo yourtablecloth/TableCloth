@@ -14,7 +14,7 @@ namespace Hostess.ViewModels
     public class MainWindowViewModelForDesigner : MainWindowViewModel
     {
         public IList<InstallItemViewModel> InstallItemsForDesigner
-            => DesignTimeCatalog.DesignTimePackageInformations.Select((x, i) => new InstallItemViewModel()
+            => DesignTimeResources.DesignTimePackageInformations.Select((x, i) => new InstallItemViewModel()
             {
                 InstallItemType = InstallItemType.DownloadAndInstall,
                 TargetSiteName = "Sample Site",
@@ -22,9 +22,9 @@ namespace Hostess.ViewModels
                 PackageName = x.Name,
                 PackageUrl = x.Url,
                 Arguments = x.Arguments,
-                Installed = DesignTimeCatalog.ConvertToTriState(i),
+                Installed = DesignTimeResources.ConvertToTriState(i),
                 StatusMessage = "Status",
-                ErrorMessage = DesignTimeCatalog.GenerateRandomErrorMessage(i),
+                ErrorMessage = DesignTimeResources.GenerateRandomErrorMessage(i),
             }).ToList();
     }
 
