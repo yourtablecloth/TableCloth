@@ -54,7 +54,12 @@ namespace Hostess.Components.Implementations
                     else if (eachItem.InstallItemType == InstallItemType.OpenWebSite)
                         await OpenAddInWebSiteAsync(eachItem, cancellationToken).ConfigureAwait(false);
                     else if (eachItem.InstallItemType == InstallItemType.CustomAction)
-                        await eachItem.CustomAction.Invoke(eachItem, cancellationToken).ConfigureAwait(false);
+                    {
+                        if (eachItem.UseNonAwaitableAction)
+                            eachItem.CustomAction.Invoke(eachItem);
+                        else
+                            await eachItem.CustomAwaitableAction.Invoke(eachItem, cancellationToken).ConfigureAwait(false);
+                    }
 
                     eachItem.StatusMessage = UIStringResources.Hostess_Install_Succeed;
                     eachItem.Installed = true;

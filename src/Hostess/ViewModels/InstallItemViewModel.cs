@@ -18,8 +18,11 @@ namespace Hostess.ViewModels
         private bool? _installed;
         private string _statusMessage;
         private string _errorMessage;
-        private Func<InstallItemViewModel, CancellationToken, Task> _customAction =
+        private bool _useNonAwaitableAction;
+        private Func<InstallItemViewModel, CancellationToken, Task> _customAwaitableAction =
             (viewModel, cancellationToken) => Task.CompletedTask;
+        private Action<InstallItemViewModel> _customAction =
+            (viewModel) => { };
 
         public InstallItemType InstallItemType
         {
@@ -81,10 +84,22 @@ namespace Hostess.ViewModels
             set => SetProperty(ref _errorMessage, value, new string[] { nameof(ErrorMessage), nameof(StatusMessage), nameof(Installed), nameof(InstallFlags), nameof(ShowErrorMessageLink), });
         }
 
-        public Func<InstallItemViewModel, CancellationToken, Task> CustomAction
+        public bool UseNonAwaitableAction
+        {
+            get => _useNonAwaitableAction;
+            set => SetProperty(ref _useNonAwaitableAction, value);
+        }
+
+        public Func<InstallItemViewModel, CancellationToken, Task> CustomAwaitableAction
+        {
+            get => _customAwaitableAction;
+            set => SetProperty(ref _customAwaitableAction, value ?? new Func<InstallItemViewModel, CancellationToken, Task>((viewModel, cancellationToken) => Task.CompletedTask));
+        }
+
+        public Action<InstallItemViewModel> CustomAction
         {
             get => _customAction;
-            set => SetProperty(ref _customAction, value ?? new Func<InstallItemViewModel, CancellationToken, Task>((viewModel, cancellationToken) => Task.CompletedTask));
+            set => SetProperty(ref _customAction, value ?? new Action<InstallItemViewModel>((viewModel) => { }));
         }
 
         public bool ShowErrorMessageLink

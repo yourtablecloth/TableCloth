@@ -54,28 +54,29 @@ namespace Hostess.Components.Implementations
                     InstallItemType = InstallItemType.CustomAction,
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_VerifyEnvironment,
-                    CustomAction = VerifyWindowsContainerEnvironmentAsync,
+                    CustomAwaitableAction = VerifyWindowsContainerEnvironmentAsync,
                 },
                 new InstallItemViewModel()
                 {
                     InstallItemType = InstallItemType.CustomAction,
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_PrepareEnvironment,
-                    CustomAction = PrepareDirectoriesAsync,
+                    CustomAwaitableAction = PrepareDirectoriesAsync,
                 },
                 new InstallItemViewModel()
                 {
                     InstallItemType = InstallItemType.CustomAction,
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_TryProtectCriticalServices,
-                    CustomAction = TryProtectCriticalServicesAsync,
+                    CustomAwaitableAction = TryProtectCriticalServicesAsync,
                 },
                 new InstallItemViewModel()
                 {
                     InstallItemType = InstallItemType.CustomAction,
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_SetDesktopWallpaper,
-                    CustomAction = SetDesktopWallpaperAsync,
+                    UseNonAwaitableAction = true,
+                    CustomAction = SetDesktopWallpaper,
                 },
             };
 
@@ -87,7 +88,7 @@ namespace Hostess.Components.Implementations
                     InstallItemType = InstallItemType.CustomAction,
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_EnableIEMode,
-                    CustomAction = EnableIEModeAsync,
+                    CustomAwaitableAction = EnableIEModeAsync,
                 });
             }
 
@@ -129,7 +130,7 @@ namespace Hostess.Components.Implementations
                 InstallItemType = InstallItemType.CustomAction,
                 TargetSiteName = UIStringResources.Option_Config,
                 PackageName = UIStringResources.Install_ConfigASTx,
-                CustomAction = ConfigASTxAsync,
+                CustomAwaitableAction = ConfigASTxAsync,
             });
 
             if (parsedArgs.InstallAdobeReader.HasValue &&
@@ -328,14 +329,13 @@ namespace Hostess.Components.Implementations
             catch (Exception ex) { _appMessageBox.DisplayError(ex, false); }
         }
 
-        private async Task SetDesktopWallpaperAsync(InstallItemViewModel viewModel,
-            CancellationToken cancellationToken = default)
+        private void SetDesktopWallpaper(InstallItemViewModel viewModel)
         {
             var parsedArgs = _commandLineArguments.Current;
 
             if (parsedArgs.DryRun)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
+                Thread.Sleep(TimeSpan.FromSeconds(1d));
                 return;
             }
 
