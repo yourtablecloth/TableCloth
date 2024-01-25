@@ -36,6 +36,9 @@ public partial class App : Application
         Action<ILoggingBuilder>? loggingBuilderOverride = default,
         Action<IServiceCollection>? servicesBuilderOverride = default)
     {
+        if (args == null)
+            args = Environment.GetCommandLineArgs().Skip(1).ToArray();
+
         return Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration(ConfigureAppConfiguration + configurationBuilderOverride)
             .ConfigureLogging(ConfigureLogging + loggingBuilderOverride)
@@ -180,10 +183,8 @@ public partial class App : Application
 
     public App()
     {
-        var args = Environment.GetCommandLineArgs().Skip(1).ToArray();
-        _host = CreateHostBuilder(args).Build();
+        _host = CreateHostBuilder().Build();
         Current.InitServiceProvider(_host.Services);
-
         InitializeComponent();
     }
 

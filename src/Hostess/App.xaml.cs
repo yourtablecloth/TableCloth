@@ -6,6 +6,7 @@ using Hostess.Components;
 using Hostess.Components.Implementations;
 using Hostess.Dialogs;
 using Hostess.ViewModels;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,16 +21,91 @@ namespace Hostess
 {
     public partial class App : Application
     {
+        public static IHostBuilder CreateHostBuilder(
+            string[] args = default,
+            Action<IConfigurationBuilder> configurationBuilderOverride = default,
+            Action<ILoggingBuilder> loggingBuilderOverride = default,
+            Action<IServiceCollection> servicesBuilderOverride = default)
+        {
+            if (args == null)
+                args = Environment.GetCommandLineArgs().Skip(1).ToArray();
+
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(ConfigureAppConfiguration + configurationBuilderOverride)
+                .ConfigureLogging(ConfigureLogging + loggingBuilderOverride)
+                .ConfigureServices(ConfigureServices + servicesBuilderOverride);
+        }
+
+        private static void ConfigureAppConfiguration(IConfigurationBuilder configure)
+        {
+        }
+
+        private static void ConfigureLogging(ILoggingBuilder logging)
+            => logging.AddConsole();
+
+        private static void ConfigureServices(IServiceCollection services)
+        {
+            // Add HTTP Service
+            services.AddHttpClient(
+                nameof(ConstantStrings.UserAgentText),
+                c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
+            services.AddHttpClient(
+                nameof(ConstantStrings.OldUserAgentText),
+                c =>
+                {
+                    c.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml");
+                    c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.OldUserAgentText);
+                });
+
+            // Components
+            services
+                .AddSingleton<IAppMessageBox, AppMessageBox>()
+                .AddSingleton<IMessageBoxService, MessageBoxService>()
+                .AddSingleton<IAppUserInterface, AppUserInterface>()
+                .AddSingleton<ILicenseDescriptor, LicenseDescriptor>()
+                .AddSingleton<ICriticalServiceProtector, CriticalServiceProtector>()
+                .AddSingleton<IVisualThemeManager, VisualThemeManager>()
+                .AddSingleton<ISharedLocations, SharedLocations>()
+                .AddSingleton<IAppStartup, AppStartup>()
+                .AddSingleton<IResourceResolver, ResourceResolver>()
+                .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
+                .AddSingleton<ICommandLineArguments, CommandLineArguments>()
+                .AddSingleton<IStepsComposer, StepsComposer>()
+                .AddSingleton<IStepsPlayer, StepsPlayer>()
+                .AddSingleton<IApplicationService, ApplicationService>();
+
+            // Shared Commands
+            services
+                .AddSingleton<OpenAppHomepageCommand>()
+                .AddSingleton<AboutThisAppCommand>()
+                .AddSingleton<ShowDebugInfoCommand>();
+
+            // About Window
+            services
+                .AddWindow<AboutWindow, AboutWindowViewModel>()
+                .AddSingleton<AboutWindowLoadedCommand>()
+                .AddSingleton<AboutWindowCloseCommand>();
+
+            // Precautions Window
+            services
+                .AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>()
+                .AddSingleton<PrecautionsWindowLoadedCommand>()
+                .AddSingleton<PrecautionsWindowCloseCommand>();
+
+            // Main Window
+            services
+                .AddWindow<MainWindow, MainWindowViewModel>()
+                .AddSingleton<MainWindowLoadedCommand>()
+                .AddSingleton<MainWindowInstallPackagesCommand>()
+                .AddSingleton<ShowErrorMessageCommand>();
+
+            // App
+            services.AddTransient(_ => Current);
+        }
+
         public App()
         {
-            _host = new HostBuilder()
-                .ConfigureLogging(logging =>
-                {
-                    logging.AddConsole();
-                })
-                .ConfigureServices(ConfigureServices)
-                .Build();
-
+            _host = CreateHostBuilder().Build();
             Current.InitServiceProvider(_host.Services);
             InitializeComponent();
         }
@@ -88,69 +164,6 @@ namespace Hostess
             var mainWindow = appUserInterface.CreateMainWindow();
             Current.MainWindow = mainWindow;
             mainWindow.Show();
-        }
-
-        private void ConfigureServices(IServiceCollection services)
-        {
-            // Add HTTP Service
-            services.AddHttpClient(
-                nameof(ConstantStrings.UserAgentText),
-                c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
-            services.AddHttpClient(
-                nameof(ConstantStrings.OldUserAgentText),
-                c =>
-                {
-                    c.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml");
-                    c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.OldUserAgentText);
-                });
-
-            // Components
-            services
-                .AddSingleton<IAppMessageBox, AppMessageBox>()
-                .AddSingleton<IMessageBoxService, MessageBoxService>()
-                .AddSingleton<IAppUserInterface, AppUserInterface>()
-                .AddSingleton<ILicenseDescriptor, LicenseDescriptor>()
-                .AddSingleton<ICriticalServiceProtector, CriticalServiceProtector>()
-                .AddSingleton<IVisualThemeManager, VisualThemeManager>()
-                .AddSingleton<ISharedLocations, SharedLocations>()
-                .AddSingleton<IAppStartup, AppStartup>()
-                .AddSingleton<IResourceResolver, ResourceResolver>()
-                .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
-                .AddSingleton<ICommandLineArguments, CommandLineArguments>()
-                .AddSingleton<IStepsComposer, StepsComposer>()
-                .AddSingleton<IStepsPlayer, StepsPlayer>()
-                .AddSingleton<IApplicationService, ApplicationService>();
-
-            // Shared Commands
-            services
-                .AddSingleton<OpenAppHomepageCommand>()
-                .AddSingleton<AboutThisAppCommand>()
-                .AddSingleton<ShowDebugInfoCommand>();
-
-            // About Window
-            services
-                .AddWindow<AboutWindow, AboutWindowViewModel>()
-                .AddSingleton<AboutWindowLoadedCommand>()
-                .AddSingleton<AboutWindowCloseCommand>();
-
-            // Precautions Window
-            services
-                .AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>()
-                .AddSingleton<PrecautionsWindowLoadedCommand>()
-                .AddSingleton<PrecautionsWindowCloseCommand>();
-
-            // Main Window
-            services
-                .AddWindow<MainWindow, MainWindowViewModel>()
-                .AddSingleton<MainWindowLoadedCommand>()
-                .AddSingleton<MainWindowInstallPackagesCommand>();
-
-            // InstallItem
-            services
-                .AddSingleton<ShowErrorMessageCommand>();
-
-            // App
-            services.AddTransient(_ => Current);
         }
     }
 }
