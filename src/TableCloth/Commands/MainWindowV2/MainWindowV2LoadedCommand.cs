@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Windows;
 using TableCloth.Components;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
@@ -21,7 +20,7 @@ public sealed class MainWindowV2LoadedCommand(
         var services = resourceCacheManager.CatalogDocument.Services;
 
         var commandLineSelectedService = default(CatalogInternetService);
-        if (parsedArg != null && parsedArg.SelectedServices.Count() > 0)
+        if (parsedArg != null && parsedArg.SelectedServices.Any())
         {
             commandLineSelectedService = services
                 .Where(x => parsedArg.SelectedServices.Contains(x.Id))

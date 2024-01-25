@@ -21,10 +21,10 @@ public partial class DisclaimerWindow : Window
 
     private void ViewModel_ViewLoaded(object? sender, EventArgs e)
     {
-        if (e is null) throw new ArgumentNullException(nameof(e));
+        ArgumentNullException.ThrowIfNull(e);
         var hwnd = new WindowInteropHelper(this).Handle;
 
-        NativeMethods.SetWindowLongW(
+        _ = NativeMethods.SetWindowLongW(
             hwnd,
             NativeMethods.GWL_STYLE,
             NativeMethods.GetWindowLongW(hwnd, NativeMethods.GWL_STYLE) & ~NativeMethods.WS_SYSMENU);

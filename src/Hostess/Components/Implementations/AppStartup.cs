@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
@@ -9,7 +8,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Serialization;
 using TableCloth.Models;
 using TableCloth.Resources;
 
@@ -19,19 +17,16 @@ namespace Hostess.Components.Implementations
     {
         public AppStartup(
             IAppMessageBox appMessageBox,
-            IAppUserInterface appUserInterface,
             ICommandLineArguments commandLineArguments,
             IResourceCacheManager resourceCacheManager)
         {
             _appMessageBox = appMessageBox;
-            _appUserInterface = appUserInterface;
             _commandLineArguments = commandLineArguments;
             _resourceCacheManager = resourceCacheManager;
             _mutex = new Mutex(true, $"Global\\{GetType().FullName}", out this._isFirstInstance);
         }
 
         private readonly IAppMessageBox _appMessageBox;
-        private readonly IAppUserInterface _appUserInterface;
         private readonly ICommandLineArguments _commandLineArguments;
         private readonly IResourceCacheManager _resourceCacheManager;
 
@@ -134,22 +129,6 @@ namespace Hostess.Components.Implementations
 
             result = ApplicationStartupResultModel.FromSucceedResult(providedWarnings: warnings);
             return await Task.FromResult(result).ConfigureAwait(false);
-        }
-
-        private T DeserializeFromXml<T>(Stream readableStream)
-            where T : class
-        {
-            var serializer = new XmlSerializer(typeof(T));
-            var xmlReaderSetting = new XmlReaderSettings()
-            {
-                XmlResolver = null,
-                DtdProcessing = DtdProcessing.Prohibit,
-            };
-
-            using (var contentStream = XmlReader.Create(readableStream, xmlReaderSetting))
-            {
-                return (T)serializer.Deserialize(contentStream);
-            }
         }
 
         private bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)

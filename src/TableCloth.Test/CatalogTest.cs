@@ -1,5 +1,4 @@
-﻿using System.IO;
-using TableCloth.Components;
+﻿using TableCloth.Components;
 
 namespace TableCloth.Test;
 

@@ -24,7 +24,7 @@ public partial class CatalogPage : Page
         => (CatalogPageViewModel)DataContext;
 
     // https://stackoverflow.com/questions/1077397/scroll-listviewitem-to-be-at-the-top-of-a-listview
-    private DependencyObject? GetScrollViewer(DependencyObject o)
+    private static DependencyObject? GetScrollViewer(DependencyObject o)
     {
         if (o is ScrollViewer)
             return o;
@@ -105,9 +105,7 @@ public partial class CatalogPage : Page
 
         foreach (var eachItem in SiteCatalog.Items)
         {
-            var catalogItem = eachItem as CatalogInternetService;
-
-            if (catalogItem == null)
+            if (eachItem is not CatalogInternetService catalogItem)
                 continue;
 
             if (catalogItem.Category != tag.Value)

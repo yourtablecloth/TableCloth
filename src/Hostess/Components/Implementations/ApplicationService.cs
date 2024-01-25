@@ -20,11 +20,7 @@ namespace Hostess.Components.Implementations
         public object DispatchInvoke(Delegate @delegate, object[] arguments)
         {
             var dispatcher = _application?.Dispatcher;
-
-            if (dispatcher == null)
-                throw new Exception("Dispatcher cannot be null reference.");
-
-            return dispatcher.Invoke(@delegate, arguments);
+            return dispatcher == null ? throw new Exception("Dispatcher cannot be null reference.") : dispatcher.Invoke(@delegate, arguments);
         }
 
         // https://stackoverflow.com/questions/2038879/refer-to-active-window-in-wpf

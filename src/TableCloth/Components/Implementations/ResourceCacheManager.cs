@@ -16,7 +16,7 @@ public sealed class ResourceCacheManager(
     IResourceResolver resourceResolver) : IResourceCacheManager
 {
     private CatalogDocument? _catalogDocument;
-    private Dictionary<string, ImageSource> _imageTable = new Dictionary<string, ImageSource>();
+    private readonly Dictionary<string, ImageSource> _imageTable = [];
 
     public async Task<CatalogDocument> LoadCatalogDocumentAsync(CancellationToken cancellationToken = default)
     {

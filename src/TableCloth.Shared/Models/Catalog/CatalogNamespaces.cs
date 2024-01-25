@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TableCloth.Models.Catalog
+﻿namespace TableCloth.Models.Catalog
 {
     public static class CatalogNamespaces
     {

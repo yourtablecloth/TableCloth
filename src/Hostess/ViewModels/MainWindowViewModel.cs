@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TableCloth;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
@@ -67,9 +66,6 @@ namespace Hostess.ViewModels
 
         public ShowDebugInfoCommand ShowDebugInfoCommand
             => _showDebugInfoCommand;
-
-        public bool DebugMode
-            => Helpers.IsDevelopmentBuild;
 
         public event EventHandler WindowLoaded;
         public event EventHandler CloseRequested;

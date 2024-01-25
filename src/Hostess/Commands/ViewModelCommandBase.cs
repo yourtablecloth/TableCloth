@@ -11,9 +11,7 @@ namespace Hostess.Commands
 
         public override void Execute(object parameter)
         {
-            var viewModel = parameter as TViewModel;
-
-            if (viewModel == null)
+            if (!(parameter is TViewModel viewModel))
                 throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
 
             Execute(viewModel);

@@ -63,7 +63,7 @@
                     <Image Source="{StaticResource BackButtonImage}" />
                 </Button.Content>
             </Button>
-            <Button Grid.Column="1" Width="100" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 10 0" Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Visibility="{Binding DebugMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Button Grid.Column="1" Width="100" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 10 0" Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Visibility="{Binding Source={x:Static local:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                 </Button.CommandParameter>

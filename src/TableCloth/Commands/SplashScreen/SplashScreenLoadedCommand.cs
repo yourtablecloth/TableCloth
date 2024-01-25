@@ -24,8 +24,7 @@ public sealed class SplashScreenLoadedCommand(
 
         try
         {
-            await viewModel.NotifyStatusUpdateAsync(this, new StatusUpdateRequestEventArgs(
-                UIStringResources.Status_ParsingCommandLine));
+            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_ParsingCommandLine });
 
             var parsedArgs = commandLineArguments.Current;
 
@@ -36,8 +35,7 @@ public sealed class SplashScreenLoadedCommand(
                 return;
             }
 
-            await viewModel.NotifyStatusUpdateAsync(this, new StatusUpdateRequestEventArgs(
-                UIStringResources.Status_InitSentrySDK));
+            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_InitSentrySDK });
 
             using var _ = SentrySdk.Init(o =>
             {
@@ -46,21 +44,18 @@ public sealed class SplashScreenLoadedCommand(
                 o.TracesSampleRate = 1.0;
             });
 
-            await viewModel.NotifyStatusUpdateAsync(this, new StatusUpdateRequestEventArgs(
-                UIStringResources.Status_LoadingPreferences));
+            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_LoadingPreferences });
 
             var preferences = await preferencesManager.LoadPreferencesAsync();
             viewModel.V2UIOptedIn = preferences?.V2UIOptIn ?? true;
             viewModel.ParsedArgument = parsedArgs;
 
-            await viewModel.NotifyStatusUpdateAsync(this, new StatusUpdateRequestEventArgs(
-                UIStringResources.Status_CheckInternetConnection));
+            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_CheckInternetConnection });
 
             if (!await appStartup.CheckForInternetConnectionAsync())
                 appMessageBox.DisplayError(ErrorStrings.Error_Offline, false);
 
-            await viewModel.NotifyStatusUpdateAsync(this, new StatusUpdateRequestEventArgs(
-                UIStringResources.Status_EvaluatingRequirementsMet));
+            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_EvaluatingRequirementsMet });
 
             var result = await appStartup.HasRequirementsMetAsync(viewModel.Warnings);
 
@@ -80,8 +75,7 @@ public sealed class SplashScreenLoadedCommand(
             if (viewModel.Warnings.Any())
                 appMessageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, viewModel.Warnings), false);
 
-            await viewModel.NotifyStatusUpdateAsync(this, new StatusUpdateRequestEventArgs(
-                UIStringResources.Status_InitializingApplication));
+            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_InitializingApplication });
 
             result = await appStartup.InitializeAsync(viewModel.Warnings);
 
@@ -98,13 +92,11 @@ public sealed class SplashScreenLoadedCommand(
                 }
             }
 
-            await viewModel.NotifyStatusUpdateAsync(this, new StatusUpdateRequestEventArgs(
-                UIStringResources.Status_LoadingCatalog));
+            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_LoadingCatalog });
 
             await resourceCacheManager.LoadCatalogDocumentAsync();
 
-            await viewModel.NotifyStatusUpdateAsync(this, new StatusUpdateRequestEventArgs(
-                UIStringResources.Status_LoadingImages));
+            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_LoadingImages });
 
             await resourceCacheManager.LoadSiteImagesAsync();
 
@@ -113,16 +105,14 @@ public sealed class SplashScreenLoadedCommand(
         catch (Exception ex)
         {
             viewModel.AppStartupSucceed = false;
-            await viewModel.NotifyStatusUpdateAsync(this, new StatusUpdateRequestEventArgs(
-                UIStringResources.Status_InitializingFailed));
+            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_InitializingFailed });
             appMessageBox.DisplayError(ex, true);
         }
         finally
         {
             if (viewModel.AppStartupSucceed)
             {
-                await viewModel.NotifyStatusUpdateAsync(this, new StatusUpdateRequestEventArgs(
-                    UIStringResources.Status_Done));
+                await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_Done });
             }
 
             await viewModel.NotifyInitializedAsync(this, new DialogRequestEventArgs(viewModel.AppStartupSucceed));

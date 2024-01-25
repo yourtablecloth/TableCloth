@@ -54,7 +54,7 @@ public class InputPasswordWindowViewModel : ViewModelBase
         => _inputPasswordWindowCancelCommand;
 
     private string _pfxFilePath = string.Empty;
-    private SecureString _password = new SecureString();
+    private SecureString _password = new();
     private X509CertPair? _validatedCertPair = null;
 
     public string PfxFilePath

@@ -8,17 +8,22 @@ namespace TableCloth.Models.Configuration
 {
     public class X509CertPair
     {
+#pragma warning disable IDE0300 // Simplify collection initialization
+        private static readonly char[] Separators = new char[] { ',', };
+#pragma warning restore IDE0300 // Simplify collection initialization
+
         public X509CertPair(byte[] publicKey, byte[] privateKey)
         {
             PublicKey = publicKey;
             PrivateKey = privateKey;
 
+#pragma warning disable IDE0063 // Use simple 'using' statement
             using (var cert = new X509Certificate2(publicKey))
             {
                 var issuerName = cert.Issuer;
 
                 var subject = cert.Subject
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Split(Separators, StringSplitOptions.RemoveEmptyEntries)
                     .Select(x =>
                     {
                         var parts = x.Trim().Split('=');
@@ -41,7 +46,10 @@ namespace TableCloth.Models.Configuration
                                      usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.NonRepudiation) &&
                                      usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.DigitalSignature);
 
+#pragma warning disable IDE0305 // Simplify collection initialization
                 Subject = subject.ToArray();
+#pragma warning restore IDE0305 // Simplify collection initialization
+
                 IsPersonalCert = isPersonalCert;
 
                 CommonName = Subject
@@ -69,6 +77,7 @@ namespace TableCloth.Models.Configuration
                 NotAfter = cert.NotAfter;
                 NotBefore = cert.NotBefore;
             }
+#pragma warning restore IDE0063 // Use simple 'using' statement
         }
 
         public byte[] PublicKey { get; }

@@ -42,7 +42,7 @@ public class SplashScreenViewModel : ViewModelBase
     private string _status = UIStringResources.Status_PleaseWait;
     private bool _appStartupSucceed = false;
     private bool _v2UIOptedIn = true;
-    private IList<string> _passedArguments = new string[] { };
+    private IList<string> _passedArguments = Array.Empty<string>();
     private CommandLineArgumentModel? _parsedArgument;
     private IList<string> _warnings = new List<string>();
 
@@ -51,12 +51,6 @@ public class SplashScreenViewModel : ViewModelBase
         get => _appVersion;
         set => SetProperty(ref _appVersion, value);
     }
-
-    public string BuildNote
-        => Helpers.IsDevelopmentBuild ? UIStringResources.Build_Debug : string.Empty;
-
-    public bool DebugMode
-        => Helpers.IsDevelopmentBuild;
 
     public string Status
     {

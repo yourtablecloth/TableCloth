@@ -37,7 +37,7 @@ public sealed class ShortcutCrerator(
         var shortcutFileName = linkName + ".lnk";
 
         var shortcutFilePath = Path.Combine(shortcutDirectoryPath, shortcutFileName);
-        await File.WriteAllBytesAsync(shortcutFilePath, new byte[0], cancellationToken).ConfigureAwait(false);
+        await File.WriteAllBytesAsync(shortcutFilePath, [], cancellationToken).ConfigureAwait(false);
 
         try
         {

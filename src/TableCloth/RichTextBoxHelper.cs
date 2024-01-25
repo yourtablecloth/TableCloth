@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -11,7 +12,7 @@ using System.Windows.Navigation;
 namespace TableCloth;
 
 // https://stackoverflow.com/a/2641774
-public sealed class RichTextBoxHelper : DependencyObject
+public sealed partial class RichTextBoxHelper : DependencyObject
 {
     static RichTextBoxHelper()
     {
@@ -43,14 +44,16 @@ public sealed class RichTextBoxHelper : DependencyObject
                     if (pointer.GetPointerContext(LogicalDirection.Forward) == TextPointerContext.Text)
                     {
                         var textRun = pointer.GetTextInRun(LogicalDirection.Forward);
-                        var matches = Regex.Matches(textRun, @"((https://|http://|ftp://|mailto:)[^\s]+)");
+                        var matches = UriSchemeRegex().Matches(textRun);
 
-                        foreach (Match match in matches)
+                        foreach (Match match in matches.Cast<Match>())
                         {
                             var start = pointer.GetPositionAtOffset(match.Index);
                             var end = start.GetPositionAtOffset(match.Length);
-                            var hyperlink = new Hyperlink(start, end);
-                            hyperlink.NavigateUri = new Uri(match.Value);
+                            var hyperlink = new Hyperlink(start, end)
+                            {
+                                NavigateUri = new Uri(match.Value)
+                            };
                             hyperlink.RequestNavigate += Hyperlink_RequestNavigate;
                         }
                     }
@@ -93,4 +96,7 @@ public sealed class RichTextBoxHelper : DependencyObject
     public static readonly DependencyProperty DocumentXamlProperty;
 
     private static readonly Encoding TargetEncoding;
+
+    [GeneratedRegex(@"((https://|http://|ftp://|mailto:)[^\s]+)")]
+    private static partial Regex UriSchemeRegex();
 }

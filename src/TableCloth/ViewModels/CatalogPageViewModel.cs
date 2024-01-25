@@ -59,9 +59,6 @@ public class CatalogPageViewModel : ViewModelBase
     public ShowDebugInfoCommand ShowDebugInfoCommand
         => _showDebugInfoCommand;
 
-    public bool DebugMode
-        => Helpers.IsDevelopmentBuild;
-
     public CatalogInternetService? SelectedService
     {
         get => _selectedService;

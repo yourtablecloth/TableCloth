@@ -12,14 +12,10 @@ using TableCloth.Resources;
 
 namespace TableCloth.Components;
 
-public sealed class X509CertPairScanner : IX509CertPairScanner
+public sealed class X509CertPairScanner(
+    ILogger<X509CertPairScanner> logger) : IX509CertPairScanner
 {
-    public X509CertPairScanner(ILogger<X509CertPairScanner> logger)
-    {
-        Logger = logger;
-    }
-
-    public ILogger Logger { get; init; }
+    public ILogger Logger { get; init; } = logger;
 
     public IEnumerable<string> GetCandidateDirectories()
     {
@@ -57,7 +53,7 @@ public sealed class X509CertPairScanner : IX509CertPairScanner
             }
             catch (Exception e)
             {
-                Logger.LogWarning(e, StringResources.TableCloth_Log_DirectoryEnumFail_ProhibitTranslation(eachRootPath, e));
+                Logger.LogWarning(e, "{message}", StringResources.TableCloth_Log_DirectoryEnumFail_ProhibitTranslation(eachRootPath, e));
             }
 
             try
@@ -71,19 +67,19 @@ public sealed class X509CertPairScanner : IX509CertPairScanner
             }
             catch (UnauthorizedAccessException uae)
             {
-                Logger.LogWarning(uae, $"Cannot load X509 cert pair - {eachRootPath}");
+                Logger.LogWarning(uae, "Cannot load X509 cert pair - {eachRootPath}", eachRootPath);
             }
             catch (PathTooLongException ptle)
             {
-                Logger.LogWarning(ptle, $"Cannot load X509 cert pair - {eachRootPath}");
+                Logger.LogWarning(ptle, "Cannot load X509 cert pair - {eachRootPath}", eachRootPath);
             }
             catch (AggregateException ae)
             {
-                Logger.LogWarning(ae.InnerException ?? ae, $"Cannot load X509 cert pair - {eachRootPath}");
+                Logger.LogWarning(ae.InnerException ?? ae, "Cannot load X509 cert pair - {eachRootPath}", eachRootPath);
             }
             catch (Exception e)
             {
-                Logger.LogWarning(e, $"Cannot load X509 cert pair - {eachRootPath}");
+                Logger.LogWarning(e, "Cannot load X509 cert pair - {eachRootPath}", eachRootPath);
             }
         }
 
@@ -110,18 +106,14 @@ public sealed class X509CertPairScanner : IX509CertPairScanner
 
         var copiedPassword = CertPrivateKeyHelper.CopyFromSecureString(password);
 
-        using (X509Certificate2 cert = new X509Certificate2(pfxFilePath, copiedPassword, X509KeyStorageFlags.Exportable))
-        {
-            var publicKey = cert.Export(X509ContentType.Cert);
-            var rsaPrivateKey = cert.GetRSAPrivateKey();
+        using X509Certificate2 cert = new X509Certificate2(pfxFilePath, copiedPassword, X509KeyStorageFlags.Exportable);
+        var publicKey = cert.Export(X509ContentType.Cert);
 
-            if (rsaPrivateKey == null)
-                throw new Exception("Cannot obtain RSA private key.");
+        var rsaPrivateKey = cert.GetRSAPrivateKey()
+            ?? throw new Exception("Cannot obtain RSA private key.");
+        var privateKey = rsaPrivateKey.ExportEncryptedPkcs8PrivateKey(copiedPassword,
+            new PbeParameters(PbeEncryptionAlgorithm.TripleDes3KeyPkcs12, HashAlgorithmName.SHA1, 2048));
 
-            var privateKey = rsaPrivateKey.ExportEncryptedPkcs8PrivateKey(copiedPassword,
-                new PbeParameters(PbeEncryptionAlgorithm.TripleDes3KeyPkcs12, HashAlgorithmName.SHA1, 2048));
-
-            return new X509CertPair(publicKey, privateKey);
-        }
+        return new X509CertPair(publicKey, privateKey);
     }
 }

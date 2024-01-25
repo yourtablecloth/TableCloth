@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +13,12 @@ public sealed class PreferencesManager(
     ILogger<PreferencesManager> logger) : IPreferencesManager
 {
     private readonly ILogger _logger = logger;
+
+    private static readonly JsonSerializerOptions Options = new()
+    {
+        AllowTrailingCommas = true,
+        WriteIndented = true,
+    };
 
     public async Task<PreferenceSettings?> LoadPreferencesAsync(CancellationToken cancellationToken = default)
     {
@@ -29,9 +34,7 @@ public sealed class PreferencesManager(
         {
             using var stream = File.OpenRead(prefFilePath);
             settings = await JsonSerializer.DeserializeAsync<PreferenceSettings>(
-                stream,
-                new JsonSerializerOptions() { AllowTrailingCommas = true, },
-                cancellationToken).ConfigureAwait(false);
+                stream, Options, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -43,20 +46,15 @@ public sealed class PreferencesManager(
     }
 
     public PreferenceSettings GetDefaultPreferences()
-        => new PreferenceSettings();
+        => new();
 
     public async Task SavePreferencesAsync(PreferenceSettings preferences, CancellationToken cancellationToken = default)
     {
-        var defaultPreferences = GetDefaultPreferences();
-
-        if (preferences == null)
-            preferences = defaultPreferences;
-
+        preferences ??= GetDefaultPreferences();
         var prefFilePath = sharedLocations.PreferencesFilePath;
 
         using var stream = File.OpenWrite(prefFilePath);
         await JsonSerializer.SerializeAsync(stream, preferences,
-            new JsonSerializerOptions() { AllowTrailingCommas = true, WriteIndented = true, },
-            cancellationToken).ConfigureAwait(false);
+            Options, cancellationToken).ConfigureAwait(false);
     }
 }

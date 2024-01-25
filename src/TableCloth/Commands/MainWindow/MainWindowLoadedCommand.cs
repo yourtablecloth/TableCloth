@@ -78,7 +78,8 @@ public sealed class MainWindowLoadedCommand(
                 if (item is not CatalogInternetService actualItem)
                     return true;
 
-                var splittedFilterText = filterText.Split(new char[] { ',', }, StringSplitOptions.RemoveEmptyEntries);
+                var filterTextSeparators = new char[] { ',', };
+                var splittedFilterText = filterText.Split(filterTextSeparators, StringSplitOptions.RemoveEmptyEntries);
                 var result = false;
 
                 foreach (var eachFilterText in splittedFilterText)
@@ -108,7 +109,7 @@ public sealed class MainWindowLoadedCommand(
                 return;
             }
 
-            if (parsedArg.SelectedServices.Count() > 0)
+            if (parsedArg.SelectedServices.Any())
             {
                 var config = configurationComposer.GetConfigurationFromArgumentModel(parsedArg);
                 await sandboxLauncher.RunSandboxAsync(config);
@@ -122,9 +123,7 @@ public sealed class MainWindowLoadedCommand(
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));
 
         var currentConfig = await preferencesManager.LoadPreferencesAsync();
-
-        if (currentConfig == null)
-            currentConfig = preferencesManager.GetDefaultPreferences();
+        currentConfig ??= preferencesManager.GetDefaultPreferences();
 
         switch (e.PropertyName)
         {

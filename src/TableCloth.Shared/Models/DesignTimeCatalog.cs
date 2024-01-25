@@ -7,7 +7,9 @@ namespace TableCloth.Resources
 {
     internal static class DesignTimeCatalog
     {
+#pragma warning disable IDE0090 // Use 'new(...)'
         private static readonly Random randomizer = new Random();
+#pragma warning restore IDE0090 // Use 'new(...)'
 
         public static readonly CatalogDocument DesignTimeCatalogDocument = GenerateDesignTimeCatalogDocument();
 
@@ -19,23 +21,27 @@ namespace TableCloth.Resources
 
         public static bool? ConvertToTriState(int index)
         {
+#pragma warning disable IDE0066 // Convert switch statement to expression
             switch (Math.Abs(index) % 3)
             {
                 case 0: return null;
                 case 1: return true;
                 default: return false;
             }
+#pragma warning restore IDE0066 // Convert switch statement to expression
         }
 
         public static string GenerateRandomErrorMessage(int index)
             => (index % 3 == 2) ? "Design time error simulation" : string.Empty;
 
+#pragma warning disable IDE0090 // Use 'new(...)'
         public static CatalogDocument GenerateDesignTimeCatalogDocument(int min = DefaultMinimum, int max = DefaultMaximum) =>
             new CatalogDocument()
             {
                 Services = new List<CatalogInternetService>(GenerateInternetServices(min, max)),
                 Companions = new List<CatalogCompanion>(GenerateCompanions(min, max)),
             };
+#pragma warning restore IDE0090 // Use 'new(...)'
 
         public static IEnumerable<CatalogCompanion> GenerateCompanions(int min = DefaultMinimum, int max = DefaultMaximum)
             => Enumerable

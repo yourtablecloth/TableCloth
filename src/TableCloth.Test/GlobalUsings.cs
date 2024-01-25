@@ -1,10 +1,9 @@
 global using Microsoft.Extensions.DependencyInjection;
-global using System.Windows;
-global using Xunit;
-global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Hosting;
 global using Moq;
+global using System.Windows;
 global using TableCloth.Resources;
-
-global using TableClothApp = TableCloth.App;
+global using Xunit;
 global using static Moq.It;
+global using TableClothApp = TableCloth.App;

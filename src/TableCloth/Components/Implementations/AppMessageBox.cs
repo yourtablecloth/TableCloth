@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
 using TableCloth.Resources;
 
@@ -26,7 +25,7 @@ public sealed class AppMessageBox(
                 applicationService.GetActiveWindow(), message, UIStringResources.TitleText_Info,
                 messageBoxButton, MessageBoxImage.Information,
                 MessageBoxResult.OK);
-        }, new object[] { } )!;
+        }, [])!;
     }
 
     /// <summary>
@@ -57,6 +56,6 @@ public sealed class AppMessageBox(
             return messageBoxService.Show(
                 applicationService.GetActiveWindow(), message, title, MessageBoxButton.OK,
                 image, MessageBoxResult.OK);
-        }, new object[] { })!;
+        }, [])!;
     }
 }

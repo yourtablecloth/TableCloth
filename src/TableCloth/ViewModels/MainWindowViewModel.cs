@@ -92,9 +92,6 @@ public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
     public CertSelectCommand CertSelectCommand
         => _certSelectCommand;
 
-    public bool DebugMode
-        => Helpers.IsDevelopmentBuild;
-
     public string FilterText
     {
         get => _filterText;

@@ -76,9 +76,13 @@ namespace TableCloth
                             commitId = streamReader.ReadToEnd().Trim();
 
                             if (commitId.Length > 8)
+#pragma warning disable IDE0057 // Use range operator
                                 commitId = commitId.Substring(0, 8);
+#pragma warning restore IDE0057 // Use range operator
 
+#pragma warning disable IDE0057 // Use range operator
                             versionInfo = $"{versionInfo}, #{commitId.Substring(0, 8)}";
+#pragma warning restore IDE0057 // Use range operator
                         }
                     }
                 }
@@ -94,7 +98,9 @@ namespace TableCloth
         public static string GetDefaultWindowsSandboxPath()
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsSandbox.exe");
 
+#pragma warning disable IDE0300 // Simplify collection initialization
         public static readonly string[] ValidAccountNames = new string[]
+#pragma warning restore IDE0300 // Simplify collection initialization
         {
             "ContainerAdministrator",
             "ContainerUser",

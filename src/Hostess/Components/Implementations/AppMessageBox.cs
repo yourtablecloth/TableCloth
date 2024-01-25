@@ -66,7 +66,7 @@ namespace Hostess.Components.Implementations
                 return _messageBoxService.Show(
                     _applicationService.GetMainWindow(), message, title, MessageBoxButton.OK,
                     image, MessageBoxResult.OK);
-            }), new object[] {});
+            }), new object[] { });
         }
 
         public MessageBoxResult DisplayQuestion(string message, MessageBoxButton messageBoxButton = MessageBoxButton.YesNo, MessageBoxResult defaultAnswer = MessageBoxResult.Yes)

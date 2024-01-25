@@ -70,7 +70,7 @@ public sealed class SandboxLauncher(
             tempPath, config, excludedFolderList, cancellationToken)
             .ConfigureAwait(false);
 
-        if (excludedFolderList.Any())
+        if (excludedFolderList.Count != 0)
             appMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);
 
         sandboxCleanupManager.SetWorkingDirectory(tempPath);
@@ -104,7 +104,8 @@ public sealed class SandboxLauncher(
         {
             if (!File.Exists(wsbFilePath))
             {
-                _logger.LogError(reason = StringResources.TableCloth_Log_WsbFileCreateFail_ProhibitTranslation(wsbFilePath));
+                reason = StringResources.TableCloth_Log_WsbFileCreateFail_ProhibitTranslation(wsbFilePath);
+                _logger.LogError("{reason}", reason);
                 return false;
             }
 
@@ -117,7 +118,8 @@ public sealed class SandboxLauncher(
 
                 if (content == null)
                 {
-                    _logger.LogError(reason = StringResources.TableCloth_Log_CannotParseWsbFile_ProhibitTranslation(wsbFilePath));
+                    reason = StringResources.TableCloth_Log_CannotParseWsbFile_ProhibitTranslation(wsbFilePath);
+                    _logger.LogError("{reason}", reason);
                     return false;
                 }
             }
@@ -127,7 +129,8 @@ public sealed class SandboxLauncher(
                 // HostFolder 태그에 들어가는 경로는 절대 경로만 사용되므로 상대 경로 처리를 하지 않아도 됨.
                 if (!Directory.Exists(eachMappedFolder.HostFolder))
                 {
-                    _logger.LogError(reason = StringResources.TableCloth_Log_HostFolderNotExists_ProhibitTranslation(eachMappedFolder.HostFolder));
+                    reason = StringResources.TableCloth_Log_HostFolderNotExists_ProhibitTranslation(eachMappedFolder.HostFolder);
+                    _logger.LogError("{reason}", reason);
                     return false;
                 }
             }
@@ -142,7 +145,8 @@ public sealed class SandboxLauncher(
             if (ex is AggregateException)
                 actualException = ex.InnerException ?? ex;
 
-            _logger.LogError(actualException, reason = StringResources.TableCloth_UnwrapException(actualException));
+            reason = StringResources.TableCloth_UnwrapException(actualException);
+            _logger.LogError(actualException, "{reason}", reason);
             return false;
         }
     }

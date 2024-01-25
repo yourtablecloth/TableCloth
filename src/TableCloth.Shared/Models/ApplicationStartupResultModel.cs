@@ -11,28 +11,36 @@ namespace TableCloth.Models
             ?
 #endif
             providedWarnings = default)
+#pragma warning disable IDE0090 // Use 'new(...)'
             => new ApplicationStartupResultModel(true, providedWarnings, default, false);
+#pragma warning restore IDE0090 // Use 'new(...)'
 
         public static ApplicationStartupResultModel FromHaltedResult(IEnumerable<string>
 #if !NETFX
             ?
 #endif
             providedWarnings = default)
+#pragma warning disable IDE0090 // Use 'new(...)'
             => new ApplicationStartupResultModel(false, providedWarnings, default, false);
+#pragma warning restore IDE0090 // Use 'new(...)'
 
         public static ApplicationStartupResultModel FromException(Exception thrownException, bool isCritical = default, IEnumerable<string>
 #if !NETFX
             ?
 #endif
             providedWarnings = default)
+#pragma warning disable IDE0090 // Use 'new(...)'
             => new ApplicationStartupResultModel(false, providedWarnings, thrownException, isCritical);
+#pragma warning restore IDE0090 // Use 'new(...)'
 
         public static ApplicationStartupResultModel FromErrorMessage(string errorMessage, bool isCritical = default, IEnumerable<string>
 #if !NETFX
             ?
 #endif
             providedWarnings = default)
+#pragma warning disable IDE0090 // Use 'new(...)'
             => new ApplicationStartupResultModel(false, providedWarnings, new ApplicationException(errorMessage), isCritical);
+#pragma warning restore IDE0090 // Use 'new(...)'
 
         public static ApplicationStartupResultModel FromErrorMessage(string errorMessage, Exception
 #if !NETFX
@@ -43,9 +51,13 @@ namespace TableCloth.Models
             ?
 #endif
             providedWarnings = default)
+#pragma warning disable IDE0090 // Use 'new(...)'
             => new ApplicationStartupResultModel(false, providedWarnings, new ApplicationException(errorMessage, innerException), isCritical);
+#pragma warning restore IDE0090 // Use 'new(...)'
 
+#pragma warning disable IDE0290 // Use primary constructor
         public ApplicationStartupResultModel(
+#pragma warning restore IDE0290 // Use primary constructor
             bool succeed,
 
             IEnumerable<string>

@@ -37,7 +37,11 @@ public class CertSelectWindowViewModel : ViewModelBase
     private readonly CertSelectWindowRequestConfirmCommand _certSelectWindowRequestConfirmCommand;
     private readonly CertSelectWindowRequestCancelCommand _certSelectWindowRequestCancelCommand;
 
+#pragma warning disable IDE0028 // Simplify collection initialization
+#pragma warning disable IDE0090 // Use 'new(...)'
     private List<X509CertPair> _certPairs = new List<X509CertPair>();
+#pragma warning restore IDE0090 // Use 'new(...)'
+#pragma warning restore IDE0028 // Simplify collection initialization
     private X509CertPair? _selectedCertPair;
 
     public event EventHandler<DialogRequestEventArgs>? CloseRequested;

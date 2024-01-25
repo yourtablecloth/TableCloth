@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -12,23 +11,23 @@ namespace TableCloth.Components;
 public sealed class LicenseDescriptor(
     IResourceResolver resourceResolver) : ILicenseDescriptor
 {
-    private IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
+    private static AssemblyName[] GetReferencedThirdPartyAssemblies()
     {
         var asm = Assembly.GetEntryAssembly()
             ?? throw new Exception(ErrorStrings.Error_Cannot_Obtain_Assembly);
 
         var bclPublicKeyTokens = new byte[][] {
-            new byte[] { 0xb0, 0x3f, 0x5f, 0x7f, 0x11, 0xd5, 0x0a, 0x3a, },
-            new byte[] { 0x31, 0xbf, 0x38, 0x56, 0xad, 0x36, 0x4e, 0x35, },
-            new byte[] { 0xb7, 0x7a, 0x5c, 0x56, 0x19, 0x34, 0xe0, 0x89, },
-            new byte[] { 0xad, 0xb9, 0x79, 0x38, 0x29, 0xdd, 0xae, 0x60, },
-            new byte[] { 0xcc, 0x7b, 0x13, 0xff, 0xcd, 0x2d, 0xdd, 0x51, },
+            [0xb0, 0x3f, 0x5f, 0x7f, 0x11, 0xd5, 0x0a, 0x3a,],
+            [0x31, 0xbf, 0x38, 0x56, 0xad, 0x36, 0x4e, 0x35,],
+            [0xb7, 0x7a, 0x5c, 0x56, 0x19, 0x34, 0xe0, 0x89,],
+            [0xad, 0xb9, 0x79, 0x38, 0x29, 0xdd, 0xae, 0x60,],
+            [0xcc, 0x7b, 0x13, 0xff, 0xcd, 0x2d, 0xdd, 0x51,],
         };
 
         var refList = asm
             .GetReferencedAssemblies()
             .Prepend(asm.GetName())
-            .Where(x => !bclPublicKeyTokens.Any(y => y.SequenceEqual(x.GetPublicKeyToken() ?? Array.Empty<byte>())))
+            .Where(x => !bclPublicKeyTokens.Any(y => y.SequenceEqual(x.GetPublicKeyToken() ?? [])))
             .ToArray();
 
         return refList;

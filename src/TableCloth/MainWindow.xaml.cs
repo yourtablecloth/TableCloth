@@ -70,10 +70,9 @@ public partial class MainWindow : Window
 
     private void GridViewColumnHeaderClickedHandler(object sender, RoutedEventArgs e)
     {
-        var headerClicked = e.OriginalSource as GridViewColumnHeader;
         ListSortDirection? direction;
 
-        if (headerClicked != null)
+        if (e.OriginalSource is GridViewColumnHeader headerClicked)
         {
             if (headerClicked.Role != GridViewColumnHeaderRole.Padding)
             {

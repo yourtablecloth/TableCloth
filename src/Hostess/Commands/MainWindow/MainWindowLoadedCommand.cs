@@ -40,7 +40,7 @@ namespace Hostess.Commands.MainWindow
             var targets = parsedArgs.SelectedServices;
 
             viewModel.ShowDryRunNotification = parsedArgs.DryRun;
-            
+
             await viewModel.NotifyWindowLoadedAsync(this, EventArgs.Empty);
 
             var packages = _stepsComposer.ComposeSteps();

@@ -32,7 +32,11 @@ public sealed class AppStartup : IAppStartup
 
     ~AppStartup() => Dispose(false);
 
-    public void Dispose() => Dispose(true);
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
     private void Dispose(bool disposing)
     {
@@ -168,9 +172,7 @@ public sealed class AppStartup : IAppStartup
                 };
 
                 var process = Process.Start(psi);
-
-                if (process != null)
-                    process.WaitForExit();
+                process?.WaitForExit();
 
                 result = ApplicationStartupResultModel.FromErrorMessage(
                     ErrorStrings.Error_Restart_And_RunAgain, isCritical: true, providedWarnings: warnings);
@@ -279,26 +281,22 @@ public sealed class AppStartup : IAppStartup
 
         try
         {
-            using (var imagesZipStream = File.OpenRead(_sharedLocations.ImagesZipFilePath))
+            using var imagesZipStream = File.OpenRead(_sharedLocations.ImagesZipFilePath);
+            using var zipArchive = new ZipArchive(imagesZipStream, ZipArchiveMode.Read);
+
+            foreach (var eachEntry in zipArchive.Entries)
             {
-                using var zipArchive = new ZipArchive(imagesZipStream, ZipArchiveMode.Read);
+                var destPath = Path.Combine(imageDirectoryPath, eachEntry.Name);
 
-                foreach (var eachEntry in zipArchive.Entries)
+                try
                 {
-                    var destPath = Path.Combine(imageDirectoryPath, eachEntry.Name);
-
-                    try
-                    {
-                        using (var outputStream = File.OpenWrite(destPath))
-                        using (var eachStream = eachEntry.Open())
-                        {
-                            await eachStream.CopyToAsync(outputStream, cancellationToken).ConfigureAwait(false);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogWarning(e, $"Cannot write image file {destPath}.");
-                    }
+                    using var outputStream = File.OpenWrite(destPath);
+                    using var eachStream = eachEntry.Open();
+                    await eachStream.CopyToAsync(outputStream, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning(e, "Cannot write image file {destPath}.", destPath);
                 }
             }
         }

@@ -12,7 +12,9 @@ public sealed class CatalogPageLoadedCommand(
     IResourceCacheManager resourceCacheManager) : ViewModelCommandBase<CatalogPageViewModel>
 {
     private static readonly PropertyGroupDescription GroupDescription =
-        new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
+        new(nameof(CatalogInternetService.CategoryDisplayName));
+
+    private static readonly char[] FilterTextSeparators = [',',];
 
     public override void Execute(CatalogPageViewModel viewModel)
     {
@@ -39,9 +41,7 @@ public sealed class CatalogPageLoadedCommand(
         {
             view.Filter = (item) =>
             {
-                var actualItem = item as CatalogInternetService;
-
-                if (actualItem == null)
+                if (item is not CatalogInternetService actualItem)
                     return false;
 
                 var filterText = viewModel.SearchKeyword;
@@ -50,7 +50,7 @@ public sealed class CatalogPageLoadedCommand(
                     return true;
 
                 var result = false;
-                var splittedFilterText = filterText.Split(new char[] { ',', }, StringSplitOptions.RemoveEmptyEntries);
+                var splittedFilterText = filterText.Split(FilterTextSeparators, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var eachFilterText in splittedFilterText)
                 {

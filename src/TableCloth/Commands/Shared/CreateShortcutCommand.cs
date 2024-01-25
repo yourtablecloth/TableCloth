@@ -12,7 +12,7 @@ public sealed class CreateShortcutCommand(
 
     public override async void Execute(ITableClothViewModel viewModel)
     {
-        if (viewModel.SelectedServices.Count() < 1)
+        if (!viewModel.SelectedServices.Any())
         {
             appMessageBox.DisplayError(ErrorStrings.Error_ShortcutNoSiteSelected, false);
             return;

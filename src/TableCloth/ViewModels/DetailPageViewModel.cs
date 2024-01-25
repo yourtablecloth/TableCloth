@@ -117,9 +117,6 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     public int? PackageCountForDisplay
         => _selectedService?.PackageCountForDisplay;
 
-    public bool DebugMode
-        => Helpers.IsDevelopmentBuild;
-
     private CommandLineArgumentModel? _commandLineArgumentModel;
     private ImageSource? _serviceLogo;
     private bool _mapNpkiCert;

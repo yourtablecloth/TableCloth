@@ -39,8 +39,7 @@ public sealed class SandboxBuilder(
         IList<SandboxMappedFolder> excludedDirectories,
         CancellationToken cancellationToken = default)
     {
-        if (tableClothConfiguration == null)
-            throw new ArgumentNullException(nameof(tableClothConfiguration));
+        ArgumentNullException.ThrowIfNull(tableClothConfiguration);
 
         using var hostessZipFileStream = File.OpenRead(
             Path.Combine(sharedLocations.ExecutableDirectoryPath, "Hostess.zip"));
@@ -118,8 +117,7 @@ public sealed class SandboxBuilder(
 
     private string GenerateSandboxStartupScript(TableClothConfiguration tableClothConfiguration)
     {
-        if (tableClothConfiguration == null)
-            throw new ArgumentNullException(nameof(tableClothConfiguration));
+        ArgumentNullException.ThrowIfNull(tableClothConfiguration);
 
         var certFileCopyScript = string.Empty;
 
@@ -169,7 +167,7 @@ popd
 ";
     }
 
-    private void ExpandAssetZip(Stream zipFileStream, string outputDirectory)
+    private static void ExpandAssetZip(Stream zipFileStream, string outputDirectory)
     {
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
@@ -182,10 +180,9 @@ popd
         zipArchive.ExtractToDirectory(assetsDirectory, true);
     }
 
-    private string SerializeSandboxSpec(SandboxConfiguration configuration, IList<SandboxMappedFolder> excludedFolders)
+    private static string SerializeSandboxSpec(SandboxConfiguration configuration, IList<SandboxMappedFolder> excludedFolders)
     {
-        if (configuration == null)
-            throw new ArgumentNullException(nameof(configuration));
+        ArgumentNullException.ThrowIfNull(configuration);
 
         var unavailableDirectories = configuration.MappedFolders
             .Where(x => !Directory.Exists(x.HostFolder));
@@ -197,7 +194,7 @@ popd
                 excludedFolders.Add(eachDirectory);
 
         var serializer = new XmlSerializer(typeof(SandboxConfiguration));
-        var @namespace = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty) });
+        var @namespace = new XmlSerializerNamespaces([new XmlQualifiedName(string.Empty)]);
         var targetEncoding = new UTF8Encoding(false);
 
         using var memStream = new MemoryStream();

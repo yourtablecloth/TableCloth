@@ -34,7 +34,8 @@ public class ServiceLogoConverter : IValueConverter
             _resourceCacheManager = serviceProvider.GetRequiredService<IResourceCacheManager>();
         }
 
-        return _resourceCacheManager.GetImage((string)value) ?? throw new ArgumentException(nameof(value));
+        return _resourceCacheManager.GetImage((string)value) ??
+            throw new ArgumentException(null, nameof(value));
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

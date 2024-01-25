@@ -28,9 +28,7 @@ public sealed class DetailPageLoadedCommand(
         viewModel.SelectedService = selectedService;
 
         var currentConfig = await preferencesManager.LoadPreferencesAsync();
-
-        if (currentConfig == null)
-            currentConfig = preferencesManager.GetDefaultPreferences();
+        currentConfig ??= preferencesManager.GetDefaultPreferences();
 
         viewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
         viewModel.V2UIOptIn = currentConfig.V2UIOptIn;
@@ -69,7 +67,7 @@ public sealed class DetailPageLoadedCommand(
         }
 
         if (viewModel.CommandLineArgumentModel != null &&
-            viewModel.CommandLineArgumentModel.SelectedServices.Count() > 0)
+            viewModel.CommandLineArgumentModel.SelectedServices.Any())
         {
             var config = configurationComposer.GetConfigurationFromArgumentModel(viewModel.CommandLineArgumentModel);
             await sandboxLauncher.RunSandboxAsync(config);
@@ -82,9 +80,7 @@ public sealed class DetailPageLoadedCommand(
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));
 
         var currentConfig = await preferencesManager.LoadPreferencesAsync();
-
-        if (currentConfig == null)
-            currentConfig = preferencesManager.GetDefaultPreferences();
+        currentConfig ??= preferencesManager.GetDefaultPreferences();
 
         switch (e.PropertyName)
         {

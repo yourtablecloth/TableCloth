@@ -5,6 +5,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:TableCloth.ViewModels"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:tablecloth="clr-namespace:TableCloth"
         xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         xmlns:xrpb="http://XamlRadialProgressBar/DotNet"
         mc:Ignorable="d"
@@ -35,7 +36,7 @@
                 <Image Height="100" Margin="0,0,0,20" Source="/Resources/SandboxIcon.png"/>
                 <TextBlock Text="{x:Static res:CommonStrings.AppName}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
                 <TextBlock Text="{Binding AppVersion}" TextAlignment="Center" />
-                <TextBlock Text="{Binding BuildNote}" TextAlignment="Center" Visibility="{Binding DebugMode, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <TextBlock Text="{Binding Source={x:Static res:UIStringResources.Build_Debug}}" TextAlignment="Center" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </StackPanel>
 
             <!-- Circular Progress Indicator -->

@@ -3,7 +3,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using TableCloth.Models.Catalog;
-using Windows.Services.Maps;
 
 namespace TableCloth.Components.Implementations;
 

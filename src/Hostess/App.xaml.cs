@@ -155,7 +155,7 @@ namespace Hostess
                 if (result.IsCritical)
                 {
                     if (Helpers.IsDevelopmentBuild)
-                        throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());        
+                        throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
                     else
                         Shutdown(-1);
                 }

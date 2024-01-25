@@ -13,8 +13,7 @@ public class EnumBooleanConverter : IValueConverter
         if (value == null)
             return DependencyProperty.UnsetValue;
 
-        var parameterString = parameter as string;
-        if (parameterString == null)
+        if (parameter is not string parameterString)
             return DependencyProperty.UnsetValue;
 
         if (Enum.IsDefined(value.GetType(), value) == false)
@@ -27,8 +26,7 @@ public class EnumBooleanConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
-        var parameterString = parameter as string;
-        if (parameterString == null)
+        if (parameter is not string parameterString)
             return DependencyProperty.UnsetValue;
 
         return Enum.Parse(targetType, parameterString);

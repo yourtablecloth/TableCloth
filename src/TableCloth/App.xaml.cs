@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Linq;
-using System.Net;
 using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
@@ -36,8 +35,7 @@ public partial class App : Application
         Action<ILoggingBuilder>? loggingBuilderOverride = default,
         Action<IServiceCollection>? servicesBuilderOverride = default)
     {
-        if (args == null)
-            args = Environment.GetCommandLineArgs().Skip(1).ToArray();
+        args ??= Environment.GetCommandLineArgs().Skip(1).ToArray();
 
         return Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration(ConfigureAppConfiguration + configurationBuilderOverride)

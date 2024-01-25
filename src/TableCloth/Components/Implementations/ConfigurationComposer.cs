@@ -29,15 +29,15 @@ public sealed class ConfigurationComposer(
             InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer,
             InstallRaiDrive = viewModel.InstallRaiDrive,
             EnableInternetExplorerMode = viewModel.EnableInternetExplorerMode,
-            Companions = new CatalogCompanion[] { }, /*ViewModel.CatalogDocument.Companions*/
+            Companions = Array.Empty<CatalogCompanion>(), /*ViewModel.CatalogDocument.Companions*/
             Services = viewModel.SelectedServices.ToList(),
         };
     }
 
     public TableClothConfiguration GetConfigurationFromArgumentModel(CommandLineArgumentModel argumentModel)
     {
-        var certPublicKeyData = new byte[] { };
-        var certPrivateKeyData = new byte[] { };
+        var certPublicKeyData = Array.Empty<byte>();
+        var certPrivateKeyData = Array.Empty<byte>();
         var certPair = default(X509CertPair);
 
         if (!string.IsNullOrWhiteSpace(argumentModel.CertPublicKeyPath) &&

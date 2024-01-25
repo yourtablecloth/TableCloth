@@ -9,7 +9,9 @@ namespace TableCloth.Models
 {
     public sealed class CommandLineArgumentModel
     {
+#pragma warning disable IDE0290 // Use primary constructor
         public CommandLineArgumentModel(
+#pragma warning restore IDE0290 // Use primary constructor
             string[] rawArguments,
             string[]
 #if !NETFX
@@ -143,7 +145,9 @@ namespace TableCloth.Models
                     options.Add(eachSite);
             }
 
+#pragma warning disable IDE0305 // Simplify collection initialization
             return string.Join(" ", options.ToArray());
+#pragma warning restore IDE0305 // Simplify collection initialization
         }
 
         public static CommandLineArgumentModel ParseFromArgv()
@@ -223,9 +227,10 @@ namespace TableCloth.Models
                     certPair = null;
             }
 
+#pragma warning disable IDE0301 // Simplify collection initialization
             return new CommandLineArgumentModel(
                 rawArguments: args,
-                selectedServices: selectedServiceIds?.ToArray() ?? new string[] { },
+                selectedServices: selectedServiceIds?.ToArray() ?? Array.Empty<string>(),
                 enableMicrophone: enableMicrophone,
                 enableWebCam: enableWebCam,
                 enablePrinters: enablePrinters,
@@ -239,6 +244,7 @@ namespace TableCloth.Models
                 showCommandLineHelp: showCommandLineHelp,
                 dryRun: dryRun,
                 simulateFailure: simulateFailure);
+#pragma warning restore IDE0301 // Simplify collection initialization
         }
     }
 }

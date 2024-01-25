@@ -7,6 +7,7 @@
         xmlns:controls="clr-namespace:TableCloth.Controls"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
+        xmlns:tablecloth="clr-namespace:TableCloth"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         Style="{DynamicResource MainWindowStyle}"
@@ -221,7 +222,7 @@
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                     </Button.CommandParameter>
                 </Button>
-                <Button Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Margin="5 0 0 0 " Visibility="{Binding DebugMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Button Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Margin="5 0 0 0 " Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Button.CommandParameter>
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                     </Button.CommandParameter>

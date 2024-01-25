@@ -14,7 +14,7 @@ public sealed class VisualThemeManager : IVisualThemeManager
         var source = HwndSource.FromHwnd(new WindowInteropHelper(targetWindow).Handle);
         source.AddHook(WndProc);
 
-        var appliedLightTheme = this.IsLightThemeApplied();
+        var appliedLightTheme = IsLightThemeApplied();
         if (appliedLightTheme.HasValue)
         {
             if (appliedLightTheme.Value)
@@ -24,17 +24,16 @@ public sealed class VisualThemeManager : IVisualThemeManager
         }
     }
 
-    private bool? IsLightThemeApplied()
+    private static bool? IsLightThemeApplied()
     {
         // https://stackoverflow.com/questions/51334674/how-to-detect-windows-10-light-dark-mode-in-win32-application
-        using (var personalizeKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", false))
+        using var personalizeKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", false);
+
+        if (personalizeKey != null)
         {
-            if (personalizeKey != null)
+            if (personalizeKey.GetValueKind("AppsUseLightTheme") == RegistryValueKind.DWord)
             {
-                if (personalizeKey.GetValueKind("AppsUseLightTheme") == RegistryValueKind.DWord)
-                {
-                    return GetValue<int>(personalizeKey, "AppsUseLightTheme", 1) > 0;
-                }
+                return GetValue(personalizeKey, "AppsUseLightTheme", 1) > 0;
             }
         }
 
@@ -63,11 +62,11 @@ public sealed class VisualThemeManager : IVisualThemeManager
         return IntPtr.Zero;
     }
 
-    private TValue GetValue<TValue>(RegistryKey registryKey, string name,
+    private static TValue GetValue<TValue>(RegistryKey registryKey, string name,
         TValue defaultValue = default, RegistryValueOptions options = default)
         where TValue : struct
     {
         var value = registryKey.GetValue(name, defaultValue, options) as TValue?;
-        return value.HasValue ? value.Value : defaultValue;
+        return value ?? defaultValue;
     }
 }

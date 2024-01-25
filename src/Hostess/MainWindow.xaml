@@ -5,6 +5,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Hostess"
+        xmlns:tablecloth="clr-namespace:TableCloth"
         xmlns:vm="clr-namespace:Hostess.ViewModels"
         xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         mc:Ignorable="d"
@@ -65,7 +66,7 @@
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>
             </Button>
-            <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Visibility="{Binding DebugMode, Converter={StaticResource booleanToVisibilityConverter}}">
+            <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource booleanToVisibilityConverter}}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                 </Button.CommandParameter>

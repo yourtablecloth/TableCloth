@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 using TableCloth.Resources;
@@ -52,7 +51,9 @@ namespace TableCloth.Models.Catalog
         /// 서비스를 이용하기 위해 설치해야 하는 소프트웨어 정보 목록
         /// </summary>
         [XmlArray, XmlArrayItem(typeof(CatalogPackageInformation), ElementName = "Package")]
+#pragma warning disable IDE0028 // Simplify collection initialization
         public List<CatalogPackageInformation> Packages { get; set; } = new List<CatalogPackageInformation>();
+#pragma warning restore IDE0028 // Simplify collection initialization
 
         /// <summary>
         /// 서비스를 이용하기 위해 실행해야 하는 부트스트랩 스크립트
@@ -96,6 +97,7 @@ namespace TableCloth.Models.Catalog
         {
             get
             {
+#pragma warning disable IDE0066 // Convert switch statement to expression
                 switch (Category)
                 {
                     case CatalogInternetServiceCategory.Banking: return CommonStrings.DisplayName_Banking;
@@ -108,6 +110,7 @@ namespace TableCloth.Models.Catalog
                     case CatalogInternetServiceCategory.Other:
                     default: return CommonStrings.DisplayName_Other;
                 }
+#pragma warning restore IDE0066 // Convert switch statement to expression
             }
         }
 

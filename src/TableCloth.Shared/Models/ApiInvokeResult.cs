@@ -40,6 +40,7 @@ namespace TableCloth.Models
             ?
 #endif
             Result => _result;
+
         public Exception
 #if !NETFX
             ?

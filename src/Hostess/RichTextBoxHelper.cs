@@ -49,8 +49,11 @@ namespace Hostess
                             {
                                 var start = pointer.GetPositionAtOffset(match.Index);
                                 var end = start.GetPositionAtOffset(match.Length);
-                                var hyperlink = new Hyperlink(start, end);
-                                hyperlink.NavigateUri = new Uri(match.Value);
+
+                                var hyperlink = new Hyperlink(start, end)
+                                {
+                                    NavigateUri = new Uri(match.Value)
+                                };
                                 hyperlink.RequestNavigate += Hyperlink_RequestNavigate;
                             }
                         }
