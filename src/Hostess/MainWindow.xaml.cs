@@ -15,6 +15,9 @@ namespace Hostess
             viewModel.CloseRequested += ViewModel_CloseRequested;
         }
 
+        public MainWindowViewModel ViewModel
+            => (MainWindowViewModel)DataContext;
+
         private void ViewModel_WindowLoaded(object sender, EventArgs e)
         {
             Width = MinWidth;

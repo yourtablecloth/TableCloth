@@ -183,6 +183,9 @@
   <data name="Error_CommandLineInterpreter_Missing" xml:space="preserve">
     <value>Windows Command Line Interpreter (cmd.exe) could not be found.</value>
   </data>
+  <data name="Error_FileLineNo" xml:space="preserve">
+    <value>(File: {0} (Row: {1}), Member: {2})</value>
+  </data>
   <data name="Error_Hostess_Missing" xml:space="preserve">
     <value>The sandbox auto-installer file was not found, please reinstall the program.</value>
   </data>

@@ -240,6 +240,12 @@
   <data name="Cert_Availability_MayTooEarly" xml:space="preserve">
     <value>{0}일 후 사용 가능</value>
   </data>
+  <data name="Debug_SimulateFailure" xml:space="preserve">
+    <value>실패 테스트</value>
+  </data>
+  <data name="Debug_SimulateFailurePackageName" xml:space="preserve">
+    <value>실패 테스트</value>
+  </data>
   <data name="DetailPage_PackageCountDisplayLabel" xml:space="preserve">
     <value>샌드박스 실행 후 설치될 소프트웨어 개수: {0}개</value>
   </data>

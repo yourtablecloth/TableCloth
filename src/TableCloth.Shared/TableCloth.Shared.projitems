@@ -27,6 +27,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\PreferenceSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\TableClothConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Configuration\X509CertPair.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DesignTimeCatalog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WindowsSandbox\SandboxConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WindowsSandbox\SandboxMappedFolder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NativeMethods.cs" />

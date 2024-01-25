@@ -430,6 +430,24 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failure Test.
+        /// </summary>
+        public static string Debug_SimulateFailure {
+            get {
+                return ResourceManager.GetString("Debug_SimulateFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failure Test.
+        /// </summary>
+        public static string Debug_SimulateFailurePackageName {
+            get {
+                return ResourceManager.GetString("Debug_SimulateFailurePackageName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Number of software to be installed after sandbox run: {0}.
         /// </summary>
         public static string DetailPage_PackageCountDisplayLabel {

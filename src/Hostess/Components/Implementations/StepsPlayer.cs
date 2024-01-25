@@ -66,7 +66,7 @@ namespace Hostess.Components.Implementations
                     hasAnyFailure = true;
                     eachItem.StatusMessage = UIStringResources.Hostess_Install_Failed;
                     eachItem.Installed = false;
-                    eachItem.ErrorMessage = ex is AggregateException exception ? exception.InnerException.Message : ex.Message;
+                    eachItem.ErrorMessage = ex is AggregateException exception ? exception.InnerException.ToString() : ex.ToString();
                     await Task.Delay(TimeSpan.FromMilliseconds(100d), cancellationToken).ConfigureAwait(false);
                 }
             }
@@ -106,34 +106,35 @@ namespace Hostess.Components.Implementations
                 fileStream = File.OpenWrite(tempFilePath))
             {
                 await remoteStream.CopyToAsync(fileStream, 81920, cancellationToken).ConfigureAwait(false);
-                eachItem.StatusMessage = UIStringResources.Hostess_Install_InProgress;
+            }
 
-                if (parsedArgs.DryRun)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
-                    return;
-                }
+            eachItem.StatusMessage = UIStringResources.Hostess_Install_InProgress;
 
-                var psi = new ProcessStartInfo(tempFilePath, eachItem.Arguments)
+            if (parsedArgs.DryRun)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
+            var psi = new ProcessStartInfo(tempFilePath, eachItem.Arguments)
+            {
+                UseShellExecute = false,
+            };
+
+            var cpSource = new TaskCompletionSource<int>();
+            using (var process = new Process() { StartInfo = psi, })
+            {
+                process.EnableRaisingEvents = true;
+                process.Exited += (_sender, _e) =>
                 {
-                    UseShellExecute = false,
+                    var realSender = _sender as Process;
+                    cpSource.SetResult(realSender.ExitCode);
                 };
 
-                var cpSource = new TaskCompletionSource<int>();
-                using (var process = new Process() { StartInfo = psi, })
-                {
-                    process.EnableRaisingEvents = true;
-                    process.Exited += (_sender, _e) =>
-                    {
-                        var realSender = _sender as Process;
-                        cpSource.SetResult(realSender.ExitCode);
-                    };
+                if (!process.Start())
+                    throw new ApplicationException(ErrorStrings.Error_Package_CanNotStart);
 
-                    if (!process.Start())
-                        throw new ApplicationException(ErrorStrings.Error_Package_CanNotStart);
-
-                    await cpSource.Task.ConfigureAwait(false);
-                }
+                await cpSource.Task.ConfigureAwait(false);
             }
         }
 
@@ -152,7 +153,14 @@ namespace Hostess.Components.Implementations
             if (File.Exists(tempFilePath))
                 File.Delete(tempFilePath);
 
-            File.WriteAllText(tempFilePath, eachItem.ScriptContent, Encoding.Unicode);
+            using (var stream = File.OpenWrite(tempFilePath))
+            {
+                using (var streamWriter = new StreamWriter(stream, Encoding.Unicode))
+                {
+                    await streamWriter.WriteAsync(eachItem.ScriptContent).ConfigureAwait(false);
+                }
+            }
+
             var powershellPath = _sharedLocations.GetDefaultPowerShellExecutableFilePath();
 
             if (!File.Exists(powershellPath))

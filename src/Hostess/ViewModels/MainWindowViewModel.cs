@@ -3,14 +3,31 @@ using Hostess.Commands.MainWindow;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth;
+using TableCloth.Resources;
 using TableCloth.ViewModels;
 
 namespace Hostess.ViewModels
 {
-    public class MainWindowViewModelForDesigner : MainWindowViewModel { }
+    public class MainWindowViewModelForDesigner : MainWindowViewModel
+    {
+        public IList<InstallItemViewModel> InstallItemsForDesigner
+            => DesignTimeCatalog.DesignTimePackageInformations.Select((x, i) => new InstallItemViewModel()
+            {
+                InstallItemType = InstallItemType.DownloadAndInstall,
+                TargetSiteName = "Sample Site",
+                TargetSiteUrl = "https://www.example.com/",
+                PackageName = x.Name,
+                PackageUrl = x.Url,
+                Arguments = x.Arguments,
+                Installed = DesignTimeCatalog.ConvertToTriState(i),
+                StatusMessage = "Status",
+                ErrorMessage = DesignTimeCatalog.GenerateRandomErrorMessage(i),
+            }).ToList();
+    }
 
     public class MainWindowViewModel : ViewModelBase
     {

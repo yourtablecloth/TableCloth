@@ -38,7 +38,8 @@ namespace TableCloth.Models
             bool? installRaiDrive = default,
             bool? enableInternetExplorerMode = default,
             bool showCommandLineHelp = default,
-            bool dryRun = default)
+            bool dryRun = default,
+            bool simulateFailure = false)
         {
             RawArguments = rawArguments;
             SelectedServices = selectedServices ?? Enumerable.Empty<string>();
@@ -54,6 +55,7 @@ namespace TableCloth.Models
             EnableInternetExplorerMode = enableInternetExplorerMode;
             ShowCommandLineHelp = showCommandLineHelp;
             DryRun = dryRun;
+            SimulateFailure = simulateFailure;
         }
 
         public string[] RawArguments { get; private set; }
@@ -93,6 +95,8 @@ namespace TableCloth.Models
         public IEnumerable<string> SelectedServices { get; private set; } = new List<string>();
 
         public bool DryRun { get; private set; }
+
+        public bool SimulateFailure { get; private set; }
 
         public override string ToString()
         {
@@ -164,6 +168,7 @@ namespace TableCloth.Models
             var showCommandLineHelp = false;
             var enableCert = false;
             var dryRun = false;
+            var simulateFailure = false;
 
             for (var i = 0; i < args.Length; i++)
             {
@@ -191,6 +196,8 @@ namespace TableCloth.Models
                     enableInternetExplorerMode = true;
                 else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_DryRun, StringComparison.OrdinalIgnoreCase))
                     dryRun = true;
+                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_SimulateFailure, StringComparison.OrdinalIgnoreCase))
+                    simulateFailure = true;
                 else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase))
                     showCommandLineHelp = true;
                 else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_EnableCert, StringComparison.OrdinalIgnoreCase))
@@ -230,7 +237,8 @@ namespace TableCloth.Models
                 installRaiDrive: installRaiDrive,
                 enableInternetExplorerMode: enableInternetExplorerMode,
                 showCommandLineHelp: showCommandLineHelp,
-                dryRun: dryRun);
+                dryRun: dryRun,
+                simulateFailure: simulateFailure);
         }
     }
 }

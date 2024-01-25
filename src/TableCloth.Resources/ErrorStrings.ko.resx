@@ -183,6 +183,9 @@
   <data name="Error_CommandLineInterpreter_Missing" xml:space="preserve">
     <value>Windows 명령줄 해석기 (cmd.exe)를 찾을 수 없습니다.</value>
   </data>
+  <data name="Error_FileLineNo" xml:space="preserve">
+    <value>(파일: {0} (행: {1}), 멤버: {2})</value>
+  </data>
   <data name="Error_Hostess_Missing" xml:space="preserve">
     <value>샌드박스 자동 설치 프로그램 파일을 찾을 수 없습니다. 프로그램을 다시 설치해주세요.</value>
   </data>

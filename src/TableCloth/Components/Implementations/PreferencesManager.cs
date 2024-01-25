@@ -57,6 +57,6 @@ public sealed class PreferencesManager(
         using var stream = File.OpenWrite(prefFilePath);
         await JsonSerializer.SerializeAsync(stream, preferences,
             new JsonSerializerOptions() { AllowTrailingCommas = true, WriteIndented = true, },
-            cancellationToken);
+            cancellationToken).ConfigureAwait(false);
     }
 }

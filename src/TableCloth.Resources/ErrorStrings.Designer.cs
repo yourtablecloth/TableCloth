@@ -250,6 +250,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (File: {0} (Row: {1}), Member: {2}).
+        /// </summary>
+        public static string Error_FileLineNo {
+            get {
+                return ResourceManager.GetString("Error_FileLineNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The sandbox auto-installer file was not found, please reinstall the program..
         /// </summary>
         public static string Error_Hostess_Missing {

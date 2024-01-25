@@ -304,6 +304,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to --simulate-failure.
+        /// </summary>
+        public static string TableCloth_Switch_SimulateFailure {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_SimulateFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36.
         /// </summary>
         public static string UserAgentText {

@@ -240,6 +240,12 @@
   <data name="Cert_Availability_MayTooEarly" xml:space="preserve">
     <value>Available in {0} days</value>
   </data>
+  <data name="Debug_SimulateFailure" xml:space="preserve">
+    <value>Failure Test</value>
+  </data>
+  <data name="Debug_SimulateFailurePackageName" xml:space="preserve">
+    <value>Failure Test</value>
+  </data>
   <data name="DetailPage_PackageCountDisplayLabel" xml:space="preserve">
     <value>Number of software to be installed after sandbox run: {0}</value>
   </data>

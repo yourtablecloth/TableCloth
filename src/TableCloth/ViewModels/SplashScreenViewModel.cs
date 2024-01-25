@@ -31,7 +31,7 @@ public class SplashScreenViewModel : ViewModelBase
         => await TaskFactory.StartNew(() => StatusUpdate?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     public async Task NotifyInitializedAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
-        => await TaskFactory.StartNew(() => InitializeDone?.Invoke(sender, e), cancellationToken);
+        => await TaskFactory.StartNew(() => InitializeDone?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     private readonly SplashScreenLoadedCommand _splashScreenLoadedCommand;
 
