@@ -1,30 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <Platforms>ARM64;x64</Platforms>
-	  <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <Title>Loom</Title>
-    <AssemblyVersion>1.10.0.0</AssemblyVersion>
-    <FileVersion>1.10.0.0</FileVersion>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Platforms>ARM64;x64</Platforms>
+		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<Title>Loom</Title>
+		<AssemblyVersion>1.10.0.0</AssemblyVersion>
+		<FileVersion>1.10.0.0</FileVersion>
+	</PropertyGroup>
 
 	<PropertyGroup>
 		<StartupObject>Loom.Program</StartupObject>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.9.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CommandLineParser" Version="2.9.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TableCloth.Resources\TableCloth.Resources.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\TableCloth.Resources\TableCloth.Resources.csproj" />
+	</ItemGroup>
 
-  <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
+	<Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
 
 </Project>

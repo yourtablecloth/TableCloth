@@ -1,97 +1,97 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-	<TargetFramework>net8.0-windows10.0.18362.0</TargetFramework>
-    <StartupObject>TableCloth.Program</StartupObject>
-    <ApplicationIcon>App.ico</ApplicationIcon>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
-    <Platforms>x64;ARM64</Platforms>
-    <UseWPF>True</UseWPF>
-    <Description>Keep your computer clean!</Description>
-    <Company>rkttu.com</Company>
-    <Product>TableCloth</Product>
-    <ProductName>TableCloth</ProductName>
-    <Copyright>(c) rkttu.com, 2021</Copyright>
-    <Version>1.10.0.0</Version>
-    <PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>TableCloth</PackageTags>
-    <SignAssembly>False</SignAssembly>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows10.0.18362.0</TargetFramework>
+		<StartupObject>TableCloth.Program</StartupObject>
+		<ApplicationIcon>App.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+		<Platforms>x64;ARM64</Platforms>
+		<UseWPF>True</UseWPF>
+		<Description>Keep your computer clean!</Description>
+		<Company>rkttu.com</Company>
+		<Product>TableCloth</Product>
+		<ProductName>TableCloth</ProductName>
+		<Copyright>(c) rkttu.com, 2021</Copyright>
+		<Version>1.10.0.0</Version>
+		<PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>TableCloth</PackageTags>
+		<SignAssembly>False</SignAssembly>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<Deterministic>true</Deterministic>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 	</PropertyGroup>
-  <ItemGroup>
-    <None Remove="Resources\SandboxIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="commit.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <Content Include="Hostess.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Resources\SandboxIcon.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="commit.txt">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<Content Include="Hostess.zip">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Images.zip">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="TableCloth.Test" />
 		<InternalsVisibleTo Include="TableCloth.SpecFlow" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.14" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
-    <PackageReference Include="PnPeople.Security" Version="1.1.0" />
-    <PackageReference Include="Sentry.Serilog" Version="3.41.3" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.1" />
-    <PackageReference Include="System.Management" Version="8.0.0" />
-    <PackageReference Include="XamlRadialProgressBar" Version="1.0.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+		<PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.14" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
+		<PackageReference Include="PnPeople.Security" Version="1.1.0" />
+		<PackageReference Include="Sentry.Serilog" Version="3.41.3" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+		<PackageReference Include="System.Drawing.Common" Version="8.0.1" />
+		<PackageReference Include="System.Management" Version="8.0.0" />
+		<PackageReference Include="XamlRadialProgressBar" Version="1.0.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-	  <ApplicationDefinition Remove="App.xaml" />
-	  <Page Include="App.xaml" />
-  </ItemGroup>
+	<ItemGroup>
+		<ApplicationDefinition Remove="App.xaml" />
+		<Page Include="App.xaml" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TableCloth.Resources\TableCloth.Resources.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\TableCloth.Resources\TableCloth.Resources.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="Resources\SandboxIcon.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\SandboxIcon.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Components\Implementations\LicenseDescriptor.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Components\Implementations\LicenseDescriptor.cs">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Compile>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
-  <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="set IGNORE_WARNING=1&#xD;&#xA;git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;&#xD;&#xA;if exist &quot;$(ProjectDir)..\TableClothCatalog\docs\images&quot; (&#xD;&#xA;  &quot;$(ProjectDir)..\TableCloth.ResourceBuilder\bin\$(PlatformName)\$(ConfigurationName)\TableCloth.ResourceBuilder.exe&quot; &quot;$(ProjectDir)..\TableClothCatalog\docs\images&quot; &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;  dir &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;) else (&#xD;&#xA;  echo TableCloth: Error ERROR_PATH_NOT_FOUND: Git submodule TableClothCatalog has not been checked out.&#xD;&#xA;  exit 1&#xD;&#xA;)" />
-  </Target>
+	<Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="set IGNORE_WARNING=1&#xD;&#xA;git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;&#xD;&#xA;if exist &quot;$(ProjectDir)..\TableClothCatalog\docs\images&quot; (&#xD;&#xA;  &quot;$(ProjectDir)..\TableCloth.ResourceBuilder\bin\$(PlatformName)\$(ConfigurationName)\TableCloth.ResourceBuilder.exe&quot; &quot;$(ProjectDir)..\TableClothCatalog\docs\images&quot; &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;  dir &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;) else (&#xD;&#xA;  echo TableCloth: Error ERROR_PATH_NOT_FOUND: Git submodule TableClothCatalog has not been checked out.&#xD;&#xA;  exit 1&#xD;&#xA;)" />
+	</Target>
 </Project>

@@ -1,114 +1,114 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Platforms>AnyCPU;x64</Platforms>
-	  <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
-	  <Description>Keep your computer clean!</Description>
-	  <Title>TableCloth.Resources</Title>
-	  <Company>rkttu.com</Company>
-	  <Product>TableCloth</Product>
-	  <ProductName>TableCloth</ProductName>
-	  <Copyright>(c) rkttu.com, 2021</Copyright>
-	  <Version>1.10.0.0</Version>
-	  <PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
-	  <RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
-	  <RepositoryType>git</RepositoryType>
-	  <PackageTags>TableCloth</PackageTags>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<Platforms>AnyCPU;x64</Platforms>
+		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+		<Description>Keep your computer clean!</Description>
+		<Title>TableCloth.Resources</Title>
+		<Company>rkttu.com</Company>
+		<Product>TableCloth</Product>
+		<ProductName>TableCloth</ProductName>
+		<Copyright>(c) rkttu.com, 2021</Copyright>
+		<Version>1.10.0.0</Version>
+		<PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>TableCloth</PackageTags>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <DefineConstants>$(DefineConstants);NETFX</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<DefineConstants>$(DefineConstants);NETFX</DefineConstants>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);NETFX</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>$(DefineConstants);NETFX</DefineConstants>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DefineConstants>$(DefineConstants);NETFX</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+		<DefineConstants>$(DefineConstants);NETFX</DefineConstants>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>$(DefineConstants);NETFX</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DefineConstants>$(DefineConstants);NETFX</DefineConstants>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Update="AskStrings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>AskStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Update="CommonStrings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CommonStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Update="ErrorStrings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ErrorStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Update="InfoStrings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>InfoStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Update="LogStrings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>LogStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Update="ConstantStrings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ConstantStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Update="SwitchStrings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>SwitchStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Update="UIStringResources.Designer.cs">
-      <DependentUpon>UIStringResources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="AskStrings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>AskStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="CommonStrings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>CommonStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="ErrorStrings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ErrorStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="InfoStrings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>InfoStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="LogStrings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>LogStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="ConstantStrings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ConstantStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="SwitchStrings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>SwitchStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="UIStringResources.Designer.cs">
+			<DependentUpon>UIStringResources.resx</DependentUpon>
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="AskStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>AskStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="CommonStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>CommonStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="ErrorStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ErrorStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="InfoStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>InfoStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="LogStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>LogStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="ConstantStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ConstantStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="SwitchStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>SwitchStrings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="UIStringResources.resx">
-      <LastGenOutput>UIStringResources.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="AskStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>AskStrings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="CommonStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>CommonStrings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="ErrorStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>ErrorStrings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="InfoStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>InfoStrings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="LogStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>LogStrings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="ConstantStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>ConstantStrings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="SwitchStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>SwitchStrings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="UIStringResources.resx">
+			<LastGenOutput>UIStringResources.Designer.cs</LastGenOutput>
+			<Generator>PublicResXFileCodeGenerator</Generator>
+		</EmbeddedResource>
+	</ItemGroup>
 
 </Project>
