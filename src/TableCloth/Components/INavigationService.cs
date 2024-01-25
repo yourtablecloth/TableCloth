@@ -9,5 +9,6 @@ public interface INavigationService
     Frame FindNavigationFrameFromMainWindow();
     string GetPageFrameControlName();
     bool NavigateToCatalog(string searchKeyword);
-    bool NavigateToDetail(CatalogInternetService selectedService, CommandLineArgumentModel? commandLineArgumentModel);
+    bool NavigateToDetail(string searchKeyword, CatalogInternetService selectedService, CommandLineArgumentModel? commandLineArgumentModel);
+    void GoBack();
 }

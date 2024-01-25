@@ -11,6 +11,6 @@ public sealed class CatalogPageItemSelectCommand(
         if (viewModel.SelectedService == null)
             return;
 
-        navigationService.NavigateToDetail(viewModel.SelectedService, null);
+        navigationService.NavigateToDetail(viewModel.SearchKeyword, viewModel.SelectedService, null);
     }
 }

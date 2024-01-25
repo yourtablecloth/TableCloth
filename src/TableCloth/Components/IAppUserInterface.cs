@@ -12,7 +12,7 @@ public interface IAppUserInterface
     CatalogPage CreateCatalogPage(string searchKeyword);
     CatalogPageViewModel CreateCatalogPageViewModel(string searchKeyword);
     CertSelectWindow CreateCertSelectWindow();
-    DetailPage CreateDetailPage(CatalogInternetService selectedService, CommandLineArgumentModel? commandLineArgumentModel);
+    DetailPage CreateDetailPage(string searchKeyword, CatalogInternetService selectedService, CommandLineArgumentModel? commandLineArgumentModel);
     DetailPageViewModel CreateDetailPageViewModel(CatalogInternetService selectedService, CommandLineArgumentModel? commandLineArgumentModel);
     DisclaimerWindow CreateDisclaimerWindow();
     InputPasswordWindow CreateInputPasswordWindow();

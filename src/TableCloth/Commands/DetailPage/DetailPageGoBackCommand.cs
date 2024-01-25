@@ -7,5 +7,5 @@ public sealed class DetailPageGoBackCommand(
     INavigationService navigationService) : ViewModelCommandBase<DetailPageViewModel>
 {
     public override void Execute(DetailPageViewModel viewModel)
-        => navigationService.NavigateToCatalog(string.Empty);
+        => navigationService.GoBack();
 }

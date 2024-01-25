@@ -29,7 +29,7 @@ public sealed class MainWindowV2LoadedCommand(
         }
 
         if (commandLineSelectedService != null)
-            navigationService.NavigateToDetail(commandLineSelectedService, parsedArg);
+            navigationService.NavigateToDetail(string.Empty, commandLineSelectedService, parsedArg);
         else
             navigationService.NavigateToCatalog(string.Empty);
     }

@@ -29,7 +29,11 @@ public sealed class AppUserInterface(
         => serviceProvider.GetRequiredService<SplashScreen>();
 
     public CatalogPage CreateCatalogPage(string searchKeyword)
-        => new CatalogPage(CreateCatalogPageViewModel(searchKeyword));
+    {
+        var catalogPage = serviceProvider.GetRequiredService<CatalogPage>();
+        catalogPage.ViewModel.SearchKeyword = searchKeyword;
+        return catalogPage;
+    }
 
     public CatalogPageViewModel CreateCatalogPageViewModel(string searchKeyword)
     {
@@ -39,9 +43,14 @@ public sealed class AppUserInterface(
     }
 
     public DetailPage CreateDetailPage(
+        string searchKeyword,
         CatalogInternetService selectedService,
         CommandLineArgumentModel? commandLineArgumentModel)
-        => new DetailPage(CreateDetailPageViewModel(selectedService, commandLineArgumentModel));
+    {
+        var detailPage = new DetailPage(CreateDetailPageViewModel(selectedService, commandLineArgumentModel));
+        detailPage.ViewModel.SearchKeyword = searchKeyword;
+        return detailPage;
+    }
 
     public DetailPageViewModel CreateDetailPageViewModel(
         CatalogInternetService selectedService,

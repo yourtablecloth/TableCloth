@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows;
 using System.Windows.Controls;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
@@ -33,11 +32,20 @@ public sealed class NavigationService(
     }
 
     public bool NavigateToDetail(
+        string searchKeyword,
         CatalogInternetService selectedService,
         CommandLineArgumentModel? commandLineArgumentModel)
     {
         var frame = FindNavigationFrameFromMainWindow();
-        var page = appUserInterface.CreateDetailPage(selectedService, commandLineArgumentModel);
+        var page = appUserInterface.CreateDetailPage(searchKeyword, selectedService, commandLineArgumentModel);
         return frame.Navigate(page);
+    }
+
+    public void GoBack()
+    {
+        var frame = FindNavigationFrameFromMainWindow();
+
+        if (frame.CanGoBack)
+            frame.GoBack();
     }
 }
