@@ -1,15 +1,6 @@
-﻿using Hostess.Commands;
-using Hostess.Commands.AboutWindow;
-using Hostess.Commands.MainWindow;
-using Hostess.Commands.PrecautionsWindow;
-using Hostess.Components;
-using Hostess.Components.Implementations;
-using Hostess.Dialogs;
-using Hostess.ViewModels;
-using Microsoft.Extensions.Configuration;
+﻿using Hostess.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,101 +12,23 @@ namespace Hostess
 {
     public partial class App : Application
     {
-        public static IHostBuilder CreateHostBuilder(
-            string[] args = default,
-            Action<IConfigurationBuilder> configurationBuilderOverride = default,
-            Action<ILoggingBuilder> loggingBuilderOverride = default,
-            Action<IServiceCollection> servicesBuilderOverride = default)
-        {
-            if (args == null)
-                args = Environment.GetCommandLineArgs().Skip(1).ToArray();
-
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(ConfigureAppConfiguration + configurationBuilderOverride)
-                .ConfigureLogging(ConfigureLogging + loggingBuilderOverride)
-                .ConfigureServices(ConfigureServices + servicesBuilderOverride);
-        }
-
-        private static void ConfigureAppConfiguration(IConfigurationBuilder configure)
-        {
-        }
-
-        private static void ConfigureLogging(ILoggingBuilder logging)
-            => logging.AddConsole();
-
-        private static void ConfigureServices(IServiceCollection services)
-        {
-            // Add HTTP Service
-            services.AddHttpClient(
-                nameof(ConstantStrings.UserAgentText),
-                c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
-            services.AddHttpClient(
-                nameof(ConstantStrings.OldUserAgentText),
-                c =>
-                {
-                    c.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml");
-                    c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.OldUserAgentText);
-                });
-
-            // Components
-            services
-                .AddSingleton<IAppMessageBox, AppMessageBox>()
-                .AddSingleton<IMessageBoxService, MessageBoxService>()
-                .AddSingleton<IAppUserInterface, AppUserInterface>()
-                .AddSingleton<ILicenseDescriptor, LicenseDescriptor>()
-                .AddSingleton<ICriticalServiceProtector, CriticalServiceProtector>()
-                .AddSingleton<IVisualThemeManager, VisualThemeManager>()
-                .AddSingleton<ISharedLocations, SharedLocations>()
-                .AddSingleton<IAppStartup, AppStartup>()
-                .AddSingleton<IResourceResolver, ResourceResolver>()
-                .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
-                .AddSingleton<ICommandLineArguments, CommandLineArguments>()
-                .AddSingleton<IStepsComposer, StepsComposer>()
-                .AddSingleton<IStepsPlayer, StepsPlayer>()
-                .AddSingleton<IApplicationService, ApplicationService>();
-
-            // Shared Commands
-            services
-                .AddSingleton<OpenAppHomepageCommand>()
-                .AddSingleton<AboutThisAppCommand>()
-                .AddSingleton<ShowDebugInfoCommand>();
-
-            // About Window
-            services
-                .AddWindow<AboutWindow, AboutWindowViewModel>()
-                .AddSingleton<AboutWindowLoadedCommand>()
-                .AddSingleton<AboutWindowCloseCommand>();
-
-            // Precautions Window
-            services
-                .AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>()
-                .AddSingleton<PrecautionsWindowLoadedCommand>()
-                .AddSingleton<PrecautionsWindowCloseCommand>();
-
-            // Main Window
-            services
-                .AddWindow<MainWindow, MainWindowViewModel>()
-                .AddSingleton<MainWindowLoadedCommand>()
-                .AddSingleton<MainWindowInstallPackagesCommand>()
-                .AddSingleton<ShowErrorMessageCommand>();
-
-            // App
-            services.AddTransient(_ => Current);
-        }
-
         public App()
         {
-            _host = CreateHostBuilder().Build();
-            Current.InitServiceProvider(_host.Services);
             InitializeComponent();
         }
 
-        private readonly IHost _host;
+        internal void SetupHost(IHost host)
+        {
+            Host = host ?? throw new ArgumentException("Host initialization not done.", nameof(host));
+            this.InitServiceProvider(host.Services);
+        }
+
+        public IHost Host { get; private set; }
 
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
-            var appMessageBox = _host.Services.GetRequiredService<IAppMessageBox>();
-            var commandLineArguments = _host.Services.GetRequiredService<ICommandLineArguments>();
+            var appMessageBox = Host.Services.GetRequiredService<IAppMessageBox>();
+            var commandLineArguments = Host.Services.GetRequiredService<ICommandLineArguments>();
             var parsedArgs = commandLineArguments.Current;
 
             if (parsedArgs.ShowCommandLineHelp)
@@ -124,8 +37,8 @@ namespace Hostess
                 return;
             }
 
-            var appStartup = _host.Services.GetRequiredService<IAppStartup>();
-            var appUserInterface = _host.Services.GetRequiredService<IAppUserInterface>();
+            var appStartup = Host.Services.GetRequiredService<IAppStartup>();
+            var appUserInterface = Host.Services.GetRequiredService<IAppUserInterface>();
 
             var warnings = new List<string>();
             var result = await appStartup.HasRequirementsMetAsync(warnings);

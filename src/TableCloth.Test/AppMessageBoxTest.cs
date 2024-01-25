@@ -6,7 +6,7 @@ public class AppMessageBoxTest
 {
     public AppMessageBoxTest()
     {
-        _testHost = TableClothApp.CreateHostBuilder(
+        _testHost = Program.CreateHostBuilder(
             servicesBuilderOverride: services => services
                 .ProvideMockupApplication()
                 .ReplaceWithMock<IMessageBoxService>()
