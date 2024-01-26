@@ -45,10 +45,7 @@
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Height" Value="96" />
             <Setter Property="Padding" Value="4,1"/>
-            <!--
-            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            -->
+            <Setter Property="Foreground" Value="{DynamicResource ControlDefaultForeground}" />
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Top"/>
             <Setter Property="Background" Value="Transparent"/>
@@ -249,38 +246,36 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <ContentControl>
-                        <ContentControl.InputBindings>
+                    <Grid Width="48" Height="96">
+                        <Grid.InputBindings>
                             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding RelativeSource={RelativeSource AncestorType=Page, Mode=FindAncestor}, Path=DataContext.CatalogPageItemSelectCommand }">
                                 <MouseBinding.CommandParameter>
                                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
                                 </MouseBinding.CommandParameter>
                             </MouseBinding>
-                        </ContentControl.InputBindings>
-                        <Grid Width="48" Height="96">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="50*" />
-                                <RowDefinition Height="2*" />
-                                <RowDefinition Height="48*" />
-                            </Grid.RowDefinitions>
-                            <Grid.ToolTip>
-                                <TextBlock Text="{Binding DisplayName}" d:Text="{Binding DisplayName}" TextWrapping="NoWrap" TextTrimming="None"/>
-                            </Grid.ToolTip>
-                            <Image Grid.Row="0" x:Name="Icon" Source="{Binding Id, Mode=OneWay, Converter={StaticResource ServiceLogoConverter}}" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
-                            <TextBlock x:Name="DisplayNameLabel" Grid.Row="2" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap" Panel.ZIndex="3">
-                                <TextBlock.Style>
-                                    <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}" Value="True">
-                                                <Setter Property="TextTrimming" Value="None"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Grid>
-                    </ContentControl>
+                        </Grid.InputBindings>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50*" />
+                            <RowDefinition Height="2*" />
+                            <RowDefinition Height="48*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ToolTip>
+                            <TextBlock Text="{Binding DisplayName}" d:Text="{Binding DisplayName}" TextWrapping="NoWrap" TextTrimming="None"/>
+                        </Grid.ToolTip>
+                        <Image Grid.Row="0" x:Name="Icon" Source="{Binding Id, Mode=OneWay, Converter={StaticResource ServiceLogoConverter}}" RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
+                        <TextBlock x:Name="DisplayNameLabel" Grid.Row="2" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap" Panel.ZIndex="3">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}" Value="True">
+                                            <Setter Property="TextTrimming" Value="None"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.GroupStyle>
