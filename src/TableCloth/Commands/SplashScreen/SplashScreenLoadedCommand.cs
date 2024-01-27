@@ -41,6 +41,16 @@ public sealed class SplashScreenLoadedCommand(
             viewModel.V2UIOptedIn = preferences?.V2UIOptIn ?? true;
             viewModel.ParsedArgument = parsedArgs;
 
+            if (preferences?.UseLogCollection ?? true)
+            {
+                using var _ = SentrySdk.Init(o =>
+                {
+                    o.Dsn = ConstantStrings.SentryDsn;
+                    o.Debug = true;
+                    o.TracesSampleRate = 1.0;
+                });
+            }
+
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_CheckInternetConnection });
 
             if (!await appStartup.CheckForInternetConnectionAsync())

@@ -63,13 +63,6 @@ internal static class Program
 
     private static void ConfigureLogging(ILoggingBuilder logging)
     {
-        using var _ = SentrySdk.Init(o =>
-        {
-            o.Dsn = ConstantStrings.SentryDsn;
-            o.Debug = true;
-            o.TracesSampleRate = 1.0;
-        });
-
         logging
             .AddSerilog(dispose: true)
             .AddConsole();
