@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -39,7 +40,14 @@ public sealed class ResourceCacheManager(
         foreach (var eachSiteId in services.Select(x => x.Id))
         {
             if (!_imageTable.ContainsKey(eachSiteId))
-                _imageTable.Add(eachSiteId, new BitmapImage(new Uri(Path.Combine(imageDirectoryPath, $"{eachSiteId}.png"))));
+            {
+                var bitmapImage = new BitmapImage(new Uri(Path.Combine(imageDirectoryPath, $"{eachSiteId}.png")));
+
+                // https://stackoverflow.com/questions/45893536/updating-image-source-from-a-separate-thread-in-wpf
+                bitmapImage.Freeze();
+
+                _imageTable.Add(eachSiteId, bitmapImage);
+            }
         }
     }
 
