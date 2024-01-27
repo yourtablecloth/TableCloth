@@ -1035,15 +1035,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Initializing Sentry SDK....
-        /// </summary>
-        public static string Status_InitSentrySDK {
-            get {
-                return ResourceManager.GetString("Status_InitSentrySDK", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Loading catalog....
         /// </summary>
         public static string Status_LoadingCatalog {

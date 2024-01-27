@@ -443,9 +443,6 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Status_InitializingFailed" xml:space="preserve">
     <value>An error occurred.</value>
   </data>
-  <data name="Status_InitSentrySDK" xml:space="preserve">
-    <value>Initializing Sentry SDK...</value>
-  </data>
   <data name="Status_LoadingCatalog" xml:space="preserve">
     <value>Loading catalog...</value>
   </data>

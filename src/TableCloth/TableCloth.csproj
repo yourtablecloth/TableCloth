@@ -51,7 +51,7 @@
 		<PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.14" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
 		<PackageReference Include="PnPeople.Security" Version="1.1.0" />
-		<PackageReference Include="Sentry.Serilog" Version="3.41.3" />
+		<PackageReference Include="Sentry.Serilog" Version="3.41.4" />
 		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="System.Drawing.Common" Version="8.0.1" />

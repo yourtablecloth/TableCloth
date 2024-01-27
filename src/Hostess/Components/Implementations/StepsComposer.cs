@@ -1,4 +1,5 @@
 ﻿using Hostess.ViewModels;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,13 +23,15 @@ namespace Hostess.Components.Implementations
             IResourceCacheManager resourceCacheManager,
             ISharedLocations sharedLocations,
             ICriticalServiceProtector criticalServiceProtector,
-            IAppMessageBox appMessageBox)
+            IAppMessageBox appMessageBox,
+            ILogger<StepsComposer> logger)
         {
             _commandLineArguments = commandLineArguments;
             _resourceCacheManager = resourceCacheManager;
             _sharedLocations = sharedLocations;
             _criticalServiceProtector = criticalServiceProtector;
             _appMessageBox = appMessageBox;
+            _logger = logger;
         }
 
         private readonly ICommandLineArguments _commandLineArguments;
@@ -35,6 +39,7 @@ namespace Hostess.Components.Implementations
         private readonly ISharedLocations _sharedLocations;
         private readonly ICriticalServiceProtector _criticalServiceProtector;
         private readonly IAppMessageBox _appMessageBox;
+        private readonly ILogger _logger;
 
         private readonly string[] _validAccountNames = new string[]
         {
@@ -347,9 +352,19 @@ namespace Hostess.Components.Implementations
             var wallpaperPath = Path.Combine(picturesDirectoryPath, "Signature.jpg");
             Properties.Resources.Signature.Save(wallpaperPath, ImageFormat.Jpeg);
 
-            _ = NativeMethods.SystemParametersInfoW(
+            var result = NativeMethods.SystemParametersInfoW(
                 NativeMethods.SetDesktopWallpaper, 0, wallpaperPath,
                 NativeMethods.UpdateIniFile | NativeMethods.SendWinIniChange);
+
+            if (result != 0)
+            {
+                _logger.LogWarning("SystemParametersInfoW result: {result}", result);
+
+                var lastWin32Error = Marshal.GetLastWin32Error();
+                _logger.LogWarning(
+                    "SetDesktopWallpaper failed. SystemParametersInfoW says: {result} and GetLastWin32Error says: {lastWin32Error}",
+                    result, lastWin32Error);
+            }
 
             NativeMethods.UpdatePerUserSystemParameters(
                 IntPtr.Zero, IntPtr.Zero, "1, True", 0);

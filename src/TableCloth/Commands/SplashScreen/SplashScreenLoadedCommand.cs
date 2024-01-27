@@ -35,15 +35,6 @@ public sealed class SplashScreenLoadedCommand(
                 return;
             }
 
-            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_InitSentrySDK });
-
-            using var _ = SentrySdk.Init(o =>
-            {
-                o.Dsn = ConstantStrings.SentryDsn;
-                o.Debug = true;
-                o.TracesSampleRate = 1.0;
-            });
-
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_LoadingPreferences });
 
             var preferences = await preferencesManager.LoadPreferencesAsync();

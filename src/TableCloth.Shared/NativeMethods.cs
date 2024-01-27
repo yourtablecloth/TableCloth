@@ -4,8 +4,6 @@ using System.Security;
 using System.Security.AccessControl;
 using System.Text;
 
-#pragma warning disable SYSLIB1054 // Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time
-
 namespace TableCloth
 {
     [SuppressUnmanagedCodeSecurity]
@@ -487,9 +485,7 @@ namespace TableCloth
 
     partial class NativeMethods
     {
-#pragma warning disable IDE0090 // Use 'new(...)'
         public static readonly Guid DownloadFolderGuid = new Guid("{374DE290-123F-4565-9164-39C4925E467B}");
-#pragma warning restore IDE0090 // Use 'new(...)'
 
         public static string
 #if !NETFX
@@ -553,14 +549,12 @@ namespace TableCloth
             string lpvParam,
             [MarshalAs(UnmanagedType.U4)] int fuWinIni);
 
-#pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
         [DllImport("user32.dll",
             SetLastError = false,
             CharSet = CharSet.Ansi,
             ExactSpelling = true,
             EntryPoint = nameof(UpdatePerUserSystemParameters),
             CallingConvention = CallingConvention.StdCall)]
-#pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
         public static extern void UpdatePerUserSystemParameters(
             IntPtr hWnd,
             IntPtr hInstance,
@@ -568,5 +562,3 @@ namespace TableCloth
             int nCmdShow);
     }
 }
-
-#pragma warning restore SYSLIB1054 // Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time

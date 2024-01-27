@@ -2,10 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Sentry;
 using Serilog;
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using TableCloth.Commands;
@@ -63,9 +62,18 @@ internal static class Program
     }
 
     private static void ConfigureLogging(ILoggingBuilder logging)
-        => logging
+    {
+        using var _ = SentrySdk.Init(o =>
+        {
+            o.Dsn = ConstantStrings.SentryDsn;
+            o.Debug = true;
+            o.TracesSampleRate = 1.0;
+        });
+
+        logging
             .AddSerilog(dispose: true)
             .AddConsole();
+    }
 
     private static void ConfigureServices(IServiceCollection services)
     {

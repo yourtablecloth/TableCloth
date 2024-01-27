@@ -443,9 +443,6 @@
   <data name="Status_InitializingFailed" xml:space="preserve">
     <value>오류가 발생했습니다.</value>
   </data>
-  <data name="Status_InitSentrySDK" xml:space="preserve">
-    <value>Sentry SDK 초기화 중...</value>
-  </data>
   <data name="Status_LoadingCatalog" xml:space="preserve">
     <value>카탈로그 불러오는 중...</value>
   </data>
