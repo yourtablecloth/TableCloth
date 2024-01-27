@@ -2,12 +2,13 @@
 
 > 알립니다: 물가 상승과 Authenticode 수령 정책 변경으로 Authenticode 인증서 갱신 비용이 너무 높아져서 Codesign 인증서를 애플리케이션 바이너리에 적용이 불가한 상황입니다. SmartScreen 경고가 나타나거나, 실행 중인 안티바이러스 소프트웨어에 의해 식탁보가 자동으로 종료되거나 제거될 수 있으니 사용 시 참고 부탁드립니다.
 
+> 알립니다: Microsoft Store 정책 변경으로 인하여 식탁보 최신 버전 업데이트가 어렵게 되었습니다. Microsoft Store 버전 식탁보 앱은 삭제하고, GitHub에서 릴리즈하는 버전으로 재설치하면 최신 기능을 안정적으로 이용하실 수 있습니다.
+
 * [한국어 소개](README.md)
 * [영어 (English) 소개](README.EN.md)
 
 [![식탁보 프로젝트 빌드 상황](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/build.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
 [![식탁보 최신 버전 다운로드](https://img.shields.io/github/v/release/yourtablecloth/tablecloth)](https://github.com/yourtablecloth/TableCloth/releases)
-[![Microsoft Store](https://img.shields.io/badge/microsoft_store-v1.8.0.0-blue)](https://www.microsoft.com/store/productid/9N46Z3N6T2VR)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 [![Chocolatey](https://img.shields.io/badge/chocolatey-install-orange)](https://community.chocolatey.org/packages/tablecloth)
 [![Winget](https://img.shields.io/badge/winget-install-purple)](https://winstall.app/apps/TableClothProject.TableCloth)

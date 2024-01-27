@@ -2,12 +2,13 @@
 
 > Notice: Due to inflation and changes in Authenticode acceptance policies, the cost of renewing Authenticode certificates has become too high and we are unable to apply Codesign certificates to our application binaries. Please keep this in mind when installing and running your application, and we apologize for any inconvenience this may cause.
 
+> Notice: Due to a change in Microsoft Store policy, it has become difficult to update to the latest version of Tablecloth. Please uninstall the Microsoft Store version of the Tablecloth app and reinstall the version we release on GitHub to ensure you have access to the latest features.
+
 * [Korean Readme](README.md)
 * [English Readme](README.EN.md)
 
 [![Build Status](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/publish-msi.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
 [![Downloads](https://img.shields.io/github/v/release/yourtablecloth/tablecloth)](https://github.com/yourtablecloth/TableCloth/releases)
-[![Microsoft Store](https://img.shields.io/badge/microsoft_store-s.korea_only-blue)](https://www.microsoft.com/store/productid/9N46Z3N6T2VR)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 [![Chocolatey](https://img.shields.io/badge/chocolatey-install-orange)](https://community.chocolatey.org/packages/tablecloth)
 [![Winget](https://img.shields.io/badge/winget-install-purple)](https://winstall.app/apps/TableClothProject.TableCloth)
