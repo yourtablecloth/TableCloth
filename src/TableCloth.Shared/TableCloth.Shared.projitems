@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApplicationStartupResultModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogCompanion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogEdgeExtensionInformation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogInternetService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogInternetServiceCategory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Catalog\CatalogNamespaces.cs" />

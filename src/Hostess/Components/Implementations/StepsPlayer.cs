@@ -1,4 +1,5 @@
 ﻿using Hostess.ViewModels;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -53,6 +54,8 @@ namespace Hostess.Components.Implementations
                         await ProcessPowerShellScriptAsync(eachItem, cancellationToken).ConfigureAwait(false);
                     else if (eachItem.InstallItemType == InstallItemType.OpenWebSite)
                         await OpenAddInWebSiteAsync(eachItem, cancellationToken).ConfigureAwait(false);
+                    else if (eachItem.InstallItemType == InstallItemType.EdgeExtensionInstall)
+                        ProcessEdgeExtensionInstall(eachItem);
                     else if (eachItem.InstallItemType == InstallItemType.CustomAction)
                     {
                         if (eachItem.UseNonAwaitableAction)
@@ -214,6 +217,24 @@ namespace Hostess.Components.Implementations
                 UseShellExecute = true,
                 WindowStyle = ProcessWindowStyle.Maximized,
             });
+        }
+
+        private void ProcessEdgeExtensionInstall(InstallItemViewModel viewModel)
+        {
+            // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/developer-guide/alternate-distribution-options
+            using (var regKey = Registry.LocalMachine.CreateSubKey(
+                @"Software\Microsoft\Edge\Extensions", true))
+            {
+                using (regKey.CreateSubKey(viewModel.EdgeExtensionId)) { }
+                regKey.SetValue("update_url", viewModel.EdgeCrxUrl);
+            }
+
+            using (var regKey = Registry.LocalMachine.CreateSubKey(
+                @"Software\Wow6432Node\Microsoft\Edge\Extensions", true))
+            {
+                using (regKey.CreateSubKey(viewModel.EdgeExtensionId)) { }
+                regKey.SetValue("update_url", viewModel.EdgeCrxUrl);
+            }
         }
 
         private async Task OpenRequestedWebSiteAsync(string targetUrl,

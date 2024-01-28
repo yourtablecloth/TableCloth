@@ -52,7 +52,7 @@ namespace Hostess.Components.Implementations
             var catalog = _resourceCacheManager.CatalogDocument;
             var targets = parsedArgs.SelectedServices;
 
-            var packages = new List<InstallItemViewModel>
+            var steps = new List<InstallItemViewModel>
             {
                 new InstallItemViewModel()
                 {
@@ -88,7 +88,7 @@ namespace Hostess.Components.Implementations
             if (parsedArgs.EnableInternetExplorerMode.HasValue &&
                 parsedArgs.EnableInternetExplorerMode.Value)
             {
-                packages.Add(new InstallItemViewModel()
+                steps.Add(new InstallItemViewModel()
                 {
                     InstallItemType = InstallItemType.CustomAction,
                     TargetSiteName = UIStringResources.Option_Prerequisites,
@@ -104,7 +104,7 @@ namespace Hostess.Components.Implementations
                 if (targetService == null)
                     continue;
 
-                packages.AddRange(targetService.Packages.Select(eachPackage => new InstallItemViewModel()
+                steps.AddRange(targetService.Packages.Select(eachPackage => new InstallItemViewModel()
                 {
                     InstallItemType = InstallItemType.DownloadAndInstall,
                     TargetSiteName = targetService.DisplayName,
@@ -115,11 +115,21 @@ namespace Hostess.Components.Implementations
                     Installed = null,
                 }));
 
+                steps.AddRange(targetService.EdgeExtensions.Select(eachEdgeExtension => new InstallItemViewModel()
+                {
+                    InstallItemType = InstallItemType.EdgeExtensionInstall,
+                    TargetSiteName = targetService.DisplayName,
+                    TargetSiteUrl = targetService.Url,
+                    PackageName = eachEdgeExtension.Name,
+                    EdgeExtensionId = eachEdgeExtension.ExtensionId,
+                    EdgeCrxUrl = eachEdgeExtension.CrxUrl,
+                }));
+
                 var bootstrapData = targetService.CustomBootstrap;
 
                 if (!string.IsNullOrWhiteSpace(bootstrapData))
                 {
-                    packages.Add(new InstallItemViewModel()
+                    steps.Add(new InstallItemViewModel()
                     {
                         InstallItemType = InstallItemType.PowerShellScript,
                         TargetSiteName = targetService.DisplayName,
@@ -130,7 +140,7 @@ namespace Hostess.Components.Implementations
                 }
             }
 
-            packages.Add(new InstallItemViewModel()
+            steps.Add(new InstallItemViewModel()
             {
                 InstallItemType = InstallItemType.CustomAction,
                 TargetSiteName = UIStringResources.Option_Config,
@@ -138,10 +148,18 @@ namespace Hostess.Components.Implementations
                 CustomAwaitableAction = ConfigASTxAsync,
             });
 
+            steps.Add(new InstallItemViewModel()
+            {
+                InstallItemType = InstallItemType.CustomAction,
+                TargetSiteName = UIStringResources.Option_Config,
+                PackageName = UIStringResources.Install_ReloadMicrosoftEdge,
+                CustomAwaitableAction = ReloadEdgeAsync,
+            });
+
             if (parsedArgs.InstallAdobeReader.HasValue &&
                 parsedArgs.InstallAdobeReader.Value)
             {
-                packages.Add(new InstallItemViewModel()
+                steps.Add(new InstallItemViewModel()
                 {
                     InstallItemType = InstallItemType.OpenWebSite,
                     TargetSiteName = UIStringResources.Option_Addin,
@@ -156,7 +174,7 @@ namespace Hostess.Components.Implementations
             if (parsedArgs.InstallEveryonesPrinter.HasValue &&
                 parsedArgs.InstallEveryonesPrinter.Value)
             {
-                packages.Add(new InstallItemViewModel()
+                steps.Add(new InstallItemViewModel()
                 {
                     InstallItemType = InstallItemType.OpenWebSite,
                     TargetSiteName = UIStringResources.Option_Addin,
@@ -168,7 +186,7 @@ namespace Hostess.Components.Implementations
             if (parsedArgs.InstallHancomOfficeViewer.HasValue &&
                 parsedArgs.InstallHancomOfficeViewer.Value)
             {
-                packages.Add(new InstallItemViewModel()
+                steps.Add(new InstallItemViewModel()
                 {
                     InstallItemType = InstallItemType.OpenWebSite,
                     TargetSiteName = UIStringResources.Option_Addin,
@@ -180,7 +198,7 @@ namespace Hostess.Components.Implementations
             if (parsedArgs.InstallRaiDrive.HasValue &&
                 parsedArgs.InstallRaiDrive.Value)
             {
-                packages.Add(new InstallItemViewModel()
+                steps.Add(new InstallItemViewModel()
                 {
                     InstallItemType = InstallItemType.OpenWebSite,
                     TargetSiteName = UIStringResources.Option_Addin,
@@ -189,7 +207,7 @@ namespace Hostess.Components.Implementations
                 });
             }
 
-            return packages;
+            return steps;
         }
 
         private async Task PrepareDirectoriesAsync(InstallItemViewModel viewModel,
@@ -209,6 +227,36 @@ namespace Hostess.Components.Implementations
                 Directory.CreateDirectory(downloadFolderPath);
         }
 
+        private async Task ReloadEdgeAsync(InstallItemViewModel viewModel,
+            CancellationToken cancellationToken = default)
+        {
+            // msedge.exe 파일 경로를 유추하고, Policy를 반영하기 위해 잠시 실행했다가 종료하는 동작을 추가
+            if (!_sharedLocations.TryGetMicrosoftEdgeExecutableFilePath(out var msedgePath))
+                msedgePath = _sharedLocations.GetDefaultX86MicrosoftEdgeExecutableFilePath();
+
+            if (File.Exists(msedgePath))
+            {
+                var msedgePsi = new ProcessStartInfo(msedgePath, "about:blank")
+                {
+                    UseShellExecute = false,
+                    WindowStyle = ProcessWindowStyle.Minimized,
+                };
+
+                using (var msedgeProcess = Process.Start(msedgePsi))
+                {
+                    var tcs = new TaskCompletionSource<int>();
+                    msedgeProcess.EnableRaisingEvents = true;
+                    msedgeProcess.Exited += (_sender, _e) =>
+                    {
+                        tcs.SetResult(msedgeProcess.ExitCode);
+                    };
+                    await Task.Delay(TimeSpan.FromSeconds(3d), cancellationToken).ConfigureAwait(false);
+                    msedgeProcess.CloseMainWindow();
+                    await tcs.Task.ConfigureAwait(false);
+                }
+            }
+        }
+
         private async Task EnableIEModeAsync(InstallItemViewModel viewModel,
             CancellationToken cancellationToken = default)
         {
@@ -222,37 +270,16 @@ namespace Hostess.Components.Implementations
 
             if (parsedArgs.EnableInternetExplorerMode ?? false)
             {
-                // HKLM\SOFTWARE\Policies\Microsoft\Edge > InternetExplorerIntegrationLevel (REG_DWORD) with value 1, InternetExplorerIntegrationSiteList (REG_SZ)
                 using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
                 {
                     ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
                     ieModeKey.SetValue("InternetExplorerIntegrationSiteList", ConstantStrings.IEModePolicyXmlUrl, RegistryValueKind.String);
                 }
 
-                // msedge.exe 파일 경로를 유추하고, Policy를 반영하기 위해 잠시 실행했다가 종료하는 동작을 추가
-                if (!_sharedLocations.TryGetMicrosoftEdgeExecutableFilePath(out var msedgePath))
-                    msedgePath = _sharedLocations.GetDefaultX86MicrosoftEdgeExecutableFilePath();
-
-                if (File.Exists(msedgePath))
+                using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Wow6432Node\Microsoft\Edge", true))
                 {
-                    var msedgePsi = new ProcessStartInfo(msedgePath, "about:blank")
-                    {
-                        UseShellExecute = false,
-                        WindowStyle = ProcessWindowStyle.Minimized,
-                    };
-
-                    using (var msedgeProcess = Process.Start(msedgePsi))
-                    {
-                        var tcs = new TaskCompletionSource<int>();
-                        msedgeProcess.EnableRaisingEvents = true;
-                        msedgeProcess.Exited += (_sender, _e) =>
-                        {
-                            tcs.SetResult(msedgeProcess.ExitCode);
-                        };
-                        await Task.Delay(TimeSpan.FromSeconds(1.5d), cancellationToken).ConfigureAwait(false);
-                        msedgeProcess.CloseMainWindow();
-                        await tcs.Task.ConfigureAwait(false);
-                    }
+                    ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
+                    ieModeKey.SetValue("InternetExplorerIntegrationSiteList", ConstantStrings.IEModePolicyXmlUrl, RegistryValueKind.String);
                 }
             }
         }

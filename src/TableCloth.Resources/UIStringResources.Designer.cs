@@ -684,6 +684,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reload Microsoft Edge Settings.
+        /// </summary>
+        public static string Install_ReloadMicrosoftEdge {
+            get {
+                return ResourceManager.GetString("Install_ReloadMicrosoftEdge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Setting Desktop Wallpaper.
         /// </summary>
         public static string Install_SetDesktopWallpaper {

@@ -62,6 +62,9 @@ namespace TableCloth.Models.Catalog
         public List<CatalogPackageInformation> Packages { get; set; } = new List<CatalogPackageInformation>();
 #pragma warning restore IDE0028 // Simplify collection initialization
 
+        [XmlArray, XmlArrayItem(typeof(CatalogEdgeExtensionInformation), ElementName = "EdgeExtension")]
+        public List<CatalogEdgeExtensionInformation> EdgeExtensions { get; set; } = new List<CatalogEdgeExtensionInformation>();
+
         /// <summary>
         /// 서비스를 이용하기 위해 실행해야 하는 부트스트랩 스크립트
         /// </summary>
@@ -101,13 +104,13 @@ namespace TableCloth.Models.Catalog
             SearchKeywords
         { get; set; }
 
-    /// <summary>
-    /// 서비스 분류 카테고리를 사용자에게 표시할 때 쓸 이름을 가져옵니다.
-    /// </summary>
-    /// <remarks>
-    /// 이 속성은 실제 XML 데이터를 이용하여 값을 만드는 계산된 속성입니다.
-    /// </remarks>
-    [XmlIgnore]
+        /// <summary>
+        /// 서비스 분류 카테고리를 사용자에게 표시할 때 쓸 이름을 가져옵니다.
+        /// </summary>
+        /// <remarks>
+        /// 이 속성은 실제 XML 데이터를 이용하여 값을 만드는 계산된 속성입니다.
+        /// </remarks>
+        [XmlIgnore]
         public string CategoryDisplayName
         {
             get
@@ -140,7 +143,7 @@ namespace TableCloth.Models.Catalog
         {
             get
             {
-                var actualPackageCount = Packages.Count;
+                var actualPackageCount = Packages.Count + EdgeExtensions.Count;
                 if (!string.IsNullOrWhiteSpace(CustomBootstrap))
                     actualPackageCount++;
                 return actualPackageCount;
@@ -162,7 +165,7 @@ namespace TableCloth.Models.Catalog
                 defaultString = $"*{defaultString}";
 
             if (pkgs != null && pkgs.Count > 0)
-                defaultString = $"{defaultString} (총 {PackageCountForDisplay}개 프로그램 설치)";
+                defaultString = $"{defaultString} (Total {PackageCountForDisplay} package(s) required.)";
 
             return defaultString;
         }

@@ -15,6 +15,8 @@ namespace Hostess.ViewModels
         private string _packageUrl;
         private string _arguments;
         private string _scriptContent;
+        private string _edgeCrxUrl;
+        private string _edgeExtensionId;
         private bool? _installed;
         private string _statusMessage;
         private string _errorMessage;
@@ -64,6 +66,18 @@ namespace Hostess.ViewModels
         {
             get => _scriptContent;
             set => SetProperty(ref _scriptContent, value);
+        }
+
+        public string EdgeCrxUrl
+        {
+            get => _edgeCrxUrl;
+            set => SetProperty(ref _edgeCrxUrl, value);
+        }
+
+        public string EdgeExtensionId
+        {
+            get => _edgeExtensionId;
+            set => SetProperty(ref _edgeExtensionId, value);
         }
 
         public bool? Installed

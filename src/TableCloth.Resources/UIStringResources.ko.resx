@@ -326,6 +326,9 @@
   <data name="Install_PrepareEnvironment" xml:space="preserve">
     <value>환경 준비 중</value>
   </data>
+  <data name="Install_ReloadMicrosoftEdge" xml:space="preserve">
+    <value>Microsoft Edge 설정 새로 고침</value>
+  </data>
   <data name="Install_SetDesktopWallpaper" xml:space="preserve">
     <value>바탕 화면 변경</value>
   </data>

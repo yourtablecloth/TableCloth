@@ -326,6 +326,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Install_PrepareEnvironment" xml:space="preserve">
     <value>Preparing Environment</value>
   </data>
+  <data name="Install_ReloadMicrosoftEdge" xml:space="preserve">
+    <value>Reload Microsoft Edge Settings</value>
+  </data>
   <data name="Install_SetDesktopWallpaper" xml:space="preserve">
     <value>Setting Desktop Wallpaper</value>
   </data>

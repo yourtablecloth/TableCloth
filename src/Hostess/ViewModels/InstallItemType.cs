@@ -9,5 +9,6 @@ namespace Hostess.ViewModels
         PowerShellScript,
         OpenWebSite,
         CustomAction,
+        EdgeExtensionInstall,
     }
 }
