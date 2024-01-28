@@ -16,7 +16,6 @@ public sealed class MainWindowLoadedCommand(
     IAppUserInterface appUserInterface,
     IPreferencesManager preferencesManager,
     IX509CertPairScanner certPairScanner,
-    ISharedLocations sharedLocations,
     IAppMessageBox appMessageBox,
     IAppRestartManager appRestartManager,
     IConfigurationComposer configurationComposer,
@@ -95,8 +94,6 @@ public sealed class MainWindowLoadedCommand(
                 return result;
             };
         }
-
-        var directoryPath = sharedLocations.GetImageDirectoryPath();
 
         // Command Line Parse
         var parsedArg = commandLineArguments.Current;

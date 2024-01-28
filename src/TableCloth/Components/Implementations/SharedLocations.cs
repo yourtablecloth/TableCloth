@@ -24,6 +24,12 @@ public sealed class SharedLocations : ISharedLocations
     public string GetImageDirectoryPath()
         => GetDataPath("images");
 
+    public string GetImageFilePath(string serviceId)
+        => Path.Combine(GetImageDirectoryPath(), $"{serviceId}.png");
+
+    public string GetIconFilePath(string serviceId)
+        => Path.Combine(GetImageDirectoryPath(), $"{serviceId}.ico");
+
     public string ExecutableFilePath
     {
         get

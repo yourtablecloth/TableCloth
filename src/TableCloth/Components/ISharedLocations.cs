@@ -11,5 +11,7 @@ public interface ISharedLocations
     string PreferencesFilePath { get; }
 
     string GetImageDirectoryPath();
+    string GetImageFilePath(string serviceId);
+    string GetIconFilePath(string serviceId);
     string GetTempPath();
 }

@@ -24,10 +24,7 @@ public sealed class ShortcutCrerator(
         if (firstSite != null)
         {
             linkName = firstSite.DisplayName;
-
-            iconFilePath = Path.Combine(
-                sharedLocations.GetImageDirectoryPath(),
-                $"{firstSite.Id}.ico");
+            iconFilePath = sharedLocations.GetIconFilePath(firstSite.Id);
 
             if (!File.Exists(iconFilePath))
                 iconFilePath = null;

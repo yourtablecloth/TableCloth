@@ -42,7 +42,7 @@ public sealed class DetailPageLoadedCommand(
         viewModel.EnableInternetExplorerMode = currentConfig.EnableInternetExplorerMode;
         viewModel.LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
-        var targetFilePath = Path.Combine(sharedLocations.GetImageDirectoryPath(), $"{selectedServiceId}.png");
+        var targetFilePath = sharedLocations.GetImageFilePath(selectedServiceId);
 
         if (File.Exists(targetFilePath))
             viewModel.ServiceLogo = resourceCacheManager.GetImage(selectedServiceId);
