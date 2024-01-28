@@ -112,7 +112,8 @@
                         <RowDefinition Height="40" />
                         <RowDefinition Height="40" />
                         <RowDefinition Height="40" />
-                        <RowDefinition Height="120" />
+                        <RowDefinition d:Height="80" Height="{Binding ShowMatchedKeywordsRow, Converter={StaticResource BooleanToGridRowHeightConverter}, ConverterParameter='80'}" />
+                        <RowDefinition d:Height="80" Height="{Binding ShowCompatibilityNotesRow, Converter={StaticResource BooleanToGridRowHeightConverter}, ConverterParameter='80'}" />
                     </Grid.RowDefinitions>
                     <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="8" Source="{Binding ServiceLogo}" />
                     <TextBlock Grid.Row="0" Grid.Column="1" Margin="8" Text="{Binding DisplayName}" FontSize="36" Grid.RowSpan="2" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
@@ -140,7 +141,8 @@
                         </Hyperlink>
                     </TextBlock>
                     <TextBlock Grid.Row="3" Grid.Column="1" Margin="8" Text="{Binding PackageCountForDisplay, StringFormat={x:Static res:UIStringResources.DetailPage_PackageCountDisplayLabel}}" />
-                    <RichTextBox x:Name="CompatNotes" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" local:RichTextBoxHelper.DocumentXaml="{Binding CompatibilityNotes}" Margin="8" Foreground="Red" FontWeight="Bold" BorderBrush="Transparent" BorderThickness="0" Background="Transparent" IsReadOnly="True" IsDocumentEnabled="True" />
+                    <RichTextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="8" local:RichTextBoxHelper.DocumentXaml="{Binding MatchedKeywords}" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderBrush="Transparent" BorderThickness="0" Background="Transparent" IsReadOnly="True" IsDocumentEnabled="True" />
+                    <RichTextBox x:Name="CompatNotes" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" local:RichTextBoxHelper.DocumentXaml="{Binding CompatibilityNotes}" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="8" Foreground="Red" FontWeight="Bold" BorderBrush="Transparent" BorderThickness="0" Background="Transparent" IsReadOnly="True" IsDocumentEnabled="True" />
                 </Grid>
                 <Grid Margin="8">
                     <Grid.ColumnDefinitions>

@@ -80,6 +80,9 @@ namespace TableCloth.Resources
                     DisplayName = $"Sample {x}",
                     Category = CatalogInternetServiceCategory.Banking,
                     Url = $"https://www.example.com/site{x}",
+                    SearchKeywords = string.Join(";", Enumerable
+                        .Range(0, Math.Min(min, Math.Max(max, randomizer.Next(min, max))))
+                        .Select(y => $"Hint{y}")),
                     CompatibilityNotes = @"This website's security policy is configured to force the security agent to kill RDP sessions, which is a prerequisite for Windows Sandbox. We recommend that you refer to https://yourtablecloth.app/troubleshoot.html and change the AST to allow remote connections before using the site.",
                     Packages = new List<CatalogPackageInformation>(GeneratePackageItems(min, max)),
                 });

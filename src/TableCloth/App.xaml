@@ -7,6 +7,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:BooleanToGridRowHeightConverter x:Key="BooleanToGridRowHeightConverter" />
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             <converters:ServiceLogoConverter x:Key="ServiceLogoConverter" />
             <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />

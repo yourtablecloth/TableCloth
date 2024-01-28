@@ -65,35 +65,9 @@ public sealed class MainWindowLoadedCommand(
         viewModel.Services = services;
 
         var view = (CollectionView)CollectionViewSource.GetDefaultView(viewModel.Services);
+
         if (view != null)
-        {
-            view.Filter = (item) =>
-            {
-                var filterText = viewModel.FilterText;
-
-                if (string.IsNullOrWhiteSpace(filterText))
-                    return true;
-
-                if (item is not CatalogInternetService actualItem)
-                    return true;
-
-                var filterTextSeparators = new char[] { ',', };
-                var splittedFilterText = filterText.Split(filterTextSeparators, StringSplitOptions.RemoveEmptyEntries);
-                var result = false;
-
-                foreach (var eachFilterText in splittedFilterText)
-                {
-                    result |= actualItem.DisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                        || actualItem.CategoryDisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                        || actualItem.Url.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                        || actualItem.Packages.Count.ToString().Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                        || actualItem.Packages.Any(x => x.Name.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase))
-                        || actualItem.Id.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase);
-                }
-
-                return result;
-            };
-        }
+            view.Filter = (item) => CatalogInternetService.IsMatchedItem(item, viewModel.FilterText);
 
         // Command Line Parse
         var parsedArg = commandLineArguments.Current;

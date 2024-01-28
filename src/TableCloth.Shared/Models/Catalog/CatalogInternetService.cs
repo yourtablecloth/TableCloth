@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
 using TableCloth.Resources;
@@ -12,6 +13,12 @@ namespace TableCloth.Models.Catalog
     [Serializable, XmlType]
     public sealed class CatalogInternetService
     {
+        [XmlIgnore]
+        private static readonly char[] SearchKeywordsSeparators = new char[] { ';', };
+
+        [XmlIgnore]
+        private static readonly char[] FilterTextSeparators = new char[] { ',', };
+
         /// <summary>
         /// 고유 아이디 값
         /// </summary>
@@ -86,13 +93,21 @@ namespace TableCloth.Models.Catalog
             set => CustomBootstrap = value?.Value;
         }
 
-        /// <summary>
-        /// 서비스 분류 카테고리를 사용자에게 표시할 때 쓸 이름을 가져옵니다.
-        /// </summary>
-        /// <remarks>
-        /// 이 속성은 실제 XML 데이터를 이용하여 값을 만드는 계산된 속성입니다.
-        /// </remarks>
-        [XmlIgnore]
+        [XmlElement("SearchKeywords")]
+        public string
+#if !NETFX
+            ?
+#endif
+            SearchKeywords
+        { get; set; }
+
+    /// <summary>
+    /// 서비스 분류 카테고리를 사용자에게 표시할 때 쓸 이름을 가져옵니다.
+    /// </summary>
+    /// <remarks>
+    /// 이 속성은 실제 XML 데이터를 이용하여 값을 만드는 계산된 속성입니다.
+    /// </remarks>
+    [XmlIgnore]
         public string CategoryDisplayName
         {
             get
@@ -151,5 +166,36 @@ namespace TableCloth.Models.Catalog
 
             return defaultString;
         }
+
+        public IEnumerable<string> GetSearchKeywords()
+            => (SearchKeywords ?? string.Empty).Split(SearchKeywordsSeparators, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).Distinct().ToArray();
+
+        public static bool IsMatchedItem(object item, string filterText)
+        {
+            var actualItem = item as CatalogInternetService;
+
+            if (actualItem == null)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(filterText))
+                return true;
+
+            var result = false;
+            var splittedFilterText = filterText.Split(FilterTextSeparators, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var eachFilterText in splittedFilterText)
+            {
+                result |= actualItem.DisplayName.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1)
+                    || actualItem.CategoryDisplayName.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1)
+                    || actualItem.Url.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1)
+                    || actualItem.Packages.Count.ToString().IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1)
+                    || actualItem.Packages.Any(x => x.Name.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1))
+                    || actualItem.Id.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1)
+                    || actualItem.GetSearchKeywords().Any(x => x.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1));
+            }
+
+            return result;
+        }
+
     }
 }

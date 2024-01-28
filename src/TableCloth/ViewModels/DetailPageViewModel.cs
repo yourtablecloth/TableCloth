@@ -117,6 +117,15 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     public int? PackageCountForDisplay
         => _selectedService?.PackageCountForDisplay;
 
+    public string? MatchedKeywords
+        => string.Join(", ", _selectedService?.GetSearchKeywords() ?? new string[] { });
+
+    public bool ShowMatchedKeywordsRow
+        => !string.IsNullOrWhiteSpace((MatchedKeywords ?? string.Empty).Trim());
+
+    public bool ShowCompatibilityNotesRow
+        => !string.IsNullOrWhiteSpace((CompatibilityNotes ?? string.Empty).Trim());
+
     private CommandLineArgumentModel? _commandLineArgumentModel;
     private ImageSource? _serviceLogo;
     private bool _mapNpkiCert;

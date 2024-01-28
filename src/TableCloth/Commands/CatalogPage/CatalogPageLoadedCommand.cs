@@ -14,8 +14,6 @@ public sealed class CatalogPageLoadedCommand(
     private static readonly PropertyGroupDescription GroupDescription =
         new(nameof(CatalogInternetService.CategoryDisplayName));
 
-    private static readonly char[] FilterTextSeparators = [',',];
-
     public override void Execute(CatalogPageViewModel viewModel)
     {
         var doc = resourceCacheManager.CatalogDocument;
@@ -39,31 +37,7 @@ public sealed class CatalogPageLoadedCommand(
         var view = (CollectionView)CollectionViewSource.GetDefaultView(viewModel.Services);
         if (view != null)
         {
-            view.Filter = (item) =>
-            {
-                if (item is not CatalogInternetService actualItem)
-                    return false;
-
-                var filterText = viewModel.SearchKeyword;
-
-                if (string.IsNullOrWhiteSpace(filterText))
-                    return true;
-
-                var result = false;
-                var splittedFilterText = filterText.Split(FilterTextSeparators, StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (var eachFilterText in splittedFilterText)
-                {
-                    result |= actualItem.DisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                        || actualItem.CategoryDisplayName.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                        || actualItem.Url.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                        || actualItem.Packages.Count.ToString().Contains(eachFilterText, StringComparison.OrdinalIgnoreCase)
-                        || actualItem.Packages.Any(x => x.Name.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase))
-                        || actualItem.Id.Contains(eachFilterText, StringComparison.OrdinalIgnoreCase);
-                }
-
-                return result;
-            };
+            view.Filter = (item) => CatalogInternetService.IsMatchedItem(item, viewModel.SearchKeyword);
 
             if (!view.GroupDescriptions.Contains(GroupDescription))
                 view.GroupDescriptions.Add(GroupDescription);
