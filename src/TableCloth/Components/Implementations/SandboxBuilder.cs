@@ -41,12 +41,10 @@ public sealed class SandboxBuilder(
     {
         ArgumentNullException.ThrowIfNull(tableClothConfiguration);
 
-        using var hostessZipFileStream = File.OpenRead(
-            Path.Combine(sharedLocations.ExecutableDirectoryPath, "Hostess.zip"));
-        ExpandAssetZip(hostessZipFileStream, outputDirectory);
-
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
+        var hostessZipFilePath = Path.Combine(sharedLocations.ExecutableDirectoryPath, "Hostess.zip");
+        await ExpandAssetZipAsync(hostessZipFilePath, outputDirectory, cancellationToken).ConfigureAwait(false);
 
         var assetsDirectory = Path.Combine(outputDirectory, "assets");
         if (!Directory.Exists(assetsDirectory))
@@ -167,7 +165,7 @@ popd
 ";
     }
 
-    private static void ExpandAssetZip(Stream zipFileStream, string outputDirectory)
+    private static async Task ExpandAssetZipAsync(string zipFilePath, string outputDirectory, CancellationToken cancellationToken = default)
     {
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
@@ -176,8 +174,8 @@ popd
         if (!Directory.Exists(assetsDirectory))
             Directory.CreateDirectory(assetsDirectory);
 
-        using var zipArchive = new ZipArchive(zipFileStream, ZipArchiveMode.Read);
-        zipArchive.ExtractToDirectory(assetsDirectory, true);
+        // https://stackoverflow.com/a/17755048
+        await Task.Run(() => ZipFile.ExtractToDirectory(zipFilePath, assetsDirectory, true), cancellationToken);
     }
 
     private static string SerializeSandboxSpec(SandboxConfiguration configuration, IList<SandboxMappedFolder> excludedFolders)
