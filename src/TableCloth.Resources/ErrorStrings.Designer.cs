@@ -250,6 +250,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to prepare a directory to store data files for use inside the sandbox..
+        /// </summary>
+        public static string Error_Fail_PrepareAssetDirectory {
+            get {
+                return ResourceManager.GetString("Error_Fail_PrepareAssetDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (File: {0} (Row: {1}), Member: {2}).
         /// </summary>
         public static string Error_FileLineNo {

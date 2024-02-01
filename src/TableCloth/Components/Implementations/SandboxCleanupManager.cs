@@ -31,7 +31,7 @@ public sealed class SandboxCleanupManager : ISandboxCleanupManager
             {
                 if (string.Equals(Path.GetFullPath(eachDirectory), Path.GetFullPath(CurrentDirectory), StringComparison.OrdinalIgnoreCase))
                 {
-                    if (Helpers.GetSandboxRunningState())
+                    if (Helpers.IsWindowsSandboxRunning())
                     {
                         Helpers.OpenExplorer(eachDirectory);
                         continue;

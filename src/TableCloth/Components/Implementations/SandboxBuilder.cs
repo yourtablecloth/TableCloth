@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -16,6 +17,8 @@ using TableCloth.Resources;
 namespace TableCloth.Components;
 
 public sealed class SandboxBuilder(
+    IAppMessageBox appMessageBox,
+    IArchiveExpander archiveExpander,
     ISharedLocations sharedLocations) : ISandboxBuilder
 {
     private readonly string _wdagUtilityAccountPath = @"C:\Users\WDAGUtilityAccount";
@@ -33,18 +36,18 @@ public sealed class SandboxBuilder(
         return Path.Join(_wdagUtilityAccountPath, candidatePath);
     }
 
-    public async Task<string> GenerateSandboxConfigurationAsync(
+    public async Task<string?> GenerateSandboxConfigurationAsync(
         string outputDirectory,
         TableClothConfiguration tableClothConfiguration,
         IList<SandboxMappedFolder> excludedDirectories,
         CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(tableClothConfiguration);
-
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
+
         var hostessZipFilePath = Path.Combine(sharedLocations.ExecutableDirectoryPath, "Hostess.zip");
-        await ExpandAssetZipAsync(hostessZipFilePath, outputDirectory, cancellationToken).ConfigureAwait(false);
+        if (!await ExpandAssetZipAsync(hostessZipFilePath, outputDirectory, cancellationToken).ConfigureAwait(false))
+            return default;
 
         var assetsDirectory = Path.Combine(outputDirectory, "assets");
         if (!Directory.Exists(assetsDirectory))
@@ -165,17 +168,32 @@ popd
 ";
     }
 
-    private static async Task ExpandAssetZipAsync(string zipFilePath, string outputDirectory, CancellationToken cancellationToken = default)
+    private async Task<bool> ExpandAssetZipAsync(string zipFilePath, string outputDirectory, CancellationToken cancellationToken = default)
     {
+        if (!File.Exists(zipFilePath))
+            return false;
+
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
 
         var assetsDirectory = Path.Combine(outputDirectory, "assets");
+
         if (!Directory.Exists(assetsDirectory))
             Directory.CreateDirectory(assetsDirectory);
 
-        // https://stackoverflow.com/a/17755048
-        await Task.Run(() => ZipFile.ExtractToDirectory(zipFilePath, assetsDirectory, true), cancellationToken);
+        try
+        {
+            await archiveExpander.ExpandArchiveAsync(
+                zipFilePath, assetsDirectory, cancellationToken)
+                .ConfigureAwait(false);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            appMessageBox.DisplayError(ex, true);
+            return false;
+        }
     }
 
     private static string SerializeSandboxSpec(SandboxConfiguration configuration, IList<SandboxMappedFolder> excludedFolders)

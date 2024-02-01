@@ -23,6 +23,7 @@
 		<Nullable>enable</Nullable>
 		<Deterministic>true</Deterministic>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Resources\SandboxIcon.png" />
@@ -45,6 +46,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
@@ -74,7 +76,7 @@
 
 	<ItemGroup>
 		<Compile Update="Components\Implementations\LicenseDescriptor.cs">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Compile>
 		<Compile Update="Properties\Resources.Designer.cs">
 			<DesignTime>True</DesignTime>

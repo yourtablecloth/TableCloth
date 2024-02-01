@@ -76,16 +76,16 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     # Publish TableCloth project
-    - name: Build TableCloth project
+    - name: Publish TableCloth project
       run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
 
     # Build Loom project separately
-    - name: Build Loom project
-      run: dotnet publish $env:Loom_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
+    #- name: Publish Loom project
+    #  run: dotnet publish $env:Loom_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
+    #  env:
+    #    Configuration: ${{ matrix.configuration }}
 
     - name: Set path for candle and light
       run: echo "$env:WIX_PATH\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
@@ -122,10 +122,10 @@ jobs:
         retention-days: 5
 
     # Upload the zip package: https://github.com/actions/upload-artifact
-    - name: Upload build artifacts (Loom CLI)
-      uses: actions/upload-artifact@v4
-      with:
-        name: Loom CLI (${{ matrix.platform }}, ${{ matrix.configuration }})
-        path: src\Loom\bin\${{ env.Platform }}\${{ matrix.configuration }}\net8.0\win-${{ env.Platform }}\publish\Loom.exe
-        if-no-files-found: error
-        retention-days: 90
+    #- name: Upload build artifacts (Loom CLI)
+    #  uses: actions/upload-artifact@v4
+    #  with:
+    #    name: Loom CLI (${{ matrix.platform }}, ${{ matrix.configuration }})
+    #    path: src\Loom\bin\${{ env.Platform }}\${{ matrix.configuration }}\net8.0\win-${{ env.Platform }}\publish\Loom.exe
+    #    if-no-files-found: error
+    #    retention-days: 90

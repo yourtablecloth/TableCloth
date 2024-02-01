@@ -183,6 +183,9 @@
   <data name="Error_CommandLineInterpreter_Missing" xml:space="preserve">
     <value>Windows 명령줄 해석기 (cmd.exe)를 찾을 수 없습니다.</value>
   </data>
+  <data name="Error_Fail_PrepareAssetDirectory" xml:space="preserve">
+    <value>샌드박스 안에서 사용할 데이터 파일을 저장할 디렉터리를 준비하지 못했습니다.</value>
+  </data>
   <data name="Error_FileLineNo" xml:space="preserve">
     <value>(파일: {0} (행: {1}), 멤버: {2})</value>
   </data>

@@ -8,7 +8,7 @@ namespace TableCloth.Components;
 
 public interface ISandboxBuilder
 {
-    Task<string> GenerateSandboxConfigurationAsync(
+    Task<string?> GenerateSandboxConfigurationAsync(
         string outputDirectory,
         TableClothConfiguration tableClothConfiguration,
         IList<SandboxMappedFolder> excludedDirectories,
