@@ -22,7 +22,7 @@ namespace Hostess
         {
             Width = MinWidth;
             Height = SystemParameters.PrimaryScreenHeight * 0.5;
-            Top = (SystemParameters.PrimaryScreenHeight / 2) - (Height / 2);
+            Top = 0;
             Left = SystemParameters.PrimaryScreenWidth - Width;
         }
 
