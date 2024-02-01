@@ -20,10 +20,12 @@ public sealed class AppStartup : IAppStartup
 {
     public AppStartup(
         ISharedLocations sharedLocations,
+        IArchiveExpander archiveExpander,
         ILogger<AppStartup> logger,
         IHttpClientFactory httpClientFactory)
     {
         _sharedLocations = sharedLocations;
+        _archiveExpander = archiveExpander;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
 
@@ -57,6 +59,7 @@ public sealed class AppStartup : IAppStartup
 
     private bool _disposed;
     private readonly ISharedLocations _sharedLocations;
+    private readonly IArchiveExpander _archiveExpander;
     private readonly ILogger _logger;
     private readonly IHttpClientFactory _httpClientFactory;
 
@@ -281,27 +284,13 @@ public sealed class AppStartup : IAppStartup
 
         try
         {
-            using var imagesZipStream = File.OpenRead(_sharedLocations.ImagesZipFilePath);
-            using var zipArchive = new ZipArchive(imagesZipStream, ZipArchiveMode.Read);
-
-            foreach (var eachEntry in zipArchive.Entries)
-            {
-                var destPath = Path.Combine(imageDirectoryPath, eachEntry.Name);
-
-                try
-                {
-                    using var outputStream = File.OpenWrite(destPath);
-                    using var eachStream = eachEntry.Open();
-                    await eachStream.CopyToAsync(outputStream, cancellationToken).ConfigureAwait(false);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogWarning(e, "Cannot write image file {destPath}.", destPath);
-                }
-            }
+            await _archiveExpander.ExpandArchiveAsync(
+                _sharedLocations.ImagesZipFilePath, imageDirectoryPath,
+                cancellationToken).ConfigureAwait(false);
         }
         catch (Exception e)
         {
+            _logger.LogWarning(e, "Cannot write image file to directory {destPath}.", imageDirectoryPath);
             result = ApplicationStartupResultModel.FromErrorMessage(
                 StringResources.Error_Cannot_Prepare_AppContents(e), e, isCritical: true);
             return result;

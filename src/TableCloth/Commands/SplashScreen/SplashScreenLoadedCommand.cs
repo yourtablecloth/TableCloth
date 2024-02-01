@@ -1,6 +1,9 @@
-﻿using Sentry;
+﻿using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices.MVVM;
+using Sentry;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using TableCloth.Components;
 using TableCloth.Events;
@@ -15,10 +18,13 @@ public sealed class SplashScreenLoadedCommand(
     IAppMessageBox appMessageBox,
     IPreferencesManager preferencesManager,
     IResourceCacheManager resourceCacheManager,
-    ICommandLineArguments commandLineArguments) : ViewModelCommandBase<SplashScreenViewModel>
+    ICommandLineArguments commandLineArguments) : ViewModelCommandBase<SplashScreenViewModel>, IAsyncCommand<SplashScreenViewModel>
 {
+    public override void Execute(SplashScreenViewModel viewModel)
+        => ExecuteAsync(viewModel).SafeFireAndForget();
+
     // 뷰 모델과 연결된 이벤트 통지기를 호출할 때는 Dispatcher를 통해서 호출하도록 코드 수정이 필요함.
-    public override async void Execute(SplashScreenViewModel viewModel)
+    public async Task ExecuteAsync(SplashScreenViewModel viewModel)
     {
         applicationService.ApplyCosmeticChangeToMainWindow();
 

@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AsyncAwaitBestPractices;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Windows;
 using TableCloth.Components;
@@ -17,7 +19,20 @@ public partial class App : Application
     internal void SetupHost(IHost host)
     {
         Host = host ?? throw new ArgumentException("Host initialization not done.", nameof(host));
-        this.InitServiceProvider(host.Services);
+
+        const string key = nameof(IServiceProvider);
+
+        if (Properties.Contains(key) && Properties[key] != null)
+            throw new Exception("Already service provider has been initialized.");
+
+        Properties[key] = host.Services;
+
+        SafeFireAndForgetExtensions.Initialize();
+        SafeFireAndForgetExtensions.SetDefaultExceptionHandling((thrownException) =>
+        {
+            var logger = host.Services.GetRequiredService<ILogger>();
+            logger.LogError(thrownException, "Unexpected error occurred.");
+        });
     }
 
     public IHost? Host { get; private set; }

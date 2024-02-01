@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AsyncAwaitBestPractices;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -117,6 +118,7 @@ internal static class Program
             .AddSingleton<IShortcutCrerator, ShortcutCrerator>()
             .AddSingleton<ICommandLineArguments, CommandLineArguments>()
             .AddSingleton<IApplicationService, ApplicationService>()
+            .AddSingleton<IArchiveExpander, ArchiveExpander>()
             .AddSingleton<ICatalogDeserializer, CatalogDeserializer>();
 
         // Shared Commands

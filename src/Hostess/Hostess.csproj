@@ -68,6 +68,12 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AsyncAwaitBestPractices, Version=7.0.0.0, Culture=neutral, PublicKeyToken=532360cfd341384d, processorArchitecture=MSIL">
+      <HintPath>..\packages\AsyncAwaitBestPractices.7.0.0\lib\netstandard2.0\AsyncAwaitBestPractices.dll</HintPath>
+    </Reference>
+    <Reference Include="AsyncAwaitBestPractices.MVVM, Version=7.0.0.0, Culture=neutral, PublicKeyToken=fd3d463fd20deb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\AsyncAwaitBestPractices.MVVM.7.0.0\lib\netstandard2.0\AsyncAwaitBestPractices.MVVM.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>

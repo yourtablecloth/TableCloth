@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices.MVVM;
+using System.Linq;
+using System.Threading.Tasks;
 using TableCloth.Components;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
@@ -7,10 +10,12 @@ namespace TableCloth.Commands.Shared;
 
 public sealed class CreateShortcutCommand(
     IShortcutCrerator shortcutCrerator,
-    IAppMessageBox appMessageBox) : ViewModelCommandBase<ITableClothViewModel>
+    IAppMessageBox appMessageBox) : ViewModelCommandBase<ITableClothViewModel>, IAsyncCommand<ITableClothViewModel>
 {
+    public override void Execute(ITableClothViewModel viewModel)
+        => ExecuteAsync(viewModel).SafeFireAndForget();
 
-    public override async void Execute(ITableClothViewModel viewModel)
+    public async Task ExecuteAsync(ITableClothViewModel viewModel)
     {
         if (!viewModel.SelectedServices.Any())
         {

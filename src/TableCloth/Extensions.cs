@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AsyncAwaitBestPractices;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 using System.Windows;
@@ -96,15 +97,4 @@ internal static class Extensions
 
     public static IServiceProvider GetServiceProvider(this Application application)
         => (IServiceProvider)(application.Properties[nameof(IServiceProvider)] ?? throw new Exception("Service provider has not been initialized."));
-
-    public static void InitServiceProvider(this Application application, IServiceProvider serviceProvider)
-    {
-        const string key = nameof(IServiceProvider);
-
-        if (application.Properties.Contains(key) &&
-            application.Properties[key] != null)
-            throw new ArgumentException("Already service provider has been initialized.", nameof(application));
-
-        application.Properties[key] = serviceProvider;
-    }
 }

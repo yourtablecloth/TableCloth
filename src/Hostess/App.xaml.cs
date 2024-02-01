@@ -4,9 +4,12 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using TableCloth;
 using TableCloth.Resources;
+using AsyncAwaitBestPractices.MVVM;
+using AsyncAwaitBestPractices;
 
 namespace Hostess
 {
@@ -25,7 +28,7 @@ namespace Hostess
 
         public IHost Host { get; private set; }
 
-        private async void Application_Startup(object sender, StartupEventArgs e)
+        private async Task OnApplicationstartupAsync(object sender, StartupEventArgs e)
         {
             var appMessageBox = Host.Services.GetRequiredService<IAppMessageBox>();
             var commandLineArguments = Host.Services.GetRequiredService<ICommandLineArguments>();
@@ -78,5 +81,8 @@ namespace Hostess
             Current.MainWindow = mainWindow;
             mainWindow.Show();
         }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+            => OnApplicationstartupAsync(sender, e).SafeFireAndForget();
     }
 }

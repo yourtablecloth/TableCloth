@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices.MVVM;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,9 +16,12 @@ namespace TableCloth.Commands.CertSelectWindow;
 
 public sealed class CertSelectWindowManualCertLoadCommand(
     IAppUserInterface appUserInterface,
-    IX509CertPairScanner certPairScanner) : ViewModelCommandBase<CertSelectWindowViewModel>
+    IX509CertPairScanner certPairScanner) : ViewModelCommandBase<CertSelectWindowViewModel>, IAsyncCommand<CertSelectWindowViewModel>
 {
-    public override async void Execute(CertSelectWindowViewModel viewModel)
+    public override void Execute(CertSelectWindowViewModel viewModel)
+        => ExecuteAsync(viewModel).SafeFireAndForget();
+
+    public async Task ExecuteAsync(CertSelectWindowViewModel viewModel)
     {
         var ofd = new OpenFileDialog()
         {

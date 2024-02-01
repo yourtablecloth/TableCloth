@@ -33,7 +33,7 @@ namespace TableCloth
         public static string[] GetCommandLineArguments()
             => Environment.GetCommandLineArgs().Skip(1).ToArray();
 
-        public static bool GetSandboxRunningState()
+        public static bool IsWindowsSandboxRunning()
             => Process.GetProcesses().Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase)).Any();
 
         public static void OpenExplorer(string targetDirectoryPath)

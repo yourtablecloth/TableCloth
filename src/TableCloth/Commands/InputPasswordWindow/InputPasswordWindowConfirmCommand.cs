@@ -1,4 +1,7 @@
-﻿using System;
+﻿using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices.MVVM;
+using System;
+using System.Threading.Tasks;
 using TableCloth.Components;
 using TableCloth.Events;
 using TableCloth.Resources;
@@ -8,9 +11,12 @@ namespace TableCloth.Commands.InputPasswordWindow;
 
 public sealed class InputPasswordWindowConfirmCommand(
     IX509CertPairScanner certPairScanner,
-    IAppMessageBox appMessageBox) : ViewModelCommandBase<InputPasswordWindowViewModel>
+    IAppMessageBox appMessageBox) : ViewModelCommandBase<InputPasswordWindowViewModel>, IAsyncCommand<InputPasswordWindowViewModel>
 {
-    public override async void Execute(InputPasswordWindowViewModel viewModel)
+    public override void Execute(InputPasswordWindowViewModel viewModel)
+        => ExecuteAsync(viewModel).SafeFireAndForget();
+
+    public async Task ExecuteAsync(InputPasswordWindowViewModel viewModel)
     {
         try
         {

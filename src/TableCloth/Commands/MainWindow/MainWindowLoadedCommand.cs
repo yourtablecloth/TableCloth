@@ -1,6 +1,9 @@
-﻿using System;
+﻿using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices.MVVM;
+using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using TableCloth.Components;
@@ -20,9 +23,12 @@ public sealed class MainWindowLoadedCommand(
     IAppRestartManager appRestartManager,
     IConfigurationComposer configurationComposer,
     ISandboxLauncher sandboxLauncher,
-    ICommandLineArguments commandLineArguments) : ViewModelCommandBase<MainWindowViewModel>
+    ICommandLineArguments commandLineArguments) : ViewModelCommandBase<MainWindowViewModel>, IAsyncCommand<MainWindowViewModel>
 {
-    public override async void Execute(MainWindowViewModel viewModel)
+    public override void Execute(MainWindowViewModel viewModel)
+        => ExecuteAsync(viewModel).SafeFireAndForget();
+
+    public async Task ExecuteAsync(MainWindowViewModel viewModel)
     {
         applicationService.ApplyCosmeticChangeToMainWindow();
 
@@ -88,7 +94,10 @@ public sealed class MainWindowLoadedCommand(
         }
     }
 
-    private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        => OnViewModelPropertyChangedAsync(sender, e).SafeFireAndForget();
+
+    private async Task OnViewModelPropertyChangedAsync(object? sender, PropertyChangedEventArgs e)
     {
         if (sender is not MainWindowViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));

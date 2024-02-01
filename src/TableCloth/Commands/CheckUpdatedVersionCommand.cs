@@ -1,5 +1,8 @@
-﻿using System;
+﻿using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices.MVVM;
+using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using TableCloth.Components;
 using TableCloth.Resources;
 
@@ -7,9 +10,12 @@ namespace TableCloth.Commands;
 
 public sealed class CheckUpdatedVersionCommand(
     IAppUpdateManager appUpdateManager,
-    IAppMessageBox appMessageBox) : CommandBase
+    IAppMessageBox appMessageBox) : CommandBase, IAsyncCommand<object?>
 {
-    public override async void Execute(object? parameter)
+    public override void Execute(object? parameter)
+        => ExecuteAsync(parameter).SafeFireAndForget();
+
+    public async Task ExecuteAsync(object? _)
     {
         var targetUrl = await appUpdateManager.QueryNewVersionDownloadUrlAsync();
 

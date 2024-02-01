@@ -1,7 +1,10 @@
-﻿using System;
+﻿using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices.MVVM;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using TableCloth.Components;
 using TableCloth.ViewModels;
 
@@ -15,9 +18,12 @@ public sealed class DetailPageLoadedCommand(
     IAppUserInterface appUserInterface,
     ISharedLocations sharedLocations,
     IConfigurationComposer configurationComposer,
-    ISandboxLauncher sandboxLauncher) : ViewModelCommandBase<DetailPageViewModel>
+    ISandboxLauncher sandboxLauncher) : ViewModelCommandBase<DetailPageViewModel>, IAsyncCommand<DetailPageViewModel>
 {
-    public override async void Execute(DetailPageViewModel viewModel)
+    public override void Execute(DetailPageViewModel viewModel)
+        => ExecuteAsync(viewModel).SafeFireAndForget();
+
+    public async Task ExecuteAsync(DetailPageViewModel viewModel)
     {
         if (viewModel.SelectedService == null)
             return;
@@ -74,7 +80,10 @@ public sealed class DetailPageLoadedCommand(
         }
     }
 
-    private async void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        => OnViewModelPropertyChangedAsync(sender, e).SafeFireAndForget();
+
+    private async Task OnViewModelPropertyChangedAsync(object? sender, PropertyChangedEventArgs e)
     {
         if (sender is not DetailPageViewModel viewModel)
             throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));

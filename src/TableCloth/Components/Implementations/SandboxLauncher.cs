@@ -44,7 +44,7 @@ public sealed class SandboxLauncher(
                 return;
         }
 
-        if (Helpers.GetSandboxRunningState())
+        if (Helpers.IsWindowsSandboxRunning())
         {
             appMessageBox.DisplayError(ErrorStrings.Error_Windows_Sandbox_Already_Running, false);
             return;
@@ -66,9 +66,16 @@ public sealed class SandboxLauncher(
 
         var tempPath = sharedLocations.GetTempPath();
         var excludedFolderList = new List<SandboxMappedFolder>();
+
         var wsbFilePath = await sandboxBuilder.GenerateSandboxConfigurationAsync(
             tempPath, config, excludedFolderList, cancellationToken)
             .ConfigureAwait(false);
+
+        if (string.IsNullOrWhiteSpace(wsbFilePath))
+        {
+            appMessageBox.DisplayError(ErrorStrings.Error_Fail_PrepareAssetDirectory, true);
+            return;
+        }
 
         if (excludedFolderList.Count != 0)
             appMessageBox.DisplayError(StringResources.Error_HostFolder_Unavailable(excludedFolderList.Select(x => x.HostFolder)), false);

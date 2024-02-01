@@ -1,12 +1,15 @@
-﻿using Hostess.Components;
+﻿using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices.MVVM;
+using Hostess.Components;
 using Hostess.ViewModels;
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Hostess.Commands.MainWindow
 {
-    public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowViewModel>
+    public sealed class MainWindowLoadedCommand : ViewModelCommandBase<MainWindowViewModel>, IAsyncCommand<MainWindowViewModel>
     {
         public MainWindowLoadedCommand(
             Application application,
@@ -31,7 +34,10 @@ namespace Hostess.Commands.MainWindow
         private readonly ICommandLineArguments _commandLineArguments;
         private readonly IStepsComposer _stepsComposer;
 
-        public override async void Execute(MainWindowViewModel viewModel)
+        public override void Execute(MainWindowViewModel viewModel)
+            => ExecuteAsync(viewModel).SafeFireAndForget();
+
+        public async Task ExecuteAsync(MainWindowViewModel viewModel)
         {
             _visualThemeManager.ApplyAutoThemeChange(_application.MainWindow);
 
