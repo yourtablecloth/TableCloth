@@ -17,7 +17,7 @@ jobs:
       Hostess_Project_Path: src\Hostess\Hostess.csproj
       ResourceBuilder_Project_Path: src\TableCloth.ResourceBuilder\TableCloth.ResourceBuilder.csproj
       Test_Project_Path: src\TableCloth.Test\TableCloth.Test.csproj
-      Loom_Project_Path: src\Loom\Loom.csproj
+      #Cloth_Project_Path: src\Cloth\Cloth.csproj
       TableCloth_Project_Directory: src\TableCloth
       TableCloth_Project_Path: src\TableCloth\TableCloth.csproj
       Setup_Project_Name: TableCloth.SetupBuilder
@@ -81,9 +81,9 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Build Loom project separately
-    #- name: Publish Loom project
-    #  run: dotnet publish $env:Loom_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
+    # Build Cloth project separately
+    #- name: Publish Cloth project
+    #  run: dotnet publish $env:Cloth_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
     #  env:
     #    Configuration: ${{ matrix.configuration }}
 
@@ -122,10 +122,10 @@ jobs:
         retention-days: 5
 
     # Upload the zip package: https://github.com/actions/upload-artifact
-    #- name: Upload build artifacts (Loom CLI)
+    #- name: Upload build artifacts (Cloth CLI)
     #  uses: actions/upload-artifact@v4
     #  with:
-    #    name: Loom CLI (${{ matrix.platform }}, ${{ matrix.configuration }})
-    #    path: src\Loom\bin\${{ env.Platform }}\${{ matrix.configuration }}\net8.0\win-${{ env.Platform }}\publish\Loom.exe
+    #    name: Cloth CLI (${{ matrix.platform }}, ${{ matrix.configuration }})
+    #    path: src\Cloth\bin\${{ env.Platform }}\${{ matrix.configuration }}\net8.0\win-${{ env.Platform }}\publish\Cloth.exe
     #    if-no-files-found: error
     #    retention-days: 90

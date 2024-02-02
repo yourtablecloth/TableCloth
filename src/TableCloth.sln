@@ -28,8 +28,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableCloth.ResourceBuilder", "TableCloth.ResourceBuilder\TableCloth.ResourceBuilder.csproj", "{27405F36-877A-4B82-98FB-0C461FBAB625}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loom", "Loom\Loom.csproj", "{25CA9322-D817-4F66-AC5A-8A88794162AF}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableCloth.Resources", "TableCloth.Resources\TableCloth.Resources.csproj", "{28338BD7-F42E-4D85-91BF-F6CC72DE7360}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableCloth.Test", "TableCloth.Test\TableCloth.Test.csproj", "{5367281E-9F77-4040-BD10-FD6429CC679A}"
@@ -37,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableCloth.Test", "TableClo
 		{27405F36-877A-4B82-98FB-0C461FBAB625} = {27405F36-877A-4B82-98FB-0C461FBAB625}
 		{369BB263-3C8D-4B56-9301-2C47DE7746E8} = {369BB263-3C8D-4B56-9301-2C47DE7746E8}
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloth", "Cloth\Cloth.csproj", "{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,14 +78,6 @@ Global
 		{27405F36-877A-4B82-98FB-0C461FBAB625}.Release|ARM64.Build.0 = Release|x64
 		{27405F36-877A-4B82-98FB-0C461FBAB625}.Release|x64.ActiveCfg = Release|x64
 		{27405F36-877A-4B82-98FB-0C461FBAB625}.Release|x64.Build.0 = Release|x64
-		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Debug|ARM64.ActiveCfg = Debug|ARM64
-		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Debug|ARM64.Build.0 = Debug|ARM64
-		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Debug|x64.ActiveCfg = Debug|x64
-		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Debug|x64.Build.0 = Debug|x64
-		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Release|ARM64.ActiveCfg = Release|ARM64
-		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Release|ARM64.Build.0 = Release|ARM64
-		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Release|x64.ActiveCfg = Release|x64
-		{25CA9322-D817-4F66-AC5A-8A88794162AF}.Release|x64.Build.0 = Release|x64
 		{28338BD7-F42E-4D85-91BF-F6CC72DE7360}.Debug|ARM64.ActiveCfg = Debug|Any CPU
 		{28338BD7-F42E-4D85-91BF-F6CC72DE7360}.Debug|ARM64.Build.0 = Debug|Any CPU
 		{28338BD7-F42E-4D85-91BF-F6CC72DE7360}.Debug|x64.ActiveCfg = Debug|x64
@@ -102,6 +94,14 @@ Global
 		{5367281E-9F77-4040-BD10-FD6429CC679A}.Release|ARM64.Build.0 = Release|ARM64
 		{5367281E-9F77-4040-BD10-FD6429CC679A}.Release|x64.ActiveCfg = Release|x64
 		{5367281E-9F77-4040-BD10-FD6429CC679A}.Release|x64.Build.0 = Release|x64
+		{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}.Debug|ARM64.Build.0 = Debug|ARM64
+		{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}.Debug|x64.ActiveCfg = Debug|x64
+		{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}.Debug|x64.Build.0 = Debug|x64
+		{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}.Release|ARM64.ActiveCfg = Release|ARM64
+		{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}.Release|ARM64.Build.0 = Release|ARM64
+		{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}.Release|x64.ActiveCfg = Release|x64
+		{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,9 +111,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TableCloth.Shared\TableCloth.Shared.projitems*{0f58b6a7-cca8-471a-b767-01c7b8f6e839}*SharedItemsImports = 13
-		TableCloth.Shared\TableCloth.Shared.projitems*{25ca9322-d817-4f66-ac5a-8a88794162af}*SharedItemsImports = 5
 		TableCloth.Shared\TableCloth.Shared.projitems*{2d6cd03c-52b2-46f2-8ec1-7480e7a92e5e}*SharedItemsImports = 5
 		TableCloth.Shared\TableCloth.Shared.projitems*{369bb263-3c8d-4b56-9301-2c47de7746e8}*SharedItemsImports = 4
 		TableCloth.Shared\TableCloth.Shared.projitems*{68063059-a0ea-4ed6-badf-4d8120016e93}*SharedItemsImports = 4
+		TableCloth.Shared\TableCloth.Shared.projitems*{f3b53bf9-ae1c-41b5-b2c2-bf24840440dd}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
