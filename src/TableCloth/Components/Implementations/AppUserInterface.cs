@@ -7,7 +7,7 @@ using TableCloth.Models.Catalog;
 using TableCloth.Pages;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class AppUserInterface(
     IServiceProvider serviceProvider,

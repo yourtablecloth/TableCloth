@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Windows;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class ApplicationService(
     Application? application,

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class SandboxCleanupManager : ISandboxCleanupManager
 {

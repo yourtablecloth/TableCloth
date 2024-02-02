@@ -3,7 +3,7 @@ using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class ArchiveExpander : IArchiveExpander
 {

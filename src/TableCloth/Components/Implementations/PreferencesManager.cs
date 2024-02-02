@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Models.Configuration;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class PreferencesManager(
     ISharedLocations sharedLocations,

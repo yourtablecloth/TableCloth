@@ -1,5 +1,4 @@
-﻿using Hostess.Commands;
-using Hostess.Commands.AboutWindow;
+﻿using Hostess.Commands.AboutWindow;
 using Hostess.Commands.MainWindow;
 using Hostess.Commands.PrecautionsWindow;
 using Hostess.Components;

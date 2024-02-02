@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Interop;
 using TableCloth.Themes;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class VisualThemeManager : IVisualThemeManager
 {

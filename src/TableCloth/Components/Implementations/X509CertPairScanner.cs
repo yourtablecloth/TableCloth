@@ -10,7 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class X509CertPairScanner(
     ILogger<X509CertPairScanner> logger) : IX509CertPairScanner

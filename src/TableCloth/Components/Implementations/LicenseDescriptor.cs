@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Resources;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class LicenseDescriptor(
     IResourceResolver resourceResolver) : ILicenseDescriptor

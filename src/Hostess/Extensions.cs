@@ -34,12 +34,12 @@ namespace Hostess
             where TViewModel : class
         {
             if (windowImplementationFactory != null)
-                services.AddTransient<TWindow>(windowImplementationFactory);
+                services.AddTransient(windowImplementationFactory);
             else
                 services.AddTransient<TWindow>();
 
             if (viewModelImplementationFactory != null)
-                services.AddTransient<TViewModel>(viewModelImplementationFactory);
+                services.AddTransient(viewModelImplementationFactory);
             else
                 services.AddTransient<TViewModel>();
 

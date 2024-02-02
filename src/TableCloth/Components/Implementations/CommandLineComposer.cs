@@ -3,7 +3,7 @@ using System.Linq;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class CommandLineComposer(
     ISharedLocations sharedLocations) : ICommandLineComposer

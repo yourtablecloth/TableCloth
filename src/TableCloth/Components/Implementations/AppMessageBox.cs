@@ -2,7 +2,7 @@
 using System.Windows;
 using TableCloth.Resources;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 /// <summary>
 /// Windows Presentation Foundation의 메시지 상자 표시 기능을 구현합니다.

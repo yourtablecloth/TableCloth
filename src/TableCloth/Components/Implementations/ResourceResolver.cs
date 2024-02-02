@@ -14,7 +14,7 @@ using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class ResourceResolver(
     ICatalogDeserializer catalogDeserializer,

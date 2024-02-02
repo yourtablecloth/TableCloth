@@ -6,4 +6,3 @@ global using System.Windows;
 global using TableCloth.Resources;
 global using Xunit;
 global using static Moq.It;
-global using TableClothApp = TableCloth.App;

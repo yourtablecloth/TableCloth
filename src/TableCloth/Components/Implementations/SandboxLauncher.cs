@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -11,7 +10,7 @@ using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class SandboxLauncher(
     IAppMessageBox appMessageBox,

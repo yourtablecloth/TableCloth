@@ -6,7 +6,7 @@ using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.ViewModels;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class ConfigurationComposer(
     IResourceCacheManager resourceCacheManager) : IConfigurationComposer

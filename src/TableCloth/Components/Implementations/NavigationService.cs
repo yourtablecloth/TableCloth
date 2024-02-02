@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class NavigationService(
     IApplicationService applicationService,

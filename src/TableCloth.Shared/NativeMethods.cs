@@ -2,7 +2,6 @@
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.AccessControl;
-using System.Text;
 
 namespace TableCloth
 {

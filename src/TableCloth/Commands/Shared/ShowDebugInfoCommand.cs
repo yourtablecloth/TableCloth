@@ -13,8 +13,7 @@ public sealed class ShowDebugInfoCommand(
         appMessageBox.DisplayInfo(StringResources.TableCloth_DebugInformation(
             Process.GetCurrentProcess().ProcessName,
             string.Join(" ", commandLineArguments.Current.RawArguments),
-            commandLineArguments.Current.ToString(),
-            Helpers.AppxPackageName)
+            commandLineArguments.Current.ToString())
         );
     }
 }

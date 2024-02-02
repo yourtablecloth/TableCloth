@@ -7,6 +7,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         xmlns:local="clr-namespace:TableCloth"
+        xmlns:controls="clr-namespace:TableCloth.Controls"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:AboutWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
         Style="{DynamicResource MainWindowStyle}"
@@ -43,7 +44,7 @@
             <Label Grid.Column="1" Grid.Row="0" x:Name="AppVersionLabel" Content="{Binding AppVersion}" />
             <Label Content="{x:Static res:UIStringResources.AboutWindow_CatalogDateText}" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1" />
             <Label Grid.Column="1" Grid.Row="1" x:Name="CatalogDateLabel" Content="{Binding CatalogDate}" />
-            <RichTextBox x:Name="LicenseDetails" Margin="0 10 0 10" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" local:RichTextBoxHelper.DocumentXaml="{Binding LicenseDetails}" IsDocumentEnabled="True">
+            <RichTextBox x:Name="LicenseDetails" Margin="0 10 0 10" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" controls:RichTextBoxHelper.DocumentXaml="{Binding LicenseDetails}" IsDocumentEnabled="True">
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">
                         <Setter Property="Margin" Value="0"/>

@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class SharedLocations : ISharedLocations
 {

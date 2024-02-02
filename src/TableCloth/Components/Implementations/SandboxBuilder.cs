@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -14,7 +12,7 @@ using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class SandboxBuilder(
     IAppMessageBox appMessageBox,

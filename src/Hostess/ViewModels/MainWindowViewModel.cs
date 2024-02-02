@@ -1,5 +1,4 @@
-﻿using Hostess.Commands;
-using Hostess.Commands.MainWindow;
+﻿using Hostess.Commands.MainWindow;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

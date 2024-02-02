@@ -1,7 +1,7 @@
 ﻿using System;
 using TableCloth.Models;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class CommandLineArguments : ICommandLineArguments
 {

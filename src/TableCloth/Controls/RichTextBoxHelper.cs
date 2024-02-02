@@ -9,7 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Navigation;
 
-namespace TableCloth;
+namespace TableCloth.Controls;
 
 // https://stackoverflow.com/a/2641774
 public sealed partial class RichTextBoxHelper : DependencyObject

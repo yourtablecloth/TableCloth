@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class MessageBoxService(
     IApplicationService applicationService) : IMessageBoxService

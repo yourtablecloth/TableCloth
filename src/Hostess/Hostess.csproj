@@ -241,16 +241,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Commands\AboutThisAppCommand.cs" />
+    <Compile Include="Commands\MainWindow\AboutThisAppCommand.cs" />
     <Compile Include="Commands\MainWindow\ShowErrorMessageCommand.cs" />
     <Compile Include="Commands\MainWindow\MainWindowInstallPackagesCommand.cs" />
     <Compile Include="Commands\MainWindow\MainWindowLoadedCommand.cs" />
-    <Compile Include="Commands\OpenAppHomepageCommand.cs" />
+    <Compile Include="Commands\AboutWindow\OpenAppHomepageCommand.cs" />
     <Compile Include="Commands\AboutWindow\AboutWindowCloseCommand.cs" />
     <Compile Include="Commands\AboutWindow\AboutWindowLoadedCommand.cs" />
     <Compile Include="Commands\PrecautionsWindow\PrecautionsWindowCloseCommand.cs" />
     <Compile Include="Commands\PrecautionsWindow\PrecautionsWindowLoadedCommand.cs" />
-    <Compile Include="Commands\ShowDebugInfoCommand.cs" />
+    <Compile Include="Commands\MainWindow\ShowDebugInfoCommand.cs" />
     <Compile Include="Commands\ViewModelCommandBase.cs" />
     <Compile Include="Components\IApplicationService.cs" />
     <Compile Include="Components\Implementations\ApplicationService.cs" />
@@ -289,7 +289,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Components\Implementations\CriticalServiceProtector.cs" />
     <Compile Include="Converters\StateToBrushConverter.cs" />
-    <Compile Include="RichTextBoxHelper.cs" />
+    <Compile Include="Controls\RichTextBoxHelper.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\PrecautionsWindowViewModel.cs" />
     <Page Include="Dialogs\AboutWindow.xaml">

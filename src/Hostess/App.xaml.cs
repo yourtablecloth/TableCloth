@@ -1,4 +1,5 @@
-﻿using Hostess.Components;
+﻿using AsyncAwaitBestPractices;
+using Hostess.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -8,8 +9,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using TableCloth;
 using TableCloth.Resources;
-using AsyncAwaitBestPractices.MVVM;
-using AsyncAwaitBestPractices;
 
 namespace Hostess
 {

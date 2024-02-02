@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -10,7 +9,7 @@ using System.Windows.Media.Imaging;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class ResourceCacheManager(
     ISharedLocations sharedLocations,

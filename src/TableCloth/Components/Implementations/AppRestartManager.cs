@@ -2,7 +2,7 @@
 using System.Windows;
 using TableCloth.Resources;
 
-namespace TableCloth.Components;
+namespace TableCloth.Components.Implementations;
 
 public sealed class AppRestartManager(
     IApplicationService applicationService,

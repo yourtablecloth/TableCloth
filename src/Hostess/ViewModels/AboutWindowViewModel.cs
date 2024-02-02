@@ -1,5 +1,4 @@
-﻿using Hostess.Commands;
-using Hostess.Commands.AboutWindow;
+﻿using Hostess.Commands.AboutWindow;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

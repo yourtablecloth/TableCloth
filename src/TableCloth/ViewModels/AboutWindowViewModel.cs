@@ -1,5 +1,4 @@
 ﻿using System;
-using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
 using TableCloth.Resources;
 

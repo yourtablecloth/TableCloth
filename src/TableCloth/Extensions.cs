@@ -1,5 +1,4 @@
-﻿using AsyncAwaitBestPractices;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 using System.Windows;
@@ -31,12 +30,12 @@ internal static class Extensions
         where TViewModel : class
     {
         if (windowImplementationFactory != null)
-            services.AddTransient<TWindow>(windowImplementationFactory);
+            services.AddTransient(windowImplementationFactory);
         else
             services.AddTransient<TWindow>();
 
         if (viewModelImplementationFactory != null)
-            services.AddTransient<TViewModel>(viewModelImplementationFactory);
+            services.AddTransient(viewModelImplementationFactory);
         else
             services.AddTransient<TViewModel>();
 
@@ -53,20 +52,20 @@ internal static class Extensions
         if (addPageAsSingleton)
         {
             if (pageImplementationFactory != null)
-                services.AddSingleton<TPage>(pageImplementationFactory);
+                services.AddSingleton(pageImplementationFactory);
             else
                 services.AddSingleton<TPage>();
         }
         else
         {
             if (pageImplementationFactory != null)
-                services.AddTransient<TPage>(pageImplementationFactory);
+                services.AddTransient(pageImplementationFactory);
             else
                 services.AddTransient<TPage>();
         }
 
         if (viewModelImplementationFactory != null)
-            services.AddTransient<TViewModel>(viewModelImplementationFactory);
+            services.AddTransient(viewModelImplementationFactory);
         else
             services.AddTransient<TViewModel>();
 
