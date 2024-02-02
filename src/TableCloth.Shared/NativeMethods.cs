@@ -11,37 +11,6 @@ namespace TableCloth
 
     partial class NativeMethods
     {
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern int GetCurrentPackageFullName(ref int packageFullNameLength, StringBuilder
-#if !NETFX
-            ?
-#endif
-            packageFullName);
-
-        public static bool TryGetApplicationPackagedAsMSIX(out string
-#if !NETFX
-            ?
-#endif
-            packageFullName)
-        {
-            var length = 0;
-            var result = GetCurrentPackageFullName(ref length, null);
-
-            if (result == ERROR_INSUFFICIENT_BUFFER)
-            {
-                var buffer = new StringBuilder(length);
-                result = GetCurrentPackageFullName(ref length, buffer);
-                packageFullName = buffer.ToString();
-                return result == 0;
-            }
-
-            packageFullName = null;
-            return false;
-        }
-    }
-
-    partial class NativeMethods
-    {
         public const int SERVICE_CHANGE_CONFIG = 0x0002;
         public const int SERVICE_PAUSE_CONTINUE = 0x0040;
         public const int SERVICE_STOP = 0x0020;

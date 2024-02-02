@@ -9,19 +9,6 @@ namespace TableCloth
 {
     public static class Helpers
     {
-        static Helpers()
-        {
-            IsAppxInstallation = NativeMethods.TryGetApplicationPackagedAsMSIX(out AppxPackageName);
-        }
-
-        public static readonly string
-#if !NETFX
-            ?
-#endif
-            AppxPackageName;
-
-        public static readonly bool IsAppxInstallation;
-
         public static bool IsDevelopmentBuild =>
 #if DEBUG
             true

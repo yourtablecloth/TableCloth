@@ -153,10 +153,6 @@
     <value>https://yourtablecloth.app/TableClothCatalog/images</value>
     <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="MicrosoftStore_ProductId" xml:space="preserve">
-    <value>9N46Z3N6T2VR</value>
-    <comment>(Important) Please do not translate this item without intend.</comment>
-  </data>
   <data name="QueryString_Timestamp_Key" xml:space="preserve">
     <value>ts</value>
     <comment>(Important) Please do not translate this item without intend.</comment>

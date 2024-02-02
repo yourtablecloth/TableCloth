@@ -5,7 +5,7 @@ using TableCloth.Models;
 
 namespace TableCloth.Components.Implementations;
 
-public sealed class StandaloneAppUpdateManager(
+public sealed class AppUpdateManager(
     IResourceResolver resourceResolver) : IAppUpdateManager
 {
     private readonly string owner = "yourtablecloth";

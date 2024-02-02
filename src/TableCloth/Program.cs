@@ -79,21 +79,10 @@ internal static class Program
             nameof(ConstantStrings.FamiliarUserAgentText),
             c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.FamiliarUserAgentText));
 
-        // Add Components (Conditional)
-        if (Helpers.IsAppxInstallation)
-        {
-            services
-                .AddSingleton<IAppUpdateManager, MicrosoftStoreAppUpdateManager>();
-        }
-        else
-        {
-            services
-                .AddSingleton<IAppUpdateManager, StandaloneAppUpdateManager>();
-        }
-
         // Add Components
         services
             .AddSingleton<IAppUserInterface, AppUserInterface>()
+            .AddSingleton<IAppUpdateManager, AppUpdateManager>()
             .AddSingleton<ISharedLocations, SharedLocations>()
             .AddSingleton<IPreferencesManager, PreferencesManager>()
             .AddSingleton<IX509CertPairScanner, X509CertPairScanner>()
