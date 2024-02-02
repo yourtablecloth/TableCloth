@@ -18,13 +18,6 @@ internal static class Extensions
             : httpClientFactory.CreateClient(nameof(ConstantStrings.UserAgentText));
     }
 
-    public static HttpClient CreateInternetExplorerMimickedHttpClient(this IHttpClientFactory httpClientFactory)
-    {
-        return httpClientFactory == null
-            ? throw new ArgumentNullException(nameof(httpClientFactory))
-            : httpClientFactory.CreateClient(nameof(ConstantStrings.OldUserAgentText));
-    }
-
     public static void AddCommands(this IServiceCollection services, params Type[] commandTypes)
     {
         foreach (var eachCommandType in commandTypes)

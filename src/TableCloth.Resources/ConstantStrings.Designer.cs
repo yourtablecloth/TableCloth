@@ -106,6 +106,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.3.
+        /// </summary>
+        public static string FamiliarUserAgentText {
+            get {
+                return ResourceManager.GetString("FamiliarUserAgentText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to github.com.
         /// </summary>
         public static string GitHub_Domain {
@@ -138,15 +147,6 @@ namespace TableCloth.Resources {
         public static string MicrosoftStore_ProductId {
             get {
                 return ResourceManager.GetString("MicrosoftStore_ProductId", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko.
-        /// </summary>
-        public static string OldUserAgentText {
-            get {
-                return ResourceManager.GetString("OldUserAgentText", resourceCulture);
             }
         }
         

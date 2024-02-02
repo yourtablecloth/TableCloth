@@ -137,6 +137,10 @@
     <value>https://yourtablecloth.app/TableClothCatalog/Catalog.xml</value>
     <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
+  <data name="FamiliarUserAgentText" xml:space="preserve">
+    <value>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.3</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
   <data name="GitHub_Domain" xml:space="preserve">
     <value>github.com</value>
     <comment>(Important) Please do not translate this item without intend.</comment>
@@ -151,10 +155,6 @@
   </data>
   <data name="MicrosoftStore_ProductId" xml:space="preserve">
     <value>9N46Z3N6T2VR</value>
-    <comment>(Important) Please do not translate this item without intend.</comment>
-  </data>
-  <data name="OldUserAgentText" xml:space="preserve">
-    <value>Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko</value>
     <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
   <data name="QueryString_Timestamp_Key" xml:space="preserve">

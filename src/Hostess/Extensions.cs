@@ -19,12 +19,12 @@ namespace Hostess
             return httpClientFactory.CreateClient(nameof(ConstantStrings.UserAgentText));
         }
 
-        public static HttpClient CreateInternetExplorerMimickedHttpClient(this IHttpClientFactory httpClientFactory)
+        public static HttpClient CreateGoogleChromeMimickedHttpClient(this IHttpClientFactory httpClientFactory)
         {
             if (httpClientFactory == null)
                 throw new ArgumentNullException(nameof(httpClientFactory));
 
-            return httpClientFactory.CreateClient(nameof(ConstantStrings.OldUserAgentText));
+            return httpClientFactory.CreateClient(nameof(ConstantStrings.FamiliarUserAgentText));
         }
 
         public static IServiceCollection AddWindow<TWindow, TViewModel>(this IServiceCollection services,

@@ -76,12 +76,8 @@ internal static class Program
             nameof(ConstantStrings.UserAgentText),
             c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
         services.AddHttpClient(
-            nameof(ConstantStrings.OldUserAgentText),
-            c =>
-            {
-                c.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml");
-                c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.OldUserAgentText);
-            });
+            nameof(ConstantStrings.FamiliarUserAgentText),
+            c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.FamiliarUserAgentText));
 
         // Add Components (Conditional)
         if (Helpers.IsAppxInstallation)

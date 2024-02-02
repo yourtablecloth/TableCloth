@@ -107,7 +107,7 @@ namespace Hostess.Components.Implementations
             if (File.Exists(tempFilePath))
                 File.Delete(tempFilePath);
 
-            var httpClient = _httpClientFactory.CreateInternetExplorerMimickedHttpClient();
+            var httpClient = _httpClientFactory.CreateGoogleChromeMimickedHttpClient();
             using (Stream
                 remoteStream = await httpClient.GetStreamAsync(eachItem.PackageUrl).ConfigureAwait(false),
                 fileStream = File.OpenWrite(tempFilePath))
