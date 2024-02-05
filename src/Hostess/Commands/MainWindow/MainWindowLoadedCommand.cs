@@ -50,8 +50,8 @@ namespace Hostess.Commands.MainWindow
 
             await viewModel.NotifyWindowLoadedAsync(this, EventArgs.Empty);
 
-            var packages = _stepsComposer.ComposeSteps();
-            viewModel.InstallItems = new ObservableCollection<InstallItemViewModel>(packages);
+            var steps = _stepsComposer.ComposeSteps();
+            viewModel.InstallSteps = new ObservableCollection<StepItemViewModel>(steps);
 
             if (catalog.HasAnyCompatNotes(targets))
             {

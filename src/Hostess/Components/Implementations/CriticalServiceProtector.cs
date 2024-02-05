@@ -69,7 +69,7 @@ namespace Hostess.Components.Implementations
         public int GetServiceProcessId(ServiceController sc)
         {
             sc = sc.EnsureArgumentNotNull("Service controller cannot be null reference.", nameof(sc));
-            
+
             var zero = IntPtr.Zero;
 
             try

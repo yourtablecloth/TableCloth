@@ -29,17 +29,37 @@ namespace TableCloth;
 internal static class Program
 {
     [STAThread]
-    private static void Main(string[] args)
+    private static int Main(string[] args)
         => RunApp(args);
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-    private static void RunApp(string[] args)
+    private static int RunApp(string[] args)
     {
-        // Application.Current 속성은 아래 생성자를 호출하면서 자동으로 설정됩니다.
-        var app = new App();
+        try
+        {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-        app.SetupHost(CreateHostBuilder(args).Build());
-        app.Run();
+            // Application.Current 속성은 아래 생성자를 호출하면서 자동으로 설정됩니다.
+            var app = new App();
+
+            app.SetupHost(CreateHostBuilder(args).Build());
+            app.Run();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                ex?.ToString() ?? "Unknown Error",
+                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        return Environment.ExitCode;
+    }
+
+    private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        MessageBox.Show(
+            e.ExceptionObject?.ToString() ?? "Unknown Error",
+            "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
     public static IHostBuilder CreateHostBuilder(

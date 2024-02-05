@@ -1,5 +1,4 @@
-﻿using System;
-using TableCloth;
+﻿using TableCloth;
 
 namespace Hostess.Commands
 {

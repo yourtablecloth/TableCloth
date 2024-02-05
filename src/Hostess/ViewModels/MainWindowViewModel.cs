@@ -12,15 +12,13 @@ namespace Hostess.ViewModels
 {
     public class MainWindowViewModelForDesigner : MainWindowViewModel
     {
-        public IList<InstallItemViewModel> InstallItemsForDesigner
-            => DesignTimeResources.DesignTimePackageInformations.Select((x, i) => new InstallItemViewModel()
+        public IList<StepItemViewModelForDesigner> InstallStepsForDesigner
+            => DesignTimeResources.DesignTimePackageInformations.Select((x, i) => new StepItemViewModelForDesigner
             {
-                InstallItemType = InstallItemType.DownloadAndInstall,
+                Argument = new InstallItemViewModel(),
                 TargetSiteName = "Sample Site",
                 TargetSiteUrl = "https://www.example.com/",
                 PackageName = x.Name,
-                PackageUrl = x.Url,
-                Arguments = x.Arguments,
                 Installed = DesignTimeResources.ConvertToTriState(i),
                 StatusMessage = "Status",
                 ErrorMessage = DesignTimeResources.GenerateRandomErrorMessage(i),
@@ -76,8 +74,7 @@ namespace Hostess.ViewModels
             => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
         private bool _showDryRunNotification;
-        private IList<InstallItemViewModel> _installItems
-            = new ObservableCollection<InstallItemViewModel>();
+        private IList<StepItemViewModel> _installSteps = new ObservableCollection<StepItemViewModel>();
 
         public bool ShowDryRunNotification
         {
@@ -85,10 +82,10 @@ namespace Hostess.ViewModels
             set => SetProperty(ref _showDryRunNotification, value);
         }
 
-        public IList<InstallItemViewModel> InstallItems
+        public IList<StepItemViewModel> InstallSteps
         {
-            get => _installItems;
-            set => SetProperty(ref _installItems, value);
+            get => _installSteps;
+            set => SetProperty(ref _installSteps, value);
         }
     }
 }

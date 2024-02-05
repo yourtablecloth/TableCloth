@@ -27,7 +27,7 @@ namespace Hostess.Commands.MainWindow
         public async Task ExecuteAsync(MainWindowViewModel viewModel)
         {
             var hasAnyFailure = await _stepsPlayer.PlayStepsAsync(
-                viewModel.InstallItems,
+                viewModel.InstallSteps,
                 viewModel.ShowDryRunNotification);
 
             if (!hasAnyFailure)

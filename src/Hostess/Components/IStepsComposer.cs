@@ -5,6 +5,6 @@ namespace Hostess.Components
 {
     public interface IStepsComposer
     {
-        IEnumerable<InstallItemViewModel> ComposeSteps();
+        IEnumerable<StepItemViewModel> ComposeSteps();
     }
 }

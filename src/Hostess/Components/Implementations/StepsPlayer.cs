@@ -1,15 +1,11 @@
 ﻿using Hostess.ViewModels;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TableCloth;
 using TableCloth.Resources;
 
 namespace Hostess.Components.Implementations
@@ -36,10 +32,11 @@ namespace Hostess.Components.Implementations
         public bool IsRunning { get; private set; }
 
         public async Task<bool> PlayStepsAsync(
-            IEnumerable<InstallItemViewModel> composedSteps,
+            IEnumerable<StepItemViewModel> composedSteps,
             bool dryRun,
             CancellationToken cancellationToken = default)
         {
+            var parsedArgs = _commandLineArguments.Current;
             var hasAnyFailure = false;
 
             IsRunning = true;
@@ -49,21 +46,19 @@ namespace Hostess.Components.Implementations
             {
                 try
                 {
-                    if (eachItem.InstallItemType == InstallItemType.DownloadAndInstall)
-                        await ProcessDownloadAndInstallAsync(eachItem, cancellationToken).ConfigureAwait(false);
-                    else if (eachItem.InstallItemType == InstallItemType.PowerShellScript)
-                        await ProcessPowerShellScriptAsync(eachItem, cancellationToken).ConfigureAwait(false);
-                    else if (eachItem.InstallItemType == InstallItemType.OpenWebSite)
-                        await OpenAddInWebSiteAsync(eachItem, cancellationToken).ConfigureAwait(false);
-                    else if (eachItem.InstallItemType == InstallItemType.EdgeExtensionInstall)
-                        ProcessEdgeExtensionInstall(eachItem);
-                    else if (eachItem.InstallItemType == InstallItemType.CustomAction)
-                    {
-                        if (eachItem.UseNonAwaitableAction)
-                            eachItem.CustomAction.Invoke(eachItem);
-                        else
-                            await eachItem.CustomAwaitableAction.Invoke(eachItem, cancellationToken).ConfigureAwait(false);
-                    }
+                    eachItem.Installed = null;
+
+                    eachItem.StatusMessage = UIStringResources.Hostess_Download_InProgress;
+                    if (parsedArgs.DryRun && eachItem.Step.ShouldSimulateWhenDryRun)
+                        await Task.Delay(TimeSpan.FromSeconds(0.5d), cancellationToken).ConfigureAwait(false);
+                    else
+                        await eachItem.Step.LoadContentForStepAsync(eachItem.Argument, cancellationToken).ConfigureAwait(false);
+
+                    eachItem.StatusMessage = UIStringResources.Hostess_Install_InProgress;
+                    if (parsedArgs.DryRun && eachItem.Step.ShouldSimulateWhenDryRun)
+                        await Task.Delay(TimeSpan.FromSeconds(0.5d), cancellationToken).ConfigureAwait(false);
+                    else
+                        await eachItem.Step.PlayStepAsync(eachItem.Argument, cancellationToken).ConfigureAwait(false);
 
                     eachItem.StatusMessage = UIStringResources.Hostess_Install_Succeed;
                     eachItem.Installed = true;
@@ -83,177 +78,19 @@ namespace Hostess.Components.Implementations
 
             if (!hasAnyFailure)
             {
-                var parsedArgs = _commandLineArguments.Current;
                 var targets = parsedArgs.SelectedServices;
 
                 foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
-                    await OpenRequestedWebSiteAsync(eachUrl, cancellationToken).ConfigureAwait(false);
-            }
-
-            return hasAnyFailure;
-        }
-
-        private async Task ProcessDownloadAndInstallAsync(InstallItemViewModel eachItem,
-            CancellationToken cancellationToken = default)
-        {
-            var parsedArgs = _commandLineArguments.Current;
-
-            eachItem.Installed = null;
-            eachItem.StatusMessage = UIStringResources.Hostess_Download_InProgress;
-
-            var downloadFolderPath = _sharedLocations.GetDownloadDirectoryPath();
-            var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
-            var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
-
-            if (File.Exists(tempFilePath))
-                File.Delete(tempFilePath);
-
-            var httpClient = _httpClientFactory.CreateGoogleChromeMimickedHttpClient();
-            using (Stream
-                remoteStream = await httpClient.GetStreamAsync(eachItem.PackageUrl).ConfigureAwait(false),
-                fileStream = File.OpenWrite(tempFilePath))
-            {
-                await remoteStream.CopyToAsync(fileStream, 81920, cancellationToken).ConfigureAwait(false);
-            }
-
-            eachItem.StatusMessage = UIStringResources.Hostess_Install_InProgress;
-
-            if (parsedArgs.DryRun)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
-                return;
-            }
-
-            var psi = new ProcessStartInfo(tempFilePath, eachItem.Arguments)
-            {
-                UseShellExecute = false,
-            };
-
-            var cpSource = new TaskCompletionSource<int>();
-            using (var process = new Process() { StartInfo = psi, })
-            {
-                process.EnableRaisingEvents = true;
-                process.Exited += (_sender, _e) =>
                 {
-                    var realSender = _sender as Process;
-                    cpSource.SetResult(realSender.ExitCode);
-                };
-
-                if (!process.Start())
-                    TableClothAppException.Throw(ErrorStrings.Error_Package_CanNotStart);
-
-                await cpSource.Task.ConfigureAwait(false);
-            }
-        }
-
-        private async Task ProcessPowerShellScriptAsync(InstallItemViewModel eachItem,
-            CancellationToken cancellationToken = default)
-        {
-            var parsedArgs = _commandLineArguments.Current;
-
-            eachItem.Installed = null;
-            eachItem.StatusMessage = UIStringResources.Hostess_Install_InProgress;
-
-            var downloadFolderPath = _sharedLocations.GetDownloadDirectoryPath();
-            var tempFileName = $"bootstrap_{Guid.NewGuid():n}.ps1";
-            var tempFilePath = System.IO.Path.Combine(downloadFolderPath, tempFileName);
-
-            if (File.Exists(tempFilePath))
-                File.Delete(tempFilePath);
-
-            using (var stream = File.OpenWrite(tempFilePath))
-            {
-                using (var streamWriter = new StreamWriter(stream, Encoding.Unicode))
-                {
-                    await streamWriter.WriteAsync(eachItem.ScriptContent).ConfigureAwait(false);
+                    Process.Start(new ProcessStartInfo(eachUrl)
+                    {
+                        UseShellExecute = true,
+                        WindowStyle = ProcessWindowStyle.Maximized,
+                    });
                 }
             }
 
-            var powershellPath = _sharedLocations.GetDefaultPowerShellExecutableFilePath();
-
-            if (!File.Exists(powershellPath))
-                TableClothAppException.Throw(ErrorStrings.Error_No_WindowsPowerShell);
-
-            if (parsedArgs.DryRun)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
-                return;
-            }
-
-            var psi = new ProcessStartInfo(powershellPath, $"Set-ExecutionPolicy Bypass -Scope Process -Force; {tempFilePath}")
-            {
-                UseShellExecute = false,
-            };
-
-            var cpSource = new TaskCompletionSource<int>();
-            using (var process = new Process() { StartInfo = psi, })
-            {
-                process.EnableRaisingEvents = true;
-                process.Exited += (_sender, _e) =>
-                {
-                    var realSender = _sender as Process;
-                    cpSource.SetResult(realSender.ExitCode);
-                };
-
-                if (!process.Start())
-                    TableClothAppException.Throw(ErrorStrings.Error_Package_CanNotStart);
-
-                await cpSource.Task.ConfigureAwait(false);
-            }
-        }
-
-        private async Task OpenAddInWebSiteAsync(InstallItemViewModel viewModel,
-            CancellationToken cancellationToken = default)
-        {
-            var parsedArgs = _commandLineArguments.Current;
-
-            if (parsedArgs.DryRun)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
-                return;
-            }
-
-            Process.Start(new ProcessStartInfo(viewModel.PackageUrl)
-            {
-                UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Maximized,
-            });
-        }
-
-        private void ProcessEdgeExtensionInstall(InstallItemViewModel viewModel)
-        {
-            // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/developer-guide/alternate-distribution-options
-            using (var regKey = Registry.LocalMachine.CreateSubKey(
-                @"Software\Microsoft\Edge\Extensions", true))
-            {
-                using (regKey.CreateSubKey(viewModel.EdgeExtensionId)) { }
-                regKey.SetValue("update_url", viewModel.EdgeCrxUrl);
-            }
-
-            using (var regKey = Registry.LocalMachine.CreateSubKey(
-                @"Software\Wow6432Node\Microsoft\Edge\Extensions", true))
-            {
-                using (regKey.CreateSubKey(viewModel.EdgeExtensionId)) { }
-                regKey.SetValue("update_url", viewModel.EdgeCrxUrl);
-            }
-        }
-
-        private async Task OpenRequestedWebSiteAsync(string targetUrl,
-            CancellationToken cancellationToken = default)
-        {
-            var parsedArgs = _commandLineArguments.Current;
-
-            if (parsedArgs.DryRun)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1d), cancellationToken).ConfigureAwait(false);
-                return;
-            }
-
-            Process.Start(new ProcessStartInfo(targetUrl)
-            {
-                UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Maximized,
-            });
+            return hasAnyFailure;
         }
     }
 }

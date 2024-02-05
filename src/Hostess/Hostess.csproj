@@ -237,6 +237,24 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\Implementations\OpenWebBrowserService.cs" />
+    <Compile Include="Components\Implementations\StepFactory.cs" />
+    <Compile Include="Components\IOpenWebBrowserService.cs" />
+    <Compile Include="Components\IStepFactory.cs" />
+    <Compile Include="ViewModels\StepItemViewModel.cs" />
+    <Compile Include="Steps\StepBase.cs" />
+    <Compile Include="Steps\Implementations\ConfigAhnLabSafeTransactionStep.cs" />
+    <Compile Include="Steps\Implementations\EdgeExtensionInstallStep.cs" />
+    <Compile Include="Steps\Implementations\EnableInternetExplorerModeStep.cs" />
+    <Compile Include="Steps\IStep.cs" />
+    <Compile Include="Steps\Implementations\OpenWebSiteStep.cs" />
+    <Compile Include="Steps\Implementations\PackageInstallStep.cs" />
+    <Compile Include="Steps\Implementations\PowerShellScriptRunStep.cs" />
+    <Compile Include="Steps\Implementations\PrepareDirectoriesStep.cs" />
+    <Compile Include="Steps\Implementations\ReloadEdgeStep.cs" />
+    <Compile Include="Steps\Implementations\SetDesktopWallpaperStep.cs" />
+    <Compile Include="Steps\Implementations\TryProtectCriticalServicesStep.cs" />
+    <Compile Include="Steps\Implementations\VerifyWindowsContainerEnvironmentStep.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -290,7 +308,11 @@
     <Compile Include="Components\Implementations\CriticalServiceProtector.cs" />
     <Compile Include="Converters\StateToBrushConverter.cs" />
     <Compile Include="Controls\RichTextBoxHelper.cs" />
+    <Compile Include="ViewModels\EdgeExtensionInstallItemViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\OpenWebSiteItemViewModel.cs" />
+    <Compile Include="ViewModels\PackageInstallItemViewModel.cs" />
+    <Compile Include="ViewModels\PowerShellScriptInstallItemViewModel.cs" />
     <Compile Include="ViewModels\PrecautionsWindowViewModel.cs" />
     <Page Include="Dialogs\AboutWindow.xaml">
       <SubType>Designer</SubType>
@@ -320,7 +342,6 @@
     <Compile Include="Themes\ThemesController.cs" />
     <Compile Include="Themes\ThemeTypes.cs" />
     <Compile Include="ViewModels\AboutWindowViewModel.cs" />
-    <Compile Include="ViewModels\InstallItemType.cs" />
     <Compile Include="ViewModels\InstallItemViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -387,6 +408,7 @@
       <Name>TableCloth.Resources</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

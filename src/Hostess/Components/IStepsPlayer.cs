@@ -10,7 +10,7 @@ namespace Hostess.Components
         bool IsRunning { get; }
 
         Task<bool> PlayStepsAsync(
-            IEnumerable<InstallItemViewModel> composedSteps,
+            IEnumerable<StepItemViewModel> composedSteps,
             bool dryRun,
             CancellationToken cancellationToken = default);
     }

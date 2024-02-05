@@ -43,7 +43,7 @@
         </Label>
         <TextBlock Padding="10" TextWrapping="WrapWithOverflow" FontWeight="UltraBold" FontSize="20" Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" Foreground="{Binding Source={x:Static SystemColors.WindowBrush}}" Grid.ColumnSpan="2" Grid.Row="1" Text="{x:Static res:UIStringResources.Hostess_AppTitle}" />
         <TextBlock HorizontalAlignment="Stretch" Padding="10" TextWrapping="WrapWithOverflow" Grid.ColumnSpan="2" Grid.Row="2" Text="{x:Static res:UIStringResources.Hostess_AppInstructionMessage}" />
-        <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="3" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding InstallItems}" d:ItemsSource="{Binding InstallItemsForDesigner}">
+        <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="3" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding InstallSteps}" d:ItemsSource="{Binding InstallStepsForDesigner}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">

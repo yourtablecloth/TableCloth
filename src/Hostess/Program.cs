@@ -4,6 +4,8 @@ using Hostess.Commands.PrecautionsWindow;
 using Hostess.Components;
 using Hostess.Components.Implementations;
 using Hostess.Dialogs;
+using Hostess.Steps;
+using Hostess.Steps.Implementations;
 using Hostess.ViewModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,17 +24,37 @@ namespace Hostess
     internal static class Program
     {
         [STAThread]
-        private static void Main(string[] args)
+        private static int Main(string[] args)
             => RunApp(args);
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private static void RunApp(string[] args)
+        private static int RunApp(string[] args)
         {
-            // Application.Current 속성은 아래 생성자를 호출하면서 자동으로 설정됩니다.
-            var app = new App();
+            try
+            {
+                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            app.SetupHost(CreateHostBuilder(args).Build());
-            app.Run();
+                // Application.Current 속성은 아래 생성자를 호출하면서 자동으로 설정됩니다.
+                var app = new App();
+
+                app.SetupHost(CreateHostBuilder(args).Build());
+                app.Run();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    ex?.ToString() ?? "Unknown Error",
+                    "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return Environment.ExitCode;
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show(
+                e.ExceptionObject?.ToString() ?? "Unknown Error",
+                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         public static IHostBuilder CreateHostBuilder(
@@ -97,7 +119,23 @@ namespace Hostess
                 .AddSingleton<ICommandLineArguments, CommandLineArguments>()
                 .AddSingleton<IStepsComposer, StepsComposer>()
                 .AddSingleton<IStepsPlayer, StepsPlayer>()
-                .AddSingleton<IApplicationService, ApplicationService>();
+                .AddSingleton<IApplicationService, ApplicationService>()
+                .AddSingleton<IStepFactory, StepFactory>()
+                .AddSingleton<IOpenWebBrowserService, OpenWebBrowserService>();
+
+            // Steps
+            services
+                .AddKeyedSingleton<IStep, ConfigAhnLabSafeTransactionStep>(nameof(ConfigAhnLabSafeTransactionStep))
+                .AddKeyedSingleton<IStep, EdgeExtensionInstallStep>(nameof(EdgeExtensionInstallStep))
+                .AddKeyedSingleton<IStep, EnableInternetExplorerModeStep>(nameof(EnableInternetExplorerModeStep))
+                .AddKeyedSingleton<IStep, OpenWebSiteStep>(nameof(OpenWebSiteStep))
+                .AddKeyedSingleton<IStep, PackageInstallStep>(nameof(PackageInstallStep))
+                .AddKeyedSingleton<IStep, PowerShellScriptRunStep>(nameof(PowerShellScriptRunStep))
+                .AddKeyedSingleton<IStep, PrepareDirectoriesStep>(nameof(PrepareDirectoriesStep))
+                .AddKeyedSingleton<IStep, ReloadEdgeStep>(nameof(ReloadEdgeStep))
+                .AddKeyedSingleton<IStep, SetDesktopWallpaperStep>(nameof(SetDesktopWallpaperStep))
+                .AddKeyedSingleton<IStep, TryProtectCriticalServicesStep>(nameof(TryProtectCriticalServicesStep))
+                .AddKeyedSingleton<IStep, VerifyWindowsContainerEnvironmentStep>(nameof(VerifyWindowsContainerEnvironmentStep));
 
             // Shared Commands
             services

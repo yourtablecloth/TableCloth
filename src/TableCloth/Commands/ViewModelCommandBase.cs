@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TableCloth.Commands;
+﻿namespace TableCloth.Commands;
 
 public abstract class ViewModelCommandBase<TViewModel> : CommandBase
     where TViewModel : class
