@@ -120,6 +120,12 @@
   <data name="Error_Already_TableCloth_Running" xml:space="preserve">
     <value>The TableCloth program is already running.</value>
   </data>
+  <data name="Error_Cannot_CopyToClipboard_Message_1" xml:space="preserve">
+    <value>The data could not be copied because the clipboard was not ready.</value>
+  </data>
+  <data name="Error_Cannot_CopyToClipboard_Message_2" xml:space="preserve">
+    <value>For reference, here's the error occurred - {0}</value>
+  </data>
   <data name="Error_Cannot_Create_AppDataDirectory_Message_1" xml:space="preserve">
     <value>Failed to create a directory for storing application data.</value>
   </data>

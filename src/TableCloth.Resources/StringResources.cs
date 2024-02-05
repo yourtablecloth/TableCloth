@@ -94,6 +94,23 @@ namespace TableCloth.Resources
 
             return message;
         }
+
+        public static string Error_Cannot_CopyToClipboard(Exception ex)
+        {
+            if (ex is AggregateException ae)
+                Error_Cannot_CopyToClipboard(ae?.InnerException);
+
+            var message = ErrorStrings.Error_Cannot_CopyToClipboard_Message_1;
+
+            if (ex != null)
+            {
+                message = string.Concat(message, Environment.NewLine
+                    + Environment.NewLine
+                    + string.Format(ErrorStrings.Error_Cannot_CopyToClipboard_Message_2, ex.Message));
+            }
+
+            return message;
+        }
     }
 
     // 호스트 프로그램의 오류 메시지 문자열들

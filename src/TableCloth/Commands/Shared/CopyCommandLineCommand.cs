@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Runtime.InteropServices;
+using System.Windows;
 using TableCloth.Components;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
@@ -12,7 +13,14 @@ public sealed class CopyCommandLineCommand(
     public override void Execute(ITableClothViewModel viewModel)
     {
         var expression = commandLineComposer.ComposeCommandLineExpression(viewModel, true);
-        Clipboard.SetText(expression);
+
+        try { Clipboard.SetDataObject(expression); }
+        catch (ExternalException thrownException)
+        {
+            appMessageBox.DisplayError(
+                StringResources.Error_Cannot_CopyToClipboard(thrownException),
+                false);
+        }
 
         appMessageBox.DisplayInfo(InfoStrings.Info_CopyCommandLineSuccess, MessageBoxButton.OK);
     }

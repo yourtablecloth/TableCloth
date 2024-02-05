@@ -70,6 +70,24 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The data could not be copied because the clipboard was not ready..
+        /// </summary>
+        public static string Error_Cannot_CopyToClipboard_Message_1 {
+            get {
+                return ResourceManager.GetString("Error_Cannot_CopyToClipboard_Message_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For reference, here&apos;s the error occurred - {0}.
+        /// </summary>
+        public static string Error_Cannot_CopyToClipboard_Message_2 {
+            get {
+                return ResourceManager.GetString("Error_Cannot_CopyToClipboard_Message_2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to create a directory for storing application data..
         /// </summary>
         public static string Error_Cannot_Create_AppDataDirectory_Message_1 {

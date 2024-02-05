@@ -120,6 +120,12 @@
   <data name="Error_Already_TableCloth_Running" xml:space="preserve">
     <value>이미 식탁보 프로그램이 실행되고 있어요.</value>
   </data>
+  <data name="Error_Cannot_CopyToClipboard_Message_1" xml:space="preserve">
+    <value>클립보드가 준비되지 않아서 데이터를 복사하지 못했습니다.</value>
+  </data>
+  <data name="Error_Cannot_CopyToClipboard_Message_2" xml:space="preserve">
+    <value>참고로, 발생했던 오류는 다음과 같습니다 - {0}</value>
+  </data>
   <data name="Error_Cannot_Create_AppDataDirectory_Message_1" xml:space="preserve">
     <value>애플리케이션 데이터 저장을 위한 디렉터리를 만들지 못했습니다.</value>
   </data>
