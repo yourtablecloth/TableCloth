@@ -263,7 +263,7 @@ public sealed class AppStartup : IAppStartup
             catch (Exception e)
             {
                 result = ApplicationStartupResultModel.FromErrorMessage(
-                    StringResources.Error_Cannot_Create_AppDataDirectory(e), e, isCritical: true);
+                    StringResources.Error_With_Exception(ErrorStrings.Error_Cannot_Create_AppDataDirectory, e), e, isCritical: true);
                 return result;
             }
         }
@@ -276,7 +276,7 @@ public sealed class AppStartup : IAppStartup
             catch (Exception e)
             {
                 result = ApplicationStartupResultModel.FromErrorMessage(
-                    StringResources.Error_Cannot_Create_AppDataDirectory(e), e, isCritical: true);
+                    StringResources.Error_With_Exception(ErrorStrings.Error_Cannot_Create_AppDataDirectory, e), e, isCritical: true);
                 return result;
             }
         }
@@ -291,7 +291,7 @@ public sealed class AppStartup : IAppStartup
         {
             _logger.LogWarning(e, "Cannot write image file to directory {destPath}.", imageDirectoryPath);
             result = ApplicationStartupResultModel.FromErrorMessage(
-                StringResources.Error_Cannot_Prepare_AppContents(e), e, isCritical: true);
+                StringResources.Error_With_Exception(ErrorStrings.Error_Cannot_Prepare_AppContents, e), e, isCritical: true);
             return result;
         }
 

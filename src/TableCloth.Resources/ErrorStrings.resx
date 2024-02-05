@@ -120,23 +120,14 @@
   <data name="Error_Already_TableCloth_Running" xml:space="preserve">
     <value>The TableCloth program is already running.</value>
   </data>
-  <data name="Error_Cannot_CopyToClipboard_Message_1" xml:space="preserve">
+  <data name="Error_Cannot_CopyToClipboard" xml:space="preserve">
     <value>The data could not be copied because the clipboard was not ready.</value>
   </data>
-  <data name="Error_Cannot_CopyToClipboard_Message_2" xml:space="preserve">
-    <value>For reference, here's the error occurred - {0}</value>
-  </data>
-  <data name="Error_Cannot_Create_AppDataDirectory_Message_1" xml:space="preserve">
+  <data name="Error_Cannot_Create_AppDataDirectory" xml:space="preserve">
     <value>Failed to create a directory for storing application data.</value>
   </data>
-  <data name="Error_Cannot_Create_AppDataDirectory_Message_2" xml:space="preserve">
-    <value>For reference, here's the error occurred - {0}</value>
-  </data>
-  <data name="Error_Cannot_Download_Catalog_Message_1" xml:space="preserve">
+  <data name="Error_Cannot_Download_Catalog" xml:space="preserve">
     <value>The catalog file was not downloaded.</value>
-  </data>
-  <data name="Error_Cannot_Download_Catalog_Message_2" xml:space="preserve">
-    <value>For reference, here's the error occurred - {0}</value>
   </data>
   <data name="Error_Cannot_Find_CertFile" xml:space="preserve">
     <value>The certificate information file (.der) file was not found.</value>
@@ -156,11 +147,8 @@
   <data name="Error_Cannot_Obtain_Assembly" xml:space="preserve">
     <value>Unable to get assembly information.</value>
   </data>
-  <data name="Error_Cannot_Prepare_AppContents_Message_1" xml:space="preserve">
+  <data name="Error_Cannot_Prepare_AppContents" xml:space="preserve">
     <value>The application content creation task failed.</value>
-  </data>
-  <data name="Error_Cannot_Prepare_AppContents_Message_2" xml:space="preserve">
-    <value>For reference, here's the error occurred - {0}</value>
   </data>
   <data name="Error_Cannot_Run_SysInfo" xml:space="preserve">
     <value>The application can't run the System Information utility.</value>
@@ -169,12 +157,8 @@
     <value>The format of the Catalog.xml file seems to be different from what the program expects.</value>
     <comment>This item is used by Hostess.</comment>
   </data>
-  <data name="Error_CatalogLoadFailure_Message_1" xml:space="preserve">
+  <data name="Error_CatalogLoadFailure" xml:space="preserve">
     <value>The program can't proceed with the installation because the Catalog.xml file can't be loaded from a remote website.</value>
-    <comment>This item is used by Hostess.</comment>
-  </data>
-  <data name="Error_CatalogLoadFailure_Message_2" xml:space="preserve">
-    <value>For reference, here's the error occurred - {0}</value>
     <comment>This item is used by Hostess.</comment>
   </data>
   <data name="Error_Cert_Expired" xml:space="preserve">
@@ -194,6 +178,9 @@
   </data>
   <data name="Error_FileLineNo" xml:space="preserve">
     <value>(File: {0} (Row: {1}), Member: {2})</value>
+  </data>
+  <data name="Error_ForYourReference" xml:space="preserve">
+    <value>For reference, here's the error occurred - {0}</value>
   </data>
   <data name="Error_Hostess_Missing" xml:space="preserve">
     <value>The sandbox auto-installer file was not found, please reinstall the program.</value>
@@ -223,14 +210,6 @@
     <value>Select one certificate information file (DER) and one certificate private key file (KEY).
 
 You can select multiple files by holding down the Ctrl or Shift key, or by dragging an empty space in the file selection window.</value>
-  </data>
-  <data name="Error_PackageInstallFailure_Message_1" xml:space="preserve">
-    <value>An error occurred while installing the package.</value>
-    <comment>This item is used by Hostess.</comment>
-  </data>
-  <data name="Error_PackageInstallFailure_Message_2" xml:space="preserve">
-    <value>However, we were unable to determine the cause.</value>
-    <comment>This item is used by Hostess.</comment>
   </data>
   <data name="Error_Package_CanNotStart" xml:space="preserve">
     <value>The package installer failed to start.</value>

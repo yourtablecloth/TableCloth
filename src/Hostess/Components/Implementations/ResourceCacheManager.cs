@@ -29,6 +29,6 @@ namespace Hostess.Components.Implementations
         }
 
         public CatalogDocument CatalogDocument
-            => _catalogDocument ?? throw new InvalidOperationException(StringResources.Error_CatalogLoadFailure(null));
+            => _catalogDocument ?? throw new InvalidOperationException(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
     }
 }

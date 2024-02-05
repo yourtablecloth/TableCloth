@@ -51,7 +51,7 @@ public sealed class ResourceCacheManager(
     }
 
     public CatalogDocument CatalogDocument
-        => _catalogDocument ?? throw new InvalidOperationException(StringResources.Error_CatalogLoadFailure(null));
+        => _catalogDocument ?? throw new InvalidOperationException(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
 
     public ImageSource? GetImage(string siteId)
         => _imageTable.TryGetValue(siteId, out ImageSource? value) ? value ?? null : null;

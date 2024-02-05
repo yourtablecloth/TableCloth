@@ -58,7 +58,7 @@ namespace Hostess.Components.Implementations
                     var document = serializer.Deserialize(contentStream) as CatalogDocument;
 
                     if (document == null)
-                        throw new Exception(StringResources.Error_CatalogLoadFailure(null));
+                        throw new Exception(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
 
                     return document;
                 }

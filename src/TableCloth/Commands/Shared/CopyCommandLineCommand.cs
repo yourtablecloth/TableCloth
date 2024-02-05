@@ -18,7 +18,7 @@ public sealed class CopyCommandLineCommand(
         catch (ExternalException thrownException)
         {
             appMessageBox.DisplayError(
-                StringResources.Error_Cannot_CopyToClipboard(thrownException),
+                StringResources.Error_With_Exception(ErrorStrings.Error_Cannot_CopyToClipboard, thrownException),
                 false);
         }
 

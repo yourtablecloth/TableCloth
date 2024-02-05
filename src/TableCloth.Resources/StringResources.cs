@@ -44,69 +44,20 @@ namespace TableCloth.Resources
                 Environment.NewLine + buffer.ToString();
         }
 
-        public static string Error_Cannot_Download_Catalog(Exception ex)
+        public static string Error_With_Exception(
+            string errorMessage,
+            Exception thrownException)
         {
-            if (ex is AggregateException ae)
-                return Error_Cannot_Download_Catalog(ae?.InnerException);
+            if (thrownException is AggregateException ae)
+                return Error_With_Exception(errorMessage, ae?.InnerException);
 
-            var message = ErrorStrings.Error_Cannot_Download_Catalog_Message_1;
+            var message = errorMessage;
 
-            if (ex != null)
+            if (thrownException != null)
             {
                 message = string.Concat(message, Environment.NewLine +
                     Environment.NewLine +
-                    string.Format(ErrorStrings.Error_Cannot_Download_Catalog_Message_2, ex.Message));
-            }
-
-            return message;
-        }
-
-        public static string Error_Cannot_Create_AppDataDirectory(Exception ex)
-        {
-            if (ex is AggregateException ae)
-                return Error_Cannot_Create_AppDataDirectory(ae?.InnerException);
-
-            var message = ErrorStrings.Error_Cannot_Create_AppDataDirectory_Message_1;
-
-            if (ex != null)
-            {
-                message = string.Concat(message, Environment.NewLine
-                    + Environment.NewLine
-                    + string.Format(ErrorStrings.Error_Cannot_Create_AppDataDirectory_Message_2, ex.Message));
-            }
-
-            return message;
-        }
-
-        public static string Error_Cannot_Prepare_AppContents(Exception ex)
-        {
-            if (ex is AggregateException ae)
-                return Error_Cannot_Prepare_AppContents(ae?.InnerException);
-
-            var message = ErrorStrings.Error_Cannot_Prepare_AppContents_Message_1;
-
-            if (ex != null)
-            {
-                message = string.Concat(message, Environment.NewLine
-                    + Environment.NewLine
-                    + string.Format(ErrorStrings.Error_Cannot_Prepare_AppContents_Message_2, ex.Message));
-            }
-
-            return message;
-        }
-
-        public static string Error_Cannot_CopyToClipboard(Exception ex)
-        {
-            if (ex is AggregateException ae)
-                Error_Cannot_CopyToClipboard(ae?.InnerException);
-
-            var message = ErrorStrings.Error_Cannot_CopyToClipboard_Message_1;
-
-            if (ex != null)
-            {
-                message = string.Concat(message, Environment.NewLine
-                    + Environment.NewLine
-                    + string.Format(ErrorStrings.Error_Cannot_CopyToClipboard_Message_2, ex.Message));
+                    string.Format(ErrorStrings.Error_ForYourReference, thrownException.Message));
             }
 
             return message;
@@ -116,28 +67,8 @@ namespace TableCloth.Resources
     // 호스트 프로그램의 오류 메시지 문자열들
     partial class StringResources
     {
-        public static string Error_CatalogLoadFailure(Exception ex)
-        {
-            if (ex is AggregateException ae)
-                return Error_CatalogLoadFailure(ae?.InnerException);
-
-            var message = ErrorStrings.Error_CatalogLoadFailure_Message_1;
-
-            if (ex != null)
-            {
-                message = string.Concat(message, Environment.NewLine +
-                    Environment.NewLine +
-                    string.Format(ErrorStrings.Error_CatalogLoadFailure_Message_2, ex.Message));
-            }
-
-            return message;
-        }
-
         public static string Error_X509CertError(string certSubject, string errorCode)
             => string.Format(ErrorStrings.Error_X509CertError, certSubject, errorCode);
-
-        public static string Error_PackageInstallFailure(string errorMessage)
-            => string.Format(ErrorStrings.Error_PackageInstallFailure_Message_1, (string.IsNullOrWhiteSpace(errorMessage) ? ErrorStrings.Error_PackageInstallFailure_Message_2 : errorMessage));
     }
 
     // 호스트 프로그램에서 사용할 스위치

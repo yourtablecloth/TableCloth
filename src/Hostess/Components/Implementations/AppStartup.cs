@@ -96,7 +96,7 @@ namespace Hostess.Components.Implementations
                         if (attemptCount == retryCount)
                         {
                             result = ApplicationStartupResultModel.FromErrorMessage(
-                                StringResources.Error_CatalogLoadFailure(ex), ex,
+                                StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, ex), ex,
                                 isCritical: true, providedWarnings: warnings);
                             return result;
                         }

@@ -72,54 +72,27 @@ namespace TableCloth.Resources {
         /// <summary>
         ///   Looks up a localized string similar to The data could not be copied because the clipboard was not ready..
         /// </summary>
-        public static string Error_Cannot_CopyToClipboard_Message_1 {
+        public static string Error_Cannot_CopyToClipboard {
             get {
-                return ResourceManager.GetString("Error_Cannot_CopyToClipboard_Message_1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to For reference, here&apos;s the error occurred - {0}.
-        /// </summary>
-        public static string Error_Cannot_CopyToClipboard_Message_2 {
-            get {
-                return ResourceManager.GetString("Error_Cannot_CopyToClipboard_Message_2", resourceCulture);
+                return ResourceManager.GetString("Error_Cannot_CopyToClipboard", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Failed to create a directory for storing application data..
         /// </summary>
-        public static string Error_Cannot_Create_AppDataDirectory_Message_1 {
+        public static string Error_Cannot_Create_AppDataDirectory {
             get {
-                return ResourceManager.GetString("Error_Cannot_Create_AppDataDirectory_Message_1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to For reference, here&apos;s the error occurred - {0}.
-        /// </summary>
-        public static string Error_Cannot_Create_AppDataDirectory_Message_2 {
-            get {
-                return ResourceManager.GetString("Error_Cannot_Create_AppDataDirectory_Message_2", resourceCulture);
+                return ResourceManager.GetString("Error_Cannot_Create_AppDataDirectory", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The catalog file was not downloaded..
         /// </summary>
-        public static string Error_Cannot_Download_Catalog_Message_1 {
+        public static string Error_Cannot_Download_Catalog {
             get {
-                return ResourceManager.GetString("Error_Cannot_Download_Catalog_Message_1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to For reference, here&apos;s the error occurred - {0}.
-        /// </summary>
-        public static string Error_Cannot_Download_Catalog_Message_2 {
-            get {
-                return ResourceManager.GetString("Error_Cannot_Download_Catalog_Message_2", resourceCulture);
+                return ResourceManager.GetString("Error_Cannot_Download_Catalog", resourceCulture);
             }
         }
         
@@ -180,18 +153,9 @@ namespace TableCloth.Resources {
         /// <summary>
         ///   Looks up a localized string similar to The application content creation task failed..
         /// </summary>
-        public static string Error_Cannot_Prepare_AppContents_Message_1 {
+        public static string Error_Cannot_Prepare_AppContents {
             get {
-                return ResourceManager.GetString("Error_Cannot_Prepare_AppContents_Message_1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to For reference, here&apos;s the error occurred - {0}.
-        /// </summary>
-        public static string Error_Cannot_Prepare_AppContents_Message_2 {
-            get {
-                return ResourceManager.GetString("Error_Cannot_Prepare_AppContents_Message_2", resourceCulture);
+                return ResourceManager.GetString("Error_Cannot_Prepare_AppContents", resourceCulture);
             }
         }
         
@@ -216,18 +180,9 @@ namespace TableCloth.Resources {
         /// <summary>
         ///   Looks up a localized string similar to The program can&apos;t proceed with the installation because the Catalog.xml file can&apos;t be loaded from a remote website..
         /// </summary>
-        public static string Error_CatalogLoadFailure_Message_1 {
+        public static string Error_CatalogLoadFailure {
             get {
-                return ResourceManager.GetString("Error_CatalogLoadFailure_Message_1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to For reference, here&apos;s the error occurred - {0}.
-        /// </summary>
-        public static string Error_CatalogLoadFailure_Message_2 {
-            get {
-                return ResourceManager.GetString("Error_CatalogLoadFailure_Message_2", resourceCulture);
+                return ResourceManager.GetString("Error_CatalogLoadFailure", resourceCulture);
             }
         }
         
@@ -282,6 +237,15 @@ namespace TableCloth.Resources {
         public static string Error_FileLineNo {
             get {
                 return ResourceManager.GetString("Error_FileLineNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For reference, here&apos;s the error occurred - {0}.
+        /// </summary>
+        public static string Error_ForYourReference {
+            get {
+                return ResourceManager.GetString("Error_ForYourReference", resourceCulture);
             }
         }
         
@@ -374,24 +338,6 @@ namespace TableCloth.Resources {
         public static string Error_Package_CanNotStart {
             get {
                 return ResourceManager.GetString("Error_Package_CanNotStart", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occurred while installing the package..
-        /// </summary>
-        public static string Error_PackageInstallFailure_Message_1 {
-            get {
-                return ResourceManager.GetString("Error_PackageInstallFailure_Message_1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to However, we were unable to determine the cause..
-        /// </summary>
-        public static string Error_PackageInstallFailure_Message_2 {
-            get {
-                return ResourceManager.GetString("Error_PackageInstallFailure_Message_2", resourceCulture);
             }
         }
         

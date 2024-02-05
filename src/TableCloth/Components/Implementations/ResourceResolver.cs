@@ -47,7 +47,7 @@ public sealed class ResourceResolver(
             var document = catalogDeserializer.Deserialize(catalogStream, new UTF8Encoding(false));
 
             return document == null ?
-                throw new Exception(StringResources.Error_CatalogLoadFailure(null)) :
+                throw new Exception(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null)) :
                 (ApiInvokeResult<CatalogDocument?>)document;
         }
         catch (Exception ex)
