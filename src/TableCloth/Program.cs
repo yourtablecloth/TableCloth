@@ -69,6 +69,9 @@ internal static class Program
 
     private static void ConfigureServices(IServiceCollection services)
     {
+        // Add Logging
+        services.AddLogging();
+
         // Add HTTP Service
         services.AddHttpClient(
             nameof(ConstantStrings.UserAgentText),
