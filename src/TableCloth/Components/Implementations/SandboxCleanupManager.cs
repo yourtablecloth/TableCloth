@@ -15,7 +15,7 @@ public sealed class SandboxCleanupManager : ISandboxCleanupManager
         var normalizedPath = Path.GetFullPath(workingDirectory);
 
         if (!Directory.Exists(normalizedPath))
-            throw new DirectoryNotFoundException($"Directory not found: {normalizedPath}");
+            TableClothAppException.Throw($"Directory not found: {normalizedPath}");
 
         CurrentDirectory = normalizedPath;
 

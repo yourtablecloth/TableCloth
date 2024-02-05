@@ -85,8 +85,8 @@ public sealed class DetailPageLoadedCommand(
 
     private async Task OnViewModelPropertyChangedAsync(object? sender, PropertyChangedEventArgs e)
     {
-        if (sender is not DetailPageViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));
+        var viewModel = sender.EnsureArgumentNotNullWithCast<object, DetailPageViewModel>(
+            "Selected parameter is not a supported type.", nameof(sender));
 
         var currentConfig = await preferencesManager.LoadPreferencesAsync();
         currentConfig ??= preferencesManager.GetDefaultPreferences();
@@ -98,7 +98,7 @@ public sealed class DetailPageLoadedCommand(
                 if (appRestartManager.AskRestart())
                 {
                     appRestartManager.ReserveRestart();
-                    await viewModel.RequestCloseAsync(sender, e);
+                    await viewModel.RequestCloseAsync(viewModel, e);
                 }
                 break;
 
@@ -107,7 +107,7 @@ public sealed class DetailPageLoadedCommand(
                 if (appRestartManager.AskRestart())
                 {
                     appRestartManager.ReserveRestart();
-                    await viewModel.RequestCloseAsync(sender, e);
+                    await viewModel.RequestCloseAsync(viewModel, e);
                 }
                 break;
 

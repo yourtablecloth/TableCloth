@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using TableCloth;
 using TableCloth.Models;
 using TableCloth.Resources;
 
@@ -86,8 +87,8 @@ namespace Hostess.Components.Implementations
                 {
                     try
                     {
-                        var document = await _resourceCacheManager.LoadCatalogDocumentAsync(cancellationToken).ConfigureAwait(false) ??
-                            throw new XmlException(ErrorStrings.Error_CatalogDeserilizationFailure);
+                        var document = await _resourceCacheManager.LoadCatalogDocumentAsync(cancellationToken).ConfigureAwait(false);
+                        document.EnsureNotNull(ErrorStrings.Error_CatalogDeserilizationFailure);
                     }
                     catch (Exception ex)
                     {

@@ -68,10 +68,9 @@ namespace Hostess.Components.Implementations
 
         public int GetServiceProcessId(ServiceController sc)
         {
-            if (sc == null)
-                throw new ArgumentNullException(nameof(sc));
-
-            IntPtr zero = IntPtr.Zero;
+            sc = sc.EnsureArgumentNotNull("Service controller cannot be null reference.", nameof(sc));
+            
+            var zero = IntPtr.Zero;
 
             try
             {
@@ -121,12 +120,12 @@ namespace Hostess.Components.Implementations
                 }
                 else
                 {
-                    throw new ApplicationException("error calling QueryServiceObjectSecurity() to get DACL for " + service + ": error code=" + err);
+                    TableClothAppException.Throw("error calling QueryServiceObjectSecurity() to get DACL for " + service + ": error code=" + err);
                 }
             }
 
             if (!ok)
-                throw new ApplicationException("error calling QueryServiceObjectSecurity(2) to get DACL for " + service + ": error code=" + Marshal.GetLastWin32Error());
+                TableClothAppException.Throw("error calling QueryServiceObjectSecurity(2) to get DACL for " + service + ": error code=" + Marshal.GetLastWin32Error());
 
             // get security descriptor via raw into DACL form so ACE
             // ordering checks are done for us.
@@ -152,7 +151,7 @@ namespace Hostess.Components.Implementations
             ok = NativeMethods.SetServiceObjectSecurity(sc.ServiceHandle, SecurityInfos.DiscretionaryAcl, rawsd);
 
             if (!ok)
-                throw new ApplicationException("error calling SetServiceObjectSecurity(); error code=" + Marshal.GetLastWin32Error());
+                TableClothAppException.Throw("error calling SetServiceObjectSecurity(); error code=" + Marshal.GetLastWin32Error());
         }
     }
 }

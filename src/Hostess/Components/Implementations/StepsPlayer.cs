@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TableCloth;
 using TableCloth.Resources;
 
 namespace Hostess.Components.Implementations
@@ -139,7 +140,7 @@ namespace Hostess.Components.Implementations
                 };
 
                 if (!process.Start())
-                    throw new ApplicationException(ErrorStrings.Error_Package_CanNotStart);
+                    TableClothAppException.Throw(ErrorStrings.Error_Package_CanNotStart);
 
                 await cpSource.Task.ConfigureAwait(false);
             }
@@ -171,7 +172,7 @@ namespace Hostess.Components.Implementations
             var powershellPath = _sharedLocations.GetDefaultPowerShellExecutableFilePath();
 
             if (!File.Exists(powershellPath))
-                throw new Exception(ErrorStrings.Error_No_WindowsPowerShell);
+                TableClothAppException.Throw(ErrorStrings.Error_No_WindowsPowerShell);
 
             if (parsedArgs.DryRun)
             {
@@ -195,7 +196,7 @@ namespace Hostess.Components.Implementations
                 };
 
                 if (!process.Start())
-                    throw new ApplicationException(ErrorStrings.Error_Package_CanNotStart);
+                    TableClothAppException.Throw(ErrorStrings.Error_Package_CanNotStart);
 
                 await cpSource.Task.ConfigureAwait(false);
             }

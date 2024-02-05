@@ -21,7 +21,7 @@ namespace Hostess
 
         internal void SetupHost(IHost host)
         {
-            Host = host ?? throw new ArgumentException("Host initialization not done.", nameof(host));
+            Host = host.EnsureArgumentNotNull("Host initialization not done.", nameof(host));
             this.InitServiceProvider(host.Services);
         }
 

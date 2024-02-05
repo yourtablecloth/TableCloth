@@ -12,9 +12,14 @@ namespace TableCloth
 ?
 #endif
             reason = "",
-            [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+            [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0,
+            Exception
+#if !NETFX
+?
+#endif
+            innerException = default)
         {
-            return new TableClothAppException(reason, file, member, line);
+            return new TableClothAppException(reason, file, member, line, innerException);
         }
 
         public static void Throw(
@@ -23,17 +28,27 @@ namespace TableCloth
 ?
 #endif
             reason = "",
-            [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+            [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0,
+            Exception
+#if !NETFX
+?
+#endif
+            innerException = default)
         {
-            throw new TableClothAppException(reason, file, member, line);
+            throw new TableClothAppException(reason, file, member, line, innerException);
         }
 
         public TableClothAppException(string
 #if !NETFX
 ?
 #endif
-            reason, string file, string member, int line)
-            : base((reason ?? "Unknown reason") + " (" + StringResources.Error_Unknown(file, member, line) + ")")
+            reason, string file, string member, int line,
+            Exception
+#if !NETFX
+?
+#endif
+            innerException = default)
+            : base((reason ?? "Unknown reason") + " (" + StringResources.Error_Unknown(file, member, line) + ")", innerException)
         {
             File = file ?? "(Unknown)";
             Member = member ?? "(Unknown)";

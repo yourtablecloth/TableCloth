@@ -18,14 +18,14 @@ public partial class App : Application
 
     internal void SetupHost(IHost host)
     {
-        Host = host ?? throw new ArgumentException("Host initialization not done.", nameof(host));
+        Host = host.EnsureArgumentNotNull("Host initialization not done.", nameof(host));
 
         const string key = nameof(IServiceProvider);
 
         if (Properties.Contains(key) && Properties[key] != null)
-            throw new Exception("Already service provider has been initialized.");
+            TableClothAppException.Throw("Already service provider has been initialized.");
 
-        Properties[key] = host.Services;
+        this.InitServiceProvider(host.Services);
 
         SafeFireAndForgetExtensions.Initialize();
         SafeFireAndForgetExtensions.SetDefaultExceptionHandling((thrownException) =>
@@ -41,10 +41,9 @@ public partial class App : Application
 
     private void Application_Startup(object sender, StartupEventArgs e)
     {
-        if (Host == null)
-            throw new Exception("Host initialization not done.");
+        var host = Host.EnsureNotNull("App initialization not done.");
+        var appUserInterface = host.Services.GetRequiredService<IAppUserInterface>();
 
-        var appUserInterface = Host.Services.GetRequiredService<IAppUserInterface>();
         _splashScreen = appUserInterface.CreateSplashScreen();
         _splashScreen.ViewModel.InitializeDone += ViewModel_InitializeDone;
         _splashScreen.Show();
@@ -52,21 +51,18 @@ public partial class App : Application
 
     private void ViewModel_InitializeDone(object? sender, DialogRequestEventArgs e)
     {
-        if (Host == null)
-            throw new Exception("App initialization not done.");
-
-        if (_splashScreen == null)
-            throw new Exception("App initialization not done.");
+        var host = Host.EnsureNotNull("App initialization not done.");
+        _splashScreen = _splashScreen.EnsureNotNull("App initialization not done.");
 
         _splashScreen.Hide();
 
         if (e.DialogResult.HasValue && e.DialogResult.Value)
         {
-            var mainWindow = default(Window);
+            Window? mainWindow;
             if (_splashScreen.ViewModel.V2UIOptedIn)
-                mainWindow = Host.Services.GetRequiredService<MainWindowV2>();
+                mainWindow = host.Services.GetRequiredService<MainWindowV2>();
             else
-                mainWindow = Host.Services.GetRequiredService<MainWindow>();
+                mainWindow = host.Services.GetRequiredService<MainWindow>();
 
             this.MainWindow = mainWindow;
             mainWindow.Show();

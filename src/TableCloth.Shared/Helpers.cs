@@ -7,7 +7,7 @@ using System.Text;
 
 namespace TableCloth
 {
-    public static class Helpers
+    internal static class Helpers
     {
         public static bool IsDevelopmentBuild =>
 #if DEBUG

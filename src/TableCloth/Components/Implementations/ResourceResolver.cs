@@ -44,11 +44,11 @@ public sealed class ResourceResolver(
             _catalogLastModified = httpResponse.Content.Headers.LastModified;
 
             using var catalogStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-            var document = catalogDeserializer.Deserialize(catalogStream, new UTF8Encoding(false));
+            var document = catalogDeserializer
+                .Deserialize(catalogStream, new UTF8Encoding(false))
+                .EnsureNotNull(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
 
-            return document == null ?
-                throw new Exception(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null)) :
-                (ApiInvokeResult<CatalogDocument?>)document;
+            return (ApiInvokeResult<CatalogDocument?>)document;
         }
         catch (Exception ex)
         {

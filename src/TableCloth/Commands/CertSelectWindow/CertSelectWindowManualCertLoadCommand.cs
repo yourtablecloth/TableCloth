@@ -71,7 +71,11 @@ public sealed class CertSelectWindowManualCertLoadCommand(
             return;
 
         var basePath = Path.GetDirectoryName(firstFilePath)
-            ?? throw new Exception($"Cannot obtain the directory name of '{firstFilePath}'.");
+            .EnsureNotNull($"Cannot obtain the directory name of '{firstFilePath}'.");
+
+        if (string.IsNullOrWhiteSpace(basePath))
+            TableClothAppException.Throw($"Cannot obtain the directory name of '{firstFilePath}'.");
+
         var signCertDerPath = Path.Combine(basePath, "signCert.der");
         var signPriKeyPath = Path.Combine(basePath, "signPri.key");
 

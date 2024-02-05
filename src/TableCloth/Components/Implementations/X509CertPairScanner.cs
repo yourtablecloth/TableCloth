@@ -89,10 +89,10 @@ public sealed class X509CertPairScanner(
     public X509CertPair CreateX509CertPair(string derFilePath, string keyFilePath)
     {
         if (!File.Exists(derFilePath))
-            throw new FileNotFoundException(ErrorStrings.Error_Cannot_Find_CertFile, derFilePath);
+            TableClothAppException.Throw(ErrorStrings.Error_Cannot_Find_CertFile, derFilePath);
 
         if (!File.Exists(keyFilePath))
-            throw new FileNotFoundException(ErrorStrings.Error_Cannot_Find_KeyFile, keyFilePath);
+            TableClothAppException.Throw(ErrorStrings.Error_Cannot_Find_KeyFile, keyFilePath);
 
         return new X509CertPair(
             File.ReadAllBytes(derFilePath),
@@ -102,15 +102,14 @@ public sealed class X509CertPairScanner(
     public X509CertPair CreateX509Cert(string pfxFilePath, SecureString password)
     {
         if (!File.Exists(pfxFilePath))
-            throw new FileNotFoundException(ErrorStrings.Error_Cannot_Find_PfxFile, pfxFilePath);
+            TableClothAppException.Throw(ErrorStrings.Error_Cannot_Find_PfxFile, pfxFilePath);
 
         var copiedPassword = CertPrivateKeyHelper.CopyFromSecureString(password);
 
         using X509Certificate2 cert = new X509Certificate2(pfxFilePath, copiedPassword, X509KeyStorageFlags.Exportable);
         var publicKey = cert.Export(X509ContentType.Cert);
 
-        var rsaPrivateKey = cert.GetRSAPrivateKey()
-            ?? throw new Exception("Cannot obtain RSA private key.");
+        var rsaPrivateKey = cert.GetRSAPrivateKey().EnsureNotNull("Cannot obtain RSA private key.");
         var privateKey = rsaPrivateKey.ExportEncryptedPkcs8PrivateKey(copiedPassword,
             new PbeParameters(PbeEncryptionAlgorithm.TripleDes3KeyPkcs12, HashAlgorithmName.SHA1, 2048));
 

@@ -17,11 +17,7 @@ public sealed class NavigationService(
         var frameName = GetPageFrameControlName();
         var mainWindow = applicationService.GetMainWindow();
         var pageFrame = mainWindow!.FindName(frameName) as Frame;
-
-        if (pageFrame == null)
-            throw new Exception($"There is no frame control named as '{pageFrame}'.");
-
-        return pageFrame;
+        return pageFrame.EnsureArgumentNotNull($"There is no frame control named as '{frameName}'.", frameName);
     }
 
     public bool NavigateToCatalog(string searchKeyword)

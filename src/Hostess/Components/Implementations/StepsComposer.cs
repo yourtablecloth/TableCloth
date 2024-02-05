@@ -305,7 +305,7 @@ namespace Hostess.Components.Implementations
             var comSpecPath = Helpers.GetDefaultCommandLineInterpreterPath();
 
             if (!File.Exists(comSpecPath))
-                throw new Exception(ErrorStrings.Error_CommandLineInterpreter_Missing);
+                TableClothAppException.Throw(ErrorStrings.Error_CommandLineInterpreter_Missing);
 
             // To Do: 상세한 설명을 담은 UI를 제작할 필요가 있음.
             _appMessageBox.DisplayInfo(UIStringResources.Instruction_ConfigASTx);
@@ -313,7 +313,7 @@ namespace Hostess.Components.Implementations
             using (var process = Helpers.CreateRunProcess(comSpecPath, stSessPath, "/config"))
             {
                 if (!process.Start())
-                    throw new Exception(ErrorStrings.Error_StSessConfig_CanNotStart);
+                    TableClothAppException.Throw(ErrorStrings.Error_StSessConfig_CanNotStart);
                 else
                     _appMessageBox.DisplayInfo(UIStringResources.Await_ConfigASTx);
             }

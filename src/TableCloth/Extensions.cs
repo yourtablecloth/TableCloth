@@ -11,11 +11,9 @@ namespace TableCloth;
 internal static class Extensions
 {
     public static HttpClient CreateTableClothHttpClient(this IHttpClientFactory httpClientFactory)
-    {
-        return httpClientFactory == null
-            ? throw new ArgumentNullException(nameof(httpClientFactory))
-            : httpClientFactory.CreateClient(nameof(ConstantStrings.UserAgentText));
-    }
+        => httpClientFactory
+            .EnsureNotNull("HTTP client factory cannot be null reference.")
+            .CreateClient(nameof(ConstantStrings.UserAgentText));
 
     public static void AddCommands(this IServiceCollection services, params Type[] commandTypes)
     {
@@ -88,5 +86,18 @@ internal static class Extensions
     }
 
     public static IServiceProvider GetServiceProvider(this Application application)
-        => (IServiceProvider)(application.Properties[nameof(IServiceProvider)] ?? throw new Exception("Service provider has not been initialized."));
+        => application
+            .Properties[nameof(IServiceProvider)]
+            .EnsureNotNullWithCast<object, IServiceProvider>("Service provider has not been initialized.");
+
+    public static void InitServiceProvider(this Application application, IServiceProvider serviceProvider)
+    {
+        const string key = nameof(IServiceProvider);
+
+        if (application.Properties.Contains(key) &&
+            application.Properties[key] != null)
+            TableClothAppException.Throw("Already service provider has been initialized.");
+
+        application.Properties[key] = serviceProvider;
+    }
 }

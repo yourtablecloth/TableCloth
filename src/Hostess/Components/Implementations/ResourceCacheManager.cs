@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using TableCloth;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
@@ -23,12 +24,12 @@ namespace Hostess.Components.Implementations
             var doc = await _resourceResolver.DeserializeCatalogAsync(cancellationToken).ConfigureAwait(false);
 
             if (doc.Result == null)
-                throw new Exception("Cannot load catalog document from remote source.");
+                TableClothAppException.Throw("Cannot load catalog document from remote source.");
 
             return _catalogDocument = doc.Result;
         }
 
         public CatalogDocument CatalogDocument
-            => _catalogDocument ?? throw new InvalidOperationException(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
+            => _catalogDocument.EnsureNotNull(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
     }
 }

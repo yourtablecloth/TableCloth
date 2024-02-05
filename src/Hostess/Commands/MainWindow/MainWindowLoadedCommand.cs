@@ -6,6 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
+using TableCloth;
 
 namespace Hostess.Commands.MainWindow
 {

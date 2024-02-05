@@ -35,20 +35,14 @@ public sealed class SharedLocations : ISharedLocations
         get
         {
             var mainModule = Process.GetCurrentProcess().MainModule
-                ?? throw new Exception("Cannot obtain process main module information.");
+                .EnsureNotNull("Cannot obtain process main module information.");
             return mainModule.FileName
-                ?? throw new Exception("Cannot obtain executable file name.");
+                .EnsureNotNull("Cannot obtain executable file name.");
         }
     }
 
     public string ExecutableDirectoryPath
-    {
-        get
-        {
-            return Path.GetDirectoryName(ExecutableFilePath)
-                ?? throw new Exception("Cannot obtain executable directory path.");
-        }
-    }
+        => Path.GetDirectoryName(ExecutableFilePath).EnsureNotNull("Cannot obtain executable directory path.");
 
     public string HostessZipFilePath
         => Path.Combine(ExecutableDirectoryPath, "Hostess.zip");

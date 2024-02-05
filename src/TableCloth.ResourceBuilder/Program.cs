@@ -117,7 +117,7 @@ namespace TableCloth.ResourceBuilder
                 if (File.Exists(outputZipFilePath))
                     Console.Out.WriteLine($"{outputZipFilePath} zip file created successfully.");
                 else
-                    throw new Exception($"{outputZipFilePath} zip file does not created due to error.");
+                    throw new FileNotFoundException($"{outputZipFilePath} zip file does not created due to error.", outputZipFilePath);
             }
             catch (Exception ex)
             {

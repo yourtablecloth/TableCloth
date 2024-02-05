@@ -1,4 +1,5 @@
 ﻿using System;
+using TableCloth;
 
 namespace Hostess.Commands
 {
@@ -11,8 +12,8 @@ namespace Hostess.Commands
 
         public override void Execute(object parameter)
         {
-            if (!(parameter is TViewModel viewModel))
-                throw new ArgumentException("Selected parameter is not a supported type.", nameof(parameter));
+            var viewModel = parameter.EnsureArgumentNotNullWithCast<object, TViewModel>(
+                "Selected parameter is not a supported type.", nameof(parameter));
 
             Execute(viewModel);
         }

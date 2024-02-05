@@ -21,11 +21,7 @@ public sealed class ResourceCacheManager(
     public async Task<CatalogDocument> LoadCatalogDocumentAsync(CancellationToken cancellationToken = default)
     {
         var doc = await resourceResolver.DeserializeCatalogAsync(cancellationToken).ConfigureAwait(false);
-
-        if (doc.Result == null)
-            throw new Exception("Cannot load catalog document from remote source.");
-
-        return _catalogDocument = doc.Result;
+        return _catalogDocument = doc.Result.EnsureNotNull("Cannot load catalog document from remote source.");
     }
 
     public async Task LoadSiteImagesAsync(CancellationToken cancellationToken = default)
@@ -51,7 +47,7 @@ public sealed class ResourceCacheManager(
     }
 
     public CatalogDocument CatalogDocument
-        => _catalogDocument ?? throw new InvalidOperationException(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
+        => _catalogDocument.EnsureNotNull(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
 
     public ImageSource? GetImage(string siteId)
         => _imageTable.TryGetValue(siteId, out ImageSource? value) ? value ?? null : null;

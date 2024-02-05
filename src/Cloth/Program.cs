@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using TableCloth.Models.WindowsSandbox;
+using TableCloth;
 
 namespace Cloth;
 
@@ -88,7 +89,7 @@ public static class Program
                 Directory.CreateDirectory(workingDirectoryPath);
 
             if (!File.Exists(runOption.InputFilePath))
-                throw new FileNotFoundException("WSBX file doees not existing.");
+                TableClothAppException.Throw("WSBX file doees not existing.");
 
             ZipFile.ExtractToDirectory(runOption.InputFilePath, workingDirectoryPath, true);
 
@@ -302,7 +303,7 @@ public static class Program
             if (composeOption.OverwriteOutputFilePath)
                 File.Delete(composeOption.OutputFilePath);
             else
-                throw new Exception("Cannot overwrite existing file. Please specify overwrite option to proceed.");
+                TableClothAppException.Throw(reason: "Cannot overwrite existing file. Please specify overwrite option to proceed.");
         }
 
         ZipFile.CreateFromDirectory(

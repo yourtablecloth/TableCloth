@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using TableCloth;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
@@ -58,7 +59,7 @@ namespace Hostess.Components.Implementations
                     var document = serializer.Deserialize(contentStream) as CatalogDocument;
 
                     if (document == null)
-                        throw new Exception(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
+                        TableClothAppException.Throw(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
 
                     return document;
                 }

@@ -99,8 +99,8 @@ public sealed class MainWindowLoadedCommand(
 
     private async Task OnViewModelPropertyChangedAsync(object? sender, PropertyChangedEventArgs e)
     {
-        if (sender is not MainWindowViewModel viewModel)
-            throw new ArgumentException("Selected parameter is not a supported type.", nameof(sender));
+        var viewModel = sender.EnsureArgumentNotNullWithCast<object, MainWindowViewModel>(
+            "Selected parameter is not a supported type.", nameof(sender));
 
         var currentConfig = await preferencesManager.LoadPreferencesAsync();
         currentConfig ??= preferencesManager.GetDefaultPreferences();
