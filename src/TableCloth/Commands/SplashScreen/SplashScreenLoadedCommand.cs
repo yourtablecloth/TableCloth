@@ -73,7 +73,7 @@ public sealed class SplashScreenLoadedCommand(
                 if (result.IsCritical)
                 {
                     if (Helpers.IsDevelopmentBuild)
-                        throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
+                        throw result.FailedReason ?? TableClothAppException.Issue();
                     else
                         applicationService.Shutdown(CodeResources.ExitCode_SystemError);
                 }
@@ -93,7 +93,7 @@ public sealed class SplashScreenLoadedCommand(
                 if (result.IsCritical)
                 {
                     if (Helpers.IsDevelopmentBuild)
-                        throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
+                        throw result.FailedReason ?? TableClothAppException.Issue();
                     else
                         applicationService.Shutdown(CodeResources.ExitCode_SystemError);
                 }

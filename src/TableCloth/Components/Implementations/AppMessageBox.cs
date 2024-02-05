@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using TableCloth.Resources;
 
@@ -34,8 +35,9 @@ public sealed class AppMessageBox(
     /// <param name="failureReason">발생한 예외 개체의 참조</param>
     /// <param name="isCritical">심각성 여부</param>
     /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
-    public MessageBoxResult DisplayError(Exception? failureReason, bool isCritical)
-        => DisplayError(StringResources.TableCloth_UnwrapException(failureReason), isCritical);
+    public MessageBoxResult DisplayError(Exception? failureReason, bool isCritical,
+        [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+        => DisplayErrorCore(StringResources.TableCloth_UnwrapException(failureReason), isCritical, file, member, line);
 
     /// <summary>
     /// 오류를 안내하는 메시지 상자를 띄웁니다.
@@ -43,10 +45,14 @@ public sealed class AppMessageBox(
     /// <param name="message">표시할 메시지</param>
     /// <param name="isCritical">심각성 여부</param>
     /// <returns>누른 버튼이 무엇인지 반환합니다.</returns>
-    public MessageBoxResult DisplayError(string? message, bool isCritical)
+    public MessageBoxResult DisplayError(string? message, bool isCritical,
+        [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+        => DisplayErrorCore(message, isCritical, file, member, line);
+
+    private MessageBoxResult DisplayErrorCore(string? message, bool isCritical, string file, string member, int line)
     {
         if (string.IsNullOrWhiteSpace(message))
-            message = StringResources.Error_Unknown();
+            message = StringResources.Error_Unknown(file, member, line);
 
         var title = isCritical ? UIStringResources.TitleText_Error : UIStringResources.TitleText_Warning;
         var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;

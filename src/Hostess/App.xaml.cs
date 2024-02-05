@@ -52,7 +52,7 @@ namespace Hostess
                 if (result.IsCritical)
                 {
                     if (Helpers.IsDevelopmentBuild)
-                        throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
+                        throw result.FailedReason ?? TableClothAppException.Issue();
                     else
                         Shutdown(-1);
                 }
@@ -70,7 +70,7 @@ namespace Hostess
                 if (result.IsCritical)
                 {
                     if (Helpers.IsDevelopmentBuild)
-                        throw result.FailedReason ?? new Exception(StringResources.Error_Unknown());
+                        throw result.FailedReason ?? TableClothAppException.Issue();
                     else
                         Shutdown(-1);
                 }

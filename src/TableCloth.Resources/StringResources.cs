@@ -28,7 +28,7 @@ namespace TableCloth.Resources
     // 오류 메시지에 표시될 문자열들
     partial class StringResources
     {
-        public static string Error_Unknown([CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+        public static string Error_Unknown(string file, string member, int line)
             => string.Format(ErrorStrings.Error_Unknown, file, line, member);
 
         public static string Error_Cannot_Invoke_GetVersionEx(int errorCode)
