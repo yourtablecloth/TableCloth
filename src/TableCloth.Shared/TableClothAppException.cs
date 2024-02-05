@@ -14,6 +14,17 @@ namespace TableCloth
             reason = "",
             [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
         {
+            return new TableClothAppException(reason, file, member, line);
+        }
+
+        public static void Throw(
+            string
+#if !NETFX
+?
+#endif
+            reason = "",
+            [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+        {
             throw new TableClothAppException(reason, file, member, line);
         }
 
