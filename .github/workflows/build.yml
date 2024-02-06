@@ -15,7 +15,6 @@ jobs:
     env:
       Solution_Name: src\TableCloth.sln
       Hostess_Project_Path: src\Hostess\Hostess.csproj
-      ResourceBuilder_Project_Path: src\TableCloth.ResourceBuilder\TableCloth.ResourceBuilder.csproj
       Test_Project_Path: src\TableCloth.Test\TableCloth.Test.csproj
       #Cloth_Project_Path: src\Cloth\Cloth.csproj
       TableCloth_Project_Directory: src\TableCloth
@@ -60,12 +59,6 @@ jobs:
     # Build Hostess project separately
     - name: Build Hostess project
       run: msbuild $env:Hostess_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
-      env:
-        Configuration: ${{ matrix.configuration }}
-
-    # Build ResourceBuilder project separately
-    - name: Build ResourceBuilder project
-      run: msbuild $env:ResourceBuilder_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
       env:
         Configuration: ${{ matrix.configuration }}
 
