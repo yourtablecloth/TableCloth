@@ -1,12 +1,11 @@
-﻿using Hostess.Steps;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Hostess.Components.Implementations
+namespace Hostess.Steps.Implementations
 {
-    public sealed class StepFactory : IStepFactory
+    public sealed class StepsFactory : IStepsFactory
     {
-        public StepFactory(
+        public StepsFactory(
             IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;

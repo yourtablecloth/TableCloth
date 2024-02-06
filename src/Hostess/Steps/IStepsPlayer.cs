@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Hostess.Components
+namespace Hostess.Steps
 {
     public interface IStepsPlayer
     {

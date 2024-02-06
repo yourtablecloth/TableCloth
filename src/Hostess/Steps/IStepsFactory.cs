@@ -1,8 +1,8 @@
 ﻿using Hostess.Steps;
 
-namespace Hostess.Components
+namespace Hostess.Steps
 {
-    public interface IStepFactory
+    public interface IStepsFactory
     {
         IStep GetStepByName(string name);
     }

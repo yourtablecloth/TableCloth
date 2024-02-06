@@ -1,7 +1,7 @@
 ﻿using Hostess.ViewModels;
 using System.Collections.Generic;
 
-namespace Hostess.Components
+namespace Hostess.Steps
 {
     public interface IStepsComposer
     {

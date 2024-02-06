@@ -1,4 +1,5 @@
-﻿using Hostess.Components;
+﻿using Hostess.Browsers;
+using Hostess.Components;
 using Hostess.ViewModels;
 using System;
 using System.Diagnostics;
@@ -9,17 +10,22 @@ namespace Hostess.Steps.Implementations
 {
     public sealed class OpenWebSiteStep : StepBase<OpenWebSiteItemViewModel>
     {
+        public OpenWebSiteStep(
+            IWebBrowserServiceFactory webBrowserServiceFactory)
+        {
+            _webBrowserServiceFactory = webBrowserServiceFactory;
+            _defaultWebBrowserService = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
+        }
+
+        private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
+        private readonly IWebBrowserService _defaultWebBrowserService;
+
         public override Task LoadContentForStepAsync(OpenWebSiteItemViewModel viewModel, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 
         public override Task PlayStepAsync(OpenWebSiteItemViewModel viewModel, CancellationToken cancellationToken = default)
         {
-            Process.Start(new ProcessStartInfo(viewModel.TargetUrl)
-            {
-                UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Maximized,
-            });
-
+            Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(viewModel.TargetUrl, ProcessWindowStyle.Maximized));
             return Task.CompletedTask;
         }
 

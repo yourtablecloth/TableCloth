@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Hostess.Browsers;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -81,7 +83,11 @@ namespace Hostess.Controls
 
         private static void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true, });
+            var serviceProvider = Application.Current.GetServiceProvider();
+            var webBrowserServiceFactory = serviceProvider.GetRequiredService<IWebBrowserServiceFactory>();
+            var defaultWebBrowserService = webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
+
+            Process.Start(defaultWebBrowserService.CreateWebPageOpenRequest(e.Uri.AbsoluteUri));
             e.Handled = true;
         }
 

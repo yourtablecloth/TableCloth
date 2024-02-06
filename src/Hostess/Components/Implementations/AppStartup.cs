@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hostess.Browsers;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,17 +19,22 @@ namespace Hostess.Components.Implementations
         public AppStartup(
             IAppMessageBox appMessageBox,
             ICommandLineArguments commandLineArguments,
-            IResourceCacheManager resourceCacheManager)
+            IResourceCacheManager resourceCacheManager,
+            IWebBrowserServiceFactory webBrowserServiceFactory)
         {
             _appMessageBox = appMessageBox;
             _commandLineArguments = commandLineArguments;
             _resourceCacheManager = resourceCacheManager;
+            _webBrowserServiceFactory = webBrowserServiceFactory;
+            _defaultWebBrowserService = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
             _mutex = new Mutex(true, $"Global\\{GetType().FullName}", out this._isFirstInstance);
         }
 
         private readonly IAppMessageBox _appMessageBox;
         private readonly ICommandLineArguments _commandLineArguments;
         private readonly IResourceCacheManager _resourceCacheManager;
+        private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
+        private readonly IWebBrowserService _defaultWebBrowserService;
 
         private bool _disposed;
         private readonly Mutex _mutex;
@@ -111,11 +117,8 @@ namespace Hostess.Components.Implementations
                 {
                     _appMessageBox.DisplayInfo(UIStringResources.Hostess_No_Targets);
 
-                    Process.Start(new ProcessStartInfo(CommonStrings.UnboundHomeUrl)
-                    {
-                        UseShellExecute = true,
-                        WindowStyle = ProcessWindowStyle.Maximized,
-                    });
+                    Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(
+                        CommonStrings.UnboundHomeUrl, ProcessWindowStyle.Maximized));
 
                     result = ApplicationStartupResultModel.FromHaltedResult(providedWarnings: warnings);
                     return result;

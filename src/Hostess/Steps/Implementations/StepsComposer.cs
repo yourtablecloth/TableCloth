@@ -1,25 +1,25 @@
-﻿using Hostess.Steps.Implementations;
+﻿using Hostess.Components;
 using Hostess.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TableCloth.Resources;
 
-namespace Hostess.Components.Implementations
+namespace Hostess.Steps.Implementations
 {
     public sealed class StepsComposer : IStepsComposer
     {
         public StepsComposer(
-            IStepFactory stepFactory,
+            IStepsFactory stepsFactory,
             ICommandLineArguments commandLineArguments,
             IResourceCacheManager resourceCacheManager)
         {
-            _stepFactory = stepFactory;
+            _stepsFactory = stepsFactory;
             _commandLineArguments = commandLineArguments;
             _resourceCacheManager = resourceCacheManager;
         }
 
-        private readonly IStepFactory _stepFactory;
+        private readonly IStepsFactory _stepsFactory;
         private readonly ICommandLineArguments _commandLineArguments;
         private readonly IResourceCacheManager _resourceCacheManager;
 
@@ -34,28 +34,28 @@ namespace Hostess.Components.Implementations
             {
                 new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(VerifyWindowsContainerEnvironmentStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(VerifyWindowsContainerEnvironmentStep)),
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_VerifyEnvironment,
                 },
                 new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(PrepareDirectoriesStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(PrepareDirectoriesStep)),
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_PrepareEnvironment,
                 },
                 new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(TryProtectCriticalServicesStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(TryProtectCriticalServicesStep)),
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_TryProtectCriticalServices,
                 },
                 new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(SetDesktopWallpaperStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(SetDesktopWallpaperStep)),
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_SetDesktopWallpaper,
@@ -67,7 +67,7 @@ namespace Hostess.Components.Implementations
             {
                 steps.Add(new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(EnableInternetExplorerModeStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(EnableInternetExplorerModeStep)),
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_EnableIEMode,
@@ -83,7 +83,7 @@ namespace Hostess.Components.Implementations
 
                 steps.AddRange(targetService.Packages.Select(eachPackage => new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(PackageInstallStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(PackageInstallStep)),
                     Argument = new PackageInstallItemViewModel
                     {
                         PackageUrl = eachPackage.Url,
@@ -96,7 +96,7 @@ namespace Hostess.Components.Implementations
 
                 steps.AddRange(targetService.EdgeExtensions.Select(eachEdgeExtension => new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(EdgeExtensionInstallStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(EdgeExtensionInstallStep)),
                     Argument = new EdgeExtensionInstallItemViewModel
                     {
                         EdgeExtensionId = eachEdgeExtension.ExtensionId,
@@ -113,7 +113,7 @@ namespace Hostess.Components.Implementations
                 {
                     steps.Add(new StepItemViewModel
                     {
-                        Step = _stepFactory.GetStepByName(nameof(PowerShellScriptRunStep)),
+                        Step = _stepsFactory.GetStepByName(nameof(PowerShellScriptRunStep)),
                         Argument = new PowerShellScriptInstallItemViewModel
                         {
                             ScriptContent = bootstrapData,
@@ -129,14 +129,14 @@ namespace Hostess.Components.Implementations
             {
                 new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(ConfigAhnLabSafeTransactionStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(ConfigAhnLabSafeTransactionStep)),
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Config,
                     PackageName = UIStringResources.Install_ConfigASTx,
                 },
                 new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(ReloadEdgeStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(ReloadEdgeStep)),
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Config,
                     PackageName = UIStringResources.Install_ReloadMicrosoftEdge,
@@ -148,7 +148,7 @@ namespace Hostess.Components.Implementations
             {
                 steps.Add(new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(OpenWebSiteStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(OpenWebSiteStep)),
                     Argument = new OpenWebSiteItemViewModel
                     {
                         TargetUrl = CommonStrings.AdobeReaderUrl,
@@ -163,7 +163,7 @@ namespace Hostess.Components.Implementations
             {
                 steps.Add(new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(OpenWebSiteStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(OpenWebSiteStep)),
                     Argument = new OpenWebSiteItemViewModel
                     {
                         TargetUrl = CommonStrings.EveryonesPrinterUrl,
@@ -178,7 +178,7 @@ namespace Hostess.Components.Implementations
             {
                 steps.Add(new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(OpenWebSiteStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(OpenWebSiteStep)),
                     Argument = new OpenWebSiteItemViewModel
                     {
                         TargetUrl = CommonStrings.HancomOfficeViewerUrl,
@@ -193,7 +193,7 @@ namespace Hostess.Components.Implementations
             {
                 steps.Add(new StepItemViewModel
                 {
-                    Step = _stepFactory.GetStepByName(nameof(OpenWebSiteStep)),
+                    Step = _stepsFactory.GetStepByName(nameof(OpenWebSiteStep)),
                     Argument = new OpenWebSiteItemViewModel
                     {
                         TargetUrl = CommonStrings.RaiDriveUrl,

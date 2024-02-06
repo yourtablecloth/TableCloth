@@ -1,4 +1,6 @@
-﻿using Hostess.Commands.AboutWindow;
+﻿using Hostess.Browsers;
+using Hostess.Browsers.Implementations;
+using Hostess.Commands.AboutWindow;
 using Hostess.Commands.MainWindow;
 using Hostess.Commands.PrecautionsWindow;
 using Hostess.Components;
@@ -117,14 +119,18 @@ namespace Hostess
                 .AddSingleton<IResourceResolver, ResourceResolver>()
                 .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
                 .AddSingleton<ICommandLineArguments, CommandLineArguments>()
-                .AddSingleton<IStepsComposer, StepsComposer>()
-                .AddSingleton<IStepsPlayer, StepsPlayer>()
-                .AddSingleton<IApplicationService, ApplicationService>()
-                .AddSingleton<IStepFactory, StepFactory>()
-                .AddSingleton<IOpenWebBrowserService, OpenWebBrowserService>();
+                .AddSingleton<IApplicationService, ApplicationService>();
+
+            // Browser Services
+            services
+                .AddSingleton<IWebBrowserServiceFactory, WebBrowserServiceFactory>()
+                .AddKeyedSingleton<IWebBrowserService, X86ChromiumEdgeWebBrowserService>(nameof(X86ChromiumEdgeWebBrowserService));
 
             // Steps
             services
+                .AddSingleton<IStepsFactory, StepsFactory>()
+                .AddSingleton<IStepsComposer, StepsComposer>()
+                .AddSingleton<IStepsPlayer, StepsPlayer>()
                 .AddKeyedSingleton<IStep, ConfigAhnLabSafeTransactionStep>(nameof(ConfigAhnLabSafeTransactionStep))
                 .AddKeyedSingleton<IStep, EdgeExtensionInstallStep>(nameof(EdgeExtensionInstallStep))
                 .AddKeyedSingleton<IStep, EnableInternetExplorerModeStep>(nameof(EnableInternetExplorerModeStep))

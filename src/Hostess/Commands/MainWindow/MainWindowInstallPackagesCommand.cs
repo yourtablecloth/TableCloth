@@ -1,6 +1,6 @@
 ﻿using AsyncAwaitBestPractices;
 using AsyncAwaitBestPractices.MVVM;
-using Hostess.Components;
+using Hostess.Steps;
 using Hostess.ViewModels;
 using System;
 using System.Threading.Tasks;

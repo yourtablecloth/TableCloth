@@ -1,4 +1,6 @@
-﻿using Hostess.ViewModels;
+﻿using Hostess.Browsers;
+using Hostess.Components;
+using Hostess.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,26 +10,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Resources;
 
-namespace Hostess.Components.Implementations
+namespace Hostess.Steps.Implementations
 {
     public sealed class StepsPlayer : IStepsPlayer
     {
         public StepsPlayer(
             IResourceCacheManager resourceCacheManager,
-            ISharedLocations sharedLocations,
             ICommandLineArguments commandLineArguments,
-            IHttpClientFactory httpClientFactory)
+            IWebBrowserServiceFactory webBrowserServiceFactory)
         {
             _resourceCacheManager = resourceCacheManager;
-            _sharedLocations = sharedLocations;
             _commandLineArguments = commandLineArguments;
-            _httpClientFactory = httpClientFactory;
+            _webBrowserServiceFactory = webBrowserServiceFactory;
+            _defaultWebBrowserService = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
         }
 
         private readonly IResourceCacheManager _resourceCacheManager;
-        private readonly ISharedLocations _sharedLocations;
         private readonly ICommandLineArguments _commandLineArguments;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
+        private readonly IWebBrowserService _defaultWebBrowserService;
 
         public bool IsRunning { get; private set; }
 
@@ -81,13 +82,7 @@ namespace Hostess.Components.Implementations
                 var targets = parsedArgs.SelectedServices;
 
                 foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
-                {
-                    Process.Start(new ProcessStartInfo(eachUrl)
-                    {
-                        UseShellExecute = true,
-                        WindowStyle = ProcessWindowStyle.Maximized,
-                    });
-                }
+                    Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(eachUrl, ProcessWindowStyle.Maximized));
             }
 
             return hasAnyFailure;
