@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -125,5 +126,49 @@ public partial class CatalogPage : Page
     {
         if (string.Equals(nameof(CatalogPageViewModel.SearchKeyword), e.PropertyName, StringComparison.Ordinal))
             CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
+    }
+
+    private void UpdateLabelPopup()
+    {
+        var selectedItem = SiteCatalog.SelectedItem;
+        LabelPopup.IsOpen = false;
+
+        if (selectedItem == null)
+            return;
+
+        var selectedItemContainer = (ListViewItem)SiteCatalog.ItemContainerGenerator.ContainerFromItem(selectedItem);
+
+        var textBlock = selectedItemContainer.FindChildControl<TextBlock>();
+
+        if (textBlock != null)
+        {
+            LabelPopup.PlacementTarget = textBlock;
+            LabelPopup.VerticalOffset = 0;
+            LabelPopup.HorizontalOffset = 0;
+            LabelPopup.Placement = PlacementMode.RelativePoint;
+            LabelPopup.Width = textBlock.ActualWidth;
+            LabelPopup.Height = textBlock.ActualHeight;
+
+            LabelPopupTextBlock.Text = textBlock.Text;
+            LabelPopupTextBlock.TextTrimming = TextTrimming.None;
+            LabelPopupTextBlock.TextWrapping = TextWrapping.Wrap;
+            LabelPopupTextBlock.TextAlignment = textBlock.TextAlignment;
+            LabelPopupTextBlock.Background = SystemColors.ControlBrush;
+            LabelPopupTextBlock.Foreground = SystemColors.ControlTextBrush;
+
+            LabelPopup.IsOpen = textBlock.IsControlVisibleToUser(SiteCatalog);
+        }
+        else
+            LabelPopup.IsOpen = false;
+    }
+
+    private void SiteCatalog_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        UpdateLabelPopup();
+    }
+
+    private void SiteCatalog_ScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+        UpdateLabelPopup();
     }
 }

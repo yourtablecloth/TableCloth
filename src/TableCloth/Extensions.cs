@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using TableCloth.Resources;
 
 namespace TableCloth;
@@ -99,5 +100,39 @@ internal static class Extensions
             TableClothAppException.Throw("Already service provider has been initialized.");
 
         application.Properties[key] = serviceProvider;
+    }
+
+    public static T? FindChildControl<T>(this DependencyObject depObj)
+        where T : DependencyObject
+    {
+        if (depObj != null)
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(depObj, i);
+
+                if (child is T targetChild)
+                    return targetChild;
+
+                var childItem = FindChildControl<T>(child);
+                if (childItem != null)
+                    return childItem;
+            }
+        }
+
+        return null;
+    }
+
+    public static bool IsControlVisibleToUser(this FrameworkElement element, FrameworkElement container)
+    {
+        if (!element.IsVisible)
+            return false;
+
+        // 컨트롤의 상대적인 위치를 화면에서의 위치로 변환
+        Rect bounds = element.TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, element.ActualWidth, element.ActualHeight));
+        Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
+
+        // 컨트롤의 영역이 컨테이너의 보이는 영역과 겹치는지 확인
+        return rect.IntersectsWith(bounds);
     }
 }
