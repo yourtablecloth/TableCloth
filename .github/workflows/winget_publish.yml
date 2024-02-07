@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Submit package to Windows Package Manager Community Repository
         run: |
-          $packageId = "TableClothProject"
+          $packageId = "TableClothProject.TableCloth"
           $gitToken = "${{ secrets.TABLECLOTH_GITHUB_PAT }}"
 
           # Fetching latest release from GitHub
