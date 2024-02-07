@@ -437,9 +437,14 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,visualstudio,visualstudiocode,windows
 
 /src/Hostess/commit.txt
+
 /src/TableCloth/commit.txt
 /src/TableCloth/Hostess.zip
 /src/TableCloth/Images.zip
-/src/TableClothSetup.exe
+
+/src/TableCloth.Test/commit.txt
+/src/TableCloth.Test/Hostess.zip
+/src/TableCloth.Test/Images.zip
+
 /src/commit.iss
 /src/Output
