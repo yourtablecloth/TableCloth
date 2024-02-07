@@ -7,7 +7,7 @@
 * [Korean Readme](README.md)
 * [English Readme](README.EN.md)
 
-[![Build Status](https://github.com/yourtablecloth/TableCloth/actions/workflows/publish-msi.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
+[![Build Status](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/build.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
 [![Downloads](https://img.shields.io/github/v/release/yourtablecloth/tablecloth)](https://github.com/yourtablecloth/TableCloth/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 [![Chocolatey](https://img.shields.io/badge/chocolatey-install-orange)](https://community.chocolatey.org/packages/tablecloth)
@@ -17,11 +17,11 @@
 
 ## Summary
 
-This project is a program that takes advantage of the Windows Sandbox, which was added in Windows 10 version 1909, to help you use various client security programs that are installed when you use Internet banking or eGovernment Internet services on your computer without affecting the actual computer environment.
+This project is a program that takes advantage of the Windows Sandbox, which was added in Windows 10 version 1909, to help you use various client security programs that are installed when you use Korean Internet banking or Korean eGovernment Internet services on your computer without affecting the actual computer environment.
 
-There are many agents, virtual keyboards, and intermediate encryption programs that are installed in the name of security. However, in the ever-changing web ecosystem, there are still many websites that don't properly reflect the requirements of the Windows operating system. As a result, the ancillary software that is supposed to provide security and stability can actually slow down your system's performance and sometimes even break the Windows operating system.
+In Korea, there are many agents, virtual keyboards, and intermediate encryption programs that are installed in the name of security. However, in the ever-changing web ecosystem, there are still many websites that don't properly reflect the requirements of the Windows operating system. As a result, the ancillary software that is supposed to provide security and stability can actually slow down your system's performance and sometimes even break the Windows operating system.
 
-This project to help alleviate this problem and keep your computer stable at all times.
+This project helps mitigate this problem and keep your computer stable at all times.
 
 ## Installation
 
