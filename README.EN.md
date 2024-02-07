@@ -30,13 +30,13 @@ Installation and usage guide are introduced in [Tablecloth Introduction Page(KO)
 ## Build Environment
 
 * Visual Studio 2022 or up to
-* .NET 6.0 SDK
+* .NET 8.0 SDK
 * .NET Framework 4.8 SDK
 
 ## Test Environment
 
 * Windows 10 1909 or up to
-* Windows 10 Pro, Edu and Enterprise
+* Supported SKU: Pro, Edu and Enterprise
 * Windows Sandbox activated
 
 ## Copyrights
