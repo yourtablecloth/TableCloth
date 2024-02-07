@@ -10,6 +10,20 @@ namespace TableCloth
 
     partial class NativeMethods
     {
+        public const int WM_SIZE = 0x0005;
+        public const int WM_MOVE = 0x0003;
+        public const int WM_CLOSE = 0x0010;
+        public const int WM_SHOWWINDOW = 0x0018;
+        public const int WM_SYSCOMMAND = 0x0112;
+        public const int WM_ACTIVATE = 0x0006;
+        public const int WM_KILLFOCUS = 0x0008;
+        public const int WM_ACTIVATEAPP = 0x001C;
+
+        public const int WA_INACTIVE = 0;
+    }
+
+    partial class NativeMethods
+    {
         public const int SERVICE_CHANGE_CONFIG = 0x0002;
         public const int SERVICE_PAUSE_CONTINUE = 0x0040;
         public const int SERVICE_STOP = 0x0020;

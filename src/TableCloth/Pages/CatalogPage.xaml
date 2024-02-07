@@ -11,7 +11,8 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="{x:Static res:UIStringResources.CatalogPage_Title}"
-      d:DataContext="{d:DesignInstance Type=vm:CatalogPageViewModelForDesigner, IsDesignTimeCreatable=True}">
+      d:DataContext="{d:DesignInstance Type=vm:CatalogPageViewModelForDesigner, IsDesignTimeCreatable=True}"
+      Loaded="Page_Loaded">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding CatalogPageLoadedCommand}">
@@ -224,12 +225,14 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <Popup IsOpen="False" x:Name="LabelPopup">
-            <Border BorderThickness="0">
-                <TextBlock Text="Test" x:Name="LabelPopupTextBlock" />
+        <Popup IsOpen="False" x:Name="LabelPopup" AllowsTransparency="True" Focusable="False">
+            <Border BorderThickness="0" Background="Transparent" Focusable="False">
+                <ContentControl Focusable="False" MouseDoubleClick="ContentControl_MouseDoubleClick">
+                    <TextBlock Text="Test" x:Name="LabelPopupTextBlock" Focusable="False" />
+                </ContentControl>
             </Border>
         </Popup>
-        <ListView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" SelectedItem="{Binding Path='SelectedService'}" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" PreviewMouseDown="SiteCatalog_PreviewMouseDown" d:Visibility="Visible" d:ItemsSource="{Binding ServicesForDesigner}" VirtualizingPanel.IsContainerVirtualizable="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.IsVirtualizingWhenGrouping="True" SelectionChanged="SiteCatalog_SelectionChanged" ScrollViewer.ScrollChanged="SiteCatalog_ScrollChanged">
+        <ListView Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" SelectedItem="{Binding Path='SelectedService'}" ItemsSource="{Binding Path='Services'}" SelectionMode="Single" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" ItemContainerStyle="{StaticResource FileItemStyle}" PreviewMouseDown="SiteCatalog_PreviewMouseDown" d:Visibility="Visible" d:ItemsSource="{Binding ServicesForDesigner}" VirtualizingPanel.IsContainerVirtualizable="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.IsVirtualizingWhenGrouping="True" SelectionChanged="SiteCatalog_SelectionChanged" ScrollViewer.ScrollChanged="SiteCatalog_ScrollChanged" SizeChanged="SiteCatalog_SizeChanged" GotFocus="SiteCatalog_GotFocus" LostFocus="SiteCatalog_LostFocus">
             <ListView.InputBindings>
                 <KeyBinding Key="Return" Command="{Binding CatalogPageItemSelectCommand}">
                     <KeyBinding.CommandParameter>

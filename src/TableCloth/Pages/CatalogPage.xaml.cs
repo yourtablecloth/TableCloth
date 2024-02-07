@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using TableCloth.Models.Catalog;
 using TableCloth.ViewModels;
@@ -42,6 +44,16 @@ public partial class CatalogPage : Page
         }
 
         return null;
+    }
+
+    private void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        var parentWindow = Window.GetWindow(this);
+        if (parentWindow != null)
+        {
+            if (PresentationSource.FromVisual(parentWindow) is HwndSource source)
+                source.AddHook(PageWndProc);
+        }
     }
 
     // https://stackoverflow.com/questions/660554/how-to-automatically-select-all-text-on-focus-in-wpf-textbox
@@ -153,8 +165,7 @@ public partial class CatalogPage : Page
             LabelPopupTextBlock.TextTrimming = TextTrimming.None;
             LabelPopupTextBlock.TextWrapping = TextWrapping.Wrap;
             LabelPopupTextBlock.TextAlignment = textBlock.TextAlignment;
-            LabelPopupTextBlock.Background = SystemColors.ControlBrush;
-            LabelPopupTextBlock.Foreground = SystemColors.ControlTextBrush;
+            LabelPopupTextBlock.Foreground = textBlock.Foreground;
 
             LabelPopup.IsOpen = textBlock.IsControlVisibleToUser(SiteCatalog);
         }
@@ -162,13 +173,53 @@ public partial class CatalogPage : Page
             LabelPopup.IsOpen = false;
     }
 
+    private void ContentControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        => ViewModel.CatalogPageItemSelectCommand.Execute(ViewModel);
+
     private void SiteCatalog_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        UpdateLabelPopup();
-    }
+        => UpdateLabelPopup();
 
     private void SiteCatalog_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        => UpdateLabelPopup();
+
+    private void SiteCatalog_SizeChanged(object sender, SizeChangedEventArgs e)
+        => UpdateLabelPopup();
+
+    private void SiteCatalog_GotFocus(object sender, RoutedEventArgs e)
+        => UpdateLabelPopup();
+
+    private void SiteCatalog_LostFocus(object sender, RoutedEventArgs e)
+        => UpdateLabelPopup();
+
+    private IntPtr PageWndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
-        UpdateLabelPopup();
+        switch (msg)
+        {
+            case NativeMethods.WM_SIZE: case NativeMethods.WM_MOVE:
+            case NativeMethods.WM_CLOSE: case NativeMethods.WM_SHOWWINDOW:
+            case NativeMethods.WM_SYSCOMMAND:
+                UpdateLabelPopup();
+                break;
+
+            case NativeMethods.WM_ACTIVATE:
+                if (wParam.ToInt32() == NativeMethods.WA_INACTIVE)
+                    LabelPopup.IsOpen = false;
+                else
+                    UpdateLabelPopup();
+                break;
+
+            case NativeMethods.WM_ACTIVATEAPP:
+                var thisWindow = Window.GetWindow(this);
+                var activeWindow = Application.Current.Windows.Cast<Window>().FirstOrDefault(x => x.IsActive && object.ReferenceEquals(x, thisWindow));
+                if (activeWindow != null)
+                    UpdateLabelPopup();
+                break;
+
+            case NativeMethods.WM_KILLFOCUS:
+                LabelPopup.IsOpen = false;
+                break;
+        }
+
+        return IntPtr.Zero;
     }
 }
