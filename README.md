@@ -30,7 +30,7 @@
 ## 빌드 환경
 
 * Visual Studio 2022 이상
-* .NET 6.0 SDK
+* .NET 8.0 SDK
 * .NET Framework 4.8 SDK
 
 ## 테스트 환경
