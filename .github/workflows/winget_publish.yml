@@ -10,7 +10,7 @@ jobs:
     name: Publish winget package
     runs-on: windows-2022
     steps:
-      - name: Submit package to Windows Package Manager Community Repository
+      - name: Submit TableCloth WinGet Package Submission
         run: |
           $packageId = "TableClothProject.TableCloth"
           $gitToken = "${{ secrets.TABLECLOTH_GITHUB_PAT }}"
