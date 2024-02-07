@@ -16,9 +16,7 @@ jobs:
       Solution_Name: src\TableCloth.sln
       Hostess_Project_Path: src\Hostess\Hostess.csproj
       Test_Project_Path: src\TableCloth.Test\TableCloth.Test.csproj
-      Cloth_Project_Path: src\Cloth\Cloth.csproj
       TableCloth_Project_Path: src\TableCloth\TableCloth.csproj
-      TableClothSetup_Directory_Path: src\TableClothSetup
       Platform: ${{ matrix.platform }}
 
     steps:
@@ -53,12 +51,6 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Build Hostess project separately
-    - name: Build Hostess project
-      run: msbuild $env:Hostess_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
-      env:
-        Configuration: ${{ matrix.configuration }}
-
     # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test $env:Test_Project_Path -r win-${{ env.Platform }} -c:$env:Configuration
@@ -71,17 +63,11 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Build Cloth project separately
-    - name: Publish Cloth project
-      run: dotnet publish $env:Cloth_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
-
     # Create InnoSetup package
     - name: Create InnoSetup package
       run: |
-        "#define GitCommit ""$(git.exe rev-parse HEAD)""" | Out-File -Path "$env:TableClothSetup_Directory_Path\commit.iss"
-        . "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DConfiguration=$env:Configuration /DArchitecture=$env:Platform $env:TableClothSetup_Directory_Path\TableClothSetup.iss
+        "#define GitCommit ""$(git.exe rev-parse HEAD)""" | Out-File -Path "src\commit.iss"
+        . "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DConfiguration=$env:Configuration /DArchitecture=$env:Platform src\TableClothSetup.iss
       env:
         Configuration: ${{ matrix.configuration }}
 
@@ -90,6 +76,6 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: InnoSetup Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
-        path: "${{ env.TableClothSetup_Directory_Path }}/Output/*.exe"
+        path: "src/Output/*.exe"
         if-no-files-found: error
         retention-days: 5

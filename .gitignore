@@ -441,5 +441,5 @@ FodyWeavers.xsd
 /src/TableCloth/Hostess.zip
 /src/TableCloth/Images.zip
 /src/TableClothSetup.exe
-/src/TableClothSetup/commit.iss
-/src/TableClothSetup/Output
+/src/commit.iss
+/src/Output

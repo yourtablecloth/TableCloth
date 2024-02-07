@@ -20,7 +20,7 @@
 #define MyAppURL "https://yourtablecloth.app"
 #define MyAppExeName "TableCloth.exe"
 
-#define MyAppSourceDirectory "..\TableCloth\bin\" + Configuration + "\net8.0-windows10.0.18362.0\win-" + Architecture + "\publish"
+#define MyAppSourceDirectory "TableCloth\bin\" + Architecture + "\" + Configuration + "\net8.0-windows10.0.18362.0\win-" + Architecture + "\publish"
 #define MyAppVersion GetVersionNumbersString(MyAppSourceDirectory + "\TableCloth.exe")
 #define MyAppCommitId Copy(GitCommit, 1, 7)
 
@@ -48,7 +48,7 @@ DirExistsWarning=no
 LicenseFile=License.rtf
 PrivilegesRequired=lowest
 OutputBaseFilename=TableCloth_{#MyAppVersion}_{#Configuration}_{#MyAppCommitId}
-SetupIconFile=..\TableCloth\Resources\SandboxIcon.ico
+SetupIconFile=TableCloth\Resources\SandboxIcon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
