@@ -51,6 +51,12 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
+    # Build Hostess project separately
+    - name: Build Hostess project
+      run: msbuild $env:Hostess_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
+      env:
+        Configuration: ${{ matrix.configuration }}
+
     # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test $env:Test_Project_Path -r win-${{ env.Platform }} -c:$env:Configuration
