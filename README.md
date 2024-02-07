@@ -36,8 +36,8 @@
 ## 테스트 환경
 
 * Windows 10 1909 이상
-* Windows 10 Pro, Edu, Enterprise
-* Windows Sandbox 활성화
+* 지원되는 SKU: Pro, Edu and Enterprise
+* 반드시 Windows Sandbox를 실행할 수 있는 환경이어야 합니다.
 
 ## [개발자 가이드](./DEVREADME.md)
 
