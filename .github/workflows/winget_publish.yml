@@ -18,7 +18,7 @@ jobs:
           # Fetching latest release from GitHub
           $github = Invoke-RestMethod -uri "https://api.github.com/repos/yourtablecloth/TableCloth/releases"
           $targetRelease = $github | Where-Object -Property name -match 'v[\d\.]+' | Select-Object -First 1
-          $installerUrl = $targetRelease | Select-Object -ExpandProperty assets -First 1 | Where-Object -Property name -match '\.msi' | Select-Object -ExpandProperty browser_download_url
+          $installerUrl = $targetRelease | Select-Object -ExpandProperty assets -First 1 | Where-Object -Property name -match '\.exe' | Select-Object -ExpandProperty browser_download_url
           $packageVersion = $targetRelease.tag_name.Trim("v")
 
           # Update package using wingetcreate

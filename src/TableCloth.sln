@@ -12,8 +12,6 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TableCloth.Shared", "TableC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hostess", "Hostess\Hostess.csproj", "{369BB263-3C8D-4B56-9301-2C47DE7746E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableCloth.SetupBuilder", "TableCloth.SetupBuilder\TableCloth.SetupBuilder.csproj", "{68063059-A0EA-4ED6-BADF-4D8120016E93}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0550F36D-5775-4A30-9783-E60FE4B7C438}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -58,14 +56,6 @@ Global
 		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|ARM64.Build.0 = Release|ARM64
 		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.ActiveCfg = Release|x64
 		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.Build.0 = Release|x64
-		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Debug|ARM64.ActiveCfg = Debug|ARM64
-		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Debug|ARM64.Build.0 = Debug|ARM64
-		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Debug|x64.ActiveCfg = Debug|x64
-		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Debug|x64.Build.0 = Debug|x64
-		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Release|ARM64.ActiveCfg = Release|ARM64
-		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Release|ARM64.Build.0 = Release|ARM64
-		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Release|x64.ActiveCfg = Release|x64
-		{68063059-A0EA-4ED6-BADF-4D8120016E93}.Release|x64.Build.0 = Release|x64
 		{28338BD7-F42E-4D85-91BF-F6CC72DE7360}.Debug|ARM64.ActiveCfg = Debug|Any CPU
 		{28338BD7-F42E-4D85-91BF-F6CC72DE7360}.Debug|ARM64.Build.0 = Debug|Any CPU
 		{28338BD7-F42E-4D85-91BF-F6CC72DE7360}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -101,7 +91,6 @@ Global
 		TableCloth.Shared\TableCloth.Shared.projitems*{0f58b6a7-cca8-471a-b767-01c7b8f6e839}*SharedItemsImports = 13
 		TableCloth.Shared\TableCloth.Shared.projitems*{2d6cd03c-52b2-46f2-8ec1-7480e7a92e5e}*SharedItemsImports = 5
 		TableCloth.Shared\TableCloth.Shared.projitems*{369bb263-3c8d-4b56-9301-2c47de7746e8}*SharedItemsImports = 4
-		TableCloth.Shared\TableCloth.Shared.projitems*{68063059-a0ea-4ed6-badf-4d8120016e93}*SharedItemsImports = 4
 		TableCloth.Shared\TableCloth.Shared.projitems*{f3b53bf9-ae1c-41b5-b2c2-bf24840440dd}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

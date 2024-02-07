@@ -16,12 +16,9 @@ jobs:
       Solution_Name: src\TableCloth.sln
       Hostess_Project_Path: src\Hostess\Hostess.csproj
       Test_Project_Path: src\TableCloth.Test\TableCloth.Test.csproj
-      #Cloth_Project_Path: src\Cloth\Cloth.csproj
-      TableCloth_Project_Directory: src\TableCloth
+      Cloth_Project_Path: src\Cloth\Cloth.csproj
       TableCloth_Project_Path: src\TableCloth\TableCloth.csproj
-      Setup_Project_Name: TableCloth.SetupBuilder
-      Setup_Project_Directory: src\TableCloth.SetupBuilder
-      Setup_Project_Path: src\TableCloth.SetupBuilder\TableCloth.SetupBuilder.csproj
+      TableClothSetup_Directory_Path: src\TableClothSetup
       Platform: ${{ matrix.platform }}
 
     steps:
@@ -75,50 +72,24 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     # Build Cloth project separately
-    #- name: Publish Cloth project
-    #  run: dotnet publish $env:Cloth_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
-    #  env:
-    #    Configuration: ${{ matrix.configuration }}
-
-    - name: Set path for candle and light
-      run: echo "$env:WIX_PATH\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      env:
-        WIX_PATH: ${{ env.wix }}
-
-    # Build setup builder project separately
-    - name: Build setup builder project
-      run: msbuild $env:Setup_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
+    - name: Publish Cloth project
+      run: dotnet publish $env:Cloth_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Run Setup builder
-    - name: Run setup builder
+    # Create InnoSetup package
+    - name: Create InnoSetup package
       run: |
-        $SetupBuilderFullPath = [System.IO.Path]::GetFullPath('${{ env.Setup_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\${{ env.Setup_Project_Name }}.exe')
-        $InputDirPath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\bin\${{ env.Platform }}\${{ matrix.configuration }}\net8.0-windows10.0.18362.0\win-${{ env.Platform }}\publish')
-        $IconFilePath = [System.IO.Path]::GetFullPath('${{ env.TableCloth_Project_Directory }}\App.ico')
-        echo $SetupBuilderFullPath
-        echo $InputDirPath
-        echo $IconFilePath
-        dir $SetupBuilderFullPath -ErrorAction Continue
-        dir $InputDirPath -ErrorAction Continue
-        dir $IconFilePath -ErrorAction Continue
-        . $SetupBuilderFullPath $InputDirPath '--ignore--' '--ignore--' $IconFilePath
+        "#define GitCommit ""$(git.exe rev-parse HEAD)""" | Out-File -Path "$env:TableClothSetup_Directory_Path\commit.iss"
+        . "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DConfiguration=$env:Configuration /DArchitecture=$env:Platform $env:TableClothSetup_Directory_Path\TableClothSetup.iss
+      env:
+        Configuration: ${{ matrix.configuration }}
 
-    # Upload the MSI package: https://github.com/actions/upload-artifact
-    - name: Upload build artifacts (MSI)
+    # Upload the InnoSetup package: https://github.com/actions/upload-artifact
+    - name: Upload build artifacts (InnoSetup)
       uses: actions/upload-artifact@v4
       with:
-        name: MSI Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
-        path: TableCloth.msi
+        name: InnoSetup Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
+        path: "${{ env.TableClothSetup_Directory_Path }}/Output/*.exe"
         if-no-files-found: error
         retention-days: 5
-
-    # Upload the zip package: https://github.com/actions/upload-artifact
-    #- name: Upload build artifacts (Cloth CLI)
-    #  uses: actions/upload-artifact@v4
-    #  with:
-    #    name: Cloth CLI (${{ matrix.platform }}, ${{ matrix.configuration }})
-    #    path: src\Cloth\bin\${{ env.Platform }}\${{ matrix.configuration }}\net8.0\win-${{ env.Platform }}\publish\Cloth.exe
-    #    if-no-files-found: error
-    #    retention-days: 90
