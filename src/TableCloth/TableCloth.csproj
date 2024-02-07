@@ -94,6 +94,6 @@
 
 	<Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="set IGNORE_WARNING=1&#xD;&#xA;git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot; -z &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
+		<Exec Command="set IGNORE_WARNING=1&#xD;&#xA;git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
 	</Target>
 </Project>
