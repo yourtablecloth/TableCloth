@@ -810,7 +810,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TableCloth - Keep your computer clean!.
+        ///   Looks up a localized string similar to Keep Your Computer Sound &amp; Safe!.
         /// </summary>
         public static string MainWindow_Title {
             get {

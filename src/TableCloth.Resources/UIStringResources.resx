@@ -369,7 +369,7 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
     <value>Failed to import the catalog file!</value>
   </data>
   <data name="MainWindow_Title" xml:space="preserve">
-    <value>TableCloth - Keep your computer clean!</value>
+    <value>Keep Your Computer Sound &amp; Safe!</value>
   </data>
   <data name="Option_Addin" xml:space="preserve">
     <value>Add-in</value>
