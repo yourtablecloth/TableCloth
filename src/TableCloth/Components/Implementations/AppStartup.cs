@@ -141,7 +141,7 @@ public sealed class AppStartup : IAppStartup
         var wsbExecPath = Helpers.GetDefaultWindowsSandboxPath();
 
         // 1st Try: WindowsSandbox.exe 파일이 없을 경우 dism.exe로 설치 시도
-        if (!File.Exists(wsbExecPath))
+        if (!Helpers.IsDevelopmentBuild && !File.Exists(wsbExecPath))
         {
             var dismExecPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.System),
