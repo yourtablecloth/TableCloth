@@ -1,6 +1,18 @@
 name: TableCloth Build Pipeline
 
-on: [push, pull_request]
+on:
+    push:
+        paths:
+        - '.github/workflows/**'
+        - 'docs/**'
+        - 'src/**'
+        - 'tools/**'
+    pull_request:
+        paths:
+        - '.github/workflows/**'
+        - 'docs/**'
+        - 'src/**'
+        - 'tools/**'
 
 jobs:
   build:
