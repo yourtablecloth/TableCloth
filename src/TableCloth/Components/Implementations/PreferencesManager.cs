@@ -53,8 +53,8 @@ public sealed class PreferencesManager(
         preferences ??= GetDefaultPreferences();
         var prefFilePath = sharedLocations.PreferencesFilePath;
 
-        using var stream = File.OpenWrite(prefFilePath);
+        using var stream = File.Create(prefFilePath);
         await JsonSerializer.SerializeAsync(stream, preferences,
-            Options, cancellationToken).ConfigureAwait(false);
+            Options, cancellationToken).ConfigureAwait(false); ;
     }
 }
