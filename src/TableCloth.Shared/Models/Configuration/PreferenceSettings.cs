@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TableCloth.Models.Configuration
 {
@@ -61,5 +62,10 @@ namespace TableCloth.Models.Configuration
         /// 새 버전 UI를 활성화할지 여부를 기록합니다.
         /// </summary>
         public bool V2UIOptIn { get; set; } = true;
+
+        /// <summary>
+        /// 즐겨찾기로 등록된 서비스 아이디를 기록합니다.
+        /// </summary>
+        public List<string> Favorites { get; set; } = new List<string>();
     }
 }

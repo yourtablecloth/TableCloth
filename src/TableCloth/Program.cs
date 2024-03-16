@@ -184,7 +184,8 @@ internal static class Program
         services
             .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
             .AddSingleton<CatalogPageLoadedCommand>()
-            .AddSingleton<CatalogPageItemSelectCommand>();
+            .AddSingleton<CatalogPageItemSelectCommand>()
+            .AddSingleton<CatalogPageItemFavoriteCommand>();
 
         // Detail Page
         services
