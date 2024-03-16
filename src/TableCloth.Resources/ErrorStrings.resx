@@ -155,11 +155,11 @@
   </data>
   <data name="Error_CatalogDeserilizationFailure" xml:space="preserve">
     <value>The format of the Catalog.xml file seems to be different from what the program expects.</value>
-    <comment>This item is used by Hostess.</comment>
+    <comment>This item is used by Spork.</comment>
   </data>
   <data name="Error_CatalogLoadFailure" xml:space="preserve">
     <value>The program can't proceed with the installation because the Catalog.xml file can't be loaded from a remote website.</value>
-    <comment>This item is used by Hostess.</comment>
+    <comment>This item is used by Spork.</comment>
   </data>
   <data name="Error_Cert_Expired" xml:space="preserve">
     <value>The certificate you selected has expired. You'll need to select a different public certificate, or replace it with a new public certificate.</value>
@@ -182,8 +182,8 @@
   <data name="Error_ForYourReference" xml:space="preserve">
     <value>For reference, here's the error occurred - {0}</value>
   </data>
-  <data name="Error_Hostess_Missing" xml:space="preserve">
-    <value>The sandbox auto-installer file was not found, please reinstall the program.</value>
+  <data name="Error_Spork_Missing" xml:space="preserve">
+    <value>The spork executable file was not found, please reinstall the program.</value>
   </data>
   <data name="Error_HostFolder_Unavailable" xml:space="preserve">
     <value>The following directories are not found on this computer and will not be mounted when connecting from the sandbox.</value>
@@ -213,7 +213,7 @@ You can select multiple files by holding down the Ctrl or Shift key, or by dragg
   </data>
   <data name="Error_Package_CanNotStart" xml:space="preserve">
     <value>The package installer failed to start.</value>
-    <comment>This item is used by Hostess.</comment>
+    <comment>This item is used by Spork.</comment>
   </data>
   <data name="Error_Restart_And_RunAgain" xml:space="preserve">
     <value>After installing Windows Sandbox, you may need to restart your system. If necessary, restart your system and run TableCloth again.</value>
@@ -229,7 +229,7 @@ You can select multiple files by holding down the Ctrl or Shift key, or by dragg
   </data>
   <data name="Error_StSessConfig_CanNotStart" xml:space="preserve">
     <value>The application can't run the AhnLab Safe Transaction configuration utility.</value>
-    <comment>This item is used by Hostess.</comment>
+    <comment>This item is used by Spork.</comment>
   </data>
   <data name="Error_Unknown" xml:space="preserve">
     <value>An unexpected error occurred: (File: {0} (Row: {1}), Member: {2})</value>
@@ -257,6 +257,6 @@ You can select multiple files by holding down the Ctrl or Shift key, or by dragg
   </data>
   <data name="Error_X509CertError" xml:space="preserve">
     <value>An X509 certificate error occurred during communication with a remote website. The certificate subject is {0}, and the error code encountered is {1}.</value>
-    <comment>This item is used by Hostess.</comment>
+    <comment>This item is used by Spork.</comment>
   </data>
 </root>

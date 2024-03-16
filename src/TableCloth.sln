@@ -10,8 +10,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableCloth", "TableCloth\Ta
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TableCloth.Shared", "TableCloth.Shared\TableCloth.Shared.shproj", "{0F58B6A7-CCA8-471A-B767-01C7B8F6E839}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hostess", "Hostess\Hostess.csproj", "{369BB263-3C8D-4B56-9301-2C47DE7746E8}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0550F36D-5775-4A30-9783-E60FE4B7C438}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -32,6 +30,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableCloth.Test", "TableClo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloth", "Cloth\Cloth.csproj", "{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spork", "D:\Projects\TableCloth\src\Spork\Spork.csproj", "{369BB263-3C8D-4B56-9301-2C47DE7746E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -48,14 +48,6 @@ Global
 		{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}.Release|ARM64.Build.0 = Release|ARM64
 		{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}.Release|x64.ActiveCfg = Release|x64
 		{2D6CD03C-52B2-46F2-8EC1-7480E7A92E5E}.Release|x64.Build.0 = Release|x64
-		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|ARM64.ActiveCfg = Debug|ARM64
-		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|ARM64.Build.0 = Debug|ARM64
-		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|x64.ActiveCfg = Debug|x64
-		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|x64.Build.0 = Debug|x64
-		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|ARM64.ActiveCfg = Release|ARM64
-		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|ARM64.Build.0 = Release|ARM64
-		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.ActiveCfg = Release|x64
-		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.Build.0 = Release|x64
 		{28338BD7-F42E-4D85-91BF-F6CC72DE7360}.Debug|ARM64.ActiveCfg = Debug|Any CPU
 		{28338BD7-F42E-4D85-91BF-F6CC72DE7360}.Debug|ARM64.Build.0 = Debug|Any CPU
 		{28338BD7-F42E-4D85-91BF-F6CC72DE7360}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -80,6 +72,14 @@ Global
 		{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}.Release|ARM64.Build.0 = Release|ARM64
 		{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}.Release|x64.ActiveCfg = Release|x64
 		{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}.Release|x64.Build.0 = Release|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|ARM64.Build.0 = Debug|ARM64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|x64.ActiveCfg = Debug|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Debug|x64.Build.0 = Debug|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|ARM64.ActiveCfg = Release|ARM64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|ARM64.Build.0 = Release|ARM64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.ActiveCfg = Release|x64
+		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,7 +90,7 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TableCloth.Shared\TableCloth.Shared.projitems*{0f58b6a7-cca8-471a-b767-01c7b8f6e839}*SharedItemsImports = 13
 		TableCloth.Shared\TableCloth.Shared.projitems*{2d6cd03c-52b2-46f2-8ec1-7480e7a92e5e}*SharedItemsImports = 5
-		TableCloth.Shared\TableCloth.Shared.projitems*{369bb263-3c8d-4b56-9301-2c47de7746e8}*SharedItemsImports = 4
+		D:\Projects\TableCloth\src\TableCloth.Shared\TableCloth.Shared.projitems*{369bb263-3c8d-4b56-9301-2c47de7746e8}*SharedItemsImports = 4
 		TableCloth.Shared\TableCloth.Shared.projitems*{f3b53bf9-ae1c-41b5-b2c2-bf24840440dd}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

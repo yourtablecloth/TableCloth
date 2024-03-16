@@ -11,6 +11,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Spork.zip" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
@@ -37,16 +41,16 @@
 		<EmbeddedResource Include="commit.txt">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</EmbeddedResource>
-		<Content Include="Hostess.zip">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 		<Content Include="Images.zip">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Spork.zip">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-	  <Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Hostess\bin\$(PlatformName)\$(ConfigurationName)\Hostess.zip&quot; &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Hostess.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
+	  <Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Spork\bin\$(PlatformName)\$(ConfigurationName)\Spork.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Spork\bin\$(PlatformName)\$(ConfigurationName)\Spork.zip&quot; &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
 	</Target>
 
 </Project>

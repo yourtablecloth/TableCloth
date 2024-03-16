@@ -269,42 +269,6 @@
   <data name="DisclaimerWindow_Title" xml:space="preserve">
     <value>식탁보 사용 시 주의 사항</value>
   </data>
-  <data name="Hostess_AppInstructionMessage" xml:space="preserve">
-    <value>이 프로그램은 요청받은 설치 프로그램들을 샌드 박스 안에 한번에 설치해주는 도구입니다. 설치하기 버튼을 누르면 설치가 시작됩니다.</value>
-  </data>
-  <data name="Hostess_AppTitle" xml:space="preserve">
-    <value>식탁보 자동 설치 프로그램</value>
-  </data>
-  <data name="Hostess_CustomScript_Title" xml:space="preserve">
-    <value>별도 설치 스크립트</value>
-  </data>
-  <data name="Hostess_Download_InProgress" xml:space="preserve">
-    <value>다운로드 중...</value>
-  </data>
-  <data name="Hostess_DryRunInstructionMessage" xml:space="preserve">
-    <value>식탁보 자동 설치 프로그램이 Dry Run 모드로 실행 중입니다.</value>
-  </data>
-  <data name="Hostess_Install_Failed" xml:space="preserve">
-    <value>설치 실패</value>
-  </data>
-  <data name="Hostess_Install_InProgress" xml:space="preserve">
-    <value>설치하는 중...</value>
-  </data>
-  <data name="Hostess_Install_Succeed" xml:space="preserve">
-    <value>설치 완료</value>
-  </data>
-  <data name="Hostess_No_Targets" xml:space="preserve">
-    <value>이용하려는 웹 사이트 아이디가 지정되지 않았습니다. 샌드박스는 지금부터 사용하실 수 있어요.</value>
-  </data>
-  <data name="Hostess_PrecautionWindowText" xml:space="preserve">
-    <value>주의 사항</value>
-  </data>
-  <data name="Hostess_ShowDetailError" xml:space="preserve">
-    <value>자세히 보기</value>
-  </data>
-  <data name="Hostess_Warning_Title" xml:space="preserve">
-    <value>사이트 이용 시 주의 사항</value>
-  </data>
   <data name="InputPasswordWindow_Disclaimer" xml:space="preserve">
     <value>입력하시는 암호는 프로그램 내부에서만 사용되고 폐기됩니다.</value>
   </data>
@@ -430,6 +394,42 @@
   </data>
   <data name="SearchFilter_Watermark" xml:space="preserve">
     <value>검색 키워드 입력 (예: 신한, 보험)</value>
+  </data>
+  <data name="Spork_AppInstructionMessage" xml:space="preserve">
+    <value>이 프로그램은 요청받은 설치 프로그램들을 샌드 박스 안에 한번에 설치해주는 도구입니다. 설치하기 버튼을 누르면 설치가 시작됩니다.</value>
+  </data>
+  <data name="Spork_AppTitle" xml:space="preserve">
+    <value>포카락</value>
+  </data>
+  <data name="Spork_CustomScript_Title" xml:space="preserve">
+    <value>별도 설치 스크립트</value>
+  </data>
+  <data name="Spork_Download_InProgress" xml:space="preserve">
+    <value>다운로드 중...</value>
+  </data>
+  <data name="Spork_DryRunInstructionMessage" xml:space="preserve">
+    <value>포카락이 모의 실행 상태로 실행 중입니다.</value>
+  </data>
+  <data name="Spork_Install_Failed" xml:space="preserve">
+    <value>설치 실패</value>
+  </data>
+  <data name="Spork_Install_InProgress" xml:space="preserve">
+    <value>설치하는 중...</value>
+  </data>
+  <data name="Spork_Install_Succeed" xml:space="preserve">
+    <value>설치 완료</value>
+  </data>
+  <data name="Spork_No_Targets" xml:space="preserve">
+    <value>이용하려는 웹 사이트 아이디가 지정되지 않았습니다. 샌드박스는 지금부터 사용하실 수 있어요.</value>
+  </data>
+  <data name="Spork_PrecautionWindowText" xml:space="preserve">
+    <value>주의 사항</value>
+  </data>
+  <data name="Spork_ShowDetailError" xml:space="preserve">
+    <value>자세히 보기</value>
+  </data>
+  <data name="Spork_Warning_Title" xml:space="preserve">
+    <value>사이트 이용 시 주의 사항</value>
   </data>
   <data name="Status_CheckInternetConnection" xml:space="preserve">
     <value>인터넷 연결 상태 확인 중...</value>

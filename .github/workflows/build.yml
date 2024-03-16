@@ -26,7 +26,7 @@ jobs:
 
     env:
       Solution_Name: src\TableCloth.sln
-      Hostess_Project_Path: src\Hostess\Hostess.csproj
+      Spork_Project_Path: src\Spork\Spork.csproj
       Test_Project_Path: src\TableCloth.Test\TableCloth.Test.csproj
       TableCloth_Project_Path: src\TableCloth\TableCloth.csproj
       Platform: ${{ matrix.platform }}
@@ -63,9 +63,9 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Build Hostess project separately
-    - name: Build Hostess project
-      run: msbuild $env:Hostess_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
+    # Build Spork project separately
+    - name: Build Spork project
+      run: msbuild $env:Spork_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
       env:
         Configuration: ${{ matrix.configuration }}
 

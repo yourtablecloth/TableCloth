@@ -513,114 +513,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This program is a tool that installs the requested installers into the sandbox at once. Press the Install button to start the installation..
-        /// </summary>
-        public static string Hostess_AppInstructionMessage {
-            get {
-                return ResourceManager.GetString("Hostess_AppInstructionMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to TableCloth Auto-Installer.
-        /// </summary>
-        public static string Hostess_AppTitle {
-            get {
-                return ResourceManager.GetString("Hostess_AppTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Separate installation script.
-        /// </summary>
-        public static string Hostess_CustomScript_Title {
-            get {
-                return ResourceManager.GetString("Hostess_CustomScript_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Downloading....
-        /// </summary>
-        public static string Hostess_Download_InProgress {
-            get {
-                return ResourceManager.GetString("Hostess_Download_InProgress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The TableCloth auto-installer is running in dry run mode..
-        /// </summary>
-        public static string Hostess_DryRunInstructionMessage {
-            get {
-                return ResourceManager.GetString("Hostess_DryRunInstructionMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Fail.
-        /// </summary>
-        public static string Hostess_Install_Failed {
-            get {
-                return ResourceManager.GetString("Hostess_Install_Failed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Installing....
-        /// </summary>
-        public static string Hostess_Install_InProgress {
-            get {
-                return ResourceManager.GetString("Hostess_Install_InProgress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Done.
-        /// </summary>
-        public static string Hostess_Install_Succeed {
-            get {
-                return ResourceManager.GetString("Hostess_Install_Succeed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The website ID you want to use is not specified. The sandbox is now available for use..
-        /// </summary>
-        public static string Hostess_No_Targets {
-            get {
-                return ResourceManager.GetString("Hostess_No_Targets", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Caveats.
-        /// </summary>
-        public static string Hostess_PrecautionWindowText {
-            get {
-                return ResourceManager.GetString("Hostess_PrecautionWindowText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Read more.
-        /// </summary>
-        public static string Hostess_ShowDetailError {
-            get {
-                return ResourceManager.GetString("Hostess_ShowDetailError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Precautions for using the site.
-        /// </summary>
-        public static string Hostess_Warning_Title {
-            get {
-                return ResourceManager.GetString("Hostess_Warning_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The password you enter is only used inside the program and is discarded..
         /// </summary>
         public static string InputPasswordWindow_Disclaimer {
@@ -995,6 +887,114 @@ namespace TableCloth.Resources {
         public static string SearchFilter_Watermark {
             get {
                 return ResourceManager.GetString("SearchFilter_Watermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This program is a tool that installs the requested installers into the sandbox at once. Press the Install button to start the installation..
+        /// </summary>
+        public static string Spork_AppInstructionMessage {
+            get {
+                return ResourceManager.GetString("Spork_AppInstructionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spork.
+        /// </summary>
+        public static string Spork_AppTitle {
+            get {
+                return ResourceManager.GetString("Spork_AppTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Separate installation script.
+        /// </summary>
+        public static string Spork_CustomScript_Title {
+            get {
+                return ResourceManager.GetString("Spork_CustomScript_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading....
+        /// </summary>
+        public static string Spork_Download_InProgress {
+            get {
+                return ResourceManager.GetString("Spork_Download_InProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spork is running in dry run mode..
+        /// </summary>
+        public static string Spork_DryRunInstructionMessage {
+            get {
+                return ResourceManager.GetString("Spork_DryRunInstructionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fail.
+        /// </summary>
+        public static string Spork_Install_Failed {
+            get {
+                return ResourceManager.GetString("Spork_Install_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installing....
+        /// </summary>
+        public static string Spork_Install_InProgress {
+            get {
+                return ResourceManager.GetString("Spork_Install_InProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Done.
+        /// </summary>
+        public static string Spork_Install_Succeed {
+            get {
+                return ResourceManager.GetString("Spork_Install_Succeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The website ID you want to use is not specified. The sandbox is now available for use..
+        /// </summary>
+        public static string Spork_No_Targets {
+            get {
+                return ResourceManager.GetString("Spork_No_Targets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Caveats.
+        /// </summary>
+        public static string Spork_PrecautionWindowText {
+            get {
+                return ResourceManager.GetString("Spork_PrecautionWindowText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Read more.
+        /// </summary>
+        public static string Spork_ShowDetailError {
+            get {
+                return ResourceManager.GetString("Spork_ShowDetailError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Precautions for using the site.
+        /// </summary>
+        public static string Spork_Warning_Title {
+            get {
+                return ResourceManager.GetString("Spork_Warning_Title", resourceCulture);
             }
         }
         

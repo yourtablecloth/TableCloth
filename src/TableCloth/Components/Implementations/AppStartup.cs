@@ -93,10 +93,10 @@ public sealed class AppStartup : IAppStartup
     {
         var result = default(ApplicationStartupResultModel);
 
-        if (!File.Exists(_sharedLocations.HostessZipFilePath))
+        if (!File.Exists(_sharedLocations.SporkZipFilePath))
         {
             result = ApplicationStartupResultModel.FromErrorMessage(
-                ErrorStrings.Error_Hostess_Missing, isCritical: true, providedWarnings: warnings);
+                ErrorStrings.Error_Spork_Missing, isCritical: true, providedWarnings: warnings);
             return result;
         }
 
