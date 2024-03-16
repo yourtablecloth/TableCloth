@@ -43,8 +43,8 @@ public sealed class SandboxBuilder(
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
 
-        var hostessZipFilePath = Path.Combine(sharedLocations.ExecutableDirectoryPath, "Hostess.zip");
-        if (!await ExpandAssetZipAsync(hostessZipFilePath, outputDirectory, cancellationToken).ConfigureAwait(false))
+        var sporkZipFilePath = Path.Combine(sharedLocations.ExecutableDirectoryPath, "Spork.zip");
+        if (!await ExpandAssetZipAsync(sporkZipFilePath, outputDirectory, cancellationToken).ConfigureAwait(false))
             return default;
 
         var assetsDirectory = Path.Combine(outputDirectory, "assets");
@@ -153,13 +153,13 @@ del /f /q ""{providedCertFilePath}""
 
         var serviceIdList = (tableClothConfiguration.Services ?? Enumerable.Empty<CatalogInternetService>())
             .Select(x => x.Id).Distinct();
-        var hostessFilePath = Path.Combine(GetAssetsPathForSandbox(), "Hostess.exe");
+        var sporkFilePath = Path.Combine(GetAssetsPathForSandbox(), "Spork.exe");
         var idList = string.Join(" ", serviceIdList);
 
         return $@"@echo off
 pushd ""%~dp0""
 {certFileCopyScript}
-""{hostessFilePath}"" {idList} {string.Join(" ", switches)}
+""{sporkFilePath}"" {idList} {string.Join(" ", switches)}
 :exit
 popd
 @echo on

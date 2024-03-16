@@ -125,7 +125,7 @@
   </data>
   <data name="TableCloth_Switch_DryRun_Help" xml:space="preserve">
     <value>(Features for developers) Skip installing application packages, changing system settings, and just watch the program run.</value>
-    <comment>This item is used by Hostess.</comment>
+    <comment>This item is used by Spork.</comment>
   </data>
   <data name="TableCloth_Switch_EnableCamera_Help" xml:space="preserve">
     <value>Turn on the Use video input feature.</value>

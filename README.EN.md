@@ -42,3 +42,4 @@ Installation and usage guide are introduced in [Tablecloth Introduction Page(KO)
 ## Copyrights
 
 ![Tablecloth icon](https://img.icons8.com/color/96/000000/tablecloth.png) by [Icons8](https://icons8.com)
+![Spork icon](https://www.flaticon.com/free-icon/spork_5625701) by Freepik Flaticon

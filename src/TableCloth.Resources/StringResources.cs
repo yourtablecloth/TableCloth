@@ -116,7 +116,7 @@ namespace TableCloth.Resources
   {SwitchStrings.TableCloth_Switch_Help_Help}
 ";
 
-        public static string TableCloth_Hostess_Switches_Help => $@"ServiceID ServiceID ... {SwitchStrings.TableCloth_Switch_Option_Arg}
+        public static string TableCloth_Spork_Switches_Help => $@"ServiceID ServiceID ... {SwitchStrings.TableCloth_Switch_Option_Arg}
 
 {string.Format(SwitchStrings.TableCloth_Switch_ServiceID_Help, ConstantStrings.CatalogUrl)}
 

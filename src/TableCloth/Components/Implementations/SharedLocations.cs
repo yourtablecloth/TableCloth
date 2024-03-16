@@ -44,8 +44,8 @@ public sealed class SharedLocations : ISharedLocations
     public string ExecutableDirectoryPath
         => Path.GetDirectoryName(ExecutableFilePath).EnsureNotNull("Cannot obtain executable directory path.");
 
-    public string HostessZipFilePath
-        => Path.Combine(ExecutableDirectoryPath, "Hostess.zip");
+    public string SporkZipFilePath
+        => Path.Combine(ExecutableDirectoryPath, "Spork.zip");
 
     public string ImagesZipFilePath
         => Path.Combine(ExecutableDirectoryPath, "Images.zip");

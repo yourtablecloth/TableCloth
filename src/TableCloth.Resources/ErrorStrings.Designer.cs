@@ -250,15 +250,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The sandbox auto-installer file was not found, please reinstall the program..
-        /// </summary>
-        public static string Error_Hostess_Missing {
-            get {
-                return ResourceManager.GetString("Error_Hostess_Missing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The following directories are not found on this computer and will not be mounted when connecting from the sandbox..
         /// </summary>
         public static string Error_HostFolder_Unavailable {
@@ -374,6 +365,15 @@ namespace TableCloth.Resources {
         public static string Error_ShortcutNoSiteSelected {
             get {
                 return ResourceManager.GetString("Error_ShortcutNoSiteSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The spork executable file was not found, please reinstall the program..
+        /// </summary>
+        public static string Error_Spork_Missing {
+            get {
+                return ResourceManager.GetString("Error_Spork_Missing", resourceCulture);
             }
         }
         

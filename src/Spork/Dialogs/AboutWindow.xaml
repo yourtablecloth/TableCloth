@@ -1,0 +1,69 @@
+﻿<Window x:Class="Spork.Dialogs.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Spork.ViewModels"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
+        xmlns:controls="clr-namespace:Spork.Controls"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:AboutWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
+        Style="{DynamicResource MainWindowStyle}"
+        Title="{x:Static res:UIStringResources.AboutWindow_Title}" Width="640" Height="480" MinWidth="320" MinHeight="240">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding AboutWindowLoadedCommand}">
+                <i:InvokeCommandAction.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                </i:InvokeCommandAction.CommandParameter>
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*" />
+            <ColumnDefinition Width="5*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80*" />
+            <RowDefinition Height="35" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="100*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="100*"/>
+            </Grid.RowDefinitions>
+            <Label Content="{x:Static res:UIStringResources.AboutWindow_AppVersionText}" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" />
+            <Label Grid.Column="1" Grid.Row="0" Content="{Binding AppVersion}" />
+            <Label Content="{x:Static res:UIStringResources.AboutWindow_CatalogDateText}" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1" />
+            <Label Grid.Column="1" Grid.Row="1" Content="{Binding CatalogVersion}" />
+            <RichTextBox x:Name="LicenseDetails" Margin="0 10 0 10" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" controls:RichTextBoxHelper.DocumentXaml="{Binding LicenseDescription}" IsDocumentEnabled="True">
+                <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Paragraph}">
+                        <Setter Property="Margin" Value="0"/>
+                    </Style>
+                </RichTextBox.Resources>
+            </RichTextBox>
+        </Grid>
+        <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+            <Button Padding="10 1 10 1" Command="{Binding OpenAppHomepageCommand}" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}">
+                <Button.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                </Button.CommandParameter>
+            </Button>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
+            <Button Padding="10 1 10 1" Command="{Binding AboutWindowCloseCommand}" Content="{x:Static res:UIStringResources.Button_OkayButton}">
+                <Button.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                </Button.CommandParameter>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

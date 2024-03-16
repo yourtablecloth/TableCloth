@@ -1,0 +1,48 @@
+﻿<Window x:Class="Spork.Dialogs.PrecautionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Spork.ViewModels"
+        xmlns:controls="clr-namespace:Spork.Controls"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:PrecautionsWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
+        Style="{DynamicResource MainWindowStyle}"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        Title="{x:Static res:UIStringResources.Spork_PrecautionWindowText}" Width="640" Height="480"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding PrecautionsWindowLoadedCommand}">
+                <i:InvokeCommandAction.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                </i:InvokeCommandAction.CommandParameter>
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="360*"/>
+            <RowDefinition Height="55"/>
+        </Grid.RowDefinitions>
+        <TextBlock Padding="10" TextWrapping="WrapWithOverflow" FontWeight="UltraBold" FontSize="20" Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}" Foreground="{Binding Source={x:Static SystemColors.WindowBrush}}" Grid.ColumnSpan="2" Grid.Row="0" Text="{x:Static res:UIStringResources.Spork_PrecautionWindowText}" />
+        <RichTextBox Grid.Row="1" Margin="10" controls:RichTextBoxHelper.DocumentXaml="{Binding CautionContent}" IsReadOnly="True" IsDocumentEnabled="True">
+            <RichTextBox.Resources>
+                <Style TargetType="{x:Type Paragraph}">
+                    <Setter Property="Margin" Value="0"/>
+                </Style>
+            </RichTextBox.Resources>
+        </RichTextBox>
+        <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="2">
+            <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Button_CloseButton}" Command="{Binding PrecautionsWindowCloseCommand}">
+                <Button.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                </Button.CommandParameter>
+            </Button>
+        </WrapPanel>
+    </Grid>
+</Window>

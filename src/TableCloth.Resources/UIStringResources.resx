@@ -269,42 +269,6 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="DisclaimerWindow_Title" xml:space="preserve">
     <value>Precautions for using TableCloth</value>
   </data>
-  <data name="Hostess_AppInstructionMessage" xml:space="preserve">
-    <value>This program is a tool that installs the requested installers into the sandbox at once. Press the Install button to start the installation.</value>
-  </data>
-  <data name="Hostess_AppTitle" xml:space="preserve">
-    <value>TableCloth Auto-Installer</value>
-  </data>
-  <data name="Hostess_CustomScript_Title" xml:space="preserve">
-    <value>Separate installation script</value>
-  </data>
-  <data name="Hostess_Download_InProgress" xml:space="preserve">
-    <value>Downloading...</value>
-  </data>
-  <data name="Hostess_DryRunInstructionMessage" xml:space="preserve">
-    <value>The TableCloth auto-installer is running in dry run mode.</value>
-  </data>
-  <data name="Hostess_Install_Failed" xml:space="preserve">
-    <value>Fail</value>
-  </data>
-  <data name="Hostess_Install_InProgress" xml:space="preserve">
-    <value>Installing...</value>
-  </data>
-  <data name="Hostess_Install_Succeed" xml:space="preserve">
-    <value>Done</value>
-  </data>
-  <data name="Hostess_No_Targets" xml:space="preserve">
-    <value>The website ID you want to use is not specified. The sandbox is now available for use.</value>
-  </data>
-  <data name="Hostess_PrecautionWindowText" xml:space="preserve">
-    <value>Caveats</value>
-  </data>
-  <data name="Hostess_ShowDetailError" xml:space="preserve">
-    <value>Read more</value>
-  </data>
-  <data name="Hostess_Warning_Title" xml:space="preserve">
-    <value>Precautions for using the site</value>
-  </data>
   <data name="InputPasswordWindow_Disclaimer" xml:space="preserve">
     <value>The password you enter is only used inside the program and is discarded.</value>
   </data>
@@ -430,6 +394,42 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   </data>
   <data name="SearchFilter_Watermark" xml:space="preserve">
     <value>Enter a search keyword (e.g., Shinhan)</value>
+  </data>
+  <data name="Spork_AppInstructionMessage" xml:space="preserve">
+    <value>This program is a tool that installs the requested installers into the sandbox at once. Press the Install button to start the installation.</value>
+  </data>
+  <data name="Spork_AppTitle" xml:space="preserve">
+    <value>Spork</value>
+  </data>
+  <data name="Spork_CustomScript_Title" xml:space="preserve">
+    <value>Separate installation script</value>
+  </data>
+  <data name="Spork_Download_InProgress" xml:space="preserve">
+    <value>Downloading...</value>
+  </data>
+  <data name="Spork_DryRunInstructionMessage" xml:space="preserve">
+    <value>Spork is running in dry run mode.</value>
+  </data>
+  <data name="Spork_Install_Failed" xml:space="preserve">
+    <value>Fail</value>
+  </data>
+  <data name="Spork_Install_InProgress" xml:space="preserve">
+    <value>Installing...</value>
+  </data>
+  <data name="Spork_Install_Succeed" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Spork_No_Targets" xml:space="preserve">
+    <value>The website ID you want to use is not specified. The sandbox is now available for use.</value>
+  </data>
+  <data name="Spork_PrecautionWindowText" xml:space="preserve">
+    <value>Caveats</value>
+  </data>
+  <data name="Spork_ShowDetailError" xml:space="preserve">
+    <value>Read more</value>
+  </data>
+  <data name="Spork_Warning_Title" xml:space="preserve">
+    <value>Precautions for using the site</value>
   </data>
   <data name="Status_CheckInternetConnection" xml:space="preserve">
     <value>Checking internet connection...</value>

@@ -125,7 +125,7 @@
   </data>
   <data name="TableCloth_Switch_DryRun_Help" xml:space="preserve">
     <value>(개발자용 기능) 애플리케이션 패키지 설치, 시스템 설정 변경을 건너뛰고 프로그램의 실행 과정만 살펴봅니다.</value>
-    <comment>This item is used by Hostess.</comment>
+    <comment>This item is used by Spork.</comment>
   </data>
   <data name="TableCloth_Switch_EnableCamera_Help" xml:space="preserve">
     <value>비디오 입력 사용하기 기능을 켭니다.</value>
