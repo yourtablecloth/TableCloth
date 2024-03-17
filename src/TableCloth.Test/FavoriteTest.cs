@@ -42,10 +42,4 @@ public class FavoriteTest
         var savedCountIsOne = defaultSettings.Favorites.Count == 1;
         Assert.True(savedCountIsOne);
     }
-
-    [Fact]
-    public async Task LoadCatalogPageItems()
-    {
-
-    }
 }
