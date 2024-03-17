@@ -138,6 +138,9 @@ public partial class CatalogPage : Page
     {
         if (string.Equals(nameof(CatalogPageViewModel.SearchKeyword), e.PropertyName, StringComparison.Ordinal))
             CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
+
+        if(string.Equals(nameof(CatalogPageViewModel.OnFavoriteOnly),  e.PropertyName, StringComparison.Ordinal))
+            CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
     }
 
     private void UpdateLabelPopup()

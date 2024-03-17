@@ -204,5 +204,34 @@ namespace TableCloth.Models.Catalog
             return result;
         }
 
+        public static bool IsMatchedItem(object item, string filterText, bool isFavoriteOnly)
+        {
+            var actualItem = item as CatalogInternetService;
+
+            if (actualItem == null)
+                return false;
+
+            if (isFavoriteOnly && !actualItem.IsFavorite)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(filterText))
+                return true;
+
+            var result = false;
+            var splittedFilterText = filterText.Split(FilterTextSeparators, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var eachFilterText in splittedFilterText)
+            {
+                result |= actualItem.DisplayName.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1)
+                          || actualItem.CategoryDisplayName.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1)
+                          || actualItem.Url.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1)
+                          || actualItem.Packages.Count.ToString().IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1)
+                          || actualItem.Packages.Any(x => x.Name.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1))
+                          || actualItem.Id.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1)
+                          || actualItem.GetSearchKeywords().Any(x => x.IndexOf(eachFilterText, StringComparison.OrdinalIgnoreCase) > (-1));
+            }
+
+            return result;
+        }
     }
 }

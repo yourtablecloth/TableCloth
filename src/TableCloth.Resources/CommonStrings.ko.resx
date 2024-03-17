@@ -147,6 +147,9 @@
   <data name="DisplayName_Education" xml:space="preserve">
     <value>교육</value>
   </data>
+  <data name="DisplayName_Favorite" xml:space="preserve">
+    <value>즐겨찾기</value>
+  </data>
   <data name="DisplayName_Financing" xml:space="preserve">
     <value>대출/금융</value>
   </data>

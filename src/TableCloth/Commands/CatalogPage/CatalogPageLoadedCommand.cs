@@ -36,7 +36,7 @@ public sealed class CatalogPageLoadedCommand(
         var view = (CollectionView)CollectionViewSource.GetDefaultView(viewModel.Services);
         if (view != null)
         {
-            view.Filter = (item) => CatalogInternetService.IsMatchedItem(item, viewModel.SearchKeyword);
+            view.Filter = (item) => CatalogInternetService.IsMatchedItem(item, viewModel.SearchKeyword, viewModel.OnFavoriteOnly);
 
             if (!view.GroupDescriptions.Contains(GroupDescription))
                 view.GroupDescriptions.Add(GroupDescription);

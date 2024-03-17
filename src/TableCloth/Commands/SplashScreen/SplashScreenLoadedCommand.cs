@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using TableCloth.Components;
 using TableCloth.Events;
 using TableCloth.Resources;
@@ -81,7 +82,7 @@ public sealed class SplashScreenLoadedCommand(
 
             if (viewModel.Warnings.Any())
                 appMessageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, viewModel.Warnings), false);
-
+            
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_InitializingApplication });
 
             result = await appStartup.InitializeAsync(viewModel.Warnings);
@@ -101,11 +102,17 @@ public sealed class SplashScreenLoadedCommand(
 
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_LoadingCatalog });
 
-            await resourceCacheManager.LoadCatalogDocumentAsync();
+            var doc = await resourceCacheManager.LoadCatalogDocumentAsync();
 
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_LoadingImages });
 
             await resourceCacheManager.LoadSiteImagesAsync();
+
+            preferences?.Favorites?.ForEach(serviceId =>
+            {
+                var service = doc.Services.Find(x => x.Id == serviceId);
+                if (service != null) service.IsFavorite = true;
+            });
 
             viewModel.AppStartupSucceed = true;
         }
