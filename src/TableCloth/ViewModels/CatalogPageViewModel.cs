@@ -47,6 +47,7 @@ public class CatalogPageViewModel : ViewModelBase
     private CatalogInternetService? _selectedService;
     private string _searchKeyword = string.Empty;
     private IList<CatalogInternetService> _services = new List<CatalogInternetService>();
+    private bool _onFavoriteOnly = default;
 
     public CatalogPageLoadedCommand CatalogPageLoadedCommand
         => _catalogPageLoadedCommand;
@@ -90,5 +91,9 @@ public class CatalogPageViewModel : ViewModelBase
     public bool HasServices
         => _services.Count > 0;
 
-    
+    public bool OnFavoriteOnly
+    {
+        get => _onFavoriteOnly;
+        set => SetProperty(ref _onFavoriteOnly, value);
+    }
 }

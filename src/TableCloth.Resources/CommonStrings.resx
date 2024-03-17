@@ -147,6 +147,9 @@
   <data name="DisplayName_Education" xml:space="preserve">
     <value>Education</value>
   </data>
+  <data name="DisplayName_Favorite" xml:space="preserve">
+    <value>Favorite</value>
+  </data>
   <data name="DisplayName_Financing" xml:space="preserve">
     <value>Loans/Finance</value>
   </data>
