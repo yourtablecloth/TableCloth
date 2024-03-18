@@ -1,10 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace TableCloth.Resources
 {
     public static partial class StringResources { }
+
+    // GitHub User-Agent 헤더 문자열 생성
+    partial class StringResources
+    {
+        // https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api#user-agent
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent
+        public static string TableCloth_GitHubRestUAString
+        {
+            get
+            {
+                var asm = Assembly.GetExecutingAssembly();
+                var asmProduct = asm.GetCustomAttribute<AssemblyProductAttribute>()?.Product;
+                var asmVersion = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
+                var os = Environment.OSVersion;
+
+                var resourceNames = asm.GetManifestResourceNames();
+                var commitTextFileName = resourceNames.Where(x => x.EndsWith("commit.txt", StringComparison.Ordinal)).FirstOrDefault();
+
+                return $"{asmProduct}/{asmVersion} ({os.Platform}; {os.VersionString}; {RuntimeInformation.ProcessArchitecture}) yourtablecloth";
+            }
+        }
+    }
 
     // 공동 인증서 관련 문자열들
     partial class StringResources
