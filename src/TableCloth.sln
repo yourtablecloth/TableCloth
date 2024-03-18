@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableCloth.Test", "TableClo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloth", "Cloth\Cloth.csproj", "{F3B53BF9-AE1C-41B5-B2C2-BF24840440DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spork", "D:\Projects\TableCloth\src\Spork\Spork.csproj", "{369BB263-3C8D-4B56-9301-2C47DE7746E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spork", "Spork\Spork.csproj", "{369BB263-3C8D-4B56-9301-2C47DE7746E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
