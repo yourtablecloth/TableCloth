@@ -317,6 +317,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="MainWindow_Column_SiteUrl" xml:space="preserve">
     <value>Website Address</value>
   </data>
+  <data name="MainWindow_Favorites" xml:space="preserve">
+    <value>Show Only Favorites</value>
+  </data>
   <data name="MainWindow_JustRunItemText" xml:space="preserve">
     <value>Just run it.</value>
   </data>

@@ -317,6 +317,9 @@
   <data name="MainWindow_Column_SiteUrl" xml:space="preserve">
     <value>웹 사이트 주소</value>
   </data>
+  <data name="MainWindow_Favorites" xml:space="preserve">
+    <value>즐겨찾기만 표시</value>
+  </data>
   <data name="MainWindow_JustRunItemText" xml:space="preserve">
     <value>그냥 실행해주세요.</value>
   </data>
