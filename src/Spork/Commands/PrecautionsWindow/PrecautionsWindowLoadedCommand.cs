@@ -23,7 +23,7 @@ namespace Spork.Commands.PrecautionsWindow
         public override void Execute(PrecautionsWindowViewModel viewModel)
         {
             var catalog = _resourceCacheManager.CatalogDocument;
-            var parsedArgs = _commandLineArguments.Current;
+            var parsedArgs = _commandLineArguments.GetCurrent();
             var targets = parsedArgs.SelectedServices;
 
             var buffer = new StringBuilder();

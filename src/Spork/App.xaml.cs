@@ -31,7 +31,7 @@ namespace Spork
         {
             var appMessageBox = Host.Services.GetRequiredService<IAppMessageBox>();
             var commandLineArguments = Host.Services.GetRequiredService<ICommandLineArguments>();
-            var parsedArgs = commandLineArguments.Current;
+            var parsedArgs = commandLineArguments.GetCurrent();
 
             if (parsedArgs.ShowCommandLineHelp)
             {

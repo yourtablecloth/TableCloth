@@ -23,7 +23,7 @@ namespace Spork.Steps.Implementations
 
         public override Task PlayStepAsync(InstallItemViewModel _, CancellationToken cancellationToken = default)
         {
-            var parsedArgs = _commandLineArguments.Current;
+            var parsedArgs = _commandLineArguments.GetCurrent();
 
             if (parsedArgs.EnableInternetExplorerMode ?? false)
             {

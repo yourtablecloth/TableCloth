@@ -33,7 +33,7 @@ public sealed class SplashScreenLoadedCommand(
         {
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_ParsingCommandLine });
 
-            var parsedArgs = commandLineArguments.Current;
+            var parsedArgs = commandLineArguments.GetCurrent();
 
             if (parsedArgs != null && parsedArgs.ShowCommandLineHelp)
             {

@@ -16,7 +16,7 @@ public sealed class MainWindowV2LoadedCommand(
     {
         applicationService.ApplyCosmeticChangeToMainWindow();
 
-        var parsedArg = commandLineArguments.Current;
+        var parsedArg = commandLineArguments.GetCurrent();
         var services = resourceCacheManager.CatalogDocument.Services;
 
         var commandLineSelectedService = default(CatalogInternetService);

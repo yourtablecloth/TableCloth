@@ -12,8 +12,8 @@ public sealed class ShowDebugInfoCommand(
     {
         appMessageBox.DisplayInfo(StringResources.TableCloth_DebugInformation(
             Process.GetCurrentProcess().ProcessName,
-            string.Join(" ", commandLineArguments.Current.RawArguments),
-            commandLineArguments.Current.ToString())
+            string.Join(" ", commandLineArguments.GetCurrent().RawArguments),
+            commandLineArguments.GetCurrent().ToString())
         );
     }
 }

@@ -37,7 +37,7 @@ namespace Spork.Steps.Implementations
             bool dryRun,
             CancellationToken cancellationToken = default)
         {
-            var parsedArgs = _commandLineArguments.Current;
+            var parsedArgs = _commandLineArguments.GetCurrent();
             var hasAnyFailure = false;
 
             IsRunning = true;

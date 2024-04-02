@@ -25,7 +25,7 @@ namespace Spork.Steps.Implementations
 
         public IEnumerable<StepItemViewModel> ComposeSteps()
         {
-            var parsedArgs = _commandLineArguments.Current;
+            var parsedArgs = _commandLineArguments.GetCurrent();
             var catalog = _resourceCacheManager.CatalogDocument;
             var targets = parsedArgs.SelectedServices;
             var steps = new List<StepItemViewModel>();

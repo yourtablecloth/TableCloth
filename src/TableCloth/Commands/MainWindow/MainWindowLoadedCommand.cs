@@ -76,7 +76,7 @@ public sealed class MainWindowLoadedCommand(
             view.Filter = (item) => CatalogInternetService.IsMatchedItem(item, viewModel.FilterText);
 
         // Command Line Parse
-        var parsedArg = commandLineArguments.Current;
+        var parsedArg = commandLineArguments.GetCurrent();
 
         if (parsedArg != null)
         {

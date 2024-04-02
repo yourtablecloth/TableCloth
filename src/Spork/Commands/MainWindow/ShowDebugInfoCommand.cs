@@ -21,8 +21,8 @@ namespace Spork.Commands.MainWindow
         {
             _appMessageBox.DisplayInfo(StringResources.TableCloth_DebugInformation(
                 Process.GetCurrentProcess().ProcessName,
-                string.Join(" ", _commandLineArguments.Current.RawArguments),
-                _commandLineArguments.Current.ToString())
+                string.Join(" ", _commandLineArguments.GetCurrent().RawArguments),
+                _commandLineArguments.GetCurrent().ToString())
             );
         }
     }

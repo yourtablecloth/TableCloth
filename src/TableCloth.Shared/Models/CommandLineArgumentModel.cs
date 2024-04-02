@@ -150,6 +150,7 @@ namespace TableCloth.Models
 #pragma warning restore IDE0305 // Simplify collection initialization
         }
 
+        /*
         public static CommandLineArgumentModel ParseFromArgv()
             => Parse(Helpers.GetCommandLineArguments());
 
@@ -246,5 +247,6 @@ namespace TableCloth.Models
                 simulateFailure: simulateFailure);
 #pragma warning restore IDE0301 // Simplify collection initialization
         }
+        */
     }
 }
