@@ -117,22 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppCommentTextForWixAndStore" xml:space="preserve">
-    <value>Keep Your Computer Sound &amp; Safe!</value>
-    <comment>(Important) Please do not translate this item without intend.</comment>
-  </data>
-  <data name="AppContactForWixAndStore" xml:space="preserve">
-    <value>https://yourtablecloth.app</value>
-    <comment>(Important) Please do not translate this item without intend.</comment>
-  </data>
-  <data name="AppNameForWixAndStore" xml:space="preserve">
-    <value>TableCloth</value>
-    <comment>(Important) Please do not translate this item without intend.</comment>
-  </data>
-  <data name="AppPublisherForWixAndStore" xml:space="preserve">
-    <value>TableCloth Project</value>
-    <comment>(Important) Please do not translate this item without intend.</comment>
-  </data>
   <data name="CatalogUrl" xml:space="preserve">
     <value>https://yourtablecloth.app/TableClothCatalog/Catalog.xml</value>
     <comment>(Important) Please do not translate this item without intend.</comment>

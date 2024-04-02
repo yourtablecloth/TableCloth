@@ -61,42 +61,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Keep Your Computer Sound &amp; Safe!과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string AppCommentTextForWixAndStore {
-            get {
-                return ResourceManager.GetString("AppCommentTextForWixAndStore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   https://yourtablecloth.app과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string AppContactForWixAndStore {
-            get {
-                return ResourceManager.GetString("AppContactForWixAndStore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   TableCloth과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string AppNameForWixAndStore {
-            get {
-                return ResourceManager.GetString("AppNameForWixAndStore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   TableCloth Project과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string AppPublisherForWixAndStore {
-            get {
-                return ResourceManager.GetString("AppPublisherForWixAndStore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   https://yourtablecloth.app/TableClothCatalog/Catalog.xml과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string CatalogUrl {
