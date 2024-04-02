@@ -16,6 +16,11 @@ internal static class Extensions
             .EnsureNotNull("HTTP client factory cannot be null reference.")
             .CreateClient(nameof(ConstantStrings.UserAgentText));
 
+    public static HttpClient CreateGitHubRestApiClient(this IHttpClientFactory httpClientFactory)
+        => httpClientFactory
+            .EnsureNotNull("HTTP client factory cannot be null reference.")
+            .CreateClient(nameof(StringResources.TableCloth_GitHubRestUAString));
+
     public static void AddCommands(this IServiceCollection services, params Type[] commandTypes)
     {
         foreach (var eachCommandType in commandTypes)

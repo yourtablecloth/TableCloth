@@ -29,7 +29,7 @@ public sealed class ResourceResolver(
     {
         try
         {
-            var httpClient = httpClientFactory.CreateTableClothHttpClient();
+            var httpClient = httpClientFactory.CreateGitHubRestApiClient();
             var uriBuilder = new UriBuilder(new Uri(ConstantStrings.CatalogUrl, UriKind.Absolute));
 
             var queryKeyValues = HttpUtility.ParseQueryString(uriBuilder.Query);
@@ -61,7 +61,7 @@ public sealed class ResourceResolver(
         try
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
-            var httpClient = httpClientFactory.CreateTableClothHttpClient();
+            var httpClient = httpClientFactory.CreateGitHubRestApiClient();
 
             using var licenseDescription = await httpClient.GetStreamAsync(targetUri, cancellationToken).ConfigureAwait(false);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -78,7 +78,7 @@ public sealed class ResourceResolver(
         try
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/releases/latest", UriKind.Absolute);
-            var httpClient = httpClientFactory.CreateTableClothHttpClient();
+            var httpClient = httpClientFactory.CreateGitHubRestApiClient();
 
             using var licenseDescription = await httpClient.GetStreamAsync(targetUri, cancellationToken).ConfigureAwait(false);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -99,7 +99,7 @@ public sealed class ResourceResolver(
         try
         {
             var targetUri = new Uri($"https://api.github.com/repos/{owner}/{repoName}/license", UriKind.Absolute);
-            var httpClient = httpClientFactory.CreateTableClothHttpClient();
+            var httpClient = httpClientFactory.CreateGitHubRestApiClient();
 
             using var licenseDescription = await httpClient.GetStreamAsync(targetUri, cancellationToken).ConfigureAwait(false);
             var jsonDocument = await JsonDocument.ParseAsync(licenseDescription, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -119,7 +119,7 @@ public sealed class ResourceResolver(
         if (!Directory.Exists(imageDirectoryPath))
             Directory.CreateDirectory(imageDirectoryPath);
 
-        var httpClient = httpClientFactory.CreateTableClothHttpClient();
+        var httpClient = httpClientFactory.CreateGitHubRestApiClient();
 
         foreach (var eachSite in services)
         {

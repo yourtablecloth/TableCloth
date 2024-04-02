@@ -26,6 +26,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="commit.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="commit.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Compile Update="AskStrings.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
@@ -102,5 +110,9 @@
 			<Generator>PublicResXFileCodeGenerator</Generator>
 		</EmbeddedResource>
 	</ItemGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	  <Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;" />
+	</Target>
 
 </Project>
