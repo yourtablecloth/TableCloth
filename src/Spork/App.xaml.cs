@@ -35,7 +35,13 @@ namespace Spork
 
             if (parsedArgs.ShowCommandLineHelp)
             {
-                appMessageBox.DisplayInfo(StringResources.TableCloth_Spork_Switches_Help, MessageBoxButton.OK);
+                appMessageBox.DisplayInfo(await commandLineArguments.GetHelpStringAsync(), MessageBoxButton.OK);
+                return;
+            }
+
+            if (parsedArgs.ShowVersionHelp)
+            {
+                appMessageBox.DisplayInfo(await commandLineArguments.GetVersionStringAsync(), MessageBoxButton.OK);
                 return;
             }
 

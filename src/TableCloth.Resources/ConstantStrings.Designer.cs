@@ -268,6 +268,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   --version과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_Version {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string UserAgentText {

@@ -35,11 +35,21 @@ public sealed class SplashScreenLoadedCommand(
 
             var parsedArgs = commandLineArguments.GetCurrent();
 
-            if (parsedArgs != null && parsedArgs.ShowCommandLineHelp)
+            if (parsedArgs != null)
             {
-                viewModel.AppStartupSucceed = false;
-                appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
-                return;
+                if (parsedArgs.ShowCommandLineHelp)
+                {
+                    viewModel.AppStartupSucceed = false;
+                    appMessageBox.DisplayInfo(await commandLineArguments.GetHelpStringAsync(), MessageBoxButton.OK);
+                    return;
+                }
+
+                if (parsedArgs.ShowVersionHelp)
+                {
+                    viewModel.AppStartupSucceed = false;
+                    appMessageBox.DisplayInfo(await commandLineArguments.GetVersionStringAsync(), MessageBoxButton.OK);
+                    return;
+                }
             }
 
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_LoadingPreferences });

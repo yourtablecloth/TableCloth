@@ -82,7 +82,7 @@ public sealed class MainWindowLoadedCommand(
         {
             if (parsedArg.ShowCommandLineHelp)
             {
-                appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                appMessageBox.DisplayInfo(await commandLineArguments.GetHelpStringAsync(), MessageBoxButton.OK);
                 return;
             }
 

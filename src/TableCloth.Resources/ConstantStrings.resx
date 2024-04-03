@@ -209,6 +209,10 @@
     <value>--simulate-failure</value>
     <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
+  <data name="TableCloth_Switch_Version" xml:space="preserve">
+    <value>--version</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
   <data name="UserAgentText" xml:space="preserve">
     <value>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36</value>
     <comment>(Important) Please do not translate this item without intend.</comment>

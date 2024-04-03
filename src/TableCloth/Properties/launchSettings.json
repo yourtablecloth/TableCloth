@@ -1,8 +1,7 @@
 {
   "profiles": {
     "TableCloth": {
-      "commandName": "Project",
-      "commandLineArgs": "--enable-microphone --enable-printer --install-everyones-printer --install-adobe-reader --install-hancom-office-viewer --install-rai-drive --enable-ie-mode WooriBank"
+      "commandName": "Project"
     }
   }
 }

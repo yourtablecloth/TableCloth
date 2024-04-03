@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 
 namespace TableCloth.Models
@@ -40,6 +37,7 @@ namespace TableCloth.Models
             bool? installRaiDrive = default,
             bool? enableInternetExplorerMode = default,
             bool showCommandLineHelp = default,
+            bool showVersionHelp = default,
             bool dryRun = default,
             bool simulateFailure = false)
         {
@@ -56,6 +54,7 @@ namespace TableCloth.Models
             InstallRaiDrive = installRaiDrive;
             EnableInternetExplorerMode = enableInternetExplorerMode;
             ShowCommandLineHelp = showCommandLineHelp;
+            ShowVersionHelp = showVersionHelp;
             DryRun = dryRun;
             SimulateFailure = simulateFailure;
         }
@@ -94,6 +93,8 @@ namespace TableCloth.Models
 
         public bool ShowCommandLineHelp { get; private set; }
 
+        public bool ShowVersionHelp { get; private set; }
+
         public IEnumerable<string> SelectedServices { get; private set; } = new List<string>();
 
         public bool DryRun { get; private set; }
@@ -106,6 +107,8 @@ namespace TableCloth.Models
 
             if (ShowCommandLineHelp)
                 options.Add(ConstantStrings.TableCloth_Switch_Help);
+            else if (ShowVersionHelp)
+                options.Add(ConstantStrings.TableCloth_Switch_Version);
             else
             {
                 if (EnableMicrophone.HasValue && EnableMicrophone.Value)
@@ -140,6 +143,8 @@ namespace TableCloth.Models
 
                 if (DryRun)
                     options.Add(ConstantStrings.TableCloth_Switch_DryRun);
+                if (SimulateFailure)
+                    options.Add(ConstantStrings.TableCloth_Switch_SimulateFailure);
 
                 foreach (var eachSite in SelectedServices)
                     options.Add(eachSite);
@@ -149,104 +154,5 @@ namespace TableCloth.Models
             return string.Join(" ", options.ToArray());
 #pragma warning restore IDE0305 // Simplify collection initialization
         }
-
-        /*
-        public static CommandLineArgumentModel ParseFromArgv()
-            => Parse(Helpers.GetCommandLineArguments());
-
-        public static CommandLineArgumentModel Parse(string[] args)
-        {
-            if (args.Length < 1)
-                return new CommandLineArgumentModel(args);
-
-            var selectedServiceIds = new List<string>();
-            var enableMicrophone = default(bool?);
-            var enableWebCam = default(bool?);
-            var enablePrinters = default(bool?);
-            var certPrivateKeyPath = default(string);
-            var certPublicKeyPath = default(string);
-            var installEveryonesPrinter = default(bool?);
-            var installAdobeReader = default(bool?);
-            var installHancomOfficeViewer = default(bool?);
-            var installRaiDrive = default(bool?);
-            var enableInternetExplorerMode = default(bool?);
-            var showCommandLineHelp = false;
-            var enableCert = false;
-            var dryRun = false;
-            var simulateFailure = false;
-
-            for (var i = 0; i < args.Length; i++)
-            {
-                if (!args[i].StartsWith(ConstantStrings.TableCloth_Switch_Prefix))
-                    selectedServiceIds.Add(args[i]);
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_EnableMicrophone, StringComparison.OrdinalIgnoreCase))
-                    enableMicrophone = true;
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_EnableCamera, StringComparison.OrdinalIgnoreCase))
-                    enableWebCam = true;
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_EnablePrinter, StringComparison.OrdinalIgnoreCase))
-                    enablePrinters = true;
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_CertPrivateKey, StringComparison.OrdinalIgnoreCase))
-                    certPrivateKeyPath = args[Math.Min(args.Length - 1, ++i)];
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_CertPublicKey, StringComparison.OrdinalIgnoreCase))
-                    certPublicKeyPath = args[Math.Min(args.Length - 1, ++i)];
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter, StringComparison.OrdinalIgnoreCase))
-                    installEveryonesPrinter = true;
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_InstallAdobeReader, StringComparison.OrdinalIgnoreCase))
-                    installAdobeReader = true;
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer, StringComparison.OrdinalIgnoreCase))
-                    installHancomOfficeViewer = true;
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_InstallRaiDrive, StringComparison.OrdinalIgnoreCase))
-                    installRaiDrive = true;
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_EnableIEMode, StringComparison.OrdinalIgnoreCase))
-                    enableInternetExplorerMode = true;
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_DryRun, StringComparison.OrdinalIgnoreCase))
-                    dryRun = true;
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_SimulateFailure, StringComparison.OrdinalIgnoreCase))
-                    simulateFailure = true;
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase))
-                    showCommandLineHelp = true;
-                else if (string.Equals(args[i], ConstantStrings.TableCloth_Switch_EnableCert, StringComparison.OrdinalIgnoreCase))
-                    enableCert = true;
-            }
-
-            var certPair = default(X509CertPair);
-
-            if (enableCert)
-            {
-                var certPublicKeyData = default(byte[]);
-                var certPrivateKeyData = default(byte[]);
-
-                if (File.Exists(certPublicKeyPath))
-                    certPublicKeyData = File.ReadAllBytes(certPublicKeyPath);
-
-                if (File.Exists(certPrivateKeyPath))
-                    certPrivateKeyData = File.ReadAllBytes(certPrivateKeyPath);
-
-                if (certPublicKeyData != null && certPrivateKeyData != null)
-                    certPair = new X509CertPair(certPublicKeyData, certPrivateKeyData);
-                else
-                    certPair = null;
-            }
-
-#pragma warning disable IDE0301 // Simplify collection initialization
-            return new CommandLineArgumentModel(
-                rawArguments: args,
-                selectedServices: selectedServiceIds?.ToArray() ?? Array.Empty<string>(),
-                enableMicrophone: enableMicrophone,
-                enableWebCam: enableWebCam,
-                enablePrinters: enablePrinters,
-                certPrivateKeyPath: certPrivateKeyPath,
-                certPublicKeyPath: certPublicKeyPath,
-                installEveryonesPrinter: installEveryonesPrinter,
-                installAdobeReader: installAdobeReader,
-                installHancomOfficeViewer: installHancomOfficeViewer,
-                installRaiDrive: installRaiDrive,
-                enableInternetExplorerMode: enableInternetExplorerMode,
-                showCommandLineHelp: showCommandLineHelp,
-                dryRun: dryRun,
-                simulateFailure: simulateFailure);
-#pragma warning restore IDE0301 // Simplify collection initialization
-        }
-        */
     }
 }
