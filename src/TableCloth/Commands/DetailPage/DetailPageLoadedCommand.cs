@@ -91,24 +91,18 @@ public sealed class DetailPageLoadedCommand(
         var currentConfig = await preferencesManager.LoadPreferencesAsync();
         currentConfig ??= preferencesManager.GetDefaultPreferences();
 
+        var reserveRestart = false;
+
         switch (e.PropertyName)
         {
             case nameof(MainWindowViewModel.EnableLogAutoCollecting):
                 currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
-                if (appRestartManager.AskRestart())
-                {
-                    appRestartManager.ReserveRestart();
-                    await viewModel.RequestCloseAsync(viewModel, e);
-                }
+                reserveRestart = appRestartManager.AskRestart();
                 break;
 
             case nameof(MainWindowViewModel.V2UIOptIn):
                 currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
-                if (appRestartManager.AskRestart())
-                {
-                    appRestartManager.ReserveRestart();
-                    await viewModel.RequestCloseAsync(viewModel, e);
-                }
+                reserveRestart = appRestartManager.AskRestart();
                 break;
 
             case nameof(MainWindowViewModel.EnableMicrophone):
@@ -152,5 +146,11 @@ public sealed class DetailPageLoadedCommand(
         }
 
         await preferencesManager.SavePreferencesAsync(currentConfig);
+
+        if (reserveRestart)
+        {
+            appRestartManager.ReserveRestart();
+            await viewModel.RequestCloseAsync(viewModel, e);
+        }
     }
 }
