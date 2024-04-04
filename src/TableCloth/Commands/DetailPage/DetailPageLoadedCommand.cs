@@ -39,6 +39,7 @@ public sealed class DetailPageLoadedCommand(
         var currentConfig = await preferencesManager.LoadPreferencesAsync();
         currentConfig ??= preferencesManager.GetDefaultPreferences();
 
+        viewModel.IsFavorite = currentConfig.Favorites.Contains(selectedServiceId);
         viewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
         viewModel.V2UIOptIn = currentConfig.V2UIOptIn;
         viewModel.EnableMicrophone = currentConfig.UseAudioRedirection;
@@ -98,6 +99,13 @@ public sealed class DetailPageLoadedCommand(
 
         switch (e.PropertyName)
         {
+            case nameof(DetailPageViewModel.IsFavorite):
+                var serviceId = viewModel.SelectedService?.Id;
+                if (!string.IsNullOrWhiteSpace(serviceId))
+                    if (!currentConfig.Favorites.Contains(serviceId))
+                        currentConfig.Favorites.Add(serviceId);
+                break;
+
             case nameof(DetailPageViewModel.EnableLogAutoCollecting):
                 currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
                 reserveRestart = appRestartManager.AskRestart();

@@ -1,4 +1,5 @@
 ﻿using AsyncAwaitBestPractices;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
@@ -43,6 +44,9 @@ public sealed class CatalogPageLoadedCommand(
 
         viewModel.ShowFavoritesOnly = currentConfig.ShowFavoritesOnly;
         viewModel.Services = services;
+
+        foreach (var eachFavoriteServce in services)
+            eachFavoriteServce.IsFavorite = currentConfig.Favorites.Contains(eachFavoriteServce.Id, StringComparer.OrdinalIgnoreCase);
 
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
 

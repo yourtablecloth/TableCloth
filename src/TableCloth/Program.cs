@@ -196,7 +196,8 @@ internal static class Program
             .AddSingleton<DetailPageLoadedCommand>()
             .AddSingleton<DetailPageSearchTextLostFocusCommand>()
             .AddSingleton<DetailPageGoBackCommand>()
-            .AddSingleton<DetailPageOpenHomepageLinkCommand>();
+            .AddSingleton<DetailPageOpenHomepageLinkCommand>()
+            .AddSingleton<DetailPageItemFavoriteCommand>();
 
         // Splash Screen
         services
