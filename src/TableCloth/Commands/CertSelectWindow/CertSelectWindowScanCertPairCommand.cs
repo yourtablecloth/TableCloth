@@ -11,7 +11,9 @@ public sealed class CertSelectWindowScanCertPairCommand(
     {
         viewModel.SelectedCertPair = default;
         viewModel.CertPairs = certPairScanner.ScanX509Pairs(
-            certPairScanner.GetCandidateDirectories()).ToList();
+            certPairScanner.GetCandidateDirectories())
+            .OrderByDescending(x => x.IsValid)
+            .ToList();
 
         if (viewModel.CertPairs.Count == 1)
             viewModel.SelectedCertPair = viewModel.CertPairs.Single();

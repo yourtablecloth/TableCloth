@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:TableCloth.ViewModels"
-        xmlns:mconfig="clr-namespace:TableCloth.Models.Configuration"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         mc:Ignorable="d"
@@ -41,6 +40,9 @@
             <ListView Grid.Row="1" ItemsSource="{Binding Path='CertPairs'}" SelectedItem="{Binding Path='SelectedCertPair'}" d:ItemsSource="{Binding Path='CertPairsForDesigner'}">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
+                        <Style.Setters>
+                            <Setter Property="Height" Value="32" />
+                        </Style.Setters>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding HasExpired}" Value="True">
                                 <Setter Property="Background">
