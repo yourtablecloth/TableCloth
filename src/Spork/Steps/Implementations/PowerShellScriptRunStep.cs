@@ -21,6 +21,9 @@ namespace Spork.Steps.Implementations
 
         private readonly ISharedLocations _sharedLocations;
 
+        public override Task<bool> EvaluateRequiredStepAsync(PowerShellScriptInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+            => Task.FromResult(true);
+
         public override async Task LoadContentForStepAsync(PowerShellScriptInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
         {
             var downloadFolderPath = _sharedLocations.GetDownloadDirectoryPath();

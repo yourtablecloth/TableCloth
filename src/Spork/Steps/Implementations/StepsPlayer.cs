@@ -58,7 +58,7 @@ namespace Spork.Steps.Implementations
                     eachItem.StatusMessage = UIStringResources.Spork_Install_InProgress;
                     if (parsedArgs.DryRun && eachItem.Step.ShouldSimulateWhenDryRun)
                         await Task.Delay(TimeSpan.FromSeconds(0.5d), cancellationToken).ConfigureAwait(false);
-                    else
+                    else if (await eachItem.Step.EvaluateRequiredStepAsync(eachItem.Argument, cancellationToken).ConfigureAwait(false))
                         await eachItem.Step.PlayStepAsync(eachItem.Argument, cancellationToken).ConfigureAwait(false);
 
                     eachItem.StatusMessage = UIStringResources.Spork_Install_Succeed;

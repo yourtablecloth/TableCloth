@@ -972,6 +972,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Skipped과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Spork_Install_Skipped {
+            get {
+                return ResourceManager.GetString("Spork_Install_Skipped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Done과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Spork_Install_Succeed {

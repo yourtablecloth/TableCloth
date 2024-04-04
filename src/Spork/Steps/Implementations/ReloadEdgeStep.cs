@@ -21,6 +21,9 @@ namespace Spork.Steps.Implementations
 
         private readonly IWebBrowserService _expectedWebBrowserService;
 
+        public override Task<bool> EvaluateRequiredStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+            => Task.FromResult(true);
+
         public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 

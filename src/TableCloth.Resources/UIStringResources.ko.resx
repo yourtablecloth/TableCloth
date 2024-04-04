@@ -422,6 +422,9 @@
   <data name="Spork_Install_InProgress" xml:space="preserve">
     <value>설치하는 중...</value>
   </data>
+  <data name="Spork_Install_Skipped" xml:space="preserve">
+    <value>건너뜀</value>
+  </data>
   <data name="Spork_Install_Succeed" xml:space="preserve">
     <value>설치 완료</value>
   </data>

@@ -19,6 +19,9 @@ namespace Spork.Steps.Implementations
         private readonly ICriticalServiceProtector _criticalServiceProtector;
         private readonly IAppMessageBox _appMessageBox;
 
+        public override Task<bool> EvaluateRequiredStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+            => Task.FromResult(true);
+
         public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 

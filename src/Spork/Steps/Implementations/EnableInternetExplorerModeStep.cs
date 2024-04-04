@@ -18,26 +18,28 @@ namespace Spork.Steps.Implementations
 
         private readonly ICommandLineArguments _commandLineArguments;
 
+        public override Task<bool> EvaluateRequiredStepAsync(InstallItemViewModel _, CancellationToken cancellationToken = default)
+        {
+            var parsedArgs = _commandLineArguments.GetCurrent();
+            var isIeModeRequested = parsedArgs.EnableInternetExplorerMode ?? false;
+            return Task.FromResult(!isIeModeRequested);
+        }
+
         public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 
         public override Task PlayStepAsync(InstallItemViewModel _, CancellationToken cancellationToken = default)
         {
-            var parsedArgs = _commandLineArguments.GetCurrent();
-
-            if (parsedArgs.EnableInternetExplorerMode ?? false)
+            using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
             {
-                using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
-                {
-                    ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
-                    ieModeKey.SetValue("InternetExplorerIntegrationSiteList", ConstantStrings.IEModePolicyXmlUrl, RegistryValueKind.String);
-                }
+                ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
+                ieModeKey.SetValue("InternetExplorerIntegrationSiteList", ConstantStrings.IEModePolicyXmlUrl, RegistryValueKind.String);
+            }
 
-                using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Wow6432Node\Microsoft\Edge", true))
-                {
-                    ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
-                    ieModeKey.SetValue("InternetExplorerIntegrationSiteList", ConstantStrings.IEModePolicyXmlUrl, RegistryValueKind.String);
-                }
+            using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Wow6432Node\Microsoft\Edge", true))
+            {
+                ieModeKey.SetValue("InternetExplorerIntegrationLevel", 1, RegistryValueKind.DWord);
+                ieModeKey.SetValue("InternetExplorerIntegrationSiteList", ConstantStrings.IEModePolicyXmlUrl, RegistryValueKind.String);
             }
 
             return Task.CompletedTask;

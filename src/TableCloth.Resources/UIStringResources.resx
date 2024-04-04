@@ -422,6 +422,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Spork_Install_InProgress" xml:space="preserve">
     <value>Installing...</value>
   </data>
+  <data name="Spork_Install_Skipped" xml:space="preserve">
+    <value>Skipped</value>
+  </data>
   <data name="Spork_Install_Succeed" xml:space="preserve">
     <value>Done</value>
   </data>

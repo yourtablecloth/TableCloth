@@ -17,6 +17,9 @@ namespace Spork.ViewModels
 
             public override bool ShouldSimulateWhenDryRun
                 => false;
+
+            public override Task<bool> EvaluateRequiredStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+                => Task.FromResult(true);
         }
 
         public StepItemViewModelForDesigner()

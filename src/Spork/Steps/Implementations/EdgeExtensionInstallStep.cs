@@ -7,6 +7,9 @@ namespace Spork.Steps.Implementations
 {
     public sealed class EdgeExtensionInstallStep : StepBase<EdgeExtensionInstallItemViewModel>
     {
+        public override Task<bool> EvaluateRequiredStepAsync(EdgeExtensionInstallItemViewModel _, CancellationToken cancellationToken = default)
+            => Task.FromResult(true);
+
         public override Task LoadContentForStepAsync(EdgeExtensionInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 
