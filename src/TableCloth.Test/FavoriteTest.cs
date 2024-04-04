@@ -14,7 +14,7 @@ namespace TableCloth.Test;
 
 public class FavoriteTest
 {
-    // OnFavorite
+    // ShowFavorites
     [Fact]
     public async Task CatalogPageItemFavoriteCommandTest()
     {

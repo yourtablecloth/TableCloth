@@ -98,50 +98,50 @@ public sealed class DetailPageLoadedCommand(
 
         switch (e.PropertyName)
         {
-            case nameof(MainWindowViewModel.EnableLogAutoCollecting):
+            case nameof(DetailPageViewModel.EnableLogAutoCollecting):
                 currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
                 reserveRestart = appRestartManager.AskRestart();
                 break;
 
-            case nameof(MainWindowViewModel.V2UIOptIn):
+            case nameof(DetailPageViewModel.V2UIOptIn):
                 currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
                 appMessageBox.DisplayInfo(UIStringResources.Announcement_V1UIRetirement);
                 reserveRestart = appRestartManager.AskRestart();
                 break;
 
-            case nameof(MainWindowViewModel.EnableMicrophone):
+            case nameof(DetailPageViewModel.EnableMicrophone):
                 currentConfig.UseAudioRedirection = viewModel.EnableMicrophone;
                 break;
 
-            case nameof(MainWindowViewModel.EnableWebCam):
+            case nameof(DetailPageViewModel.EnableWebCam):
                 currentConfig.UseVideoRedirection = viewModel.EnableWebCam;
                 break;
 
-            case nameof(MainWindowViewModel.EnablePrinters):
+            case nameof(DetailPageViewModel.EnablePrinters):
                 currentConfig.UsePrinterRedirection = viewModel.EnablePrinters;
                 break;
 
-            case nameof(MainWindowViewModel.InstallEveryonesPrinter):
+            case nameof(DetailPageViewModel.InstallEveryonesPrinter):
                 currentConfig.InstallEveryonesPrinter = viewModel.InstallEveryonesPrinter;
                 break;
 
-            case nameof(MainWindowViewModel.InstallAdobeReader):
+            case nameof(DetailPageViewModel.InstallAdobeReader):
                 currentConfig.InstallAdobeReader = viewModel.InstallAdobeReader;
                 break;
 
-            case nameof(MainWindowViewModel.InstallHancomOfficeViewer):
+            case nameof(DetailPageViewModel.InstallHancomOfficeViewer):
                 currentConfig.InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer;
                 break;
 
-            case nameof(MainWindowViewModel.InstallRaiDrive):
+            case nameof(DetailPageViewModel.InstallRaiDrive):
                 currentConfig.InstallRaiDrive = viewModel.InstallRaiDrive;
                 break;
 
-            case nameof(MainWindowViewModel.EnableInternetExplorerMode):
+            case nameof(DetailPageViewModel.EnableInternetExplorerMode):
                 currentConfig.EnableInternetExplorerMode = viewModel.EnableInternetExplorerMode;
                 break;
 
-            case nameof(MainWindowViewModel.LastDisclaimerAgreedTime):
+            case nameof(DetailPageViewModel.LastDisclaimerAgreedTime):
                 currentConfig.LastDisclaimerAgreedTime = viewModel.LastDisclaimerAgreedTime;
                 break;
 

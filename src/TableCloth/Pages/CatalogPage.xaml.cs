@@ -139,7 +139,7 @@ public partial class CatalogPage : Page
         if (string.Equals(nameof(CatalogPageViewModel.SearchKeyword), e.PropertyName, StringComparison.Ordinal))
             CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
 
-        if(string.Equals(nameof(CatalogPageViewModel.OnFavoriteOnly),  e.PropertyName, StringComparison.Ordinal))
+        if(string.Equals(nameof(CatalogPageViewModel.ShowFavoritesOnly),  e.PropertyName, StringComparison.Ordinal))
             CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
     }
 
