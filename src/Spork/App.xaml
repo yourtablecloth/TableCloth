@@ -8,6 +8,7 @@
             <converters:BooleanToGridRowHeightConverter x:Key="BooleanToGridRowHeightConverter" />
             <converters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
             <converters:StateToBrushConverter x:Key="stateToBrushConverter" />
+            <converters:WidthConverter x:Key="widthConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary x:Uid="Theme" Source="/PresentationFramework.Aero2, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, ProcessorArchitecture=MSIL;component/themes/aero2.normalcolor.xaml" />
             </ResourceDictionary.MergedDictionaries>

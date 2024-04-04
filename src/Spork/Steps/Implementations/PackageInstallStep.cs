@@ -27,7 +27,7 @@ namespace Spork.Steps.Implementations
         public override Task<bool> EvaluateRequiredStepAsync(PackageInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
             => Task.FromResult(true);
 
-        public override async Task LoadContentForStepAsync(PackageInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override async Task LoadContentForStepAsync(PackageInstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
             var downloadFolderPath = _sharedLocations.GetDownloadDirectoryPath();
             var tempFileName = $"installer_{Guid.NewGuid():n}.exe";
@@ -39,15 +39,22 @@ namespace Spork.Steps.Implementations
                 File.Delete(tempFilePath);
 
             var httpClient = _httpClientFactory.CreateGoogleChromeMimickedHttpClient();
-            using (Stream
-                remoteStream = await httpClient.GetStreamAsync(viewModel.PackageUrl).ConfigureAwait(false),
-                fileStream = File.OpenWrite(tempFilePath))
+
+            // Note: HttpClient.GetStreamAsync로는 Content-Length 헤더 값을 스트림 길이로 받지 못함.
+            using (var response = await httpClient.GetAsync(viewModel.PackageUrl, cancellationToken).ConfigureAwait(false))
             {
-                await remoteStream.CopyToAsync(fileStream, 81920, cancellationToken).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+                var remoteStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                using (var fileStream = File.OpenWrite(tempFilePath))
+                {
+                    await remoteStream.CopyStreamWithProgressAsync(
+                        fileStream, new Progress<double>(progressCallback),
+                        81920, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
 
-        public override async Task PlayStepAsync(PackageInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override async Task PlayStepAsync(PackageInstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
             var tempFilePath = viewModel.DownloadedFilePath;
 

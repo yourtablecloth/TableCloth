@@ -25,10 +25,10 @@ namespace Spork.Steps.Implementations
             return Task.FromResult(!isIeModeRequested);
         }
 
-        public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 
-        public override Task PlayStepAsync(InstallItemViewModel _, CancellationToken cancellationToken = default)
+        public override Task PlayStepAsync(InstallItemViewModel _, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
             using (var ieModeKey = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Policies\Microsoft\Edge", true))
             {

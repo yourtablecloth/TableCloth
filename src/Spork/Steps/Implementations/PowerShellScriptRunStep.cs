@@ -24,7 +24,7 @@ namespace Spork.Steps.Implementations
         public override Task<bool> EvaluateRequiredStepAsync(PowerShellScriptInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
             => Task.FromResult(true);
 
-        public override async Task LoadContentForStepAsync(PowerShellScriptInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override async Task LoadContentForStepAsync(PowerShellScriptInstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
             var downloadFolderPath = _sharedLocations.GetDownloadDirectoryPath();
             var tempFileName = $"bootstrap_{Guid.NewGuid():n}.ps1";
@@ -43,7 +43,7 @@ namespace Spork.Steps.Implementations
             }
         }
 
-        public override async Task PlayStepAsync(PowerShellScriptInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override async Task PlayStepAsync(PowerShellScriptInstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
             var powershellPath = _sharedLocations.GetDefaultPowerShellExecutableFilePath();
 

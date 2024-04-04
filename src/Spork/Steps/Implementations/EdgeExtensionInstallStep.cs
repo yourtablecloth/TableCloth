@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
 
 namespace Spork.Steps.Implementations
 {
@@ -10,10 +11,10 @@ namespace Spork.Steps.Implementations
         public override Task<bool> EvaluateRequiredStepAsync(EdgeExtensionInstallItemViewModel _, CancellationToken cancellationToken = default)
             => Task.FromResult(true);
 
-        public override Task LoadContentForStepAsync(EdgeExtensionInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override Task LoadContentForStepAsync(EdgeExtensionInstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 
-        public override Task PlayStepAsync(EdgeExtensionInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override Task PlayStepAsync(EdgeExtensionInstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
             // https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/developer-guide/alternate-distribution-options
             using (var regKey = Registry.LocalMachine.CreateSubKey(

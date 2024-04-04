@@ -13,15 +13,25 @@ namespace Spork.ViewModels
     public class MainWindowViewModelForDesigner : MainWindowViewModel
     {
         public IList<StepItemViewModelForDesigner> InstallStepsForDesigner
-            => DesignTimeResources.DesignTimePackageInformations.Select((x, i) => new StepItemViewModelForDesigner
+            => DesignTimeResources.DesignTimePackageInformations.Select((x, i) =>
             {
-                Argument = new InstallItemViewModel(),
-                TargetSiteName = "Sample Site",
-                TargetSiteUrl = "https://www.example.com/",
-                PackageName = x.Name,
-                Installed = DesignTimeResources.ConvertToTriState(i),
-                StatusMessage = "Status",
-                ErrorMessage = DesignTimeResources.GenerateRandomErrorMessage(i),
+                var triState = DesignTimeResources.ConvertToTriState(i);
+
+                var model = new StepItemViewModelForDesigner
+                {
+                    Argument = new InstallItemViewModel(),
+                    TargetSiteName = "Sample Site",
+                    TargetSiteUrl = "https://www.example.com/",
+                    PackageName = x.Name,
+                    Installed = triState,
+                    StatusMessage = "Status",
+                    ErrorMessage = DesignTimeResources.GenerateRandomErrorMessage(i),
+                    ProgressRate = triState.HasValue ? 100d : 50d,
+                    ShowProgress = !triState.HasValue,
+                };
+
+                return model;
+
             }).ToList();
     }
 

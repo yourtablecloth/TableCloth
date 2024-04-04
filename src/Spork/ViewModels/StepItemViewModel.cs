@@ -1,4 +1,5 @@
 ﻿using Spork.Steps;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.ViewModels;
@@ -9,10 +10,10 @@ namespace Spork.ViewModels
     {
         internal protected sealed class FakeStepForDesigner : StepBase<InstallItemViewModel>
         {
-            public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+            public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
                 => Task.CompletedTask;
 
-            public override Task PlayStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+            public override Task PlayStepAsync(InstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
                 => Task.CompletedTask;
 
             public override bool ShouldSimulateWhenDryRun
@@ -38,6 +39,8 @@ namespace Spork.ViewModels
         private bool? _installed;
         private string _statusMessage;
         private string _errorMessage;
+        private double _progressRate;
+        private bool _showProgress;
 
         public InstallItemViewModel Argument
         {
@@ -85,6 +88,18 @@ namespace Spork.ViewModels
         {
             get => _errorMessage;
             set => SetProperty(ref _errorMessage, value, new string[] { nameof(ErrorMessage), nameof(StatusMessage), nameof(Installed), nameof(InstallFlags), nameof(ShowErrorMessageLink), });
+        }
+
+        public double ProgressRate
+        {
+            get => _progressRate;
+            set => SetProperty(ref _progressRate, value);
+        }
+
+        public bool ShowProgress
+        {
+            get => _showProgress;
+            set => SetProperty(ref _showProgress, value);
         }
 
         public bool ShowErrorMessageLink

@@ -243,6 +243,7 @@
     <Compile Include="Browsers\Implementations\WebBrowserServiceFactory.cs" />
     <Compile Include="Browsers\Implementations\X86ChromiumEdgeWebBrowserService.cs" />
     <Compile Include="Browsers\IWebBrowserServiceFactory.cs" />
+    <Compile Include="Converters\WidthConverter.cs" />
     <Compile Include="Steps\Implementations\EnableWinSxsForSandboxStep.cs" />
     <Compile Include="Steps\Implementations\StepsFactory.cs" />
     <Compile Include="Browsers\IWebBrowserService.cs" />

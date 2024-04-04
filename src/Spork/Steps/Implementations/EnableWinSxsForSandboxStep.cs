@@ -30,7 +30,7 @@ namespace Spork.Steps.Implementations
         public override Task<bool> EvaluateRequiredStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
             => Task.FromResult(Helpers.SandboxAccountNames.Contains(Environment.UserName, StringComparer.Ordinal));
 
-        public override async Task LoadContentForStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override async Task LoadContentForStepAsync(InstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
             var downloadFolderPath = _sharedLocations.GetDownloadDirectoryPath();
             var enableWinSxSScriptPath = Path.Combine(downloadFolderPath, "enable_winsxs.ps1");
@@ -56,7 +56,7 @@ Restart-Service -ServiceName TrustedInstaller
             }
         }
 
-        public override async Task PlayStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override async Task PlayStepAsync(InstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
             var powershellPath = _sharedLocations.GetDefaultPowerShellExecutableFilePath();
 
