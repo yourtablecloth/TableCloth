@@ -52,6 +52,7 @@ SetupIconFile=TableCloth\Resources\SandboxIcon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+ChangesAssociations=yes
 
 [Languages]
 Name: "korean"; MessagesFile: "Korean.isl"
@@ -66,3 +67,10 @@ Source: "{#MyAppSourceDirectory}\*.*"; DestDir: "{app}"; Flags: ignoreversion re
 [Icons]
 Name: "{autoprograms}\{#MyAppDisplayName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppDisplayName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+
+[Registry]
+Root: HKA; Subkey: "Software\Classes\.tclnk"; ValueType: string; ValueName: ""; ValueData: "TableCloth.tclnk"; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.tclnk\OpenWithProgids"; ValueType: string; ValueName: "TableCloth.tclnk"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\TableCloth.tclnk"; ValueType: string; ValueName: ""; ValueData: "My Program File"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\TableCloth.tclnk\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\TableCloth.exe,0"
+Root: HKA; Subkey: "Software\Classes\TableCloth.tclnk\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\TableCloth.exe"" ""@%1"""
