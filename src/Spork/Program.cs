@@ -141,7 +141,8 @@ namespace Spork
                 .AddKeyedSingleton<IStep, ReloadEdgeStep>(nameof(ReloadEdgeStep))
                 .AddKeyedSingleton<IStep, SetDesktopWallpaperStep>(nameof(SetDesktopWallpaperStep))
                 .AddKeyedSingleton<IStep, TryProtectCriticalServicesStep>(nameof(TryProtectCriticalServicesStep))
-                .AddKeyedSingleton<IStep, VerifyWindowsContainerEnvironmentStep>(nameof(VerifyWindowsContainerEnvironmentStep));
+                .AddKeyedSingleton<IStep, VerifyWindowsContainerEnvironmentStep>(nameof(VerifyWindowsContainerEnvironmentStep))
+                .AddKeyedSingleton<IStep, EnableWinSxsForSandboxStep>(nameof(EnableWinSxsForSandboxStep));
 
             // Shared Commands
             services

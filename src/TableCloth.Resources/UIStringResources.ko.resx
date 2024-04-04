@@ -290,6 +290,9 @@
   <data name="Install_EnableIEMode" xml:space="preserve">
     <value>Internet Explorer 모드 지원 활성화</value>
   </data>
+  <data name="Install_EnableWinSxSForSandbox" xml:space="preserve">
+    <value>WinSxS 활성화</value>
+  </data>
   <data name="Install_PrepareEnvironment" xml:space="preserve">
     <value>환경 준비 중</value>
   </data>

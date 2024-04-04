@@ -98,11 +98,9 @@ namespace TableCloth
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsSandbox.exe");
 
 #pragma warning disable IDE0300 // Simplify collection initialization
-        public static readonly string[] ValidAccountNames = new string[]
+        public static readonly string[] SandboxAccountNames = new string[]
 #pragma warning restore IDE0300 // Simplify collection initialization
         {
-            "ContainerAdministrator",
-            "ContainerUser",
             "WDAGUtilityAccount",
         };
     }

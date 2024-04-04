@@ -290,6 +290,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Install_EnableIEMode" xml:space="preserve">
     <value>Enabling Internet Explorer Mode</value>
   </data>
+  <data name="Install_EnableWinSxSForSandbox" xml:space="preserve">
+    <value>Enabling WinSxS</value>
+  </data>
   <data name="Install_PrepareEnvironment" xml:space="preserve">
     <value>Preparing Environment</value>
   </data>
