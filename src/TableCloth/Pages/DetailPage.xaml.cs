@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using TableCloth.Resources;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Pages;

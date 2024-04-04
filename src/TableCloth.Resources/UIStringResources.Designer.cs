@@ -97,6 +97,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Notice: Starting with the next release, Classic UI will not be supported.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Announcement_V1UIRetirement {
+            get {
+                return ResourceManager.GetString("Announcement_V1UIRetirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Once you&apos;ve finalized your settings, hit the OK button.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Await_ConfigASTx {

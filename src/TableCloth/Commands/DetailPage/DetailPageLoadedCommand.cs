@@ -5,7 +5,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using TableCloth.Components;
+using TableCloth.Resources;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.DetailPage;
@@ -18,6 +20,7 @@ public sealed class DetailPageLoadedCommand(
     IAppUserInterface appUserInterface,
     ISharedLocations sharedLocations,
     IConfigurationComposer configurationComposer,
+    IAppMessageBox appMessageBox,
     ISandboxLauncher sandboxLauncher) : ViewModelCommandBase<DetailPageViewModel>, IAsyncCommand<DetailPageViewModel>
 {
     public override void Execute(DetailPageViewModel viewModel)
@@ -102,6 +105,7 @@ public sealed class DetailPageLoadedCommand(
 
             case nameof(MainWindowViewModel.V2UIOptIn):
                 currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
+                appMessageBox.DisplayInfo(UIStringResources.Announcement_V1UIRetirement);
                 reserveRestart = appRestartManager.AskRestart();
                 break;
 
