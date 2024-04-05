@@ -158,7 +158,7 @@ public sealed class DetailPageLoadedCommand(
                 break;
 
             case nameof(DetailPageViewModel.SelectedCertFile):
-                currentConfig.LastUsedCertHash = viewModel.SelectedCertFile?.CertHash ?? string.Empty;
+                currentConfig.LastUsedCertHash = viewModel.SelectedCertFile?.CertHash;
                 break;
 
             default:
