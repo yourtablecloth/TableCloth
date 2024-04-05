@@ -1,14 +1,13 @@
 ﻿using AsyncAwaitBestPractices;
-using Spork.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Spork.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using TableCloth;
-using TableCloth.Resources;
 
 namespace Spork
 {
@@ -31,11 +30,17 @@ namespace Spork
         {
             var appMessageBox = Host.Services.GetRequiredService<IAppMessageBox>();
             var commandLineArguments = Host.Services.GetRequiredService<ICommandLineArguments>();
-            var parsedArgs = commandLineArguments.Current;
+            var parsedArgs = commandLineArguments.GetCurrent();
 
             if (parsedArgs.ShowCommandLineHelp)
             {
-                appMessageBox.DisplayInfo(StringResources.TableCloth_Spork_Switches_Help, MessageBoxButton.OK);
+                appMessageBox.DisplayInfo(await commandLineArguments.GetHelpStringAsync(), MessageBoxButton.OK);
+                return;
+            }
+
+            if (parsedArgs.ShowVersionHelp)
+            {
+                appMessageBox.DisplayInfo(await commandLineArguments.GetVersionStringAsync(), MessageBoxButton.OK);
                 return;
             }
 

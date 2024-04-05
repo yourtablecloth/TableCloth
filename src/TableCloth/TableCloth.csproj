@@ -13,7 +13,7 @@
 		<Product>TableCloth</Product>
 		<ProductName>TableCloth</ProductName>
 		<Copyright>(c) rkttu.com, 2021</Copyright>
-		<Version>1.12.3.0</Version>
+		<Version>1.13.0.0</Version>
 		<PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
@@ -57,6 +57,7 @@
 		<PackageReference Include="Sentry.Serilog" Version="3.41.4" />
 		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.Drawing.Common" Version="8.0.1" />
 		<PackageReference Include="System.Management" Version="8.0.0" />
 		<PackageReference Include="XamlRadialProgressBar" Version="1.0.3" />

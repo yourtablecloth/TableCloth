@@ -43,7 +43,7 @@ namespace Spork.Commands.MainWindow
         {
             _visualThemeManager.ApplyAutoThemeChange(_application.MainWindow);
 
-            var parsedArgs = _commandLineArguments.Current;
+            var parsedArgs = _commandLineArguments.GetCurrent();
             var catalog = _resourceCacheManager.CatalogDocument;
             var targets = parsedArgs.SelectedServices;
 

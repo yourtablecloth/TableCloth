@@ -19,10 +19,13 @@ namespace Spork.Steps.Implementations
         private readonly ICriticalServiceProtector _criticalServiceProtector;
         private readonly IAppMessageBox _appMessageBox;
 
-        public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override Task<bool> EvaluateRequiredStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+            => Task.FromResult(true);
+
+        public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 
-        public override Task PlayStepAsync(InstallItemViewModel _, CancellationToken cancellationToken = default)
+        public override Task PlayStepAsync(InstallItemViewModel _, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
             try { _criticalServiceProtector.PreventServiceProcessTermination("TermService"); }
             catch (AggregateException aex) { _appMessageBox.DisplayError(aex.InnerException, false); }

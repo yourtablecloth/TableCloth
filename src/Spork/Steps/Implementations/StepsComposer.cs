@@ -25,7 +25,7 @@ namespace Spork.Steps.Implementations
 
         public IEnumerable<StepItemViewModel> ComposeSteps()
         {
-            var parsedArgs = _commandLineArguments.Current;
+            var parsedArgs = _commandLineArguments.GetCurrent();
             var catalog = _resourceCacheManager.CatalogDocument;
             var targets = parsedArgs.SelectedServices;
             var steps = new List<StepItemViewModel>();
@@ -59,6 +59,13 @@ namespace Spork.Steps.Implementations
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_SetDesktopWallpaper,
+                },
+                new StepItemViewModel
+                {
+                    Step = _stepsFactory.GetStepByName(nameof(EnableWinSxsForSandboxStep)),
+                    Argument = new InstallItemViewModel(),
+                    TargetSiteName = UIStringResources.Option_Prerequisites,
+                    PackageName = UIStringResources.Install_EnableWinSxSForSandbox,
                 },
             });
 

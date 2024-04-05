@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TableCloth.Components;
+using TableCloth.Models.Configuration;
+using TableCloth.Resources;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.DetailPage;
@@ -18,6 +20,7 @@ public sealed class DetailPageLoadedCommand(
     IAppUserInterface appUserInterface,
     ISharedLocations sharedLocations,
     IConfigurationComposer configurationComposer,
+    IAppMessageBox appMessageBox,
     ISandboxLauncher sandboxLauncher) : ViewModelCommandBase<DetailPageViewModel>, IAsyncCommand<DetailPageViewModel>
 {
     public override void Execute(DetailPageViewModel viewModel)
@@ -36,6 +39,7 @@ public sealed class DetailPageLoadedCommand(
         var currentConfig = await preferencesManager.LoadPreferencesAsync();
         currentConfig ??= preferencesManager.GetDefaultPreferences();
 
+        viewModel.IsFavorite = currentConfig.Favorites.Contains(selectedServiceId);
         viewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
         viewModel.V2UIOptIn = currentConfig.V2UIOptIn;
         viewModel.EnableMicrophone = currentConfig.UseAudioRedirection;
@@ -53,13 +57,17 @@ public sealed class DetailPageLoadedCommand(
         if (File.Exists(targetFilePath))
             viewModel.ServiceLogo = resourceCacheManager.GetImage(selectedServiceId);
 
-        var foundCandidate = certPairScanner.ScanX509Pairs(certPairScanner.GetCandidateDirectories()).FirstOrDefault();
+        var allCerts = certPairScanner.ScanX509Pairs(certPairScanner.GetCandidateDirectories());
+        var lastUsedCertHash = currentConfig.LastUsedCertHash;
+        var selectedCert = default(X509CertPair?);
 
-        if (foundCandidate != null)
-        {
-            viewModel.SelectedCertFile = foundCandidate;
-            viewModel.MapNpkiCert = true;
-        }
+        if (!string.IsNullOrWhiteSpace(lastUsedCertHash))
+            selectedCert = allCerts.FirstOrDefault(x => string.Equals(lastUsedCertHash, x.CertHash, StringComparison.Ordinal));
+        else if (allCerts.Count() < 2)
+            selectedCert = allCerts.Where(x => x.IsValid).FirstOrDefault();
+
+        viewModel.MapNpkiCert = (selectedCert != null);
+        viewModel.SelectedCertFile = selectedCert;
 
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
 
@@ -91,60 +99,66 @@ public sealed class DetailPageLoadedCommand(
         var currentConfig = await preferencesManager.LoadPreferencesAsync();
         currentConfig ??= preferencesManager.GetDefaultPreferences();
 
+        var reserveRestart = false;
+
         switch (e.PropertyName)
         {
-            case nameof(MainWindowViewModel.EnableLogAutoCollecting):
+            case nameof(DetailPageViewModel.IsFavorite):
+                var serviceId = viewModel.SelectedService?.Id;
+                if (!string.IsNullOrWhiteSpace(serviceId))
+                    if (!currentConfig.Favorites.Contains(serviceId))
+                        currentConfig.Favorites.Add(serviceId);
+                break;
+
+            case nameof(DetailPageViewModel.EnableLogAutoCollecting):
                 currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
-                if (appRestartManager.AskRestart())
-                {
-                    appRestartManager.ReserveRestart();
-                    await viewModel.RequestCloseAsync(viewModel, e);
-                }
+                reserveRestart = appRestartManager.AskRestart();
                 break;
 
-            case nameof(MainWindowViewModel.V2UIOptIn):
+            case nameof(DetailPageViewModel.V2UIOptIn):
                 currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
-                if (appRestartManager.AskRestart())
-                {
-                    appRestartManager.ReserveRestart();
-                    await viewModel.RequestCloseAsync(viewModel, e);
-                }
+                appMessageBox.DisplayInfo(UIStringResources.Announcement_V1UIRetirement);
+                reserveRestart = appRestartManager.AskRestart();
                 break;
 
-            case nameof(MainWindowViewModel.EnableMicrophone):
+            case nameof(DetailPageViewModel.EnableMicrophone):
                 currentConfig.UseAudioRedirection = viewModel.EnableMicrophone;
                 break;
 
-            case nameof(MainWindowViewModel.EnableWebCam):
+            case nameof(DetailPageViewModel.EnableWebCam):
                 currentConfig.UseVideoRedirection = viewModel.EnableWebCam;
                 break;
 
-            case nameof(MainWindowViewModel.EnablePrinters):
+            case nameof(DetailPageViewModel.EnablePrinters):
                 currentConfig.UsePrinterRedirection = viewModel.EnablePrinters;
                 break;
 
-            case nameof(MainWindowViewModel.InstallEveryonesPrinter):
+            case nameof(DetailPageViewModel.InstallEveryonesPrinter):
                 currentConfig.InstallEveryonesPrinter = viewModel.InstallEveryonesPrinter;
                 break;
 
-            case nameof(MainWindowViewModel.InstallAdobeReader):
+            case nameof(DetailPageViewModel.InstallAdobeReader):
                 currentConfig.InstallAdobeReader = viewModel.InstallAdobeReader;
                 break;
 
-            case nameof(MainWindowViewModel.InstallHancomOfficeViewer):
+            case nameof(DetailPageViewModel.InstallHancomOfficeViewer):
                 currentConfig.InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer;
                 break;
 
-            case nameof(MainWindowViewModel.InstallRaiDrive):
+            case nameof(DetailPageViewModel.InstallRaiDrive):
                 currentConfig.InstallRaiDrive = viewModel.InstallRaiDrive;
                 break;
 
-            case nameof(MainWindowViewModel.EnableInternetExplorerMode):
+            case nameof(DetailPageViewModel.EnableInternetExplorerMode):
                 currentConfig.EnableInternetExplorerMode = viewModel.EnableInternetExplorerMode;
                 break;
 
-            case nameof(MainWindowViewModel.LastDisclaimerAgreedTime):
+            case nameof(DetailPageViewModel.LastDisclaimerAgreedTime):
                 currentConfig.LastDisclaimerAgreedTime = viewModel.LastDisclaimerAgreedTime;
+                break;
+
+            case nameof(DetailPageViewModel.SelectedCertFile):
+                currentConfig.LastUsedCertHash = viewModel.SelectedCertFile?.CertHash;
                 break;
 
             default:
@@ -152,5 +166,11 @@ public sealed class DetailPageLoadedCommand(
         }
 
         await preferencesManager.SavePreferencesAsync(currentConfig);
+
+        if (reserveRestart)
+        {
+            appRestartManager.ReserveRestart();
+            await viewModel.RequestCloseAsync(viewModel, e);
+        }
     }
 }

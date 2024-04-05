@@ -41,19 +41,22 @@
             </Label.Content>
         </Label>
         <TextBlock HorizontalAlignment="Stretch" Padding="10" TextWrapping="WrapWithOverflow" Grid.ColumnSpan="2" Grid.Row="1" Text="{x:Static res:UIStringResources.Spork_AppInstructionMessage}" />
-        <ListBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding InstallSteps}" d:ItemsSource="{Binding InstallStepsForDesigner}">
+        <ListBox x:Name="listView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding InstallSteps}" d:ItemsSource="{Binding InstallStepsForDesigner}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path='InstallFlags'}" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" Margin="0 0 5 0" FontWeight="Bold" />
-                        <TextBlock Text="{Binding Path='TargetSiteName'}" Margin="0 0 5 0" FontWeight="Bold" />
-                        <TextBlock Text="{Binding Path='PackageName'}" Margin="0 0 5 0" />
-                        <TextBlock Text="{Binding Path='StatusMessage'}" Margin="0 0 5 0" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" />
-                        <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path='ViewModel.ShowErrorMessageCommand'}"
-                                CommandParameter="{Binding Path='ErrorMessage'}"
-                                Content="{x:Static res:UIStringResources.Spork_ShowDetailError}"
-                                Visibility="{Binding Path='ShowErrorMessageLink', Converter={StaticResource booleanToVisibilityConverter}}"
-                                Margin="0 0 5 0" BorderThickness="0" Background="Transparent" Cursor="Hand" />
+                    <StackPanel Orientation="Vertical" Width="{Binding ActualWidth, ElementName=listView, Converter={StaticResource widthConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="Flag" Text="{Binding Path='InstallFlags'}" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" Margin="0 0 5 0" FontWeight="Bold" />
+                            <TextBlock Text="{Binding Path='TargetSiteName'}" Margin="0 0 5 0" FontWeight="Bold" />
+                            <TextBlock Text="{Binding Path='PackageName'}" Margin="0 0 5 0" />
+                            <TextBlock Text="{Binding Path='StatusMessage'}" Margin="0 0 5 0" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" />
+                            <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path='ViewModel.ShowErrorMessageCommand'}"
+                                    CommandParameter="{Binding Path='ErrorMessage'}"
+                                    Content="{x:Static res:UIStringResources.Spork_ShowDetailError}"
+                                    Visibility="{Binding Path='ShowErrorMessageLink', Converter={StaticResource booleanToVisibilityConverter}}"
+                                    Margin="0 0 5 0" BorderThickness="0" Background="Transparent" Cursor="Hand" />
+                        </StackPanel>
+                        <ProgressBar Height="10" Margin="5 5 5 5" Value="{Binding ProgressRate}" Visibility="{Binding Path='ShowProgress', Converter={StaticResource booleanToVisibilityConverter}}" />
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

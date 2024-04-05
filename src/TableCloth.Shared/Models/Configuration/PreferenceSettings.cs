@@ -64,8 +64,22 @@ namespace TableCloth.Models.Configuration
         public bool V2UIOptIn { get; set; } = true;
 
         /// <summary>
+        /// 즐겨찾기만 표시할지 여부를 기록합니다.
+        /// </summary>
+        public bool ShowFavoritesOnly { get; set; } = false;
+
+        /// <summary>
         /// 즐겨찾기로 등록된 서비스 아이디를 기록합니다.
         /// </summary>
         public List<string> Favorites { get; set; } = new List<string>();
+
+        /// <summary>
+        /// 마지막으로 사용한 공동 인증서 해시 값을 기록합니다.
+        /// </summary>
+        public string
+#if !NETFX
+            ?
+#endif
+            LastUsedCertHash { get; set; } = null;
     }
 }

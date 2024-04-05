@@ -187,6 +187,9 @@
     <Reference Include="System.Collections.Immutable, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.8.0.0\lib\net462\System.Collections.Immutable.dll</HintPath>
     </Reference>
+    <Reference Include="System.CommandLine, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.CommandLine.2.0.0-beta4.22272.1\lib\netstandard2.0\System.CommandLine.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.8.0.0\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
@@ -240,6 +243,8 @@
     <Compile Include="Browsers\Implementations\WebBrowserServiceFactory.cs" />
     <Compile Include="Browsers\Implementations\X86ChromiumEdgeWebBrowserService.cs" />
     <Compile Include="Browsers\IWebBrowserServiceFactory.cs" />
+    <Compile Include="Converters\WidthConverter.cs" />
+    <Compile Include="Steps\Implementations\EnableWinSxsForSandboxStep.cs" />
     <Compile Include="Steps\Implementations\StepsFactory.cs" />
     <Compile Include="Browsers\IWebBrowserService.cs" />
     <Compile Include="Steps\IStepsFactory.cs" />

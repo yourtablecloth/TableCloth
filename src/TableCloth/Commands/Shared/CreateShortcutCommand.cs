@@ -27,5 +27,6 @@ public sealed class CreateShortcutCommand(
             appMessageBox.DisplayInfo(InfoStrings.Info_WillCreateSingleSiteShortcut);
 
         await shortcutCrerator.CreateShortcutAsync(viewModel);
+        //await shortcutCrerator.CreateResponseFileAsync(viewModel);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using TableCloth.Resources;
 
@@ -27,6 +28,9 @@ namespace TableCloth.Models.Configuration
 
     public class X509CertPair
     {
+        public static IEnumerable<X509CertPair> SortX509CertPairs(IEnumerable<X509CertPair> certPairs)
+            => certPairs.OrderByDescending(x => x.IsValid).ThenBy(x => x.NotAfter).ThenBy(x => x.NotBefore);
+
 #pragma warning disable IDE0300 // Simplify collection initialization
         private static readonly char[] Separators = new char[] { ',', };
 #pragma warning restore IDE0300 // Simplify collection initialization
@@ -99,6 +103,12 @@ namespace TableCloth.Models.Configuration
 
                 NotAfter = cert.NotAfter;
                 NotBefore = cert.NotBefore;
+
+                using (var sha256 = SHA256.Create())
+                {
+                    var hashBytes = sha256.ComputeHash(cert.RawData);
+                    CertHash = BitConverter.ToString(hashBytes).Replace("-", string.Empty);
+                }
             }
 #pragma warning restore IDE0063 // Use simple 'using' statement
         }
@@ -136,9 +146,13 @@ namespace TableCloth.Models.Configuration
 
         public DateTime NotAfter { get; protected set; }
         public DateTime NotBefore { get; protected set; }
+        public string CertHash { get; protected set; }
 
         public bool IsValid
             => NotBefore <= DateTime.Now && DateTime.Now <= NotAfter;
+
+        public bool IsBefore
+            => DateTime.Now < NotBefore;
 
         public bool HasExpired
             => DateTime.Now > NotAfter;

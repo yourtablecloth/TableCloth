@@ -1,11 +1,9 @@
-﻿using Spork.Browsers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spork.Browsers;
 using Spork.Browsers.Implementations;
-using Spork.Components;
 using Spork.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,10 +19,13 @@ namespace Spork.Steps.Implementations
 
         private readonly IWebBrowserService _expectedWebBrowserService;
 
-        public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override Task<bool> EvaluateRequiredStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+            => Task.FromResult(true);
+
+        public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 
-        public override async Task PlayStepAsync(InstallItemViewModel _, CancellationToken cancellationToken = default)
+        public override async Task PlayStepAsync(InstallItemViewModel _, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
             if (!_expectedWebBrowserService.TryGetBrowserExecutablePath(out var browserExecutablePath))
                 return;

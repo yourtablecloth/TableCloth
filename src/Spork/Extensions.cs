@@ -1,8 +1,11 @@
-﻿using Spork.Browsers;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spork.Browsers;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using TableCloth;
 using TableCloth.Resources;
@@ -62,6 +65,40 @@ namespace Spork
                 TableClothAppException.Throw("Already service provider has been initialized.");
 
             application.Properties[key] = serviceProvider;
+        }
+
+        public static async Task CopyStreamWithProgressAsync(
+            this Stream source,
+            Stream destination,
+            IProgress<double> progress = default,
+            int bufferSize = 81920,
+            CancellationToken cancellationToken = default)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            if (destination == null)
+                throw new ArgumentNullException(nameof(destination));
+
+            if (!source.CanRead)
+                throw new ArgumentException("Source stream must be readable.", nameof(source));
+
+            if (!destination.CanWrite)
+                throw new ArgumentException("Destination stream must be writable.", nameof(destination));
+
+            var buffer = new byte[bufferSize];
+            var totalBytesRead = 0L;
+            var totalLength = source.CanSeek ? source.Length : default(long?);
+
+            int bytesRead;
+            while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false)) > 0)
+            {
+                await destination.WriteAsync(buffer, 0, bytesRead);
+                totalBytesRead += bytesRead;
+
+                if (totalLength.HasValue)
+                    progress?.Report((double)totalBytesRead / totalLength.Value);
+            }
         }
     }
 }

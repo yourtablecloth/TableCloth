@@ -10,7 +10,7 @@
 		<Product>TableCloth</Product>
 		<ProductName>TableCloth</ProductName>
 		<Copyright>(c) rkttu.com, 2021</Copyright>
-		<Version>1.12.3.0</Version>
+		<Version>1.13.0.0</Version>
 		<PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
@@ -24,6 +24,14 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DefineConstants>$(DefineConstants);NETFX</DefineConstants>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="commit.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="commit.txt" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Compile Update="AskStrings.Designer.cs">
@@ -102,5 +110,9 @@
 			<Generator>PublicResXFileCodeGenerator</Generator>
 		</EmbeddedResource>
 	</ItemGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	  <Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;" />
+	</Target>
 
 </Project>

@@ -1,8 +1,13 @@
-﻿using TableCloth.Models;
+﻿using System.Threading.Tasks;
+using TableCloth.Models;
 
 namespace TableCloth.Components;
 
 public interface ICommandLineArguments
 {
-    CommandLineArgumentModel Current { get; }
+    Task<string> GetHelpStringAsync();
+
+    Task<string> GetVersionStringAsync();
+
+    CommandLineArgumentModel GetCurrent();
 }

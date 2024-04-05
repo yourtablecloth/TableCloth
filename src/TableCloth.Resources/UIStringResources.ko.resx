@@ -129,6 +129,9 @@
   <data name="AboutWindow_Title" xml:space="preserve">
     <value>프로그램 정보</value>
   </data>
+  <data name="Announcement_V1UIRetirement" xml:space="preserve">
+    <value>알립니다: 다음 출시 버전부터는 클래식 UI를 지원하지 않을 예정입니다.</value>
+  </data>
   <data name="Await_ConfigASTx" xml:space="preserve">
     <value>설정을 마무리하셨다면 확인 버튼을 눌러주세요.</value>
   </data>
@@ -287,6 +290,9 @@
   <data name="Install_EnableIEMode" xml:space="preserve">
     <value>Internet Explorer 모드 지원 활성화</value>
   </data>
+  <data name="Install_EnableWinSxSForSandbox" xml:space="preserve">
+    <value>WinSxS 활성화</value>
+  </data>
   <data name="Install_PrepareEnvironment" xml:space="preserve">
     <value>환경 준비 중</value>
   </data>
@@ -418,6 +424,9 @@
   </data>
   <data name="Spork_Install_InProgress" xml:space="preserve">
     <value>설치하는 중...</value>
+  </data>
+  <data name="Spork_Install_Skipped" xml:space="preserve">
+    <value>건너뜀</value>
   </data>
   <data name="Spork_Install_Succeed" xml:space="preserve">
     <value>설치 완료</value>

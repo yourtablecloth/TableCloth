@@ -61,7 +61,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   https://get.adobe.com/kr/reader/과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   https://get.adobe.com/reader/?region=US과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string AdobeReaderUrl {
             get {
@@ -241,7 +241,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   https://www.naver.com/과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   https://www.google.com/과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string UnboundHomeUrl {
             get {

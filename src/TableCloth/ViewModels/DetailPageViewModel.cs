@@ -27,6 +27,7 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
         DetailPageSearchTextLostFocusCommand detailPageSearchTextLostFocusCommand,
         DetailPageGoBackCommand detailPageGoBackCommand,
         DetailPageOpenHomepageLinkCommand detailPageOpenHomepageLinkCommand,
+        DetailPageItemFavoriteCommand detailPageItemFavoriteCommand,
         LaunchSandboxCommand launchSandboxCommand,
         CreateShortcutCommand createShortcutCommand,
         CopyCommandLineCommand copyCommandLineCommand,
@@ -37,6 +38,7 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
         _detailPageSearchTextLostFocusCommand = detailPageSearchTextLostFocusCommand;
         _detailPageGoBackCommand = detailPageGoBackCommand;
         _detailPageOpenHomepageLinkCommand = detailPageOpenHomepageLinkCommand;
+        _detailPageItemFavoriteCommand = detailPageItemFavoriteCommand;
         _launchSandboxCommand = launchSandboxCommand;
         _createShortcutCommand = createShortcutCommand;
         _copyCommandLineCommand = copyCommandLineCommand;
@@ -53,6 +55,7 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     private readonly DetailPageSearchTextLostFocusCommand _detailPageSearchTextLostFocusCommand;
     private readonly DetailPageGoBackCommand _detailPageGoBackCommand;
     private readonly DetailPageOpenHomepageLinkCommand _detailPageOpenHomepageLinkCommand;
+    private readonly DetailPageItemFavoriteCommand _detailPageItemFavoriteCommand;
     private readonly LaunchSandboxCommand _launchSandboxCommand;
     private readonly CreateShortcutCommand _createShortcutCommand;
     private readonly CopyCommandLineCommand _copyCommandLineCommand;
@@ -70,6 +73,9 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
 
     public DetailPageOpenHomepageLinkCommand DetailPageOpenHomepageLinkCommand
         => _detailPageOpenHomepageLinkCommand;
+
+    public DetailPageItemFavoriteCommand DetailPageItemFavoriteCommand
+        => _detailPageItemFavoriteCommand;
 
     public LaunchSandboxCommand LaunchSandboxCommand
         => _launchSandboxCommand;
@@ -127,6 +133,7 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
         => !string.IsNullOrWhiteSpace((CompatibilityNotes ?? string.Empty).Trim());
 
     private CommandLineArgumentModel? _commandLineArgumentModel;
+    private bool _isFavorite;
     private ImageSource? _serviceLogo;
     private bool _mapNpkiCert;
     private bool _enableLogAutoCollecting;
@@ -147,6 +154,12 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     {
         get => _commandLineArgumentModel;
         set => SetProperty(ref _commandLineArgumentModel, value);
+    }
+
+    public bool IsFavorite
+    {
+        get => _isFavorite;
+        set => SetProperty(ref _isFavorite, value);
     }
 
     public ImageSource? ServiceLogo

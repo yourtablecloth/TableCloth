@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using TableCloth.Components;
 using TableCloth.Events;
 using TableCloth.Resources;
@@ -33,13 +32,23 @@ public sealed class SplashScreenLoadedCommand(
         {
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_ParsingCommandLine });
 
-            var parsedArgs = commandLineArguments.Current;
+            var parsedArgs = commandLineArguments.GetCurrent();
 
-            if (parsedArgs != null && parsedArgs.ShowCommandLineHelp)
+            if (parsedArgs != null)
             {
-                viewModel.AppStartupSucceed = false;
-                appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
-                return;
+                if (parsedArgs.ShowCommandLineHelp)
+                {
+                    viewModel.AppStartupSucceed = false;
+                    appMessageBox.DisplayInfo(await commandLineArguments.GetHelpStringAsync(), MessageBoxButton.OK);
+                    return;
+                }
+
+                if (parsedArgs.ShowVersionHelp)
+                {
+                    viewModel.AppStartupSucceed = false;
+                    appMessageBox.DisplayInfo(await commandLineArguments.GetVersionStringAsync(), MessageBoxButton.OK);
+                    return;
+                }
             }
 
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_LoadingPreferences });
@@ -82,7 +91,7 @@ public sealed class SplashScreenLoadedCommand(
 
             if (viewModel.Warnings.Any())
                 appMessageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, viewModel.Warnings), false);
-            
+
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_InitializingApplication });
 
             result = await appStartup.InitializeAsync(viewModel.Warnings);

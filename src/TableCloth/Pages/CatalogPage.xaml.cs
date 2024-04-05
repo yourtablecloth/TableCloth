@@ -139,7 +139,7 @@ public partial class CatalogPage : Page
         if (string.Equals(nameof(CatalogPageViewModel.SearchKeyword), e.PropertyName, StringComparison.Ordinal))
             CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
 
-        if(string.Equals(nameof(CatalogPageViewModel.OnFavoriteOnly),  e.PropertyName, StringComparison.Ordinal))
+        if (string.Equals(nameof(CatalogPageViewModel.ShowFavoritesOnly), e.PropertyName, StringComparison.Ordinal))
             CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
     }
 
@@ -198,8 +198,10 @@ public partial class CatalogPage : Page
     {
         switch (msg)
         {
-            case NativeMethods.WM_SIZE: case NativeMethods.WM_MOVE:
-            case NativeMethods.WM_CLOSE: case NativeMethods.WM_SHOWWINDOW:
+            case NativeMethods.WM_SIZE:
+            case NativeMethods.WM_MOVE:
+            case NativeMethods.WM_CLOSE:
+            case NativeMethods.WM_SHOWWINDOW:
             case NativeMethods.WM_SYSCOMMAND:
                 UpdateLabelPopup();
                 break;

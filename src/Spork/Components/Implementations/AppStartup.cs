@@ -81,7 +81,7 @@ namespace Spork.Components.Implementations
             CancellationToken cancellationToken = default)
         {
             var result = default(ApplicationStartupResultModel);
-            var parsedArgs = _commandLineArguments.Current;
+            var parsedArgs = _commandLineArguments.GetCurrent();
             ServicePointManager.ServerCertificateValidationCallback += ValidateRemoteCertificate;
 
             const int retryCount = 3;

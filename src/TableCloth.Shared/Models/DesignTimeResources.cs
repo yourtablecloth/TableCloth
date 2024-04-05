@@ -33,7 +33,7 @@ namespace TableCloth.Resources
             var future = new X509CertPairForDesigner(
                 "William", now.AddYears(3), now.AddYears(10), "Future Corp.", "C Bank", "KR");
 
-            return new[] { expired, current, future };
+            return X509CertPair.SortX509CertPairs(new[] { expired, current, future });
         }
 
         public static bool? ConvertToTriState(int index)

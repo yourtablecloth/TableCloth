@@ -11,11 +11,14 @@ public sealed class CommandLineComposer(
     public string ComposeCommandLineExpression(ITableClothViewModel viewModel, bool allowMultipleItems)
     {
         var targetFilePath = sharedLocations.ExecutableFilePath;
-        var args = this.ComposeCommandLineArguments(viewModel, allowMultipleItems);
+        var args = ComposeCommandLineArguments(viewModel, allowMultipleItems);
         return $"\"{targetFilePath}\" {args}";
     }
 
     public string ComposeCommandLineArguments(ITableClothViewModel viewModel, bool allowMultipleItems)
+        => string.Join(' ', GetCommandLineExpressionList(viewModel, allowMultipleItems));
+
+    public IReadOnlyList<string> GetCommandLineExpressionList(ITableClothViewModel viewModel, bool allowMultipleItems)
     {
         var options = new List<string>();
 
@@ -38,15 +41,16 @@ public sealed class CommandLineComposer(
         if (viewModel.MapNpkiCert)
             options.Add(ConstantStrings.TableCloth_Switch_EnableCert);
 
-        var firstSite = viewModel.SelectedServices.FirstOrDefault();
-
-        if (firstSite != null)
-            options.Add(firstSite.Id);
-
         if (allowMultipleItems)
-            foreach (var eachSite in viewModel.SelectedServices.Skip(1).ToList())
-                options.Add(eachSite.Id);
+            options.AddRange(viewModel.SelectedServices.Select(x => x.Id));
+        else
+        {
+            var firstSite = viewModel.SelectedServices.FirstOrDefault();
 
-        return string.Join(' ', [.. options]);
+            if (firstSite != null)
+                options.Add(firstSite.Id);
+        }
+
+        return options.AsReadOnly();
     }
 }

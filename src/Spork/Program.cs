@@ -1,4 +1,10 @@
-﻿using Spork.Browsers;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Sentry;
+using Serilog;
+using Spork.Browsers;
 using Spork.Browsers.Implementations;
 using Spork.Commands.AboutWindow;
 using Spork.Commands.MainWindow;
@@ -9,12 +15,6 @@ using Spork.Dialogs;
 using Spork.Steps;
 using Spork.Steps.Implementations;
 using Spork.ViewModels;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Sentry;
-using Serilog;
 using System;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -141,7 +141,8 @@ namespace Spork
                 .AddKeyedSingleton<IStep, ReloadEdgeStep>(nameof(ReloadEdgeStep))
                 .AddKeyedSingleton<IStep, SetDesktopWallpaperStep>(nameof(SetDesktopWallpaperStep))
                 .AddKeyedSingleton<IStep, TryProtectCriticalServicesStep>(nameof(TryProtectCriticalServicesStep))
-                .AddKeyedSingleton<IStep, VerifyWindowsContainerEnvironmentStep>(nameof(VerifyWindowsContainerEnvironmentStep));
+                .AddKeyedSingleton<IStep, VerifyWindowsContainerEnvironmentStep>(nameof(VerifyWindowsContainerEnvironmentStep))
+                .AddKeyedSingleton<IStep, EnableWinSxsForSandboxStep>(nameof(EnableWinSxsForSandboxStep));
 
             // Shared Commands
             services

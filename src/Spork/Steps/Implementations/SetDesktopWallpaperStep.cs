@@ -1,6 +1,6 @@
-﻿using Spork.Components;
+﻿using Microsoft.Extensions.Logging;
+using Spork.Components;
 using Spork.ViewModels;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing.Imaging;
 using System.IO;
@@ -24,10 +24,13 @@ namespace Spork.Steps.Implementations
         private readonly ISharedLocations _sharedLocations;
         private readonly ILogger _logger;
 
-        public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override Task<bool> EvaluateRequiredStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+            => Task.FromResult(true);
+
+        public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 
-        public override Task PlayStepAsync(InstallItemViewModel _, CancellationToken cancellationToken = default)
+        public override Task PlayStepAsync(InstallItemViewModel _, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
             var picturesDirectoryPath = _sharedLocations.GetPicturesDirectoryPath();
 

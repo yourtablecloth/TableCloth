@@ -76,13 +76,13 @@ public sealed class MainWindowLoadedCommand(
             view.Filter = (item) => CatalogInternetService.IsMatchedItem(item, viewModel.FilterText);
 
         // Command Line Parse
-        var parsedArg = commandLineArguments.Current;
+        var parsedArg = commandLineArguments.GetCurrent();
 
         if (parsedArg != null)
         {
             if (parsedArg.ShowCommandLineHelp)
             {
-                appMessageBox.DisplayInfo(StringResources.TableCloth_TableCloth_Switches_Help, MessageBoxButton.OK);
+                appMessageBox.DisplayInfo(await commandLineArguments.GetHelpStringAsync(), MessageBoxButton.OK);
                 return;
             }
 

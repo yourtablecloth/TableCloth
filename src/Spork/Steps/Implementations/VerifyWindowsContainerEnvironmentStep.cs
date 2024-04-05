@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using TableCloth;
 using TableCloth.Resources;
 
 namespace Spork.Steps.Implementations
@@ -19,17 +20,15 @@ namespace Spork.Steps.Implementations
 
         private readonly IAppMessageBox _appMessageBox;
 
-        private static readonly string[] ValidAccountNames = new string[]
-        {
-            "WDAGUtilityAccount",
-        };
+        public override Task<bool> EvaluateRequiredStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+            => Task.FromResult(true);
 
-        public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
+        public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 
-        public override Task PlayStepAsync(InstallItemViewModel _, CancellationToken cancellationToken = default)
+        public override Task PlayStepAsync(InstallItemViewModel _, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
-            if (!ValidAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
+            if (!Helpers.SandboxAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
             {
                 var response = _appMessageBox.DisplayQuestion(
                     AskStrings.Ask_WarningForNonSandboxEnvironment,

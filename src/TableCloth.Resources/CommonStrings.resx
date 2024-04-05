@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AdobeReaderUrl" xml:space="preserve">
-    <value>https://get.adobe.com/kr/reader/</value>
+    <value>https://get.adobe.com/reader/?region=US</value>
   </data>
   <data name="AppCommentText" xml:space="preserve">
     <value>TableCloth - Keep Your Computer Sound &amp; Safe!</value>
@@ -178,7 +178,7 @@
     <value>https://www.raidrive.com/download</value>
   </data>
   <data name="UnboundHomeUrl" xml:space="preserve">
-    <value>https://www.naver.com/</value>
+    <value>https://www.google.com/</value>
   </data>
   <data name="UnknownText" xml:space="preserve">
     <value>Unknown</value>

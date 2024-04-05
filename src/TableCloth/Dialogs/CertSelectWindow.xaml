@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:TableCloth.ViewModels"
-        xmlns:mconfig="clr-namespace:TableCloth.Models.Configuration"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         mc:Ignorable="d"
@@ -38,18 +37,34 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="{x:Static res:UIStringResources.CertSelectWindow_InstructionLabel}" />
-            <ListView Grid.Row="1" ItemsSource="{Binding Path='CertPairs'}" SelectedItem="{Binding Path='SelectedCertPair'}" d:ItemsSource="{Binding Path='CertPairsForDesigner'}">
+            <ListView Grid.Row="1" ItemsSource="{Binding Path='CertPairs'}" SelectedItem="{Binding Path='SelectedCertPair'}" d:ItemsSource="{Binding Path='CertPairsForDesigner'}" MouseDoubleClick="ListView_MouseDoubleClick">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasExpired}" Value="True">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <Brush>#ffadad</Brush>
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
+                        <Style.Setters>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <Grid Height="32">
+                                            <Border Name="Border" Padding="2" SnapsToDevicePixels="true" Background="Transparent">
+                                                <GridViewRowPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                            </Border>
+                                            <Rectangle Name="StrikeThrough" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="1" StrokeThickness="1" Stroke="Transparent"/>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="true">
+                                                <Setter TargetName="Border" Property="Background" Value="Lightblue"/>
+                                            </Trigger>
+                                            <DataTrigger Binding="{Binding HasExpired}" Value="True">
+                                                <Setter TargetName="StrikeThrough" Property="Stroke" Value="Red"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsBefore}" Value="True">
+                                                <Setter TargetName="StrikeThrough" Property="Stroke" Value="Red"/>
+                                            </DataTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style.Setters>
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.View>
@@ -78,7 +93,7 @@
                     </Button.CommandParameter>
                 </Button>
             </Grid>
-            <TextBlock Grid.Row="3" TextWrapping="Wrap" Text="{x:Static res:UIStringResources.CertSelectWindow_ManualInstructionLabelText}" />
+            <TextBlock Grid.Row="3" Margin="0 10 0 0" TextWrapping="Wrap" Text="{x:Static res:UIStringResources.CertSelectWindow_ManualInstructionLabelText}" />
             <Button x:Name="OpenCertPairManuallyButton" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" Content="{x:Static res:UIStringResources.CertSelectWindow_OpenNpkiCertButton}" Margin="0 5 0 5" Padding="5" Command="{Binding CertSelectWindowManualCertLoadCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />

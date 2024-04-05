@@ -53,6 +53,7 @@
 
         <Grid Margin="10 0 10 0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="40" x:Name="AnnouncementRow" />
                 <RowDefinition Height="40" x:Name="SiteListHelpRow" />
                 <RowDefinition Height="40" x:Name="SiteListSearchRow" />
                 <RowDefinition Height="30*" x:Name="SiteListRow" />
@@ -60,9 +61,11 @@
                 <RowDefinition Height="50*" x:Name="OptionRow" />
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" VerticalAlignment="Top" Margin="0 5 0 0" Content="{x:Static res:UIStringResources.MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" d:Visibility="Visible" />
+            <TextBlock Grid.Row="0" Background="AliceBlue" Foreground="Red" FontWeight="Bold" VerticalAlignment="Top" Margin="0 5 0 0" Text="{x:Static res:UIStringResources.Announcement_V1UIRetirement}" d:Visibility="Visible" />
 
-            <TextBox Grid.Row="1" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 0 0 10" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" d:Visibility="Visible">
+            <Label Grid.Row="1" VerticalAlignment="Top" Margin="0 5 0 0" Content="{x:Static res:UIStringResources.MainWindow_SelectSiteLabelText}" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" d:Visibility="Visible" />
+
+            <TextBox Grid.Row="2" x:Name="SiteCatalogFilter" Width="Auto" TextChanged="SiteCatalogFilter_TextChanged" Margin="0 0 0 10" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" d:Visibility="Visible">
                 <TextBox.Style>
                     <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                         <Style.Resources>
@@ -87,7 +90,7 @@
                 </TextBox.Style>
             </TextBox>
 
-            <StackPanel Grid.Row="2" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical" d:Visibility="Hidden">
+            <StackPanel Grid.Row="3" Margin="0 5 0 0" Visibility="{Binding HasServices, Converter={StaticResource InverseBooleanToVisibilityConverter}}" Orientation="Vertical" d:Visibility="Hidden">
                 <Label VerticalAlignment="Top" HorizontalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_SelectSiteLabelText_Alt}" />
                 <Button x:Name="ReloadCatalogButton" Width="250" Margin="0 10 0 0" Content="{x:Static res:UIStringResources.Button_AppRestartButton}" Command="{Binding AppRestartCommand}">
                     <Button.CommandParameter>
@@ -95,7 +98,7 @@
                     </Button.CommandParameter>
                 </Button>
             </StackPanel>
-            <ListView Grid.Row="2" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" SelectionChanged="SiteList_SelectionChanged" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler" d:Visibility="Visible" d:ItemsSource="{Binding ServicesForDesigner}">
+            <ListView Grid.Row="3" VerticalAlignment="Stretch" x:Name="SiteCatalog" Width="Auto" ItemsSource="{Binding Path='Services'}" SelectionMode="Extended" SelectionChanged="SiteList_SelectionChanged" Visibility="{Binding Path='HasServices', Converter={StaticResource BooleanToVisibilityConverter}}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler" d:Visibility="Visible" d:ItemsSource="{Binding ServicesForDesigner}">
                 <ListView.View>
                     <GridView>
                         <controls:ExtendedGridViewColumn Header="{x:Static res:UIStringResources.MainWindow_Column_SiteName}" BindingPath="DisplayName" Width="180">
@@ -142,8 +145,8 @@
                 </ListView.View>
             </ListView>
 
-            <Label Grid.Row="3" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_SelectOptionsLabelText}" />
-            <TabControl Grid.Row="4">
+            <Label Grid.Row="4" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.MainWindow_SelectOptionsLabelText}" />
+            <TabControl Grid.Row="5">
                 <TabItem Header="{x:Static res:UIStringResources.Option_BasicPreferences}">
                     <Grid Margin="4">
                         <Grid.RowDefinitions>

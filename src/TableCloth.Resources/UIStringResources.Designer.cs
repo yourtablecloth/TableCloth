@@ -97,6 +97,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Notice: Starting with the next release, Classic UI will not be supported.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Announcement_V1UIRetirement {
+            get {
+                return ResourceManager.GetString("Announcement_V1UIRetirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Once you&apos;ve finalized your settings, hit the OK button.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Await_ConfigASTx {
@@ -567,6 +576,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Enabling WinSxS과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Install_EnableWinSxSForSandbox {
+            get {
+                return ResourceManager.GetString("Install_EnableWinSxSForSandbox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Preparing Environment과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Install_PrepareEnvironment {
@@ -959,6 +977,15 @@ namespace TableCloth.Resources {
         public static string Spork_Install_InProgress {
             get {
                 return ResourceManager.GetString("Spork_Install_InProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Skipped과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Spork_Install_Skipped {
+            get {
+                return ResourceManager.GetString("Spork_Install_Skipped", resourceCulture);
             }
         }
         

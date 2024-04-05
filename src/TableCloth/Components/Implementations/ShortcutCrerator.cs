@@ -67,4 +67,21 @@ public sealed class ShortcutCrerator(
             return default;
         }
     }
+
+    public async Task<string?> CreateResponseFileAsync(ITableClothViewModel viewModel, CancellationToken cancellationToken = default)
+    {
+        var linkName = CommonStrings.AppName;
+        var firstSite = viewModel.SelectedServices.FirstOrDefault();
+
+        if (firstSite != null)
+            linkName = firstSite.DisplayName;
+
+        var shortcutDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        var shortcutFileName = linkName + ".tclnk";
+
+        var shortcutFilePath = Path.Combine(shortcutDirectoryPath, shortcutFileName);
+        var fileContents = commandLineComposer.GetCommandLineExpressionList(viewModel, false);
+        await File.WriteAllLinesAsync(shortcutFilePath, fileContents, cancellationToken).ConfigureAwait(false);
+        return shortcutFilePath;
+    }
 }

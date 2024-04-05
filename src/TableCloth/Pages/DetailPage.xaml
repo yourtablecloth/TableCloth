@@ -117,6 +117,31 @@
                         <RowDefinition d:Height="80" Height="{Binding ShowCompatibilityNotesRow, Converter={StaticResource BooleanToGridRowHeightConverter}, ConverterParameter='80'}" />
                     </Grid.RowDefinitions>
                     <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="8" Source="{Binding ServiceLogo}" />
+                    <ToggleButton Grid.Row="0" Width="15" Height="15" IsChecked="{Binding IsFavorite}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3" Command="{Binding DetailPageItemFavoriteCommand}" CommandParameter="{Binding}" Cursor="Hand">
+                        <ToggleButton.Template>
+                            <ControlTemplate TargetType="ToggleButton">
+                                <Grid>
+                                    <Grid.Resources>
+                                        <Geometry x:Key="PathData">M 26.285 2.486 l 5.407 10.956 c 0.376 0.762 1.103 1.29 1.944 1.412 l 12.091 1.757 c 2.118 0.308 2.963 2.91 1.431 4.403 l -8.749 8.528 c -0.608 0.593 -0.886 1.448 -0.742 2.285 l 2.065 12.042 c 0.362 2.109 -1.852 3.717 -3.746 2.722 l -10.814 -5.685 c -0.752 -0.395 -1.651 -0.395 -2.403 0 l -10.814 5.685 c -1.894 0.996 -4.108 -0.613 -3.746 -2.722 l 2.065 -12.042 c 0.144 -0.837 -0.134 -1.692 -0.742 -2.285 l -8.749 -8.528 c -1.532 -1.494 -0.687 -4.096 1.431 -4.403 l 12.091 -1.757 c 0.841 -0.122 1.568 -0.65 1.944 -1.412 l 5.407 -10.956 C 22.602 0.567 25.338 0.567 26.285 2.486 z</Geometry>
+                                    </Grid.Resources>
+                                    <Border Background="Transparent">
+                                        <Path Data="{StaticResource PathData}" Fill="Transparent" Stroke="Black" StrokeThickness="5" StrokeLineJoin="Round" Stretch="Uniform" />
+                                    </Border>
+                                    <Border Background="Transparent">
+                                        <Path x:Name="ButtonPath" Data="{StaticResource PathData}" Fill="LightGray" Stretch="Uniform"/>
+                                    </Border>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter TargetName="ButtonPath" Property="Fill" Value="#FFD401"/>
+                                    </Trigger>
+                                    <Trigger Property="IsChecked" Value="False">
+                                        <Setter TargetName="ButtonPath" Property="Fill" Value="LightGray"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                    </ToggleButton>
                     <TextBlock Grid.Row="0" Grid.Column="1" Margin="8" Text="{Binding DisplayName}" FontSize="36" Grid.RowSpan="2" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
                     <Button x:Name="LaunchButton" Grid.Row="1" Grid.Column="2" Margin="8" Content="{x:Static res:UIStringResources.Button_LaunchButton}" Command="{Binding LaunchSandboxCommand}">
                         <Button.CommandParameter>
@@ -165,8 +190,7 @@
                             </Button.CommandParameter>
                         </Button>
                     </WrapPanel>
-                    <Label Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" Margin="0 5 0 0" Content="{Binding Path='SelectedCertFile'}"  IsEnabled="{Binding Path='MapNpkiCert'}">
-                    </Label>
+                    <Label Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" Margin="0 5 0 0" Content="{Binding Path='SelectedCertFile'}"  IsEnabled="{Binding Path='MapNpkiCert'}" />
                     <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{x:Static res:UIStringResources.Option_UseMicrophoneCheckboxText}" IsChecked="{Binding Path='EnableMicrophone'}" />
                     <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{x:Static res:UIStringResources.Option_UseWebCameraCheckboxText}" IsChecked="{Binding Path='EnableWebCam'}" />
                     <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_UsePrinterCheckboxText}" IsChecked="{Binding Path='EnablePrinters'}" />

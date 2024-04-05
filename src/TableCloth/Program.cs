@@ -99,6 +99,9 @@ internal static class Program
         services.AddHttpClient(
             nameof(ConstantStrings.FamiliarUserAgentText),
             c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.FamiliarUserAgentText));
+        services.AddHttpClient(
+            nameof(StringResources.TableCloth_GitHubRestUAString),
+            c => c.DefaultRequestHeaders.Add("User-Agent", StringResources.TableCloth_GitHubRestUAString));
 
         // Add Components
         services
@@ -193,7 +196,8 @@ internal static class Program
             .AddSingleton<DetailPageLoadedCommand>()
             .AddSingleton<DetailPageSearchTextLostFocusCommand>()
             .AddSingleton<DetailPageGoBackCommand>()
-            .AddSingleton<DetailPageOpenHomepageLinkCommand>();
+            .AddSingleton<DetailPageOpenHomepageLinkCommand>()
+            .AddSingleton<DetailPageItemFavoriteCommand>();
 
         // Splash Screen
         services

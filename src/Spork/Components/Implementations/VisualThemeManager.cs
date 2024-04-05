@@ -1,5 +1,5 @@
-﻿using Spork.Themes;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
+using Spork.Themes;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;

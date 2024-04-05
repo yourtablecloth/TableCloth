@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AdobeReaderUrl" xml:space="preserve">
-    <value>https://get.adobe.com/kr/reader/</value>
+    <value>https://get.adobe.com/reader/?region=KR</value>
   </data>
   <data name="AppCommentText" xml:space="preserve">
     <value>식탁보 - 컴퓨터를 안전하게 사용하세요!</value>

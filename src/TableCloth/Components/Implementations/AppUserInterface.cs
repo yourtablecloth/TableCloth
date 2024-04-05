@@ -4,6 +4,7 @@ using System.Linq;
 using TableCloth.Dialogs;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
+using TableCloth.Models.Configuration;
 using TableCloth.Pages;
 using TableCloth.ViewModels;
 
@@ -16,8 +17,13 @@ public sealed class AppUserInterface(
     public AboutWindow CreateAboutWindow()
         => serviceProvider.GetRequiredService<AboutWindow>();
 
-    public CertSelectWindow CreateCertSelectWindow()
-        => serviceProvider.GetRequiredService<CertSelectWindow>();
+    public CertSelectWindow CreateCertSelectWindow(X509CertPair? previousCertPair)
+    {
+        var window = serviceProvider.GetRequiredService<CertSelectWindow>();
+        if (previousCertPair != null)
+            window.ViewModel.PreviousCertPairHash = previousCertPair?.CertHash;
+        return window;
+    }
 
     public InputPasswordWindow CreateInputPasswordWindow()
         => serviceProvider.GetRequiredService<InputPasswordWindow>();
