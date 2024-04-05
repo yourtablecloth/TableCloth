@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows;
-
-namespace Spork.Browsers
+﻿namespace Spork.Browsers
 {
     public interface IWebBrowserService
     {

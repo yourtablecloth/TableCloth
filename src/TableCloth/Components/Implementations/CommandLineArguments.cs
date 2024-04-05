@@ -1,12 +1,12 @@
 ﻿using System;
-using System.CommandLine.Builder;
 using System.CommandLine;
-using TableCloth.Models;
-using System.Linq;
-using System.CommandLine.Parsing;
-using TableCloth.Resources;
+using System.CommandLine.Builder;
 using System.CommandLine.IO;
+using System.CommandLine.Parsing;
+using System.Linq;
 using System.Threading.Tasks;
+using TableCloth.Models;
+using TableCloth.Resources;
 
 namespace TableCloth.Components.Implementations;
 

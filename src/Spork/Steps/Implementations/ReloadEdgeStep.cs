@@ -1,11 +1,9 @@
-﻿using Spork.Browsers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spork.Browsers;
 using Spork.Browsers.Implementations;
-using Spork.Components;
 using Spork.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 

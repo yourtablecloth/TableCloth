@@ -1,14 +1,14 @@
-﻿using Spork.Browsers;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spork.Browsers;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using TableCloth;
 using TableCloth.Resources;
-using System.IO;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Spork
 {

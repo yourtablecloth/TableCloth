@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TableCloth.Commands.CatalogPage;
-using TableCloth.Components.Implementations;
+﻿using TableCloth.Commands.CatalogPage;
 using TableCloth.Components;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
@@ -22,7 +15,7 @@ public class FavoriteTest
         var mockPreferencesManager = new Mock<IPreferencesManager>();
         var defaultSettings = new PreferenceSettings
         {
-            Favorites =new List<string>()
+            Favorites = new List<string>()
         };
         mockPreferencesManager.Setup(x => x.LoadPreferencesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(defaultSettings);
@@ -34,7 +27,7 @@ public class FavoriteTest
             IsFavorite = true,
         };
         var command = new CatalogPageItemFavoriteCommand(mockPreferencesManager.Object);
-        
+
         //act
         await command.ExecuteAsync(service);
 

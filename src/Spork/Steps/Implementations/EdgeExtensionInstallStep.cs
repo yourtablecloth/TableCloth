@@ -1,8 +1,8 @@
-﻿using Spork.ViewModels;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
+using Spork.ViewModels;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System;
 
 namespace Spork.Steps.Implementations
 {

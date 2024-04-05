@@ -1,5 +1,5 @@
-﻿using Spork.Dialogs;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Spork.Dialogs;
 using System;
 
 namespace Spork.Components.Implementations

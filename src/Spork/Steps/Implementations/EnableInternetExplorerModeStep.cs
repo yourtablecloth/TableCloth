@@ -1,6 +1,6 @@
-﻿using Spork.Components;
+﻿using Microsoft.Win32;
+using Spork.Components;
 using Spork.ViewModels;
-using Microsoft.Win32;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

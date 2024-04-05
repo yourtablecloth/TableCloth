@@ -1,14 +1,13 @@
 ﻿using AsyncAwaitBestPractices;
-using Spork.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Spork.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using TableCloth;
-using TableCloth.Resources;
 
 namespace Spork
 {

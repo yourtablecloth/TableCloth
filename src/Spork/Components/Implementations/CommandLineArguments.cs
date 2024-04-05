@@ -1,13 +1,13 @@
 ﻿using System;
-using System.CommandLine.Builder;
 using System.CommandLine;
+using System.CommandLine.Builder;
+using System.CommandLine.IO;
+using System.CommandLine.Parsing;
+using System.Linq;
+using System.Threading.Tasks;
 using TableCloth;
 using TableCloth.Models;
-using System.Linq;
-using System.CommandLine.Parsing;
-using System.CommandLine.IO;
 using TableCloth.Resources;
-using System.Threading.Tasks;
 
 namespace Spork.Components.Implementations
 {

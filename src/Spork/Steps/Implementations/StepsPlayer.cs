@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
-using Spork.Browsers;
+﻿using Spork.Browsers;
 using Spork.Components;
 using Spork.ViewModels;
 using System;

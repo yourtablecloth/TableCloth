@@ -21,12 +21,12 @@ public class CatalogPageItemFavoriteCommand(
         settings!.Favorites ??= new List<string>();
         if (service!.IsFavorite)
             settings.Favorites.Add(service.Id);
-        else if(settings.Favorites.Contains(service.Id))
+        else if (settings.Favorites.Contains(service.Id))
             settings.Favorites.Remove(service.Id);
 
         await preferencesManager.SavePreferencesAsync(settings);
     }
 
-    [Obsolete("unused path.",false)]
+    [Obsolete("unused path.", false)]
     public Task ExecuteAsync() => throw new NotImplementedException();
 }

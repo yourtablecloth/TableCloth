@@ -1,6 +1,4 @@
-﻿using Spork.Steps;
-
-namespace Spork.Steps
+﻿namespace Spork.Steps
 {
     public interface IStepsFactory
     {

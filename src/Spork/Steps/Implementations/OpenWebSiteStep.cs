@@ -1,5 +1,4 @@
 ﻿using Spork.Browsers;
-using Spork.Components;
 using Spork.ViewModels;
 using System;
 using System.Diagnostics;

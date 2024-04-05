@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using System.Windows;
+﻿using System.Windows;
 using TableCloth.Events;
 using TableCloth.Models.Configuration;
 using TableCloth.ViewModels;

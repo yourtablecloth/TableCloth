@@ -1,6 +1,6 @@
-﻿using Spork.Components;
+﻿using Microsoft.Extensions.Logging;
+using Spork.Components;
 using Spork.ViewModels;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Drawing.Imaging;
 using System.IO;
