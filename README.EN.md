@@ -4,6 +4,8 @@
 
 > Notice: Due to a change in Microsoft Store policy, it has become difficult to update to the latest version of Tablecloth. Please uninstall the Microsoft Store version of the Tablecloth app and reinstall the version we release on GitHub to ensure you have access to the latest features.
 
+> Notice: With the release of version 1.13.0, the tablecloth project has changed to a dual licence model. You can choose between AGPL 3.0 or a commercial licence. If you use the commercial licence, please contact us at the contact details in the licence file.
+
 * [Korean Readme](README.md)
 * [English Readme](README.EN.md)
 
