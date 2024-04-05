@@ -8,7 +8,7 @@ public sealed class CertSelectCommand(
 {
     public override void Execute(ITableClothViewModel viewModel)
     {
-        var certSelectWindow = appUserInterface.CreateCertSelectWindow();
+        var certSelectWindow = appUserInterface.CreateCertSelectWindow(viewModel.SelectedCertFile);
         var response = certSelectWindow.ShowDialog();
 
         if (!response.HasValue || !response.Value)

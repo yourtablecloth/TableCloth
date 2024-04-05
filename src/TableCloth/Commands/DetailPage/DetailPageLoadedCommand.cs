@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using TableCloth.Components;
+using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
@@ -57,13 +58,17 @@ public sealed class DetailPageLoadedCommand(
         if (File.Exists(targetFilePath))
             viewModel.ServiceLogo = resourceCacheManager.GetImage(selectedServiceId);
 
-        var foundCandidate = certPairScanner.ScanX509Pairs(certPairScanner.GetCandidateDirectories()).FirstOrDefault();
+        var allCerts = certPairScanner.ScanX509Pairs(certPairScanner.GetCandidateDirectories());
+        var lastUsedCertHash = currentConfig.LastUsedCertHash;
+        var selectedCert = default(X509CertPair?);
 
-        if (foundCandidate != null)
-        {
-            viewModel.SelectedCertFile = foundCandidate;
-            viewModel.MapNpkiCert = true;
-        }
+        if (!string.IsNullOrWhiteSpace(lastUsedCertHash))
+            selectedCert = allCerts.FirstOrDefault(x => string.Equals(lastUsedCertHash, x.CertHash, StringComparison.Ordinal));
+        else if (allCerts.Count() < 2)
+            selectedCert = allCerts.Where(x => x.IsValid).FirstOrDefault();
+
+        viewModel.MapNpkiCert = (selectedCert != null);
+        viewModel.SelectedCertFile = selectedCert;
 
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
 
@@ -151,6 +156,10 @@ public sealed class DetailPageLoadedCommand(
 
             case nameof(DetailPageViewModel.LastDisclaimerAgreedTime):
                 currentConfig.LastDisclaimerAgreedTime = viewModel.LastDisclaimerAgreedTime;
+                break;
+
+            case nameof(DetailPageViewModel.SelectedCertFile):
+                currentConfig.LastUsedCertHash = viewModel.SelectedCertFile?.CertHash ?? string.Empty;
                 break;
 
             default:

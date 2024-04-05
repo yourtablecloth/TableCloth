@@ -49,6 +49,7 @@ public class CertSelectWindowViewModel : ViewModelBase
 #pragma warning restore IDE0090 // Use 'new(...)'
 #pragma warning restore IDE0028 // Simplify collection initialization
     private X509CertPair? _selectedCertPair;
+    private string? _previousCertPairHash;
 
     public event EventHandler<DialogRequestEventArgs>? CloseRequested;
 
@@ -80,5 +81,11 @@ public class CertSelectWindowViewModel : ViewModelBase
     {
         get => _selectedCertPair;
         set => SetProperty(ref _selectedCertPair, value);
+    }
+
+    public string? PreviousCertPairHash
+    {
+        get => _previousCertPairHash;
+        set => SetProperty(ref _previousCertPairHash, value);
     }
 }

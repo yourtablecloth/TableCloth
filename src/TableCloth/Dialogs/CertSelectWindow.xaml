@@ -41,24 +41,30 @@
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Style.Setters>
-                            <Setter Property="Height" Value="32" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <Grid Height="32">
+                                            <Border Name="Border" Padding="2" SnapsToDevicePixels="true" Background="Transparent">
+                                                <GridViewRowPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                            </Border>
+                                            <Rectangle Name="StrikeThrough" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="1" StrokeThickness="1" Stroke="Transparent"/>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="true">
+                                                <Setter TargetName="Border" Property="Background" Value="Lightblue"/>
+                                            </Trigger>
+                                            <DataTrigger Binding="{Binding HasExpired}" Value="True">
+                                                <Setter TargetName="StrikeThrough" Property="Stroke" Value="Red"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsBefore}" Value="True">
+                                                <Setter TargetName="StrikeThrough" Property="Stroke" Value="Red"/>
+                                            </DataTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                         </Style.Setters>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasExpired}" Value="True">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <Brush>#ffadad</Brush>
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding IsBefore}" Value="True">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <Brush>#cccccc</Brush>
-                                    </Setter.Value>
-                                </Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.View>

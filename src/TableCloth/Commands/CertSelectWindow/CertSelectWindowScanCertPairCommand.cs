@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using TableCloth.Components;
 using TableCloth.Models.Configuration;
 using TableCloth.ViewModels;
@@ -17,5 +18,12 @@ public sealed class CertSelectWindowScanCertPairCommand(
 
         if (viewModel.CertPairs.Count == 1)
             viewModel.SelectedCertPair = viewModel.CertPairs.Single();
+
+        if (!string.IsNullOrWhiteSpace(viewModel.PreviousCertPairHash))
+        {
+            viewModel.SelectedCertPair = viewModel.CertPairs
+                .Where(x => string.Equals(viewModel.PreviousCertPairHash, x.CertHash, StringComparison.Ordinal))
+                .FirstOrDefault();
+        }
     }
 }

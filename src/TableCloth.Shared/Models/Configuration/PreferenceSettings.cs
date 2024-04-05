@@ -72,5 +72,10 @@ namespace TableCloth.Models.Configuration
         /// 즐겨찾기로 등록된 서비스 아이디를 기록합니다.
         /// </summary>
         public List<string> Favorites { get; set; } = new List<string>();
+
+        /// <summary>
+        /// 마지막으로 사용한 공동 인증서 해시 값을 기록합니다.
+        /// </summary>
+        public string LastUsedCertHash { get; set; } = null;
     }
 }
