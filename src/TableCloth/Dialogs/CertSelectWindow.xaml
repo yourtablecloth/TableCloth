@@ -37,7 +37,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="{x:Static res:UIStringResources.CertSelectWindow_InstructionLabel}" />
-            <ListView Grid.Row="1" ItemsSource="{Binding Path='CertPairs'}" SelectedItem="{Binding Path='SelectedCertPair'}" d:ItemsSource="{Binding Path='CertPairsForDesigner'}">
+            <ListView Grid.Row="1" ItemsSource="{Binding Path='CertPairs'}" SelectedItem="{Binding Path='SelectedCertPair'}" d:ItemsSource="{Binding Path='CertPairsForDesigner'}" MouseDoubleClick="ListView_MouseDoubleClick">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Style.Setters>
