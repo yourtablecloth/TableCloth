@@ -27,6 +27,9 @@ namespace TableCloth.Models.Configuration
 
     public class X509CertPair
     {
+        public static IEnumerable<X509CertPair> SortX509CertPairs(IEnumerable<X509CertPair> certPairs)
+            => certPairs.OrderByDescending(x => x.IsValid).ThenBy(x => x.NotAfter).ThenBy(x => x.NotBefore);
+
 #pragma warning disable IDE0300 // Simplify collection initialization
         private static readonly char[] Separators = new char[] { ',', };
 #pragma warning restore IDE0300 // Simplify collection initialization
@@ -139,6 +142,9 @@ namespace TableCloth.Models.Configuration
 
         public bool IsValid
             => NotBefore <= DateTime.Now && DateTime.Now <= NotAfter;
+
+        public bool IsBefore
+            => DateTime.Now < NotBefore;
 
         public bool HasExpired
             => DateTime.Now > NotAfter;

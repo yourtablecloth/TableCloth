@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using TableCloth.Components;
+using TableCloth.Models.Configuration;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Commands.CertSelectWindow;
@@ -10,9 +11,8 @@ public sealed class CertSelectWindowScanCertPairCommand(
     public override void Execute(CertSelectWindowViewModel viewModel)
     {
         viewModel.SelectedCertPair = default;
-        viewModel.CertPairs = certPairScanner.ScanX509Pairs(
-            certPairScanner.GetCandidateDirectories())
-            .OrderByDescending(x => x.IsValid)
+        viewModel.CertPairs = X509CertPair.SortX509CertPairs(certPairScanner.ScanX509Pairs(
+            certPairScanner.GetCandidateDirectories()))
             .ToList();
 
         if (viewModel.CertPairs.Count == 1)
