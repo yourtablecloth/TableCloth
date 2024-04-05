@@ -3,7 +3,7 @@ name: TableCloth Build Pipeline
 on:
     push:
         paths:
-        - '.github/workflows/**'
+        - '.github/workflows/build.yml'
         - 'docs/**'
         - 'src/**'
         - 'tools/**'
