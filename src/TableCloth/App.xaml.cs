@@ -30,8 +30,14 @@ public partial class App : Application
         SafeFireAndForgetExtensions.Initialize();
         SafeFireAndForgetExtensions.SetDefaultExceptionHandling((thrownException) =>
         {
-            var logger = host.Services.GetRequiredService<ILogger>();
+            var logger = host.Services.GetRequiredService<ILogger<App>>();
             logger.LogError(thrownException, "Unexpected error occurred.");
+
+            if (Helpers.IsDevelopmentBuild)
+            {
+                var appMessageBox = host.Services.GetRequiredService<IAppMessageBox>();
+                appMessageBox.DisplayError(thrownException, false);
+            }
         });
     }
 
