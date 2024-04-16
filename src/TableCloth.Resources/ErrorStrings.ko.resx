@@ -259,4 +259,10 @@ Ctrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 
     <value>원격 웹 사이트와의 통신 도중 X509 인증서 오류가 발생했습니다. 인증서 주체는 {0}이며, 발생한 오류 코드는 {1} 입니다.</value>
     <comment>This item is used by Spork.</comment>
   </data>
+  <data name="Error_HelpSwitch_NotFound" xml:space="preserve">
+    <value>예기치 않은 오류가 발생했습니다: 명령줄 구문 분석기 구성에서 도움말 스위치를 찾을 수 없습니다.</value>
+  </data>
+  <data name="Error_VersionSwitch_NotFound" xml:space="preserve">
+    <value>예기치 않은 오류가 발생했습니다: 명령줄 구문 분석기 구성에서 버전 정보 스위치를 찾을 수 없습니다.</value>
+  </data>
 </root>

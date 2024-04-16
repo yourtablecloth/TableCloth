@@ -473,6 +473,54 @@
   <data name="Status_PleaseWait" xml:space="preserve">
     <value>잠시만 기다려 주세요.</value>
   </data>
+  <data name="TableCloth_Arguments_SiteIdList_Help" xml:space="preserve">
+    <value>카탈로그의 사이트 아이디 목록을 하나 이상 지정합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_CertPrivateKey_Help" xml:space="preserve">
+    <value>개인 공동 인증서 비밀 키 파일을 지정합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_CertPublicKey_Help" xml:space="preserve">
+    <value>개인 공동 인증서 공개 키 파일을 지정합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_DryRun_Help" xml:space="preserve">
+    <value>시스템 변경을 시도하지 않도록 동작을 변경합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableCamera_Help" xml:space="preserve">
+    <value>Windows Sandbox 안에서 카메라 촬영을 할 수 있도록 권한을 부여합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableCert_Help" xml:space="preserve">
+    <value>Windows Sandbox 안에서 공동 인증서 파일을 이용할 수 있게 복사합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableIEMode_Help" xml:space="preserve">
+    <value>Windows Sandbox 안에서 Internet Explorer 모드로 Microsoft Edge 브라우저를 실행할 수 있도록 설정을 변경합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableMicrophone_Help" xml:space="preserve">
+    <value>Windows Sandbox 안에서 오디오 녹음을 할 수 있도록 권한을 부여합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_EnablePrinter_Help" xml:space="preserve">
+    <value>Windows Sandbox 안에서 프린터 인쇄를 요청할 수 있도록 권한을 부여합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
+    <value>지금 보고 있는 도움말을 표시합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallAdobeReader_Help" xml:space="preserve">
+    <value>Adobe Reader 설치를 시도합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallEveryonesPrinter_Help" xml:space="preserve">
+    <value>모두의 프린터 설치를 시도합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallHancomOfficeViewer_Help" xml:space="preserve">
+    <value>한컴오피스 뷰어 설치를 시도합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallRaiDrive_Help" xml:space="preserve">
+    <value>RaiDrive 설치를 시도합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_SimulateFailure_Help" xml:space="preserve">
+    <value>임의의 확률로 오류 발생을 시뮬레이션합니다. 이 옵션은 개발자용 기능입니다.</value>
+  </data>
+  <data name="TableCloth_Switch_Version_Help" xml:space="preserve">
+    <value>프로그램의 버전 정보를 표시합니다.</value>
+  </data>
   <data name="TitleText_Error" xml:space="preserve">
     <value>식탁보 오류</value>
   </data>

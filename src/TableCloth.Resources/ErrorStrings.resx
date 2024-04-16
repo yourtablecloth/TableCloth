@@ -259,4 +259,10 @@ You can select multiple files by holding down the Ctrl or Shift key, or by dragg
     <value>An X509 certificate error occurred during communication with a remote website. The certificate subject is {0}, and the error code encountered is {1}.</value>
     <comment>This item is used by Spork.</comment>
   </data>
+  <data name="Error_HelpSwitch_NotFound" xml:space="preserve">
+    <value>Unexpected Error: Cannot find help switch from command line parser configuration.</value>
+  </data>
+  <data name="Error_VersionSwitch_NotFound" xml:space="preserve">
+    <value>Unexpected Error: Cannot find version switch from command line parser configuration.</value>
+  </data>
 </root>

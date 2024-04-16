@@ -16,34 +16,34 @@ namespace Spork.Components.Implementations
         public CommandLineArguments()
         {
             _certPrivateKeyOption = new Option<string>(ConstantStrings.TableCloth_Switch_CertPrivateKey)
-            { IsRequired = false, Arity = ArgumentArity.ExactlyOne, };
+            { IsRequired = false, Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_CertPrivateKey_Help, };
 
             _certPublicKeyOption = new Option<string>(ConstantStrings.TableCloth_Switch_CertPublicKey)
-            { IsRequired = false, Arity = ArgumentArity.ExactlyOne, };
+            { IsRequired = false, Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_CertPublicKey_Help, };
 
             _installEveryonesPrinterOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter)
-            { IsRequired = false, Arity = ArgumentArity.Zero, };
+            { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallEveryonesPrinter_Help, };
 
             _installAdobeReaderOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallAdobeReader)
-            { IsRequired = false, Arity = ArgumentArity.Zero, };
+            { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallAdobeReader_Help, };
 
             _installHancomOfficeViewerOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer)
-            { IsRequired = false, Arity = ArgumentArity.Zero, };
+            { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallHancomOfficeViewer_Help, };
 
             _installRaiDriveOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallRaiDrive)
-            { IsRequired = false, Arity = ArgumentArity.Zero, };
+            { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallRaiDrive_Help, };
 
             _enableIEModeOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_EnableIEMode)
-            { IsRequired = false, Arity = ArgumentArity.Zero, };
+            { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_EnableIEMode_Help, };
 
             _dryRunOption = new Option<bool>(ConstantStrings.TableCloth_Switch_DryRun)
-            { IsRequired = false, Arity = ArgumentArity.Zero, };
+            { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_DryRun_Help, };
 
             _simulateFailureOption = new Option<bool>(ConstantStrings.TableCloth_Switch_SimulateFailure)
-            { IsRequired = false, Arity = ArgumentArity.Zero, };
+            { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_SimulateFailure_Help, };
 
             _siteIdListArgument = new Argument<string[]>()
-            { Arity = ArgumentArity.ZeroOrMore, };
+            { Arity = ArgumentArity.ZeroOrMore, Description = UIStringResources.TableCloth_Arguments_SiteIdList_Help, };
 
             _rootCommand = new RootCommand()
             {
@@ -67,11 +67,11 @@ namespace Spork.Components.Implementations
 
             _helpOption = _rootCommand.Options
                 .FirstOrDefault(x => x.Aliases.Contains(ConstantStrings.TableCloth_Switch_Help, StringComparer.OrdinalIgnoreCase))
-                ?? throw new Exception("Unexpected Error: Cannot find help switch from command line parser configuration.");
+                ?? throw new Exception(ErrorStrings.Error_HelpSwitch_NotFound);
 
             _versionOption = _rootCommand.Options
                 .FirstOrDefault(x => x.Aliases.Contains(ConstantStrings.TableCloth_Switch_Version, StringComparer.OrdinalIgnoreCase))
-                ?? throw new Exception("Unexpected Error: Cannot find version switch from command line parser configuration.");
+                ?? throw new Exception(ErrorStrings.Error_VersionSwitch_NotFound);
         }
 
         private readonly Option<string> _certPrivateKeyOption;

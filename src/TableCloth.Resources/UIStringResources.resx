@@ -473,6 +473,55 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Status_PleaseWait" xml:space="preserve">
     <value>Please wait a second...</value>
   </data>
+  <data name="TableCloth_Arguments_SiteIdList_Help" xml:space="preserve">
+    <value>Specifies a list of one or more site IDs from the catalog.</value>
+  </data>
+  <data name="TableCloth_Switch_CertPrivateKey_Help" xml:space="preserve">
+    <value>Specify the private public certificate secret key file.</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
+  <data name="TableCloth_Switch_CertPublicKey_Help" xml:space="preserve">
+    <value>Specify the private public certificate public key file.</value>
+  </data>
+  <data name="TableCloth_Switch_DryRun_Help" xml:space="preserve">
+    <value>Change the behavior so that no system changes are attempted.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableCamera_Help" xml:space="preserve">
+    <value>Grant permission to take camera shots inside the Windows Sandbox.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableCert_Help" xml:space="preserve">
+    <value>Copy the joint certificate file to be available inside the Windows Sandbox.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableIEMode_Help" xml:space="preserve">
+    <value>Change the settings to allow the Microsoft Edge browser to run in Internet Explorer mode inside the Windows Sandbox.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableMicrophone_Help" xml:space="preserve">
+    <value>Grant permission to record audio inside the Windows Sandbox.</value>
+  </data>
+  <data name="TableCloth_Switch_EnablePrinter_Help" xml:space="preserve">
+    <value>Authorize the printer to request printing from within the Windows Sandbox.</value>
+  </data>
+  <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
+    <value>Displays the help you're viewing.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallAdobeReader_Help" xml:space="preserve">
+    <value>Attempt to install Adobe Reader.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallEveryonesPrinter_Help" xml:space="preserve">
+    <value>Attempt to install Everyones' Printer.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallHancomOfficeViewer_Help" xml:space="preserve">
+    <value>Attempt to install HancomOffice Viewer.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallRaiDrive_Help" xml:space="preserve">
+    <value>Attempt to install RaiDrive.</value>
+  </data>
+  <data name="TableCloth_Switch_SimulateFailure_Help" xml:space="preserve">
+    <value>Simulates the occurrence of an error with random probability. This option is a developer feature.</value>
+  </data>
+  <data name="TableCloth_Switch_Version_Help" xml:space="preserve">
+    <value>Displays version information for the program.</value>
+  </data>
   <data name="TitleText_Error" xml:space="preserve">
     <value>TableCloth Error</value>
   </data>

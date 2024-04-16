@@ -1125,6 +1125,150 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Specifies a list of one or more site IDs from the catalog.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Arguments_SiteIdList_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Arguments_SiteIdList_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Specify the private public certificate secret key file.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_CertPrivateKey_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_CertPrivateKey_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Specify the private public certificate public key file.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_CertPublicKey_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_CertPublicKey_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Change the behavior so that no system changes are attempted.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_DryRun_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_DryRun_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Grant permission to take camera shots inside the Windows Sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_EnableCamera_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_EnableCamera_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Copy the joint certificate file to be available inside the Windows Sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_EnableCert_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_EnableCert_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Change the settings to allow the Microsoft Edge browser to run in Internet Explorer mode inside the Windows Sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_EnableIEMode_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_EnableIEMode_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Grant permission to record audio inside the Windows Sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_EnableMicrophone_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_EnableMicrophone_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Authorize the printer to request printing from within the Windows Sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_EnablePrinter_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_EnablePrinter_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Displays the help you&apos;re viewing.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_Help_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_Help_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Attempt to install Adobe Reader.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_InstallAdobeReader_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_InstallAdobeReader_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Attempt to install Everyones&apos; Printer.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_InstallEveryonesPrinter_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_InstallEveryonesPrinter_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Attempt to install HancomOffice Viewer.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_InstallHancomOfficeViewer_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_InstallHancomOfficeViewer_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Attempt to install RaiDrive.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_InstallRaiDrive_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_InstallRaiDrive_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Simulates the occurrence of an error with random probability. This option is a developer feature.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_SimulateFailure_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_SimulateFailure_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Displays version information for the program.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_Version_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_Version_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   TableCloth Error과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string TitleText_Error {
