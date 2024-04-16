@@ -15,15 +15,6 @@ namespace Spork.Components.Implementations
     {
         public CommandLineArguments()
         {
-            _enableMicrophoneOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_EnableMicrophone)
-            { IsRequired = false, Arity = ArgumentArity.Zero, };
-
-            _enableCameraOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_EnableCamera)
-            { IsRequired = false, Arity = ArgumentArity.Zero, };
-
-            _enablePrinterOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_EnablePrinter)
-            { IsRequired = false, Arity = ArgumentArity.Zero, };
-
             _certPrivateKeyOption = new Option<string>(ConstantStrings.TableCloth_Switch_CertPrivateKey)
             { IsRequired = false, Arity = ArgumentArity.ExactlyOne, };
 
@@ -56,9 +47,6 @@ namespace Spork.Components.Implementations
 
             _rootCommand = new RootCommand()
             {
-                _enableMicrophoneOption,
-                _enableCameraOption,
-                _enablePrinterOption,
                 _certPrivateKeyOption,
                 _certPublicKeyOption,
                 _installEveryonesPrinterOption,
@@ -86,9 +74,6 @@ namespace Spork.Components.Implementations
                 ?? throw new Exception("Unexpected Error: Cannot find version switch from command line parser configuration.");
         }
 
-        private readonly Option<bool?> _enableMicrophoneOption;
-        private readonly Option<bool?> _enableCameraOption;
-        private readonly Option<bool?> _enablePrinterOption;
         private readonly Option<string> _certPrivateKeyOption;
         private readonly Option<string> _certPublicKeyOption;
         private readonly Option<bool?> _installEveryonesPrinterOption;
@@ -128,9 +113,9 @@ namespace Spork.Components.Implementations
 
             return new CommandLineArgumentModel(args,
                 selectedServices: parseResult.GetValueForArgument(_siteIdListArgument),
-                enableMicrophone: parseResult.GetValueForOption(_enableMicrophoneOption),
-                enableWebCam: parseResult.GetValueForOption(_enableCameraOption),
-                enablePrinters: parseResult.GetValueForOption(_enablePrinterOption),
+                enableMicrophone: default,
+                enableWebCam: default,
+                enablePrinters: default,
                 certPrivateKeyPath: parseResult.GetValueForOption(_certPrivateKeyOption),
                 certPublicKeyPath: parseResult.GetValueForOption(_certPublicKeyOption),
                 installEveryonesPrinter: parseResult.GetValueForOption(_installEveryonesPrinterOption),
