@@ -91,7 +91,9 @@ public sealed class SandboxBuilder(
             ReadOnly = bool.FalseString,
         });
 
-        if (tableClothConfig.CertPair != null)
+        if (tableClothConfig.CertPair != null &&
+            tableClothConfig.CertPair.PublicKey != null &&
+            tableClothConfig.CertPair.PrivateKey != null)
         {
             var certAssetsDirectoryPath = Path.Combine(tableClothConfig.AssetsDirectoryPath, "certs");
             if (!Directory.Exists(certAssetsDirectoryPath))

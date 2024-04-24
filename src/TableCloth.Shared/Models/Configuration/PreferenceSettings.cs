@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 
 namespace TableCloth.Models.Configuration
@@ -76,10 +78,6 @@ namespace TableCloth.Models.Configuration
         /// <summary>
         /// 마지막으로 사용한 공동 인증서 해시 값을 기록합니다.
         /// </summary>
-        public string
-#if !NETFX
-            ?
-#endif
-            LastUsedCertHash { get; set; } = null;
+        public string? LastUsedCertHash { get; set; } = null;
     }
 }

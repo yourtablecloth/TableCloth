@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -11,18 +13,10 @@ namespace TableCloth
         public static bool HasAnyCompatNotes(this CatalogDocument catalog, IEnumerable<string> targets)
             => catalog.Services.Where(x => targets.Contains(x.Id)).Any(x => !string.IsNullOrWhiteSpace(x.CompatibilityNotes?.Trim()));
 
-        public static TExpectedType EnsureNotNullWithCast<T, TExpectedType>(this T
-#if !NETFX
-            ?
-#endif
-    value, string message, Exception
-#if !NETFX
-            ?
-#endif
-    innerException = default,
-    [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
-    where T : class
-    where TExpectedType : class
+        public static TExpectedType EnsureNotNullWithCast<T, TExpectedType>(this T? value, string message, Exception? innerException = default,
+            [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+            where T : class
+            where TExpectedType : class
         {
             var expected = value as TExpectedType;
 
@@ -32,11 +26,7 @@ namespace TableCloth
             return expected;
         }
 
-        public static TExpectedType EnsureArgumentNotNullWithCast<T, TExpectedType>(this T
-#if !NETFX
-            ?
-#endif
-            value, string message, string paramName,
+        public static TExpectedType EnsureArgumentNotNullWithCast<T, TExpectedType>(this T? value, string message, string paramName,
             [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
             where T : class
             where TExpectedType : class
@@ -49,15 +39,7 @@ namespace TableCloth
             return expected;
         }
 
-        public static T EnsureNotNull<T>(this T
-#if !NETFX
-            ?
-#endif
-            value, string message, Exception
-#if !NETFX
-            ?
-#endif
-            innerException = default,
+        public static T EnsureNotNull<T>(this T? value, string message, Exception? innerException = default,
             [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
             where T : class
         {
@@ -67,11 +49,7 @@ namespace TableCloth
             return value;
         }
 
-        public static T EnsureArgumentNotNull<T>(this T
-#if !NETFX
-            ?
-#endif
-            value, string message, string paramName,
+        public static T EnsureArgumentNotNull<T>(this T? value, string message, string paramName,
             [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
             where T : class
         {

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -12,18 +14,10 @@ namespace TableCloth.ViewModels
 
         protected TaskFactory TaskFactory => _taskFactory;
 
-        public event PropertyChangedEventHandler
-#if !NETFX
-            ?
-#endif
-            PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void NotifyPropertyChanged(
-            [CallerMemberName] string
-#if !NETFX
-            ?
-#endif
-            propertyName = default)
+            [CallerMemberName] string? propertyName = default)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         protected void NotifyMultiplePropertiesChanged(
@@ -38,11 +32,7 @@ namespace TableCloth.ViewModels
 
         protected virtual bool SetProperty<T>(
             ref T member, T value,
-            [CallerMemberName] string
-#if !NETFX
-            ?
-#endif
-            propertyName = default)
+            [CallerMemberName] string? propertyName = default)
         {
             if (EqualityComparer<T>.Default.Equals(member, value))
                 return false;

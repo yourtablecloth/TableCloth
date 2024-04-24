@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Linq;
 using TableCloth.Resources;
 
@@ -6,31 +8,14 @@ namespace TableCloth.Models
 {
     public sealed class CommandLineArgumentModel
     {
-#pragma warning disable IDE0290 // Use primary constructor
         public CommandLineArgumentModel(
-#pragma warning restore IDE0290 // Use primary constructor
             string[] rawArguments,
-            string[]
-#if !NETFX
-            ?
-#endif
-            selectedServices = default,
+            string[]? selectedServices = default,
             bool? enableMicrophone = default,
             bool? enableWebCam = default,
             bool? enablePrinters = default,
-
-            string
-#if !NETFX
-            ?
-#endif
-            certPrivateKeyPath = default,
-
-            string
-#if !NETFX
-            ?
-#endif
-            certPublicKeyPath = default,
-
+            string? certPrivateKeyPath = default,
+            string? certPublicKeyPath = default,
             bool? installEveryonesPrinter = default,
             bool? installAdobeReader = default,
             bool? installHancomOfficeViewer = default,
@@ -67,19 +52,9 @@ namespace TableCloth.Models
 
         public bool? EnablePrinters { get; private set; }
 
-        public string
-#if !NETFX
-            ?
-#endif
-            CertPrivateKeyPath
-        { get; private set; }
+        public string? CertPrivateKeyPath { get; private set; }
 
-        public string
-#if !NETFX
-            ?
-#endif
-            CertPublicKeyPath
-        { get; private set; }
+        public string? CertPublicKeyPath { get; private set; }
 
         public bool? InstallEveryonesPrinter { get; private set; }
 
@@ -103,7 +78,7 @@ namespace TableCloth.Models
 
         public override string ToString()
         {
-            var options = new List<string>();
+            var options = new List<string?>();
 
             if (ShowCommandLineHelp)
                 options.Add(ConstantStrings.TableCloth_Switch_Help);
@@ -150,9 +125,7 @@ namespace TableCloth.Models
                     options.Add(eachSite);
             }
 
-#pragma warning disable IDE0305 // Simplify collection initialization
             return string.Join(" ", options.ToArray());
-#pragma warning restore IDE0305 // Simplify collection initialization
         }
     }
 }

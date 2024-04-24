@@ -14,16 +14,12 @@ namespace TableCloth.Models.Catalog
         /// 서비스에 관계없이 공용으로 사용할 수 있는 소프트웨어에 대한 정보 목록
         /// </summary>
         [XmlArray(ElementName = "Companions"), XmlArrayItem(typeof(CatalogCompanion), ElementName = "Companion")]
-#pragma warning disable IDE0028 // Simplify collection initialization
         public List<CatalogCompanion> Companions { get; set; } = new List<CatalogCompanion>();
-#pragma warning restore IDE0028 // Simplify collection initialization
 
         /// <summary>
         /// 특정 서비스 및 해당 서비스용 소프트웨어에 대한 정보 목록
         /// </summary>
         [XmlArray(ElementName = "InternetServices"), XmlArrayItem(typeof(CatalogInternetService), ElementName = "Service")]
-#pragma warning disable IDE0028 // Simplify collection initialization
         public List<CatalogInternetService> Services { get; set; } = new List<CatalogInternetService>();
-#pragma warning restore IDE0028 // Simplify collection initialization
     }
 }

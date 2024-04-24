@@ -13,9 +13,7 @@ public class InputPasswordWindowViewModelForDesigner : InputPasswordWindowViewMo
 
 public class InputPasswordWindowViewModel : ViewModelBase
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected InputPasswordWindowViewModel() { }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public InputPasswordWindowViewModel(
         InputPasswordWindowLoadedCommand inputPasswordWindowLoadedCommand,
@@ -40,9 +38,9 @@ public class InputPasswordWindowViewModel : ViewModelBase
     public async Task RequestRetryPasswordInputAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
         => await TaskFactory.StartNew(() => RetryPasswordInputRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    private readonly InputPasswordWindowLoadedCommand _inputPasswordWindowLoadedCommand;
-    private readonly InputPasswordWindowConfirmCommand _inputPasswordWindowConfirmCommand;
-    private readonly InputPasswordWindowCancelCommand _inputPasswordWindowCancelCommand;
+    private readonly InputPasswordWindowLoadedCommand _inputPasswordWindowLoadedCommand = default!;
+    private readonly InputPasswordWindowConfirmCommand _inputPasswordWindowConfirmCommand = default!;
+    private readonly InputPasswordWindowCancelCommand _inputPasswordWindowCancelCommand = default!;
 
     public InputPasswordWindowLoadedCommand InputPasswordWindowLoadedCommand
         => _inputPasswordWindowLoadedCommand;

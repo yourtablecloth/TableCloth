@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Xml.Serialization;
 
 namespace TableCloth.Models.Catalog
@@ -13,33 +15,18 @@ namespace TableCloth.Models.Catalog
         /// 도메인
         /// </summary>
         [XmlAttribute("Domain")]
-        public string
-#if !NETFX
-            ?
-#endif
-            Domain
-        { get; set; }
+        public string? Domain { get; set; }
 
         /// <summary>
         /// 동작 모드
         /// </summary>
         [XmlAttribute("Mode")]
-        public string
-#if !NETFX
-            ?
-#endif
-            Mode
-        { get; set; }
+        public string? Mode { get; set; }
 
         /// <summary>
         /// 브라우저 실행 방법
         /// </summary>
         [XmlAttribute("OpenIn")]
-        public string
-#if !NETFX
-            ?
-#endif
-            OpenIn
-        { get; set; }
+        public string? OpenIn { get; set; }
     }
 }

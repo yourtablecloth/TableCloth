@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using TableCloth.Models.Catalog;
 
@@ -13,49 +15,11 @@ namespace TableCloth.Models.Configuration
         /// <summary>
         /// 선택한 X.509 인증서 정보입니다.
         /// </summary>
-        public X509CertPair
-#if !NETFX
-            ?
-#endif
-            CertPair
-        { get; set; }
+        public X509CertPair? CertPair { get; set; }
 
         /// <summary>
         /// 마이크 입력을 공유할 것인지 여부입니다.
         /// </summary>
-
-        /* Unmerged change from project 'TableCloth.SetupBuilder'
-        Before:
-                public bool EnableMicrophone { get; set; }
-
-                /// <summary>
-        After:
-                public bool EnableMicrophone { get; set; }
-
-                /// <summary>
-        */
-
-        /* Unmerged change from project 'TableCloth'
-        Before:
-                public bool EnableMicrophone { get; set; }
-
-                /// <summary>
-        After:
-                public bool EnableMicrophone { get; set; }
-
-                /// <summary>
-        */
-
-        /* Unmerged change from project 'Loom'
-        Before:
-                public bool EnableMicrophone { get; set; }
-
-                /// <summary>
-        After:
-                public bool EnableMicrophone { get; set; }
-
-                /// <summary>
-        */
         public bool EnableMicrophone { get; set; }
 
         /// <summary>
@@ -106,11 +70,6 @@ namespace TableCloth.Models.Configuration
         /// <summary>
         /// 샌드박스 명세 파일 (WSB) 및 데이터 파일을 저장할 디렉터리 경로입니다.
         /// </summary>
-        public string
-#if !NETFX
-            ?
-#endif
-            AssetsDirectoryPath
-        { get; internal set; }
+        public string? AssetsDirectoryPath { get; internal set; }
     }
 }

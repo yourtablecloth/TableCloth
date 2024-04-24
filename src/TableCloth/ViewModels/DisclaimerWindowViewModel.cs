@@ -10,9 +10,7 @@ public class DisclaimerWindowViewModelForDesigner : DisclaimerWindowViewModel { 
 
 public class DisclaimerWindowViewModel : ViewModelBase
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected DisclaimerWindowViewModel() { }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public DisclaimerWindowViewModel(
         DisclaimerWindowLoadedCommand disclaimerWindowLoadedCommand,
@@ -31,8 +29,8 @@ public class DisclaimerWindowViewModel : ViewModelBase
     public async Task NotifyDisclaimerAcknowledgedAsync(object? sender, EventArgs e, CancellationToken cancellationToken = default)
         => await TaskFactory.StartNew(() => DisclaimerAcknowledged?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    private readonly DisclaimerWindowLoadedCommand _disclaimerWindowLoadedCommand;
-    private readonly DisclaimerWindowAcknowledgeCommand _disclaimerWindowAcknowledgeCommand;
+    private readonly DisclaimerWindowLoadedCommand _disclaimerWindowLoadedCommand = default!;
+    private readonly DisclaimerWindowAcknowledgeCommand _disclaimerWindowAcknowledgeCommand = default!;
 
     public DisclaimerWindowLoadedCommand DisclaimerWindowLoadedCommand
         => _disclaimerWindowLoadedCommand;

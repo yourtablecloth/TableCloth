@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -31,20 +33,15 @@ namespace TableCloth.Models.Configuration
         public static IEnumerable<X509CertPair> SortX509CertPairs(IEnumerable<X509CertPair> certPairs)
             => certPairs.OrderByDescending(x => x.IsValid).ThenBy(x => x.NotAfter).ThenBy(x => x.NotBefore);
 
-#pragma warning disable IDE0300 // Simplify collection initialization
         private static readonly char[] Separators = new char[] { ',', };
-#pragma warning restore IDE0300 // Simplify collection initialization
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         protected X509CertPair() { }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public X509CertPair(byte[] publicKey, byte[] privateKey)
         {
             PublicKey = publicKey;
             PrivateKey = privateKey;
 
-#pragma warning disable IDE0063 // Use simple 'using' statement
             using (var cert = new X509Certificate2(publicKey))
             {
                 var issuerName = cert.Issuer;
@@ -73,9 +70,7 @@ namespace TableCloth.Models.Configuration
                                      usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.NonRepudiation) &&
                                      usageExtension.KeyUsages.HasFlag(X509KeyUsageFlags.DigitalSignature);
 
-#pragma warning disable IDE0305 // Simplify collection initialization
                 Subject = subject.ToArray();
-#pragma warning restore IDE0305 // Simplify collection initialization
 
                 IsPersonalCert = isPersonalCert;
 
@@ -110,43 +105,22 @@ namespace TableCloth.Models.Configuration
                     CertHash = BitConverter.ToString(hashBytes).Replace("-", string.Empty);
                 }
             }
-#pragma warning restore IDE0063 // Use simple 'using' statement
         }
 
-        public byte[] PublicKey { get; }
-        public byte[] PrivateKey { get; }
-        public KeyValuePair<string, string>[] Subject { get; }
+        public byte[]? PublicKey { get; }
+        public byte[]? PrivateKey { get; }
+        public KeyValuePair<string, string>[]? Subject { get; }
         public bool IsPersonalCert { get; }
 
-        public string
-#if !NETFX
-            ?
-#endif
-            CommonName
-        { get; protected set; }
-        public IEnumerable<string> OrganizationalUnits { get; }
-        public string
-#if !NETFX
-            ?
-#endif
-            OrganizationalUnit
-        { get; protected set; }
-        public string
-#if !NETFX
-            ?
-#endif
-            Organization
-        { get; protected set; }
-        public string
-#if !NETFX
-            ?
-#endif
-            CountryName
-        { get; protected set; }
+        public string? CommonName { get; protected set; }
+        public IEnumerable<string>? OrganizationalUnits { get; }
+        public string? OrganizationalUnit { get; protected set; }
+        public string? Organization { get; protected set; }
+        public string? CountryName { get; protected set; }
 
         public DateTime NotAfter { get; protected set; }
         public DateTime NotBefore { get; protected set; }
-        public string CertHash { get; protected set; }
+        public string? CertHash { get; protected set; }
 
         public bool IsValid
             => NotBefore <= DateTime.Now && DateTime.Now <= NotAfter;
@@ -180,9 +154,9 @@ namespace TableCloth.Models.Configuration
         }
 
         public string SubjectNameForNpkiApp
-            => string.Join(",", Subject.Select(x => $"{x.Key.ToLowerInvariant()}={x.Value}"));
+            => string.Join(",", Subject?.Select(x => $"{x.Key.ToLowerInvariant()}={x.Value}") ?? new string[] { });
 
         public override string ToString()
-            => string.Join(",", Subject.Select(x => $"{x.Key}={x.Value}"));
+            => string.Join(",", Subject?.Select(x => $"{x.Key}={x.Value}") ?? new string[] { });
     }
 }

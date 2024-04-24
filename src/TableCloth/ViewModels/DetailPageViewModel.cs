@@ -18,9 +18,7 @@ public class DetailPageViewModelForDesigner : DetailPageViewModel { }
 
 public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected DetailPageViewModel() { }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public DetailPageViewModel(
         DetailPageLoadedCommand detailPageLoadedCommand,
@@ -51,16 +49,16 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
         => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    private readonly DetailPageLoadedCommand _detailPageLoadedCommand;
-    private readonly DetailPageSearchTextLostFocusCommand _detailPageSearchTextLostFocusCommand;
-    private readonly DetailPageGoBackCommand _detailPageGoBackCommand;
-    private readonly DetailPageOpenHomepageLinkCommand _detailPageOpenHomepageLinkCommand;
-    private readonly DetailPageItemFavoriteCommand _detailPageItemFavoriteCommand;
-    private readonly LaunchSandboxCommand _launchSandboxCommand;
-    private readonly CreateShortcutCommand _createShortcutCommand;
-    private readonly CopyCommandLineCommand _copyCommandLineCommand;
-    private readonly CertSelectCommand _certSelectCommand;
-    private readonly ShowDebugInfoCommand _showDebugInfoCommand;
+    private readonly DetailPageLoadedCommand _detailPageLoadedCommand = default!;
+    private readonly DetailPageSearchTextLostFocusCommand _detailPageSearchTextLostFocusCommand = default!;
+    private readonly DetailPageGoBackCommand _detailPageGoBackCommand = default!;
+    private readonly DetailPageOpenHomepageLinkCommand _detailPageOpenHomepageLinkCommand = default!;
+    private readonly DetailPageItemFavoriteCommand _detailPageItemFavoriteCommand = default!;
+    private readonly LaunchSandboxCommand _launchSandboxCommand = default!;
+    private readonly CreateShortcutCommand _createShortcutCommand = default!;
+    private readonly CopyCommandLineCommand _copyCommandLineCommand = default!;
+    private readonly CertSelectCommand _certSelectCommand = default!;
+    private readonly ShowDebugInfoCommand _showDebugInfoCommand = default!;
 
     public DetailPageLoadedCommand DetailPageLoadedCommand
         => _detailPageLoadedCommand;

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Windows;
 
 namespace TableCloth.Components.Implementations;
@@ -6,11 +8,7 @@ namespace TableCloth.Components.Implementations;
 public sealed class MessageBoxService(
     IApplicationService applicationService) : IMessageBoxService
 {
-    public MessageBoxResult Show(Window
-#if !NETFX
-?
-#endif
-        owner, string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon, MessageBoxResult defaultResult, MessageBoxOptions options = default)
+    public MessageBoxResult Show(Window? owner, string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon, MessageBoxResult defaultResult, MessageBoxOptions options = default)
     {
         owner ??= applicationService.GetMainWindow();
 

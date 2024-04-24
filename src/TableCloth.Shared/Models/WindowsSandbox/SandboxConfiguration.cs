@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -8,78 +10,43 @@ namespace TableCloth.Models.WindowsSandbox
     public sealed partial class SandboxConfiguration
     {
         [XmlElement("Networking")]
-        public string
-#if !NETFX
-            ?
-#endif
-            Networking
-        { get; set; }
+        public string? Networking { get; set; }
 
         [XmlIgnore]
         public bool NetworkingSpecified => Networking != null;
 
         [XmlElement("AudioInput")]
-        public string
-#if !NETFX
-            ?
-#endif
-            AudioInput
-        { get; set; }
+        public string? AudioInput { get; set; }
 
         [XmlIgnore]
         public bool AudioInputSpecified => AudioInput != null;
 
         [XmlElement("VideoInput")]
-        public string
-#if !NETFX
-            ?
-#endif
-            VideoInput
-        { get; set; }
+        public string? VideoInput { get; set; }
 
         [XmlIgnore]
         public bool VideoInputSpecified => VideoInput != null;
 
         [XmlElement("vGPU")]
-        public string
-#if !NETFX
-            ?
-#endif
-            VirtualGpu
-        { get; set; }
+        public string? VirtualGpu { get; set; }
 
         [XmlIgnore]
         public bool VirtualGpuSpecified => VirtualGpu != null;
 
         [XmlElement("PrinterRedirection")]
-        public string
-#if !NETFX
-            ?
-#endif
-            PrinterRedirection
-        { get; set; }
+        public string? PrinterRedirection { get; set; }
 
         [XmlIgnore]
         public bool PrinterRedirectionSpecified => PrinterRedirection != null;
 
         [XmlElement("ClipboardRedirection")]
-        public string
-#if !NETFX
-            ?
-#endif
-            ClipboardRedirection
-        { get; set; }
+        public string? ClipboardRedirection { get; set; }
 
         [XmlIgnore]
         public bool ClipboardRedirectionSpecified => ClipboardRedirection != null;
 
         [XmlElement("ProtectedClient")]
-        public string
-#if !NETFX
-            ?
-#endif
-            ProtectedClient
-        { get; set; }
+        public string? ProtectedClient { get; set; }
 
         [XmlIgnore]
         public bool ProtectedClientSpecified => ProtectedClient != null;

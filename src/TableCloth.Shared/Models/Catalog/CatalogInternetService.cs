@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
@@ -47,13 +49,7 @@ namespace TableCloth.Models.Catalog
         /// 사용자에게 고지해야 할 호환성 정보
         /// </summary>
         [XmlElement("CompatNotes")]
-        public string
-#if !NETFX
-            ?
-#endif
-            CompatibilityNotes
-        { get; set; }
-
+        public string? CompatibilityNotes { get; set; }
 
         [XmlIgnore]
         public bool IsFavorite { get; set; }
@@ -62,9 +58,7 @@ namespace TableCloth.Models.Catalog
         /// 서비스를 이용하기 위해 설치해야 하는 소프트웨어 정보 목록
         /// </summary>
         [XmlArray, XmlArrayItem(typeof(CatalogPackageInformation), ElementName = "Package")]
-#pragma warning disable IDE0028 // Simplify collection initialization
         public List<CatalogPackageInformation> Packages { get; set; } = new List<CatalogPackageInformation>();
-#pragma warning restore IDE0028 // Simplify collection initialization
 
         [XmlArray, XmlArrayItem(typeof(CatalogEdgeExtensionInformation), ElementName = "EdgeExtension")]
         public List<CatalogEdgeExtensionInformation> EdgeExtensions { get; set; } = new List<CatalogEdgeExtensionInformation>();
@@ -76,12 +70,7 @@ namespace TableCloth.Models.Catalog
         /// 이 속성은 <see cref="CustomBootstrapCDATA"/> 속성의 내부 저장 용도로 사용됩니다. 한 속성을 바꾸면 다른 속성도 내용이 변경됩니다.
         /// </remarks>
         [XmlIgnore]
-        public string
-#if !NETFX
-            ?
-#endif
-            CustomBootstrap
-        { get; set; }
+        public string? CustomBootstrap { get; set; }
 
         /// <summary>
         /// 서비스를 이용하기 위해 실행해야 하는 부트스트랩 스크립트
@@ -90,23 +79,14 @@ namespace TableCloth.Models.Catalog
         /// 이 속성은 <see cref="CustomBootstrap"/> 속성에 실제 데이터를 저장합니다. 한 속성을 바꾸면 다른 속성도 내용이 변경됩니다.
         /// </remarks>
         [XmlElement("CustomBootstrap")]
-        public XmlCDataSection
-#if !NETFX
-            ?
-#endif
-            CustomBootstrapCDATA
+        public XmlCDataSection? CustomBootstrapCDATA
         {
             get => new XmlDocument().CreateCDataSection(CustomBootstrap);
             set => CustomBootstrap = value?.Value;
         }
 
         [XmlElement("SearchKeywords")]
-        public string
-#if !NETFX
-            ?
-#endif
-            SearchKeywords
-        { get; set; }
+        public string? SearchKeywords { get; set; }
 
         /// <summary>
         /// 서비스 분류 카테고리를 사용자에게 표시할 때 쓸 이름을 가져옵니다.
@@ -119,7 +99,6 @@ namespace TableCloth.Models.Catalog
         {
             get
             {
-#pragma warning disable IDE0066 // Convert switch statement to expression
                 switch (Category)
                 {
                     case CatalogInternetServiceCategory.Banking: return CommonStrings.DisplayName_Banking;
@@ -132,7 +111,6 @@ namespace TableCloth.Models.Catalog
                     case CatalogInternetServiceCategory.Other:
                     default: return CommonStrings.DisplayName_Other;
                 }
-#pragma warning restore IDE0066 // Convert switch statement to expression
             }
         }
 

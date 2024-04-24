@@ -9,9 +9,7 @@ public class AboutWindowViewModelForDesigner : AboutWindowViewModel { }
 
 public class AboutWindowViewModel : ViewModelBase
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected AboutWindowViewModel() { }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public AboutWindowViewModel(
         AboutWindowLoadedCommand aboutWindowLoadedCommand,
@@ -29,11 +27,11 @@ public class AboutWindowViewModel : ViewModelBase
         _licenseDetails = UIStringResources.AboutWindow_LoadingLicensesMessage;
     }
 
-    private readonly AboutWindowLoadedCommand _aboutWindowLoadedCommand;
-    private readonly OpenWebsiteCommand _openWebsiteCommand;
-    private readonly ShowSystemInfoCommand _showSystemInfoCommand;
-    private readonly CheckUpdatedVersionCommand _checkUpdatedVersionCommand;
-    private readonly OpenPrivacyPolicyCommand _openPrivacyPolicyCommand;
+    private readonly AboutWindowLoadedCommand _aboutWindowLoadedCommand = default!;
+    private readonly OpenWebsiteCommand _openWebsiteCommand = default!;
+    private readonly ShowSystemInfoCommand _showSystemInfoCommand = default!;
+    private readonly CheckUpdatedVersionCommand _checkUpdatedVersionCommand = default!;
+    private readonly OpenPrivacyPolicyCommand _openPrivacyPolicyCommand = default!;
 
     private string _appVersion = string.Empty;
     private string _catalogDate = string.Empty;

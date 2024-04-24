@@ -18,9 +18,7 @@ public class CertSelectWindowViewModelForDesigner : CertSelectWindowViewModel
 
 public class CertSelectWindowViewModel : ViewModelBase
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected CertSelectWindowViewModel() { }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public CertSelectWindowViewModel(
         CertSelectWindowScanCertPairCommand certSelectWindowScanCertPairCommand,
@@ -36,17 +34,13 @@ public class CertSelectWindowViewModel : ViewModelBase
         _certSelectWindowRequestCancelCommand = certSelectWindowRequestCancelCommand;
     }
 
-    private readonly CertSelectWindowScanCertPairCommand _certSelectWindowScanCertPairCommand;
-    private readonly CertSelectWindowLoadedCommand _certSelectWindowLoadedCommand;
-    private readonly CertSelectWindowManualCertLoadCommand _certSelectManualCertLoadCommand;
-    private readonly CertSelectWindowRequestConfirmCommand _certSelectWindowRequestConfirmCommand;
-    private readonly CertSelectWindowRequestCancelCommand _certSelectWindowRequestCancelCommand;
+    private readonly CertSelectWindowScanCertPairCommand _certSelectWindowScanCertPairCommand = default!;
+    private readonly CertSelectWindowLoadedCommand _certSelectWindowLoadedCommand = default!;
+    private readonly CertSelectWindowManualCertLoadCommand _certSelectManualCertLoadCommand = default!;
+    private readonly CertSelectWindowRequestConfirmCommand _certSelectWindowRequestConfirmCommand = default!;
+    private readonly CertSelectWindowRequestCancelCommand _certSelectWindowRequestCancelCommand = default!;
 
-#pragma warning disable IDE0028 // Simplify collection initialization
-#pragma warning disable IDE0090 // Use 'new(...)'
     private List<X509CertPair> _certPairs = new List<X509CertPair>();
-#pragma warning restore IDE0090 // Use 'new(...)'
-#pragma warning restore IDE0028 // Simplify collection initialization
     private X509CertPair? _selectedCertPair;
     private string? _previousCertPairHash;
 

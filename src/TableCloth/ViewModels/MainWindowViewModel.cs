@@ -18,9 +18,7 @@ public class MainWindowViewModelForDesigner : MainWindowViewModel
 
 public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected MainWindowViewModel() { }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public MainWindowViewModel(
         MainWindowLoadedCommand mainWindowLoadedCommand,
@@ -42,14 +40,14 @@ public class MainWindowViewModel : ViewModelBase, ITableClothViewModel
         _certSelectCommand = certSelectCommand;
     }
 
-    private readonly MainWindowLoadedCommand _mainWindowLoadedCommand;
-    private readonly MainWindowClosedCommand _mainWindowClosedCommand;
-    private readonly LaunchSandboxCommand _launchSandboxCommand;
-    private readonly CreateShortcutCommand _createShortcutCommand;
-    private readonly AppRestartCommand _appRestartCommand;
-    private readonly AboutThisAppCommand _aboutThisAppCommand;
-    private readonly ShowDebugInfoCommand _showDebugInfoCommand;
-    private readonly CertSelectCommand _certSelectCommand;
+    private readonly MainWindowLoadedCommand _mainWindowLoadedCommand = default!;
+    private readonly MainWindowClosedCommand _mainWindowClosedCommand = default!;
+    private readonly LaunchSandboxCommand _launchSandboxCommand = default!;
+    private readonly CreateShortcutCommand _createShortcutCommand = default!;
+    private readonly AppRestartCommand _appRestartCommand = default!;
+    private readonly AboutThisAppCommand _aboutThisAppCommand = default!;
+    private readonly ShowDebugInfoCommand _showDebugInfoCommand = default!;
+    private readonly CertSelectCommand _certSelectCommand = default!;
 
     private string _filterText = string.Empty;
     private bool _mapNpkiCert;

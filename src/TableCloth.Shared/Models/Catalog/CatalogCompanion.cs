@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Xml.Serialization;
 
 namespace TableCloth.Models.Catalog
@@ -13,44 +15,24 @@ namespace TableCloth.Models.Catalog
         /// 고유 아이디 값
         /// </summary>
         [XmlAttribute("Id")]
-        public string
-#if !NETFX
-            ?
-#endif
-            Id
-        { get; set; }
+        public string? Id { get; set; }
 
         /// <summary>
         /// 사용자에게 표시될 이름
         /// </summary>
         [XmlAttribute("DisplayName")]
-        public string
-#if !NETFX
-            ?
-#endif
-            DisplayName
-        { get; set; }
+        public string? DisplayName { get; set; }
 
         /// <summary>
         /// 소프트웨어를 다운로드할 수 있는 URL
         /// </summary>
         [XmlAttribute("Url")]
-        public string
-#if !NETFX
-            ?
-#endif
-            Url
-        { get; set; }
+        public string? Url { get; set; }
 
         /// <summary>
         /// 설치 프로그램 실행 시 전달할 매개 변수
         /// </summary>
         [XmlAttribute("Arguments")]
-        public string
-#if !NETFX
-            ?
-#endif
-            Arguments
-        { get; set; }
+        public string? Arguments { get; set; }
     }
 }

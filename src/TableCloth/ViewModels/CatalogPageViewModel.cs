@@ -17,9 +17,7 @@ public class CatalogPageViewModelForDesigner : CatalogPageViewModel
 
 public class CatalogPageViewModel : ViewModelBase
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected CatalogPageViewModel() { }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     public CatalogPageViewModel(
         CatalogPageLoadedCommand catalogPageLoadedCommand,
@@ -37,12 +35,12 @@ public class CatalogPageViewModel : ViewModelBase
         _catalogPageFavoriteCommand = catalogPageFavoriteCommand;
     }
 
-    private readonly CatalogPageLoadedCommand _catalogPageLoadedCommand;
-    private readonly CatalogPageItemSelectCommand _catalogPageItemSelectCommand;
-    private readonly AppRestartCommand _appRestartCommand;
-    private readonly AboutThisAppCommand _aboutThisAppCommand;
-    private readonly ShowDebugInfoCommand _showDebugInfoCommand;
-    private readonly CatalogPageItemFavoriteCommand _catalogPageFavoriteCommand;
+    private readonly CatalogPageLoadedCommand _catalogPageLoadedCommand = default!;
+    private readonly CatalogPageItemSelectCommand _catalogPageItemSelectCommand = default!;
+    private readonly AppRestartCommand _appRestartCommand = default!;
+    private readonly AboutThisAppCommand _aboutThisAppCommand = default!;
+    private readonly ShowDebugInfoCommand _showDebugInfoCommand = default!;
+    private readonly CatalogPageItemFavoriteCommand _catalogPageFavoriteCommand = default!;
 
     private CatalogInternetService? _selectedService;
     private string _searchKeyword = string.Empty;
