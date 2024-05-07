@@ -96,6 +96,6 @@
 
 	<Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Spork\bin\$(PlatformName)\$(ConfigurationName)\Spork.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Spork\bin\$(PlatformName)\$(ConfigurationName)\Spork.zip&quot; &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
+		<Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Spork\bin\$(PlatformName)\$(ConfigurationName)\Spork.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Spork\bin\$(PlatformName)\$(ConfigurationName)\Spork.zip&quot; &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Sponge\bin\$(PlatformName)\$(ConfigurationName)\Sponge.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Sponge\bin\$(PlatformName)\$(ConfigurationName)\Sponge.zip&quot; &quot;$(ProjectDir)Sponge.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Sponge.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
 	</Target>
 </Project>

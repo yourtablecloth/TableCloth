@@ -20,7 +20,6 @@ public sealed class DetailPageLoadedCommand(
     IAppUserInterface appUserInterface,
     ISharedLocations sharedLocations,
     IConfigurationComposer configurationComposer,
-    IAppMessageBox appMessageBox,
     ISandboxLauncher sandboxLauncher) : ViewModelCommandBase<DetailPageViewModel>, IAsyncCommand<DetailPageViewModel>
 {
     public override void Execute(DetailPageViewModel viewModel)
