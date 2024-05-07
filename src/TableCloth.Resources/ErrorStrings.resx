@@ -265,4 +265,9 @@ You can select multiple files by holding down the Ctrl or Shift key, or by dragg
   <data name="Error_VersionSwitch_NotFound" xml:space="preserve">
     <value>Unexpected Error: Cannot find version switch from command line parser configuration.</value>
   </data>
+  <data name="Error_SystemDrive_Vulnerable" xml:space="preserve">
+    <value>The drive where Windows Sandbox will run does not appear to be protected by BitLocker.
+
+If the device or disk is stolen, forensics may reveal sensitive data, so be sure to turn on BitLocker protection before continuing to run TableCloth.</value>
+  </data>
 </root>
