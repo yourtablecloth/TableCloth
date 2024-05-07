@@ -19,9 +19,12 @@ public sealed class X509CertPairScanner(
 
     public IEnumerable<string> GetCandidateDirectories()
     {
-        var defaultNpkiPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "NPKI");
+        var localLowPath = NativeMethods.GetKnownFolderPath(NativeMethods.LocalLowFolderGuid);
 
+        if (localLowPath == null)
+            throw new Exception("Cannot obtain the LocalLow folder path.");
+
+        var defaultNpkiPath = Path.Combine(localLowPath, "NPKI");
         var directoryCandidates = new List<string>();
 
         if (Directory.Exists(defaultNpkiPath))

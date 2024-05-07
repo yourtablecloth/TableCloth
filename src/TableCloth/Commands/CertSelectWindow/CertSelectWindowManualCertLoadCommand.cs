@@ -39,7 +39,12 @@ public sealed class CertSelectWindowManualCertLoadCommand(
             ValidateNames = true,
         };
 
-        var npkiPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "NPKI");
+        var localLowPath = NativeMethods.GetKnownFolderPath(NativeMethods.LocalLowFolderGuid);
+
+        if (localLowPath == null)
+            throw new Exception("Cannot obtain the LocalLow folder path.");
+
+        var npkiPath = Path.Combine(localLowPath, "NPKI");
         var userDirectories = new List<string>();
 
         if (Directory.Exists(npkiPath))

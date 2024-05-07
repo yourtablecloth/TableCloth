@@ -4,6 +4,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.AccessControl;
+using System.Text;
 
 namespace TableCloth
 {
@@ -470,33 +471,28 @@ namespace TableCloth
     partial class NativeMethods
     {
         public static readonly Guid DownloadFolderGuid = new Guid("{374DE290-123F-4565-9164-39C4925E467B}");
+        public static readonly Guid LocalLowFolderGuid = new Guid("{A520A1A4-1780-4FF6-BD18-167343C5AF16}");
 
         public static string? GetKnownFolderPath(Guid knownFolderGuid, KnownFolderFlags flags = KnownFolderFlags.DontVerify, bool defaultUser = false)
         {
-            var result = SHGetKnownFolderPath(knownFolderGuid, (int)flags, new IntPtr(defaultUser ? -1 : 0), out var outPath);
+            var result = SHGetKnownFolderPath(knownFolderGuid, (int)flags, new IntPtr(defaultUser ? -1 : 0), out StringBuilder outPath);
 
             if (result >= 0)
-            {
-                var path = Marshal.PtrToStringUni(outPath);
-                Marshal.FreeCoTaskMem(outPath);
-                return path;
-            }
+                return outPath.ToString();
             else
-            {
                 throw new ExternalException("Unable to retrieve the known folder path. It may not be available on this system.", result);
-            }
         }
 
         [DllImport("shell32.dll",
             SetLastError = false,
-            CharSet = CharSet.None,
+            CharSet = CharSet.Unicode,
             ExactSpelling = true,
             EntryPoint = nameof(SHGetKnownFolderPath),
             CallingConvention = CallingConvention.StdCall)]
         private static extern int SHGetKnownFolderPath(
             [MarshalAs(UnmanagedType.LPStruct)] Guid rfid,
             [MarshalAs(UnmanagedType.U4)] int dwFlags,
-            IntPtr hToken, out IntPtr ppszPath);
+            IntPtr hToken, out StringBuilder ppszPath);
 
         [Flags]
         public enum KnownFolderFlags : uint
