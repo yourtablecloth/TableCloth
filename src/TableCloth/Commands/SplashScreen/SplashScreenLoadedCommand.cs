@@ -54,7 +54,6 @@ public sealed class SplashScreenLoadedCommand(
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_LoadingPreferences });
 
             var preferences = await preferencesManager.LoadPreferencesAsync();
-            viewModel.V2UIOptedIn = preferences?.V2UIOptIn ?? true;
             viewModel.ParsedArgument = parsedArgs;
 
             if (preferences?.UseLogCollection ?? true)

@@ -368,15 +368,6 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Option_InstallRaiDrive" xml:space="preserve">
     <value>Install RaiDrive</value>
   </data>
-  <data name="Option_LabDescriptionText" xml:space="preserve">
-    <value>The options below allow you to turn on and off features that will be introduced in the new version of the TableCloth program.</value>
-  </data>
-  <data name="Option_LabPreferences" xml:space="preserve">
-    <value>Experimentals</value>
-  </data>
-  <data name="Option_NewUIOptIn" xml:space="preserve">
-    <value>Using the new user interface</value>
-  </data>
   <data name="Option_Prerequisites" xml:space="preserve">
     <value>Prerequisites</value>
   </data>

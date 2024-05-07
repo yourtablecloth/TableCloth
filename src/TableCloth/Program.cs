@@ -13,7 +13,6 @@ using TableCloth.Commands.CertSelectWindow;
 using TableCloth.Commands.DetailPage;
 using TableCloth.Commands.DisclaimerWindow;
 using TableCloth.Commands.InputPasswordWindow;
-using TableCloth.Commands.MainWindow;
 using TableCloth.Commands.MainWindowV2;
 using TableCloth.Commands.Shared;
 using TableCloth.Commands.SplashScreen;
@@ -170,12 +169,6 @@ internal static class Program
             .AddSingleton<CertSelectWindowManualCertLoadCommand>()
             .AddSingleton<CertSelectWindowRequestConfirmCommand>()
             .AddSingleton<CertSelectWindowRequestCancelCommand>();
-
-        // Main Window
-        services
-            .AddWindow<MainWindow, MainWindowViewModel>()
-            .AddSingleton<MainWindowLoadedCommand>()
-            .AddSingleton<MainWindowClosedCommand>();
 
         // Main Window v2
         services

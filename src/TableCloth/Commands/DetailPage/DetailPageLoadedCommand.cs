@@ -41,7 +41,6 @@ public sealed class DetailPageLoadedCommand(
 
         viewModel.IsFavorite = currentConfig.Favorites.Contains(selectedServiceId);
         viewModel.EnableLogAutoCollecting = currentConfig.UseLogCollection;
-        viewModel.V2UIOptIn = currentConfig.V2UIOptIn;
         viewModel.EnableMicrophone = currentConfig.UseAudioRedirection;
         viewModel.EnableWebCam = currentConfig.UseVideoRedirection;
         viewModel.EnablePrinters = currentConfig.UsePrinterRedirection;
@@ -112,12 +111,6 @@ public sealed class DetailPageLoadedCommand(
 
             case nameof(DetailPageViewModel.EnableLogAutoCollecting):
                 currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
-                reserveRestart = appRestartManager.AskRestart();
-                break;
-
-            case nameof(DetailPageViewModel.V2UIOptIn):
-                currentConfig.V2UIOptIn = viewModel.V2UIOptIn;
-                appMessageBox.DisplayInfo(UIStringResources.Announcement_V1UIRetirement);
                 reserveRestart = appRestartManager.AskRestart();
                 break;
 

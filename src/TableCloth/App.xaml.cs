@@ -64,14 +64,8 @@ public partial class App : Application
 
         if (e.DialogResult.HasValue && e.DialogResult.Value)
         {
-            Window? mainWindow;
-            if (_splashScreen.ViewModel.V2UIOptedIn)
-                mainWindow = host.Services.GetRequiredService<MainWindowV2>();
-            else
-                mainWindow = host.Services.GetRequiredService<MainWindow>();
-
-            this.MainWindow = mainWindow;
-            mainWindow.Show();
+            MainWindow = host.Services.GetRequiredService<MainWindowV2>(); ;
+            MainWindow.Show();
         }
 
         _splashScreen.Close();

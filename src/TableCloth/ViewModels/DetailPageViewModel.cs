@@ -135,7 +135,6 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     private ImageSource? _serviceLogo;
     private bool _mapNpkiCert;
     private bool _enableLogAutoCollecting;
-    private bool _v2UIOptIn;
     private bool _enableMicrophone;
     private bool _enableWebCam;
     private bool _enablePrinters;
@@ -176,12 +175,6 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     {
         get => _enableLogAutoCollecting;
         set => SetProperty(ref _enableLogAutoCollecting, value);
-    }
-
-    public bool V2UIOptIn
-    {
-        get => _v2UIOptIn;
-        set => SetProperty(ref _v2UIOptIn, value);
     }
 
     public bool EnableMicrophone

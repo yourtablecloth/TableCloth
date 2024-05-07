@@ -222,19 +222,6 @@
                         <RowDefinition Height="50" />
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>
-
-                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{x:Static res:UIStringResources.Option_LabDescriptionText}" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_NewUIOptIn}" IsChecked="{Binding Path='V2UIOptIn'}" />
-                </Grid>
-                <Grid Margin="8">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="120" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50" />
-                        <RowDefinition Height="30" />
-                    </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{x:Static res:UIStringResources.Option_TelemetryDescriptionText}" />
                     <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_UseAutoLogCollecting}" IsChecked="{Binding Path='EnableLogAutoCollecting'}" />
                 </Grid>

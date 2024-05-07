@@ -810,33 +810,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   The options below allow you to turn on and off features that will be introduced in the new version of the TableCloth program.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Option_LabDescriptionText {
-            get {
-                return ResourceManager.GetString("Option_LabDescriptionText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Experimentals과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Option_LabPreferences {
-            get {
-                return ResourceManager.GetString("Option_LabPreferences", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Using the new user interface과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Option_NewUIOptIn {
-            get {
-                return ResourceManager.GetString("Option_NewUIOptIn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Prerequisites과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Option_Prerequisites {

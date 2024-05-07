@@ -368,15 +368,6 @@
   <data name="Option_InstallRaiDrive" xml:space="preserve">
     <value>RaiDrive 설치하기</value>
   </data>
-  <data name="Option_LabDescriptionText" xml:space="preserve">
-    <value>아래 옵션에서 새로운 버전의 식탁보 프로그램에 도입될 예정인 기능을 켜고 끌 수 있습니다.</value>
-  </data>
-  <data name="Option_LabPreferences" xml:space="preserve">
-    <value>실험실</value>
-  </data>
-  <data name="Option_NewUIOptIn" xml:space="preserve">
-    <value>새로운 사용자 인터페이스 사용</value>
-  </data>
   <data name="Option_Prerequisites" xml:space="preserve">
     <value>사전 작업</value>
   </data>

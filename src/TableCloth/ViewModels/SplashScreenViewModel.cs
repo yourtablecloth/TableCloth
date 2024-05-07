@@ -39,7 +39,6 @@ public class SplashScreenViewModel : ViewModelBase
     private string _appVersion = Helpers.GetAppVersion();
     private string _status = UIStringResources.Status_PleaseWait;
     private bool _appStartupSucceed = false;
-    private bool _v2UIOptedIn = true;
     private IList<string> _passedArguments = Array.Empty<string>();
     private CommandLineArgumentModel? _parsedArgument;
     private IList<string> _warnings = new List<string>();
@@ -60,12 +59,6 @@ public class SplashScreenViewModel : ViewModelBase
     {
         get => _appStartupSucceed;
         set => SetProperty(ref _appStartupSucceed, value);
-    }
-
-    public bool V2UIOptedIn
-    {
-        get => _v2UIOptedIn;
-        set => SetProperty(ref _v2UIOptedIn, value);
     }
 
     public IList<string> PassedArguments
