@@ -26,6 +26,7 @@ public sealed class SandboxBuilder(
 
     private string GetNPKIPathForSandbox(X509CertPair certPair)
     {
+        // Note: 샌드박스 안에서 사용할 경로를 조립하는 것이므로 SHGetKnownFolderPath API를 사용하면 안됩니다.
         var candidatePath = Path.Join("AppData", "LocalLow", "NPKI", certPair.Organization);
 
         if (certPair.IsPersonalCert)
