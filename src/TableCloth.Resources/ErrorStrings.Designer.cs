@@ -396,6 +396,17 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   The drive where Windows Sandbox will run does not appear to be protected by BitLocker.
+        ///
+        ///If the device or disk is stolen, forensics may reveal sensitive data, so be sure to turn on BitLocker protection before continuing to run TableCloth.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Error_SystemDrive_Vulnerable {
+            get {
+                return ResourceManager.GetString("Error_SystemDrive_Vulnerable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   An unexpected error occurred: (File: {0} (Row: {1}), Member: {2})과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Error_Unknown {

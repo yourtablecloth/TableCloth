@@ -265,4 +265,9 @@ Ctrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 
   <data name="Error_VersionSwitch_NotFound" xml:space="preserve">
     <value>예기치 않은 오류가 발생했습니다: 명령줄 구문 분석기 구성에서 버전 정보 스위치를 찾을 수 없습니다.</value>
   </data>
+  <data name="Error_SystemDrive_Vulnerable" xml:space="preserve">
+    <value>Windows Sandbox가 실행될 드라이브가 BitLocker로 보호되지 않고 있는 것 같습니다.
+
+장치나 디스크가 도난될 경우 포렌식을 통해 민감 데이터가 유출될 수 있으니, 식탁보를 계속 실행하기 전에 반드시 BitLocker 보호 기능을 켜주세요.</value>
+  </data>
 </root>
