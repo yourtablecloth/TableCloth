@@ -438,6 +438,7 @@ FodyWeavers.xsd
 
 /src/Hostess/commit.txt
 /src/Spork/commit.txt
+/src/Sponge/commit.txt
 
 /src/TableCloth/commit.txt
 /src/TableCloth/Hostess.zip
@@ -447,6 +448,7 @@ FodyWeavers.xsd
 /src/TableCloth.Test/commit.txt
 /src/TableCloth.Test/Hostess.zip
 /src/TableCloth.Test/Spork.zip
+/src/TableCloth/Sponge.zip
 /src/TableCloth.Test/Images.zip
 
 /src/TableCloth.Resources/commit.txt
