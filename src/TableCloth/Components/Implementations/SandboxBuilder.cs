@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -17,7 +18,8 @@ namespace TableCloth.Components.Implementations;
 public sealed class SandboxBuilder(
     IAppMessageBox appMessageBox,
     IArchiveExpander archiveExpander,
-    ISharedLocations sharedLocations) : ISandboxBuilder
+    ISharedLocations sharedLocations,
+    ISystemProperties systemProperties) : ISandboxBuilder
 {
     private readonly string _wdagUtilityAccountPath = @"C:\Users\WDAGUtilityAccount";
 
@@ -57,6 +59,19 @@ public sealed class SandboxBuilder(
         await File.WriteAllTextAsync(batchFilePath, batchFileContent, Encoding.Default, cancellationToken).ConfigureAwait(false);
 
         tableClothConfiguration.AssetsDirectoryPath = assetsDirectory;
+
+        var isSystemDiskAHdd = systemProperties.IsSystemDiskAHardDrive();
+        var recommendSafeDelete = false;
+        if (isSystemDiskAHdd.HasValue && isSystemDiskAHdd.Value)
+            recommendSafeDelete = true;
+
+        var answerJsonPath = Path.Combine(assetsDirectory, "SporkAnswers.json");
+        var answerJsonContent = await SerializeSporkAnswersJsonAsync(new SporkAnswers
+        {
+            RecommendSafeDelete = recommendSafeDelete,
+
+        }, cancellationToken).ConfigureAwait(false);
+        await File.WriteAllTextAsync(answerJsonPath, answerJsonContent, cancellationToken).ConfigureAwait(false);
 
         var wsbFilePath = Path.Combine(outputDirectory, "InternetBankingSandbox.wsb");
         var serializedXml = SerializeSandboxSpec(
@@ -195,6 +210,13 @@ popd
             appMessageBox.DisplayError(ex, true);
             return false;
         }
+    }
+
+    public static async Task<string> SerializeSporkAnswersJsonAsync(SporkAnswers answers, CancellationToken cancellationToken = default)
+    {
+        using var memStream = new MemoryStream();
+        await JsonSerializer.SerializeAsync<SporkAnswers>(memStream, answers, new JsonSerializerOptions() { WriteIndented = true, }, cancellationToken).ConfigureAwait(false);
+        return new UTF8Encoding(false).GetString(memStream.ToArray());
     }
 
     private static string SerializeSandboxSpec(SandboxConfiguration configuration, IList<SandboxMappedFolder> excludedFolders)

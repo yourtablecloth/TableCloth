@@ -21,12 +21,14 @@ public sealed class AppStartup : IAppStartup
         ISharedLocations sharedLocations,
         IArchiveExpander archiveExpander,
         ILogger<AppStartup> logger,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        ISystemProperties systemProperties)
     {
         _sharedLocations = sharedLocations;
         _archiveExpander = archiveExpander;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
+        _systemProperties = systemProperties;
 
         _mutex = new Mutex(true, $"Global\\{GetType().FullName}", out this._isFirstInstance);
     }
@@ -61,6 +63,7 @@ public sealed class AppStartup : IAppStartup
     private readonly IArchiveExpander _archiveExpander;
     private readonly ILogger _logger;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ISystemProperties _systemProperties;
 
     private readonly Mutex _mutex;
     private readonly bool _isFirstInstance;
@@ -246,16 +249,9 @@ public sealed class AppStartup : IAppStartup
             }
         }
 
-        var shellType = Type.GetTypeFromProgID("Shell.Application").EnsureNotNull("Cannot obtain Shell.Application type.");
-        object oInstance = Activator.CreateInstance(shellType).EnsureNotNull("Cannot create instance of Shell.Application.");
-        dynamic shell = oInstance;
-
-        // https://www.reddit.com/r/PowerShell/comments/jl12ux/comment/gamgwhj/
-        var systemDrivePath = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.Windows));
-        var protectionStatus = ((int?)shell?.NameSpace(systemDrivePath)?.Self?.ExtendedProperty("System.Volume.BitLockerProtection")) ?? 0;
-
-        // 0: Unprotectable, 1: Protected, 2: Not Protected, 3: Protection In Progress
-        if (protectionStatus != 1)
+        var bitLockerStatus = _systemProperties.IsSystemPartitionBitLockerEnabled();
+ 
+        if (!bitLockerStatus.HasValue || !bitLockerStatus.Value)
             warnings.Add(ErrorStrings.Error_SystemDrive_Vulnerable);
 
         result = ApplicationStartupResultModel.FromSucceedResult(providedWarnings: warnings);
