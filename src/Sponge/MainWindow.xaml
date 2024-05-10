@@ -5,10 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sponge"
         mc:Ignorable="d"
-        Title="Sponge" Width="320" Height="160" MinWidth="320" MinHeight="160">
+        Title="Sponge" Width="320" Height="200" MinWidth="320" MinHeight="160" Closing="Window_Closing">
+    <Window.Resources>
+        <local:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
+    <Window.DataContext>
+        <local:MainWindowViewModel />
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30*"/>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="10*"/>
             <RowDefinition Height="10*"/>
             <RowDefinition Height="20*"/>
         </Grid.RowDefinitions>
@@ -17,8 +25,9 @@
             <ColumnDefinition Width="50*"/>
         </Grid.ColumnDefinitions>
         <TextBlock Text="이 프로그램은 식탁보 실행과 함께 복사된 공동 인증서 파일을 복구 불가능하게 삭제할 수 있도록 돕습니다." TextWrapping="Wrap" Margin="10,0,10,0" VerticalAlignment="Center" Height="52" Grid.ColumnSpan="2"/>
-        <Button x:Name="DeleteButton" Content="삭제하기" Margin="10,10,10,10" Grid.Row="2" Click="DeleteButton_Click" />
-        <Button x:Name="QuitButton" Content="종료하기" Margin="10,10,10,10" Grid.Column="1" Grid.Row="2" Click="QuitButton_Click" />
-        <ProgressBar x:Name="ProgressBar" Height="30" Margin="10,0,10,0" VerticalAlignment="Center" Grid.ColumnSpan="2" Grid.Row="1" Visibility="Collapsed" />
+        <CheckBox x:Name="UseSecureDelete" Content="여러 번 덮어써서 삭제하기" Margin="10,10,0,0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding Path=OverwriteMultipleTimes}" IsEnabled="{Binding Path=WorkInProgress, Converter={StaticResource InverseBooleanConverter}}" />
+        <ProgressBar x:Name="ProgressBar" Height="15" Margin="10,0,10,0" VerticalAlignment="Center" Grid.ColumnSpan="2" Grid.Row="1" Value="{Binding Path=ProgressRate}" Visibility="{Binding Path=WorkInProgress, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <Button x:Name="DeleteButton" Content="삭제하기" Margin="10,10,10,10" Grid.Row="3" Click="DeleteButton_Click" IsEnabled="{Binding Path=WorkInProgress, Converter={StaticResource InverseBooleanConverter}}" />
+        <Button x:Name="QuitButton" Content="종료하기" Margin="10,10,10,10" Grid.Column="1" Grid.Row="3" Click="QuitButton_Click" IsEnabled="{Binding Path=WorkInProgress, Converter={StaticResource InverseBooleanConverter}}" />
     </Grid>
 </Window>
