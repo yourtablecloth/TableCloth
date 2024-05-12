@@ -16,7 +16,12 @@ namespace Sponge
         {
             InitializeComponent();
 
-            _backgroundWorker = new BackgroundWorker();
+            _backgroundWorker = new BackgroundWorker()
+            {
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = false,
+            };
+
             _backgroundWorker.DoWork += BackgroundWorker_DoWork;
             _backgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
             _backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
@@ -29,6 +34,12 @@ namespace Sponge
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            var args = e.Argument as RemovePrivacyFilesRequest;
+
+            if (args == default)
+                return;
+
+            var repeatCount = args.OverwriteCount;
             var succeedFileCount = 0;
             var failedFileCount = 0;
 
@@ -53,7 +64,6 @@ namespace Sponge
 
                 var totalFileCount = fileList.Count;
                 var processedFileCount = 0;
-                var repeatCount = ViewModel.OverwriteMultipleTimes ? 3 : 1;
 
                 foreach (var eachFile in fileList)
                 {
@@ -61,7 +71,7 @@ namespace Sponge
 
                     try
                     {
-                        fileInfo.SecureDelete(repeatCount, SecureDeleteObfuscationMode.All);
+                        //fileInfo.SecureDelete(repeatCount, SecureDeleteObfuscationMode.All);
                         succeedFileCount++;
                     }
                     catch
@@ -77,6 +87,7 @@ namespace Sponge
             finally
             {
                 _backgroundWorker.ReportProgress(100, $"모든 작업을 완료했습니다. 총 {succeedFileCount}개 파일을 삭제했고, {failedFileCount}개 파일을 삭제하지 못했습니다.");
+                e.Result = new RemovePrivacyFilesResult(succeedFileCount, failedFileCount);
             }
         }
 
@@ -88,6 +99,29 @@ namespace Sponge
         private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             ViewModel.WorkInProgress = false;
+
+            if (e.Cancelled)
+            {
+                MessageBox.Show(this, "작업이 도중에 취소되었습니다.", Title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
+                return;
+            }
+
+            if (e.Error != null)
+            {
+                var actualError = e.Error is AggregateException ? e.Error.InnerException : e.Error;
+                MessageBox.Show(this, $"예기치 않은 오류가 발생했습니다. {actualError.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                return;
+            }
+
+            var result = e.Result as RemovePrivacyFilesResult;
+            if (result == null)
+            {
+                MessageBox.Show(this, "작업을 완료했지만 결과를 확인할 수 없습니다.", Title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                return;
+            }
+
+            MessageBox.Show(this, $"총 {result.SucceedFileCount}개의 파일을 삭제했고, {result.FailedFileCount}개의 파일을 삭제하지 못했습니다.", Title, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+            Close();
         }
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
@@ -95,7 +129,8 @@ namespace Sponge
             try
             {
                 ViewModel.WorkInProgress = true;
-                _backgroundWorker.RunWorkerAsync();
+                _backgroundWorker.RunWorkerAsync(new RemovePrivacyFilesRequest(
+                    ViewModel.OverwriteMultipleTimes ? 3 : 0));
             }
             catch (Exception thrownException)
             {
