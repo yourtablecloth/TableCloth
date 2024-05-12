@@ -103,6 +103,13 @@ public sealed class AppStartup : IAppStartup
             return result;
         }
 
+        if (!File.Exists(_sharedLocations.SporkZipFilePath))
+        {
+            result = ApplicationStartupResultModel.FromErrorMessage(
+                ErrorStrings.Error_Sponge_Missing, isCritical: true, providedWarnings: warnings);
+            return result;
+        }
+
         if (!File.Exists(_sharedLocations.ImagesZipFilePath))
         {
             result = ApplicationStartupResultModel.FromErrorMessage(

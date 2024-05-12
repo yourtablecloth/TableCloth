@@ -270,4 +270,7 @@ Ctrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 
 
 장치나 디스크가 도난될 경우 포렌식을 통해 민감 데이터가 유출될 수 있으니, 식탁보를 계속 실행하기 전에 반드시 BitLocker 보호 기능을 켜주세요.</value>
   </data>
+  <data name="Error_Sponge_Missing" xml:space="preserve">
+    <value>스폰지 실행 파일을 찾을 수 없습니다. 프로그램을 다시 설치해주세요.</value>
+  </data>
 </root>

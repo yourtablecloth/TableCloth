@@ -50,6 +50,10 @@ public sealed class SandboxBuilder(
         if (!await ExpandAssetZipAsync(sporkZipFilePath, outputDirectory, cancellationToken).ConfigureAwait(false))
             return default;
 
+        var spongeZipFilePath = Path.Combine(sharedLocations.ExecutableDirectoryPath, "Sponge.zip");
+        if (!await ExpandAssetZipAsync(spongeZipFilePath, outputDirectory, cancellationToken).ConfigureAwait(false))
+            return default;
+
         var assetsDirectory = Path.Combine(outputDirectory, "assets");
         if (!Directory.Exists(assetsDirectory))
             Directory.CreateDirectory(assetsDirectory);

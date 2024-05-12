@@ -378,6 +378,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   The sponge executable file was not found, please reinstall the program.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Error_Sponge_Missing {
+            get {
+                return ResourceManager.GetString("Error_Sponge_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   The spork executable file was not found, please reinstall the program.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Error_Spork_Missing {

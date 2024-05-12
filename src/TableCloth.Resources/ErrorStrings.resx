@@ -270,4 +270,7 @@ You can select multiple files by holding down the Ctrl or Shift key, or by dragg
 
 If the device or disk is stolen, forensics may reveal sensitive data, so be sure to turn on BitLocker protection before continuing to run TableCloth.</value>
   </data>
+  <data name="Error_Sponge_Missing" xml:space="preserve">
+    <value>The sponge executable file was not found, please reinstall the program.</value>
+  </data>
 </root>
