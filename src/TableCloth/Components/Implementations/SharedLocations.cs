@@ -47,6 +47,9 @@ public sealed class SharedLocations : ISharedLocations
     public string SporkZipFilePath
         => Path.Combine(ExecutableDirectoryPath, "Spork.zip");
 
+    public string SpongeZipFilePath
+        => Path.Combine(ExecutableDirectoryPath, "Sponge.zip");
+
     public string ImagesZipFilePath
         => Path.Combine(ExecutableDirectoryPath, "Images.zip");
 }

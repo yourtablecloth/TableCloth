@@ -443,11 +443,13 @@ FodyWeavers.xsd
 /src/TableCloth/commit.txt
 /src/TableCloth/Hostess.zip
 /src/TableCloth/Spork.zip
+/src/TableCloth/Sponge.zip
 /src/TableCloth/Images.zip
 
 /src/TableCloth.Test/commit.txt
 /src/TableCloth.Test/Hostess.zip
 /src/TableCloth.Test/Spork.zip
+/src/TableCloth.Test/Sponge.zip
 /src/TableCloth/Sponge.zip
 /src/TableCloth.Test/Images.zip
 

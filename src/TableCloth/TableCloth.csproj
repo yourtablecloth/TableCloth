@@ -28,6 +28,7 @@
 	<ItemGroup>
 		<None Remove="Resources\SandboxIcon.png" />
 		<None Remove="Spork.zip" />
+		<None Remove="Sponge.zip" />
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="commit.txt">
@@ -38,6 +39,9 @@
 		</Content>
 		<Content Include="Spork.zip">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Sponge.zip">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 
