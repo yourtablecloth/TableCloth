@@ -11,6 +11,6 @@ namespace Spork.Converters
             => (value is bool v) && v ? Visibility.Visible : Visibility.Collapsed;
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => throw new NotImplementedException();
+            => DependencyProperty.UnsetValue;
     }
 }

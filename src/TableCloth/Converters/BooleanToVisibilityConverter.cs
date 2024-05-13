@@ -11,5 +11,5 @@ public class BooleanToVisibilityConverter : IValueConverter
         => (value is bool internalValue && internalValue) ? Visibility.Visible : Visibility.Collapsed;
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        => throw new NotImplementedException();
+        => DependencyProperty.UnsetValue;
 }

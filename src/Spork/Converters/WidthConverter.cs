@@ -11,6 +11,6 @@ namespace Spork.Converters
             => (double)value - SystemParameters.VerticalScrollBarWidth;
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => throw new NotImplementedException();
+            => DependencyProperty.UnsetValue;
     }
 }
