@@ -1,9 +1,12 @@
 ﻿using dotEnhancer;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
+using TableCloth;
 
 namespace Sponge
 {
@@ -46,12 +49,12 @@ namespace Sponge
             try
             {
                 _backgroundWorker.ReportProgress(0, "공동 인증서 파일을 검색 중입니다...");
-                var userProfileDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                var localLowNpkiDirectoryPath = NativeMethods.GetKnownFolderPath(NativeMethods.LocalLowFolderGuid);
 
-                if (!Directory.Exists(userProfileDirectory))
+                if (!Directory.Exists(localLowNpkiDirectoryPath))
                     return;
 
-                var fileList = Directory.GetFiles(userProfileDirectory, "*.*", SearchOption.AllDirectories)
+                var fileList = Directory.GetFiles(localLowNpkiDirectoryPath, "*.*", SearchOption.AllDirectories)
                     .Where(x =>
                     {
                         return
@@ -86,7 +89,13 @@ namespace Sponge
             }
             finally
             {
-                _backgroundWorker.ReportProgress(100, $"모든 작업을 완료했습니다. 총 {succeedFileCount}개 파일을 삭제했고, {failedFileCount}개 파일을 삭제하지 못했습니다.");
+                var fragments = new List<string>();
+                if (succeedFileCount > 0)
+                    fragments.Add($"{succeedFileCount}개 파일 삭제 완료");
+                if (failedFileCount > 0)
+                    fragments.Add($"{failedFileCount}개 파일 삭제 실패");
+
+                _backgroundWorker.ReportProgress(100, $"모든 작업을 완료했습니다. ({string.Join(", ", fragments)})");
                 e.Result = new RemovePrivacyFilesResult(succeedFileCount, failedFileCount);
             }
         }
