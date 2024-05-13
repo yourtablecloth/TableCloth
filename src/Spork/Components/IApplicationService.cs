@@ -17,5 +17,4 @@ namespace Spork.Components
 
         void Shutdown(int exitCode = default);
     }
-
 }

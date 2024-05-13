@@ -119,7 +119,8 @@ namespace Spork
                 .AddSingleton<IResourceResolver, ResourceResolver>()
                 .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
                 .AddSingleton<ICommandLineArguments, CommandLineArguments>()
-                .AddSingleton<IApplicationService, ApplicationService>();
+                .AddSingleton<IApplicationService, ApplicationService>()
+                .AddSingleton<IShortcutCreator, ShortcutCreator>();
 
             // Browser Services
             services

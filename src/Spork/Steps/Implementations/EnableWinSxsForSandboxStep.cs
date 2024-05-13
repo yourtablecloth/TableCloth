@@ -25,7 +25,7 @@ namespace Spork.Steps.Implementations
             => true;
 
         public override Task<bool> EvaluateRequiredStepAsync(InstallItemViewModel viewModel, CancellationToken cancellationToken = default)
-            => Task.FromResult(Helpers.SandboxAccountNames.Contains(Environment.UserName, StringComparer.Ordinal));
+            => Task.FromResult(Helpers.IsUnderWindowsSandboxSession());
 
         public override async Task LoadContentForStepAsync(InstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {

@@ -28,7 +28,7 @@ namespace Spork.Steps.Implementations
 
         public override Task PlayStepAsync(InstallItemViewModel _, Action<double> progressCallback, CancellationToken cancellationToken = default)
         {
-            if (!Helpers.SandboxAccountNames.Contains(Environment.UserName, StringComparer.Ordinal))
+            if (!Helpers.IsUnderWindowsSandboxSession())
             {
                 var response = _appMessageBox.DisplayQuestion(
                     AskStrings.Ask_WarningForNonSandboxEnvironment,
