@@ -396,6 +396,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   This program is designed to run only in a Windows Sandbox environment.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Error_Sponge_NotEligible {
+            get {
+                return ResourceManager.GetString("Error_Sponge_NotEligible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   The job was canceled midway through.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Error_Sponge_TaskCancelled {

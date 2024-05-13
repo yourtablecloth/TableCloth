@@ -61,6 +61,9 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Sponge.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="dotEnhancer, Version=0.5.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\dotEnhancer.0.5.4\lib\netstandard20\dotEnhancer.dll</HintPath>
@@ -110,10 +113,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </ApplicationDefinition>
+    </Page>
     <Compile Include="Components\Implementations\VisualThemeManager.cs" />
     <Compile Include="Components\IVisualThemeManager.cs" />
     <Compile Include="Models\RemovePrivacyFilesRequest.cs" />
@@ -150,6 +153,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Program.cs" />
     <Compile Include="Themes\ColourfulDarkTheme.xaml.cs">
       <DependentUpon>ColourfulDarkTheme.xaml</DependentUpon>
     </Compile>

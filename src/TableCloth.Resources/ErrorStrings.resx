@@ -285,4 +285,7 @@ If the device or disk is stolen, forensics may reveal sensitive data, so be sure
     <value>An unexpected error occurred: {0}</value>
     <comment>This item is used by Sponge</comment>
   </data>
+  <data name="Error_Sponge_NotEligible" xml:space="preserve">
+    <value>This program is designed to run only in a Windows Sandbox environment.</value>
+  </data>
 </root>

@@ -1,13 +1,6 @@
-﻿
-using Sponge.Components.Implementations;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using TableCloth;
+using TableCloth.Resources;
 
 namespace Sponge
 {
@@ -20,7 +13,7 @@ namespace Sponge
         {
             if (!Helpers.IsUnderWindowsSandboxSession())
             {
-                MessageBox.Show("이 프로그램은 Windows Sandbox 환경에서만 실행하도록 설계되었습니다.", "알림", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(ErrorStrings.Error_Sponge_NotEligible, UIStringResources.TitleText_Info, MessageBoxButton.OK, MessageBoxImage.Warning);
 
 #if !DEBUG
                 Shutdown();

@@ -4,6 +4,6 @@ namespace TableCloth.Models.Answers
 {
     public sealed class SporkAnswers
     {
-        public bool RecommendSafeDelete { get; set; }
+        public string? HostUILocale { get; set; }
     }
 }

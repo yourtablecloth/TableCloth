@@ -285,4 +285,7 @@ Ctrl 키나 Shift 키를 누른 채로 선택하거나, 파일 선택 창에서 
     <value>예기치 않은 오류가 발생했습니다. {0}</value>
     <comment>This item is used by Sponge</comment>
   </data>
+  <data name="Error_Sponge_NotEligible" xml:space="preserve">
+    <value>이 프로그램은 Windows Sandbox 환경에서만 실행하도록 설계되었습니다.</value>
+  </data>
 </root>

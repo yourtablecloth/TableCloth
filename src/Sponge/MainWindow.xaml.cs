@@ -7,10 +7,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Windows;
 using TableCloth;
-using TableCloth.Models.Answers;
 using TableCloth.Resources;
 
 namespace Sponge
@@ -92,32 +90,15 @@ namespace Sponge
             var themeManager = new VisualThemeManager();
             themeManager.ApplyAutoThemeChange(this);
 
-            var answerFilePath = Path.GetFullPath("SpongeAnswers.json");
-
-            if (File.Exists(answerFilePath))
-            {
-                using (var answerFileContent = File.OpenRead(answerFilePath))
-                {
-                    var answer = DeserializeSpongeAnswersJson(answerFileContent);
-
-                    if (answer != null)
-                        ViewModel.OverwriteMultipleTimes = answer.RecommendSafeDelete;
-                }
-            }
+            var answer = Program.DeserializeSpongeAnswersJson();
+            if (answer != null)
+                ViewModel.OverwriteMultipleTimes = answer.RecommendSafeDelete;
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             if (ViewModel.WorkInProgress)
                 e.Cancel = true;
-        }
-
-        private SpongeAnswers DeserializeSpongeAnswersJson(Stream targetStream)
-        {
-            if (!targetStream.CanRead)
-                return default;
-
-            return JsonSerializer.Deserialize<SpongeAnswers>(targetStream);
         }
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)

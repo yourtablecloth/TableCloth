@@ -16,9 +16,14 @@ using Spork.Steps;
 using Spork.Steps.Implementations;
 using Spork.ViewModels;
 using System;
+using System.Globalization;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Threading;
 using System.Windows;
 using TableCloth;
+using TableCloth.Models.Answers;
 using TableCloth.Resources;
 
 namespace Spork
@@ -29,16 +34,30 @@ namespace Spork
         private static int Main(string[] args)
             => RunApp(args);
 
+        // To Do: Not Working
+        private static void SetDefaultCulture(CultureInfo desiredCulture)
+        {
+            Thread.CurrentThread.CurrentCulture = desiredCulture;
+            Thread.CurrentThread.CurrentUICulture = desiredCulture;
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static int RunApp(string[] args)
         {
             try
             {
+                var answer = DeserializeSporkAnswersJson();
+
+                if (!string.IsNullOrWhiteSpace(answer?.HostUILocale))
+                {
+                    var desiredCulture = new CultureInfo(answer.HostUILocale);
+                    SetDefaultCulture(desiredCulture);
+                }
+
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
                 // Application.Current 속성은 아래 생성자를 호출하면서 자동으로 설정됩니다.
                 var app = new App();
-
                 app.SetupHost(CreateHostBuilder(args).Build());
                 app.Run();
             }
@@ -172,6 +191,25 @@ namespace Spork
 
             // App
             services.AddTransient(_ => Application.Current);
+        }
+
+        internal static SporkAnswers DeserializeSporkAnswersJson()
+        {
+            try
+            {
+                var answerFilePath = Path.GetFullPath("SporkAnswers.json");
+
+                if (File.Exists(answerFilePath))
+                {
+                    using (var answerFileContent = File.OpenRead(answerFilePath))
+                    {
+                        return JsonSerializer.Deserialize<SporkAnswers>(answerFileContent);
+                    }
+                }
+
+                return default;
+            }
+            catch { return default; }
         }
     }
 }

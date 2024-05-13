@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -76,7 +77,7 @@ public sealed class SandboxBuilder(
         var sporkAnswerJsonPath = Path.Combine(assetsDirectory, "SporkAnswers.json");
         var sporkAnswerJsonContent = await SerializeSporkAnswersJsonAsync(new SporkAnswers
         {
-            RecommendSafeDelete = recommendSafeDelete,
+            HostUILocale = CultureInfo.CurrentUICulture.Name,
 
         }, cancellationToken).ConfigureAwait(false);
         await File.WriteAllTextAsync(sporkAnswerJsonPath, sporkAnswerJsonContent, cancellationToken).ConfigureAwait(false);
@@ -84,6 +85,7 @@ public sealed class SandboxBuilder(
         var spongeAnswerJsonPath = Path.Combine(assetsDirectory, "Sponge", "SpongeAnswers.json");
         var spongeAnswerJsonContent = await SerializeSpongeAnswersJsonAsync(new SpongeAnswers
         {
+            HostUILocale = CultureInfo.CurrentUICulture.Name,
             RecommendSafeDelete = recommendSafeDelete,
 
         }, cancellationToken).ConfigureAwait(false);
