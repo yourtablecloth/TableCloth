@@ -52,3 +52,5 @@ GitHub Sponsorship을 통하여 후원해주시면 지속적으로 프로젝트�
 <img width="100" alt="Tablecloth Icon by Icons8" src="docs/images/TableCloth_NewLogo.png" /> by [Icons8](https://img.icons8.com/color/96/000000/tablecloth.png)
 
 <img width="100" alt="Spork Icon by Freepik Flaticon" src="docs/images/Spork_NewLogo.png" /> by [Freepik Flaticon](https://www.flaticon.com/free-icon/spork_5625701)
+
+<img width="100" alt="Sponge Icon by Freepik Flaticon" src="docs/images/Sponge_NewLogo.png"/> by [Freepik photo3idea_studio](https://www.flaticon.com/free-icons/sponge)
