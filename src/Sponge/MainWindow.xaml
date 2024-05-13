@@ -3,15 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Sponge"
+        xmlns:viewModel="clr-namespace:Sponge.ViewModels"
+        xmlns:componentModels="clr-namespace:System.ComponentModel;assembly=netstandard"
         mc:Ignorable="d"
         Title="Sponge" Width="320" Height="200" MinWidth="320" MinHeight="160" Closing="Window_Closing" Loaded="Window_Loaded">
     <Window.Resources>
-        <local:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-        <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <componentModels:BackgroundWorker
+            x:Key="BackgroundWorker" WorkerReportsProgress="True" WorkerSupportsCancellation="False"
+            DoWork="BackgroundWorker_DoWork" ProgressChanged="BackgroundWorker_ProgressChanged"
+            RunWorkerCompleted="BackgroundWorker_RunWorkerCompleted" />
     </Window.Resources>
     <Window.DataContext>
-        <local:MainWindowViewModel />
+        <viewModel:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>

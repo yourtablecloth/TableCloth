@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Sponge
+namespace Sponge.Converters
 {
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public sealed class BooleanToVisibilityConverter : IValueConverter

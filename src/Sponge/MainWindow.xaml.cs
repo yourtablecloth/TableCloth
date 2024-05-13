@@ -1,4 +1,6 @@
 ﻿using dotEnhancer;
+using Sponge.Models;
+using Sponge.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,22 +21,13 @@ namespace Sponge
         public MainWindow()
         {
             InitializeComponent();
-
-            _backgroundWorker = new BackgroundWorker()
-            {
-                WorkerReportsProgress = true,
-                WorkerSupportsCancellation = false,
-            };
-
-            _backgroundWorker.DoWork += BackgroundWorker_DoWork;
-            _backgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
-            _backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
         }
-
-        private BackgroundWorker _backgroundWorker;
 
         public MainWindowViewModel ViewModel
             => (MainWindowViewModel)DataContext;
+
+        public BackgroundWorker BackgroundWorker
+            => (BackgroundWorker)Resources["BackgroundWorker"];
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -49,7 +42,7 @@ namespace Sponge
 
             try
             {
-                _backgroundWorker.ReportProgress(0, "공동 인증서 파일을 검색 중입니다...");
+                BackgroundWorker.ReportProgress(0, "공동 인증서 파일을 검색 중입니다...");
                 var localLowNpkiDirectoryPath = NativeMethods.GetKnownFolderPath(NativeMethods.LocalLowFolderGuid);
 
                 if (!Directory.Exists(localLowNpkiDirectoryPath))
@@ -84,7 +77,7 @@ namespace Sponge
                     }
                     finally
                     {
-                        _backgroundWorker.ReportProgress((int)((double)++processedFileCount / totalFileCount * 100d), $"파일 삭제 완료 ({totalFileCount}개 중 {processedFileCount}개)");
+                        BackgroundWorker.ReportProgress((int)((double)++processedFileCount / totalFileCount * 100d), $"파일 삭제 완료 ({totalFileCount}개 중 {processedFileCount}개)");
                     }
                 }
             }
@@ -96,7 +89,7 @@ namespace Sponge
                 if (failedFileCount > 0)
                     fragments.Add($"{failedFileCount}개 파일 삭제 실패");
 
-                _backgroundWorker.ReportProgress(100, $"모든 작업을 완료했습니다. ({string.Join(", ", fragments)})");
+                BackgroundWorker.ReportProgress(100, $"모든 작업을 완료했습니다. ({string.Join(", ", fragments)})");
                 e.Result = new RemovePrivacyFilesResult(succeedFileCount, failedFileCount);
             }
         }
@@ -139,7 +132,7 @@ namespace Sponge
             try
             {
                 ViewModel.WorkInProgress = true;
-                _backgroundWorker.RunWorkerAsync(new RemovePrivacyFilesRequest(
+                BackgroundWorker.RunWorkerAsync(new RemovePrivacyFilesRequest(
                     ViewModel.OverwriteMultipleTimes ? 3 : 0));
             }
             catch (Exception thrownException)

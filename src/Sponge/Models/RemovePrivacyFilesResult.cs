@@ -1,4 +1,4 @@
-﻿namespace Sponge
+﻿namespace Sponge.Models
 {
     public class RemovePrivacyFilesResult
     {
