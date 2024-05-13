@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Spork.Themes;
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -32,9 +33,14 @@ namespace Spork.Components.Implementations
             {
                 if (personalizeKey != null)
                 {
-                    if (personalizeKey.GetValueKind("AppsUseLightTheme") == RegistryValueKind.DWord)
+                    var appsUseLightThemeValueName = personalizeKey.GetValueNames().FirstOrDefault(x => string.Equals("AppsUseLightTheme", x, StringComparison.OrdinalIgnoreCase));
+
+                    if (appsUseLightThemeValueName == null)
+                        return null;
+
+                    if (personalizeKey.GetValueKind(appsUseLightThemeValueName) == RegistryValueKind.DWord)
                     {
-                        return GetValue<int>(personalizeKey, "AppsUseLightTheme", 1) > 0;
+                        return GetValue<int>(personalizeKey, appsUseLightThemeValueName, 1) > 0;
                     }
                 }
             }
