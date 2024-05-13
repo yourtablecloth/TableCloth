@@ -395,6 +395,36 @@
   <data name="SearchFilter_Watermark" xml:space="preserve">
     <value>검색 키워드 입력 (예: 신한, 보험)</value>
   </data>
+  <data name="Sponge_DeletedFileCount" xml:space="preserve">
+    <value>{0}개 파일 삭제 완료</value>
+  </data>
+  <data name="Sponge_DeleteFailedFileCount" xml:space="preserve">
+    <value>{0}개 파일 삭제 실패</value>
+  </data>
+  <data name="Sponge_DeleteProgressMessage" xml:space="preserve">
+    <value>파일 삭제 완료 ({0}개 중 {1}개)</value>
+  </data>
+  <data name="Sponge_Exit" xml:space="preserve">
+    <value>종료하기</value>
+  </data>
+  <data name="Sponge_Introduction" xml:space="preserve">
+    <value>이 프로그램은 식탁보 실행과 함께 복사된 공동 인증서 파일을 복구 불가능하게 삭제할 수 있도록 돕습니다.</value>
+  </data>
+  <data name="Sponge_OperationCompleted" xml:space="preserve">
+    <value>검색된 인증서 파일의 삭제 결과는 다음과 같습니다.</value>
+  </data>
+  <data name="Sponge_OperationCompleted_WithNoResult" xml:space="preserve">
+    <value>검색된 인증서 파일이 없습니다.</value>
+  </data>
+  <data name="Sponge_OverwriteMultipleTimes" xml:space="preserve">
+    <value>여러 번 덮어써서 삭제하기</value>
+  </data>
+  <data name="Sponge_PerformDelete" xml:space="preserve">
+    <value>파일 삭제하기</value>
+  </data>
+  <data name="Sponge_WorkInProgress" xml:space="preserve">
+    <value>공동 인증서 파일을 검색 중입니다...</value>
+  </data>
   <data name="Spork_AppInstructionMessage" xml:space="preserve">
     <value>이 프로그램은 요청받은 설치 프로그램들을 샌드 박스 안에 한번에 설치해주는 도구입니다. 설치하기 버튼을 누르면 설치가 시작됩니다.</value>
   </data>

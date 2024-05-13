@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Windows;
 using TableCloth;
 using TableCloth.Models.Answers;
+using TableCloth.Resources;
 
 namespace Sponge
 {
@@ -30,71 +31,6 @@ namespace Sponge
         public BackgroundWorker BackgroundWorker
             => (BackgroundWorker)Resources["BackgroundWorker"];
 
-        private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            var args = e.Argument as RemovePrivacyFilesRequest;
-
-            if (args == default)
-                return;
-
-            var repeatCount = args.OverwriteCount;
-            var succeedFileCount = 0;
-            var failedFileCount = 0;
-
-            try
-            {
-                BackgroundWorker.ReportProgress(0, "공동 인증서 파일을 검색 중입니다...");
-                var localLowNpkiDirectoryPath = NativeMethods.GetKnownFolderPath(NativeMethods.LocalLowFolderGuid);
-
-                if (!Directory.Exists(localLowNpkiDirectoryPath))
-                    return;
-
-                var fileList = Directory.GetFiles(localLowNpkiDirectoryPath, "*.*", SearchOption.AllDirectories)
-                    .Where(x =>
-                    {
-                        return
-                            string.Equals(".der", System.IO.Path.GetExtension(x), StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(".key", System.IO.Path.GetExtension(x), StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(".pfx", System.IO.Path.GetExtension(x), StringComparison.OrdinalIgnoreCase);
-                    })
-                    .Distinct()
-                    .ToList();
-
-                var totalFileCount = fileList.Count;
-                var processedFileCount = 0;
-
-                foreach (var eachFile in fileList)
-                {
-                    var fileInfo = new FileInfo(eachFile);
-
-                    try
-                    {
-                        fileInfo.SecureDelete(repeatCount, SecureDeleteObfuscationMode.All);
-                        succeedFileCount++;
-                    }
-                    catch
-                    {
-                        failedFileCount++;
-                    }
-                    finally
-                    {
-                        BackgroundWorker.ReportProgress((int)((double)++processedFileCount / totalFileCount * 100d), $"파일 삭제 완료 ({totalFileCount}개 중 {processedFileCount}개)");
-                    }
-                }
-            }
-            finally
-            {
-                var fragments = new List<string>();
-                if (succeedFileCount > 0)
-                    fragments.Add($"{succeedFileCount}개 파일 삭제 완료");
-                if (failedFileCount > 0)
-                    fragments.Add($"{failedFileCount}개 파일 삭제 실패");
-
-                BackgroundWorker.ReportProgress(100, $"모든 작업을 완료했습니다. ({string.Join(", ", fragments)})");
-                e.Result = new RemovePrivacyFilesResult(succeedFileCount, failedFileCount);
-            }
-        }
-
         private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             ViewModel.ProgressRate = e.ProgressPercentage;
@@ -106,25 +42,25 @@ namespace Sponge
 
             if (e.Cancelled)
             {
-                MessageBox.Show(this, "작업이 도중에 취소되었습니다.", Title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
+                MessageBox.Show(this, ErrorStrings.Error_Sponge_TaskCancelled, Title, MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
                 return;
             }
 
             if (e.Error != null)
             {
                 var actualError = e.Error is AggregateException ? e.Error.InnerException : e.Error;
-                MessageBox.Show(this, $"예기치 않은 오류가 발생했습니다. {actualError.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                MessageBox.Show(this, string.Format(ErrorStrings.Error_Sponge_UnexpectedErrorOccurred, actualError.Message), Title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                 return;
             }
 
             var result = e.Result as RemovePrivacyFilesResult;
             if (result == null)
             {
-                MessageBox.Show(this, "작업을 완료했지만 결과를 확인할 수 없습니다.", Title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                MessageBox.Show(this, ErrorStrings.Error_Sponge_NoCompatibleResultFound, Title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                 return;
             }
 
-            MessageBox.Show(this, $"총 {result.SucceedFileCount}개의 파일을 삭제했고, {result.FailedFileCount}개의 파일을 삭제하지 못했습니다.", Title, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+            MessageBox.Show(this, result.Message, Title, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
             Close();
         }
 
@@ -182,6 +118,75 @@ namespace Sponge
                 return default;
 
             return JsonSerializer.Deserialize<SpongeAnswers>(targetStream);
+        }
+
+        private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var args = e.Argument as RemovePrivacyFilesRequest;
+
+            if (args == default)
+                return;
+
+            var repeatCount = args.OverwriteCount;
+            var succeedFileCount = 0;
+            var failedFileCount = 0;
+
+            try
+            {
+                BackgroundWorker.ReportProgress(0, UIStringResources.Sponge_WorkInProgress);
+                var localLowNpkiDirectoryPath = NativeMethods.GetKnownFolderPath(NativeMethods.LocalLowFolderGuid);
+
+                if (!Directory.Exists(localLowNpkiDirectoryPath))
+                    return;
+
+                var fileList = Directory.GetFiles(localLowNpkiDirectoryPath, "*.*", SearchOption.AllDirectories)
+                    .Where(x =>
+                    {
+                        return
+                            string.Equals(".der", System.IO.Path.GetExtension(x), StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(".key", System.IO.Path.GetExtension(x), StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(".pfx", System.IO.Path.GetExtension(x), StringComparison.OrdinalIgnoreCase);
+                    })
+                    .Distinct()
+                    .ToList();
+
+                var totalFileCount = fileList.Count;
+                var processedFileCount = 0;
+
+                foreach (var eachFile in fileList)
+                {
+                    var fileInfo = new FileInfo(eachFile);
+
+                    try
+                    {
+                        fileInfo.SecureDelete(repeatCount, SecureDeleteObfuscationMode.All);
+                        succeedFileCount++;
+                    }
+                    catch
+                    {
+                        failedFileCount++;
+                    }
+                    finally
+                    {
+                        BackgroundWorker.ReportProgress((int)((double)++processedFileCount / totalFileCount * 100d), string.Format(UIStringResources.Sponge_DeleteProgressMessage, totalFileCount, processedFileCount));
+                    }
+                }
+            }
+            finally
+            {
+                var fragments = new List<string>();
+                if (succeedFileCount > 0)
+                    fragments.Add(string.Format(UIStringResources.Sponge_DeletedFileCount, succeedFileCount));
+                if (failedFileCount > 0)
+                    fragments.Add(string.Format(UIStringResources.Sponge_DeleteFailedFileCount, failedFileCount));
+
+                var message = fragments.Count() > 0 ?
+                    $"{UIStringResources.Sponge_OperationCompleted} ({string.Join(", ", fragments)})" :
+                    UIStringResources.Sponge_OperationCompleted_WithNoResult;
+
+                BackgroundWorker.ReportProgress(100, message);
+                e.Result = new RemovePrivacyFilesResult(succeedFileCount, failedFileCount, message);
+            }
         }
     }
 }

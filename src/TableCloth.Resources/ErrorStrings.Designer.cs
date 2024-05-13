@@ -387,6 +387,33 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Completed the action, but can&apos;t see the result.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Error_Sponge_NoCompatibleResultFound {
+            get {
+                return ResourceManager.GetString("Error_Sponge_NoCompatibleResultFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The job was canceled midway through.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Error_Sponge_TaskCancelled {
+            get {
+                return ResourceManager.GetString("Error_Sponge_TaskCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   An unexpected error occurred: {0}과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Error_Sponge_UnexpectedErrorOccurred {
+            get {
+                return ResourceManager.GetString("Error_Sponge_UnexpectedErrorOccurred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   The spork executable file was not found, please reinstall the program.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Error_Spork_Missing {

@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModel="clr-namespace:Sponge.ViewModels"
         xmlns:componentModels="clr-namespace:System.ComponentModel;assembly=netstandard"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         mc:Ignorable="d"
         Style="{DynamicResource MainWindowStyle}"
+        WindowStartupLocation="CenterScreen" Topmost="True"
         Title="Sponge" Width="320" Height="200" MinWidth="320" MinHeight="160" Closing="Window_Closing" Loaded="Window_Loaded">
     <Window.Resources>
         <componentModels:BackgroundWorker
@@ -28,10 +30,10 @@
             <ColumnDefinition Width="50*"/>
             <ColumnDefinition Width="50*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="이 프로그램은 식탁보 실행과 함께 복사된 공동 인증서 파일을 복구 불가능하게 삭제할 수 있도록 돕습니다." TextWrapping="Wrap" Margin="10,0,10,0" VerticalAlignment="Center" Height="52" Grid.ColumnSpan="2"/>
-        <CheckBox x:Name="UseSecureDelete" Content="여러 번 덮어써서 삭제하기" Margin="10,10,0,0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding Path=OverwriteMultipleTimes}" IsEnabled="{Binding Path=WorkInProgress, Converter={StaticResource InverseBooleanConverter}}" />
+        <TextBlock Text="{x:Static res:UIStringResources.Sponge_Introduction}" TextWrapping="Wrap" Margin="10,0,10,0" VerticalAlignment="Center" Height="52" Grid.ColumnSpan="2"/>
+        <CheckBox x:Name="UseSecureDelete" Content="{x:Static res:UIStringResources.Sponge_OverwriteMultipleTimes}" Margin="10,10,0,0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding Path=OverwriteMultipleTimes}" IsEnabled="{Binding Path=WorkInProgress, Converter={StaticResource InverseBooleanConverter}}" />
         <ProgressBar x:Name="ProgressBar" Height="15" Margin="10,0,10,0" VerticalAlignment="Center" Grid.ColumnSpan="2" Grid.Row="1" Value="{Binding Path=ProgressRate}" Visibility="{Binding Path=WorkInProgress, Converter={StaticResource BooleanToVisibilityConverter}}" />
-        <Button x:Name="DeleteButton" Content="삭제하기" Margin="10,10,10,10" Grid.Row="3" Click="DeleteButton_Click" IsEnabled="{Binding Path=WorkInProgress, Converter={StaticResource InverseBooleanConverter}}" />
-        <Button x:Name="QuitButton" Content="종료하기" Margin="10,10,10,10" Grid.Column="1" Grid.Row="3" Click="QuitButton_Click" IsEnabled="{Binding Path=WorkInProgress, Converter={StaticResource InverseBooleanConverter}}" />
+        <Button x:Name="DeleteButton" Content="{x:Static res:UIStringResources.Sponge_PerformDelete}" Margin="10,10,10,10" Grid.Row="3" Click="DeleteButton_Click" IsEnabled="{Binding Path=WorkInProgress, Converter={StaticResource InverseBooleanConverter}}" />
+        <Button x:Name="QuitButton" Content="{x:Static res:UIStringResources.Sponge_Exit}" Margin="10,10,10,10" Grid.Column="1" Grid.Row="3" Click="QuitButton_Click" IsEnabled="{Binding Path=WorkInProgress, Converter={StaticResource InverseBooleanConverter}}" />
     </Grid>
 </Window>
