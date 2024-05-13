@@ -27,6 +27,7 @@ jobs:
     env:
       Solution_Name: src\TableCloth.sln
       Spork_Project_Path: src\Spork\Spork.csproj
+      Sponge_Project_Path: src\Sponge\Sponge.csproj
       Test_Project_Path: src\TableCloth.Test\TableCloth.Test.csproj
       TableCloth_Project_Path: src\TableCloth\TableCloth.csproj
       Platform: ${{ matrix.platform }}
@@ -66,6 +67,12 @@ jobs:
     # Build Spork project separately
     - name: Build Spork project
       run: msbuild $env:Spork_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    # Build Sponge project separately
+    - name: Build Sponge project
+      run: msbuild $env:Sponge_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
       env:
         Configuration: ${{ matrix.configuration }}
 
