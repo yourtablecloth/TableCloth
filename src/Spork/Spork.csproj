@@ -242,6 +242,8 @@
     <Compile Include="Browsers\Implementations\WebBrowserServiceFactory.cs" />
     <Compile Include="Browsers\Implementations\X86ChromiumEdgeWebBrowserService.cs" />
     <Compile Include="Browsers\IWebBrowserServiceFactory.cs" />
+    <Compile Include="Components\Implementations\ShortcutCreator.cs" />
+    <Compile Include="Components\IShortcutCreator.cs" />
     <Compile Include="Converters\WidthConverter.cs" />
     <Compile Include="NullableShim.cs" />
     <Compile Include="Steps\Implementations\EnableWinSxsForSandboxStep.cs" />

@@ -23,6 +23,12 @@ namespace TableCloth
         public static bool IsWindowsSandboxRunning()
             => Process.GetProcesses().Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase)).Any();
 
+        public static bool IsUnderWindowsSandboxSession()
+        {
+            // To Do: %windir%\system32\win32queryhost.sandbox.dll 파일의 존재 유무로 샌드박스 환경 판정이 가능할지 검토 필요.
+            return SandboxAccountNames.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase);
+        }
+
         public static void OpenExplorer(string targetDirectoryPath)
         {
             if (!Directory.Exists(targetDirectoryPath))

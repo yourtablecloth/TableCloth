@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
@@ -20,7 +21,9 @@ namespace Spork.Components.Implementations
             IAppMessageBox appMessageBox,
             ICommandLineArguments commandLineArguments,
             IResourceCacheManager resourceCacheManager,
-            IWebBrowserServiceFactory webBrowserServiceFactory)
+            IWebBrowserServiceFactory webBrowserServiceFactory,
+            IShortcutCreator shortcutCreator,
+            ISharedLocations sharedLocations)
         {
             _appMessageBox = appMessageBox;
             _commandLineArguments = commandLineArguments;
@@ -28,6 +31,8 @@ namespace Spork.Components.Implementations
             _webBrowserServiceFactory = webBrowserServiceFactory;
             _defaultWebBrowserService = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
             _mutex = new Mutex(true, $"Global\\{GetType().FullName}", out this._isFirstInstance);
+            _shortcutCreator = shortcutCreator;
+            _sharedLocations = sharedLocations;
         }
 
         private readonly IAppMessageBox _appMessageBox;
@@ -35,6 +40,8 @@ namespace Spork.Components.Implementations
         private readonly IResourceCacheManager _resourceCacheManager;
         private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
         private readonly IWebBrowserService _defaultWebBrowserService;
+        private readonly IShortcutCreator _shortcutCreator;
+        private readonly ISharedLocations _sharedLocations;
 
         private bool _disposed;
         private readonly Mutex _mutex;
@@ -122,6 +129,15 @@ namespace Spork.Components.Implementations
 
                     result = ApplicationStartupResultModel.FromHaltedResult(providedWarnings: warnings);
                     return result;
+                }
+
+                if (Helpers.IsUnderWindowsSandboxSession())
+                {
+                    var thisExecutableDirectoryPath = _sharedLocations.ExecutableDirectoryPath;
+                    var spongeExceutableFilePath = Directory.GetFiles(thisExecutableDirectoryPath, "Sponge.exe", SearchOption.AllDirectories).FirstOrDefault();
+
+                    if (spongeExceutableFilePath != null && File.Exists(spongeExceutableFilePath))
+                        await _shortcutCreator.CreateShortcutOnDesktopAsync(spongeExceutableFilePath, "Sponge", cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
