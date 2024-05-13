@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Sponge
+namespace Sponge.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
