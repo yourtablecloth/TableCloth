@@ -9,7 +9,7 @@
         xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         xmlns:xrpb="http://XamlRadialProgressBar/DotNet"
         mc:Ignorable="d"
-        Title="Splash Screen" Height="400" Width="600"
+        Title="{x:Static res:UIStringResources.MainWindow_Title}" Height="400" Width="600"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None" AllowsTransparency="True"
         Style="{DynamicResource MainWindowStyle}"
