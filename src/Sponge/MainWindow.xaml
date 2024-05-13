@@ -6,6 +6,7 @@
         xmlns:viewModel="clr-namespace:Sponge.ViewModels"
         xmlns:componentModels="clr-namespace:System.ComponentModel;assembly=netstandard"
         mc:Ignorable="d"
+        Style="{DynamicResource MainWindowStyle}"
         Title="Sponge" Width="320" Height="200" MinWidth="320" MinHeight="160" Closing="Window_Closing" Loaded="Window_Loaded">
     <Window.Resources>
         <componentModels:BackgroundWorker
