@@ -25,7 +25,8 @@ namespace TableCloth
 
         public static bool IsUnderWindowsSandboxSession()
         {
-            // To Do: %windir%\system32\win32queryhost.sandbox.dll 파일의 존재 유무로 샌드박스 환경 판정이 가능할지 검토 필요.
+            // Note: %windir%\system32\win32queryhost.sandbox.dll 파일은 최신 버전의 Windows Sandbox부터 들어간 기능.
+            // 모든 버전을 고려해야 한다면 이 파일의 존재 유무로 샌드박스 환경인지 아닌지 판정하는 것은 적절하지 않음.
             return SandboxAccountNames.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase);
         }
 
