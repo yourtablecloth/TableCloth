@@ -1,8 +1,8 @@
 ﻿#nullable enable
 
-namespace TableCloth.Models.Configuration
+namespace TableCloth.Models.Answers
 {
-    public sealed class SporkAnswers
+    public sealed class SpongeAnswers
     {
         public bool RecommendSafeDelete { get; set; }
     }
