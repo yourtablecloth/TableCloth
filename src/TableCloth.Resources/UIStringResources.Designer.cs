@@ -891,6 +891,96 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   {0} files deleted successfully과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponge_DeletedFileCount {
+            get {
+                return ResourceManager.GetString("Sponge_DeletedFileCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Failed to delete {0} files과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponge_DeleteFailedFileCount {
+            get {
+                return ResourceManager.GetString("Sponge_DeleteFailedFileCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Files deleted successfully ({0} of {1})과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponge_DeleteProgressMessage {
+            get {
+                return ResourceManager.GetString("Sponge_DeleteProgressMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Exit과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponge_Exit {
+            get {
+                return ResourceManager.GetString("Sponge_Exit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   This program helps you irretrievably delete the joint certificate file that was copied with the TableCloth run.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponge_Introduction {
+            get {
+                return ResourceManager.GetString("Sponge_Introduction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   The deletion of the retrieved certificate files results in the following:과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponge_OperationCompleted {
+            get {
+                return ResourceManager.GetString("Sponge_OperationCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   No certificate files were found.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponge_OperationCompleted_WithNoResult {
+            get {
+                return ResourceManager.GetString("Sponge_OperationCompleted_WithNoResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Deleting by overwriting multiple times과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponge_OverwriteMultipleTimes {
+            get {
+                return ResourceManager.GetString("Sponge_OverwriteMultipleTimes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Delete Files과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponge_PerformDelete {
+            get {
+                return ResourceManager.GetString("Sponge_PerformDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Searching for a joint certificate file...과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponge_WorkInProgress {
+            get {
+                return ResourceManager.GetString("Sponge_WorkInProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   This program is a tool that installs the requested installers into the sandbox at once. Press the Install button to start the installation.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Spork_AppInstructionMessage {

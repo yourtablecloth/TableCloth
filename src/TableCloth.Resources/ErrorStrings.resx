@@ -273,4 +273,16 @@ If the device or disk is stolen, forensics may reveal sensitive data, so be sure
   <data name="Error_Sponge_Missing" xml:space="preserve">
     <value>The sponge executable file was not found, please reinstall the program.</value>
   </data>
+  <data name="Error_Sponge_NoCompatibleResultFound" xml:space="preserve">
+    <value>Completed the action, but can't see the result.</value>
+    <comment>This item is used by Sponge</comment>
+  </data>
+  <data name="Error_Sponge_TaskCancelled" xml:space="preserve">
+    <value>The job was canceled midway through.</value>
+    <comment>This item is used by Sponge</comment>
+  </data>
+  <data name="Error_Sponge_UnexpectedErrorOccurred" xml:space="preserve">
+    <value>An unexpected error occurred: {0}</value>
+    <comment>This item is used by Sponge</comment>
+  </data>
 </root>

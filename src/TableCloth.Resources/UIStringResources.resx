@@ -395,6 +395,36 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="SearchFilter_Watermark" xml:space="preserve">
     <value>Enter a search keyword (e.g., Shinhan)</value>
   </data>
+  <data name="Sponge_DeletedFileCount" xml:space="preserve">
+    <value>{0} files deleted successfully</value>
+  </data>
+  <data name="Sponge_DeleteFailedFileCount" xml:space="preserve">
+    <value>Failed to delete {0} files</value>
+  </data>
+  <data name="Sponge_DeleteProgressMessage" xml:space="preserve">
+    <value>Files deleted successfully ({0} of {1})</value>
+  </data>
+  <data name="Sponge_Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Sponge_Introduction" xml:space="preserve">
+    <value>This program helps you irretrievably delete the joint certificate file that was copied with the TableCloth run.</value>
+  </data>
+  <data name="Sponge_OperationCompleted" xml:space="preserve">
+    <value>The deletion of the retrieved certificate files results in the following:</value>
+  </data>
+  <data name="Sponge_OperationCompleted_WithNoResult" xml:space="preserve">
+    <value>No certificate files were found.</value>
+  </data>
+  <data name="Sponge_OverwriteMultipleTimes" xml:space="preserve">
+    <value>Deleting by overwriting multiple times</value>
+  </data>
+  <data name="Sponge_PerformDelete" xml:space="preserve">
+    <value>Delete Files</value>
+  </data>
+  <data name="Sponge_WorkInProgress" xml:space="preserve">
+    <value>Searching for a joint certificate file...</value>
+  </data>
   <data name="Spork_AppInstructionMessage" xml:space="preserve">
     <value>This program is a tool that installs the requested installers into the sandbox at once. Press the Install button to start the installation.</value>
   </data>
