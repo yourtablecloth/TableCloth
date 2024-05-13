@@ -51,7 +51,7 @@ namespace Sponge
                 if (!Directory.Exists(userProfileDirectory))
                     return;
 
-                var fileList = Directory.GetFiles(userProfileDirectory)
+                var fileList = Directory.GetFiles(userProfileDirectory, "*.*", SearchOption.AllDirectories)
                     .Where(x =>
                     {
                         return
@@ -71,7 +71,7 @@ namespace Sponge
 
                     try
                     {
-                        //fileInfo.SecureDelete(repeatCount, SecureDeleteObfuscationMode.All);
+                        fileInfo.SecureDelete(repeatCount, SecureDeleteObfuscationMode.All);
                         succeedFileCount++;
                     }
                     catch
