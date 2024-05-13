@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sponge"
         mc:Ignorable="d"
-        Title="Sponge" Width="320" Height="200" MinWidth="320" MinHeight="160" Closing="Window_Closing">
+        Title="Sponge" Width="320" Height="200" MinWidth="320" MinHeight="160" Closing="Window_Closing" Loaded="Window_Loaded">
     <Window.Resources>
         <local:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
