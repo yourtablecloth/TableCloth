@@ -1,4 +1,5 @@
 ﻿using dotEnhancer;
+using Sponge.Components.Implementations;
 using Sponge.Models;
 using Sponge.ViewModels;
 using System;
@@ -152,6 +153,9 @@ namespace Sponge
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            var themeManager = new VisualThemeManager();
+            themeManager.ApplyAutoThemeChange(this);
+
             var answerFilePath = Path.GetFullPath("SpongeAnswers.json");
 
             if (File.Exists(answerFilePath))
