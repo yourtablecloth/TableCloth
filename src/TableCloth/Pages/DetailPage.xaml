@@ -5,7 +5,7 @@
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:vm="clr-namespace:TableCloth.ViewModels"
-      xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
+      xmlns:res="clr-namespace:TableCloth.Resources"
       xmlns:local="clr-namespace:TableCloth"
       xmlns:controls="clr-namespace:TableCloth.Controls"
       mc:Ignorable="d" 

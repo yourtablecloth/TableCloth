@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:TableCloth.ViewModels"
-        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
+        xmlns:res="clr-namespace:TableCloth.Resources"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"

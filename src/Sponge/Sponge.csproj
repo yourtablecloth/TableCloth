@@ -198,12 +198,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TableCloth.Resources\TableCloth.Resources.csproj">
-      <Project>{28338bd7-f42e-4d85-91bf-f6cc72de7360}</Project>
-      <Name>TableCloth.Resources</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="App.ico" />
   </ItemGroup>
   <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />

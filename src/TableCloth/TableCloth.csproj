@@ -73,10 +73,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\TableCloth.Resources\TableCloth.Resources.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Resource Include="Resources\SandboxIcon.png" />
 	</ItemGroup>
 

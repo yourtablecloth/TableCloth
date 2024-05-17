@@ -1,0 +1,555 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AboutWindow_AppVersionText" xml:space="preserve">
+    <value>Program Version</value>
+  </data>
+  <data name="AboutWindow_CatalogDateText" xml:space="preserve">
+    <value>Catalog Version</value>
+  </data>
+  <data name="AboutWindow_LoadingLicensesMessage" xml:space="preserve">
+    <value>Retrieving license information.</value>
+  </data>
+  <data name="AboutWindow_Title" xml:space="preserve">
+    <value>About This Program</value>
+  </data>
+  <data name="Await_ConfigASTx" xml:space="preserve">
+    <value>Once you've finalized your settings, hit the OK button.</value>
+  </data>
+  <data name="Build_Debug" xml:space="preserve">
+    <value>This build is for development purposes only.</value>
+  </data>
+  <data name="Button_AboutButton" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Button_AppRestartButton" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="Button_BrowseButton" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="Button_CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Button_CheckUpdateButton" xml:space="preserve">
+    <value>Check Update</value>
+  </data>
+  <data name="Button_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Button_ConvertToPfxButton" xml:space="preserve">
+    <value>Convert to PFX</value>
+  </data>
+  <data name="Button_CopyCommandLineButton" xml:space="preserve">
+    <value>Copy Commandline</value>
+  </data>
+  <data name="Button_CreateShortcutButton" xml:space="preserve">
+    <value>Create a Shortcut</value>
+  </data>
+  <data name="Button_DebugButton" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="Button_InstallButton" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Button_LaunchButton" xml:space="preserve">
+    <value>Launch</value>
+  </data>
+  <data name="Button_MapNpkiCertButton" xml:space="preserve">
+    <value>Import Certificates</value>
+  </data>
+  <data name="Button_OkayButton" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Button_OpenHomepageButton" xml:space="preserve">
+    <value>Website</value>
+  </data>
+  <data name="Button_PrivacyLink" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="Button_RefreshButton" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Button_ShowSysInfoButton" xml:space="preserve">
+    <value>System Information</value>
+  </data>
+  <data name="CatalogPage_Instruction" xml:space="preserve">
+    <value>Select the website you want to access, or enter a search term in the search bar in the upper-right corner.</value>
+  </data>
+  <data name="CatalogPage_ItemCountLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="CatalogPage_Title" xml:space="preserve">
+    <value>Select a service</value>
+  </data>
+  <data name="CertSelectWindow_CertList_Available" xml:space="preserve">
+    <value>Availability</value>
+  </data>
+  <data name="CertSelectWindow_CertList_CommonName" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="CertSelectWindow_CertList_CountryName" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="CertSelectWindow_CertList_Organization" xml:space="preserve">
+    <value>Organization</value>
+  </data>
+  <data name="CertSelectWindow_CertList_OrganizationalUnits" xml:space="preserve">
+    <value>Organizational Unit</value>
+  </data>
+  <data name="CertSelectWindow_FileOpenDialog_FilterText" xml:space="preserve">
+    <value>Public Certificate File (signCert.der;signPri.key)|signCert.der;signPri.key|Public Certificate File (*.pfx;*.p12)|*.pfx;*.p12</value>
+  </data>
+  <data name="CertSelectWindow_FileOpenDialog_Text" xml:space="preserve">
+    <value>Open the certificate files (signCert.der, signPri.key, *.pfx, *.p12)</value>
+  </data>
+  <data name="CertSelectWindow_InstructionLabel" xml:space="preserve">
+    <value>The following certificates were found, please select one of them.</value>
+  </data>
+  <data name="CertSelectWindow_ManualInstructionLabelText" xml:space="preserve">
+    <value>If you don't see the certificate you're looking for, click the Find Joint Certificate button to manually find the DER file and KEY file pair, or PFX file.</value>
+  </data>
+  <data name="CertSelectWindow_OpenNpkiCertButton" xml:space="preserve">
+    <value>Select a certificate...</value>
+  </data>
+  <data name="CertSelectWindow_Title" xml:space="preserve">
+    <value>Select the certificate</value>
+  </data>
+  <data name="Cert_Availability_Available" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Cert_Availability_Expired" xml:space="preserve">
+    <value>Expired</value>
+  </data>
+  <data name="Cert_Availability_ExpireSoon" xml:space="preserve">
+    <value>Expires in {0} days</value>
+  </data>
+  <data name="Cert_Availability_MayTooEarly" xml:space="preserve">
+    <value>Available in {0} days</value>
+  </data>
+  <data name="Debug_SimulateFailure" xml:space="preserve">
+    <value>Failure Test</value>
+  </data>
+  <data name="Debug_SimulateFailurePackageName" xml:space="preserve">
+    <value>Failure Test</value>
+  </data>
+  <data name="DetailPage_PackageCountDisplayLabel" xml:space="preserve">
+    <value>Number of software to be installed after sandbox run: {0}</value>
+  </data>
+  <data name="DetailPage_UrlLabel" xml:space="preserve">
+    <value>Homepage address: {0}</value>
+  </data>
+  <data name="DisclaimerWindow_AgreeButtonText" xml:space="preserve">
+    <value>I agree. I won't look at this screen for a week.</value>
+  </data>
+  <data name="DisclaimerWindow_Content" xml:space="preserve">
+    <value>You are responsible for any failure or damage to any person, business, or organization that occurs while using Tableau, including loss of money, missed tax returns, etc.
+
+We recommend that you do not use TableCloth for tasks that cannot be performed in a virtual environment and should be performed in a physical PC environment to prevent damage or harm.</value>
+  </data>
+  <data name="DisclaimerWindow_Readme" xml:space="preserve">
+    <value>Be sure to read it.</value>
+  </data>
+  <data name="DisclaimerWindow_Title" xml:space="preserve">
+    <value>Precautions for using TableCloth</value>
+  </data>
+  <data name="InputPasswordWindow_Disclaimer" xml:space="preserve">
+    <value>The password you enter is only used inside the program and is discarded.</value>
+  </data>
+  <data name="InputPasswordWindow_Instruction" xml:space="preserve">
+    <value>A passphrase is required to convert the PFX certificate to a DER and KEY for delivery.</value>
+  </data>
+  <data name="InputPasswordWindow_PfxPathPrefix" xml:space="preserve">
+    <value>PFX Certificate File Path: {0}</value>
+  </data>
+  <data name="InputPasswordWindow_Title" xml:space="preserve">
+    <value>Enter the password to convert the PFX certificate</value>
+  </data>
+  <data name="Install_ConfigASTx" xml:space="preserve">
+    <value>Config AhnLab Safe Transaction</value>
+  </data>
+  <data name="Install_EnableIEMode" xml:space="preserve">
+    <value>Enabling Internet Explorer Mode</value>
+  </data>
+  <data name="Install_EnableWinSxSForSandbox" xml:space="preserve">
+    <value>Enabling WinSxS</value>
+  </data>
+  <data name="Install_PrepareEnvironment" xml:space="preserve">
+    <value>Preparing Environment</value>
+  </data>
+  <data name="Install_ReloadMicrosoftEdge" xml:space="preserve">
+    <value>Reload Microsoft Edge Settings</value>
+  </data>
+  <data name="Install_SetDesktopWallpaper" xml:space="preserve">
+    <value>Setting Desktop Wallpaper</value>
+  </data>
+  <data name="Install_TryProtectCriticalServices" xml:space="preserve">
+    <value>Try Protecting Critical Services</value>
+  </data>
+  <data name="Install_VerifyEnvironment" xml:space="preserve">
+    <value>Verifying Environment</value>
+  </data>
+  <data name="Instruction_ConfigASTx" xml:space="preserve">
+    <value>AhnLab Safe Transaction needs to turn off the remote access blocking feature to continue running Windows Sandbox. Please uncheck the Block Remote Access checkbox on the screen and click the Close button.</value>
+  </data>
+  <data name="MainWindow_Column_Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="MainWindow_Column_PackageCount" xml:space="preserve">
+    <value>Number of software required</value>
+  </data>
+  <data name="MainWindow_Column_SiteName" xml:space="preserve">
+    <value>Website Name</value>
+  </data>
+  <data name="MainWindow_Column_SiteUrl" xml:space="preserve">
+    <value>Website Address</value>
+  </data>
+  <data name="MainWindow_Favorites" xml:space="preserve">
+    <value>Show Only Favorites</value>
+  </data>
+  <data name="MainWindow_JustRunItemText" xml:space="preserve">
+    <value>Just run it.</value>
+  </data>
+  <data name="MainWindow_SelectOptionsLabelText" xml:space="preserve">
+    <value>Select your preferred option.</value>
+  </data>
+  <data name="MainWindow_SelectSiteLabelText" xml:space="preserve">
+    <value>Select the sites you want to access on the tablecloth. The site will automatically install the necessary programs for you.</value>
+  </data>
+  <data name="MainWindow_SelectSiteLabelText_Alt" xml:space="preserve">
+    <value>The program didn't get the catalog file! But we'll run the sandbox for you.</value>
+  </data>
+  <data name="MainWindow_SelectSiteLabelText_Alt2" xml:space="preserve">
+    <value>Failed to import the catalog file!</value>
+  </data>
+  <data name="MainWindow_Title" xml:space="preserve">
+    <value>Keep Your Computer Sound &amp; Safe!</value>
+  </data>
+  <data name="Option_Addin" xml:space="preserve">
+    <value>Add-in</value>
+  </data>
+  <data name="Option_Addons" xml:space="preserve">
+    <value>Add-ons</value>
+  </data>
+  <data name="Option_BasicPreferences" xml:space="preserve">
+    <value>Basic Preferences</value>
+  </data>
+  <data name="Option_Config" xml:space="preserve">
+    <value>Post Config</value>
+  </data>
+  <data name="Option_InstallAdobeReader" xml:space="preserve">
+    <value>Install Adobe Reader</value>
+  </data>
+  <data name="Option_InstallEveryonesPrinter" xml:space="preserve">
+    <value>Install Everyones Printer</value>
+  </data>
+  <data name="Option_InstallHancomOfficeViewer" xml:space="preserve">
+    <value>Install Hancom Office Viewer</value>
+  </data>
+  <data name="Option_InstallRaiDrive" xml:space="preserve">
+    <value>Install RaiDrive</value>
+  </data>
+  <data name="Option_Prerequisites" xml:space="preserve">
+    <value>Prerequisites</value>
+  </data>
+  <data name="Option_TelemetryDescriptionText" xml:space="preserve">
+    <value>TableCloth uses the Sentry.io service to anonymously collect information about errors that occur during the execution of the Tablecloth program. If you do not want to send data, please uncheck the box below and run Tablecloth again.</value>
+  </data>
+  <data name="Option_TelemetryPreferences" xml:space="preserve">
+    <value>Collecting information to improve features</value>
+  </data>
+  <data name="Option_UseAutoLogCollecting" xml:space="preserve">
+    <value>Automatically collect TableCloth error logs</value>
+  </data>
+  <data name="Option_UseIEModeCompatList" xml:space="preserve">
+    <value>Enable Internet Explorer compatibility mode</value>
+  </data>
+  <data name="Option_UseMicrophoneCheckboxText" xml:space="preserve">
+    <value>Using audio input - be careful about revealing personal information!</value>
+  </data>
+  <data name="Option_UsePrinterCheckboxText" xml:space="preserve">
+    <value>Using with printers</value>
+  </data>
+  <data name="Option_UseWebCameraCheckboxText" xml:space="preserve">
+    <value>Using video input - be careful about exposing personal information!</value>
+  </data>
+  <data name="SearchFilter_Watermark" xml:space="preserve">
+    <value>Enter a search keyword (e.g., Shinhan)</value>
+  </data>
+  <data name="Sponge_DeletedFileCount" xml:space="preserve">
+    <value>{0} files deleted successfully</value>
+  </data>
+  <data name="Sponge_DeleteFailedFileCount" xml:space="preserve">
+    <value>Failed to delete {0} files</value>
+  </data>
+  <data name="Sponge_DeleteProgressMessage" xml:space="preserve">
+    <value>Files deleted successfully ({0} of {1})</value>
+  </data>
+  <data name="Sponge_Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Sponge_Introduction" xml:space="preserve">
+    <value>This program helps you irretrievably delete the joint certificate file that was copied with the TableCloth run.</value>
+  </data>
+  <data name="Sponge_OperationCompleted" xml:space="preserve">
+    <value>The deletion of the retrieved certificate files results in the following:</value>
+  </data>
+  <data name="Sponge_OperationCompleted_WithNoResult" xml:space="preserve">
+    <value>No certificate files were found.</value>
+  </data>
+  <data name="Sponge_OverwriteMultipleTimes" xml:space="preserve">
+    <value>Deleting by overwriting multiple times</value>
+  </data>
+  <data name="Sponge_PerformDelete" xml:space="preserve">
+    <value>Delete Files</value>
+  </data>
+  <data name="Sponge_WorkInProgress" xml:space="preserve">
+    <value>Searching for a joint certificate file...</value>
+  </data>
+  <data name="Spork_AppInstructionMessage" xml:space="preserve">
+    <value>This program is a tool that installs the requested installers into the sandbox at once. Press the Install button to start the installation.</value>
+  </data>
+  <data name="Spork_AppTitle" xml:space="preserve">
+    <value>Spork</value>
+  </data>
+  <data name="Spork_CustomScript_Title" xml:space="preserve">
+    <value>Separate installation script</value>
+  </data>
+  <data name="Spork_Download_InProgress" xml:space="preserve">
+    <value>Downloading...</value>
+  </data>
+  <data name="Spork_DryRunInstructionMessage" xml:space="preserve">
+    <value>Spork is running in dry run mode.</value>
+  </data>
+  <data name="Spork_Install_Failed" xml:space="preserve">
+    <value>Fail</value>
+  </data>
+  <data name="Spork_Install_InProgress" xml:space="preserve">
+    <value>Installing...</value>
+  </data>
+  <data name="Spork_Install_Skipped" xml:space="preserve">
+    <value>Skipped</value>
+  </data>
+  <data name="Spork_Install_Succeed" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Spork_No_Targets" xml:space="preserve">
+    <value>The website ID you want to use is not specified. The sandbox is now available for use.</value>
+  </data>
+  <data name="Spork_PrecautionWindowText" xml:space="preserve">
+    <value>Caveats</value>
+  </data>
+  <data name="Spork_ShowDetailError" xml:space="preserve">
+    <value>Read more</value>
+  </data>
+  <data name="Spork_Warning_Title" xml:space="preserve">
+    <value>Precautions for using the site</value>
+  </data>
+  <data name="Status_CheckInternetConnection" xml:space="preserve">
+    <value>Checking internet connection...</value>
+  </data>
+  <data name="Status_Done" xml:space="preserve">
+    <value>You're ready to run.</value>
+  </data>
+  <data name="Status_EvaluatingRequirementsMet" xml:space="preserve">
+    <value>Checking system environment...</value>
+  </data>
+  <data name="Status_InitializingApplication" xml:space="preserve">
+    <value>Initializing the application...</value>
+  </data>
+  <data name="Status_InitializingFailed" xml:space="preserve">
+    <value>An error occurred.</value>
+  </data>
+  <data name="Status_LoadingCatalog" xml:space="preserve">
+    <value>Loading catalog...</value>
+  </data>
+  <data name="Status_LoadingImages" xml:space="preserve">
+    <value>Loading images...</value>
+  </data>
+  <data name="Status_LoadingPreferences" xml:space="preserve">
+    <value>Loading preferences...</value>
+  </data>
+  <data name="Status_ParsingCommandLine" xml:space="preserve">
+    <value>Analyzing the command line...</value>
+  </data>
+  <data name="Status_PleaseWait" xml:space="preserve">
+    <value>Please wait a second...</value>
+  </data>
+  <data name="TableCloth_Arguments_SiteIdList_Help" xml:space="preserve">
+    <value>Specifies a list of one or more site IDs from the catalog.</value>
+  </data>
+  <data name="TableCloth_Switch_CertPrivateKey_Help" xml:space="preserve">
+    <value>Specify the private public certificate secret key file.</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
+  <data name="TableCloth_Switch_CertPublicKey_Help" xml:space="preserve">
+    <value>Specify the private public certificate public key file.</value>
+  </data>
+  <data name="TableCloth_Switch_DryRun_Help" xml:space="preserve">
+    <value>Change the behavior so that no system changes are attempted.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableCamera_Help" xml:space="preserve">
+    <value>Grant permission to take camera shots inside the Windows Sandbox.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableCert_Help" xml:space="preserve">
+    <value>Copy the joint certificate file to be available inside the Windows Sandbox.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableIEMode_Help" xml:space="preserve">
+    <value>Change the settings to allow the Microsoft Edge browser to run in Internet Explorer mode inside the Windows Sandbox.</value>
+  </data>
+  <data name="TableCloth_Switch_EnableMicrophone_Help" xml:space="preserve">
+    <value>Grant permission to record audio inside the Windows Sandbox.</value>
+  </data>
+  <data name="TableCloth_Switch_EnablePrinter_Help" xml:space="preserve">
+    <value>Authorize the printer to request printing from within the Windows Sandbox.</value>
+  </data>
+  <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
+    <value>Displays the help you're viewing.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallAdobeReader_Help" xml:space="preserve">
+    <value>Attempt to install Adobe Reader.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallEveryonesPrinter_Help" xml:space="preserve">
+    <value>Attempt to install Everyones' Printer.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallHancomOfficeViewer_Help" xml:space="preserve">
+    <value>Attempt to install HancomOffice Viewer.</value>
+  </data>
+  <data name="TableCloth_Switch_InstallRaiDrive_Help" xml:space="preserve">
+    <value>Attempt to install RaiDrive.</value>
+  </data>
+  <data name="TableCloth_Switch_SimulateFailure_Help" xml:space="preserve">
+    <value>Simulates the occurrence of an error with random probability. This option is a developer feature.</value>
+  </data>
+  <data name="TableCloth_Switch_Version_Help" xml:space="preserve">
+    <value>Displays version information for the program.</value>
+  </data>
+  <data name="TitleText_Error" xml:space="preserve">
+    <value>TableCloth Error</value>
+  </data>
+  <data name="TitleText_Info" xml:space="preserve">
+    <value>TableCloth Info</value>
+  </data>
+  <data name="TitleText_Question" xml:space="preserve">
+    <value>TableCloth Question</value>
+  </data>
+  <data name="TitleText_Warning" xml:space="preserve">
+    <value>TableCloth Warning</value>
+  </data>
+</root>

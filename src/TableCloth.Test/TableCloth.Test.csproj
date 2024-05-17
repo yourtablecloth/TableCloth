@@ -46,7 +46,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\TableCloth.Resources\TableCloth.Resources.csproj" />
 		<ProjectReference Include="..\TableCloth\TableCloth.csproj" />
 	</ItemGroup>
 
