@@ -47,6 +47,12 @@
 
 GitHub Sponsorship을 통하여 후원해주시면 지속적으로 프로젝트를 진행하는데에 큰 도움이 됩니다. [프로젝트 후원하러 가기](https://github.com/sponsors/yourtablecloth)
 
+## 수상
+
+### 2024년 9월
+
+[![Product of the Week, Recognized by disquiet.io](docs/images/disquiet_product_of_the_week.jpeg)](https://disquiet.io/product/%EC%8B%9D%ED%83%81%EB%B3%B4)
+
 ## 저작권 정보
 
 <img width="100" alt="Tablecloth Icon by Icons8" src="docs/images/TableCloth_NewLogo.png" /> by [Icons8](https://img.icons8.com/color/96/000000/tablecloth.png)
