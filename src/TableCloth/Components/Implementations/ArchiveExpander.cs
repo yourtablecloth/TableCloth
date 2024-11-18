@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,11 +15,21 @@ public sealed class ArchiveExpander : IArchiveExpander
 
         foreach (var eachEntry in zipArchive.Entries)
         {
-            var destPath = Path.Combine(destinationDirectoryPath, eachEntry.Name);
+            try
+            {
+                if (string.IsNullOrWhiteSpace(eachEntry.Name))
+                    continue;
 
-            using var outputStream = File.OpenWrite(destPath);
-            using var eachStream = eachEntry.Open();
-            await eachStream.CopyToAsync(outputStream, cancellationToken).ConfigureAwait(false);
+                var destPath = Path.Combine(destinationDirectoryPath, eachEntry.Name);
+
+                using var outputStream = File.OpenWrite(destPath);
+                using var eachStream = eachEntry.Open();
+                await eachStream.CopyToAsync(outputStream, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"Cannot extract the file '{eachEntry.Name}' to '{destinationDirectoryPath}'.", ex);
+            }
         }
     }
 }
