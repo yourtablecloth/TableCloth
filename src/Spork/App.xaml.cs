@@ -13,9 +13,14 @@ namespace Spork
 {
     public partial class App : Application
     {
-        public App()
+        internal App()
         {
             InitializeComponent();
+        }
+
+        public App(IHost host) : this()
+        {
+            SetupHost(host);
         }
 
         internal void SetupHost(IHost host)

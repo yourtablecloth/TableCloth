@@ -57,8 +57,7 @@ namespace Spork
                 AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
                 // Application.Current 속성은 아래 생성자를 호출하면서 자동으로 설정됩니다.
-                var app = new App();
-                app.SetupHost(CreateHostBuilder(args).Build());
+                var app = new App(CreateHostBuilder(args).Build());
                 app.Run();
             }
             catch (Exception ex)
