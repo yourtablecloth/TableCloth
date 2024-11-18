@@ -22,14 +22,14 @@ namespace TableCloth.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class AskStrings {
+    public class InfoStrings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal AskStrings() {
+        internal InfoStrings() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace TableCloth.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TableCloth.Resources.AskStrings", typeof(AskStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sponge.Resources.InfoStrings", typeof(InfoStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,21 +61,47 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   설정이 반영되려면 식탁보 프로그램을 다시 시작해야 합니다.
-        ///지금 다시 시작하시겠습니까?과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   You&apos;ve copied commands to the clipboard that you can use when running automation tasks.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string Ask_RestartRequired {
+        public static string Info_CopyCommandLineSuccess {
             get {
-                return ResourceManager.GetString("Ask_RestartRequired", resourceCulture);
+                return ResourceManager.GetString("Info_CopyCommandLineSuccess", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   지금 이 프로그램이 실행되는 환경은 윈도우 샌드박스 환경이 아닌 것 같습니다. 그래도 계속 실행하시겠습니까?과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   You&apos;ve created a shortcut on your desktop.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string Ask_WarningForNonSandboxEnvironment {
+        public static string Info_ShortcutSuccess {
             get {
-                return ResourceManager.GetString("Ask_WarningForNonSandboxEnvironment", resourceCulture);
+                return ResourceManager.GetString("Info_ShortcutSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   You are using the latest version of TableCloth.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Info_UpdateNotRequired {
+            get {
+                return ResourceManager.GetString("Info_UpdateNotRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   A new version of TableCloth has been released.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Info_UpdateRequired {
+            get {
+                return ResourceManager.GetString("Info_UpdateRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Because of the maximum command length limit that can be specified for a shortcut, only the first selected site is made a shortcut.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Info_WillCreateSingleSiteShortcut {
+            get {
+                return ResourceManager.GetString("Info_WillCreateSingleSiteShortcut", resourceCulture);
             }
         }
     }

@@ -86,12 +86,92 @@
 			<AutoGen>True</AutoGen>
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
+		<Compile Update="Resources\AskStrings.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>AskStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\CommonStrings.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>CommonStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\ConstantStrings.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>ConstantStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\ErrorStrings.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>ErrorStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\InfoStrings.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>InfoStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\LogStrings.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>LogStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\SwitchStrings.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>SwitchStrings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\UIStringResources.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>UIStringResources.resx</DependentUpon>
+		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>
 		<EmbeddedResource Update="Properties\Resources.resx">
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\AskStrings.resx">
+		  <Generator>PublicResXFileCodeGenerator</Generator>
+		  <LastGenOutput>AskStrings.Designer.cs</LastGenOutput>
+		  <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\CommonStrings.resx">
+		  <Generator>PublicResXFileCodeGenerator</Generator>
+		  <LastGenOutput>CommonStrings.Designer.cs</LastGenOutput>
+		  <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\ConstantStrings.resx">
+		  <Generator>PublicResXFileCodeGenerator</Generator>
+		  <LastGenOutput>ConstantStrings.Designer.cs</LastGenOutput>
+		  <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\ErrorStrings.resx">
+		  <Generator>PublicResXFileCodeGenerator</Generator>
+		  <LastGenOutput>ErrorStrings.Designer.cs</LastGenOutput>
+		  <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\InfoStrings.resx">
+		  <Generator>PublicResXFileCodeGenerator</Generator>
+		  <LastGenOutput>InfoStrings.Designer.cs</LastGenOutput>
+		  <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\LogStrings.resx">
+		  <Generator>PublicResXFileCodeGenerator</Generator>
+		  <LastGenOutput>LogStrings.Designer.cs</LastGenOutput>
+		  <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\SwitchStrings.resx">
+		  <Generator>PublicResXFileCodeGenerator</Generator>
+		  <LastGenOutput>SwitchStrings.Designer.cs</LastGenOutput>
+		  <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\UIStringResources.resx">
+		  <Generator>PublicResXFileCodeGenerator</Generator>
+		  <LastGenOutput>UIStringResources.Designer.cs</LastGenOutput>
+		  <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
 		</EmbeddedResource>
 	</ItemGroup>
 

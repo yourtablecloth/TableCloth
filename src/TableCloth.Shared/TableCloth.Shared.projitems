@@ -9,40 +9,10 @@
     <Import_RootNamespace>TableCloth</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Resources\AskStrings.Designer.cs">
-      <DependentUpon>AskStrings.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CodeResources.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Resources\CommonStrings.Designer.cs">
-      <DependentUpon>CommonStrings.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Resources\ConstantStrings.Designer.cs">
-      <DependentUpon>ConstantStrings.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Resources\ErrorStrings.Designer.cs">
-      <DependentUpon>ErrorStrings.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Events\DialogRequestEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\StatusUpdateRequestEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Resources\InfoStrings.Designer.cs">
-      <DependentUpon>InfoStrings.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Resources\LogStrings.Designer.cs">
-      <DependentUpon>LogStrings.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Models\Answers\SpongeAnswers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Answers\SporkAnswers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiInvokeResult.cs" />
@@ -66,100 +36,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\WindowsSandbox\SandboxMappedFolder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NativeMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharedExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StringResources.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Resources\SwitchStrings.Designer.cs">
-      <DependentUpon>SwitchStrings.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)TableClothAppException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Resources\UIStringResources.Designer.cs">
-      <DependentUpon>UIStringResources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ViewModelBase.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\AskStrings.resx">
-      <LastGenOutput>AskStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\CommonStrings.ko.resx">
-      <CustomToolNamespace>
-      </CustomToolNamespace>
-      <Generator>
-      </Generator>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\CommonStrings.resx">
-      <LastGenOutput>CommonStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\ConstantStrings.resx">
-      <LastGenOutput>ConstantStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\ErrorStrings.ko.resx">
-      <CustomToolNamespace>
-      </CustomToolNamespace>
-      <Generator>
-      </Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\ErrorStrings.resx">
-      <LastGenOutput>ErrorStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\InfoStrings.ko.resx">
-      <CustomToolNamespace>
-      </CustomToolNamespace>
-      <Generator>
-      </Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\InfoStrings.resx">
-      <LastGenOutput>InfoStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\LogStrings.ko.resx">
-      <CustomToolNamespace>
-      </CustomToolNamespace>
-      <Generator>
-      </Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\LogStrings.resx">
-      <LastGenOutput>LogStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\SwitchStrings.ko.resx">
-      <CustomToolNamespace>
-      </CustomToolNamespace>
-      <Generator>
-      </Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\SwitchStrings.resx">
-      <LastGenOutput>SwitchStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\UIStringResources.ko.resx">
-      <CustomToolNamespace>
-      </CustomToolNamespace>
-      <Generator>
-      </Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\UIStringResources.resx">
-      <LastGenOutput>UIStringResources.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Resources\" />
   </ItemGroup>
 </Project>

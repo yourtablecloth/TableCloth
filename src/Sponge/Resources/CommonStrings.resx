@@ -117,11 +117,70 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Ask_RestartRequired" xml:space="preserve">
-    <value>설정이 반영되려면 식탁보 프로그램을 다시 시작해야 합니다.
-지금 다시 시작하시겠습니까?</value>
+  <data name="AdobeReaderUrl" xml:space="preserve">
+    <value>https://get.adobe.com/reader/?region=US</value>
   </data>
-  <data name="Ask_WarningForNonSandboxEnvironment" xml:space="preserve">
-    <value>지금 이 프로그램이 실행되는 환경은 윈도우 샌드박스 환경이 아닌 것 같습니다. 그래도 계속 실행하시겠습니까?</value>
+  <data name="AppCommentText" xml:space="preserve">
+    <value>TableCloth - Keep Your Computer Sound &amp; Safe!</value>
+  </data>
+  <data name="AppCopyright" xml:space="preserve">
+    <value>(c) 2021 Jung Hyun, Nam</value>
+  </data>
+  <data name="AppInfoUrl" xml:space="preserve">
+    <value>https://yourtablecloth.app</value>
+  </data>
+  <data name="AppName" xml:space="preserve">
+    <value>TableCloth</value>
+  </data>
+  <data name="AppPublisher" xml:space="preserve">
+    <value>TableCloth Project</value>
+  </data>
+  <data name="AppUpdateInfoUrl" xml:space="preserve">
+    <value>https://github.com/yourtablecloth/TableCloth/releases</value>
+  </data>
+  <data name="DisplayName_Banking" xml:space="preserve">
+    <value>Banking</value>
+  </data>
+  <data name="DisplayName_CreditCard" xml:space="preserve">
+    <value>Credit Card</value>
+  </data>
+  <data name="DisplayName_Education" xml:space="preserve">
+    <value>Education</value>
+  </data>
+  <data name="DisplayName_Favorite" xml:space="preserve">
+    <value>Favorite</value>
+  </data>
+  <data name="DisplayName_Financing" xml:space="preserve">
+    <value>Loans/Finance</value>
+  </data>
+  <data name="DisplayName_Government" xml:space="preserve">
+    <value>Government</value>
+  </data>
+  <data name="DisplayName_Insurance" xml:space="preserve">
+    <value>Insurance</value>
+  </data>
+  <data name="DisplayName_Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="DisplayName_Security" xml:space="preserve">
+    <value>Securities/Investments</value>
+  </data>
+  <data name="EveryonesPrinterUrl" xml:space="preserve">
+    <value>https://modu-print.com/</value>
+  </data>
+  <data name="HancomOfficeViewerUrl" xml:space="preserve">
+    <value>https://www.hancom.com/cs_center/csDownload.do</value>
+  </data>
+  <data name="PrivacyPolicyUrl" xml:space="preserve">
+    <value>https://yourtablecloth.app/privacy</value>
+  </data>
+  <data name="RaiDriveUrl" xml:space="preserve">
+    <value>https://www.raidrive.com/download</value>
+  </data>
+  <data name="UnboundHomeUrl" xml:space="preserve">
+    <value>https://www.google.com/</value>
+  </data>
+  <data name="UnknownText" xml:space="preserve">
+    <value>Unknown</value>
   </data>
 </root>
