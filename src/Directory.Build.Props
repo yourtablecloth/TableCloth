@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Please do not delete, move, or rename this file (Directory.build.props); MSbuild will automatically read this file by convention. -->
+<!-- https://stackoverflow.com/a/74789660 -->
+<Project>
+  <PropertyGroup>
+    <SolutionDir Condition="'$(SolutionDir)'==''">$(MSBuildThisFileDirectory)</SolutionDir> 
+  </PropertyGroup>
+</Project>
