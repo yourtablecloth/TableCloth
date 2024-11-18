@@ -33,6 +33,7 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
 		<PackageReference Include="Moq" Version="4.20.70" />
+		<PackageReference Include="System.Text.Json" Version="8.0.5" />
 		<PackageReference Include="xunit" Version="2.6.6" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.5.6">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -65,7 +66,7 @@
 	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-	  <Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Spork\bin\$(PlatformName)\$(ConfigurationName)\Spork.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Spork\bin\$(PlatformName)\$(ConfigurationName)\Spork.zip&quot; &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Spork\bin\$(PlatformName)\$(ConfigurationName)\Sponge.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Sponge\bin\$(PlatformName)\$(ConfigurationName)\Sponge.zip&quot; &quot;$(ProjectDir)Sponge.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Sponge.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
+	  <Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(SolutionDir)Artifacts\Spork.zip&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)Artifacts\Spork.zip&quot; &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(SolutionDir)Artifacts\Sponge.zip&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)Artifacts\Sponge.zip&quot; &quot;$(ProjectDir)Sponge.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Sponge.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
 	</Target>
 
 </Project>

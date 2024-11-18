@@ -64,6 +64,7 @@
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.Drawing.Common" Version="8.0.1" />
 		<PackageReference Include="System.Management" Version="8.0.0" />
+		<PackageReference Include="System.Text.Json" Version="8.0.5" />
 		<PackageReference Include="XamlRadialProgressBar" Version="1.0.3" />
 	</ItemGroup>
 
@@ -96,6 +97,6 @@
 
 	<Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Spork\bin\$(PlatformName)\$(ConfigurationName)\Spork.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Spork\bin\$(PlatformName)\$(ConfigurationName)\Spork.zip&quot; &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(ProjectDir)..\Sponge\bin\$(PlatformName)\$(ConfigurationName)\Sponge.zip&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)..\Sponge\bin\$(PlatformName)\$(ConfigurationName)\Sponge.zip&quot; &quot;$(ProjectDir)Sponge.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Sponge.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
+		<Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(SolutionDir)Artifacts\Spork.zip&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)Artifacts\Spork.zip&quot; &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(SolutionDir)Artifacts\Sponge.zip&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)Artifacts\Sponge.zip&quot; &quot;$(ProjectDir)Sponge.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Sponge.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
 	</Target>
 </Project>

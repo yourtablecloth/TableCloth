@@ -207,9 +207,11 @@
     <PreBuildEvent>git.exe rev-parse HEAD &gt; "$(ProjectDir)commit.txt"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>echo Compressing '$(TargetDir)' into '$(TargetDir)$(ProjectName).zip'...
-powershell.exe Compress-Archive -Path '$(TargetDir)*' -DestinationPath '$(TargetDir)$(ProjectName).zip' -CompressionLevel Optimal -Force
-dir $(TargetDir)$(ProjectName).zip
+    <PostBuildEvent>echo Compressing '$(TargetDir)' into '$(SolutionDir)Artifacts\$(ProjectName).zip'...
+if not exist "$(SolutionDir)Artifacts\" mkdir "$(SolutionDir)Artifacts\"
+if exist "$(SolutionDir)Artifacts\$(ProjectName).zip" del /f /q "$(SolutionDir)Artifacts\$(ProjectName).zip"
+powershell.exe Add-Type -AssemblyName 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$(TargetDir)', '$(SolutionDir)Artifacts\$(ProjectName).zip')
+dir $(SolutionDir)Artifacts\$(ProjectName).zip
 </PostBuildEvent>
   </PropertyGroup>
 </Project>
