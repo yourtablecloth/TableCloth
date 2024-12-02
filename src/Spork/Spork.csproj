@@ -287,7 +287,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UIStringResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Steps\Implementations\EnableWinSxsForSandboxStep.cs" />
     <Compile Include="Steps\Implementations\StepsFactory.cs" />
     <Compile Include="Browsers\IWebBrowserService.cs" />
     <Compile Include="Steps\IStepsFactory.cs" />

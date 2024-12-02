@@ -60,13 +60,6 @@ namespace Spork.Steps.Implementations
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_SetDesktopWallpaper,
                 },
-                new StepItemViewModel
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(EnableWinSxsForSandboxStep)),
-                    Argument = new InstallItemViewModel(),
-                    TargetSiteName = UIStringResources.Option_Prerequisites,
-                    PackageName = UIStringResources.Install_EnableWinSxSForSandbox,
-                },
             });
 
             if (parsedArgs.EnableInternetExplorerMode.HasValue &&
