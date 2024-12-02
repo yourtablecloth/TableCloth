@@ -22,14 +22,14 @@ namespace TableCloth.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class LogStrings {
+    public class AskStrings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal LogStrings() {
+        internal AskStrings() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace TableCloth.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Spork.Resources.LogStrings", typeof(LogStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TableCloth.Resources.Resources.AskStrings", typeof(AskStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,38 +61,12 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Cannot parse WSB file `{0}`. The file content may corrupted or invalid.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   설정이 반영되려면 식탁보 프로그램을 다시 시작해야 합니다.
+        ///지금 다시 시작하시겠습니까?과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string TableCloth_Log_CannotParseWsbFile_ProhibitTranslation {
+        public static string Ask_RestartRequired {
             get {
-                return ResourceManager.GetString("TableCloth_Log_CannotParseWsbFile_ProhibitTranslation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Directory enumeration failed - {0} (Reason: {1})과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Log_DirectoryEnumFail_ProhibitTranslation {
-            get {
-                return ResourceManager.GetString("TableCloth_Log_DirectoryEnumFail_ProhibitTranslation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   The path `{0}` of the host folder listed in the WSB file does not exist on the host.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Log_HostFolderNotExists_ProhibitTranslation {
-            get {
-                return ResourceManager.GetString("TableCloth_Log_HostFolderNotExists_ProhibitTranslation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   WSB file `{0}` was not created.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Log_WsbFileCreateFail_ProhibitTranslation {
-            get {
-                return ResourceManager.GetString("TableCloth_Log_WsbFileCreateFail_ProhibitTranslation", resourceCulture);
+                return ResourceManager.GetString("Ask_RestartRequired", resourceCulture);
             }
         }
     }

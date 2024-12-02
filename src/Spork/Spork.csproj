@@ -247,46 +247,6 @@
     <Compile Include="Components\IShortcutCreator.cs" />
     <Compile Include="Converters\WidthConverter.cs" />
     <Compile Include="NullableShim.cs" />
-    <Compile Include="Resources\AskStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AskStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\CommonStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CommonStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\ConstantStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ConstantStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\ErrorStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ErrorStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\InfoStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>InfoStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\LogStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LogStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\SwitchStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SwitchStrings.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\UIStringResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>UIStringResources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Steps\Implementations\StepsFactory.cs" />
     <Compile Include="Browsers\IWebBrowserService.cs" />
     <Compile Include="Steps\IStepsFactory.cs" />
@@ -304,7 +264,6 @@
     <Compile Include="Steps\Implementations\ReloadEdgeStep.cs" />
     <Compile Include="Steps\Implementations\SetDesktopWallpaperStep.cs" />
     <Compile Include="Steps\Implementations\TryProtectCriticalServicesStep.cs" />
-    <Compile Include="Steps\Implementations\VerifyWindowsContainerEnvironmentStep.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -436,52 +395,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\AskStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>AskStrings.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\CommonStrings.ko.resx" />
-    <EmbeddedResource Include="Resources\CommonStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>CommonStrings.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ConstantStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ConstantStrings.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ErrorStrings.ko.resx" />
-    <EmbeddedResource Include="Resources\ErrorStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ErrorStrings.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\InfoStrings.ko.resx" />
-    <EmbeddedResource Include="Resources\InfoStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>InfoStrings.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\LogStrings.ko.resx" />
-    <EmbeddedResource Include="Resources\LogStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>LogStrings.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\SwitchStrings.ko.resx" />
-    <EmbeddedResource Include="Resources\SwitchStrings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>SwitchStrings.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\UIStringResources.ko.resx" />
-    <EmbeddedResource Include="Resources\UIStringResources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>UIStringResources.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
     <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -498,7 +411,12 @@
   <ItemGroup>
     <None Include="Resources\Signature.jpg" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\TableCloth.Resources\TableCloth.Resources.csproj">
+      <Project>{e7dfc99c-3073-4859-9c3c-08f817ca8722}</Project>
+      <Name>TableCloth.Resources</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

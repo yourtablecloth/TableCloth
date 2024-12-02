@@ -39,7 +39,7 @@ namespace TableCloth.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Spork.Resources.ErrorStrings", typeof(ErrorStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TableCloth.Resources.Resources.ErrorStrings", typeof(ErrorStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

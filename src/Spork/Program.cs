@@ -159,8 +159,7 @@ namespace Spork
                 .AddKeyedSingleton<IStep, PrepareDirectoriesStep>(nameof(PrepareDirectoriesStep))
                 .AddKeyedSingleton<IStep, ReloadEdgeStep>(nameof(ReloadEdgeStep))
                 .AddKeyedSingleton<IStep, SetDesktopWallpaperStep>(nameof(SetDesktopWallpaperStep))
-                .AddKeyedSingleton<IStep, TryProtectCriticalServicesStep>(nameof(TryProtectCriticalServicesStep))
-                .AddKeyedSingleton<IStep, VerifyWindowsContainerEnvironmentStep>(nameof(VerifyWindowsContainerEnvironmentStep));
+                .AddKeyedSingleton<IStep, TryProtectCriticalServicesStep>(nameof(TryProtectCriticalServicesStep));
 
             // Shared Commands
             services

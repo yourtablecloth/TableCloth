@@ -6,7 +6,7 @@
         xmlns:vm="clr-namespace:TableCloth.ViewModels"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:tablecloth="clr-namespace:TableCloth"
-        xmlns:res="clr-namespace:TableCloth.Resources"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         xmlns:xrpb="http://XamlRadialProgressBar/DotNet"
         mc:Ignorable="d"
         Title="{x:Static res:UIStringResources.MainWindow_Title}" Height="400" Width="600"

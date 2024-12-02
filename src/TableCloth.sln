@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spork", "Spork\Spork.csproj", "{369BB263-3C8D-4B56-9301-2C47DE7746E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableCloth.Resources", "TableCloth.Resources\TableCloth.Resources.csproj", "{E7DFC99C-3073-4859-9C3C-08F817CA8722}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -48,6 +50,14 @@ Global
 		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|ARM64.Build.0 = Release|ARM64
 		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.ActiveCfg = Release|x64
 		{369BB263-3C8D-4B56-9301-2C47DE7746E8}.Release|x64.Build.0 = Release|x64
+		{E7DFC99C-3073-4859-9C3C-08F817CA8722}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{E7DFC99C-3073-4859-9C3C-08F817CA8722}.Debug|ARM64.Build.0 = Debug|ARM64
+		{E7DFC99C-3073-4859-9C3C-08F817CA8722}.Debug|x64.ActiveCfg = Debug|x64
+		{E7DFC99C-3073-4859-9C3C-08F817CA8722}.Debug|x64.Build.0 = Debug|x64
+		{E7DFC99C-3073-4859-9C3C-08F817CA8722}.Release|ARM64.ActiveCfg = Release|ARM64
+		{E7DFC99C-3073-4859-9C3C-08F817CA8722}.Release|ARM64.Build.0 = Release|ARM64
+		{E7DFC99C-3073-4859-9C3C-08F817CA8722}.Release|x64.ActiveCfg = Release|x64
+		{E7DFC99C-3073-4859-9C3C-08F817CA8722}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

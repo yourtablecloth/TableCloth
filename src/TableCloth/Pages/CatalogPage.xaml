@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
-      xmlns:res="clr-namespace:TableCloth.Resources"
+      xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
       xmlns:vm="clr-namespace:TableCloth.ViewModels"
       xmlns:catalogmodel="clr-namespace:TableCloth.Models.Catalog"
       xmlns:tablecloth="clr-namespace:TableCloth"

@@ -5,7 +5,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:Spork.ViewModels"
-        xmlns:res="clr-namespace:TableCloth.Resources"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Resources"
         xmlns:controls="clr-namespace:Spork.Controls"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:AboutWindowViewModelForDesigner, IsDesignTimeCreatable=True}"

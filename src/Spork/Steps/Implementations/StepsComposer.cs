@@ -34,13 +34,6 @@ namespace Spork.Steps.Implementations
             {
                 new StepItemViewModel
                 {
-                    Step = _stepsFactory.GetStepByName(nameof(VerifyWindowsContainerEnvironmentStep)),
-                    Argument = new InstallItemViewModel(),
-                    TargetSiteName = UIStringResources.Option_Prerequisites,
-                    PackageName = UIStringResources.Install_VerifyEnvironment,
-                },
-                new StepItemViewModel
-                {
                     Step = _stepsFactory.GetStepByName(nameof(PrepareDirectoriesStep)),
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Prerequisites,
