@@ -21,14 +21,12 @@ public sealed class AppStartup : IAppStartup
         ISharedLocations sharedLocations,
         IArchiveExpander archiveExpander,
         ILogger<AppStartup> logger,
-        IHttpClientFactory httpClientFactory,
-        ISystemProperties systemProperties)
+        IHttpClientFactory httpClientFactory)
     {
         _sharedLocations = sharedLocations;
         _archiveExpander = archiveExpander;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
-        _systemProperties = systemProperties;
 
         _mutex = new Mutex(true, $"Global\\{GetType().FullName}", out this._isFirstInstance);
     }
@@ -63,7 +61,6 @@ public sealed class AppStartup : IAppStartup
     private readonly IArchiveExpander _archiveExpander;
     private readonly ILogger _logger;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ISystemProperties _systemProperties;
 
     private readonly Mutex _mutex;
     private readonly bool _isFirstInstance;
@@ -100,13 +97,6 @@ public sealed class AppStartup : IAppStartup
         {
             result = ApplicationStartupResultModel.FromErrorMessage(
                 ErrorStrings.Error_Spork_Missing, isCritical: true, providedWarnings: warnings);
-            return result;
-        }
-
-        if (!File.Exists(_sharedLocations.SpongeZipFilePath))
-        {
-            result = ApplicationStartupResultModel.FromErrorMessage(
-                ErrorStrings.Error_Sponge_Missing, isCritical: true, providedWarnings: warnings);
             return result;
         }
 
@@ -255,11 +245,6 @@ public sealed class AppStartup : IAppStartup
                     warnings.Add(ErrorStrings.Error_SandboxMightNotAvailable);
             }
         }
-
-        var bitLockerStatus = _systemProperties.IsSystemPartitionBitLockerEnabled();
- 
-        if (!bitLockerStatus.HasValue || !bitLockerStatus.Value)
-            warnings.Add(ErrorStrings.Error_SystemDrive_Vulnerable);
 
         result = ApplicationStartupResultModel.FromSucceedResult(providedWarnings: warnings);
         return await Task.FromResult(result).ConfigureAwait(false);

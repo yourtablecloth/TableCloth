@@ -127,8 +127,7 @@ internal static class Program
             .AddSingleton<ICommandLineArguments, CommandLineArguments>()
             .AddSingleton<IApplicationService, ApplicationService>()
             .AddSingleton<IArchiveExpander, ArchiveExpander>()
-            .AddSingleton<ICatalogDeserializer, CatalogDeserializer>()
-            .AddSingleton<ISystemProperties, SystemProperties>();
+            .AddSingleton<ICatalogDeserializer, CatalogDeserializer>();
 
         // Shared Commands
         services

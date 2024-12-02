@@ -21,8 +21,7 @@ namespace TableCloth.Components.Implementations;
 public sealed class SandboxBuilder(
     IAppMessageBox appMessageBox,
     IArchiveExpander archiveExpander,
-    ISharedLocations sharedLocations,
-    ISystemProperties systemProperties) : ISandboxBuilder
+    ISharedLocations sharedLocations) : ISandboxBuilder
 {
     private readonly string _wdagUtilityAccountPath = @"C:\Users\WDAGUtilityAccount";
 
@@ -54,11 +53,6 @@ public sealed class SandboxBuilder(
         if (!await ExpandSporkAssetZipAsync(sporkZipFilePath, outputDirectory, cancellationToken).ConfigureAwait(false))
             return default;
 
-        // Sponge 실행 파일은 assets\Sponge 디렉터리에 압축 해제
-        var spongeZipFilePath = Path.Combine(sharedLocations.ExecutableDirectoryPath, "Sponge.zip");
-        if (!await ExpandSpongeAssetZipAsync(spongeZipFilePath, outputDirectory, cancellationToken).ConfigureAwait(false))
-            return default;
-
         var assetsDirectory = Path.Combine(outputDirectory, "assets");
         if (!Directory.Exists(assetsDirectory))
             Directory.CreateDirectory(assetsDirectory);
@@ -69,11 +63,6 @@ public sealed class SandboxBuilder(
 
         tableClothConfiguration.AssetsDirectoryPath = assetsDirectory;
 
-        var isSystemDiskAHdd = systemProperties.IsSystemDiskAHardDrive();
-        var recommendSafeDelete = false;
-        if (isSystemDiskAHdd.HasValue && isSystemDiskAHdd.Value)
-            recommendSafeDelete = true;
-
         var sporkAnswerJsonPath = Path.Combine(assetsDirectory, "SporkAnswers.json");
         var sporkAnswerJsonContent = await SerializeSporkAnswersJsonAsync(new SporkAnswers
         {
@@ -81,15 +70,6 @@ public sealed class SandboxBuilder(
 
         }, cancellationToken).ConfigureAwait(false);
         await File.WriteAllTextAsync(sporkAnswerJsonPath, sporkAnswerJsonContent, cancellationToken).ConfigureAwait(false);
-
-        var spongeAnswerJsonPath = Path.Combine(assetsDirectory, "Sponge", "SpongeAnswers.json");
-        var spongeAnswerJsonContent = await SerializeSpongeAnswersJsonAsync(new SpongeAnswers
-        {
-            HostUILocale = CultureInfo.CurrentUICulture.Name,
-            RecommendSafeDelete = recommendSafeDelete,
-
-        }, cancellationToken).ConfigureAwait(false);
-        await File.WriteAllTextAsync(spongeAnswerJsonPath, spongeAnswerJsonContent, cancellationToken).ConfigureAwait(false);
 
         var wsbFilePath = Path.Combine(outputDirectory, "InternetBankingSandbox.wsb");
         var serializedXml = SerializeSandboxSpec(
@@ -230,42 +210,7 @@ popd
         }
     }
 
-    private async Task<bool> ExpandSpongeAssetZipAsync(string zipFilePath, string outputDirectory, CancellationToken cancellationToken = default)
-    {
-        if (!File.Exists(zipFilePath))
-            return false;
-
-        if (!Directory.Exists(outputDirectory))
-            Directory.CreateDirectory(outputDirectory);
-
-        var spongeAssetsDirectory = Path.Combine(outputDirectory, "assets", "Sponge");
-
-        if (!Directory.Exists(spongeAssetsDirectory))
-            Directory.CreateDirectory(spongeAssetsDirectory);
-
-        try
-        {
-            await archiveExpander.ExpandArchiveAsync(
-                zipFilePath, spongeAssetsDirectory, cancellationToken)
-                .ConfigureAwait(false);
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            appMessageBox.DisplayError(ex, true);
-            return false;
-        }
-    }
-
     public static async Task<string> SerializeSporkAnswersJsonAsync(SporkAnswers answers, CancellationToken cancellationToken = default)
-    {
-        using var memStream = new MemoryStream();
-        await JsonSerializer.SerializeAsync(memStream, answers, new JsonSerializerOptions() { WriteIndented = true, }, cancellationToken).ConfigureAwait(false);
-        return new UTF8Encoding(false).GetString(memStream.ToArray());
-    }
-
-    public static async Task<string> SerializeSpongeAnswersJsonAsync(SpongeAnswers answers, CancellationToken cancellationToken = default)
     {
         using var memStream = new MemoryStream();
         await JsonSerializer.SerializeAsync(memStream, answers, new JsonSerializerOptions() { WriteIndented = true, }, cancellationToken).ConfigureAwait(false);

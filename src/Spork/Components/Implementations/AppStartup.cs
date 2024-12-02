@@ -130,15 +130,6 @@ namespace Spork.Components.Implementations
                     result = ApplicationStartupResultModel.FromHaltedResult(providedWarnings: warnings);
                     return result;
                 }
-
-                if (Helpers.IsUnderWindowsSandboxSession())
-                {
-                    var thisExecutableDirectoryPath = _sharedLocations.ExecutableDirectoryPath;
-                    var spongeExceutableFilePath = Directory.GetFiles(thisExecutableDirectoryPath, "Sponge.exe", SearchOption.AllDirectories).FirstOrDefault();
-
-                    if (spongeExceutableFilePath != null && File.Exists(spongeExceutableFilePath))
-                        await _shortcutCreator.CreateShortcutOnDesktopAsync(spongeExceutableFilePath, "Sponge", cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
             }
             catch (Exception ex)
             {

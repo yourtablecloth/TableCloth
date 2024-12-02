@@ -13,7 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Events\DialogRequestEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\StatusUpdateRequestEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Answers\SpongeAnswers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Answers\SporkAnswers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiInvokeResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApplicationStartupResultModel.cs" />
