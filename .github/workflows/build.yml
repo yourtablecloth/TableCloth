@@ -69,12 +69,6 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Build Sponge project separately
-    - name: Build Sponge project
-      run: msbuild $env:Sponge_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
-      env:
-        Configuration: ${{ matrix.configuration }}
-
     # Publish TableCloth project
     - name: Publish TableCloth project
       run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
