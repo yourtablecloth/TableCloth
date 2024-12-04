@@ -14,12 +14,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		build_setup.cmd = build_setup.cmd
 		Directory.build.props = Directory.build.props
+		Korean.isl = Korean.isl
 		License.rtf = License.rtf
 		..\LICENSE.txt = ..\LICENSE.txt
 		PRIVACY.md = PRIVACY.md
 		README.md = README.md
 		SECURITY.md = SECURITY.md
+		TableClothSetup.iss = TableClothSetup.iss
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spork", "Spork\Spork.csproj", "{369BB263-3C8D-4B56-9301-2C47DE7746E8}"
