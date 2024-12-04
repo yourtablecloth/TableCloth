@@ -7,8 +7,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("TableCloth")]
 [assembly: AssemblyCopyright("(c) rkttu.com, 2021")]
 [assembly: AssemblyTrademark("TableCloth")]
-[assembly: AssemblyVersion("1.13.2.0")]
-[assembly: AssemblyFileVersion("1.13.2.0")]
+[assembly: AssemblyVersion("1.14.0.0")]
+[assembly: AssemblyFileVersion("1.14.0.0")]
 [assembly: Guid("e7dfc99c-3073-4859-9c3c-08f817ca8722")]
 [assembly: ComVisible(true)]
 
