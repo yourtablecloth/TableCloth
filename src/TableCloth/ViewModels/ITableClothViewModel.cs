@@ -13,7 +13,6 @@ public interface ITableClothViewModel
     bool InstallAdobeReader { get; }
     bool InstallHancomOfficeViewer { get; }
     bool InstallRaiDrive { get; }
-    bool EnableInternetExplorerMode { get; }
     bool MapNpkiCert { get; }
     IEnumerable<CatalogInternetService> SelectedServices { get; }
     X509CertPair? SelectedCertFile { get; set; }

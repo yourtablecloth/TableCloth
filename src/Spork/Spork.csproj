@@ -255,7 +255,6 @@
     <Compile Include="Steps\StepBase.cs" />
     <Compile Include="Steps\Implementations\ConfigAhnLabSafeTransactionStep.cs" />
     <Compile Include="Steps\Implementations\EdgeExtensionInstallStep.cs" />
-    <Compile Include="Steps\Implementations\EnableInternetExplorerModeStep.cs" />
     <Compile Include="Steps\IStep.cs" />
     <Compile Include="Steps\Implementations\OpenWebSiteStep.cs" />
     <Compile Include="Steps\Implementations\PackageInstallStep.cs" />

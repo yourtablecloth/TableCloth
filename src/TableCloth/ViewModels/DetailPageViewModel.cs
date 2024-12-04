@@ -142,7 +142,6 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     private bool _installAdobeReader;
     private bool _installHancomOfficeViewer;
     private bool _installRaiDrive;
-    private bool _enableInternetExplorerMode;
     private DateTime? _lastDisclaimerAgreedTime;
     private X509CertPair? _selectedCertFile;
     private string _searchKeyword = string.Empty;
@@ -217,12 +216,6 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     {
         get => _installRaiDrive;
         set => SetProperty(ref _installRaiDrive, value);
-    }
-
-    public bool EnableInternetExplorerMode
-    {
-        get => _enableInternetExplorerMode;
-        set => SetProperty(ref _enableInternetExplorerMode, value);
     }
 
     public DateTime? LastDisclaimerAgreedTime

@@ -152,7 +152,6 @@ namespace Spork
                 .AddSingleton<IStepsPlayer, StepsPlayer>()
                 .AddKeyedSingleton<IStep, ConfigAhnLabSafeTransactionStep>(nameof(ConfigAhnLabSafeTransactionStep))
                 .AddKeyedSingleton<IStep, EdgeExtensionInstallStep>(nameof(EdgeExtensionInstallStep))
-                .AddKeyedSingleton<IStep, EnableInternetExplorerModeStep>(nameof(EnableInternetExplorerModeStep))
                 .AddKeyedSingleton<IStep, OpenWebSiteStep>(nameof(OpenWebSiteStep))
                 .AddKeyedSingleton<IStep, PackageInstallStep>(nameof(PackageInstallStep))
                 .AddKeyedSingleton<IStep, PowerShellScriptRunStep>(nameof(PowerShellScriptRunStep))

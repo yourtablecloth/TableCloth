@@ -1233,15 +1233,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Change the settings to allow the Microsoft Edge browser to run in Internet Explorer mode inside the Windows Sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_EnableIEMode_Help {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_EnableIEMode_Help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Grant permission to record audio inside the Windows Sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string TableCloth_Switch_EnableMicrophone_Help {

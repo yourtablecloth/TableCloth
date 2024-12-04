@@ -55,18 +55,6 @@ namespace Spork.Steps.Implementations
                 },
             });
 
-            if (parsedArgs.EnableInternetExplorerMode.HasValue &&
-                parsedArgs.EnableInternetExplorerMode.Value)
-            {
-                steps.Add(new StepItemViewModel
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(EnableInternetExplorerModeStep)),
-                    Argument = new InstallItemViewModel(),
-                    TargetSiteName = UIStringResources.Option_Prerequisites,
-                    PackageName = UIStringResources.Install_EnableIEMode,
-                });
-            }
-
             foreach (var eachTargetName in targets)
             {
                 var targetService = catalog.Services.FirstOrDefault(x => string.Equals(eachTargetName, x.Id, StringComparison.Ordinal));

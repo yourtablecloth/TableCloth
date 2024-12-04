@@ -46,11 +46,6 @@ namespace TableCloth.Models.Configuration
         public bool InstallRaiDrive { get; set; } = true;
 
         /// <summary>
-        /// Internet Explorer 호환성 모드를 사용할지 여부를 나타냅니다.
-        /// </summary>
-        public bool EnableInternetExplorerMode { get; set; } = true;
-
-        /// <summary>
         /// 로그 수집 기능을 사용할지 여부를 나타냅니다.
         /// </summary>
         public bool UseLogCollection { get; set; } = true;
