@@ -509,9 +509,6 @@
   <data name="TableCloth_Switch_EnableCert_Help" xml:space="preserve">
     <value>Windows Sandbox 안에서 공동 인증서 파일을 이용할 수 있게 복사합니다.</value>
   </data>
-  <data name="TableCloth_Switch_EnableIEMode_Help" xml:space="preserve">
-    <value>Windows Sandbox 안에서 Internet Explorer 모드로 Microsoft Edge 브라우저를 실행할 수 있도록 설정을 변경합니다.</value>
-  </data>
   <data name="TableCloth_Switch_EnableMicrophone_Help" xml:space="preserve">
     <value>Windows Sandbox 안에서 오디오 녹음을 할 수 있도록 권한을 부여합니다.</value>
   </data>

@@ -88,15 +88,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   https://yourtablecloth.app/TableClothCatalog/sites.xml과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string IEModePolicyXmlUrl {
-            get {
-                return ResourceManager.GetString("IEModePolicyXmlUrl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   https://yourtablecloth.app/TableClothCatalog/images과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string ImageUrlPrefix {
@@ -165,15 +156,6 @@ namespace TableCloth.Resources {
         public static string TableCloth_Switch_EnableCert {
             get {
                 return ResourceManager.GetString("TableCloth_Switch_EnableCert", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   --enable-ie-mode과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_EnableIEMode {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_EnableIEMode", resourceCulture);
             }
         }
         

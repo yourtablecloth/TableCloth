@@ -36,8 +36,6 @@ public sealed class CommandLineComposer(
             options.Add(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer);
         if (viewModel.InstallRaiDrive)
             options.Add(ConstantStrings.TableCloth_Switch_InstallRaiDrive);
-        if (viewModel.EnableInternetExplorerMode)
-            options.Add(ConstantStrings.TableCloth_Switch_EnableIEMode);
         if (viewModel.MapNpkiCert)
             options.Add(ConstantStrings.TableCloth_Switch_EnableCert);
 

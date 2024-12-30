@@ -33,9 +33,6 @@ namespace Spork.Components.Implementations
             _installRaiDriveOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallRaiDrive)
             { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallRaiDrive_Help, };
 
-            _enableIEModeOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_EnableIEMode)
-            { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_EnableIEMode_Help, };
-
             _dryRunOption = new Option<bool>(ConstantStrings.TableCloth_Switch_DryRun)
             { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_DryRun_Help, };
 
@@ -53,7 +50,6 @@ namespace Spork.Components.Implementations
                 _installAdobeReaderOption,
                 _installHancomOfficeViewerOption,
                 _installRaiDriveOption,
-                _enableIEModeOption,
                 _dryRunOption,
                 _simulateFailureOption,
                 _siteIdListArgument,
@@ -80,7 +76,6 @@ namespace Spork.Components.Implementations
         private readonly Option<bool?> _installAdobeReaderOption;
         private readonly Option<bool?> _installHancomOfficeViewerOption;
         private readonly Option<bool?> _installRaiDriveOption;
-        private readonly Option<bool?> _enableIEModeOption;
         private readonly Option<bool> _dryRunOption;
         private readonly Option<bool> _simulateFailureOption;
         private readonly Argument<string[]> _siteIdListArgument;
@@ -122,7 +117,6 @@ namespace Spork.Components.Implementations
                 installAdobeReader: parseResult.GetValueForOption(_installAdobeReaderOption),
                 installHancomOfficeViewer: parseResult.GetValueForOption(_installHancomOfficeViewerOption),
                 installRaiDrive: parseResult.GetValueForOption(_installRaiDriveOption),
-                enableInternetExplorerMode: parseResult.GetValueForOption(_enableIEModeOption),
                 showCommandLineHelp: parseResult.HasOption(_helpOption),
                 showVersionHelp: parseResult.HasOption(_versionOption),
                 dryRun: parseResult.GetValueForOption(_dryRunOption),

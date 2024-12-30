@@ -164,9 +164,6 @@ del /f /q ""{providedCertFilePath}""
         if (tableClothConfiguration.InstallRaiDrive)
             switches.Add(ConstantStrings.TableCloth_Switch_InstallRaiDrive);
 
-        if (tableClothConfiguration.EnableInternetExplorerMode)
-            switches.Add(ConstantStrings.TableCloth_Switch_EnableIEMode);
-
         var serviceIdList = (tableClothConfiguration.Services ?? Enumerable.Empty<CatalogInternetService>())
             .Select(x => x.Id).Distinct();
         var sporkFilePath = Path.Combine(GetAssetsPathForSandbox(), "Spork.exe");

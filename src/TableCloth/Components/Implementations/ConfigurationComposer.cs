@@ -28,8 +28,7 @@ public sealed class ConfigurationComposer(
             InstallAdobeReader = viewModel.InstallAdobeReader,
             InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer,
             InstallRaiDrive = viewModel.InstallRaiDrive,
-            EnableInternetExplorerMode = viewModel.EnableInternetExplorerMode,
-            Companions = Array.Empty<CatalogCompanion>(), /*ViewModel.CatalogDocument.Companions*/
+            Companions = Array.Empty<CatalogCompanion>(),
             Services = viewModel.SelectedServices.ToList(),
         };
     }
@@ -67,7 +66,6 @@ public sealed class ConfigurationComposer(
             InstallAdobeReader = argumentModel.InstallAdobeReader ?? default,
             InstallHancomOfficeViewer = argumentModel.InstallHancomOfficeViewer ?? default,
             InstallRaiDrive = argumentModel.InstallRaiDrive ?? default,
-            EnableInternetExplorerMode = argumentModel.EnableInternetExplorerMode ?? default,
         };
     }
 }

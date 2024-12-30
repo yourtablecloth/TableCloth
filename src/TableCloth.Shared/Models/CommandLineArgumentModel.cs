@@ -20,7 +20,6 @@ namespace TableCloth.Models
             bool? installAdobeReader = default,
             bool? installHancomOfficeViewer = default,
             bool? installRaiDrive = default,
-            bool? enableInternetExplorerMode = default,
             bool showCommandLineHelp = default,
             bool showVersionHelp = default,
             bool dryRun = default,
@@ -37,7 +36,6 @@ namespace TableCloth.Models
             InstallAdobeReader = installAdobeReader;
             InstallHancomOfficeViewer = installHancomOfficeViewer;
             InstallRaiDrive = installRaiDrive;
-            EnableInternetExplorerMode = enableInternetExplorerMode;
             ShowCommandLineHelp = showCommandLineHelp;
             ShowVersionHelp = showVersionHelp;
             DryRun = dryRun;
@@ -63,8 +61,6 @@ namespace TableCloth.Models
         public bool? InstallHancomOfficeViewer { get; private set; }
 
         public bool? InstallRaiDrive { get; private set; }
-
-        public bool? EnableInternetExplorerMode { get; private set; }
 
         public bool ShowCommandLineHelp { get; private set; }
 
@@ -113,8 +109,6 @@ namespace TableCloth.Models
                     options.Add(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer);
                 if (InstallRaiDrive.HasValue && InstallRaiDrive.Value)
                     options.Add(ConstantStrings.TableCloth_Switch_InstallRaiDrive);
-                if (EnableInternetExplorerMode.HasValue && EnableInternetExplorerMode.Value)
-                    options.Add(ConstantStrings.TableCloth_Switch_EnableIEMode);
 
                 if (DryRun)
                     options.Add(ConstantStrings.TableCloth_Switch_DryRun);

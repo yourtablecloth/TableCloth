@@ -47,7 +47,6 @@ public sealed class DetailPageLoadedCommand(
         viewModel.InstallAdobeReader = currentConfig.InstallAdobeReader;
         viewModel.InstallHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
         viewModel.InstallRaiDrive = currentConfig.InstallRaiDrive;
-        viewModel.EnableInternetExplorerMode = currentConfig.EnableInternetExplorerMode;
         viewModel.LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
         var targetFilePath = sharedLocations.GetImageFilePath(selectedServiceId);
@@ -139,10 +138,6 @@ public sealed class DetailPageLoadedCommand(
 
             case nameof(DetailPageViewModel.InstallRaiDrive):
                 currentConfig.InstallRaiDrive = viewModel.InstallRaiDrive;
-                break;
-
-            case nameof(DetailPageViewModel.EnableInternetExplorerMode):
-                currentConfig.EnableInternetExplorerMode = viewModel.EnableInternetExplorerMode;
                 break;
 
             case nameof(DetailPageViewModel.LastDisclaimerAgreedTime):
