@@ -27,7 +27,6 @@ jobs:
     env:
       Solution_Name: src\TableCloth.sln
       Spork_Project_Path: src\Spork\Spork.csproj
-      Sponge_Project_Path: src\Sponge\Sponge.csproj
       TableCloth_Project_Path: src\TableCloth\TableCloth.csproj
       Platform: ${{ matrix.platform }}
 
@@ -41,7 +40,7 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 9.0.x
 
     # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
