@@ -9,7 +9,7 @@ public sealed class NavigationService(
     IAppUserInterface appUserInterface) : INavigationService
 {
     public string GetPageFrameControlName()
-        => nameof(MainWindowV2.PageFrame);
+        => nameof(MainWindow.PageFrame);
 
     public Frame FindNavigationFrameFromMainWindow()
     {

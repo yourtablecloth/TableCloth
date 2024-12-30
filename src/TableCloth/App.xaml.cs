@@ -64,7 +64,7 @@ public partial class App : Application
 
         if (e.DialogResult.HasValue && e.DialogResult.Value)
         {
-            MainWindow = host.Services.GetRequiredService<MainWindowV2>(); ;
+            MainWindow = host.Services.GetRequiredService<MainWindow>(); ;
             MainWindow.Show();
         }
 

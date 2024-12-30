@@ -1,8 +1,8 @@
 ﻿using TableCloth.Components;
 
-namespace TableCloth.Commands.MainWindowV2;
+namespace TableCloth.Commands.MainWindow;
 
-public sealed class MainWindowV2ClosedCommand(
+public sealed class MainWindowClosedCommand(
     ISandboxCleanupManager sandboxCleanupManager,
     IAppRestartManager appRestartManager) : CommandBase
 {

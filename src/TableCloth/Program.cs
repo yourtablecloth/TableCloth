@@ -13,7 +13,7 @@ using TableCloth.Commands.CertSelectWindow;
 using TableCloth.Commands.DetailPage;
 using TableCloth.Commands.DisclaimerWindow;
 using TableCloth.Commands.InputPasswordWindow;
-using TableCloth.Commands.MainWindowV2;
+using TableCloth.Commands.MainWindow;
 using TableCloth.Commands.Shared;
 using TableCloth.Commands.SplashScreen;
 using TableCloth.Components;
@@ -172,9 +172,9 @@ internal static class Program
 
         // Main Window v2
         services
-            .AddWindow<MainWindowV2, MainWindowV2ViewModel>()
-            .AddSingleton<MainWindowV2LoadedCommand>()
-            .AddSingleton<MainWindowV2ClosedCommand>();
+            .AddWindow<MainWindow, MainWindowViewModel>()
+            .AddSingleton<MainWindowLoadedCommand>()
+            .AddSingleton<MainWindowClosedCommand>();
 
         // Catalog Page
         services
