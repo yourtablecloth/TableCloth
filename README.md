@@ -11,9 +11,6 @@
 
 [![식탁보 프로젝트 빌드 상황](https://github.com/dotnetdev-kr/TableCloth/actions/workflows/build.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
 [![식탁보 최신 버전 다운로드](https://img.shields.io/github/v/release/yourtablecloth/tablecloth)](https://github.com/yourtablecloth/TableCloth/releases)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
-[![Chocolatey](https://img.shields.io/badge/chocolatey-install-orange)](https://community.chocolatey.org/packages/tablecloth)
-[![Winget](https://img.shields.io/badge/winget-install-purple)](https://winstall.app/apps/TableClothProject.TableCloth)
 
 ![식탁보 실행 화면](docs/images/TableCloth.png)
 
