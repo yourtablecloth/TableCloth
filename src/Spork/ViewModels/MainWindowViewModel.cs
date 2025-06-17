@@ -97,5 +97,12 @@ namespace Spork.ViewModels
             get => _installSteps;
             set => SetProperty(ref _installSteps, value);
         }
+
+        private string _languageToggleButtonText = System.Threading.Thread.CurrentThread.CurrentUICulture.Name.StartsWith("ko") ? "To English" : "한글로";
+        public string LanguageToggleButtonText
+        {
+            get => _languageToggleButtonText;
+            set => SetProperty(ref _languageToggleButtonText, value);
+        }
     }
 }

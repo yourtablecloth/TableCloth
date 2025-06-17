@@ -30,5 +30,19 @@ namespace Spork
         {
             Close();
         }
+
+        private void OnLanguageToggleButtonClick(object sender, RoutedEventArgs e)
+        {
+            var current = System.Threading.Thread.CurrentThread.CurrentUICulture.Name.StartsWith("ko") ? "en-US" : "ko-KR";
+            var culture = new System.Globalization.CultureInfo(current);
+            System.Threading.Thread.CurrentThread.CurrentCulture = culture;
+            System.Threading.Thread.CurrentThread.CurrentUICulture = culture;
+            if (ViewModel != null)
+            {
+                ViewModel.LanguageToggleButtonText = current.StartsWith("ko") ? "To English" : "한글로";
+            }
+            System.Windows.Forms.Application.Restart();
+            Application.Current.Shutdown();
+        }
     }
 }

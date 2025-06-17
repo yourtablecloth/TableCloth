@@ -62,6 +62,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0">
+            <Button Margin="10 0 0 0" Padding="5" Content="{Binding LanguageToggleButtonText}" Click="OnLanguageToggleButtonClick" />
             <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_AboutButton}" Command="{Binding AboutThisAppCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
