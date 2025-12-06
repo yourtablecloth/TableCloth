@@ -172,7 +172,7 @@
     <value>https://www.hancom.com/cs_center/csDownload.do</value>
   </data>
   <data name="PrivacyPolicyUrl" xml:space="preserve">
-    <value>https://yourtablecloth.app/privacy</value>
+    <value>https://yourtablecloth.app/#privacy</value>
   </data>
   <data name="RaiDriveUrl" xml:space="preserve">
     <value>https://www.raidrive.com/download</value>
