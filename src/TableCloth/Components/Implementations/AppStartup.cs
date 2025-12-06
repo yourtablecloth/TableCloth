@@ -228,6 +228,8 @@ public sealed class AppStartup : IAppStartup
             NativeMethods.OSEdition.PRODUCT_PRO_WORKSTATION_N,
             NativeMethods.OSEdition.PRODUCT_PROFESSIONAL,
             NativeMethods.OSEdition.PRODUCT_PROFESSIONAL_N,
+            NativeMethods.OSEdition.PRODUCT_IOTENTERPRISE,
+            NativeMethods.OSEdition.PRODUCT_IOTENTERPRISE_S,
         };
 
         if (!NativeMethods.GetVersionExW(ref osvi))
