@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
@@ -20,7 +20,12 @@ public sealed class ArchiveExpander : IArchiveExpander
                 if (string.IsNullOrWhiteSpace(eachEntry.Name))
                     continue;
 
-                var destPath = Path.Combine(destinationDirectoryPath, eachEntry.Name);
+                // Use FullName to preserve directory structure
+                var destPath = Path.Combine(destinationDirectoryPath, eachEntry.FullName);
+                var destDirectory = Path.GetDirectoryName(destPath);
+
+                if (!string.IsNullOrWhiteSpace(destDirectory) && !Directory.Exists(destDirectory))
+                    Directory.CreateDirectory(destDirectory);
 
                 using var outputStream = File.OpenWrite(destPath);
                 using var eachStream = eachEntry.Open();
@@ -28,7 +33,7 @@ public sealed class ArchiveExpander : IArchiveExpander
             }
             catch (Exception ex)
             {
-                throw new IOException($"Cannot extract the file '{eachEntry.Name}' to '{destinationDirectoryPath}'.", ex);
+                throw new IOException($"Cannot extract the file '{eachEntry.FullName}' to '{destinationDirectoryPath}'.", ex);
             }
         }
     }

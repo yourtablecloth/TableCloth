@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -34,11 +34,12 @@ namespace Spork
         private static int Main(string[] args)
             => RunApp(args);
 
-        // To Do: Not Working
         private static void SetDefaultCulture(CultureInfo desiredCulture)
         {
             Thread.CurrentThread.CurrentCulture = desiredCulture;
             Thread.CurrentThread.CurrentUICulture = desiredCulture;
+            CultureInfo.DefaultThreadCurrentCulture = desiredCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = desiredCulture;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
@@ -193,7 +194,9 @@ namespace Spork
         {
             try
             {
-                var answerFilePath = Path.GetFullPath("SporkAnswers.json");
+                // Get the directory where Spork.exe is located
+                var exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                var answerFilePath = Path.Combine(exeDirectory, "SporkAnswers.json");
 
                 if (File.Exists(answerFilePath))
                 {
