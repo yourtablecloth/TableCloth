@@ -27,6 +27,9 @@ public sealed class SandboxBuilder(
     private string GetAssetsPathForSandbox()
         => Path.Combine(_wdagUtilityAccountPath, "Desktop", "Assets");
 
+    private string GetCertificateStagingPathForSandbox()
+        => Path.Combine(_wdagUtilityAccountPath, "Desktop", "Assets", "certs");
+
     private string GetNPKIPathForSandbox(X509CertPair certPair)
     {
         // Note: 샌드박스 안에서 사용할 경로를 조립하는 것이므로 SHGetKnownFolderPath API를 사용하면 안됩니다.
@@ -56,11 +59,11 @@ public sealed class SandboxBuilder(
         if (!Directory.Exists(assetsDirectory))
             Directory.CreateDirectory(assetsDirectory);
 
+        tableClothConfiguration.AssetsDirectoryPath = assetsDirectory;
+
         var batchFileContent = GenerateSandboxStartupScript(tableClothConfiguration);
         var batchFilePath = Path.Combine(assetsDirectory, "StartupScript.cmd");
         await File.WriteAllTextAsync(batchFilePath, batchFileContent, Encoding.Default, cancellationToken).ConfigureAwait(false);
-
-        tableClothConfiguration.AssetsDirectoryPath = assetsDirectory;
 
         var sporkAnswerJsonPath = Path.Combine(assetsDirectory, "SporkAnswers.json");
         var sporkAnswerJsonContent = await SerializeSporkAnswersJsonAsync(new SporkAnswers
@@ -108,21 +111,16 @@ public sealed class SandboxBuilder(
             tableClothConfig.CertPair.PublicKey != null &&
             tableClothConfig.CertPair.PrivateKey != null)
         {
-            var certAssetsDirectoryPath = Path.Combine(tableClothConfig.AssetsDirectoryPath, "certs");
-            if (!Directory.Exists(certAssetsDirectoryPath))
-                Directory.CreateDirectory(certAssetsDirectoryPath);
+            var certStagingDirectoryPath = sharedLocations.GetCertificateStagingDirectoryPath();
+            if (Directory.Exists(certStagingDirectoryPath))
+                Directory.Delete(certStagingDirectoryPath, true);
+            Directory.CreateDirectory(certStagingDirectoryPath);
 
-            var destDerFilePath = Path.Combine(certAssetsDirectoryPath, "signCert.der");
-            var destKeyFileName = Path.Combine(certAssetsDirectoryPath, "signPri.key");
+            var destDerFilePath = Path.Combine(certStagingDirectoryPath, "signCert.der");
+            var destKeyFileName = Path.Combine(certStagingDirectoryPath, "signPri.key");
 
             await File.WriteAllBytesAsync(destDerFilePath, tableClothConfig.CertPair.PublicKey, cancellationToken).ConfigureAwait(false);
             await File.WriteAllBytesAsync(destKeyFileName, tableClothConfig.CertPair.PrivateKey, cancellationToken).ConfigureAwait(false);
-
-            sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
-            {
-                HostFolder = certAssetsDirectoryPath,
-                ReadOnly = bool.TrueString,
-            });
         }
 
         sandboxConfig.LogonCommand.Add(Path.Combine(GetAssetsPathForSandbox(), "StartupScript.cmd"));
@@ -133,19 +131,20 @@ public sealed class SandboxBuilder(
     {
         ArgumentNullException.ThrowIfNull(tableClothConfiguration);
 
-        var certFileCopyScript = string.Empty;
+        var certFileMoveScript = string.Empty;
 
         if (tableClothConfiguration.CertPair != null)
         {
             var npkiDirectoryPathInSandbox = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
             var desktopDirectoryPathInSandbox = "%userprofile%\\Desktop\\Certificates";
-            var providedCertFilePath = Path.Combine(GetAssetsPathForSandbox(), "certs", "*.*");
-            certFileCopyScript = $@"
+            var certStagingPath = GetCertificateStagingPathForSandbox();
+            var providedCertFilePath = Path.Combine(certStagingPath, "*.*");
+            certFileMoveScript = $@"
 if not exist ""{npkiDirectoryPathInSandbox}"" mkdir ""{npkiDirectoryPathInSandbox}""
-copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPathInSandbox}""
 if not exist ""{desktopDirectoryPathInSandbox}"" mkdir ""{desktopDirectoryPathInSandbox}""
-copy /y ""{providedCertFilePath}"" ""{desktopDirectoryPathInSandbox}""
-del /f /q ""{providedCertFilePath}""
+copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPathInSandbox}""
+move /y ""{providedCertFilePath}"" ""{desktopDirectoryPathInSandbox}""
+rmdir /q ""{certStagingPath}""
 ";
         }
 
@@ -170,7 +169,7 @@ del /f /q ""{providedCertFilePath}""
 
         return $@"@echo off
 pushd ""%~dp0""
-{certFileCopyScript}
+{certFileMoveScript}
 ""{sporkFilePath}"" {idList} {string.Join(" ", switches)}
 :exit
 popd

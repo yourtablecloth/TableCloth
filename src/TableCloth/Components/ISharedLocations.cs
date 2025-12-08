@@ -1,4 +1,4 @@
-﻿namespace TableCloth.Components;
+namespace TableCloth.Components;
 
 public interface ISharedLocations
 {
@@ -14,4 +14,5 @@ public interface ISharedLocations
     string GetImageFilePath(string serviceId);
     string GetIconFilePath(string serviceId);
     string GetTempPath();
+    string GetCertificateStagingDirectoryPath();
 }

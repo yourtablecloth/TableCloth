@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
 
 namespace TableCloth.Components.Implementations;
 
 public sealed class SandboxCleanupManager : ISandboxCleanupManager
 {
-    private readonly List<string> _temporaryDirectories = new List<string>();
-
     public string? CurrentDirectory { get; private set; }
 
     public void SetWorkingDirectory(string workingDirectory)
@@ -18,32 +15,17 @@ public sealed class SandboxCleanupManager : ISandboxCleanupManager
             TableClothAppException.Throw($"Directory not found: {normalizedPath}");
 
         CurrentDirectory = normalizedPath;
-
-        if (!_temporaryDirectories.Contains(CurrentDirectory))
-            _temporaryDirectories.Add(CurrentDirectory);
     }
 
     public void TryCleanup()
     {
-        foreach (var eachDirectory in _temporaryDirectories)
-        {
-            if (!string.IsNullOrWhiteSpace(CurrentDirectory))
-            {
-                if (string.Equals(Path.GetFullPath(eachDirectory), Path.GetFullPath(CurrentDirectory), StringComparison.OrdinalIgnoreCase))
-                {
-                    if (Helpers.IsWindowsSandboxRunning())
-                    {
-                        Helpers.OpenExplorer(eachDirectory);
-                        continue;
-                    }
-                }
-            }
+        if (string.IsNullOrWhiteSpace(CurrentDirectory))
+            return;
 
-            if (!Directory.Exists(eachDirectory))
-                continue;
+        if (!Directory.Exists(CurrentDirectory))
+            return;
 
-            try { Directory.Delete(eachDirectory, true); }
-            catch { Helpers.OpenExplorer(eachDirectory); }
-        }
+        try { Directory.Delete(CurrentDirectory, true); }
+        catch { /* 다음 실행 시 덮어쓰므로 무시 */ }
     }
 }

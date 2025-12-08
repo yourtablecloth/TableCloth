@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -19,7 +19,10 @@ public sealed class SharedLocations : ISharedLocations
         => GetDataPath("Preferences.json");
 
     public string GetTempPath()
-        => GetDataPath($"bwsb_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}");
+        => GetDataPath("Sandbox");
+
+    public string GetCertificateStagingDirectoryPath()
+        => Path.Combine(GetTempPath(), "assets", "certs");
 
     public string GetImageDirectoryPath()
         => GetDataPath("images");
