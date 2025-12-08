@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
+using System.Xml.Linq;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
@@ -107,29 +107,30 @@ public sealed class SandboxLauncher(
                 return false;
             }
 
-            var content = default(SandboxConfiguration);
+            var doc = XDocument.Load(wsbFilePath);
+            var root = doc.Root;
 
-            using (var fileStream = File.OpenRead(wsbFilePath))
+            if (root == null || root.Name.LocalName != "Configuration")
             {
-                var serializer = new XmlSerializer(typeof(SandboxConfiguration));
-                content = serializer.Deserialize(fileStream) as SandboxConfiguration;
-
-                if (content == null)
-                {
-                    reason = StringResources.TableCloth_Log_CannotParseWsbFile_ProhibitTranslation(wsbFilePath);
-                    _logger.LogError("{reason}", reason);
-                    return false;
-                }
+                reason = StringResources.TableCloth_Log_CannotParseWsbFile_ProhibitTranslation(wsbFilePath);
+                _logger.LogError("{reason}", reason);
+                return false;
             }
 
-            foreach (var eachMappedFolder in content.MappedFolders)
+            var mappedFoldersElement = root.Element("MappedFolders");
+            if (mappedFoldersElement != null)
             {
-                // HostFolder 태그에 들어가는 경로는 절대 경로만 사용되므로 상대 경로 처리를 하지 않아도 됨.
-                if (!Directory.Exists(eachMappedFolder.HostFolder))
+                foreach (var mappedFolderElement in mappedFoldersElement.Elements("MappedFolder"))
                 {
-                    reason = StringResources.TableCloth_Log_HostFolderNotExists_ProhibitTranslation(eachMappedFolder.HostFolder);
-                    _logger.LogError("{reason}", reason);
-                    return false;
+                    var hostFolder = mappedFolderElement.Element("HostFolder")?.Value;
+
+                    // HostFolder 태그에 들어가는 경로는 절대 경로만 사용되므로 상대 경로 처리를 하지 않아도 됨.
+                    if (!string.IsNullOrEmpty(hostFolder) && !Directory.Exists(hostFolder))
+                    {
+                        reason = StringResources.TableCloth_Log_HostFolderNotExists_ProhibitTranslation(hostFolder);
+                        _logger.LogError("{reason}", reason);
+                        return false;
+                    }
                 }
             }
 

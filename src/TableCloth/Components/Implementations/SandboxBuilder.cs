@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -7,8 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
+using System.Xml.Linq;
 using TableCloth.Models.Answers;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
@@ -219,21 +218,63 @@ popd
         ArgumentNullException.ThrowIfNull(configuration);
 
         var unavailableDirectories = configuration.MappedFolders
-            .Where(x => !Directory.Exists(x.HostFolder));
+            .Where(x => !Directory.Exists(x.HostFolder))
+            .ToList();
 
         configuration.MappedFolders.RemoveAll(x => unavailableDirectories.Contains(x));
 
         if (excludedFolders != null)
+        {
             foreach (var eachDirectory in unavailableDirectories)
                 excludedFolders.Add(eachDirectory);
+        }
 
-        var serializer = new XmlSerializer(typeof(SandboxConfiguration));
-        var @namespace = new XmlSerializerNamespaces([new XmlQualifiedName(string.Empty)]);
-        var targetEncoding = new UTF8Encoding(false);
+        var configElement = new XElement("Configuration");
 
-        using var memStream = new MemoryStream();
-        var contentStream = new StreamWriter(memStream);
-        serializer.Serialize(contentStream, configuration, @namespace);
-        return targetEncoding.GetString(memStream.ToArray());
+        AddElementIfNotNull(configElement, "Networking", configuration.Networking);
+        AddElementIfNotNull(configElement, "AudioInput", configuration.AudioInput);
+        AddElementIfNotNull(configElement, "VideoInput", configuration.VideoInput);
+        AddElementIfNotNull(configElement, "vGPU", configuration.VirtualGpu);
+        AddElementIfNotNull(configElement, "PrinterRedirection", configuration.PrinterRedirection);
+        AddElementIfNotNull(configElement, "ClipboardRedirection", configuration.ClipboardRedirection);
+        AddElementIfNotNull(configElement, "ProtectedClient", configuration.ProtectedClient);
+
+        if (configuration.MemoryInMB.HasValue)
+            configElement.Add(new XElement("MemoryInMB", configuration.MemoryInMB.Value));
+
+        if (configuration.MappedFolders.Count > 0)
+        {
+            var mappedFoldersElement = new XElement("MappedFolders");
+            foreach (var folder in configuration.MappedFolders)
+            {
+                var folderElement = new XElement("MappedFolder",
+                    new XElement("HostFolder", folder.HostFolder));
+
+                AddElementIfNotNull(folderElement, "SandboxFolder", folder.SandboxFolder);
+                AddElementIfNotNull(folderElement, "ReadOnly", folder.ReadOnly);
+
+                mappedFoldersElement.Add(folderElement);
+            }
+            configElement.Add(mappedFoldersElement);
+        }
+
+        if (configuration.LogonCommand.Count > 0)
+        {
+            var logonCommandElement = new XElement("LogonCommand");
+            foreach (var command in configuration.LogonCommand)
+            {
+                logonCommandElement.Add(new XElement("Command", command));
+            }
+            configElement.Add(logonCommandElement);
+        }
+
+        var doc = new XDocument(configElement);
+        return doc.ToString(SaveOptions.DisableFormatting);
+    }
+
+    private static void AddElementIfNotNull(XElement parent, string name, string? value)
+    {
+        if (!string.IsNullOrEmpty(value))
+            parent.Add(new XElement(name, value));
     }
 }

@@ -1,4 +1,4 @@
-﻿using Spork.ViewModels;
+using Spork.ViewModels;
 using System;
 using System.Windows;
 
@@ -41,7 +41,6 @@ namespace Spork
             {
                 ViewModel.LanguageToggleButtonText = current.StartsWith("ko") ? "To English" : "한글로";
             }
-            System.Windows.Forms.Application.Restart();
             Application.Current.Shutdown();
         }
     }
