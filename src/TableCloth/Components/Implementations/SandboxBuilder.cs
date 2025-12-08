@@ -94,6 +94,7 @@ public sealed class SandboxBuilder(
             AudioInput = tableClothConfig.EnableMicrophone ? Enable : Disable,
             VideoInput = tableClothConfig.EnableWebCam ? Enable : Disable,
             PrinterRedirection = tableClothConfig.EnablePrinters ? Enable : Disable,
+            VirtualGpu = Disable,
         };
 
         if (!Directory.Exists(tableClothConfig.AssetsDirectoryPath))
