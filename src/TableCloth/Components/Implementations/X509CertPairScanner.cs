@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using PnPeople.Security;
 using System;
 using System.Collections.Generic;
@@ -109,7 +109,11 @@ public sealed class X509CertPairScanner(
 
         var copiedPassword = CertPrivateKeyHelper.CopyFromSecureString(password);
 
+#if NETFX
         using X509Certificate2 cert = new X509Certificate2(pfxFilePath, copiedPassword, X509KeyStorageFlags.Exportable);
+#else
+        using X509Certificate2 cert = X509CertificateLoader.LoadPkcs12FromFile(pfxFilePath, copiedPassword, X509KeyStorageFlags.Exportable);
+#endif
         var publicKey = cert.Export(X509ContentType.Cert);
 
         var rsaPrivateKey = cert.GetRSAPrivateKey().EnsureNotNull("Cannot obtain RSA private key.");

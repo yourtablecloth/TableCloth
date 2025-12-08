@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using System;
 using System.Collections.Generic;
@@ -42,7 +42,11 @@ namespace TableCloth.Models.Configuration
             PublicKey = publicKey;
             PrivateKey = privateKey;
 
+#if NETFX
             using (var cert = new X509Certificate2(publicKey))
+#else
+            using (var cert = X509CertificateLoader.LoadCertificate(publicKey))
+#endif
             {
                 var issuerName = cert.Issuer;
 
