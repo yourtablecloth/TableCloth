@@ -2,7 +2,16 @@
 <!-- Please do not delete, move, or rename this file (Directory.build.props); MSbuild will automatically read this file by convention. -->
 <!-- https://stackoverflow.com/a/74789660 -->
 <Project>
-  <PropertyGroup>
-    <SolutionDir Condition="'$(SolutionDir)'==''">$(MSBuildThisFileDirectory)</SolutionDir> 
-  </PropertyGroup>
+	<PropertyGroup>
+		<SolutionDir Condition="'$(SolutionDir)'==''">$(MSBuildThisFileDirectory)</SolutionDir>
+	</PropertyGroup>
+	<!-- Workaround for https://github.com/dotnet/wpf/issues/11246 -->
+	<Target Name="FixWpfReferences" AfterTargets="ResolveTargetingPackAssets" Condition="'$(UseWPF)' == 'true'">
+		<ItemGroup>
+			<SystemPrivateWindowsCoreRef Include="@(Reference)" Condition="'%(Filename)' == 'System.Private.Windows.Core'" />
+			<ReferencePath Include="@(SystemPrivateWindowsCoreRef->'%(RootDir)%(Directory)System.Private.Windows.GdiPlus.dll')">
+				<AssemblyName>System.Private.Windows.GdiPlus</AssemblyName>
+			</ReferencePath>
+		</ItemGroup>
+	</Target>
 </Project>
