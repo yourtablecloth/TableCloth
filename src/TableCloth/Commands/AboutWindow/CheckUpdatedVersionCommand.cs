@@ -17,21 +17,39 @@ public sealed class CheckUpdatedVersionCommand(
 
     public async Task ExecuteAsync(object? _)
     {
-        var targetUrl = await appUpdateManager.QueryNewVersionDownloadUrlAsync();
-
-        if (targetUrl.ThrownException != null)
+        try
         {
-            appMessageBox.DisplayError(targetUrl.ThrownException, false);
-            return;
-        }
+            // Velopack 자동 업데이트 시도
+            var hasUpdate = await appUpdateManager.CheckForUpdatesAsync();
 
-        if (!string.IsNullOrWhiteSpace(targetUrl.Result?.AbsoluteUri))
-        {
-            appMessageBox.DisplayInfo(InfoStrings.Info_UpdateRequired);
-            var psi = new ProcessStartInfo(targetUrl.Result.AbsoluteUri) { UseShellExecute = true, };
-            Process.Start(psi);
+            if (hasUpdate)
+            {
+                appMessageBox.DisplayInfo(InfoStrings.Info_UpdateRequired);
+                await appUpdateManager.DownloadAndApplyUpdatesAsync();
+                return;
+            }
+
+            // Velopack 설치가 아닌 경우 기존 방식으로 폴백
+            var targetUrl = await appUpdateManager.QueryNewVersionDownloadUrlAsync();
+
+            if (targetUrl.ThrownException != null)
+            {
+                appMessageBox.DisplayError(targetUrl.ThrownException, false);
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(targetUrl.Result?.AbsoluteUri))
+            {
+                appMessageBox.DisplayInfo(InfoStrings.Info_UpdateRequired);
+                var psi = new ProcessStartInfo(targetUrl.Result.AbsoluteUri) { UseShellExecute = true, };
+                Process.Start(psi);
+            }
+            else
+                appMessageBox.DisplayInfo(InfoStrings.Info_UpdateNotRequired);
         }
-        else
-            appMessageBox.DisplayInfo(InfoStrings.Info_UpdateNotRequired);
+        catch (Exception ex)
+        {
+            appMessageBox.DisplayError(ex, false);
+        }
     }
 }

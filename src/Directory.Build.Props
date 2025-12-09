@@ -5,6 +5,19 @@
 	<PropertyGroup>
 		<SolutionDir Condition="'$(SolutionDir)'==''">$(MSBuildThisFileDirectory)</SolutionDir>
 	</PropertyGroup>
+
+	<!-- Version information - Single source of truth -->
+	<PropertyGroup>
+		<TableClothVersionMajor>1</TableClothVersionMajor>
+		<TableClothVersionMinor>14</TableClothVersionMinor>
+		<TableClothVersionPatch>0</TableClothVersionPatch>
+		<TableClothVersionRevision>0</TableClothVersionRevision>
+
+		<!-- Computed versions -->
+		<TableClothVersion>$(TableClothVersionMajor).$(TableClothVersionMinor).$(TableClothVersionPatch).$(TableClothVersionRevision)</TableClothVersion>
+		<TableClothSemVer>$(TableClothVersionMajor).$(TableClothVersionMinor).$(TableClothVersionPatch)</TableClothSemVer>
+	</PropertyGroup>
+
 	<!-- Workaround for https://github.com/dotnet/wpf/issues/11246 -->
 	<Target Name="FixWpfReferences" AfterTargets="ResolveTargetingPackAssets" Condition="'$(UseWPF)' == 'true'">
 		<ItemGroup>

@@ -1,208 +1,126 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E7DFC99C-3073-4859-9C3C-08F817CA8722}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TableCloth.Resources</RootNamespace>
-    <AssemblyName>TableCloth.Resources</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\ARM64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>ARM64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'">
-    <OutputPath>bin\ARM64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>ARM64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AskStrings.Designer.cs">
-      <DependentUpon>AskStrings.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="CommonStrings.Designer.cs">
-      <DependentUpon>CommonStrings.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="CommonStrings.ko.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CommonStrings.ko.resx</DependentUpon>
-    </Compile>
-    <Compile Include="ConstantStrings.Designer.cs">
-      <DependentUpon>ConstantStrings.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="ErrorStrings.Designer.cs">
-      <DependentUpon>ErrorStrings.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="ErrorStrings.ko.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ErrorStrings.ko.resx</DependentUpon>
-    </Compile>
-    <Compile Include="InfoStrings.Designer.cs">
-      <DependentUpon>InfoStrings.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="InfoStrings.ko.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>InfoStrings.ko.resx</DependentUpon>
-    </Compile>
-    <Compile Include="LogStrings.Designer.cs">
-      <DependentUpon>LogStrings.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="LogStrings.ko.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LogStrings.ko.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SwitchStrings.Designer.cs">
-      <DependentUpon>SwitchStrings.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="SwitchStrings.ko.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SwitchStrings.ko.resx</DependentUpon>
-    </Compile>
-    <Compile Include="UIStringResources.Designer.cs">
-      <DependentUpon>UIStringResources.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="UIStringResources.ko.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>UIStringResources.ko.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="AskStrings.resx">
-      <LastGenOutput>AskStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CommonStrings.ko.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>CommonStrings.ko.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CommonStrings.resx">
-      <LastGenOutput>CommonStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ConstantStrings.resx">
-      <LastGenOutput>ConstantStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ErrorStrings.ko.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ErrorStrings.ko.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ErrorStrings.resx">
-      <LastGenOutput>ErrorStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="InfoStrings.ko.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>InfoStrings.ko.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="InfoStrings.resx">
-      <LastGenOutput>InfoStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LogStrings.ko.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>LogStrings.ko.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LogStrings.resx">
-      <LastGenOutput>LogStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SwitchStrings.ko.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>SwitchStrings.ko.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SwitchStrings.resx">
-      <LastGenOutput>SwitchStrings.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UIStringResources.ko.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>UIStringResources.ko.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UIStringResources.resx">
-      <LastGenOutput>UIStringResources.Designer.cs</LastGenOutput>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net48;net10.0</TargetFrameworks>
+		<RootNamespace>TableCloth.Resources</RootNamespace>
+		<AssemblyName>TableCloth.Resources</AssemblyName>
+		<LangVersion>latest</LangVersion>
+		<Deterministic>true</Deterministic>
+		<Platforms>x64;ARM64</Platforms>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="CommonStrings.ko.Designer.cs" />
+		<Compile Remove="ErrorStrings.ko.Designer.cs" />
+		<Compile Remove="InfoStrings.ko.Designer.cs" />
+		<Compile Remove="LogStrings.ko.Designer.cs" />
+		<Compile Remove="SwitchStrings.ko.Designer.cs" />
+		<Compile Remove="UIStringResources.ko.Designer.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="AskStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>AskStrings.Designer.cs</LastGenOutput>
+			<CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="CommonStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>CommonStrings.Designer.cs</LastGenOutput>
+			<CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="CommonStrings.ko.resx">
+			<DependentUpon>CommonStrings.resx</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Update="ConstantStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>ConstantStrings.Designer.cs</LastGenOutput>
+			<CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="ErrorStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>ErrorStrings.Designer.cs</LastGenOutput>
+			<CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="ErrorStrings.ko.resx">
+			<DependentUpon>ErrorStrings.resx</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Update="InfoStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>InfoStrings.Designer.cs</LastGenOutput>
+			<CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="InfoStrings.ko.resx">
+			<DependentUpon>InfoStrings.resx</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Update="LogStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>LogStrings.Designer.cs</LastGenOutput>
+			<CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="LogStrings.ko.resx">
+			<DependentUpon>LogStrings.resx</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Update="SwitchStrings.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>SwitchStrings.Designer.cs</LastGenOutput>
+			<CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="SwitchStrings.ko.resx">
+			<DependentUpon>SwitchStrings.resx</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Update="UIStringResources.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>UIStringResources.Designer.cs</LastGenOutput>
+			<CustomToolNamespace>TableCloth.Resources</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Update="UIStringResources.ko.resx">
+			<DependentUpon>UIStringResources.resx</DependentUpon>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="AskStrings.Designer.cs">
+			<DependentUpon>AskStrings.resx</DependentUpon>
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+		</Compile>
+		<Compile Update="CommonStrings.Designer.cs">
+			<DependentUpon>CommonStrings.resx</DependentUpon>
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+		</Compile>
+		<Compile Update="ConstantStrings.Designer.cs">
+			<DependentUpon>ConstantStrings.resx</DependentUpon>
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+		</Compile>
+		<Compile Update="ErrorStrings.Designer.cs">
+			<DependentUpon>ErrorStrings.resx</DependentUpon>
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+		</Compile>
+		<Compile Update="InfoStrings.Designer.cs">
+			<DependentUpon>InfoStrings.resx</DependentUpon>
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+		</Compile>
+		<Compile Update="LogStrings.Designer.cs">
+			<DependentUpon>LogStrings.resx</DependentUpon>
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+		</Compile>
+		<Compile Update="SwitchStrings.Designer.cs">
+			<DependentUpon>SwitchStrings.resx</DependentUpon>
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+		</Compile>
+		<Compile Update="UIStringResources.Designer.cs">
+			<DependentUpon>UIStringResources.resx</DependentUpon>
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+		</Compile>
+	</ItemGroup>
+
 </Project>

@@ -69,5 +69,15 @@ namespace TableCloth.Models.Configuration
         /// 마지막으로 사용한 공동 인증서 해시 값을 기록합니다.
         /// </summary>
         public string? LastUsedCertHash { get; set; } = null;
+
+        /// <summary>
+        /// 라이선스 동의 시점을 기록합니다.
+        /// </summary>
+        public DateTime? LicenseAgreedTime { get; set; } = null;
+
+        /// <summary>
+        /// 라이선스 동의 시 프로그램 버전을 기록합니다.
+        /// </summary>
+        public string? LicenseAgreedVersion { get; set; } = null;
     }
 }

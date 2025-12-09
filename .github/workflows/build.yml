@@ -22,12 +22,13 @@ jobs:
         platform: [x64]
 
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     env:
       Solution_Name: src\TableCloth.sln
       Spork_Project_Path: src\Spork\Spork.csproj
       TableCloth_Project_Path: src\TableCloth\TableCloth.csproj
+      TableCloth_Resources_Project_Path: src\TableCloth.Resources\TableCloth.Resources.csproj
       Platform: ${{ matrix.platform }}
 
     steps:
@@ -42,51 +43,60 @@ jobs:
       with:
         dotnet-version: 10.0.x
 
-    # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.3.2
+    # Install Velopack CLI
+    - name: Install Velopack CLI
+      run: dotnet tool install -g vpk
 
-    # Setup NuGet CLI
-    - name: Setup NuGet CLI
-      uses: nuget/setup-nuget@v1.2.0
-      with:
-        nuget-version: '5.x'
-
-    # Restore .NET Framework nuget packages
-    - name: Restore the application (.NET Framework Part)
-      run: nuget restore $env:Solution_Name
-
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application (.NET Core Part)
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration /m
+    # Build TableCloth.Resources project
+    - name: Build TableCloth.Resources project
+      run: dotnet build $env:TableCloth_Resources_Project_Path -c:$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Build Spork project separately
+    # Build Spork project
     - name: Build Spork project
-      run: msbuild $env:Spork_Project_Path /p:Configuration=$env:Configuration /p:Platform=$env:Platform /m
+      run: dotnet build $env:Spork_Project_Path -c:$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
 
     # Publish TableCloth project
-    - name: Publish TableCloth project
-      run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration
+    - name: Publish TableCloth project  
+      run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration -o publish
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Create InnoSetup package
-    - name: Create InnoSetup package
+    # Get version from assembly
+    - name: Get version
+      id: get_version
       run: |
-        "#define GitCommit ""$(git.exe rev-parse HEAD)""" | Out-File -Path "src\commit.iss"
-        . "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /DConfiguration=$env:Configuration /DArchitecture=$env:Platform src\TableClothSetup.iss
+        $version = (Get-Item "publish\TableCloth.exe").VersionInfo.ProductVersion
+        # Remove any suffix after + sign for semver compatibility
+        $version = $version -replace '\+.*$', ''
+        # Convert 4-part version (e.g., 1.14.0.0) to 3-part SemVer2 (e.g., 1.14.0)
+        $versionParts = $version -split '\.'
+        if ($versionParts.Count -ge 3) {
+          $version = "$($versionParts[0]).$($versionParts[1]).$($versionParts[2])"
+        }
+        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+      shell: pwsh
+    # Create Velopack release package
+    - name: Create Velopack package
+      run: |
+        vpk pack `
+          --packId TableCloth `
+          --packVersion ${{ steps.get_version.outputs.VERSION }} `
+          --packDir publish `
+          --mainExe TableCloth.exe `
+          --outputDir releases
+      shell: pwsh
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Upload the InnoSetup package: https://github.com/actions/upload-artifact
-    - name: Upload build artifacts (InnoSetup)
+    # Upload the Velopack package
+    - name: Upload build artifacts (Velopack)
       uses: actions/upload-artifact@v4
       with:
-        name: InnoSetup Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
-        path: "src/Output/*.exe"
+        name: Velopack Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
+        path: "releases/*"
         if-no-files-found: error
         retention-days: 5

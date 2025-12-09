@@ -2,9 +2,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using Serilog;
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Windows;
 using TableCloth.Commands;
 using TableCloth.Commands.AboutWindow;
@@ -19,9 +22,11 @@ using TableCloth.Commands.SplashScreen;
 using TableCloth.Components;
 using TableCloth.Components.Implementations;
 using TableCloth.Dialogs;
+using TableCloth.Models.Configuration;
 using TableCloth.Pages;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
+using Velopack;
 
 namespace TableCloth;
 
@@ -29,7 +34,166 @@ internal static class Program
 {
     [STAThread]
     private static int Main(string[] args)
-        => RunApp(args);
+    {
+        // Velopack 초기화 - 설치/업데이트/제거 시 처리
+        VelopackApp.Build().Run();
+
+        // 라이선스 동의 여부 확인
+        if (!CheckLicenseAgreement())
+        {
+            return 1; // 라이선스 미동의 시 종료
+        }
+
+        // 설치 후 첫 실행 시 파일 연결 등록
+        RegisterFileAssociationsIfNeeded();
+    
+        return RunApp(args);
+    }
+
+    private static bool CheckLicenseAgreement()
+    {
+        try
+        {
+            var preferencesPath = GetPreferencesFilePath();
+            if (!File.Exists(preferencesPath))
+            {
+                // 설정 파일이 없으면 라이선스 동의 필요
+                return ShowLicenseAgreement();
+            }
+
+            var json = File.ReadAllText(preferencesPath);
+            var preferences = JsonSerializer.Deserialize<PreferenceSettings>(json);
+
+            if (preferences?.LicenseAgreedTime == null)
+            {
+                // 라이선스 동의 기록이 없으면 동의 필요
+                return ShowLicenseAgreement();
+            }
+
+            return true;
+        }
+        catch
+        {
+            // 오류 발생 시 라이선스 동의 창 표시
+            return ShowLicenseAgreement();
+        }
+    }
+
+    private static bool ShowLicenseAgreement()
+    {
+        var licenseWindow = new LicenseWindow();
+        var result = licenseWindow.ShowDialog();
+
+        if (result == true && licenseWindow.LicenseAccepted)
+        {
+            // 라이선스 동의 정보 저장
+            SaveLicenseAgreement();
+            return true;
+        }
+        else
+        {
+            // 라이선스 거부 시 메시지 표시
+            MessageBox.Show(
+                "이 소프트웨어를 사용하려면 라이선스 계약에 동의해야 합니다. 응용 프로그램이 종료됩니다.\n\nYou must accept the license agreement to use this software. The application will now exit.",
+                "License Agreement / 라이선스 동의",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return false;
+        }
+    }
+
+    private static void SaveLicenseAgreement()
+    {
+        try
+        {
+            var preferencesPath = GetPreferencesFilePath();
+            var preferencesDir = Path.GetDirectoryName(preferencesPath);
+            
+            if (!string.IsNullOrEmpty(preferencesDir) && !Directory.Exists(preferencesDir))
+                Directory.CreateDirectory(preferencesDir);
+
+            PreferenceSettings preferences;
+
+            if (File.Exists(preferencesPath))
+            {
+                var json = File.ReadAllText(preferencesPath);
+                preferences = JsonSerializer.Deserialize<PreferenceSettings>(json) ?? new PreferenceSettings();
+            }
+            else
+            {
+                preferences = new PreferenceSettings();
+            }
+
+            preferences.LicenseAgreedTime = DateTime.UtcNow;
+            preferences.LicenseAgreedVersion = typeof(Program).Assembly.GetName().Version?.ToString();
+
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            var updatedJson = JsonSerializer.Serialize(preferences, options);
+            File.WriteAllText(preferencesPath, updatedJson);
+        }
+        catch
+        {
+            // 저장 실패는 무시 - 다음 실행 시 다시 동의 요청
+        }
+    }
+
+    private static string GetPreferencesFilePath()
+    {
+        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        return Path.Combine(appDataPath, "TableCloth", "Preferences.json");
+    }
+
+    private static void RegisterFileAssociationsIfNeeded()
+    {
+        try
+        {
+            // Velopack으로 설치된 경우에만 파일 연결 등록
+            var updateManager = new UpdateManager(new Velopack.Sources.GithubSource(
+                "https://github.com/yourtablecloth/TableCloth", null, false));
+            
+            if (!updateManager.IsInstalled)
+                return;
+
+            var exePath = Environment.ProcessPath;
+            if (string.IsNullOrEmpty(exePath))
+                return;
+
+            using var classesKey = Registry.CurrentUser.OpenSubKey(@"Software\Classes", writable: true);
+            if (classesKey == null) return;
+
+            // 이미 등록되어 있는지 확인
+            using var existingKey = classesKey.OpenSubKey("TableCloth.tclnk");
+            if (existingKey != null) return;
+
+            // .tclnk 확장자 등록
+            using (var extKey = classesKey.CreateSubKey(".tclnk"))
+            {
+                extKey?.SetValue("", "TableCloth.tclnk");
+                using var progIdsKey = extKey?.CreateSubKey("OpenWithProgids");
+                progIdsKey?.SetValue("TableCloth.tclnk", "");
+            }
+
+            // TableCloth.tclnk ProgId 등록
+            using (var progIdKey = classesKey.CreateSubKey("TableCloth.tclnk"))
+            {
+                progIdKey?.SetValue("", "TableCloth Link File");
+
+                using (var iconKey = progIdKey?.CreateSubKey("DefaultIcon"))
+                {
+                    iconKey?.SetValue("", $"\"{exePath}\",0");
+                }
+
+                using (var commandKey = progIdKey?.CreateSubKey(@"shell\open\command"))
+                {
+                    commandKey?.SetValue("", $"\"{exePath}\" \"@%1\"");
+                }
+            }
+        }
+        catch
+        {
+            // 레지스트리 등록 실패는 무시
+        }
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     private static int RunApp(string[] args)
