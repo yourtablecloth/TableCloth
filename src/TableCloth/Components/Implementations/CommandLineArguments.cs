@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.CommandLine;
-using System.CommandLine.Builder;
-using System.CommandLine.IO;
 using System.CommandLine.Parsing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TableCloth.Models;
@@ -15,39 +14,39 @@ public sealed class CommandLineArguments : ICommandLineArguments
     public CommandLineArguments()
     {
         _enableMicrophoneOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_EnableMicrophone)
-        { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_EnableMicrophone_Help, };
+        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_EnableMicrophone_Help, };
 
         _enableCameraOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_EnableCamera)
-        { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_EnableCamera_Help, };
+        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_EnableCamera_Help, };
 
         _enablePrinterOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_EnablePrinter)
-        { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_EnablePrinter_Help, };
+        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_EnablePrinter_Help, };
 
         _certPrivateKeyOption = new Option<string>(ConstantStrings.TableCloth_Switch_CertPrivateKey)
-        { IsRequired = false, Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_CertPrivateKey_Help, };
+        { Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_CertPrivateKey_Help, };
 
         _certPublicKeyOption = new Option<string>(ConstantStrings.TableCloth_Switch_CertPublicKey)
-        { IsRequired = false, Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_CertPublicKey_Help, };
+        { Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_CertPublicKey_Help, };
 
         _installEveryonesPrinterOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter)
-        { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallEveryonesPrinter_Help, };
+        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallEveryonesPrinter_Help, };
 
         _installAdobeReaderOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallAdobeReader)
-        { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallAdobeReader_Help, };
+        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallAdobeReader_Help, };
 
         _installHancomOfficeViewerOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer)
-        { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallHancomOfficeViewer_Help, };
+        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallHancomOfficeViewer_Help, };
 
         _installRaiDriveOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallRaiDrive)
-        { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallRaiDrive_Help, };
+        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallRaiDrive_Help, };
 
         _dryRunOption = new Option<bool>(ConstantStrings.TableCloth_Switch_DryRun)
-        { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_DryRun_Help, };
+        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_DryRun_Help, };
 
         _simulateFailureOption = new Option<bool>(ConstantStrings.TableCloth_Switch_SimulateFailure)
-        { IsRequired = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_SimulateFailure_Help, };
+        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_SimulateFailure_Help, };
 
-        _siteIdListArgument = new Argument<string[]>()
+        _siteIdListArgument = new Argument<string[]>("siteIds")
         { Arity = ArgumentArity.ZeroOrMore, Description = UIStringResources.TableCloth_Arguments_SiteIdList_Help, };
 
         _rootCommand = new RootCommand()
@@ -66,18 +65,14 @@ public sealed class CommandLineArguments : ICommandLineArguments
             _siteIdListArgument,
         };
 
-        _commandLineBuilder = new CommandLineBuilder(_rootCommand)
-            .UseDefaults()
-            .UseHelp()
-            .UseVersionOption()
-            .UseLocalizationResources(LocalizationResources.Instance);
-
         _helpOption = _rootCommand.Options
-            .FirstOrDefault(x => x.Aliases.Contains(ConstantStrings.TableCloth_Switch_Help, StringComparer.OrdinalIgnoreCase))
+            .FirstOrDefault(x => x.Name.Equals(ConstantStrings.TableCloth_Switch_Help, StringComparison.OrdinalIgnoreCase)
+                || x.Aliases.Contains(ConstantStrings.TableCloth_Switch_Help, StringComparer.OrdinalIgnoreCase))
             ?? throw new Exception(ErrorStrings.Error_HelpSwitch_NotFound);
 
         _versionOption = _rootCommand.Options
-            .FirstOrDefault(x => x.Aliases.Contains(ConstantStrings.TableCloth_Switch_Version, StringComparer.OrdinalIgnoreCase))
+            .FirstOrDefault(x => x.Name.Equals(ConstantStrings.TableCloth_Switch_Version, StringComparison.OrdinalIgnoreCase)
+                || x.Aliases.Contains(ConstantStrings.TableCloth_Switch_Version, StringComparer.OrdinalIgnoreCase))
             ?? throw new Exception(ErrorStrings.Error_VersionSwitch_NotFound);
     }
 
@@ -94,25 +89,34 @@ public sealed class CommandLineArguments : ICommandLineArguments
     private readonly Option<bool> _simulateFailureOption;
     private readonly Argument<string[]> _siteIdListArgument;
     private readonly RootCommand _rootCommand;
-    private readonly CommandLineBuilder _commandLineBuilder;
     private readonly Option _helpOption;
     private readonly Option _versionOption;
 
     private ParseResult ParseCommandLine(string[] args)
-        => _commandLineBuilder.Build().Parse(args);
+        => _rootCommand.Parse(args);
 
     public async Task<string> GetHelpStringAsync()
     {
-        var testConsole = new TestConsole();
-        await ParseCommandLine([ConstantStrings.TableCloth_Switch_Help]).InvokeAsync(testConsole).ConfigureAwait(false);
-        return testConsole.Out.ToString() ?? string.Empty;
+        var output = new StringWriter();
+        var config = new InvocationConfiguration()
+        {
+            Output = output,
+        };
+        var parseResult = ParseCommandLine([ConstantStrings.TableCloth_Switch_Help]);
+        await parseResult.InvokeAsync(config).ConfigureAwait(false);
+        return output.ToString();
     }
 
     public async Task<string> GetVersionStringAsync()
     {
-        var testConsole = new TestConsole();
-        await ParseCommandLine([ConstantStrings.TableCloth_Switch_Version]).InvokeAsync(testConsole).ConfigureAwait(false);
-        return testConsole.Out.ToString() ?? string.Empty;
+        var output = new StringWriter();
+        var config = new InvocationConfiguration()
+        {
+            Output = output,
+        };
+        var parseResult = ParseCommandLine([ConstantStrings.TableCloth_Switch_Version]);
+        await parseResult.InvokeAsync(config).ConfigureAwait(false);
+        return output.ToString();
     }
 
     public CommandLineArgumentModel GetCurrent()
@@ -121,19 +125,19 @@ public sealed class CommandLineArguments : ICommandLineArguments
         var parseResult = ParseCommandLine(args);
 
         return new CommandLineArgumentModel(args,
-            selectedServices: parseResult.GetValueForArgument(_siteIdListArgument),
-            enableMicrophone: parseResult.GetValueForOption(_enableMicrophoneOption),
-            enableWebCam: parseResult.GetValueForOption(_enableCameraOption),
-            enablePrinters: parseResult.GetValueForOption(_enablePrinterOption),
-            certPrivateKeyPath: parseResult.GetValueForOption(_certPrivateKeyOption),
-            certPublicKeyPath: parseResult.GetValueForOption(_certPublicKeyOption),
-            installEveryonesPrinter: parseResult.GetValueForOption(_installEveryonesPrinterOption),
-            installAdobeReader: parseResult.GetValueForOption(_installAdobeReaderOption),
-            installHancomOfficeViewer: parseResult.GetValueForOption(_installHancomOfficeViewerOption),
-            installRaiDrive: parseResult.GetValueForOption(_installRaiDriveOption),
-            showCommandLineHelp: parseResult.HasOption(_helpOption),
-            showVersionHelp: parseResult.HasOption(_versionOption),
-            dryRun: parseResult.GetValueForOption(_dryRunOption),
-            simulateFailure: parseResult.GetValueForOption(_simulateFailureOption));
+            selectedServices: parseResult.GetValue(_siteIdListArgument),
+            enableMicrophone: parseResult.GetValue(_enableMicrophoneOption),
+            enableWebCam: parseResult.GetValue(_enableCameraOption),
+            enablePrinters: parseResult.GetValue(_enablePrinterOption),
+            certPrivateKeyPath: parseResult.GetValue(_certPrivateKeyOption),
+            certPublicKeyPath: parseResult.GetValue(_certPublicKeyOption),
+            installEveryonesPrinter: parseResult.GetValue(_installEveryonesPrinterOption),
+            installAdobeReader: parseResult.GetValue(_installAdobeReaderOption),
+            installHancomOfficeViewer: parseResult.GetValue(_installHancomOfficeViewerOption),
+            installRaiDrive: parseResult.GetValue(_installRaiDriveOption),
+            showCommandLineHelp: parseResult.GetResult(_helpOption) != null,
+            showVersionHelp: parseResult.GetResult(_versionOption) != null,
+            dryRun: parseResult.GetValue(_dryRunOption),
+            simulateFailure: parseResult.GetValue(_simulateFailureOption));
     }
 }
