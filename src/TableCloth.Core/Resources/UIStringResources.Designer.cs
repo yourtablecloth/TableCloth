@@ -97,6 +97,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Open Source Licenses과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string AboutWindow_OssLicenseText {
+            get {
+                return ResourceManager.GetString("AboutWindow_OssLicenseText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   About This Program과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string AboutWindow_Title {

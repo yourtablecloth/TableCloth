@@ -72,8 +72,8 @@ public sealed class LicenseDescriptor(
                             !string.IsNullOrWhiteSpace(repoNamePart))
                         {
                             var licenseDescription = await resourceResolver.GetLicenseDescriptionForGitHubAsync(ownerPart, repoNamePart, cancellationToken).ConfigureAwait(false);
-                            if (licenseDescription != null)
-                                buffer.AppendLine($"OSS License: {licenseDescription}");
+                            if (licenseDescription.Result != null)
+                                buffer.AppendLine($"OSS License: {licenseDescription.Result}");
                         }
                     }
                 }
