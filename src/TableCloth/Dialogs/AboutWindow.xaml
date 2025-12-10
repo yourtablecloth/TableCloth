@@ -42,9 +42,9 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap">
                     <Run Text="💖" />
-                    <Run Text="식탁보 프로젝트가 도움이 되셨나요? GitHub Sponsors를 통해 후원해주시면 프로젝트 지속에 큰 힘이 됩니다!" />
+                    <Run Text="{x:Static res:UIStringResources.Sponsor_BannerMessage}" />
                 </TextBlock>
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="#E91E63" FontWeight="Bold" Text="후원하기 →" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="#E91E63" FontWeight="Bold" Text="{x:Static res:UIStringResources.Sponsor_BannerLinkText}" />
             </Grid>
         </Border>
         

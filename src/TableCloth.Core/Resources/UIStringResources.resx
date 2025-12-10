@@ -123,6 +123,18 @@
   <data name="AboutWindow_CatalogDateText" xml:space="preserve">
     <value>Catalog Version</value>
   </data>
+  <data name="Sponsor_BannerMessage" xml:space="preserve">
+    <value>Did TableCloth help you? Your support via GitHub Sponsors will help keep this project running!</value>
+  </data>
+  <data name="Sponsor_BannerLinkText" xml:space="preserve">
+    <value>Support →</value>
+  </data>
+  <data name="Sponsor_BannerShortMessage" xml:space="preserve">
+    <value>Support TableCloth Project</value>
+  </data>
+  <data name="Sponsor_BannerArrow" xml:space="preserve">
+    <value>→</value>
+  </data>
   <data name="AboutWindow_CopyrightText" xml:space="preserve">
     <value>© 2021-2025 rkttu.com. All rights reserved.</value>
   </data>

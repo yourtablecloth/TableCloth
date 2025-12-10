@@ -124,6 +124,42 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   →과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponsor_BannerArrow {
+            get {
+                return ResourceManager.GetString("Sponsor_BannerArrow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Support →과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponsor_BannerLinkText {
+            get {
+                return ResourceManager.GetString("Sponsor_BannerLinkText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Did TableCloth help you? Your support via GitHub Sponsors will help keep this project running!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponsor_BannerMessage {
+            get {
+                return ResourceManager.GetString("Sponsor_BannerMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Support TableCloth Project과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponsor_BannerShortMessage {
+            get {
+                return ResourceManager.GetString("Sponsor_BannerShortMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Once you&apos;ve finalized your settings, hit the OK button.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Await_ConfigASTx {

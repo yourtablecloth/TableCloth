@@ -47,10 +47,10 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11">
-                    <Run Text="??" />
-                    <Run Text="��Ź�� ������Ʈ �Ŀ��ϱ�" />
+                    <Run Text="💖" />
+                    <Run Text="{x:Static res:UIStringResources.Sponsor_BannerShortMessage}" />
                 </TextBlock>
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="5 0 0 0" Foreground="#E91E63" FontWeight="Bold" FontSize="11" Text="��" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="5 0 0 0" Foreground="#E91E63" FontWeight="Bold" FontSize="11" Text="{x:Static res:UIStringResources.Sponsor_BannerArrow}" />
             </Grid>
         </Border>
         

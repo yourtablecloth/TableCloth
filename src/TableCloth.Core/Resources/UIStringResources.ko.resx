@@ -123,6 +123,18 @@
   <data name="AboutWindow_CatalogDateText" xml:space="preserve">
     <value>카탈로그 버전</value>
   </data>
+  <data name="Sponsor_BannerMessage" xml:space="preserve">
+    <value>식탁보 프로젝트가 도움이 되셨나요? GitHub Sponsors를 통해 후원해주시면 프로젝트 지속에 큰 힘이 됩니다!</value>
+  </data>
+  <data name="Sponsor_BannerLinkText" xml:space="preserve">
+    <value>후원하기 →</value>
+  </data>
+  <data name="Sponsor_BannerShortMessage" xml:space="preserve">
+    <value>식탁보 프로젝트 후원하기</value>
+  </data>
+  <data name="Sponsor_BannerArrow" xml:space="preserve">
+    <value>→</value>
+  </data>
   <data name="AboutWindow_CopyrightText" xml:space="preserve">
     <value>© 2021-2025 rkttu.com. All rights reserved.</value>
   </data>
