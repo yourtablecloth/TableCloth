@@ -21,11 +21,6 @@
 		<!-- Assembly Info -->
 		<Title>TableCloth Spork</Title>
 		<Description>This program is a tool that installs the requested installers at once in the sandbox.</Description>
-		<Company>rkttu.com</Company>
-		<Product>TableCloth</Product>
-		<Copyright>(c) rkttu.com, 2021</Copyright>
-		<AssemblyVersion>1.14.0.0</AssemblyVersion>
-		<FileVersion>1.14.0.0</FileVersion>
 
 		<!-- COM Interop -->
 		<ComVisible>true</ComVisible>

@@ -4,6 +4,8 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<RootNamespace>TableCloth</RootNamespace>
 		<Deterministic>true</Deterministic>
+		<Description>TableCloth Core Library - 공통 리소스 및 유틸리티</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<ItemGroup>

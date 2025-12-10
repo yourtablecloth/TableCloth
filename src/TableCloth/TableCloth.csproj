@@ -9,14 +9,7 @@
 		<Platforms>x64;ARM64</Platforms>
 		<UseWPF>True</UseWPF>
 		<Description>Keep Your Computer Sound &amp; Safe!</Description>
-		<Company>rkttu.com</Company>
-		<Product>TableCloth</Product>
 		<ProductName>TableCloth</ProductName>
-		<Copyright>(c) rkttu.com, 2021</Copyright>
-		<Version>1.14.0.0</Version>
-		<PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
 		<PackageTags>TableCloth</PackageTags>
 		<SignAssembly>False</SignAssembly>
 		<LangVersion>preview</LangVersion>
@@ -93,6 +86,23 @@
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
 	</ItemGroup>
+	<Target Name="UpdateManifestVersion" BeforeTargets="PreBuild">
+		<PropertyGroup>
+			<ManifestVersion Condition="'$(Version)' != ''">$(Version)</ManifestVersion>
+			<ManifestVersion Condition="'$(ManifestVersion)' == '' OR !$(ManifestVersion.Contains('.'))">1.0.0.0</ManifestVersion>
+			<ManifestVersion Condition="!$(ManifestVersion.Contains('.'))">$(ManifestVersion).0.0.0</ManifestVersion>
+		</PropertyGroup>
+		<WriteLinesToFile File="$(IntermediateOutputPath)app.manifest" 
+			Lines="$([System.IO.File]::ReadAllText('$(ProjectDir)app.manifest').Replace('$version$', '$(ManifestVersion)'))" 
+			Overwrite="true" />
+		<ItemGroup>
+			<None Remove="app.manifest" />
+		</ItemGroup>
+		<PropertyGroup>
+			<ApplicationManifest>$(IntermediateOutputPath)app.manifest</ApplicationManifest>
+		</PropertyGroup>
+	</Target>
+
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(SolutionDir)Artifacts\Spork.zip&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)Artifacts\Spork.zip&quot; &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
 	</Target>

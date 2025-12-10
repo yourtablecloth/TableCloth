@@ -16,6 +16,22 @@
 		<!-- Computed versions -->
 		<TableClothVersion>$(TableClothVersionMajor).$(TableClothVersionMinor).$(TableClothVersionPatch).$(TableClothVersionRevision)</TableClothVersion>
 		<TableClothSemVer>$(TableClothVersionMajor).$(TableClothVersionMinor).$(TableClothVersionPatch)</TableClothSemVer>
+
+		<!-- Standard .NET SDK version properties -->
+		<Version>$(TableClothSemVer)</Version>
+		<AssemblyVersion>$(TableClothVersion)</AssemblyVersion>
+		<FileVersion>$(TableClothVersion)</FileVersion>
+	</PropertyGroup>
+
+	<!-- Common Metadata -->
+	<PropertyGroup>
+		<Authors>TableCloth Contributors</Authors>
+		<Company>rkttu.com</Company>
+		<Product>TableCloth</Product>
+		<Copyright>(c) rkttu.com, 2021</Copyright>
+		<RepositoryUrl>https://github.com/yourtablecloth/TableCloth</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
 	</PropertyGroup>
 
 	<!-- Workaround for https://github.com/dotnet/wpf/issues/11246 -->

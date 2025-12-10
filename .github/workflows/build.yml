@@ -2,6 +2,11 @@ name: TableCloth Build Pipeline
 
 on:
     push:
+        branches:
+        - main
+        - develop
+        tags:
+        - 'v*'
         paths:
         - '.github/workflows/build.yml'
         - 'docs/**'
@@ -15,7 +20,36 @@ on:
         - 'tools/**'
 
 jobs:
+  validate-version:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Validate version matches tag
+      run: |
+        # Extract version from tag (remove 'v' prefix)
+        TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+        
+        # Extract version from Directory.Build.props
+        PROPS_VERSION=$(grep -oP '(?<=<TableClothSemVer>)[^<]+' src/Directory.Build.props)
+        
+        echo "Tag version: $TAG_VERSION"
+        echo "Props version: $PROPS_VERSION"
+        
+        if [ "$TAG_VERSION" != "$PROPS_VERSION" ]; then
+          echo "::error::Version mismatch! Tag: v$TAG_VERSION does not match Directory.Build.props: $PROPS_VERSION"
+          echo "::error::Please update Directory.Build.props to match the tag version before releasing."
+          exit 1
+        fi
+        
+        echo "? Version validated: $TAG_VERSION"
+      shell: bash
+
   build:
+    needs: [validate-version]
+    if: always() && (needs.validate-version.result == 'success' || needs.validate-version.result == 'skipped')
     strategy:
       matrix:
         configuration: [Debug, Release]
