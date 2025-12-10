@@ -548,4 +548,13 @@
   <data name="TitleText_Warning" xml:space="preserve">
     <value>식탁보 경고</value>
   </data>
+  <data name="Status_CheckingForUpdates" xml:space="preserve">
+    <value>업데이트 확인 중...</value>
+  </data>
+  <data name="Status_DownloadingUpdate" xml:space="preserve">
+    <value>업데이트 다운로드 중 ({0}%) - v{1}...</value>
+  </data>
+  <data name="Status_ApplyingUpdate" xml:space="preserve">
+    <value>업데이트 적용 중...</value>
+  </data>
 </root>

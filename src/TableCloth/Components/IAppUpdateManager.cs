@@ -1,16 +1,38 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TableCloth.Models;
 
-namespace TableCloth.Components
+namespace TableCloth.Components;
+
+public interface IAppUpdateManager
 {
-    public interface IAppUpdateManager
-    {
-        Task<ApiInvokeResult<Uri?>> QueryNewVersionDownloadUrlAsync(CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Velopack을 통해 설치된 앱인지 확인
+    /// </summary>
+    bool IsInstalledViaVelopack { get; }
 
-        Task<bool> CheckForUpdatesAsync(CancellationToken cancellationToken = default);
+    /// <summary>
+    /// 현재 설치된 앱 버전
+    /// </summary>
+    string? CurrentVersion { get; }
 
-        Task DownloadAndApplyUpdatesAsync(IProgress<int>? progress = null, CancellationToken cancellationToken = default);
-    }
+    /// <summary>
+    /// 업데이트 가능한 새 버전 (CheckForUpdatesAsync 호출 후 사용 가능)
+    /// </summary>
+    string? AvailableVersion { get; }
+
+    /// <summary>
+    /// 업데이트가 있는지 확인
+    /// </summary>
+    Task<bool> CheckForUpdatesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 업데이트 다운로드 및 적용 (앱 재시작됨)
+    /// </summary>
+    Task DownloadAndApplyUpdatesAsync(IProgress<int>? progress = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// GitHub Releases 페이지 URL 반환 (Velopack 미설치 시 사용)
+    /// </summary>
+    Uri GetReleasesPageUrl();
 }

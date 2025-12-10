@@ -21,10 +21,13 @@ public sealed class SplashScreenLoadedCommand(
     ICommandLineArguments commandLineArguments,
     IAppUpdateManager appUpdateManager) : ViewModelCommandBase<SplashScreenViewModel>, IAsyncCommand<SplashScreenViewModel>
 {
+    // 업데이트 관련 상태 메시지 (리소스 파일 생성 후 교체 필요)
+    private const string StatusCheckingForUpdates = "Checking for updates...";
+    private const string StatusDownloadingUpdate = "Downloading update ({0}%) - v{1}...";
+
     public override void Execute(SplashScreenViewModel viewModel)
         => ExecuteAsync(viewModel).SafeFireAndForget();
 
-    // 뷰 모델과 연결된 이벤트 통지기를 호출할 때는 Dispatcher를 통해서 호출하도록 코드 수정이 필요함.
     public async Task ExecuteAsync(SplashScreenViewModel viewModel)
     {
         applicationService.ApplyCosmeticChangeToMainWindow();
@@ -72,8 +75,11 @@ public sealed class SplashScreenLoadedCommand(
             if (!await appStartup.CheckForInternetConnectionAsync())
                 appMessageBox.DisplayError(ErrorStrings.Error_Offline, false);
 
-            // Velopack 업데이트 체크
-            await CheckAndApplyUpdatesAsync(viewModel);
+            // Velopack 자동 업데이트 체크 (Velopack으로 설치된 경우에만)
+            if (appUpdateManager.IsInstalledViaVelopack)
+            {
+                await CheckAndApplyUpdatesAsync(viewModel);
+            }
 
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_EvaluatingRequirementsMet });
 
@@ -149,7 +155,7 @@ public sealed class SplashScreenLoadedCommand(
     {
         try
         {
-            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = "Checking for updates..." });
+            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = StatusCheckingForUpdates });
 
             var hasUpdate = await appUpdateManager.CheckForUpdatesAsync();
 
@@ -157,12 +163,17 @@ public sealed class SplashScreenLoadedCommand(
             {
                 viewModel.IsUpdating = true;
                 viewModel.ShowUpdateProgress = true;
-                await viewModel.NotifyStatusUpdateAsync(this, new() { Status = "Downloading update..." });
+
+                var newVersion = appUpdateManager.AvailableVersion ?? "unknown";
+                await viewModel.NotifyStatusUpdateAsync(this, new()
+                {
+                    Status = string.Format(StatusDownloadingUpdate, 0, newVersion)
+                });
 
                 var progress = new Progress<int>(percent =>
                 {
                     viewModel.UpdateProgress = percent;
-                    viewModel.Status = $"Downloading update ({percent}%)...";
+                    viewModel.Status = string.Format(StatusDownloadingUpdate, percent, newVersion);
                 });
 
                 await appUpdateManager.DownloadAndApplyUpdatesAsync(progress);

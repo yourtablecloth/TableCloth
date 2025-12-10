@@ -19,33 +19,26 @@ public sealed class CheckUpdatedVersionCommand(
     {
         try
         {
-            // Velopack 자동 업데이트 시도
-            var hasUpdate = await appUpdateManager.CheckForUpdatesAsync();
-
-            if (hasUpdate)
+            // Velopack으로 설치된 경우 자동 업데이트
+            if (appUpdateManager.IsInstalledViaVelopack)
             {
-                appMessageBox.DisplayInfo(InfoStrings.Info_UpdateRequired);
-                await appUpdateManager.DownloadAndApplyUpdatesAsync();
-                return;
-            }
+                var hasUpdate = await appUpdateManager.CheckForUpdatesAsync();
 
-            // Velopack 설치가 아닌 경우 기존 방식으로 폴백
-            var targetUrl = await appUpdateManager.QueryNewVersionDownloadUrlAsync();
+                if (hasUpdate)
+                {
+                    appMessageBox.DisplayInfo(InfoStrings.Info_UpdateRequired);
+                    await appUpdateManager.DownloadAndApplyUpdatesAsync();
+                    return;
+                }
 
-            if (targetUrl.ThrownException != null)
-            {
-                appMessageBox.DisplayError(targetUrl.ThrownException, false);
-                return;
-            }
-
-            if (!string.IsNullOrWhiteSpace(targetUrl.Result?.AbsoluteUri))
-            {
-                appMessageBox.DisplayInfo(InfoStrings.Info_UpdateRequired);
-                var psi = new ProcessStartInfo(targetUrl.Result.AbsoluteUri) { UseShellExecute = true, };
-                Process.Start(psi);
-            }
-            else
                 appMessageBox.DisplayInfo(InfoStrings.Info_UpdateNotRequired);
+                return;
+            }
+
+            // Velopack으로 설치되지 않은 경우 GitHub Releases 페이지로 안내
+            var releasesUrl = appUpdateManager.GetReleasesPageUrl();
+            var psi = new ProcessStartInfo(releasesUrl.AbsoluteUri) { UseShellExecute = true };
+            Process.Start(psi);
         }
         catch (Exception ex)
         {

@@ -549,4 +549,13 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="TitleText_Warning" xml:space="preserve">
     <value>TableCloth Warning</value>
   </data>
+  <data name="Status_CheckingForUpdates" xml:space="preserve">
+    <value>Checking for updates...</value>
+  </data>
+  <data name="Status_DownloadingUpdate" xml:space="preserve">
+    <value>Downloading update ({0}%) - v{1}...</value>
+  </data>
+  <data name="Status_ApplyingUpdate" xml:space="preserve">
+    <value>Applying update...</value>
+  </data>
 </root>

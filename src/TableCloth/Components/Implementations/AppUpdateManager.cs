@@ -2,7 +2,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TableCloth.Models;
 using Velopack;
 using Velopack.Sources;
 
@@ -10,51 +9,46 @@ namespace TableCloth.Components.Implementations;
 
 public sealed class AppUpdateManager : IAppUpdateManager
 {
-    private readonly IResourceResolver _resourceResolver;
     private readonly ILogger<AppUpdateManager> _logger;
     private readonly UpdateManager _updateManager;
     private UpdateInfo? _updateInfo;
 
-    private const string owner = "yourtablecloth";
-    private const string repo = "TableCloth";
+    private const string Owner = "yourtablecloth";
+    private const string Repo = "TableCloth";
 
-    public AppUpdateManager(
-        IResourceResolver resourceResolver,
-        ILogger<AppUpdateManager> logger)
+    public AppUpdateManager(ILogger<AppUpdateManager> logger)
     {
-        _resourceResolver = resourceResolver;
         _logger = logger;
         _updateManager = new UpdateManager(
-            new GithubSource($"https://github.com/{owner}/{repo}", null, false));
+            new GithubSource($"https://github.com/{Owner}/{Repo}", null, false));
     }
 
-    public async Task<ApiInvokeResult<Uri?>> QueryNewVersionDownloadUrlAsync(
-        CancellationToken cancellationToken = default)
-    {
-        var thisVersion = typeof(IAppUpdateManager).Assembly.GetName().Version;
-        var latestVersion = await _resourceResolver.GetLatestVersionAsync(owner, repo, cancellationToken).ConfigureAwait(false);
+    public bool IsInstalledViaVelopack => _updateManager.IsInstalled;
 
-        if (Version.TryParse(latestVersion, out var parsedVersion) &&
-            thisVersion != null && parsedVersion > thisVersion)
-        {
-            var targetUrl = await _resourceResolver.GetReleaseDownloadUrlAsync(owner, repo, cancellationToken).ConfigureAwait(false);
-            return targetUrl;
-        }
-        else
-            return default;
-    }
+    public string? CurrentVersion => _updateManager.CurrentVersion?.ToString();
+
+    public string? AvailableVersion => _updateInfo?.TargetFullRelease?.Version?.ToString();
+
+    public Uri GetReleasesPageUrl() => new($"https://github.com/{Owner}/{Repo}/releases");
 
     public async Task<bool> CheckForUpdatesAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            if (!_updateManager.IsInstalled)
+            _updateInfo = await _updateManager.CheckForUpdatesAsync().ConfigureAwait(false);
+            
+            if (_updateInfo != null)
             {
-                _logger.LogInformation("Application is not installed via Velopack. Skipping update check.");
-                return false;
+                _logger.LogInformation(
+                    "Update available: {CurrentVersion} -> {NewVersion}",
+                    CurrentVersion,
+                    AvailableVersion);
+            }
+            else
+            {
+                _logger.LogInformation("No updates available. Current version: {CurrentVersion}", CurrentVersion);
             }
 
-            _updateInfo = await _updateManager.CheckForUpdatesAsync().ConfigureAwait(false);
             return _updateInfo != null;
         }
         catch (Exception ex)
@@ -74,8 +68,12 @@ public sealed class AppUpdateManager : IAppUpdateManager
 
         try
         {
+            _logger.LogInformation("Downloading update {Version}...", AvailableVersion);
+
             Action<int>? progressAction = progress != null ? p => progress.Report(p) : null;
             await _updateManager.DownloadUpdatesAsync(_updateInfo, progressAction).ConfigureAwait(false);
+
+            _logger.LogInformation("Download complete. Applying update and restarting...");
             _updateManager.ApplyUpdatesAndRestart(_updateInfo);
         }
         catch (Exception ex)
