@@ -97,7 +97,7 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Publish TableCloth project
+    # Publish TableCloth project  
     - name: Publish TableCloth project  
       run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration -o publish
       env:
@@ -117,6 +117,23 @@ jobs:
         }
         echo "VERSION=$version" >> $env:GITHUB_OUTPUT
       shell: pwsh
+
+    # Update app.manifest version placeholders
+    - name: Update manifest versions
+      run: |
+        $version = "${{ steps.get_version.outputs.VERSION }}.0"
+        $manifests = @(
+          "src\Spork\app.manifest",
+          "src\TableCloth\app.manifest"
+        )
+        foreach ($manifest in $manifests) {
+          if (Test-Path $manifest) {
+            (Get-Content $manifest) -replace 'version="0\.0\.0\.0"', "version=`"$version`"" | Set-Content $manifest
+            Write-Host "Updated $manifest to version $version"
+          }
+        }
+      shell: pwsh
+
     # Create Velopack release package
     - name: Create Velopack package
       run: |
