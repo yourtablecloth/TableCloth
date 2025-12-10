@@ -644,4 +644,10 @@
 
 https://github.com/yourtablecloth/TableCloth</value>
   </data>
+  <data name="Install_DisableSmartAppControl" xml:space="preserve">
+    <value>Smart App Control 비활성화</value>
+  </data>
+  <data name="AboutWindow_OssLicenseText" xml:space="preserve">
+    <value>오픈 소스 소프트웨어 라이선스</value>
+  </data>
 </root>

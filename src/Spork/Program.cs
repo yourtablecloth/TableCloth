@@ -152,6 +152,7 @@ namespace Spork
                 .AddSingleton<IStepsComposer, StepsComposer>()
                 .AddSingleton<IStepsPlayer, StepsPlayer>()
                 .AddKeyedSingleton<IStep, ConfigAhnLabSafeTransactionStep>(nameof(ConfigAhnLabSafeTransactionStep))
+                .AddKeyedSingleton<IStep, DisableSmartAppControlStep>(nameof(DisableSmartAppControlStep))
                 .AddKeyedSingleton<IStep, EdgeExtensionInstallStep>(nameof(EdgeExtensionInstallStep))
                 .AddKeyedSingleton<IStep, OpenWebSiteStep>(nameof(OpenWebSiteStep))
                 .AddKeyedSingleton<IStep, PackageInstallStep>(nameof(PackageInstallStep))

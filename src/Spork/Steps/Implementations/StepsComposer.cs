@@ -41,6 +41,13 @@ namespace Spork.Steps.Implementations
                 },
                 new StepItemViewModel
                 {
+                    Step = _stepsFactory.GetStepByName(nameof(DisableSmartAppControlStep)),
+                    Argument = new InstallItemViewModel(),
+                    TargetSiteName = UIStringResources.Option_Prerequisites,
+                    PackageName = UIStringResources.Install_DisableSmartAppControl,
+                },
+                new StepItemViewModel
+                {
                     Step = _stepsFactory.GetStepByName(nameof(TryProtectCriticalServicesStep)),
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Prerequisites,

@@ -97,7 +97,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Open Source Licenses과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Open Source Software License과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string AboutWindow_OssLicenseText {
             get {
@@ -120,42 +120,6 @@ namespace TableCloth.Resources {
         public static string AboutWindow_TrademarkText {
             get {
                 return ResourceManager.GetString("AboutWindow_TrademarkText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   →과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Sponsor_BannerArrow {
-            get {
-                return ResourceManager.GetString("Sponsor_BannerArrow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Support →과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Sponsor_BannerLinkText {
-            get {
-                return ResourceManager.GetString("Sponsor_BannerLinkText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Did TableCloth help you? Your support via GitHub Sponsors will help keep this project running!과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Sponsor_BannerMessage {
-            get {
-                return ResourceManager.GetString("Sponsor_BannerMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Support TableCloth Project과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Sponsor_BannerShortMessage {
-            get {
-                return ResourceManager.GetString("Sponsor_BannerShortMessage", resourceCulture);
             }
         }
         
@@ -626,6 +590,15 @@ namespace TableCloth.Resources {
         public static string Install_ConfigASTx {
             get {
                 return ResourceManager.GetString("Install_ConfigASTx", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Turning Off Smart App Control과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Install_DisableSmartAppControl {
+            get {
+                return ResourceManager.GetString("Install_DisableSmartAppControl", resourceCulture);
             }
         }
         
@@ -1117,6 +1090,42 @@ namespace TableCloth.Resources {
         public static string Sponge_WorkInProgress {
             get {
                 return ResourceManager.GetString("Sponge_WorkInProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   →과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponsor_BannerArrow {
+            get {
+                return ResourceManager.GetString("Sponsor_BannerArrow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Support →과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponsor_BannerLinkText {
+            get {
+                return ResourceManager.GetString("Sponsor_BannerLinkText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Did TableCloth help you? Your support via GitHub Sponsors will help keep this project running!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponsor_BannerMessage {
+            get {
+                return ResourceManager.GetString("Sponsor_BannerMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Support TableCloth Project과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Sponsor_BannerShortMessage {
+            get {
+                return ResourceManager.GetString("Sponsor_BannerShortMessage", resourceCulture);
             }
         }
         
