@@ -7,11 +7,7 @@
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
   </Project>
-  <Project Path="TableCloth.Resources/TableCloth.Resources.csproj">
-    <Platform Solution="*|ARM64" Project="ARM64" />
-    <Platform Solution="*|x64" Project="x64" />
-  </Project>
-  <Project Path="TableCloth.Shared/TableCloth.Shared.shproj" />
+  <Project Path="TableCloth.Core/TableCloth.Core.csproj" Id="97e346c7-479b-447e-a32e-3364e745ccf7" />
   <Project Path="TableCloth/TableCloth.csproj">
     <BuildDependency Project="Spork/Spork.csproj" />
     <Platform Solution="*|ARM64" Project="ARM64" />

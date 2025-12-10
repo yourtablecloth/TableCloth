@@ -47,7 +47,9 @@ public partial class App : Application
 
     private void Application_Startup(object sender, StartupEventArgs e)
     {
-        var host = Host.EnsureNotNull("App initialization not done.");
+        var host = Host;
+        ArgumentNullException.ThrowIfNull(host);
+
         var appUserInterface = host.Services.GetRequiredService<IAppUserInterface>();
 
         _splashScreen = appUserInterface.CreateSplashScreen();
@@ -57,8 +59,11 @@ public partial class App : Application
 
     private void ViewModel_InitializeDone(object? sender, DialogRequestEventArgs e)
     {
-        var host = Host.EnsureNotNull("App initialization not done.");
+        var host = Host;
+        ArgumentNullException.ThrowIfNull(host);
+
         _splashScreen = _splashScreen.EnsureNotNull("App initialization not done.");
+        ArgumentNullException.ThrowIfNull(_splashScreen);
 
         _splashScreen.Hide();
 

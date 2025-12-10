@@ -65,8 +65,8 @@ public sealed class CatalogPageLoadedCommand(
 
     private async Task OnViewModelPropertyChangedAsync(object? sender, PropertyChangedEventArgs e)
     {
-        var viewModel = sender.EnsureArgumentNotNullWithCast<object, CatalogPageViewModel>(
-            "Selected parameter is not a supported type.", nameof(sender));
+        var viewModel = sender as CatalogPageViewModel;
+        ArgumentNullException.ThrowIfNull(viewModel);
 
         var currentConfig = await preferencesManager.LoadPreferencesAsync();
         currentConfig ??= preferencesManager.GetDefaultPreferences();

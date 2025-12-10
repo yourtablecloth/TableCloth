@@ -37,15 +37,24 @@ public sealed class SharedLocations : ISharedLocations
     {
         get
         {
-            var mainModule = Process.GetCurrentProcess().MainModule
-                .EnsureNotNull("Cannot obtain process main module information.");
-            return mainModule.FileName
-                .EnsureNotNull("Cannot obtain executable file name.");
+            var mainModule = Process.GetCurrentProcess().MainModule;
+            ArgumentNullException.ThrowIfNull(mainModule);
+
+            var fileName = mainModule.FileName;
+            ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
+            return fileName;
         }
     }
 
     public string ExecutableDirectoryPath
-        => Path.GetDirectoryName(ExecutableFilePath).EnsureNotNull("Cannot obtain executable directory path.");
+    {
+        get
+        {
+            var directoryName = Path.GetDirectoryName(ExecutableFilePath);
+            ArgumentNullException.ThrowIfNullOrEmpty(directoryName);
+            return directoryName;
+        }
+    }
 
     public string SporkZipFilePath
         => Path.Combine(ExecutableDirectoryPath, "Spork.zip");

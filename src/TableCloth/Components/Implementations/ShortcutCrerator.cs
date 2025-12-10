@@ -40,8 +40,11 @@ public sealed class ShortcutCrerator(
         {
             // https://stackoverflow.com/questions/13542005/create-shortcut-with-unicode-character
             // WshRuntimeLibrary의 경우 유니코드 문자열로 바로 가기 아이콘을 만들지 못하는 버그가 있음.
-            var shellType = Type.GetTypeFromProgID("Shell.Application").EnsureNotNull("Cannot obtain Shell.Application type.");
-            object oInstance = Activator.CreateInstance(shellType).EnsureNotNull("Cannot create instance of Shell.Application.");
+            Type? shellType = Type.GetTypeFromProgID("Shell.Application");
+            ArgumentNullException.ThrowIfNull(shellType);
+
+            object? oInstance = Activator.CreateInstance(shellType);
+            ArgumentNullException.ThrowIfNull(oInstance);
 
             dynamic shell = oInstance;
             dynamic folder = shell.NameSpace(shortcutDirectoryPath);

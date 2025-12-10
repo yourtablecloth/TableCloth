@@ -13,7 +13,8 @@ public sealed class LicenseDescriptor(
 {
     private static AssemblyName[] GetReferencedThirdPartyAssemblies()
     {
-        var asm = Assembly.GetEntryAssembly().EnsureNotNull(ErrorStrings.Error_Cannot_Obtain_Assembly);
+        var asm = Assembly.GetEntryAssembly();
+        ArgumentNullException.ThrowIfNull(asm);
 
         var bclPublicKeyTokens = new byte[][] {
             [0xb0, 0x3f, 0x5f, 0x7f, 0x11, 0xd5, 0x0a, 0x3a,],

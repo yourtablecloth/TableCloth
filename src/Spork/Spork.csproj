@@ -102,10 +102,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\TableCloth.Resources\TableCloth.Resources.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Resource Include="App.ico" />
 	</ItemGroup>
 
@@ -113,7 +109,9 @@
 		<None Include="Resources\Signature.jpg" />
 	</ItemGroup>
 
-	<Import Project="..\TableCloth.Shared\TableCloth.Shared.projitems" Label="Shared" />
+	<ItemGroup>
+	  <ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;" />

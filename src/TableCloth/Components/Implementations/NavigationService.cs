@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 
@@ -15,8 +16,10 @@ public sealed class NavigationService(
     {
         var frameName = GetPageFrameControlName();
         var mainWindow = applicationService.GetMainWindow();
+
         var pageFrame = mainWindow!.FindName(frameName) as Frame;
-        return pageFrame.EnsureArgumentNotNull($"There is no frame control named as '{frameName}'.", frameName);
+        ArgumentNullException.ThrowIfNull(pageFrame);
+        return pageFrame;
     }
 
     public bool NavigateToCatalog(string searchKeyword)

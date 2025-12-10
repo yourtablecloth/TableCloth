@@ -90,8 +90,8 @@ public sealed class DetailPageLoadedCommand(
 
     private async Task OnViewModelPropertyChangedAsync(object? sender, PropertyChangedEventArgs e)
     {
-        var viewModel = sender.EnsureArgumentNotNullWithCast<object, DetailPageViewModel>(
-            "Selected parameter is not a supported type.", nameof(sender));
+        var viewModel = sender as DetailPageViewModel;
+        ArgumentNullException.ThrowIfNull(viewModel);
 
         var currentConfig = await preferencesManager.LoadPreferencesAsync();
         currentConfig ??= preferencesManager.GetDefaultPreferences();

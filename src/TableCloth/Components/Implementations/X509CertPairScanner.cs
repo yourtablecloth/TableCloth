@@ -116,10 +116,11 @@ public sealed class X509CertPairScanner(
 #endif
         var publicKey = cert.Export(X509ContentType.Cert);
 
-        var rsaPrivateKey = cert.GetRSAPrivateKey().EnsureNotNull("Cannot obtain RSA private key.");
+        var rsaPrivateKey = cert.GetRSAPrivateKey();
+        ArgumentNullException.ThrowIfNull(rsaPrivateKey);
+
         var privateKey = rsaPrivateKey.ExportEncryptedPkcs8PrivateKey(copiedPassword,
             new PbeParameters(PbeEncryptionAlgorithm.TripleDes3KeyPkcs12, HashAlgorithmName.SHA1, 2048));
-
         return new X509CertPair(publicKey, privateKey);
     }
 }

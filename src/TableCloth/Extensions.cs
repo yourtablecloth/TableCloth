@@ -92,9 +92,11 @@ internal static class Extensions
     }
 
     public static IServiceProvider GetServiceProvider(this Application application)
-        => application
-            .Properties[nameof(IServiceProvider)]
-            .EnsureNotNullWithCast<object, IServiceProvider>("Service provider has not been initialized.");
+    {
+        var serviceProvider = application.Properties[nameof(IServiceProvider)] as IServiceProvider;
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        return serviceProvider;
+    }
 
     public static void InitServiceProvider(this Application application, IServiceProvider serviceProvider)
     {
