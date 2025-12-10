@@ -171,7 +171,8 @@ namespace Spork
             services
                 .AddWindow<AboutWindow, AboutWindowViewModel>()
                 .AddSingleton<AboutWindowLoadedCommand>()
-                .AddSingleton<AboutWindowCloseCommand>();
+                .AddSingleton<AboutWindowCloseCommand>()
+                .AddSingleton<OpenSponsorPageCommand>();
 
             // Precautions Window
             services

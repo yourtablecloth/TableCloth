@@ -16,13 +16,15 @@ public class AboutWindowViewModel : ViewModelBase
         OpenWebsiteCommand openWebsiteCommand,
         ShowSystemInfoCommand showSystemInfoCommand,
         CheckUpdatedVersionCommand checkUpdatedVersionCommand,
-        OpenPrivacyPolicyCommand openPrivacyPolicyCommand)
+        OpenPrivacyPolicyCommand openPrivacyPolicyCommand,
+        OpenSponsorPageCommand openSponsorPageCommand)
     {
         _aboutWindowLoadedCommand = aboutWindowLoadedCommand;
         _openWebsiteCommand = openWebsiteCommand;
         _showSystemInfoCommand = showSystemInfoCommand;
         _checkUpdatedVersionCommand = checkUpdatedVersionCommand;
         _openPrivacyPolicyCommand = openPrivacyPolicyCommand;
+        _openSponsorPageCommand = openSponsorPageCommand;
 
         _licenseDetails = UIStringResources.AboutWindow_LoadingLicensesMessage;
     }
@@ -32,6 +34,7 @@ public class AboutWindowViewModel : ViewModelBase
     private readonly ShowSystemInfoCommand _showSystemInfoCommand = default!;
     private readonly CheckUpdatedVersionCommand _checkUpdatedVersionCommand = default!;
     private readonly OpenPrivacyPolicyCommand _openPrivacyPolicyCommand = default!;
+    private readonly OpenSponsorPageCommand _openSponsorPageCommand = default!;
 
     private string _appVersion = string.Empty;
     private string _catalogDate = string.Empty;
@@ -51,6 +54,9 @@ public class AboutWindowViewModel : ViewModelBase
 
     public OpenPrivacyPolicyCommand OpenPrivacyPolicyCommand
         => _openPrivacyPolicyCommand;
+
+    public OpenSponsorPageCommand OpenSponsorPageCommand
+        => _openSponsorPageCommand;
 
     public string AppVersion
     {

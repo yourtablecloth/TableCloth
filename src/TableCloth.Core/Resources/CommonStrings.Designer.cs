@@ -241,6 +241,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   https://github.com/sponsors/yourtablecloth과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SponsorshipUrl {
+            get {
+                return ResourceManager.GetString("SponsorshipUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   https://www.google.com/과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string UnboundHomeUrl {

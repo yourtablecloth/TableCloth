@@ -1,5 +1,7 @@
 ﻿using Spork.ViewModels;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 using TableCloth.Events;
 
 namespace Spork.Dialogs
@@ -20,6 +22,19 @@ namespace Spork.Dialogs
         {
             DialogResult = e.DialogResult;
             Close();
+        }
+
+        private void SponsorBanner_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "https://github.com/sponsors/yourtablecloth",
+                    UseShellExecute = true,
+                });
+            }
+            catch { }
         }
     }
 }

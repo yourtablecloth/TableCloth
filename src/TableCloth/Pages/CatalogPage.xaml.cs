@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -193,6 +194,19 @@ public partial class CatalogPage : Page
 
     private void SiteCatalog_LostFocus(object sender, RoutedEventArgs e)
         => UpdateLabelPopup();
+
+    private void SponsorBanner_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://github.com/sponsors/yourtablecloth",
+                UseShellExecute = true,
+            });
+        }
+        catch { }
+    }
 
     private IntPtr PageWndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {

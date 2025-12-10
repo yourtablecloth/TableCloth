@@ -323,7 +323,8 @@ internal static class Program
             .AddSingleton<OpenWebsiteCommand>()
             .AddSingleton<ShowSystemInfoCommand>()
             .AddSingleton<CheckUpdatedVersionCommand>()
-            .AddSingleton<OpenPrivacyPolicyCommand>();
+            .AddSingleton<OpenPrivacyPolicyCommand>()
+            .AddSingleton<OpenSponsorPageCommand>();
 
         // Cert Select Window
         services

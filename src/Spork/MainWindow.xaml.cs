@@ -1,6 +1,8 @@
 using Spork.ViewModels;
 using System;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Spork
 {
@@ -29,6 +31,19 @@ namespace Spork
         private void ViewModel_CloseRequested(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void SponsorBanner_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "https://github.com/sponsors/yourtablecloth",
+                    UseShellExecute = true,
+                });
+            }
+            catch { }
         }
     }
 }

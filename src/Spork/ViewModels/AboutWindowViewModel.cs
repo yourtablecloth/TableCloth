@@ -17,11 +17,13 @@ namespace Spork.ViewModels
         public AboutWindowViewModel(
             AboutWindowLoadedCommand aboutWindowLoadedCommand,
             AboutWindowCloseCommand aboutWindowCloseCommand,
-            OpenAppHomepageCommand openAppHomepageCommand)
+            OpenAppHomepageCommand openAppHomepageCommand,
+            OpenSponsorPageCommand openSponsorPageCommand)
         {
             _aboutWindowLoadedCommand = aboutWindowLoadedCommand;
             _aboutWindowCloseCommand = aboutWindowCloseCommand;
             _openAppHomepageCommand = openAppHomepageCommand;
+            _openSponsorPageCommand = openSponsorPageCommand;
         }
 
         public event EventHandler<DialogRequestEventArgs> CloseRequested;
@@ -32,6 +34,7 @@ namespace Spork.ViewModels
         private readonly AboutWindowLoadedCommand _aboutWindowLoadedCommand;
         private readonly AboutWindowCloseCommand _aboutWindowCloseCommand;
         private readonly OpenAppHomepageCommand _openAppHomepageCommand;
+        private readonly OpenSponsorPageCommand _openSponsorPageCommand;
 
         public AboutWindowLoadedCommand AboutWindowLoadedCommand
             => _aboutWindowLoadedCommand;
@@ -41,6 +44,9 @@ namespace Spork.ViewModels
 
         public OpenAppHomepageCommand OpenAppHomepageCommand
             => _openAppHomepageCommand;
+
+        public OpenSponsorPageCommand OpenSponsorPageCommand
+            => _openSponsorPageCommand;
 
         private string _appVersion = CommonStrings.UnknownText;
         private string _catalogVersion = CommonStrings.UnknownText;

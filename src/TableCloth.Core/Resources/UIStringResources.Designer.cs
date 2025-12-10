@@ -79,6 +79,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   © 2021-2025 rkttu.com. All rights reserved.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string AboutWindow_CopyrightText {
+            get {
+                return ResourceManager.GetString("AboutWindow_CopyrightText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Retrieving license information.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string AboutWindow_LoadingLicensesMessage {
@@ -93,6 +102,15 @@ namespace TableCloth.Resources {
         public static string AboutWindow_Title {
             get {
                 return ResourceManager.GetString("AboutWindow_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   식탁보™ is a registered trademark of rkttu.com.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string AboutWindow_TrademarkText {
+            get {
+                return ResourceManager.GetString("AboutWindow_TrademarkText", resourceCulture);
             }
         }
         
@@ -273,6 +291,15 @@ namespace TableCloth.Resources {
         public static string Button_ShowSysInfoButton {
             get {
                 return ResourceManager.GetString("Button_ShowSysInfoButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Support Project ❤️과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Button_SponsorButton {
+            get {
+                return ResourceManager.GetString("Button_SponsorButton", resourceCulture);
             }
         }
         
@@ -626,6 +653,83 @@ namespace TableCloth.Resources {
         public static string Instruction_ConfigASTx {
             get {
                 return ResourceManager.GetString("Instruction_ConfigASTx", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   I Agree과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string License_AgreeButton {
+            get {
+                return ResourceManager.GetString("License_AgreeButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   TableCloth Program Installation and Usage Guide
+        ///
+        ///Last Updated: April 5, 2024
+        ///
+        ///IMPORTANT: PLEASE READ CAREFULLY.
+        ///
+        ///══════════════════════════════════════════════════════════════════════════════
+        ///
+        ///Software Usage Precautions
+        ///
+        ///TableCloth software can be used under the following conditions. By continuing with the installation, you agree to the terms described in this guide.
+        ///
+        ///If you do not agree to the conditions below, you may cancel the installation and withdraw your use at any time.
+        ///
+        ///══════════════[나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string License_Content {
+            get {
+                return ResourceManager.GetString("License_Content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   I Decline과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string License_DeclineButton {
+            get {
+                return ResourceManager.GetString("License_DeclineButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Please read the following license agreement carefully.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string License_Instruction {
+            get {
+                return ResourceManager.GetString("License_Instruction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   You must accept the license agreement to use this software. The application will now exit.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string License_RejectionMessage {
+            get {
+                return ResourceManager.GetString("License_RejectionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   License Agreement과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string License_RejectionTitle {
+            get {
+                return ResourceManager.GetString("License_RejectionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   License Agreement과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string License_WindowTitle {
+            get {
+                return ResourceManager.GetString("License_WindowTitle", resourceCulture);
             }
         }
         
@@ -1373,87 +1477,6 @@ namespace TableCloth.Resources {
         public static string TitleText_Warning {
             get {
                 return ResourceManager.GetString("TitleText_Warning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   © 2021-2025 rkttu.com. All rights reserved.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string AboutWindow_CopyrightText {
-            get {
-                return ResourceManager.GetString("AboutWindow_CopyrightText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   식탁보™ is a registered trademark of rkttu.com.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string AboutWindow_TrademarkText {
-            get {
-                return ResourceManager.GetString("AboutWindow_TrademarkText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   License Agreement과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string License_WindowTitle {
-            get {
-                return ResourceManager.GetString("License_WindowTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Please read the following license agreement carefully.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string License_Instruction {
-            get {
-                return ResourceManager.GetString("License_Instruction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   I Agree과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string License_AgreeButton {
-            get {
-                return ResourceManager.GetString("License_AgreeButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   I Decline과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string License_DeclineButton {
-            get {
-                return ResourceManager.GetString("License_DeclineButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   You must accept the license agreement to use this software. The application will now exit.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string License_RejectionMessage {
-            get {
-                return ResourceManager.GetString("License_RejectionMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   License Agreement과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string License_RejectionTitle {
-            get {
-                return ResourceManager.GetString("License_RejectionTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   TableCloth Program Installation and Usage Guide...과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string License_Content {
-            get {
-                return ResourceManager.GetString("License_Content", resourceCulture);
             }
         }
     }

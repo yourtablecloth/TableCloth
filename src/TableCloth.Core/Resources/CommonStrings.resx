@@ -183,4 +183,7 @@
   <data name="UnknownText" xml:space="preserve">
     <value>Unknown</value>
   </data>
+  <data name="SponsorshipUrl" xml:space="preserve">
+    <value>https://github.com/sponsors/yourtablecloth</value>
+  </data>
 </root>

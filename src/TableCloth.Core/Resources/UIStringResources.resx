@@ -195,6 +195,9 @@
   <data name="Button_ShowSysInfoButton" xml:space="preserve">
     <value>System Information</value>
   </data>
+  <data name="Button_SponsorButton" xml:space="preserve">
+    <value>Support Project ❤️</value>
+  </data>
   <data name="CatalogPage_Instruction" xml:space="preserve">
     <value>Select the website you want to access, or enter a search term in the search bar in the upper-right corner.</value>
   </data>
