@@ -42,6 +42,9 @@ public class SplashScreenViewModel : ViewModelBase
     private IList<string> _passedArguments = Array.Empty<string>();
     private CommandLineArgumentModel? _parsedArgument;
     private IList<string> _warnings = new List<string>();
+    private bool _isUpdating = false;
+    private int _updateProgress = 0;
+    private bool _showUpdateProgress = false;
 
     public string AppVersion
     {
@@ -77,5 +80,23 @@ public class SplashScreenViewModel : ViewModelBase
     {
         get => _warnings;
         set => SetProperty(ref _warnings, value);
+    }
+
+    public bool IsUpdating
+    {
+        get => _isUpdating;
+        set => SetProperty(ref _isUpdating, value);
+    }
+
+    public int UpdateProgress
+    {
+        get => _updateProgress;
+        set => SetProperty(ref _updateProgress, value);
+    }
+
+    public bool ShowUpdateProgress
+    {
+        get => _showUpdateProgress;
+        set => SetProperty(ref _showUpdateProgress, value);
     }
 }

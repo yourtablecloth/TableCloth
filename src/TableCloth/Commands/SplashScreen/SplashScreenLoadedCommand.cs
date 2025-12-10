@@ -18,7 +18,8 @@ public sealed class SplashScreenLoadedCommand(
     IAppMessageBox appMessageBox,
     IPreferencesManager preferencesManager,
     IResourceCacheManager resourceCacheManager,
-    ICommandLineArguments commandLineArguments) : ViewModelCommandBase<SplashScreenViewModel>, IAsyncCommand<SplashScreenViewModel>
+    ICommandLineArguments commandLineArguments,
+    IAppUpdateManager appUpdateManager) : ViewModelCommandBase<SplashScreenViewModel>, IAsyncCommand<SplashScreenViewModel>
 {
     public override void Execute(SplashScreenViewModel viewModel)
         => ExecuteAsync(viewModel).SafeFireAndForget();
@@ -70,6 +71,9 @@ public sealed class SplashScreenLoadedCommand(
 
             if (!await appStartup.CheckForInternetConnectionAsync())
                 appMessageBox.DisplayError(ErrorStrings.Error_Offline, false);
+
+            // Velopack 업데이트 체크
+            await CheckAndApplyUpdatesAsync(viewModel);
 
             await viewModel.NotifyStatusUpdateAsync(this, new() { Status = UIStringResources.Status_EvaluatingRequirementsMet });
 
@@ -138,6 +142,38 @@ public sealed class SplashScreenLoadedCommand(
             }
 
             await viewModel.NotifyInitializedAsync(this, new DialogRequestEventArgs(viewModel.AppStartupSucceed));
+        }
+    }
+
+    private async Task CheckAndApplyUpdatesAsync(SplashScreenViewModel viewModel)
+    {
+        try
+        {
+            await viewModel.NotifyStatusUpdateAsync(this, new() { Status = "Checking for updates..." });
+
+            var hasUpdate = await appUpdateManager.CheckForUpdatesAsync();
+
+            if (hasUpdate)
+            {
+                viewModel.IsUpdating = true;
+                viewModel.ShowUpdateProgress = true;
+                await viewModel.NotifyStatusUpdateAsync(this, new() { Status = "Downloading update..." });
+
+                var progress = new Progress<int>(percent =>
+                {
+                    viewModel.UpdateProgress = percent;
+                    viewModel.Status = $"Downloading update ({percent}%)...";
+                });
+
+                await appUpdateManager.DownloadAndApplyUpdatesAsync(progress);
+                // 앱이 재시작되므로 이후 코드는 실행되지 않음
+            }
+        }
+        catch (Exception)
+        {
+            // 업데이트 실패는 무시하고 앱 실행 계속
+            viewModel.IsUpdating = false;
+            viewModel.ShowUpdateProgress = false;
         }
     }
 }
