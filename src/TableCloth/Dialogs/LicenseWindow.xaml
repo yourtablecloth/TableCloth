@@ -3,10 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Core"
         mc:Ignorable="d"
         Style="{DynamicResource MainWindowStyle}"
         WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterScreen"
-        Title="License Agreement" 
+        Title="{x:Static res:UIStringResources.License_WindowTitle}" 
         Height="550" Width="650" MinHeight="450" MinWidth="550"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <Grid Margin="16">

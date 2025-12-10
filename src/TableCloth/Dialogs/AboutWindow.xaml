@@ -38,8 +38,8 @@
                 BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" 
                 BorderThickness="1" Padding="10" Margin="0 0 0 10" CornerRadius="4">
             <StackPanel>
-                <TextBlock Text="© 2021-2025 rkttu.com. All rights reserved." />
-                <TextBlock Text="식탁보™ is a registered trademark of rkttu.com." Foreground="Gray" FontSize="11" />
+                <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_CopyrightText}" />
+                <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_TrademarkText}" Foreground="Gray" FontSize="11" />
             </StackPanel>
         </Border>
         

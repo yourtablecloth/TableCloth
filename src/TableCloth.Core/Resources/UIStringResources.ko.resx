@@ -123,6 +123,12 @@
   <data name="AboutWindow_CatalogDateText" xml:space="preserve">
     <value>카탈로그 버전</value>
   </data>
+  <data name="AboutWindow_CopyrightText" xml:space="preserve">
+    <value>© 2021-2025 rkttu.com. All rights reserved.</value>
+  </data>
+  <data name="AboutWindow_TrademarkText" xml:space="preserve">
+    <value>식탁보™는 rkttu.com의 등록 상표입니다.</value>
+  </data>
   <data name="AboutWindow_LoadingLicensesMessage" xml:space="preserve">
     <value>라이선스 정보를 확인 중입니다.</value>
   </data>
@@ -556,5 +562,71 @@
   </data>
   <data name="Status_ApplyingUpdate" xml:space="preserve">
     <value>업데이트 적용 중...</value>
+  </data>
+  <data name="License_WindowTitle" xml:space="preserve">
+    <value>라이선스 동의</value>
+  </data>
+  <data name="License_Instruction" xml:space="preserve">
+    <value>다음 라이선스 계약을 주의 깊게 읽어주십시오.</value>
+  </data>
+  <data name="License_AgreeButton" xml:space="preserve">
+    <value>동의합니다</value>
+  </data>
+  <data name="License_DeclineButton" xml:space="preserve">
+    <value>동의하지 않음</value>
+  </data>
+  <data name="License_RejectionMessage" xml:space="preserve">
+    <value>이 소프트웨어를 사용하려면 라이선스 계약에 동의해야 합니다. 응용 프로그램이 종료됩니다.</value>
+  </data>
+  <data name="License_RejectionTitle" xml:space="preserve">
+    <value>라이선스 동의</value>
+  </data>
+  <data name="License_Content" xml:space="preserve">
+    <value>식탁보 프로그램 설치 및 사용에 관한 안내
+
+최종 수정일: 2024년 4월 5일
+
+중요한 내용이오니 반드시 확인하여 주십시오.
+
+══════════════════════════════════════════════════════════════════════════════
+
+소프트웨어 사용 시 주의 사항
+
+식탁보 소프트웨어는 다음의 조건 아래에서만 사용할 수 있습니다. 설치를 계속 진행하는 경우, 이 안내문에서 설명하는 조건에 동의함을 의미합니다.
+
+만약 아래 조건에 동의하지 않는 경우, 언제든 설치를 취소하고 사용을 철회할 수 있습니다.
+
+══════════════════════════════════════════════════════════════════════════════
+
+• 책임지지 않습니다:
+이 오픈 소스 프로젝트의 개발자 및 모든 기여자는 소프트웨어의 품질, 성능, 또는 상품성에 대해 어떤 명시적이거나 암시적인 보증도 제공하지 않습니다.
+
+• 위험이 전가됩니다:
+식탁보를 사용함으로써 발생할 수 있는 모든 위험은 사용자에게 전가됩니다. 사용 중에 발생하는 문제에 대한 책임은 전적으로 사용자가 집니다.
+
+• 손해 배상을 하지 않습니다:
+이 오픈 소스 프로젝트의 개발자 및 모든 기여자는 소프트웨어 사용으로 발생하는 직접적, 간접적, 부수적, 특별한, 징벌적 또는 결과적 손해에 대해 책임을 지지 않으며 손해를 배상하지 않습니다.
+
+══════════════════════════════════════════════════════════════════════════════
+
+소프트웨어 사용 권리
+
+이 소프트웨어 (식탁보)는 오픈 소스 프로젝트 활동을 통하여 개발된 소프트웨어이며, 누구든 무료로 사용할 수 있습니다.
+
+══════════════════════════════════════════════════════════════════════════════
+
+소스 코드 사용 권리
+
+이 소프트웨어 (식탁보)의 소스 코드의 일부 또는 전체를 활용하기 위해서는 다음 중 하나의 라이선스를 택해야 합니다.
+
+- 1.13.0 버전 이후: AGPL 3.0 라이선스 — 또는 — 상용 라이선스
+
+- 1.13.0 버전 이전: MIT 라이선스
+
+위의 라이선스 중 적절한 라이선스를 선택하여 사용하실 수 있습니다.
+
+코드 사용 권한에 관련된 자세한 라이선스 정보는 다음 웹 사이트를 확인하여 주십시오:
+
+https://github.com/yourtablecloth/TableCloth</value>
   </data>
 </root>

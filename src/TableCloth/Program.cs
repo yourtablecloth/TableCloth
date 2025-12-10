@@ -94,8 +94,8 @@ internal static class Program
         {
             // 라이선스 거부 시 메시지 표시
             MessageBox.Show(
-                "이 소프트웨어를 사용하려면 라이선스 계약에 동의해야 합니다. 응용 프로그램이 종료됩니다.\n\nYou must accept the license agreement to use this software. The application will now exit.",
-                "License Agreement / 라이선스 동의",
+                UIStringResources.License_RejectionMessage,
+                UIStringResources.License_RejectionTitle,
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
             return false;

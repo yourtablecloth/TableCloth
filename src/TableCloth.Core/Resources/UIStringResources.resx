@@ -123,6 +123,12 @@
   <data name="AboutWindow_CatalogDateText" xml:space="preserve">
     <value>Catalog Version</value>
   </data>
+  <data name="AboutWindow_CopyrightText" xml:space="preserve">
+    <value>© 2021-2025 rkttu.com. All rights reserved.</value>
+  </data>
+  <data name="AboutWindow_TrademarkText" xml:space="preserve">
+    <value>식탁보™ is a registered trademark of rkttu.com.</value>
+  </data>
   <data name="AboutWindow_LoadingLicensesMessage" xml:space="preserve">
     <value>Retrieving license information.</value>
   </data>
@@ -557,5 +563,71 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   </data>
   <data name="Status_ApplyingUpdate" xml:space="preserve">
     <value>Applying update...</value>
+  </data>
+  <data name="License_WindowTitle" xml:space="preserve">
+    <value>License Agreement</value>
+  </data>
+  <data name="License_Instruction" xml:space="preserve">
+    <value>Please read the following license agreement carefully.</value>
+  </data>
+  <data name="License_AgreeButton" xml:space="preserve">
+    <value>I Agree</value>
+  </data>
+  <data name="License_DeclineButton" xml:space="preserve">
+    <value>I Decline</value>
+  </data>
+  <data name="License_RejectionMessage" xml:space="preserve">
+    <value>You must accept the license agreement to use this software. The application will now exit.</value>
+  </data>
+  <data name="License_RejectionTitle" xml:space="preserve">
+    <value>License Agreement</value>
+  </data>
+  <data name="License_Content" xml:space="preserve">
+    <value>TableCloth Program Installation and Usage Guide
+
+Last Updated: April 5, 2024
+
+IMPORTANT: PLEASE READ CAREFULLY.
+
+══════════════════════════════════════════════════════════════════════════════
+
+Software Usage Precautions
+
+TableCloth software can be used under the following conditions. By continuing with the installation, you agree to the terms described in this guide.
+
+If you do not agree to the conditions below, you may cancel the installation and withdraw your use at any time.
+
+══════════════════════════════════════════════════════════════════════════════
+
+• NO WARRANTY:
+The developers and all contributors of this open source project do not provide any express or implied warranties, including quality, performance, or merchantability of the software.
+
+• ASSUMPTION OF RISK:
+All risks arising from the use of TableCloth are transferred to the user. The user is solely responsible for any issues that occur during use.
+
+• NO LIABILITY FOR DAMAGES:
+The developers and all contributors of this open source project are not liable for and will not compensate any direct, indirect, incidental, special, punitive, or consequential damages arising from the use of the software.
+
+══════════════════════════════════════════════════════════════════════════════
+
+Software Usage Rights
+
+This software (TableCloth) is developed through open source project activities and is free for anyone to use.
+
+══════════════════════════════════════════════════════════════════════════════
+
+Source Code Usage Rights
+
+To use part or all of the source code of this software (TableCloth), you must comply with one of the following licenses:
+
+- Version 1.13.0 and later: AGPL 3.0 License — or — Commercial License
+
+- Before version 1.13.0: MIT License
+
+You may choose the appropriate license from the above.
+
+For detailed license information, please refer to:
+
+https://github.com/yourtablecloth/TableCloth</value>
   </data>
 </root>
