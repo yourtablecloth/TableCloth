@@ -19,16 +19,20 @@ jobs:
     strategy:
       matrix:
         configuration: [Debug, Release]
-        platform: [x64]
+        platform: [x64, arm64]
+        include:
+          - platform: x64
+            runner: windows-latest
+          - platform: arm64
+            runner: windows-11-arm
 
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
-    runs-on: windows-latest
+    runs-on: ${{ matrix.runner }}
 
     env:
-      Solution_Name: src\TableCloth.sln
       Spork_Project_Path: src\Spork\Spork.csproj
       TableCloth_Project_Path: src\TableCloth\TableCloth.csproj
-      TableCloth_Resources_Project_Path: src\TableCloth.Resources\TableCloth.Resources.csproj
+      TableCloth_Core_Project_Path: src\TableCloth.Core\TableCloth.Core.csproj
       Platform: ${{ matrix.platform }}
 
     steps:
@@ -47,9 +51,9 @@ jobs:
     - name: Install Velopack CLI
       run: dotnet tool install -g vpk
 
-    # Build TableCloth.Resources project
-    - name: Build TableCloth.Resources project
-      run: dotnet build $env:TableCloth_Resources_Project_Path -c:$env:Configuration
+    # Build TableCloth.Core project
+    - name: Build TableCloth.Core project
+      run: dotnet build $env:TableCloth_Core_Project_Path -c:$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
 
