@@ -11,7 +11,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:AboutWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
         Style="{DynamicResource MainWindowStyle}"
-        Title="{x:Static res:UIStringResources.AboutWindow_Title}" Width="640" Height="480" MinWidth="320" MinHeight="240">
+        Title="{x:Static res:UIStringResources.AboutWindow_Title}" Width="640" Height="520" MinWidth="320" MinHeight="280">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding AboutWindowLoadedCommand}">
@@ -27,10 +27,23 @@
             <ColumnDefinition Width="5*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="80*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="35" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+        
+        <!-- Legal Notice Section -->
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" 
+                BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" 
+                BorderThickness="1" Padding="10" Margin="0 0 0 10" CornerRadius="4">
+            <StackPanel>
+                <TextBlock Text="© 2021-2025 rkttu.com. All rights reserved." />
+                <TextBlock Text="식탁보™ is a registered trademark of rkttu.com." Foreground="Gray" FontSize="11" />
+            </StackPanel>
+        </Border>
+        
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="25*"/>
                 <ColumnDefinition Width="100*"/>
@@ -52,7 +65,7 @@
                 </RichTextBox.Resources>
             </RichTextBox>
         </Grid>
-        <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Orientation="Horizontal">
+        <StackPanel Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Orientation="Horizontal">
             <Button x:Name="OpenWebsiteButton" Padding="10 1 10 1" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}" Command="{Binding OpenWebsiteCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
@@ -69,7 +82,7 @@
                 </Button.CommandParameter>
             </Button>
         </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+        <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
             <Button x:Name="OpenPrivacyPolicyButton" Padding="10 1 10 1" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.Button_PrivacyLink}" Command="{Binding OpenPrivacyPolicyCommand}">
                 <Button.CommandParameter>
                     <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />

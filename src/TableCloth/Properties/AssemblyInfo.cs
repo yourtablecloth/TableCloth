@@ -2,7 +2,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 
-[assembly: AssemblyTrademark("TableCloth")]
 [assembly: Guid("f6cff13a-fb7d-4811-9c68-a36e46f2efef")]
 [assembly: ComVisible(true)]
 

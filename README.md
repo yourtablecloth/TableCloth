@@ -29,7 +29,7 @@
 ## 빌드 환경
 
 * Visual Studio 2022 이상
-* .NET 8.0 SDK
+* .NET 10.0 SDK
 * .NET Framework 4.8 SDK
 
 ## 테스트 환경
@@ -50,7 +50,40 @@ GitHub Sponsorship을 통하여 후원해주시면 지속적으로 프로젝트�
 
 [![Product of the Week, Recognized by disquiet.io](docs/images/disquiet_product_of_the_week.jpeg)](https://disquiet.io/product/%EC%8B%9D%ED%83%81%EB%B3%B4)
 
-## 저작권 정보
+## 법적 고지
+
+### 저작권 (Copyright)
+
+**식탁보 (TableCloth)** 소프트웨어는 대한민국 저작권법에 따라 보호받는 저작물입니다.
+
+- **저작권 등록번호**: C-2025-051228
+- **등록일**: 2025년 11월 21일
+- **저작권자**: rkttu.com
+- **조회**: [한국저작권위원회 CROS 포털](https://www.cros.or.kr)에서 등록번호로 검색
+
+© 2021-2025 rkttu.com. All rights reserved.
+
+### 상표권 (Trademark)
+
+**'식탁보'** 명칭은 대한민국 특허청에 상표 출원된 등록 상표입니다.
+
+- **출원번호**: 4020240205929
+- **출원공고일**: 2025년 3월 17일
+- **상표권자**: rkttu.com
+- **조회**: [KIPRIS (특허정보검색서비스)](https://www.kipris.or.kr)에서 출원번호로 검색
+
+'식탁보' 명칭의 상업적 사용은 상표권자의 허가가 필요합니다.
+
+### 라이선스 (License)
+
+본 프로젝트는 **듀얼 라이선스** 모델을 채택하고 있습니다:
+
+1. **AGPL 3.0**: 오픈소스 프로젝트 및 비상업적 사용
+2. **상용 라이선스**: 상업적 사용 시 별도 문의 필요
+
+자세한 내용은 [LICENSE](./LICENSE) 파일을 참조하세요.
+
+## 이미지 저작권 정보
 
 <img width="100" alt="Tablecloth Icon by Icons8" src="docs/images/TableCloth_NewLogo.png" /> by [Icons8](https://img.icons8.com/color/96/000000/tablecloth.png)
 
