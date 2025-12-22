@@ -1,10 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Spork.Commands.PrecautionsWindow;
+using Spork.Components;
 using System;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Events;
+using TableCloth.Resources;
 using TableCloth.ViewModels;
 
 namespace Spork.ViewModels
@@ -16,33 +19,45 @@ namespace Spork.ViewModels
         protected PrecautionsWindowViewModel() { }
 
         public PrecautionsWindowViewModel(
-            PrecautionsWindowLoadedCommand precautionsWindowLoadedCommand,
-            PrecautionsWindowCloseCommand precautionsWindowCloseCommand)
+            IResourceCacheManager resourceCacheManager,
+            ICommandLineArguments commandLineArguments)
         {
-            _precautionsWindowLoadedCommand = precautionsWindowLoadedCommand;
-            _precautionsWindowCloseCommand = precautionsWindowCloseCommand;
+            _resourceCacheManager = resourceCacheManager;
+            _commandLineArguments = commandLineArguments;
         }
+
+        private readonly IResourceCacheManager _resourceCacheManager;
+        private readonly ICommandLineArguments _commandLineArguments;
 
         [RelayCommand]
         private void PrecautionsWindowLoaded()
         {
-            _precautionsWindowLoadedCommand.Execute(this);
-        }
+            var catalog = _resourceCacheManager.CatalogDocument;
+            var parsedArgs = _commandLineArguments.GetCurrent();
+            var targets = parsedArgs.SelectedServices;
 
-        private PrecautionsWindowLoadedCommand _precautionsWindowLoadedCommand;
+            var buffer = new StringBuilder();
+
+            foreach (var eachItem in catalog.Services.Where(x => targets.Contains(x.Id)))
+            {
+                buffer.AppendLine($"[{eachItem.DisplayName} {UIStringResources.Spork_Warning_Title}]");
+                buffer.AppendLine();
+                buffer.AppendLine(eachItem.CompatibilityNotes);
+                buffer.AppendLine();
+            }
+
+            CautionContent = buffer.ToString();
+        }
 
         [RelayCommand]
-        private void PrecautionsWindowClose()
+        private Task PrecautionsWindowClose()
         {
-            _precautionsWindowCloseCommand.Execute(this);
+            return TaskFactory.StartNew(
+                () => CloseRequested?.Invoke(this, new DialogRequestEventArgs(true)),
+                default(CancellationToken));
         }
 
-        private PrecautionsWindowCloseCommand _precautionsWindowCloseCommand;
-
         public event EventHandler<DialogRequestEventArgs> CloseRequested;
-
-        public async Task RequestCloseAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
-            => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
         [ObservableProperty]
         private string _cautionContent;

@@ -1,12 +1,18 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Spork.Commands.MainWindow;
+using Spork.Components;
+using Spork.Steps;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using TableCloth;
+using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
@@ -42,58 +48,90 @@ namespace Spork.ViewModels
         protected MainWindowViewModel() { }
 
         public MainWindowViewModel(
-            ShowErrorMessageCommand showErrorMessageCommand,
-            MainWindowLoadedCommand mainWindowLoadedCommand,
-            MainWindowInstallPackagesCommand mainWindowInstallPackagesCommand,
-            AboutThisAppCommand aboutThisAppCommand,
-            ShowDebugInfoCommand showDebugInfoCommand)
+            Application application,
+            IResourceCacheManager resourceCacheManager,
+            IAppUserInterface appUserInterface,
+            IVisualThemeManager visualThemeManager,
+            ICommandLineArguments commandLineArguments,
+            IStepsComposer stepsComposer,
+            IStepsPlayer stepsPlayer,
+            IAppMessageBox appMessageBox)
         {
-            _showErrorMessageCommand = showErrorMessageCommand;
-            _mainWindowLoadedCommand = mainWindowLoadedCommand;
-            _mainWindowInstallPackagesCommand = mainWindowInstallPackagesCommand;
-            _aboutThisAppCommand = aboutThisAppCommand;
-            _showDebugInfoCommand = showDebugInfoCommand;
+            _application = application;
+            _resourceCacheManager = resourceCacheManager;
+            _appUserInterface = appUserInterface;
+            _visualThemeManager = visualThemeManager;
+            _commandLineArguments = commandLineArguments;
+            _stepsComposer = stepsComposer;
+            _stepsPlayer = stepsPlayer;
+            _appMessageBox = appMessageBox;
         }
+
+        private readonly Application _application;
+        private readonly IResourceCacheManager _resourceCacheManager;
+        private readonly IAppUserInterface _appUserInterface;
+        private readonly IVisualThemeManager _visualThemeManager;
+        private readonly ICommandLineArguments _commandLineArguments;
+        private readonly IStepsComposer _stepsComposer;
+        private readonly IStepsPlayer _stepsPlayer;
+        private readonly IAppMessageBox _appMessageBox;
 
         [RelayCommand]
         private void ShowErrorMessage()
         {
-            _showErrorMessageCommand.Execute(this);
+            _appMessageBox.DisplayError(Convert.ToString(this), true);
         }
-
-        private ShowErrorMessageCommand _showErrorMessageCommand;
 
         [RelayCommand]
-        private void MainWindowLoaded()
+        private async Task MainWindowLoaded()
         {
-            _mainWindowLoadedCommand.Execute(this);
-        }
+            _visualThemeManager.ApplyAutoThemeChange(_application.MainWindow);
 
-        private MainWindowLoadedCommand _mainWindowLoadedCommand;
+            var parsedArgs = _commandLineArguments.GetCurrent();
+            var catalog = _resourceCacheManager.CatalogDocument;
+            var targets = parsedArgs.SelectedServices;
+
+            ShowDryRunNotification = parsedArgs.DryRun;
+
+            await NotifyWindowLoadedAsync(this, EventArgs.Empty);
+
+            var steps = _stepsComposer.ComposeSteps();
+            InstallSteps = new ObservableCollection<StepItemViewModel>(steps);
+
+            if (SharedExtensions.HasAnyCompatNotes(catalog, targets))
+            {
+                var window = _appUserInterface.CreatePrecautionsWindow();
+                window.ShowDialog();
+            }
+
+            MainWindowInstallPackagesCommand.Execute(this);
+        }
 
         [RelayCommand]
-        private void MainWindowInstallPackages()
+        private async Task MainWindowInstallPackages()
         {
-            _mainWindowInstallPackagesCommand.Execute(this);
-        }
+            var hasAnyFailure = await _stepsPlayer.PlayStepsAsync(InstallSteps, ShowDryRunNotification);
 
-        private MainWindowInstallPackagesCommand _mainWindowInstallPackagesCommand;
+            if (!hasAnyFailure)
+                await RequestCloseAsync(this, EventArgs.Empty);
+        }
 
         [RelayCommand]
         private void AboutThisApp()
         {
-            _aboutThisAppCommand.Execute(this);
+            var aboutWindow = _appUserInterface.CreateAboutWindow();
+            aboutWindow.ShowDialog();
         }
-
-        private AboutThisAppCommand _aboutThisAppCommand;
 
         [RelayCommand]
         private void ShowDebugInfo()
         {
-            _showDebugInfoCommand.Execute(this);
+            _appMessageBox.DisplayInfo(StringResources.TableCloth_DebugInformation(
+                Process.GetCurrentProcess().ProcessName,
+                string.Join(" ", _commandLineArguments.GetCurrent().RawArguments),
+                _commandLineArguments.GetCurrent().ToString())
+            );
         }
-
-        private ShowDebugInfoCommand _showDebugInfoCommand;
 
         public event EventHandler WindowLoaded;
         public event EventHandler CloseRequested;

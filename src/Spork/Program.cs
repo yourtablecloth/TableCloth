@@ -6,9 +6,6 @@ using Sentry;
 using Serilog;
 using Spork.Browsers;
 using Spork.Browsers.Implementations;
-using Spork.Commands.AboutWindow;
-using Spork.Commands.MainWindow;
-using Spork.Commands.PrecautionsWindow;
 using Spork.Components;
 using Spork.Components.Implementations;
 using Spork.Dialogs;
@@ -162,31 +159,14 @@ namespace Spork
                 .AddKeyedSingleton<IStep, SetDesktopWallpaperStep>(nameof(SetDesktopWallpaperStep))
                 .AddKeyedSingleton<IStep, TryProtectCriticalServicesStep>(nameof(TryProtectCriticalServicesStep));
 
-            // Shared Commands
-            services
-                .AddSingleton<OpenAppHomepageCommand>()
-                .AddSingleton<AboutThisAppCommand>()
-                .AddSingleton<ShowDebugInfoCommand>();
-
             // About Window
-            services
-                .AddWindow<AboutWindow, AboutWindowViewModel>()
-                .AddSingleton<AboutWindowLoadedCommand>()
-                .AddSingleton<AboutWindowCloseCommand>()
-                .AddSingleton<OpenSponsorPageCommand>();
+            services.AddWindow<AboutWindow, AboutWindowViewModel>();
 
             // Precautions Window
-            services
-                .AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>()
-                .AddSingleton<PrecautionsWindowLoadedCommand>()
-                .AddSingleton<PrecautionsWindowCloseCommand>();
+            services.AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>();
 
             // Main Window
-            services
-                .AddWindow<MainWindow, MainWindowViewModel>()
-                .AddSingleton<MainWindowLoadedCommand>()
-                .AddSingleton<MainWindowInstallPackagesCommand>()
-                .AddSingleton<ShowErrorMessageCommand>();
+            services.AddWindow<MainWindow, MainWindowViewModel>();
 
             // App
             services.AddTransient(_ => Application.Current);

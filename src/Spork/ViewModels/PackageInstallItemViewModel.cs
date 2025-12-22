@@ -3,7 +3,6 @@ using System;
 
 namespace Spork.ViewModels
 {
-    [Serializable]
     public partial class PackageInstallItemViewModel : InstallItemViewModel
     {
         [ObservableProperty]

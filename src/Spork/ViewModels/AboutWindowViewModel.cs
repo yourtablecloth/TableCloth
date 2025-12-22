@@ -1,9 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Spork.Commands.AboutWindow;
+using Spork.Browsers;
+using Spork.Components;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using TableCloth;
 using TableCloth.Events;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
@@ -17,53 +20,50 @@ namespace Spork.ViewModels
         protected AboutWindowViewModel() { }
 
         public AboutWindowViewModel(
-            AboutWindowLoadedCommand aboutWindowLoadedCommand,
-            AboutWindowCloseCommand aboutWindowCloseCommand,
-            OpenAppHomepageCommand openAppHomepageCommand,
-            OpenSponsorPageCommand openSponsorPageCommand)
+            ILicenseDescriptor licenseDescriptor,
+            IResourceResolver resourceResolver,
+            IWebBrowserServiceFactory webBrowserServiceFactory)
         {
-            _aboutWindowLoadedCommand = aboutWindowLoadedCommand;
-            _aboutWindowCloseCommand = aboutWindowCloseCommand;
-            _openAppHomepageCommand = openAppHomepageCommand;
-            _openSponsorPageCommand = openSponsorPageCommand;
+            _licenseDescriptor = licenseDescriptor;
+            _resourceResolver = resourceResolver;
+            _webBrowserServiceFactory = webBrowserServiceFactory;
+            _defaultWebBrowserService = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
         }
 
-        public event EventHandler<DialogRequestEventArgs> CloseRequested;
+        private readonly ILicenseDescriptor _licenseDescriptor;
+        private readonly IResourceResolver _resourceResolver;
+        private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
+        private readonly IWebBrowserService _defaultWebBrowserService;
 
-        public async Task RequestCloseAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
-            => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+        public event EventHandler<DialogRequestEventArgs> CloseRequested;
 
         [RelayCommand]
         private void AboutWindowLoaded()
         {
-            _aboutWindowLoadedCommand.Execute(this);
+            AppVersion = Helpers.GetAppVersion();
+            CatalogVersion = _resourceResolver.CatalogLastModified?.ToString() ?? CommonStrings.UnknownText;
+            LicenseDescription = _licenseDescriptor.GetLicenseDescriptions();
         }
-
-        private AboutWindowLoadedCommand _aboutWindowLoadedCommand;
 
         [RelayCommand]
-        private void AboutWindowClose()
+        private Task AboutWindowClose()
         {
-            _aboutWindowCloseCommand.Execute(this);
+            return TaskFactory.StartNew(
+                () => CloseRequested?.Invoke(this, new DialogRequestEventArgs(default)),
+                default(CancellationToken));
         }
-
-        private AboutWindowCloseCommand _aboutWindowCloseCommand;
 
         [RelayCommand]
         private void OpenAppHomepage()
         {
-            _openAppHomepageCommand.Execute(this);
+            Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(CommonStrings.AppInfoUrl));
         }
-
-        private OpenAppHomepageCommand _openAppHomepageCommand;
 
         [RelayCommand]
         private void OpenSponsorPage()
         {
-            _openSponsorPageCommand.Execute(this);
+            Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(CommonStrings.SponsorshipUrl));
         }
-
-        private OpenSponsorPageCommand _openSponsorPageCommand;
 
         [ObservableProperty]
         private string _appVersion = CommonStrings.UnknownText;
