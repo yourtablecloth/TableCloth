@@ -10,7 +10,6 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
 using TableCloth.Commands;
-using TableCloth.Commands.AboutWindow;
 using TableCloth.Commands.CatalogPage;
 using TableCloth.Commands.CertSelectWindow;
 using TableCloth.Commands.DetailPage;
@@ -317,14 +316,7 @@ internal static class Program
             .AddSingleton<InputPasswordWindowCancelCommand>();
 
         // About Window
-        services
-            .AddWindow<AboutWindow, AboutWindowViewModel>()
-            .AddSingleton<AboutWindowLoadedCommand>()
-            .AddSingleton<OpenWebsiteCommand>()
-            .AddSingleton<ShowSystemInfoCommand>()
-            .AddSingleton<CheckUpdatedVersionCommand>()
-            .AddSingleton<OpenPrivacyPolicyCommand>()
-            .AddSingleton<OpenSponsorPageCommand>();
+        services.AddWindow<AboutWindow, AboutWindowViewModel>();
 
         // Cert Select Window
         services

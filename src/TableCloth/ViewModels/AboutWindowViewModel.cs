@@ -1,7 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
-using TableCloth.Commands.AboutWindow;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using TableCloth.Components;
+using TableCloth.Components.Implementations;
 using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
@@ -14,70 +18,97 @@ public partial class AboutWindowViewModel : ViewModelBase
     protected AboutWindowViewModel() { }
 
     public AboutWindowViewModel(
-        AboutWindowLoadedCommand aboutWindowLoadedCommand,
-        OpenWebsiteCommand openWebsiteCommand,
-        ShowSystemInfoCommand showSystemInfoCommand,
-        CheckUpdatedVersionCommand checkUpdatedVersionCommand,
-        OpenPrivacyPolicyCommand openPrivacyPolicyCommand,
-        OpenSponsorPageCommand openSponsorPageCommand)
+        IResourceResolver resourceResolver,
+        ILicenseDescriptor licenseDescriptor,
+        IAppMessageBox appMessageBox,
+        IAppUpdateManager appUpdateManager)
     {
-        _aboutWindowLoadedCommand = aboutWindowLoadedCommand;
-        _openWebsiteCommand = openWebsiteCommand;
-        _showSystemInfoCommand = showSystemInfoCommand;
-        _checkUpdatedVersionCommand = checkUpdatedVersionCommand;
-        _openPrivacyPolicyCommand = openPrivacyPolicyCommand;
-        _openSponsorPageCommand = openSponsorPageCommand;
-
+        _resourceResolver = resourceResolver;
+        _licenseDescriptor = licenseDescriptor;
+        _appMessageBox = appMessageBox;
+        _appUpdateManager = appUpdateManager;
         _licenseDetails = UIStringResources.AboutWindow_LoadingLicensesMessage;
     }
 
-    [RelayCommand]
-    private void OnAboutWindowLoaded()
-    {
-        _aboutWindowLoadedCommand.Execute(this);
-    }
+    private readonly IResourceResolver _resourceResolver = default!;
+    private readonly ILicenseDescriptor _licenseDescriptor = default!;
+    private readonly IAppMessageBox _appMessageBox = default!;
+    private readonly IAppUpdateManager _appUpdateManager = default!;
 
-    private AboutWindowLoadedCommand _aboutWindowLoadedCommand = default!;
+    [RelayCommand]
+    private async Task OnAboutWindowLoaded()
+    {
+        AppVersion = Helpers.GetAppVersion();
+        CatalogDate = _resourceResolver.CatalogLastModified?.ToString("yyyy-MM-dd HH:mm:ss") ?? CommonStrings.UnknownText;
+        LicenseDetails = await _licenseDescriptor.GetLicenseDescriptionsAsync();
+    }
 
     [RelayCommand]
     private void OpenWebsite()
     {
-        _openWebsiteCommand.Execute(this);
+        Process.Start(new ProcessStartInfo(CommonStrings.AppInfoUrl) { UseShellExecute = true });
     }
-
-    private OpenWebsiteCommand _openWebsiteCommand = default!;
 
     [RelayCommand]
     private void ShowSystemInfo()
     {
-        _showSystemInfoCommand.Execute(this);
-    }
+        var msinfoPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.System),
+            "msinfo32.exe");
 
-    private ShowSystemInfoCommand _showSystemInfoCommand = default!;
+        if (!File.Exists(msinfoPath))
+        {
+            _appMessageBox.DisplayError(ErrorStrings.Error_Cannot_Run_SysInfo, false);
+            return;
+        }
+
+        var psi = new ProcessStartInfo(msinfoPath);
+        Process.Start(psi);
+    }
 
     [RelayCommand]
-    private void CheckUpdatedVersion()
+    private async Task CheckUpdatedVersion()
     {
-        _checkUpdatedVersionCommand.Execute(this);
-    }
+        try
+        {
+            // Velopack으로 설치된 경우 자동 업데이트
+            if (_appUpdateManager.IsInstalledViaVelopack)
+            {
+                var hasUpdate = await _appUpdateManager.CheckForUpdatesAsync();
 
-    private CheckUpdatedVersionCommand _checkUpdatedVersionCommand = default!;
+                if (hasUpdate)
+                {
+                    _appMessageBox.DisplayInfo(InfoStrings.Info_UpdateRequired);
+                    await _appUpdateManager.DownloadAndApplyUpdatesAsync();
+                    return;
+                }
+
+                _appMessageBox.DisplayInfo(InfoStrings.Info_UpdateNotRequired);
+                return;
+            }
+
+            // Velopack으로 설치되지 않은 경우 GitHub Releases 페이지로 안내
+            var releasesUrl = _appUpdateManager.GetReleasesPageUrl();
+            var psi = new ProcessStartInfo(releasesUrl.AbsoluteUri) { UseShellExecute = true };
+            Process.Start(psi);
+        }
+        catch (Exception ex)
+        {
+            _appMessageBox.DisplayError(ex, false);
+        }
+    }
 
     [RelayCommand]
     private void OpenPrivacyPolicy()
     {
-        _openPrivacyPolicyCommand.Execute(this);
+        Process.Start(new ProcessStartInfo(CommonStrings.PrivacyPolicyUrl) { UseShellExecute = true });
     }
-
-    private OpenPrivacyPolicyCommand _openPrivacyPolicyCommand = default!;
 
     [RelayCommand]
     private void OpenSponsorPage()
     {
-        _openSponsorPageCommand.Execute(this);
+        Process.Start(new ProcessStartInfo(CommonStrings.SponsorshipUrl) { UseShellExecute = true });
     }
-
-    private OpenSponsorPageCommand _openSponsorPageCommand = default!;
 
     [ObservableProperty]
     private string _appVersion = string.Empty;
