@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using TableCloth.Commands.MainWindow;
 
@@ -19,9 +20,19 @@ public partial class MainWindowViewModel : ViewModelBase
         _mainWindowClosedCommand = mainWindowClosedCommand;
     }
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void MainWindowLoaded()
+    {
+        _mainWindowLoadedCommand.Execute(this);
+    }
+
     private MainWindowLoadedCommand _mainWindowLoadedCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void MainWindowClosed()
+    {
+        _mainWindowClosedCommand.Execute(this);
+    }
+
     private MainWindowClosedCommand _mainWindowClosedCommand = default!;
 }

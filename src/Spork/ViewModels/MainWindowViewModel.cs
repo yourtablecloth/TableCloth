@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Spork.Commands.MainWindow;
 using System;
 using System.Collections.Generic;
@@ -54,19 +55,44 @@ namespace Spork.ViewModels
             _showDebugInfoCommand = showDebugInfoCommand;
         }
 
-        [ObservableProperty]
+        [RelayCommand]
+        private void ShowErrorMessage()
+        {
+            _showErrorMessageCommand.Execute(this);
+        }
+
         private ShowErrorMessageCommand _showErrorMessageCommand;
 
-        [ObservableProperty]
+        [RelayCommand]
+        private void MainWindowLoaded()
+        {
+            _mainWindowLoadedCommand.Execute(this);
+        }
+
         private MainWindowLoadedCommand _mainWindowLoadedCommand;
 
-        [ObservableProperty]
+        [RelayCommand]
+        private void MainWindowInstallPackages()
+        {
+            _mainWindowInstallPackagesCommand.Execute(this);
+        }
+
         private MainWindowInstallPackagesCommand _mainWindowInstallPackagesCommand;
 
-        [ObservableProperty]
+        [RelayCommand]
+        private void AboutThisApp()
+        {
+            _aboutThisAppCommand.Execute(this);
+        }
+
         private AboutThisAppCommand _aboutThisAppCommand;
 
-        [ObservableProperty]
+        [RelayCommand]
+        private void ShowDebugInfo()
+        {
+            _showDebugInfoCommand.Execute(this);
+        }
+
         private ShowDebugInfoCommand _showDebugInfoCommand;
 
         public event EventHandler WindowLoaded;

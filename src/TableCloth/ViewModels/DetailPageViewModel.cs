@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,34 +51,84 @@ public partial class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
         => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void DetailPageLoaded()
+    {
+        _detailPageLoadedCommand.Execute(this);
+    }
+
     private DetailPageLoadedCommand _detailPageLoadedCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void DetailPageSearchTextLostFocus()
+    {
+        _detailPageSearchTextLostFocusCommand.Execute(this);
+    }
+
     private DetailPageSearchTextLostFocusCommand _detailPageSearchTextLostFocusCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void DetailPageGoBack()
+    {
+        _detailPageGoBackCommand.Execute(this);
+    }
+
     private DetailPageGoBackCommand _detailPageGoBackCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void DetailPageOpenHomepageLink()
+    {
+        _detailPageOpenHomepageLinkCommand.Execute(this);
+    }
+
     private DetailPageOpenHomepageLinkCommand _detailPageOpenHomepageLinkCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void DetailPageItemFavorite()
+    {
+        _detailPageItemFavoriteCommand.Execute(this);
+    }
+
     private DetailPageItemFavoriteCommand _detailPageItemFavoriteCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void LaunchSandbox()
+    {
+        _launchSandboxCommand.Execute(this);
+    }
+
     private LaunchSandboxCommand _launchSandboxCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CreateShortcut()
+    {
+        _createShortcutCommand.Execute(this);
+    }
+
     private CreateShortcutCommand _createShortcutCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CopyCommandLine()
+    {
+        _copyCommandLineCommand.Execute(this);
+    }
+
     private CopyCommandLineCommand _copyCommandLineCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CertSelect()
+    {
+        _certSelectCommand.Execute(this);
+    }
+
     private CertSelectCommand _certSelectCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void ShowDebugInfo()
+    {
+        _showDebugInfoCommand.Execute(this);
+    }
+
     private ShowDebugInfoCommand _showDebugInfoCommand = default!;
 
     [ObservableProperty]

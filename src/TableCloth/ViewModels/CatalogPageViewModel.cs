@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using TableCloth.Commands;
@@ -36,22 +37,52 @@ public partial class CatalogPageViewModel : ViewModelBase
         _catalogPageFavoriteCommand = catalogPageFavoriteCommand;
     }
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CatalogPageLoaded()
+    {
+        _catalogPageLoadedCommand.Execute(this);
+    }
+
     private CatalogPageLoadedCommand _catalogPageLoadedCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CatalogPageItemSelect()
+    {
+        _catalogPageItemSelectCommand.Execute(this);
+    }
+
     private CatalogPageItemSelectCommand _catalogPageItemSelectCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void AppRestart()
+    {
+        _appRestartCommand.Execute(this);
+    }
+
     private AppRestartCommand _appRestartCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void AboutThisApp()
+    {
+        _aboutThisAppCommand.Execute(this);
+    }
+
     private AboutThisAppCommand _aboutThisAppCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void ShowDebugInfo()
+    {
+        _showDebugInfoCommand.Execute(this);
+    }
+
     private ShowDebugInfoCommand _showDebugInfoCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CatalogPageFavorite()
+    {
+        _catalogPageFavoriteCommand.Execute(this);
+    }
+
     private CatalogPageItemFavoriteCommand _catalogPageFavoriteCommand = default!;
 
     [ObservableProperty]

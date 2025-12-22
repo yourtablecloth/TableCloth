@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -35,19 +36,44 @@ public partial class CertSelectWindowViewModel : ViewModelBase
         _certSelectWindowRequestCancelCommand = certSelectWindowRequestCancelCommand;
     }
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CertSelectWindowScanCertPair()
+    {
+        _certSelectWindowScanCertPairCommand.Execute(this);
+    }
+
     private CertSelectWindowScanCertPairCommand _certSelectWindowScanCertPairCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CertSelectWindowLoaded()
+    {
+        _certSelectWindowLoadedCommand.Execute(this);
+    }
+
     private CertSelectWindowLoadedCommand _certSelectWindowLoadedCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CertSelectManualCertLoad()
+    {
+        _certSelectManualCertLoadCommand.Execute(this);
+    }
+
     private CertSelectWindowManualCertLoadCommand _certSelectManualCertLoadCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CertSelectWindowRequestConfirm()
+    {
+        _certSelectWindowRequestConfirmCommand.Execute(this);
+    }
+
     private CertSelectWindowRequestConfirmCommand _certSelectWindowRequestConfirmCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CertSelectWindowRequestCancel()
+    {
+        _certSelectWindowRequestCancelCommand.Execute(this);
+    }
+
     private CertSelectWindowRequestCancelCommand _certSelectWindowRequestCancelCommand = default!;
 
     [ObservableProperty]

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Security;
 using System.Threading;
@@ -39,13 +40,28 @@ public partial class InputPasswordWindowViewModel : ViewModelBase
     public async Task RequestRetryPasswordInputAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
         => await TaskFactory.StartNew(() => RetryPasswordInputRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void InputPasswordWindowLoaded()
+    {
+        _inputPasswordWindowLoadedCommand.Execute(this);
+    }
+
     private InputPasswordWindowLoadedCommand _inputPasswordWindowLoadedCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void InputPasswordWindowConfirm()
+    {
+        _inputPasswordWindowConfirmCommand.Execute(this);
+    }
+
     private InputPasswordWindowConfirmCommand _inputPasswordWindowConfirmCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void InputPasswordWindowCancel()
+    {
+        _inputPasswordWindowCancelCommand.Execute(this);
+    }
+
     private InputPasswordWindowCancelCommand _inputPasswordWindowCancelCommand = default!;
 
     [ObservableProperty]

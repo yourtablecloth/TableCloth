@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Spork.Commands.PrecautionsWindow;
 using System;
 using System.Threading;
@@ -18,14 +19,24 @@ namespace Spork.ViewModels
             PrecautionsWindowLoadedCommand precautionsWindowLoadedCommand,
             PrecautionsWindowCloseCommand precautionsWindowCloseCommand)
         {
-            PrecautionsWindowLoadedCommand = precautionsWindowLoadedCommand;
-            PrecautionsWindowCloseCommand = precautionsWindowCloseCommand;
+            _precautionsWindowLoadedCommand = precautionsWindowLoadedCommand;
+            _precautionsWindowCloseCommand = precautionsWindowCloseCommand;
         }
 
-        [ObservableProperty]
+        [RelayCommand]
+        private void PrecautionsWindowLoaded()
+        {
+            _precautionsWindowLoadedCommand.Execute(this);
+        }
+
         private PrecautionsWindowLoadedCommand _precautionsWindowLoadedCommand;
 
-        [ObservableProperty]
+        [RelayCommand]
+        private void PrecautionsWindowClose()
+        {
+            _precautionsWindowCloseCommand.Execute(this);
+        }
+
         private PrecautionsWindowCloseCommand _precautionsWindowCloseCommand;
 
         public event EventHandler<DialogRequestEventArgs> CloseRequested;

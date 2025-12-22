@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Spork.Commands.AboutWindow;
 using System;
 using System.Threading;
@@ -32,16 +33,36 @@ namespace Spork.ViewModels
         public async Task RequestCloseAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
             => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-        [ObservableProperty]
+        [RelayCommand]
+        private void AboutWindowLoaded()
+        {
+            _aboutWindowLoadedCommand.Execute(this);
+        }
+
         private AboutWindowLoadedCommand _aboutWindowLoadedCommand;
 
-        [ObservableProperty] 
+        [RelayCommand]
+        private void AboutWindowClose()
+        {
+            _aboutWindowCloseCommand.Execute(this);
+        }
+
         private AboutWindowCloseCommand _aboutWindowCloseCommand;
 
-        [ObservableProperty] 
+        [RelayCommand]
+        private void OpenAppHomepage()
+        {
+            _openAppHomepageCommand.Execute(this);
+        }
+
         private OpenAppHomepageCommand _openAppHomepageCommand;
 
-        [ObservableProperty] 
+        [RelayCommand]
+        private void OpenSponsorPage()
+        {
+            _openSponsorPageCommand.Execute(this);
+        }
+
         private OpenSponsorPageCommand _openSponsorPageCommand;
 
         [ObservableProperty]

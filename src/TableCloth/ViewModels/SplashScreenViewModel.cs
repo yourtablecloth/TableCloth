@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -32,7 +33,12 @@ public partial class SplashScreenViewModel : ViewModelBase
     public async Task NotifyInitializedAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
         => await TaskFactory.StartNew(() => InitializeDone?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void SplashScreenLoaded()
+    {
+        _splashScreenLoadedCommand.Execute(this);
+    }
+
     private SplashScreenLoadedCommand _splashScreenLoadedCommand = default!;
 
     [ObservableProperty]

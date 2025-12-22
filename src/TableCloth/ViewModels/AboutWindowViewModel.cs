@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using TableCloth.Commands.AboutWindow;
 using TableCloth.Resources;
@@ -30,22 +31,52 @@ public partial class AboutWindowViewModel : ViewModelBase
         _licenseDetails = UIStringResources.AboutWindow_LoadingLicensesMessage;
     }
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void OnAboutWindowLoaded()
+    {
+        _aboutWindowLoadedCommand.Execute(this);
+    }
+
     private AboutWindowLoadedCommand _aboutWindowLoadedCommand = default!;
 
-    [ObservableProperty] 
+    [RelayCommand]
+    private void OpenWebsite()
+    {
+        _openWebsiteCommand.Execute(this);
+    }
+
     private OpenWebsiteCommand _openWebsiteCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void ShowSystemInfo()
+    {
+        _showSystemInfoCommand.Execute(this);
+    }
+
     private ShowSystemInfoCommand _showSystemInfoCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void CheckUpdatedVersion()
+    {
+        _checkUpdatedVersionCommand.Execute(this);
+    }
+
     private CheckUpdatedVersionCommand _checkUpdatedVersionCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void OpenPrivacyPolicy()
+    {
+        _openPrivacyPolicyCommand.Execute(this);
+    }
+
     private OpenPrivacyPolicyCommand _openPrivacyPolicyCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void OpenSponsorPage()
+    {
+        _openSponsorPageCommand.Execute(this);
+    }
+
     private OpenSponsorPageCommand _openSponsorPageCommand = default!;
 
     [ObservableProperty]

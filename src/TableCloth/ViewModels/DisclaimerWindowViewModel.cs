@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,9 +31,19 @@ public partial class DisclaimerWindowViewModel : ViewModelBase
     public async Task NotifyDisclaimerAcknowledgedAsync(object? sender, EventArgs e, CancellationToken cancellationToken = default)
         => await TaskFactory.StartNew(() => DisclaimerAcknowledged?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void DisclaimerWindowLoaded()
+    {
+        _disclaimerWindowLoadedCommand.Execute(this);
+    }
+
     private DisclaimerWindowLoadedCommand _disclaimerWindowLoadedCommand = default!;
 
-    [ObservableProperty]
+    [RelayCommand]
+    private void DisclaimerWindowAcknowledge()
+    {
+        _disclaimerWindowAcknowledgeCommand.Execute(this);
+    }
+
     private DisclaimerWindowAcknowledgeCommand _disclaimerWindowAcknowledgeCommand = default!;
 }
