@@ -10,7 +10,7 @@ namespace TableCloth.Models.WindowsSandbox
 
         public string VideoInput { get; set; } = null;
 
-        public string VirtualGpu { get; set; } = null;
+        public string VirtualGpu { get; set; } = "Disable";
 
         public string PrinterRedirection { get; set; } = null;
 
