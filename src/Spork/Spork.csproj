@@ -8,7 +8,7 @@
 		<UseWPF>true</UseWPF>
 		<Platforms>x64;ARM64</Platforms>
 		<UseWindowsForms>false</UseWindowsForms>
-		<LangVersion>9.0</LangVersion>
+		<LangVersion>12.0</LangVersion>
 		<Deterministic>true</Deterministic>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
@@ -56,6 +56,7 @@
 	<ItemGroup>
 		<PackageReference Include="AsyncAwaitBestPractices" Version="7.0.0" />
 		<PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="7.0.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="8.0.0" />

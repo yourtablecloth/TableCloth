@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
 		<RootNamespace>TableCloth</RootNamespace>
 		<Deterministic>true</Deterministic>
 		<Description>TableCloth Core Library - 공통 리소스 및 유틸리티</Description>
@@ -9,7 +10,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
