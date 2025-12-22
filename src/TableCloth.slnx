@@ -8,6 +8,7 @@
     <Platform Solution="*|x64" Project="x64" />
   </Project>
   <Project Path="TableCloth.Core/TableCloth.Core.csproj" Id="97e346c7-479b-447e-a32e-3364e745ccf7" />
+  <Project Path="TableCloth.Test/TableCloth.Test.csproj" Id="08999632-fb58-4460-91c0-2c63df47e86b" />
   <Project Path="TableCloth/TableCloth.csproj">
     <BuildDependency Project="Spork/Spork.csproj" />
     <Platform Solution="*|ARM64" Project="ARM64" />

@@ -1,0 +1,17 @@
+﻿<Project Sdk="MSTest.Sdk/4.0.1">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseVSTest>true</UseVSTest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Spork\Spork.csproj" />
+    <ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+    <ProjectReference Include="..\TableCloth\TableCloth.csproj" />
+  </ItemGroup>
+
+</Project>

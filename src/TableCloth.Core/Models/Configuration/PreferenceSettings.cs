@@ -9,6 +9,11 @@ namespace TableCloth.Models.Configuration
     public class PreferenceSettings
     {
         /// <summary>
+        /// Disclaimer 알림 주기 (일 단위)
+        /// </summary>
+        public const double DisclaimerNotificationIntervalDays = 7d;
+
+        /// <summary>
         /// 호스트의 오디오 입력을 샌드박스 안으로 전달할지 여부를 나타냅니다.
         /// </summary>
         public bool UseAudioRedirection { get; set; } = false;
@@ -77,5 +82,27 @@ namespace TableCloth.Models.Configuration
         /// 라이선스 동의 시 프로그램 버전을 기록합니다.
         /// </summary>
         public string LicenseAgreedVersion { get; set; } = null;
+
+        /// <summary>
+        /// Disclaimer 알림을 표시해야 하는지 여부를 반환합니다.
+        /// </summary>
+        /// <param name="currentTime">현재 시간 (UTC)</param>
+        /// <returns>Disclaimer 알림을 표시해야 하면 true, 그렇지 않으면 false</returns>
+        public bool ShouldNotifyDisclaimer(DateTime currentTime)
+        {
+            if (!LastDisclaimerAgreedTime.HasValue)
+                return true;
+
+            if ((currentTime - LastDisclaimerAgreedTime.Value).TotalDays >= DisclaimerNotificationIntervalDays)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// 현재 시간 기준으로 Disclaimer 알림을 표시해야 하는지 여부를 반환합니다.
+        /// </summary>
+        public bool ShouldNotifyDisclaimer()
+            => ShouldNotifyDisclaimer(DateTime.UtcNow);
     }
 }
