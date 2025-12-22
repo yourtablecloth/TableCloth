@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using Spork.Commands.MainWindow;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using TableCloth.ViewModels;
 
 namespace Spork.ViewModels
 {
-    public class MainWindowViewModelForDesigner : MainWindowViewModel
+    public partial class MainWindowViewModelForDesigner : MainWindowViewModel
     {
         public IList<StepItemViewModelForDesigner> InstallStepsForDesigner
             => DesignTimeResources.DesignTimePackageInformations.Select((x, i) =>
@@ -35,7 +36,7 @@ namespace Spork.ViewModels
             }).ToList();
     }
 
-    public class MainWindowViewModel : ViewModelBase
+    public partial class MainWindowViewModel : ViewModelBase
     {
         protected MainWindowViewModel() { }
 
@@ -53,26 +54,20 @@ namespace Spork.ViewModels
             _showDebugInfoCommand = showDebugInfoCommand;
         }
 
-        private readonly ShowErrorMessageCommand _showErrorMessageCommand;
-        private readonly MainWindowLoadedCommand _mainWindowLoadedCommand;
-        private readonly MainWindowInstallPackagesCommand _mainWindowInstallPackagesCommand;
-        private readonly AboutThisAppCommand _aboutThisAppCommand;
-        private readonly ShowDebugInfoCommand _showDebugInfoCommand;
+        [ObservableProperty]
+        private ShowErrorMessageCommand _showErrorMessageCommand;
 
-        public ShowErrorMessageCommand ShowErrorMessageCommand
-            => _showErrorMessageCommand;
+        [ObservableProperty]
+        private MainWindowLoadedCommand _mainWindowLoadedCommand;
 
-        public MainWindowLoadedCommand MainWindowLoadedCommand
-            => _mainWindowLoadedCommand;
+        [ObservableProperty]
+        private MainWindowInstallPackagesCommand _mainWindowInstallPackagesCommand;
 
-        public MainWindowInstallPackagesCommand MainWindowInstallPackagesCommand
-            => _mainWindowInstallPackagesCommand;
+        [ObservableProperty]
+        private AboutThisAppCommand _aboutThisAppCommand;
 
-        public AboutThisAppCommand AboutThisAppCommand
-            => _aboutThisAppCommand;
-
-        public ShowDebugInfoCommand ShowDebugInfoCommand
-            => _showDebugInfoCommand;
+        [ObservableProperty]
+        private ShowDebugInfoCommand _showDebugInfoCommand;
 
         public event EventHandler WindowLoaded;
         public event EventHandler CloseRequested;
@@ -83,19 +78,10 @@ namespace Spork.ViewModels
         public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
             => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
+        [ObservableProperty]
         private bool _showDryRunNotification;
+
+        [ObservableProperty]
         private IList<StepItemViewModel> _installSteps = new ObservableCollection<StepItemViewModel>();
-
-        public bool ShowDryRunNotification
-        {
-            get => _showDryRunNotification;
-            set => SetProperty(ref _showDryRunNotification, value);
-        }
-
-        public IList<StepItemViewModel> InstallSteps
-        {
-            get => _installSteps;
-            set => SetProperty(ref _installSteps, value);
-        }
     }
 }

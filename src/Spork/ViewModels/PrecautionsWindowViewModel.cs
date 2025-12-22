@@ -1,4 +1,5 @@
-﻿using Spork.Commands.PrecautionsWindow;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Spork.Commands.PrecautionsWindow;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,9 +8,9 @@ using TableCloth.ViewModels;
 
 namespace Spork.ViewModels
 {
-    public class PrecautionsWindowViewModelForDesigner : PrecautionsWindowViewModel { }
+    public partial class PrecautionsWindowViewModelForDesigner : PrecautionsWindowViewModel { }
 
-    public class PrecautionsWindowViewModel : ViewModelBase
+    public partial class PrecautionsWindowViewModel : ViewModelBase
     {
         protected PrecautionsWindowViewModel() { }
 
@@ -17,30 +18,22 @@ namespace Spork.ViewModels
             PrecautionsWindowLoadedCommand precautionsWindowLoadedCommand,
             PrecautionsWindowCloseCommand precautionsWindowCloseCommand)
         {
-            _precautionsWindowLoadedCommand = precautionsWindowLoadedCommand;
-            _precautionsWindowCloseCommand = precautionsWindowCloseCommand;
+            PrecautionsWindowLoadedCommand = precautionsWindowLoadedCommand;
+            PrecautionsWindowCloseCommand = precautionsWindowCloseCommand;
         }
 
-        private readonly PrecautionsWindowLoadedCommand _precautionsWindowLoadedCommand;
-        private readonly PrecautionsWindowCloseCommand _precautionsWindowCloseCommand;
+        [ObservableProperty]
+        private PrecautionsWindowLoadedCommand _precautionsWindowLoadedCommand;
 
-        public PrecautionsWindowLoadedCommand PrecautionsWindowLoadedCommand
-            => _precautionsWindowLoadedCommand;
-
-        public PrecautionsWindowCloseCommand PrecautionsWindowCloseCommand
-            => _precautionsWindowCloseCommand;
+        [ObservableProperty]
+        private PrecautionsWindowCloseCommand _precautionsWindowCloseCommand;
 
         public event EventHandler<DialogRequestEventArgs> CloseRequested;
 
         public async Task RequestCloseAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
             => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
+        [ObservableProperty]
         private string _cautionContent;
-
-        public string CautionContent
-        {
-            get => _cautionContent;
-            set => SetProperty(ref _cautionContent, value);
-        }
     }
 }

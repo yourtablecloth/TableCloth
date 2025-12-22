@@ -1,12 +1,13 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using TableCloth.Commands.MainWindow;
 
 namespace TableCloth.ViewModels;
 
 [Obsolete("This class is reserved for design-time usage.", false)]
-public class MainWindowViewModelForDesigner : MainWindowViewModel { }
+public partial class MainWindowViewModelForDesigner : MainWindowViewModel { }
 
-public class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel : ViewModelBase
 {
     protected MainWindowViewModel() { }
 
@@ -18,12 +19,9 @@ public class MainWindowViewModel : ViewModelBase
         _mainWindowClosedCommand = mainWindowClosedCommand;
     }
 
-    private readonly MainWindowLoadedCommand _mainWindowLoadedCommand = default!;
-    private readonly MainWindowClosedCommand _mainWindowClosedCommand = default!;
+    [ObservableProperty]
+    private MainWindowLoadedCommand _mainWindowLoadedCommand = default!;
 
-    public MainWindowLoadedCommand MainWindowLoadedCommand
-        => _mainWindowLoadedCommand;
-
-    public MainWindowClosedCommand MainWindowClosedCommand
-        => _mainWindowClosedCommand;
+    [ObservableProperty]
+    private MainWindowClosedCommand _mainWindowClosedCommand = default!;
 }

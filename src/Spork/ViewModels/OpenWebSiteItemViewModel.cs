@@ -1,16 +1,12 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace Spork.ViewModels
 {
     [Serializable]
-    public class OpenWebSiteItemViewModel : InstallItemViewModel
+    public partial class OpenWebSiteItemViewModel : InstallItemViewModel
     {
+        [ObservableProperty]
         private string _targetUrl;
-
-        public string TargetUrl
-        {
-            get => _targetUrl;
-            set => SetProperty(ref _targetUrl, value);
-        }
     }
 }

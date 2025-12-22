@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,9 +11,9 @@ using TableCloth.Resources;
 namespace TableCloth.ViewModels;
 
 [Obsolete("This class is reserved for design-time usage.", false)]
-public class SplashScreenViewModelForDesigner : SplashScreenViewModel { }
+public partial class SplashScreenViewModelForDesigner : SplashScreenViewModel { }
 
-public class SplashScreenViewModel : ViewModelBase
+public partial class SplashScreenViewModel : ViewModelBase
 {
     protected SplashScreenViewModel() { }
 
@@ -31,72 +32,33 @@ public class SplashScreenViewModel : ViewModelBase
     public async Task NotifyInitializedAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
         => await TaskFactory.StartNew(() => InitializeDone?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    private readonly SplashScreenLoadedCommand _splashScreenLoadedCommand = default!;
+    [ObservableProperty]
+    private SplashScreenLoadedCommand _splashScreenLoadedCommand = default!;
 
-    public SplashScreenLoadedCommand SplashScreenLoadedCommand
-        => _splashScreenLoadedCommand;
-
+    [ObservableProperty]
     private string _appVersion = Helpers.GetAppVersion();
+
+    [ObservableProperty]
     private string _status = UIStringResources.Status_PleaseWait;
+
+    [ObservableProperty]
     private bool _appStartupSucceed = false;
+
+    [ObservableProperty]
     private IList<string> _passedArguments = Array.Empty<string>();
+
+    [ObservableProperty]
     private CommandLineArgumentModel? _parsedArgument;
+
+    [ObservableProperty]
     private IList<string> _warnings = new List<string>();
+
+    [ObservableProperty]
     private bool _isUpdating = false;
+
+    [ObservableProperty]
     private int _updateProgress = 0;
+
+    [ObservableProperty]
     private bool _showUpdateProgress = false;
-
-    public string AppVersion
-    {
-        get => _appVersion;
-        set => SetProperty(ref _appVersion, value);
-    }
-
-    public string Status
-    {
-        get => _status;
-        set => SetProperty(ref _status, value);
-    }
-
-    public bool AppStartupSucceed
-    {
-        get => _appStartupSucceed;
-        set => SetProperty(ref _appStartupSucceed, value);
-    }
-
-    public IList<string> PassedArguments
-    {
-        get => _passedArguments;
-        set => SetProperty(ref _passedArguments, value);
-    }
-
-    public CommandLineArgumentModel? ParsedArgument
-    {
-        get => _parsedArgument;
-        set => SetProperty(ref _parsedArgument, value);
-    }
-
-    public IList<string> Warnings
-    {
-        get => _warnings;
-        set => SetProperty(ref _warnings, value);
-    }
-
-    public bool IsUpdating
-    {
-        get => _isUpdating;
-        set => SetProperty(ref _isUpdating, value);
-    }
-
-    public int UpdateProgress
-    {
-        get => _updateProgress;
-        set => SetProperty(ref _updateProgress, value);
-    }
-
-    public bool ShowUpdateProgress
-    {
-        get => _showUpdateProgress;
-        set => SetProperty(ref _showUpdateProgress, value);
-    }
 }

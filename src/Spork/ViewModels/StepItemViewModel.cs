@@ -1,4 +1,5 @@
-﻿using Spork.Steps;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Spork.Steps;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,7 +7,7 @@ using TableCloth.ViewModels;
 
 namespace Spork.ViewModels
 {
-    public class StepItemViewModelForDesigner : StepItemViewModel
+    public partial class StepItemViewModelForDesigner : StepItemViewModel
     {
         internal protected sealed class FakeStepForDesigner : StepBase<InstallItemViewModel>
         {
@@ -29,84 +30,55 @@ namespace Spork.ViewModels
         }
     }
 
-    public class StepItemViewModel : ViewModelBase
+    public partial class StepItemViewModel : ViewModelBase
     {
+        [ObservableProperty]
         private InstallItemViewModel _argument;
+
+        [ObservableProperty]
         private IStep _step;
+
+        [ObservableProperty]
         private string _targetSiteName;
+
+        [ObservableProperty]
         private string _targetSiteUrl;
+
+        [ObservableProperty]
         private string _packageName;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(StatusMessage))]
+        [NotifyPropertyChangedFor(nameof(ErrorMessage))]
+        [NotifyPropertyChangedFor(nameof(InstallFlags))]
+        [NotifyPropertyChangedFor(nameof(ShowErrorMessageLink))]
         private bool? _installed;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(Installed))]
+        [NotifyPropertyChangedFor(nameof(ErrorMessage))]
+        [NotifyPropertyChangedFor(nameof(InstallFlags))]
+        [NotifyPropertyChangedFor(nameof(ShowErrorMessageLink))]
         private string _statusMessage;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(StatusMessage))]
+        [NotifyPropertyChangedFor(nameof(Installed))]
+        [NotifyPropertyChangedFor(nameof(InstallFlags))]
+        [NotifyPropertyChangedFor(nameof(ShowErrorMessageLink))]
         private string _errorMessage;
+
+        [ObservableProperty]
         private double _progressRate;
+
+        [ObservableProperty]
         private bool _showProgress;
 
-        public InstallItemViewModel Argument
-        {
-            get => _argument;
-            set => SetProperty(ref _argument, value);
-        }
-
-        public IStep Step
-        {
-            get => _step;
-            set => SetProperty(ref _step, value);
-        }
-
-        public string TargetSiteName
-        {
-            get => _targetSiteName;
-            set => SetProperty(ref _targetSiteName, value);
-        }
-
-        public string TargetSiteUrl
-        {
-            get => _targetSiteUrl;
-            set => SetProperty(ref _targetSiteUrl, value);
-        }
-
-        public string PackageName
-        {
-            get => _packageName;
-            set => SetProperty(ref _packageName, value);
-        }
-
-        public bool? Installed
-        {
-            get => _installed;
-            set => SetProperty(ref _installed, value, new string[] { nameof(Installed), nameof(StatusMessage), nameof(ErrorMessage), nameof(InstallFlags), nameof(ShowErrorMessageLink), });
-        }
-
-        public string StatusMessage
-        {
-            get => _statusMessage;
-            set => SetProperty(ref _statusMessage, value, new string[] { nameof(StatusMessage), nameof(Installed), nameof(ErrorMessage), nameof(InstallFlags), nameof(ShowErrorMessageLink), });
-        }
-
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set => SetProperty(ref _errorMessage, value, new string[] { nameof(ErrorMessage), nameof(StatusMessage), nameof(Installed), nameof(InstallFlags), nameof(ShowErrorMessageLink), });
-        }
-
-        public double ProgressRate
-        {
-            get => _progressRate;
-            set => SetProperty(ref _progressRate, value);
-        }
-
-        public bool ShowProgress
-        {
-            get => _showProgress;
-            set => SetProperty(ref _showProgress, value);
-        }
-
         public bool ShowErrorMessageLink
-            => !string.IsNullOrWhiteSpace(_errorMessage) && _installed.HasValue && !_installed.Value;
+            => !string.IsNullOrWhiteSpace(ErrorMessage) && Installed.HasValue && !Installed.Value;
 
         public string InstallFlags
-            => $"{(_installed.HasValue ? _installed.Value ? "\u2714\uFE0F" : "\u274C\uFE0F" : "\u23F3\uFE0F")}";
+            => $"{(Installed.HasValue ? Installed.Value ? "\u2714\uFE0F" : "\u274C\uFE0F" : "\u23F3\uFE0F")}";
 
         public override string ToString()
             => $"{InstallFlags} {TargetSiteName} {PackageName} {StatusMessage}";

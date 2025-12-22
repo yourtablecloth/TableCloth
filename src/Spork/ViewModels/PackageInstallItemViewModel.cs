@@ -1,30 +1,18 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace Spork.ViewModels
 {
     [Serializable]
-    public class PackageInstallItemViewModel : InstallItemViewModel
+    public partial class PackageInstallItemViewModel : InstallItemViewModel
     {
+        [ObservableProperty]
         private string _downloadedFilePath;
+
+        [ObservableProperty]
         private string _packageUrl;
+
+        [ObservableProperty]
         private string _arguments;
-
-        public string DownloadedFilePath
-        {
-            get => _downloadedFilePath;
-            set => SetProperty(ref _downloadedFilePath, value);
-        }
-
-        public string PackageUrl
-        {
-            get => _packageUrl;
-            set => SetProperty(ref _packageUrl, value);
-        }
-
-        public string Arguments
-        {
-            get => _arguments;
-            set => SetProperty(ref _arguments, value);
-        }
     }
 }

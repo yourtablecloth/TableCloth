@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -14,9 +15,9 @@ using TableCloth.Models.Configuration;
 namespace TableCloth.ViewModels;
 
 [Obsolete("This class is reserved for design-time usage.", false)]
-public class DetailPageViewModelForDesigner : DetailPageViewModel { }
+public partial class DetailPageViewModelForDesigner : DetailPageViewModel { }
 
-public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
+public partial class DetailPageViewModel : ViewModelBase, ITableClothViewModel
 {
     protected DetailPageViewModel() { }
 
@@ -49,80 +50,62 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
         => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    private readonly DetailPageLoadedCommand _detailPageLoadedCommand = default!;
-    private readonly DetailPageSearchTextLostFocusCommand _detailPageSearchTextLostFocusCommand = default!;
-    private readonly DetailPageGoBackCommand _detailPageGoBackCommand = default!;
-    private readonly DetailPageOpenHomepageLinkCommand _detailPageOpenHomepageLinkCommand = default!;
-    private readonly DetailPageItemFavoriteCommand _detailPageItemFavoriteCommand = default!;
-    private readonly LaunchSandboxCommand _launchSandboxCommand = default!;
-    private readonly CreateShortcutCommand _createShortcutCommand = default!;
-    private readonly CopyCommandLineCommand _copyCommandLineCommand = default!;
-    private readonly CertSelectCommand _certSelectCommand = default!;
-    private readonly ShowDebugInfoCommand _showDebugInfoCommand = default!;
+    [ObservableProperty]
+    private DetailPageLoadedCommand _detailPageLoadedCommand = default!;
 
-    public DetailPageLoadedCommand DetailPageLoadedCommand
-        => _detailPageLoadedCommand;
+    [ObservableProperty]
+    private DetailPageSearchTextLostFocusCommand _detailPageSearchTextLostFocusCommand = default!;
 
-    public DetailPageSearchTextLostFocusCommand DetailPageSearchTextLostFocusCommand
-        => _detailPageSearchTextLostFocusCommand;
+    [ObservableProperty]
+    private DetailPageGoBackCommand _detailPageGoBackCommand = default!;
 
-    public DetailPageGoBackCommand DetailPageGoBackCommand
-        => _detailPageGoBackCommand;
+    [ObservableProperty]
+    private DetailPageOpenHomepageLinkCommand _detailPageOpenHomepageLinkCommand = default!;
 
-    public DetailPageOpenHomepageLinkCommand DetailPageOpenHomepageLinkCommand
-        => _detailPageOpenHomepageLinkCommand;
+    [ObservableProperty]
+    private DetailPageItemFavoriteCommand _detailPageItemFavoriteCommand = default!;
 
-    public DetailPageItemFavoriteCommand DetailPageItemFavoriteCommand
-        => _detailPageItemFavoriteCommand;
+    [ObservableProperty]
+    private LaunchSandboxCommand _launchSandboxCommand = default!;
 
-    public LaunchSandboxCommand LaunchSandboxCommand
-        => _launchSandboxCommand;
+    [ObservableProperty]
+    private CreateShortcutCommand _createShortcutCommand = default!;
 
-    public CreateShortcutCommand CreateShortcutCommand
-        => _createShortcutCommand;
+    [ObservableProperty]
+    private CopyCommandLineCommand _copyCommandLineCommand = default!;
 
-    public CopyCommandLineCommand CopyCommandLineCommand
-        => _copyCommandLineCommand;
+    [ObservableProperty]
+    private CertSelectCommand _certSelectCommand = default!;
 
-    public CertSelectCommand CertSelectCommand
-        => _certSelectCommand;
+    [ObservableProperty]
+    private ShowDebugInfoCommand _showDebugInfoCommand = default!;
 
-    public ShowDebugInfoCommand ShowDebugInfoCommand
-        => _showDebugInfoCommand;
-
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Id))]
+    [NotifyPropertyChangedFor(nameof(DisplayName))]
+    [NotifyPropertyChangedFor(nameof(Url))]
+    [NotifyPropertyChangedFor(nameof(CompatibilityNotes))]
+    [NotifyPropertyChangedFor(nameof(PackageCountForDisplay))]
+    [NotifyPropertyChangedFor(nameof(ServiceLogo))]
     private CatalogInternetService? _selectedService;
 
-    public CatalogInternetService? SelectedService
-    {
-        get => _selectedService;
-        set => SetProperty(ref _selectedService, value, new string[] {
-            nameof(SelectedService),
-            nameof(Id),
-            nameof(DisplayName),
-            nameof(Url),
-            nameof(CompatibilityNotes),
-            nameof(PackageCountForDisplay),
-            nameof(ServiceLogo),
-        });
-    }
-
     public string? Id
-        => _selectedService?.Id;
+        => SelectedService?.Id;
 
     public string? DisplayName
-        => _selectedService?.DisplayName;
+        => SelectedService?.DisplayName;
 
     public string? Url
-        => _selectedService?.Url;
+        => SelectedService?.Url;
 
     public string? CompatibilityNotes
-        => _selectedService?.CompatibilityNotes;
+        => SelectedService?.CompatibilityNotes;
 
     public int? PackageCountForDisplay
-        => _selectedService?.PackageCountForDisplay;
+        => SelectedService?.PackageCountForDisplay;
 
     public string? MatchedKeywords
-        => string.Join(", ", _selectedService?.GetSearchKeywords() ?? new string[] { });
+        => string.Join(", ", SelectedService?.GetSearchKeywords() ?? new string[] { });
 
     public bool ShowMatchedKeywordsRow
         => !string.IsNullOrWhiteSpace((MatchedKeywords ?? string.Empty).Trim());
@@ -130,126 +113,65 @@ public class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     public bool ShowCompatibilityNotesRow
         => !string.IsNullOrWhiteSpace((CompatibilityNotes ?? string.Empty).Trim());
 
+    [ObservableProperty]
     private CommandLineArgumentModel? _commandLineArgumentModel;
+
+    [ObservableProperty]
     private bool _isFavorite;
+
+    [ObservableProperty]
     private ImageSource? _serviceLogo;
+
+    [ObservableProperty]
     private bool _mapNpkiCert;
+
+    [ObservableProperty]
     private bool _enableLogAutoCollecting;
+
+    [ObservableProperty]
     private bool _enableMicrophone;
+
+    [ObservableProperty]
     private bool _enableWebCam;
+
+    [ObservableProperty]
     private bool _enablePrinters;
+
+    [ObservableProperty]
     private bool _installEveryonesPrinter;
+
+    [ObservableProperty]
     private bool _installAdobeReader;
+
+    [ObservableProperty]
     private bool _installHancomOfficeViewer;
+
+    [ObservableProperty]
     private bool _installRaiDrive;
+
+    [ObservableProperty]
     private DateTime? _lastDisclaimerAgreedTime;
+
+    [ObservableProperty]
     private X509CertPair? _selectedCertFile;
+
+    [ObservableProperty]
     private string _searchKeyword = string.Empty;
-
-    public CommandLineArgumentModel? CommandLineArgumentModel
-    {
-        get => _commandLineArgumentModel;
-        set => SetProperty(ref _commandLineArgumentModel, value);
-    }
-
-    public bool IsFavorite
-    {
-        get => _isFavorite;
-        set => SetProperty(ref _isFavorite, value);
-    }
-
-    public ImageSource? ServiceLogo
-    {
-        get => _serviceLogo;
-        set => SetProperty(ref _serviceLogo, value);
-    }
-
-    public bool MapNpkiCert
-    {
-        get => _mapNpkiCert;
-        set => SetProperty(ref _mapNpkiCert, value);
-    }
-
-    public bool EnableLogAutoCollecting
-    {
-        get => _enableLogAutoCollecting;
-        set => SetProperty(ref _enableLogAutoCollecting, value);
-    }
-
-    public bool EnableMicrophone
-    {
-        get => _enableMicrophone;
-        set => SetProperty(ref _enableMicrophone, value);
-    }
-
-    public bool EnableWebCam
-    {
-        get => _enableWebCam;
-        set => SetProperty(ref _enableWebCam, value);
-    }
-
-    public bool EnablePrinters
-    {
-        get => _enablePrinters;
-        set => SetProperty(ref _enablePrinters, value);
-    }
-
-    public bool InstallEveryonesPrinter
-    {
-        get => _installEveryonesPrinter;
-        set => SetProperty(ref _installEveryonesPrinter, value);
-    }
-
-    public bool InstallAdobeReader
-    {
-        get => _installAdobeReader;
-        set => SetProperty(ref _installAdobeReader, value);
-    }
-
-    public bool InstallHancomOfficeViewer
-    {
-        get => _installHancomOfficeViewer;
-        set => SetProperty(ref _installHancomOfficeViewer, value);
-    }
-
-    public bool InstallRaiDrive
-    {
-        get => _installRaiDrive;
-        set => SetProperty(ref _installRaiDrive, value);
-    }
-
-    public DateTime? LastDisclaimerAgreedTime
-    {
-        get => _lastDisclaimerAgreedTime;
-        set => SetProperty(ref _lastDisclaimerAgreedTime, value);
-    }
 
     public bool ShouldNotifyDisclaimer
     {
         get
         {
-            if (!_lastDisclaimerAgreedTime.HasValue)
+            if (!LastDisclaimerAgreedTime.HasValue)
                 return true;
 
-            if ((DateTime.UtcNow - _lastDisclaimerAgreedTime.Value).TotalDays >= 7d)
+            if ((DateTime.UtcNow - LastDisclaimerAgreedTime.Value).TotalDays >= 7d)
                 return true;
 
             return false;
         }
     }
 
-    public X509CertPair? SelectedCertFile
-    {
-        get => _selectedCertFile;
-        set => SetProperty(ref _selectedCertFile, value);
-    }
-
     public IEnumerable<CatalogInternetService> SelectedServices
-        => _selectedService != null ? new CatalogInternetService[] { _selectedService, } : Enumerable.Empty<CatalogInternetService>();
-
-    public string SearchKeyword
-    {
-        get => _searchKeyword;
-        set => SetProperty(ref _searchKeyword, value);
-    }
+        => SelectedService != null ? new CatalogInternetService[] { SelectedService, } : Enumerable.Empty<CatalogInternetService>();
 }

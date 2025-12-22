@@ -4,5 +4,5 @@ using TableCloth.ViewModels;
 namespace Spork.ViewModels
 {
     [Serializable]
-    public class InstallItemViewModel : ViewModelBase { }
+    public partial class InstallItemViewModel : ViewModelBase { }
 }

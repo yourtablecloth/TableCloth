@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,9 +10,9 @@ using TableCloth.Models.Configuration;
 namespace TableCloth.ViewModels;
 
 [Obsolete("This class is reserved for design-time usage.", false)]
-public class InputPasswordWindowViewModelForDesigner : InputPasswordWindowViewModel { }
+public partial class InputPasswordWindowViewModelForDesigner : InputPasswordWindowViewModel { }
 
-public class InputPasswordWindowViewModel : ViewModelBase
+public partial class InputPasswordWindowViewModel : ViewModelBase
 {
     protected InputPasswordWindowViewModel() { }
 
@@ -38,38 +39,21 @@ public class InputPasswordWindowViewModel : ViewModelBase
     public async Task RequestRetryPasswordInputAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
         => await TaskFactory.StartNew(() => RetryPasswordInputRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-    private readonly InputPasswordWindowLoadedCommand _inputPasswordWindowLoadedCommand = default!;
-    private readonly InputPasswordWindowConfirmCommand _inputPasswordWindowConfirmCommand = default!;
-    private readonly InputPasswordWindowCancelCommand _inputPasswordWindowCancelCommand = default!;
+    [ObservableProperty]
+    private InputPasswordWindowLoadedCommand _inputPasswordWindowLoadedCommand = default!;
 
-    public InputPasswordWindowLoadedCommand InputPasswordWindowLoadedCommand
-        => _inputPasswordWindowLoadedCommand;
+    [ObservableProperty]
+    private InputPasswordWindowConfirmCommand _inputPasswordWindowConfirmCommand = default!;
 
-    public InputPasswordWindowConfirmCommand InputPasswordWindowConfirmCommand
-        => _inputPasswordWindowConfirmCommand;
+    [ObservableProperty]
+    private InputPasswordWindowCancelCommand _inputPasswordWindowCancelCommand = default!;
 
-    public InputPasswordWindowCancelCommand InputPasswordWindowCancelCommand
-        => _inputPasswordWindowCancelCommand;
-
+    [ObservableProperty]
     private string _pfxFilePath = string.Empty;
+
+    [ObservableProperty]
     private SecureString _password = new();
+
+    [ObservableProperty]
     private X509CertPair? _validatedCertPair = null;
-
-    public string PfxFilePath
-    {
-        get => _pfxFilePath;
-        set => SetProperty(ref _pfxFilePath, value);
-    }
-
-    public SecureString Password
-    {
-        get => _password;
-        set => SetProperty(ref _password, value);
-    }
-
-    public X509CertPair? ValidatedCertPair
-    {
-        get => _validatedCertPair;
-        set => SetProperty(ref _validatedCertPair, value);
-    }
 }

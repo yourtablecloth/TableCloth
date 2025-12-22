@@ -1,4 +1,5 @@
-﻿using Spork.Commands.AboutWindow;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Spork.Commands.AboutWindow;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,9 +9,9 @@ using TableCloth.ViewModels;
 
 namespace Spork.ViewModels
 {
-    public class AboutWindowViewModelForDesigner : AboutWindowViewModel { }
+    public partial class AboutWindowViewModelForDesigner : AboutWindowViewModel { }
 
-    public class AboutWindowViewModel : ViewModelBase
+    public partial class AboutWindowViewModel : ViewModelBase
     {
         protected AboutWindowViewModel() { }
 
@@ -31,50 +32,28 @@ namespace Spork.ViewModels
         public async Task RequestCloseAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
             => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
-        private readonly AboutWindowLoadedCommand _aboutWindowLoadedCommand;
-        private readonly AboutWindowCloseCommand _aboutWindowCloseCommand;
-        private readonly OpenAppHomepageCommand _openAppHomepageCommand;
-        private readonly OpenSponsorPageCommand _openSponsorPageCommand;
+        [ObservableProperty]
+        private AboutWindowLoadedCommand _aboutWindowLoadedCommand;
 
-        public AboutWindowLoadedCommand AboutWindowLoadedCommand
-            => _aboutWindowLoadedCommand;
+        [ObservableProperty] 
+        private AboutWindowCloseCommand _aboutWindowCloseCommand;
 
-        public AboutWindowCloseCommand AboutWindowCloseCommand
-            => _aboutWindowCloseCommand;
+        [ObservableProperty] 
+        private OpenAppHomepageCommand _openAppHomepageCommand;
 
-        public OpenAppHomepageCommand OpenAppHomepageCommand
-            => _openAppHomepageCommand;
+        [ObservableProperty] 
+        private OpenSponsorPageCommand _openSponsorPageCommand;
 
-        public OpenSponsorPageCommand OpenSponsorPageCommand
-            => _openSponsorPageCommand;
-
+        [ObservableProperty]
         private string _appVersion = CommonStrings.UnknownText;
+
+        [ObservableProperty]
         private string _catalogVersion = CommonStrings.UnknownText;
+
+        [ObservableProperty]
         private string _licenseDescription = default;
+
+        [ObservableProperty]
         private string _appHomepageUrl = default;
-
-        public string AppVersion
-        {
-            get => _appVersion;
-            set => SetProperty(ref _appVersion, value);
-        }
-
-        public string CatalogVersion
-        {
-            get => _catalogVersion;
-            set => SetProperty(ref _catalogVersion, value);
-        }
-
-        public string LicenseDescription
-        {
-            get => _licenseDescription;
-            set => SetProperty(ref _licenseDescription, value);
-        }
-
-        public string AppHomepageUrl
-        {
-            get => _appHomepageUrl;
-            set => SetProperty(ref _appHomepageUrl, value);
-        }
     }
 }
