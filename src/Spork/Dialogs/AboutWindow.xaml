@@ -32,7 +32,9 @@
         
         <!-- Sponsor Banner -->
         <Border Grid.Row="0"
-                Background="#FFF8E1" BorderBrush="#FFE082" BorderThickness="1" Padding="10" Margin="0 0 0 10" CornerRadius="4" Cursor="Hand"
+                Background="{DynamicResource ControlBrightDefaultBackground}" 
+                BorderBrush="{DynamicResource ControlBrightDefaultBorderBrush}" 
+                BorderThickness="1" Padding="10" Margin="0 0 0 10" CornerRadius="4" Cursor="Hand"
                 MouseLeftButtonUp="SponsorBanner_MouseLeftButtonUp">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -43,7 +45,9 @@
                     <Run Text="💖" />
                     <Run Text="{x:Static res:UIStringResources.Sponsor_BannerMessage}" />
                 </TextBlock>
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="#E91E63" FontWeight="Bold" Text="{x:Static res:UIStringResources.Sponsor_BannerLinkText}" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" 
+                           Foreground="#E91E63" FontWeight="Bold" 
+                           Text="{x:Static res:UIStringResources.Sponsor_BannerLinkText}" />
             </Grid>
         </Border>
         

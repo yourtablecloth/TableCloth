@@ -185,7 +185,9 @@
         
         <!-- Sponsor Banner -->
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" 
-                Background="#FFF8E1" BorderBrush="#FFE082" BorderThickness="0 0 0 1" Padding="8 6" Cursor="Hand"
+                Background="{DynamicResource ControlBrightDefaultBackground}" 
+                BorderBrush="{DynamicResource ControlBrightDefaultBorderBrush}" 
+                BorderThickness="0 0 0 1" Padding="8 6" Cursor="Hand"
                 MouseLeftButtonUp="SponsorBanner_MouseLeftButtonUp">
             <Grid>
                 <Grid.ColumnDefinitions>
