@@ -9,7 +9,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
-using TableCloth.Commands.DisclaimerWindow;
 using TableCloth.Commands.Shared;
 using TableCloth.Components;
 using TableCloth.Components.Implementations;
@@ -296,9 +295,7 @@ internal static class Program
 
         // Disclaimer Window
         services
-            .AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>()
-            .AddSingleton<DisclaimerWindowLoadedCommand>()
-            .AddSingleton<DisclaimerWindowAcknowledgeCommand>();
+            .AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>();
 
         // Input Password Window
         services

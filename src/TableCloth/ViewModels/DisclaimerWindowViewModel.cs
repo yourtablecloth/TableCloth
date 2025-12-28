@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TableCloth.Commands.DisclaimerWindow;
 
 namespace TableCloth.ViewModels;
 
@@ -12,16 +11,6 @@ public partial class DisclaimerWindowViewModelForDesigner : DisclaimerWindowView
 
 public partial class DisclaimerWindowViewModel : ViewModelBase
 {
-    protected DisclaimerWindowViewModel() { }
-
-    public DisclaimerWindowViewModel(
-        DisclaimerWindowLoadedCommand disclaimerWindowLoadedCommand,
-        DisclaimerWindowAcknowledgeCommand disclaimerWindowAcknowledgeCommand)
-    {
-        _disclaimerWindowLoadedCommand = disclaimerWindowLoadedCommand;
-        _disclaimerWindowAcknowledgeCommand = disclaimerWindowAcknowledgeCommand;
-    }
-
     public event EventHandler? ViewLoaded;
     public event EventHandler? DisclaimerAcknowledged;
 
@@ -32,18 +21,8 @@ public partial class DisclaimerWindowViewModel : ViewModelBase
         => await TaskFactory.StartNew(() => DisclaimerAcknowledged?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     [RelayCommand]
-    private void DisclaimerWindowLoaded()
+    private async Task DisclaimerWindowLoaded()
     {
-        _disclaimerWindowLoadedCommand.Execute(this);
+        await NotifyViewLoadedAsync(this, EventArgs.Empty);
     }
-
-    private DisclaimerWindowLoadedCommand _disclaimerWindowLoadedCommand = default!;
-
-    [RelayCommand]
-    private void DisclaimerWindowAcknowledge()
-    {
-        _disclaimerWindowAcknowledgeCommand.Execute(this);
-    }
-
-    private DisclaimerWindowAcknowledgeCommand _disclaimerWindowAcknowledgeCommand = default!;
 }
