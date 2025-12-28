@@ -10,8 +10,6 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
 using TableCloth.Commands;
-using TableCloth.Commands.CatalogPage;
-using TableCloth.Commands.CertSelectWindow;
 using TableCloth.Commands.DetailPage;
 using TableCloth.Commands.DisclaimerWindow;
 using TableCloth.Commands.InputPasswordWindow;
@@ -320,12 +318,7 @@ internal static class Program
 
         // Cert Select Window
         services
-            .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
-            .AddSingleton<CertSelectWindowScanCertPairCommand>()
-            .AddSingleton<CertSelectWindowLoadedCommand>()
-            .AddSingleton<CertSelectWindowManualCertLoadCommand>()
-            .AddSingleton<CertSelectWindowRequestConfirmCommand>()
-            .AddSingleton<CertSelectWindowRequestCancelCommand>();
+            .AddWindow<CertSelectWindow, CertSelectWindowViewModel>();
 
         // Main Window v2
         services
@@ -335,10 +328,7 @@ internal static class Program
 
         // Catalog Page
         services
-            .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
-            .AddSingleton<CatalogPageLoadedCommand>()
-            .AddSingleton<CatalogPageItemSelectCommand>()
-            .AddSingleton<CatalogPageItemFavoriteCommand>();
+            .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true);
 
         // Detail Page
         services

@@ -1,10 +1,18 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using AsyncAwaitBestPractices;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Windows.Data;
 using TableCloth.Commands;
-using TableCloth.Commands.CatalogPage;
 using TableCloth.Commands.Shared;
+using TableCloth.Components;
+using TableCloth.Components.Implementations;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
@@ -22,68 +30,123 @@ public partial class CatalogPageViewModel : ViewModelBase
     protected CatalogPageViewModel() { }
 
     public CatalogPageViewModel(
-        CatalogPageLoadedCommand catalogPageLoadedCommand,
-        CatalogPageItemSelectCommand catalogPageItemSelectCommand,
-        AppRestartCommand appRestartCommand,
-        AboutThisAppCommand aboutThisAppCommand,
-        ShowDebugInfoCommand showDebugInfoCommand,
-        CatalogPageItemFavoriteCommand catalogPageFavoriteCommand)
+        IPreferencesManager preferencesManager,
+        IResourceCacheManager resourceCacheManager,
+        INavigationService navigationService,
+        IAppRestartManager appRestartManager,
+        IAppUserInterface appUserInterface,
+        ICommandLineArguments commandLineArguments,
+        IAppMessageBox appMessageBox)
     {
-        _catalogPageLoadedCommand = catalogPageLoadedCommand;
-        _catalogPageItemSelectCommand = catalogPageItemSelectCommand;
-        _appRestartCommand = appRestartCommand;
-        _aboutThisAppCommand = aboutThisAppCommand;
-        _showDebugInfoCommand = showDebugInfoCommand;
-        _catalogPageFavoriteCommand = catalogPageFavoriteCommand;
+        _preferencesManager = preferencesManager;
+        _resourceCacheManager = resourceCacheManager;
+        _navigationService = navigationService;
+        _appRestartManager = appRestartManager;
+        _appUserInterface = appUserInterface;
+        _commandLineArguments = commandLineArguments;
+        _appMessageBox = appMessageBox;
     }
+
+    private readonly IPreferencesManager _preferencesManager = default!;
+    private readonly IResourceCacheManager _resourceCacheManager = default!;
+    private readonly INavigationService _navigationService = default!;
+    private readonly IAppRestartManager _appRestartManager = default!;
+    private readonly IAppUserInterface _appUserInterface = default!;
+    private readonly ICommandLineArguments _commandLineArguments = default!;
+    private readonly IAppMessageBox _appMessageBox = default!;
+
+    private static readonly PropertyGroupDescription GroupDescription =
+        new(nameof(CatalogInternetService.CategoryDisplayName));
 
     [RelayCommand]
-    private void CatalogPageLoaded()
+    private async Task CatalogPageLoaded()
     {
-        _catalogPageLoadedCommand.Execute(this);
+        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
+        currentConfig ??= _preferencesManager.GetDefaultPreferences();
+
+        var doc = _resourceCacheManager.CatalogDocument;
+        var services = doc.Services.OrderBy(service =>
+        {
+            var fieldInfo = typeof(CatalogInternetServiceCategory).GetField(service.Category.ToString());
+
+            if (fieldInfo == null)
+                return default;
+
+            var customAttribute = fieldInfo.GetCustomAttribute<EnumDisplayOrderAttribute>();
+
+            if (customAttribute == null)
+                return default;
+
+            return customAttribute.Order;
+        }).ToList();
+
+        ShowFavoritesOnly = currentConfig.ShowFavoritesOnly;
+        Services = services;
+
+        foreach (var eachFavoriteServce in services)
+            eachFavoriteServce.IsFavorite = currentConfig.Favorites.Contains(eachFavoriteServce.Id, StringComparer.OrdinalIgnoreCase);
+
+        PropertyChanged += ViewModel_PropertyChanged;
+
+        var view = (CollectionView)CollectionViewSource.GetDefaultView(Services);
+        if (view != null)
+        {
+            view.Filter = (item) => CatalogInternetService.IsMatchedItem(item, SearchKeyword, ShowFavoritesOnly);
+
+            if (!view.GroupDescriptions.Contains(GroupDescription))
+                view.GroupDescriptions.Add(GroupDescription);
+        }
     }
 
-    private CatalogPageLoadedCommand _catalogPageLoadedCommand = default!;
+    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        => OnViewModelPropertyChangedAsync(sender, e).SafeFireAndForget();
+
+    private async Task OnViewModelPropertyChangedAsync(object? sender, PropertyChangedEventArgs e)
+    {
+        var viewModel = sender as CatalogPageViewModel;
+        ArgumentNullException.ThrowIfNull(viewModel);
+
+        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
+        currentConfig ??= _preferencesManager.GetDefaultPreferences();
+
+        switch (e.PropertyName)
+        {
+            case nameof(CatalogPageViewModel.ShowFavoritesOnly):
+                currentConfig.ShowFavoritesOnly = viewModel.ShowFavoritesOnly;
+                break;
+
+            default:
+                return;
+        }
+
+        await _preferencesManager.SavePreferencesAsync(currentConfig);
+    }
 
     [RelayCommand]
     private void CatalogPageItemSelect()
     {
-        _catalogPageItemSelectCommand.Execute(this);
+        if (SelectedService == null)
+            return;
+
+        _navigationService.NavigateToDetail(SearchKeyword, SelectedService, null);
     }
-
-    private CatalogPageItemSelectCommand _catalogPageItemSelectCommand = default!;
-
-    [RelayCommand]
-    private void AppRestart()
-    {
-        _appRestartCommand.Execute(this);
-    }
-
-    private AppRestartCommand _appRestartCommand = default!;
 
     [RelayCommand]
     private void AboutThisApp()
     {
-        _aboutThisAppCommand.Execute(this);
+        var aboutWindow = _appUserInterface.CreateAboutWindow();
+        aboutWindow.ShowDialog();
     }
-
-    private AboutThisAppCommand _aboutThisAppCommand = default!;
 
     [RelayCommand]
     private void ShowDebugInfo()
     {
-        _showDebugInfoCommand.Execute(this);
+        _appMessageBox.DisplayInfo(StringResources.TableCloth_DebugInformation(
+            Process.GetCurrentProcess().ProcessName,
+            string.Join(" ", _commandLineArguments.GetCurrent().RawArguments),
+            _commandLineArguments.GetCurrent().ToString())
+        );
     }
-
-    private ShowDebugInfoCommand _showDebugInfoCommand = default!;
-
-    [RelayCommand]
-    private void CatalogPageFavorite()
-    {
-        _catalogPageFavoriteCommand.Execute(this);
-    }
-
-    private CatalogPageItemFavoriteCommand _catalogPageFavoriteCommand = default!;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SelectedServiceCategory))]
@@ -104,4 +167,20 @@ public partial class CatalogPageViewModel : ViewModelBase
 
     public bool HasServices
         => Services.Count > 0;
+
+    [RelayCommand]
+    private async Task CatalogPageFavorite()
+    {
+        if (SelectedService == null)
+            return;
+
+        var settings = await _preferencesManager.LoadPreferencesAsync();
+        settings!.Favorites ??= new List<string>();
+        if (SelectedService.IsFavorite)
+            settings.Favorites.Add(SelectedService.Id);
+        else if (settings.Favorites.Contains(SelectedService.Id))
+            settings.Favorites.Remove(SelectedService.Id);
+
+        await _preferencesManager.SavePreferencesAsync(settings);
+    }
 }

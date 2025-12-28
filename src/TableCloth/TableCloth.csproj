@@ -92,9 +92,7 @@
 			<ManifestVersion Condition="'$(ManifestVersion)' == '' OR !$(ManifestVersion.Contains('.'))">1.0.0.0</ManifestVersion>
 			<ManifestVersion Condition="!$(ManifestVersion.Contains('.'))">$(ManifestVersion).0.0.0</ManifestVersion>
 		</PropertyGroup>
-		<WriteLinesToFile File="$(IntermediateOutputPath)app.manifest" 
-			Lines="$([System.IO.File]::ReadAllText('$(ProjectDir)app.manifest').Replace('$version$', '$(ManifestVersion)'))" 
-			Overwrite="true" />
+		<WriteLinesToFile File="$(IntermediateOutputPath)app.manifest" Lines="$([System.IO.File]::ReadAllText('$(ProjectDir)app.manifest').Replace('$version$', '$(ManifestVersion)'))" Overwrite="true" />
 		<ItemGroup>
 			<None Remove="app.manifest" />
 		</ItemGroup>
