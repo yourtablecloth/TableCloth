@@ -1,5 +1,8 @@
 name: TableCloth Build Pipeline
 
+permissions:
+  contents: read
+
 on:
     push:
         branches:
