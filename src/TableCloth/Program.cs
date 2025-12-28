@@ -14,7 +14,6 @@ using TableCloth.Commands.DisclaimerWindow;
 using TableCloth.Commands.InputPasswordWindow;
 using TableCloth.Commands.MainWindow;
 using TableCloth.Commands.Shared;
-using TableCloth.Commands.SplashScreen;
 using TableCloth.Components;
 using TableCloth.Components.Implementations;
 using TableCloth.Dialogs;
@@ -316,8 +315,7 @@ internal static class Program
         services.AddWindow<AboutWindow, AboutWindowViewModel>();
 
         // Cert Select Window
-        services
-            .AddWindow<CertSelectWindow, CertSelectWindowViewModel>();
+        services.AddWindow<CertSelectWindow, CertSelectWindowViewModel>();
 
         // Main Window v2
         services
@@ -326,17 +324,13 @@ internal static class Program
             .AddSingleton<MainWindowClosedCommand>();
 
         // Catalog Page
-        services
-            .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true);
+        services.AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true);
 
         // Detail Page
-        services
-            .AddPage<DetailPage, DetailPageViewModel>();
+        services.AddPage<DetailPage, DetailPageViewModel>();
 
         // Splash Screen
-        services
-            .AddWindow<SplashScreen, SplashScreenViewModel>()
-            .AddSingleton<SplashScreenLoadedCommand>();
+        services.AddWindow<SplashScreen, SplashScreenViewModel>();
 
         // App
         services.AddTransient(_ => Application.Current);
