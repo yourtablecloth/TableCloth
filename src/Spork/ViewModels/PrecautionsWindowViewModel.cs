@@ -8,26 +8,28 @@ using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Events;
 using TableCloth.Resources;
-using TableCloth.ViewModels;
 
 namespace Spork.ViewModels
 {
     public partial class PrecautionsWindowViewModelForDesigner : PrecautionsWindowViewModel { }
 
-    public partial class PrecautionsWindowViewModel : ViewModelBase
+    public partial class PrecautionsWindowViewModel : ObservableObject
     {
         protected PrecautionsWindowViewModel() { }
 
         public PrecautionsWindowViewModel(
             IResourceCacheManager resourceCacheManager,
-            ICommandLineArguments commandLineArguments)
+            ICommandLineArguments commandLineArguments,
+            TaskFactory taskFactory)
         {
             _resourceCacheManager = resourceCacheManager;
             _commandLineArguments = commandLineArguments;
+            _taskFactory = taskFactory;
         }
 
         private readonly IResourceCacheManager _resourceCacheManager;
         private readonly ICommandLineArguments _commandLineArguments;
+        private readonly TaskFactory _taskFactory;
 
         [RelayCommand]
         private void PrecautionsWindowLoaded()
@@ -52,7 +54,7 @@ namespace Spork.ViewModels
         [RelayCommand]
         private Task PrecautionsWindowClose()
         {
-            return TaskFactory.StartNew(
+            return _taskFactory.StartNew(
                 () => CloseRequested?.Invoke(this, new DialogRequestEventArgs(true)),
                 default(CancellationToken));
         }

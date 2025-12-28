@@ -21,11 +21,12 @@ namespace TableCloth.ViewModels;
 [Obsolete("This class is reserved for design-time usage.", false)]
 public partial class DetailPageViewModelForDesigner : DetailPageViewModel { }
 
-public partial class DetailPageViewModel : ViewModelBase, ITableClothViewModel
+public partial class DetailPageViewModel : ObservableObject, ITableClothViewModel
 {
     protected DetailPageViewModel() { }
 
     public DetailPageViewModel(
+        TaskFactory taskFactory,
         IResourceCacheManager resourceCacheManager,
         IPreferencesManager preferencesManager,
         IX509CertPairScanner certPairScanner,
@@ -39,6 +40,7 @@ public partial class DetailPageViewModel : ViewModelBase, ITableClothViewModel
         IAppMessageBox appMessageBox,
         ICommandLineComposer commandLineComposer)
     {
+        _taskFactory = taskFactory;
         _resourceCacheManager = resourceCacheManager;
         _preferencesManager = preferencesManager;
         _certPairScanner = certPairScanner;
@@ -56,7 +58,7 @@ public partial class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     public event EventHandler? CloseRequested;
 
     public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
-        => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+        => await _taskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     [RelayCommand]
     private async Task DetailPageLoaded()
@@ -245,7 +247,7 @@ public partial class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     public IEnumerable<CatalogInternetService> SelectedServices
         => SelectedService != null ? new CatalogInternetService[] { SelectedService, } : Enumerable.Empty<CatalogInternetService>();
 
-
+    private readonly TaskFactory _taskFactory = default!;
     private readonly IResourceCacheManager _resourceCacheManager = default!;
     private readonly IPreferencesManager _preferencesManager = default!;
     private readonly IX509CertPairScanner _certPairScanner = default!;

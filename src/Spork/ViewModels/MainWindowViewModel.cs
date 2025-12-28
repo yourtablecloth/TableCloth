@@ -14,7 +14,6 @@ using System.Windows;
 using TableCloth;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
-using TableCloth.ViewModels;
 
 namespace Spork.ViewModels
 {
@@ -43,7 +42,7 @@ namespace Spork.ViewModels
             }).ToList();
     }
 
-    public partial class MainWindowViewModel : ViewModelBase
+    public partial class MainWindowViewModel : ObservableObject
     {
         protected MainWindowViewModel() { }
 
@@ -55,7 +54,8 @@ namespace Spork.ViewModels
             ICommandLineArguments commandLineArguments,
             IStepsComposer stepsComposer,
             IStepsPlayer stepsPlayer,
-            IAppMessageBox appMessageBox)
+            IAppMessageBox appMessageBox,
+            TaskFactory taskFactory)
         {
             _application = application;
             _resourceCacheManager = resourceCacheManager;
@@ -65,6 +65,7 @@ namespace Spork.ViewModels
             _stepsComposer = stepsComposer;
             _stepsPlayer = stepsPlayer;
             _appMessageBox = appMessageBox;
+            _taskFactory = taskFactory;
         }
 
         private readonly Application _application;
@@ -75,6 +76,7 @@ namespace Spork.ViewModels
         private readonly IStepsComposer _stepsComposer;
         private readonly IStepsPlayer _stepsPlayer;
         private readonly IAppMessageBox _appMessageBox;
+        private readonly TaskFactory _taskFactory;
 
         [RelayCommand]
         private void ShowErrorMessage()
@@ -137,10 +139,10 @@ namespace Spork.ViewModels
         public event EventHandler CloseRequested;
 
         public async Task NotifyWindowLoadedAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
-            => await TaskFactory.StartNew(() => WindowLoaded?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+            => await _taskFactory.StartNew(() => WindowLoaded?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
         public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
-            => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+            => await _taskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
         [ObservableProperty]
         private bool _showDryRunNotification;

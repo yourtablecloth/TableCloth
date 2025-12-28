@@ -12,7 +12,7 @@ namespace TableCloth.ViewModels;
 [Obsolete("This class is reserved for design-time usage.", false)]
 public partial class AboutWindowViewModelForDesigner : AboutWindowViewModel { }
 
-public partial class AboutWindowViewModel : ViewModelBase
+public partial class AboutWindowViewModel : ObservableObject
 {
     protected AboutWindowViewModel() { }
 

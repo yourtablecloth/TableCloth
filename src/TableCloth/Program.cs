@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using TableCloth.Components;
 using TableCloth.Components.Implementations;
@@ -281,7 +282,8 @@ internal static class Program
             .AddSingleton<ICommandLineArguments, CommandLineArguments>()
             .AddSingleton<IApplicationService, ApplicationService>()
             .AddSingleton<IArchiveExpander, ArchiveExpander>()
-            .AddSingleton<ICatalogDeserializer, CatalogDeserializer>();
+            .AddSingleton<ICatalogDeserializer, CatalogDeserializer>()
+            .AddSingleton(_ => new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext()));
 
         // Disclaimer Window
         services.AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>();

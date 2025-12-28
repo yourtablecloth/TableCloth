@@ -14,13 +14,14 @@ namespace TableCloth.ViewModels;
 [Obsolete("This class is reserved for design-time usage.", false)]
 public partial class InputPasswordWindowViewModelForDesigner : InputPasswordWindowViewModel { }
 
-public partial class InputPasswordWindowViewModel : ViewModelBase
+public partial class InputPasswordWindowViewModel : ObservableObject
 {
     protected InputPasswordWindowViewModel() { }
 
     public InputPasswordWindowViewModel(
         IX509CertPairScanner certPairScanner,
-        IAppMessageBox appMessageBox)
+        IAppMessageBox appMessageBox,
+        TaskFactory taskFactory)
     {
         _certPairScanner = certPairScanner;
         _appMessageBox = appMessageBox;
@@ -31,13 +32,13 @@ public partial class InputPasswordWindowViewModel : ViewModelBase
     public event EventHandler? RetryPasswordInputRequested;
 
     public async Task NotifyViewLoadedAsync(object? sender, EventArgs e, CancellationToken cancellationToken = default)
-        => await TaskFactory.StartNew(() => ViewLoaded?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+        => await _taskFactory.StartNew(() => ViewLoaded?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     public async Task RequestCloseAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
-        => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+        => await _taskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     public async Task RequestRetryPasswordInputAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
-        => await TaskFactory.StartNew(() => RetryPasswordInputRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+        => await _taskFactory.StartNew(() => RetryPasswordInputRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     [RelayCommand]
     private async Task InputPasswordWindowConfirm()
@@ -82,4 +83,5 @@ public partial class InputPasswordWindowViewModel : ViewModelBase
 
     private readonly IX509CertPairScanner _certPairScanner = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
+    private readonly TaskFactory _taskFactory = default!;
 }

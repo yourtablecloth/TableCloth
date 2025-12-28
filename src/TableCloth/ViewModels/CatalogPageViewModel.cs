@@ -22,7 +22,7 @@ public partial class CatalogPageViewModelForDesigner : CatalogPageViewModel
         => DesignTimeResources.DesignTimeCatalogDocument.Services;
 }
 
-public partial class CatalogPageViewModel : ViewModelBase
+public partial class CatalogPageViewModel : ObservableObject
 {
     protected CatalogPageViewModel() { }
 

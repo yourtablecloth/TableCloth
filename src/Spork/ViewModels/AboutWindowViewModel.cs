@@ -9,31 +9,33 @@ using System.Threading.Tasks;
 using TableCloth;
 using TableCloth.Events;
 using TableCloth.Resources;
-using TableCloth.ViewModels;
 
 namespace Spork.ViewModels
 {
     public partial class AboutWindowViewModelForDesigner : AboutWindowViewModel { }
 
-    public partial class AboutWindowViewModel : ViewModelBase
+    public partial class AboutWindowViewModel : ObservableObject
     {
         protected AboutWindowViewModel() { }
 
         public AboutWindowViewModel(
             ILicenseDescriptor licenseDescriptor,
             IResourceResolver resourceResolver,
-            IWebBrowserServiceFactory webBrowserServiceFactory)
+            IWebBrowserServiceFactory webBrowserServiceFactory,
+            TaskFactory taskFactory)
         {
             _licenseDescriptor = licenseDescriptor;
             _resourceResolver = resourceResolver;
             _webBrowserServiceFactory = webBrowserServiceFactory;
             _defaultWebBrowserService = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
+            _taskFactory = taskFactory;
         }
 
         private readonly ILicenseDescriptor _licenseDescriptor;
         private readonly IResourceResolver _resourceResolver;
         private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
         private readonly IWebBrowserService _defaultWebBrowserService;
+        private readonly TaskFactory _taskFactory;
 
         public event EventHandler<DialogRequestEventArgs> CloseRequested;
 
@@ -48,7 +50,7 @@ namespace Spork.ViewModels
         [RelayCommand]
         private Task AboutWindowClose()
         {
-            return TaskFactory.StartNew(
+            return _taskFactory.StartNew(
                 () => CloseRequested?.Invoke(this, new DialogRequestEventArgs(default)),
                 default(CancellationToken));
         }

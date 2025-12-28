@@ -21,16 +21,18 @@ public partial class CertSelectWindowViewModelForDesigner : CertSelectWindowView
         => DesignTimeResources.DesignTimeCertPairs;
 }
 
-public partial class CertSelectWindowViewModel : ViewModelBase
+public partial class CertSelectWindowViewModel : ObservableObject
 {
     protected CertSelectWindowViewModel() { }
 
     public CertSelectWindowViewModel(
         IX509CertPairScanner certPairScanner,
-        IAppUserInterface appUserInterface)
+        IAppUserInterface appUserInterface,
+        TaskFactory taskFactory)
     {
         _certPairScanner = certPairScanner;
         _appUserInterface = appUserInterface;
+        _taskFactory = taskFactory;
     }
 
     [RelayCommand]
@@ -76,10 +78,11 @@ public partial class CertSelectWindowViewModel : ViewModelBase
     public event EventHandler<DialogRequestEventArgs>? CloseRequested;
 
     public async Task RequestCloseAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
-        => await TaskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+        => await _taskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     private readonly IX509CertPairScanner _certPairScanner = default!;
     private readonly IAppUserInterface _appUserInterface = default!;
+    private readonly TaskFactory _taskFactory = default!;
 
     private async Task LoadCertPairAsync(string? firstFilePath, CancellationToken cancellationToken = default)
     {

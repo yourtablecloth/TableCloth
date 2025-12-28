@@ -1,7 +1,7 @@
-﻿using System;
-using TableCloth.ViewModels;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace Spork.ViewModels
 {
-    public partial class InstallItemViewModel : ViewModelBase { }
+    public partial class InstallItemViewModel : ObservableObject { }
 }

@@ -17,7 +17,7 @@ namespace TableCloth.ViewModels;
 [Obsolete("This class is reserved for design-time usage.", false)]
 public partial class SplashScreenViewModelForDesigner : SplashScreenViewModel { }
 
-public partial class SplashScreenViewModel : ViewModelBase
+public partial class SplashScreenViewModel : ObservableObject
 {
     protected SplashScreenViewModel() { }
 
@@ -28,7 +28,8 @@ public partial class SplashScreenViewModel : ViewModelBase
         IPreferencesManager preferencesManager,
         IResourceCacheManager resourceCacheManager,
         ICommandLineArguments commandLineArguments,
-        IAppUpdateManager appUpdateManager)
+        IAppUpdateManager appUpdateManager,
+        TaskFactory taskFactory)
     {
         _applicationService = applicationService;
         _appStartup = appStartup;
@@ -37,16 +38,17 @@ public partial class SplashScreenViewModel : ViewModelBase
         _resourceCacheManager = resourceCacheManager;
         _commandLineArguments = commandLineArguments;
         _appUpdateManager = appUpdateManager;
+        _taskFactory = taskFactory;
     }
 
     public event EventHandler<StatusUpdateRequestEventArgs>? StatusUpdate;
     public event EventHandler<DialogRequestEventArgs>? InitializeDone;
 
     public async Task NotifyStatusUpdateAsync(object sender, StatusUpdateRequestEventArgs e, CancellationToken cancellationToken = default)
-        => await TaskFactory.StartNew(() => StatusUpdate?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+        => await _taskFactory.StartNew(() => StatusUpdate?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     public async Task NotifyInitializedAsync(object sender, DialogRequestEventArgs e, CancellationToken cancellationToken = default)
-        => await TaskFactory.StartNew(() => InitializeDone?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+        => await _taskFactory.StartNew(() => InitializeDone?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     [RelayCommand]
     private async Task SplashScreenLoaded()
@@ -247,4 +249,5 @@ public partial class SplashScreenViewModel : ViewModelBase
     private readonly IResourceCacheManager _resourceCacheManager = default!;
     private readonly ICommandLineArguments _commandLineArguments = default!;
     private readonly IAppUpdateManager _appUpdateManager = default!;
+    private readonly TaskFactory _taskFactory = default!;
 }

@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,16 +9,25 @@ namespace TableCloth.ViewModels;
 [Obsolete("This class is reserved for design-time usage.", false)]
 public partial class DisclaimerWindowViewModelForDesigner : DisclaimerWindowViewModel { }
 
-public partial class DisclaimerWindowViewModel : ViewModelBase
+public partial class DisclaimerWindowViewModel : ObservableObject
 {
+    protected DisclaimerWindowViewModel() { }
+
+    public DisclaimerWindowViewModel(TaskFactory taskFactory)
+    {
+        _taskFactory = taskFactory;
+    }
+
+    private readonly TaskFactory _taskFactory = default!;
+
     public event EventHandler? ViewLoaded;
     public event EventHandler? DisclaimerAcknowledged;
 
     public async Task NotifyViewLoadedAsync(object? sender, EventArgs e, CancellationToken cancellationToken = default)
-        => await TaskFactory.StartNew(() => ViewLoaded?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+        => await _taskFactory.StartNew(() => ViewLoaded?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     public async Task NotifyDisclaimerAcknowledgedAsync(object? sender, EventArgs e, CancellationToken cancellationToken = default)
-        => await TaskFactory.StartNew(() => DisclaimerAcknowledged?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+        => await _taskFactory.StartNew(() => DisclaimerAcknowledged?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     [RelayCommand]
     private async Task DisclaimerWindowLoaded()

@@ -3,7 +3,6 @@ using Spork.Steps;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using TableCloth.ViewModels;
 
 namespace Spork.ViewModels
 {
@@ -30,7 +29,7 @@ namespace Spork.ViewModels
         }
     }
 
-    public partial class StepItemViewModel : ViewModelBase
+    public partial class StepItemViewModel : ObservableObject
     {
         [ObservableProperty]
         private InstallItemViewModel _argument;

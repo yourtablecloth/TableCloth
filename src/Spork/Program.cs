@@ -18,6 +18,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using TableCloth;
 using TableCloth.Models.Answers;
@@ -29,18 +30,6 @@ namespace Spork
     {
         [STAThread]
         private static int Main(string[] args)
-            => RunApp(args);
-
-        private static void SetDefaultCulture(CultureInfo desiredCulture)
-        {
-            Thread.CurrentThread.CurrentCulture = desiredCulture;
-            Thread.CurrentThread.CurrentUICulture = desiredCulture;
-            CultureInfo.DefaultThreadCurrentCulture = desiredCulture;
-            CultureInfo.DefaultThreadCurrentUICulture = desiredCulture;
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private static int RunApp(string[] args)
         {
             try
             {
@@ -66,6 +55,14 @@ namespace Spork
             }
 
             return Environment.ExitCode;
+        }
+
+        private static void SetDefaultCulture(CultureInfo desiredCulture)
+        {
+            Thread.CurrentThread.CurrentCulture = desiredCulture;
+            Thread.CurrentThread.CurrentUICulture = desiredCulture;
+            CultureInfo.DefaultThreadCurrentCulture = desiredCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = desiredCulture;
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -136,7 +133,8 @@ namespace Spork
                 .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
                 .AddSingleton<ICommandLineArguments, CommandLineArguments>()
                 .AddSingleton<IApplicationService, ApplicationService>()
-                .AddSingleton<IShortcutCreator, ShortcutCreator>();
+                .AddSingleton<IShortcutCreator, ShortcutCreator>()
+                .AddSingleton(_ => new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext()));
 
             // Browser Services
             services
