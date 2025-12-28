@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,9 @@ public partial class DisclaimerWindowViewModel : ObservableObject
 {
     protected DisclaimerWindowViewModel() { }
 
-    public DisclaimerWindowViewModel(TaskFactory taskFactory)
+    [ActivatorUtilitiesConstructor]
+    public DisclaimerWindowViewModel(
+        TaskFactory taskFactory)
     {
         _taskFactory = taskFactory;
     }

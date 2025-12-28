@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Spork.Components;
 using System;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace Spork.ViewModels
     {
         protected PrecautionsWindowViewModel() { }
 
+        [ActivatorUtilitiesConstructor]
         public PrecautionsWindowViewModel(
             IResourceCacheManager resourceCacheManager,
             ICommandLineArguments commandLineArguments,

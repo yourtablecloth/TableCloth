@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -16,6 +17,7 @@ public partial class AboutWindowViewModel : ObservableObject
 {
     protected AboutWindowViewModel() { }
 
+    [ActivatorUtilitiesConstructor]
     public AboutWindowViewModel(
         IResourceResolver resourceResolver,
         ILicenseDescriptor licenseDescriptor,

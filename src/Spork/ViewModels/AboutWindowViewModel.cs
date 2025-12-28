@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Spork.Browsers;
 using Spork.Components;
 using System;
@@ -18,6 +19,7 @@ namespace Spork.ViewModels
     {
         protected AboutWindowViewModel() { }
 
+        [ActivatorUtilitiesConstructor]
         public AboutWindowViewModel(
             ILicenseDescriptor licenseDescriptor,
             IResourceResolver resourceResolver,

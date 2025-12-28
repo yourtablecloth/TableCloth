@@ -1,6 +1,7 @@
 ﻿using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,8 +26,8 @@ public partial class DetailPageViewModel : ObservableObject
 {
     protected DetailPageViewModel() { }
 
+    [ActivatorUtilitiesConstructor]
     public DetailPageViewModel(
-        TaskFactory taskFactory,
         IResourceCacheManager resourceCacheManager,
         IPreferencesManager preferencesManager,
         IX509CertPairScanner certPairScanner,
@@ -38,9 +39,9 @@ public partial class DetailPageViewModel : ObservableObject
         INavigationService navigationService,
         IShortcutCrerator shortcutCrerator,
         IAppMessageBox appMessageBox,
-        ICommandLineComposer commandLineComposer)
+        ICommandLineComposer commandLineComposer,
+        TaskFactory taskFactory)
     {
-        _taskFactory = taskFactory;
         _resourceCacheManager = resourceCacheManager;
         _preferencesManager = preferencesManager;
         _certPairScanner = certPairScanner;
@@ -53,6 +54,7 @@ public partial class DetailPageViewModel : ObservableObject
         _shortcutCrerator = shortcutCrerator;
         _appMessageBox = appMessageBox;
         _commandLineComposer = commandLineComposer;
+        _taskFactory = taskFactory;
     }
 
     public event EventHandler? CloseRequested;
@@ -247,7 +249,6 @@ public partial class DetailPageViewModel : ObservableObject
     public IEnumerable<CatalogInternetService> SelectedServices
         => SelectedService != null ? new CatalogInternetService[] { SelectedService, } : Enumerable.Empty<CatalogInternetService>();
 
-    private readonly TaskFactory _taskFactory = default!;
     private readonly IResourceCacheManager _resourceCacheManager = default!;
     private readonly IPreferencesManager _preferencesManager = default!;
     private readonly IX509CertPairScanner _certPairScanner = default!;
@@ -260,6 +261,7 @@ public partial class DetailPageViewModel : ObservableObject
     private readonly IShortcutCrerator _shortcutCrerator = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
     private readonly ICommandLineComposer _commandLineComposer = default!;
+    private readonly TaskFactory _taskFactory = default!;
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         => OnViewModelPropertyChangedAsync(sender, e).SafeFireAndForget();

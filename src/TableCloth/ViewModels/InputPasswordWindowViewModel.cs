@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Security;
 using System.Threading;
@@ -18,6 +19,7 @@ public partial class InputPasswordWindowViewModel : ObservableObject
 {
     protected InputPasswordWindowViewModel() { }
 
+    [ActivatorUtilitiesConstructor]
     public InputPasswordWindowViewModel(
         IX509CertPairScanner certPairScanner,
         IAppMessageBox appMessageBox,

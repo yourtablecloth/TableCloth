@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ public partial class MainWindowViewModel : ObservableObject
 {
     protected MainWindowViewModel() { }
 
+    [ActivatorUtilitiesConstructor]
     public MainWindowViewModel(
         IApplicationService applicationService,
         IResourceCacheManager resourceCacheManager,

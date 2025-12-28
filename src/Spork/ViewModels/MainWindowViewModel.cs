@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Spork.Components;
 using Spork.Steps;
 using System;
@@ -46,6 +47,7 @@ namespace Spork.ViewModels
     {
         protected MainWindowViewModel() { }
 
+        [ActivatorUtilitiesConstructor]
         public MainWindowViewModel(
             Application application,
             IResourceCacheManager resourceCacheManager,

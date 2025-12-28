@@ -1,6 +1,7 @@
 ﻿using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,6 +27,7 @@ public partial class CatalogPageViewModel : ObservableObject
 {
     protected CatalogPageViewModel() { }
 
+    [ActivatorUtilitiesConstructor]
     public CatalogPageViewModel(
         IPreferencesManager preferencesManager,
         IResourceCacheManager resourceCacheManager,

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Sentry;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ public partial class SplashScreenViewModel : ObservableObject
 {
     protected SplashScreenViewModel() { }
 
+    [ActivatorUtilitiesConstructor]
     public SplashScreenViewModel(
         IApplicationService applicationService,
         IAppStartup appStartup,
