@@ -7,7 +7,7 @@
 		<Deterministic>true</Deterministic>
 		<Description>TableCloth Core Library - 공통 리소스 및 유틸리티</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Platforms>AnyCPU;x64</Platforms>
+		<Platforms>AnyCPU</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>

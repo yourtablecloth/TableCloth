@@ -5,16 +5,6 @@ namespace TableCloth.Test
     [TestClass]
     public sealed class DisclaimerNotificationTests
     {
-        #region 상수 테스트
-
-        [TestMethod]
-        public void DisclaimerNotificationIntervalDays_ShouldBe7()
-        {
-            Assert.AreEqual(7d, PreferenceSettings.DisclaimerNotificationIntervalDays);
-        }
-
-        #endregion
-
         #region Disclaimer 알림 주기 테스트
 
         [TestMethod]

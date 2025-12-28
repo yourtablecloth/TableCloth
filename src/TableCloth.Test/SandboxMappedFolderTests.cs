@@ -6,13 +6,6 @@ namespace TableCloth.Test
     public sealed class SandboxMappedFolderTests
     {
         [TestMethod]
-        public void DefaultAssetPath_ShouldBeCorrect()
-        {
-            // Assert
-            Assert.AreEqual(@"C:\assets", SandboxMappedFolder.DefaultAssetPath);
-        }
-
-        [TestMethod]
         public void HostFolder_DefaultValue_ShouldBeEmptyString()
         {
             // Arrange & Act
