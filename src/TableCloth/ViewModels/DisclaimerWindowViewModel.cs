@@ -24,4 +24,10 @@ public partial class DisclaimerWindowViewModel : ViewModelBase
     {
         await NotifyViewLoadedAsync(this, EventArgs.Empty);
     }
+
+    [RelayCommand]
+    private async Task DisclaimerWindowAcknowledge()
+    {
+        await NotifyDisclaimerAcknowledgedAsync(this, EventArgs.Empty);
+    }
 }

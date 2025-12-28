@@ -21,7 +21,7 @@
             </i:InvokeCommandAction>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Grid Margin="4" Visibility="{Binding Path=Visibility, ElementName=DisclaimerTab}">
+    <Grid Margin="4">
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
             <RowDefinition Height="1*" />

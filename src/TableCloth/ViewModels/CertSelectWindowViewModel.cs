@@ -119,7 +119,7 @@ public partial class CertSelectWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task CertSelectManualCertLoad()
+    private async Task CertSelectWindowManualCertLoad()
     {
         var ofd = new OpenFileDialog()
         {

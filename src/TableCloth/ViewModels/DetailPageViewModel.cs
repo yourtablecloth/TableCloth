@@ -37,8 +37,7 @@ public partial class DetailPageViewModel : ViewModelBase, ITableClothViewModel
         INavigationService navigationService,
         IShortcutCrerator shortcutCrerator,
         IAppMessageBox appMessageBox,
-        ICommandLineComposer commandLineComposer,
-        ICommandLineArguments commandLineArguments)
+        ICommandLineComposer commandLineComposer)
     {
         _resourceCacheManager = resourceCacheManager;
         _preferencesManager = preferencesManager;
@@ -52,7 +51,6 @@ public partial class DetailPageViewModel : ViewModelBase, ITableClothViewModel
         _shortcutCrerator = shortcutCrerator;
         _appMessageBox = appMessageBox;
         _commandLineComposer = commandLineComposer;
-        _commandLineArguments = commandLineArguments;
     }
 
     public event EventHandler? CloseRequested;
@@ -260,7 +258,6 @@ public partial class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     private readonly IShortcutCrerator _shortcutCrerator = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
     private readonly ICommandLineComposer _commandLineComposer = default!;
-    private readonly ICommandLineArguments _commandLineArguments = default!;
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         => OnViewModelPropertyChangedAsync(sender, e).SafeFireAndForget();
@@ -361,6 +358,13 @@ public partial class DetailPageViewModel : ViewModelBase, ITableClothViewModel
     }
 
     [RelayCommand]
+    private async Task LaunchSandbox()
+    {
+        var config = _configurationComposer.GetConfigurationFromViewModel(this);
+        await _sandboxLauncher.RunSandboxAsync(config);
+    }
+
+    [RelayCommand]
     private void CopyCommandLine()
     {
         var expression = _commandLineComposer.ComposeCommandLineExpression(this, true);
@@ -374,5 +378,30 @@ public partial class DetailPageViewModel : ViewModelBase, ITableClothViewModel
         }
 
         _appMessageBox.DisplayInfo("Command line copied to clipboard.", MessageBoxButton.OK);
+    }
+
+    [RelayCommand]
+    private void ShowDebugInfo()
+    {
+        var debugInfo = $"Selected Service: {DisplayName} ({Id})\nURL: {Url}\nCompatibility Notes: {CompatibilityNotes}\nIs Favorite: {IsFavorite}";
+        _appMessageBox.DisplayInfo(debugInfo, MessageBoxButton.OK);
+    }
+
+    [RelayCommand]
+    private async Task DetailPageItemFavorite()
+    {
+        var settings = await _preferencesManager.LoadPreferencesAsync();
+        var currentId = Id;
+
+        if (!string.IsNullOrWhiteSpace(currentId))
+        {
+            settings!.Favorites ??= new List<string>();
+            if (IsFavorite)
+                settings.Favorites.Add(currentId);
+            else if (settings.Favorites.Contains(currentId))
+                settings.Favorites.Remove(currentId);
+
+            await _preferencesManager.SavePreferencesAsync(settings);
+        }
     }
 }

@@ -145,6 +145,12 @@ public partial class CatalogPageViewModel : ViewModelBase
         );
     }
 
+    [RelayCommand]
+    private void AppRestart()
+    {
+        _appRestartManager.RestartNow();
+    }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SelectedServiceCategory))]
     private CatalogInternetService? _selectedService;
@@ -166,7 +172,7 @@ public partial class CatalogPageViewModel : ViewModelBase
         => Services.Count > 0;
 
     [RelayCommand]
-    private async Task CatalogPageFavorite()
+    private async Task CatalogPageItemFavorite()
     {
         if (SelectedService == null)
             return;

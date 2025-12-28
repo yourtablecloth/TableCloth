@@ -65,6 +65,12 @@ public partial class InputPasswordWindowViewModel : ViewModelBase
         await RequestCloseAsync(this, new DialogRequestEventArgs(false));
     }
 
+    [RelayCommand]
+    private async Task InputPasswordWindowLoaded()
+    {
+        await NotifyViewLoadedAsync(this, EventArgs.Empty);
+    }
+
     [ObservableProperty]
     private string _pfxFilePath = string.Empty;
 
