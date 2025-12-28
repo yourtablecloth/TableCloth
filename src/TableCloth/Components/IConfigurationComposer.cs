@@ -7,5 +7,5 @@ namespace TableCloth.Components;
 public interface IConfigurationComposer
 {
     TableClothConfiguration GetConfigurationFromArgumentModel(CommandLineArgumentModel argumentModel);
-    TableClothConfiguration GetConfigurationFromViewModel(ITableClothViewModel viewModel);
+    TableClothConfiguration GetConfigurationFromViewModel(DetailPageViewModel viewModel);
 }

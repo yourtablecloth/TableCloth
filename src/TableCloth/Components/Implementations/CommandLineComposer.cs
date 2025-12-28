@@ -8,17 +8,17 @@ namespace TableCloth.Components.Implementations;
 public sealed class CommandLineComposer(
     ISharedLocations sharedLocations) : ICommandLineComposer
 {
-    public string ComposeCommandLineExpression(ITableClothViewModel viewModel, bool allowMultipleItems)
+    public string ComposeCommandLineExpression(DetailPageViewModel viewModel, bool allowMultipleItems)
     {
         var targetFilePath = sharedLocations.ExecutableFilePath;
         var args = ComposeCommandLineArguments(viewModel, allowMultipleItems);
         return $"\"{targetFilePath}\" {args}";
     }
 
-    public string ComposeCommandLineArguments(ITableClothViewModel viewModel, bool allowMultipleItems)
+    public string ComposeCommandLineArguments(DetailPageViewModel viewModel, bool allowMultipleItems)
         => string.Join(' ', GetCommandLineExpressionList(viewModel, allowMultipleItems));
 
-    public IReadOnlyList<string> GetCommandLineExpressionList(ITableClothViewModel viewModel, bool allowMultipleItems)
+    public IReadOnlyList<string> GetCommandLineExpressionList(DetailPageViewModel viewModel, bool allowMultipleItems)
     {
         var options = new List<string>();
 

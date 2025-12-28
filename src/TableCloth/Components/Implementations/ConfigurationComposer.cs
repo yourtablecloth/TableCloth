@@ -11,7 +11,7 @@ namespace TableCloth.Components.Implementations;
 public sealed class ConfigurationComposer(
     IResourceCacheManager resourceCacheManager) : IConfigurationComposer
 {
-    public TableClothConfiguration GetConfigurationFromViewModel(ITableClothViewModel viewModel)
+    public TableClothConfiguration GetConfigurationFromViewModel(DetailPageViewModel viewModel)
     {
         var selectedCert = viewModel.SelectedCertFile;
 

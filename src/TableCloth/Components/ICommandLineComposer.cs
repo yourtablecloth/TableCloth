@@ -5,7 +5,7 @@ namespace TableCloth.Components;
 
 public interface ICommandLineComposer
 {
-    string ComposeCommandLineArguments(ITableClothViewModel viewModel, bool allowMultipleItems);
-    string ComposeCommandLineExpression(ITableClothViewModel viewModel, bool allowMultipleItems);
-    IReadOnlyList<string> GetCommandLineExpressionList(ITableClothViewModel viewModel, bool allowMultipleItems);
+    string ComposeCommandLineArguments(DetailPageViewModel viewModel, bool allowMultipleItems);
+    string ComposeCommandLineExpression(DetailPageViewModel viewModel, bool allowMultipleItems);
+    IReadOnlyList<string> GetCommandLineExpressionList(DetailPageViewModel viewModel, bool allowMultipleItems);
 }

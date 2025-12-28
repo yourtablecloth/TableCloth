@@ -21,7 +21,7 @@ namespace TableCloth.ViewModels;
 [Obsolete("This class is reserved for design-time usage.", false)]
 public partial class DetailPageViewModelForDesigner : DetailPageViewModel { }
 
-public partial class DetailPageViewModel : ObservableObject, ITableClothViewModel
+public partial class DetailPageViewModel : ObservableObject
 {
     protected DetailPageViewModel() { }
 

@@ -13,7 +13,7 @@ public sealed class ShortcutCrerator(
     ISharedLocations sharedLocations,
     IAppMessageBox appMessageBox) : IShortcutCrerator
 {
-    public async Task<string?> CreateShortcutAsync(ITableClothViewModel viewModel, CancellationToken cancellationToken = default)
+    public async Task<string?> CreateShortcutAsync(DetailPageViewModel viewModel, CancellationToken cancellationToken = default)
     {
         var targetPath = sharedLocations.ExecutableFilePath;
         var linkName = CommonStrings.AppName;
@@ -71,7 +71,7 @@ public sealed class ShortcutCrerator(
         }
     }
 
-    public async Task<string?> CreateResponseFileAsync(ITableClothViewModel viewModel, CancellationToken cancellationToken = default)
+    public async Task<string?> CreateResponseFileAsync(DetailPageViewModel viewModel, CancellationToken cancellationToken = default)
     {
         var linkName = CommonStrings.AppName;
         var firstSite = viewModel.SelectedServices.FirstOrDefault();

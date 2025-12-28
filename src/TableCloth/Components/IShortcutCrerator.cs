@@ -6,7 +6,7 @@ namespace TableCloth.Components;
 
 public interface IShortcutCrerator
 {
-    Task<string?> CreateShortcutAsync(ITableClothViewModel viewModel, CancellationToken cancellationToken = default);
+    Task<string?> CreateShortcutAsync(DetailPageViewModel viewModel, CancellationToken cancellationToken = default);
 
-    Task<string?> CreateResponseFileAsync(ITableClothViewModel viewModel, CancellationToken cancellationToken = default);
+    Task<string?> CreateResponseFileAsync(DetailPageViewModel viewModel, CancellationToken cancellationToken = default);
 }
