@@ -13,6 +13,8 @@ public sealed class ArchiveExpander : IArchiveExpander
         using var zipStream = File.OpenRead(zipFilePath);
         using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
 
+        var fullDestDirPath = Path.GetFullPath(destinationDirectoryPath + Path.DirectorySeparatorChar);
+
         foreach (var eachEntry in zipArchive.Entries)
         {
             try
@@ -20,8 +22,12 @@ public sealed class ArchiveExpander : IArchiveExpander
                 if (string.IsNullOrWhiteSpace(eachEntry.Name))
                     continue;
 
-                // Use FullName to preserve directory structure
-                var destPath = Path.Combine(destinationDirectoryPath, eachEntry.FullName);
+                // Use FullName to preserve directory structure, but ensure the result stays within destinationDirectoryPath
+                var destPath = Path.GetFullPath(Path.Combine(destinationDirectoryPath, eachEntry.FullName));
+
+                if (!destPath.StartsWith(fullDestDirPath, StringComparison.Ordinal))
+                    throw new IOException($"Entry is outside the target directory: '{eachEntry.FullName}'.");
+
                 var destDirectory = Path.GetDirectoryName(destPath);
 
                 if (!string.IsNullOrWhiteSpace(destDirectory) && !Directory.Exists(destDirectory))
