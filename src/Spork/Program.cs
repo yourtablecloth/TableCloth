@@ -157,17 +157,12 @@ namespace Spork
                 .AddKeyedSingleton<IStep, SetDesktopWallpaperStep>(nameof(SetDesktopWallpaperStep))
                 .AddKeyedSingleton<IStep, TryProtectCriticalServicesStep>(nameof(TryProtectCriticalServicesStep));
 
-            // About Window
-            services.AddWindow<AboutWindow, AboutWindowViewModel>();
-
-            // Precautions Window
-            services.AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>();
-
-            // Main Window
-            services.AddWindow<MainWindow, MainWindowViewModel>();
-
-            // App
-            services.AddTransient(_ => Application.Current);
+            // UI
+            services
+                .AddWindow<AboutWindow, AboutWindowViewModel>()
+                .AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>()
+                .AddWindow<MainWindow, MainWindowViewModel>()
+                .AddSingleton(_ => Application.Current);
         }
 
         internal static SporkAnswers DeserializeSporkAnswersJson()

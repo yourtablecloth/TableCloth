@@ -285,31 +285,16 @@ internal static class Program
             .AddSingleton<ICatalogDeserializer, CatalogDeserializer>()
             .AddSingleton(_ => new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext()));
 
-        // Disclaimer Window
-        services.AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>();
-
-        // Input Password Window
-        services.AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>();
-
-        // About Window
-        services.AddWindow<AboutWindow, AboutWindowViewModel>();
-
-        // Cert Select Window
-        services.AddWindow<CertSelectWindow, CertSelectWindowViewModel>();
-
-        // Main Window
-        services.AddWindow<MainWindow, MainWindowViewModel>();
-
-        // Catalog Page
-        services.AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true);
-
-        // Detail Page
-        services.AddPage<DetailPage, DetailPageViewModel>();
-
-        // Splash Screen
-        services.AddWindow<SplashScreen, SplashScreenViewModel>();
-
-        // App
-        services.AddTransient(_ => Application.Current);
+        // UI
+        services
+            .AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>()
+            .AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>()
+            .AddWindow<AboutWindow, AboutWindowViewModel>()
+            .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
+            .AddWindow<MainWindow, MainWindowViewModel>()
+            .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
+            .AddPage<DetailPage, DetailPageViewModel>()
+            .AddWindow<SplashScreen, SplashScreenViewModel>()
+            .AddSingleton(_ => Application.Current);
     }
 }
