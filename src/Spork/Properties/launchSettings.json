@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Spork": {
+      "commandName": "Project",
+      "commandLineArgs": "--dry-run WooriBank"
+    }
+  }
+}
