@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TableCloth.Models.Catalog;
-using TableCloth.Resources;
 
 namespace TableCloth.Components.Implementations;
 

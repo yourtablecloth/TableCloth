@@ -13,7 +13,6 @@ using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
-using Windows.Services.Maps;
 
 namespace TableCloth.Components.Implementations;
 

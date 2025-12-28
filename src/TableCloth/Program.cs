@@ -9,7 +9,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
-using TableCloth.Commands.Shared;
 using TableCloth.Components;
 using TableCloth.Components.Implementations;
 using TableCloth.Dialogs;
@@ -37,7 +36,7 @@ internal static class Program
 
         // 설치 후 첫 실행 시 파일 연결 등록
         RegisterFileAssociationsIfNeeded();
-    
+
         return RunApp(args);
     }
 
@@ -99,7 +98,7 @@ internal static class Program
         {
             var preferencesPath = GetPreferencesFilePath();
             var preferencesDir = Path.GetDirectoryName(preferencesPath);
-            
+
             if (!string.IsNullOrEmpty(preferencesDir) && !Directory.Exists(preferencesDir))
                 Directory.CreateDirectory(preferencesDir);
 
@@ -141,7 +140,7 @@ internal static class Program
             // Velopack으로 설치된 경우에만 파일 연결 등록
             var updateManager = new UpdateManager(new Velopack.Sources.GithubSource(
                 "https://github.com/yourtablecloth/TableCloth", null, false));
-            
+
             if (!updateManager.IsInstalled)
                 return;
 
@@ -284,22 +283,11 @@ internal static class Program
             .AddSingleton<IArchiveExpander, ArchiveExpander>()
             .AddSingleton<ICatalogDeserializer, CatalogDeserializer>();
 
-        // Shared Commands
-        services
-            .AddSingleton<LaunchSandboxCommand>()
-            .AddSingleton<CreateShortcutCommand>()
-            .AddSingleton<CertSelectCommand>()
-            .AddSingleton<AppRestartCommand>()
-            .AddSingleton<CopyCommandLineCommand>()
-            .AddSingleton<AboutThisAppCommand>();
-
         // Disclaimer Window
-        services
-            .AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>();
+        services.AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>();
 
         // Input Password Window
-        services
-            .AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>();
+        services.AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>();
 
         // About Window
         services.AddWindow<AboutWindow, AboutWindowViewModel>();

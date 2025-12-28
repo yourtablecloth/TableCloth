@@ -36,7 +36,7 @@ public sealed class AppUpdateManager : IAppUpdateManager
         try
         {
             _updateInfo = await _updateManager.CheckForUpdatesAsync().ConfigureAwait(false);
-            
+
             if (_updateInfo != null)
             {
                 _logger.LogInformation(

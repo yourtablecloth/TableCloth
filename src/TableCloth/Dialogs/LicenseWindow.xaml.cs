@@ -8,7 +8,7 @@ public partial class LicenseWindow : Window
     public LicenseWindow()
     {
         InitializeComponent();
-        
+
         // Set UI strings from resources
         InstructionLabel.Content = UIStringResources.License_Instruction;
         AgreeButton.Content = UIStringResources.License_AgreeButton;

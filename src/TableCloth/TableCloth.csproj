@@ -19,20 +19,6 @@
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Compile Remove="Commands\DisclaimerWindow\**" />
-	  <Compile Remove="Commands\InputPasswordWindow\**" />
-	  <Compile Remove="Commands\MainWindowV2\**" />
-	  <EmbeddedResource Remove="Commands\DisclaimerWindow\**" />
-	  <EmbeddedResource Remove="Commands\InputPasswordWindow\**" />
-	  <EmbeddedResource Remove="Commands\MainWindowV2\**" />
-	  <None Remove="Commands\DisclaimerWindow\**" />
-	  <None Remove="Commands\InputPasswordWindow\**" />
-	  <None Remove="Commands\MainWindowV2\**" />
-	  <Page Remove="Commands\DisclaimerWindow\**" />
-	  <Page Remove="Commands\InputPasswordWindow\**" />
-	  <Page Remove="Commands\MainWindowV2\**" />
-	</ItemGroup>
-	<ItemGroup>
 		<None Remove="Resources\SandboxIcon.png" />
 		<None Remove="Spork.zip" />
 	</ItemGroup>

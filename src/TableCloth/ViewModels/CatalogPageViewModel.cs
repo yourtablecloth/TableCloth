@@ -9,10 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using TableCloth.Commands;
-using TableCloth.Commands.Shared;
 using TableCloth.Components;
-using TableCloth.Components.Implementations;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
