@@ -10,7 +10,6 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
 using TableCloth.Commands.DisclaimerWindow;
-using TableCloth.Commands.InputPasswordWindow;
 using TableCloth.Commands.Shared;
 using TableCloth.Components;
 using TableCloth.Components.Implementations;
@@ -303,10 +302,7 @@ internal static class Program
 
         // Input Password Window
         services
-            .AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>()
-            .AddSingleton<InputPasswordWindowLoadedCommand>()
-            .AddSingleton<InputPasswordWindowConfirmCommand>()
-            .AddSingleton<InputPasswordWindowCancelCommand>();
+            .AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>();
 
         // About Window
         services.AddWindow<AboutWindow, AboutWindowViewModel>();

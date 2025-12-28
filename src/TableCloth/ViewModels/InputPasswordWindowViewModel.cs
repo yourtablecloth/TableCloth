@@ -4,9 +4,10 @@ using System;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using TableCloth.Commands.InputPasswordWindow;
+using TableCloth.Components;
 using TableCloth.Events;
 using TableCloth.Models.Configuration;
+using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
 
@@ -18,13 +19,11 @@ public partial class InputPasswordWindowViewModel : ViewModelBase
     protected InputPasswordWindowViewModel() { }
 
     public InputPasswordWindowViewModel(
-        InputPasswordWindowLoadedCommand inputPasswordWindowLoadedCommand,
-        InputPasswordWindowConfirmCommand inputPasswordWindowConfirmCommand,
-        InputPasswordWindowCancelCommand inputPasswordWindowCancelCommand)
+        IX509CertPairScanner certPairScanner,
+        IAppMessageBox appMessageBox)
     {
-        _inputPasswordWindowLoadedCommand = inputPasswordWindowLoadedCommand;
-        _inputPasswordWindowConfirmCommand = inputPasswordWindowConfirmCommand;
-        _inputPasswordWindowCancelCommand = inputPasswordWindowCancelCommand;
+        _certPairScanner = certPairScanner;
+        _appMessageBox = appMessageBox;
     }
 
     public event EventHandler? ViewLoaded;
@@ -41,28 +40,30 @@ public partial class InputPasswordWindowViewModel : ViewModelBase
         => await TaskFactory.StartNew(() => RetryPasswordInputRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
     [RelayCommand]
-    private void InputPasswordWindowLoaded()
+    private async Task InputPasswordWindowConfirm()
     {
-        _inputPasswordWindowLoadedCommand.Execute(this);
-    }
+        try
+        {
+            var pfxFilePath = PfxFilePath.EnsureNotNull(ErrorStrings.Error_Cannot_Find_PfxFile);
+            var certPair = _certPairScanner.CreateX509Cert(pfxFilePath, Password);
 
-    private InputPasswordWindowLoadedCommand _inputPasswordWindowLoadedCommand = default!;
+            if (certPair != null)
+                ValidatedCertPair = certPair;
+
+            await RequestCloseAsync(this, new DialogRequestEventArgs(true));
+        }
+        catch (Exception ex)
+        {
+            _appMessageBox.DisplayError(ex, false);
+        }
+    }
 
     [RelayCommand]
-    private void InputPasswordWindowConfirm()
+    private async Task InputPasswordWindowCancel()
     {
-        _inputPasswordWindowConfirmCommand.Execute(this);
+        ValidatedCertPair = null;
+        await RequestCloseAsync(this, new DialogRequestEventArgs(false));
     }
-
-    private InputPasswordWindowConfirmCommand _inputPasswordWindowConfirmCommand = default!;
-
-    [RelayCommand]
-    private void InputPasswordWindowCancel()
-    {
-        _inputPasswordWindowCancelCommand.Execute(this);
-    }
-
-    private InputPasswordWindowCancelCommand _inputPasswordWindowCancelCommand = default!;
 
     [ObservableProperty]
     private string _pfxFilePath = string.Empty;
@@ -72,4 +73,7 @@ public partial class InputPasswordWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private X509CertPair? _validatedCertPair = null;
+
+    private readonly IX509CertPairScanner _certPairScanner = default!;
+    private readonly IAppMessageBox _appMessageBox = default!;
 }

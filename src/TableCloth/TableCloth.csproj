@@ -19,9 +19,13 @@
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Compile Remove="Commands\InputPasswordWindow\**" />
 	  <Compile Remove="Commands\MainWindowV2\**" />
+	  <EmbeddedResource Remove="Commands\InputPasswordWindow\**" />
 	  <EmbeddedResource Remove="Commands\MainWindowV2\**" />
+	  <None Remove="Commands\InputPasswordWindow\**" />
 	  <None Remove="Commands\MainWindowV2\**" />
+	  <Page Remove="Commands\InputPasswordWindow\**" />
 	  <Page Remove="Commands\MainWindowV2\**" />
 	</ItemGroup>
 	<ItemGroup>
