@@ -10,7 +10,6 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
 using TableCloth.Commands;
-using TableCloth.Commands.DetailPage;
 using TableCloth.Commands.DisclaimerWindow;
 using TableCloth.Commands.InputPasswordWindow;
 using TableCloth.Commands.MainWindow;
@@ -332,12 +331,7 @@ internal static class Program
 
         // Detail Page
         services
-            .AddPage<DetailPage, DetailPageViewModel>()
-            .AddSingleton<DetailPageLoadedCommand>()
-            .AddSingleton<DetailPageSearchTextLostFocusCommand>()
-            .AddSingleton<DetailPageGoBackCommand>()
-            .AddSingleton<DetailPageOpenHomepageLinkCommand>()
-            .AddSingleton<DetailPageItemFavoriteCommand>();
+            .AddPage<DetailPage, DetailPageViewModel>();
 
         // Splash Screen
         services
