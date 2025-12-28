@@ -19,6 +19,12 @@
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Compile Remove="Commands\MainWindowV2\**" />
+	  <EmbeddedResource Remove="Commands\MainWindowV2\**" />
+	  <None Remove="Commands\MainWindowV2\**" />
+	  <Page Remove="Commands\MainWindowV2\**" />
+	</ItemGroup>
+	<ItemGroup>
 		<None Remove="Resources\SandboxIcon.png" />
 		<None Remove="Spork.zip" />
 	</ItemGroup>

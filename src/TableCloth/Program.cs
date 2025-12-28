@@ -9,10 +9,8 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
-using TableCloth.Commands;
 using TableCloth.Commands.DisclaimerWindow;
 using TableCloth.Commands.InputPasswordWindow;
-using TableCloth.Commands.MainWindow;
 using TableCloth.Commands.Shared;
 using TableCloth.Components;
 using TableCloth.Components.Implementations;
@@ -295,8 +293,7 @@ internal static class Program
             .AddSingleton<CertSelectCommand>()
             .AddSingleton<AppRestartCommand>()
             .AddSingleton<CopyCommandLineCommand>()
-            .AddSingleton<AboutThisAppCommand>()
-            .AddSingleton<ShowDebugInfoCommand>();
+            .AddSingleton<AboutThisAppCommand>();
 
         // Disclaimer Window
         services
@@ -317,11 +314,8 @@ internal static class Program
         // Cert Select Window
         services.AddWindow<CertSelectWindow, CertSelectWindowViewModel>();
 
-        // Main Window v2
-        services
-            .AddWindow<MainWindow, MainWindowViewModel>()
-            .AddSingleton<MainWindowLoadedCommand>()
-            .AddSingleton<MainWindowClosedCommand>();
+        // Main Window
+        services.AddWindow<MainWindow, MainWindowViewModel>();
 
         // Catalog Page
         services.AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true);

@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
-using TableCloth.Commands.MainWindow;
+using System.Linq;
+using TableCloth.Components;
+using TableCloth.Models.Catalog;
 
 namespace TableCloth.ViewModels;
 
@@ -13,26 +15,56 @@ public partial class MainWindowViewModel : ViewModelBase
     protected MainWindowViewModel() { }
 
     public MainWindowViewModel(
-        MainWindowLoadedCommand mainWindowLoadedCommand,
-        MainWindowClosedCommand mainWindowClosedCommand)
+        IApplicationService applicationService,
+        IResourceCacheManager resourceCacheManager,
+        INavigationService navigationService,
+        ICommandLineArguments commandLineArguments,
+        ISandboxCleanupManager sandboxCleanupManager,
+        IAppRestartManager appRestartManager)
     {
-        _mainWindowLoadedCommand = mainWindowLoadedCommand;
-        _mainWindowClosedCommand = mainWindowClosedCommand;
+        _applicationService = applicationService;
+        _resourceCacheManager = resourceCacheManager;
+        _navigationService = navigationService;
+        _commandLineArguments = commandLineArguments;
+        _sandboxCleanupManager = sandboxCleanupManager;
+        _appRestartManager = appRestartManager;
     }
 
     [RelayCommand]
     private void MainWindowLoaded()
     {
-        _mainWindowLoadedCommand.Execute(this);
-    }
+        _applicationService.ApplyCosmeticChangeToMainWindow();
 
-    private MainWindowLoadedCommand _mainWindowLoadedCommand = default!;
+        var parsedArg = _commandLineArguments.GetCurrent();
+        var services = _resourceCacheManager.CatalogDocument.Services;
+
+        var commandLineSelectedService = default(CatalogInternetService);
+        if (parsedArg != null && parsedArg.SelectedServices.Any())
+        {
+            commandLineSelectedService = services
+                .Where(x => parsedArg.SelectedServices.Contains(x.Id))
+                .FirstOrDefault();
+        }
+
+        if (commandLineSelectedService != null)
+            _navigationService.NavigateToDetail(string.Empty, commandLineSelectedService, parsedArg);
+        else
+            _navigationService.NavigateToCatalog(string.Empty);
+    }
 
     [RelayCommand]
     private void MainWindowClosed()
     {
-        _mainWindowClosedCommand.Execute(this);
+        _sandboxCleanupManager.TryCleanup();
+
+        if (_appRestartManager.IsRestartReserved())
+            _appRestartManager.RestartNow();
     }
 
-    private MainWindowClosedCommand _mainWindowClosedCommand = default!;
+    private readonly IApplicationService _applicationService = default!;
+    private readonly IResourceCacheManager _resourceCacheManager = default!;
+    private readonly INavigationService _navigationService = default!;
+    private readonly ICommandLineArguments _commandLineArguments = default!;
+    private readonly ISandboxCleanupManager _sandboxCleanupManager = default!;
+    private readonly IAppRestartManager _appRestartManager = default!;
 }
