@@ -16,7 +16,9 @@ public partial class App : Application
         InitializeComponent();
     }
 
-    internal void SetupHost(IHost host)
+    [ActivatorUtilitiesConstructor]
+    public App(IHost host)
+        : this()
     {
         Host = host.EnsureArgumentNotNull("Host initialization not done.", nameof(host));
 

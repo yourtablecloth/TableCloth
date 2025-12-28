@@ -32,13 +32,97 @@ internal static class Program
         // 라이선스 동의 여부 확인
         if (!CheckLicenseAgreement())
         {
-            return 1; // 라이선스 미동의 시 종료
+            Environment.Exit(1); // 라이선스 미동의 시 종료
+            return Environment.ExitCode;
         }
 
         // 설치 후 첫 실행 시 파일 연결 등록
         RegisterFileAssociationsIfNeeded();
 
-        return RunApp(args);
+        try
+        {
+            AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+            {
+                MessageBox.Show(
+                    e.ExceptionObject?.ToString() ?? "Unknown Error",
+                    "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            };
+
+            args ??= Helpers.GetCommandLineArguments();
+            var builder = Host.CreateApplicationBuilder(args);
+
+            builder.Logging
+                .AddSerilog(dispose: true)
+                .AddConsole();
+
+            // Add Logging
+            builder.Services.AddLogging();
+
+            // Add HTTP Service
+            builder.Services.AddHttpClient(
+                nameof(ConstantStrings.UserAgentText),
+                c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
+            builder.Services.AddHttpClient(
+                nameof(ConstantStrings.FamiliarUserAgentText),
+                c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.FamiliarUserAgentText));
+            builder.Services.AddHttpClient(
+                nameof(StringResources.TableCloth_GitHubRestUAString),
+                c => c.DefaultRequestHeaders.Add("User-Agent", StringResources.TableCloth_GitHubRestUAString));
+
+            // Add Components
+            builder.Services
+                .AddSingleton<IAppUserInterface, AppUserInterface>()
+                .AddSingleton<IAppUpdateManager, AppUpdateManager>()
+                .AddSingleton<ISharedLocations, SharedLocations>()
+                .AddSingleton<IPreferencesManager, PreferencesManager>()
+                .AddSingleton<IX509CertPairScanner, X509CertPairScanner>()
+                .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
+                .AddSingleton<ISandboxBuilder, SandboxBuilder>()
+                .AddSingleton<ISandboxLauncher, SandboxLauncher>()
+                .AddSingleton<ISandboxCleanupManager, SandboxCleanupManager>()
+                .AddSingleton<IAppStartup, AppStartup>()
+                .AddSingleton<IResourceResolver, ResourceResolver>()
+                .AddSingleton<ILicenseDescriptor, LicenseDescriptor>()
+                .AddSingleton<IAppRestartManager, AppRestartManager>()
+                .AddSingleton<ICommandLineComposer, CommandLineComposer>()
+                .AddSingleton<IConfigurationComposer, ConfigurationComposer>()
+                .AddSingleton<IVisualThemeManager, VisualThemeManager>()
+                .AddSingleton<IAppMessageBox, AppMessageBox>()
+                .AddSingleton<IMessageBoxService, MessageBoxService>()
+                .AddSingleton<INavigationService, NavigationService>()
+                .AddSingleton<IShortcutCrerator, ShortcutCrerator>()
+                .AddSingleton<ICommandLineArguments, CommandLineArguments>()
+                .AddSingleton<IApplicationService, ApplicationService>()
+                .AddSingleton<IArchiveExpander, ArchiveExpander>()
+                .AddSingleton<ICatalogDeserializer, CatalogDeserializer>()
+                .AddSingleton(_ => new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext()));
+
+            // UI
+            builder.Services
+                .AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>()
+                .AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>()
+                .AddWindow<AboutWindow, AboutWindowViewModel>()
+                .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
+                .AddWindow<MainWindow, MainWindowViewModel>()
+                .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
+                .AddPage<DetailPage, DetailPageViewModel>()
+                .AddWindow<SplashScreen, SplashScreenViewModel>()
+                .AddSingleton<Application>(sp => new App(sp.GetRequiredService<IHost>()));
+
+            using var appHost = builder.Build();
+            appHost.Start();
+            var app = appHost.Services.GetRequiredService<Application>();
+            app.Run();
+            appHost.StopAsync().GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                ex?.ToString() ?? "Unknown Error",
+                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        return Environment.ExitCode;
     }
 
     private static bool CheckLicenseAgreement()
@@ -184,117 +268,5 @@ internal static class Program
         {
             // 레지스트리 등록 실패는 무시
         }
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-    private static int RunApp(string[] args)
-    {
-        try
-        {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
-            // Application.Current 속성은 아래 생성자를 호출하면서 자동으로 설정됩니다.
-            var app = new App();
-
-            app.SetupHost(CreateHostBuilder(args).Build());
-            app.Run();
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(
-                ex?.ToString() ?? "Unknown Error",
-                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-
-        return Environment.ExitCode;
-    }
-
-    private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-    {
-        MessageBox.Show(
-            e.ExceptionObject?.ToString() ?? "Unknown Error",
-            "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
-    }
-
-    public static IHostBuilder CreateHostBuilder(
-        string[]? args = default,
-        Action<IConfigurationBuilder>? configurationBuilderOverride = default,
-        Action<ILoggingBuilder>? loggingBuilderOverride = default,
-        Action<IServiceCollection>? servicesBuilderOverride = default)
-    {
-        args ??= Helpers.GetCommandLineArguments();
-
-        return Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration(ConfigureAppConfiguration + configurationBuilderOverride)
-            .ConfigureLogging(ConfigureLogging + loggingBuilderOverride)
-            .ConfigureServices(ConfigureServices + servicesBuilderOverride);
-    }
-
-    private static void ConfigureAppConfiguration(IConfigurationBuilder configure)
-    {
-    }
-
-    private static void ConfigureLogging(ILoggingBuilder logging)
-    {
-        logging
-            .AddSerilog(dispose: true)
-            .AddConsole();
-    }
-
-    private static void ConfigureServices(IServiceCollection services)
-    {
-        // Add Logging
-        services.AddLogging();
-
-        // Add HTTP Service
-        services.AddHttpClient(
-            nameof(ConstantStrings.UserAgentText),
-            c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
-        services.AddHttpClient(
-            nameof(ConstantStrings.FamiliarUserAgentText),
-            c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.FamiliarUserAgentText));
-        services.AddHttpClient(
-            nameof(StringResources.TableCloth_GitHubRestUAString),
-            c => c.DefaultRequestHeaders.Add("User-Agent", StringResources.TableCloth_GitHubRestUAString));
-
-        // Add Components
-        services
-            .AddSingleton<IAppUserInterface, AppUserInterface>()
-            .AddSingleton<IAppUpdateManager, AppUpdateManager>()
-            .AddSingleton<ISharedLocations, SharedLocations>()
-            .AddSingleton<IPreferencesManager, PreferencesManager>()
-            .AddSingleton<IX509CertPairScanner, X509CertPairScanner>()
-            .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
-            .AddSingleton<ISandboxBuilder, SandboxBuilder>()
-            .AddSingleton<ISandboxLauncher, SandboxLauncher>()
-            .AddSingleton<ISandboxCleanupManager, SandboxCleanupManager>()
-            .AddSingleton<IAppStartup, AppStartup>()
-            .AddSingleton<IResourceResolver, ResourceResolver>()
-            .AddSingleton<ILicenseDescriptor, LicenseDescriptor>()
-            .AddSingleton<IAppRestartManager, AppRestartManager>()
-            .AddSingleton<ICommandLineComposer, CommandLineComposer>()
-            .AddSingleton<IConfigurationComposer, ConfigurationComposer>()
-            .AddSingleton<IVisualThemeManager, VisualThemeManager>()
-            .AddSingleton<IAppMessageBox, AppMessageBox>()
-            .AddSingleton<IMessageBoxService, MessageBoxService>()
-            .AddSingleton<INavigationService, NavigationService>()
-            .AddSingleton<IShortcutCrerator, ShortcutCrerator>()
-            .AddSingleton<ICommandLineArguments, CommandLineArguments>()
-            .AddSingleton<IApplicationService, ApplicationService>()
-            .AddSingleton<IArchiveExpander, ArchiveExpander>()
-            .AddSingleton<ICatalogDeserializer, CatalogDeserializer>()
-            .AddSingleton(_ => new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext()));
-
-        // UI
-        services
-            .AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>()
-            .AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>()
-            .AddWindow<AboutWindow, AboutWindowViewModel>()
-            .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
-            .AddWindow<MainWindow, MainWindowViewModel>()
-            .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
-            .AddPage<DetailPage, DetailPageViewModel>()
-            .AddWindow<SplashScreen, SplashScreenViewModel>()
-            .AddSingleton(_ => Application.Current);
     }
 }
