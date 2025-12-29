@@ -11,51 +11,55 @@ permissions:
 jobs:
   winget:
     name: Publish winget package
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Install wingetcreate
         run: |
-          dotnet tool install --global wingetcreate
+          winget install wingetcreate
 
       - name: Submit TableCloth WinGet Package Submission
         env:
           GITHUB_PAT: ${{ secrets.TABLECLOTH_GITHUB_PAT }}
         run: |
-          set -e
+          $ErrorActionPreference = 'Stop'
           
-          PACKAGE_ID="TableClothProject.TableCloth"
+          $PACKAGE_ID = "TableClothProject.TableCloth"
 
           # Fetching latest release from GitHub
-          RELEASE_JSON=$(curl -s "https://api.github.com/repos/yourtablecloth/TableCloth/releases" | jq '[.[] | select(.tag_name | test("^v[0-9.]+$"))] | first')
+          $response = Invoke-WebRequest -Uri "https://api.github.com/repos/yourtablecloth/TableCloth/releases" -UseBasicParsing
+          $releases = $response.Content | ConvertFrom-Json
           
-          if [ "$RELEASE_JSON" == "null" ] || [ -z "$RELEASE_JSON" ]; then
-            echo "No valid release found"
+          # Find the latest release with version tag
+          $latestRelease = $releases | Where-Object { $_.tag_name -match '^v[0-9.]+$' } | Select-Object -First 1
+          
+          if ($null -eq $latestRelease) {
+            Write-Host "No valid release found"
             exit 1
-          fi
+          }
 
-          PACKAGE_VERSION=$(echo "$RELEASE_JSON" | jq -r '.tag_name' | sed 's/^v//')
-          echo "Found release version: $PACKAGE_VERSION"
+          $PACKAGE_VERSION = $latestRelease.tag_name -replace '^v', ''
+          Write-Host "Found release version: $PACKAGE_VERSION"
 
           # Get Velopack Setup.exe installer URLs for each architecture
-          X64_URL=$(echo "$RELEASE_JSON" | jq -r '.assets[] | select(.name | test("x64.*Setup\\.exe$") or (test("Setup\\.exe$") and (test("arm64") | not))) | .browser_download_url' | head -1)
-          ARM64_URL=$(echo "$RELEASE_JSON" | jq -r '.assets[] | select(.name | test("arm64.*Setup\\.exe$")) | .browser_download_url' | head -1)
+          $x64Url = $latestRelease.assets | Where-Object { $_.name -match 'x64.*\.exe$' -and $_.name -notmatch 'arm64' } | Select-Object -First 1 -ExpandProperty browser_download_url
+          $arm64Url = $latestRelease.assets | Where-Object { $_.name -match 'arm64.*\.exe$' } | Select-Object -First 1 -ExpandProperty browser_download_url
 
-          if [ -z "$X64_URL" ]; then
-            echo "x64 installer not found in release assets"
+          if ([string]::IsNullOrEmpty($x64Url)) {
+            Write-Host "x64 installer not found in release assets"
             exit 1
-          fi
+          }
 
-          echo "x64 Installer URL: $X64_URL"
+          Write-Host "x64 Installer URL: $x64Url"
 
           # Build installer URLs string for wingetcreate
-          if [ -n "$ARM64_URL" ]; then
-            echo "arm64 Installer URL: $ARM64_URL"
-            INSTALLER_URLS="$X64_URL|x64 $ARM64_URL|arm64"
-          else
-            echo "arm64 installer not found, submitting x64 only"
-            INSTALLER_URLS="$X64_URL|x64"
-          fi
+          if (-not [string]::IsNullOrEmpty($arm64Url)) {
+            Write-Host "arm64 Installer URL: $arm64Url"
+            $INSTALLER_URLS = "$x64Url|x64 $arm64Url|arm64"
+          } else {
+            Write-Host "arm64 installer not found, submitting x64 only"
+            $INSTALLER_URLS = "$x64Url|x64"
+          }
 
           # Update package using wingetcreate
-          wingetcreate update "$PACKAGE_ID" --version "$PACKAGE_VERSION" --urls $INSTALLER_URLS --submit --token "$GITHUB_PAT"
-        shell: bash
+          wingetcreate update "$PACKAGE_ID" --version "$PACKAGE_VERSION" --urls $INSTALLER_URLS --submit --token "$env:GITHUB_PAT"
+        shell: pwsh
