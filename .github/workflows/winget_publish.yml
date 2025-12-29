@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Install wingetcreate
         run: |
-          winget install wingetcreate
+          winget install --accept-source-agreements wingetcreate
 
       - name: Submit TableCloth WinGet Package Submission
         env:
