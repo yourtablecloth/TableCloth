@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Spork.ViewModels
 {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace TableCloth.Models
 {
@@ -23,7 +23,7 @@ namespace TableCloth.Models
 
         public Exception ThrownException => _thrownException;
 
-        public static implicit operator TResult (ApiInvokeResult<TResult> item)
+        public static implicit operator TResult(ApiInvokeResult<TResult> item)
             => item._result;
 
         public static implicit operator ApiInvokeResult<TResult>(TResult result)

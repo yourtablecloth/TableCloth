@@ -1,5 +1,4 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Spork.Components;
 using Spork.Components.Implementations;
 using System.Threading.Tasks;
 
