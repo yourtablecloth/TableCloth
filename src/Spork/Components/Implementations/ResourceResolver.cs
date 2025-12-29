@@ -1,11 +1,11 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Serialization;
 using TableCloth;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
@@ -47,16 +47,15 @@ namespace Spork.Components.Implementations
 
             using (var catalogStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
             {
-                var serializer = new XmlSerializer(typeof(CatalogDocument));
-                var xmlReaderSetting = new XmlReaderSettings()
+                var xmlReaderSettings = new XmlReaderSettings()
                 {
                     XmlResolver = null,
                     DtdProcessing = DtdProcessing.Prohibit,
                 };
 
-                using (var contentStream = XmlReader.Create(catalogStream, xmlReaderSetting))
+                using (var xmlReader = XmlReader.Create(catalogStream, xmlReaderSettings))
                 {
-                    var document = serializer.Deserialize(contentStream) as CatalogDocument;
+                    var document = XmlCatalogParser.ParseCatalogDocument(xmlReader);
 
                     if (document == null)
                         TableClothAppException.Throw(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
