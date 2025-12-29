@@ -2,12 +2,9 @@
 <!-- Please do not delete, move, or rename this file (Directory.build.props); MSbuild will automatically read this file by convention. -->
 <!-- https://stackoverflow.com/a/74789660 -->
 <Project>
-	<PropertyGroup>
-		<SolutionDir Condition="'$(SolutionDir)'==''">$(MSBuildThisFileDirectory)</SolutionDir>
-	</PropertyGroup>
-
 	<!-- Version information - Single source of truth -->
 	<PropertyGroup>
+		<!-- Important: After changing the version information below, you must refresh the build using the Rebuild Entire Solution feature to reflect the change. -->
 		<TableClothVersionMajor>1</TableClothVersionMajor>
 		<TableClothVersionMinor>14</TableClothVersionMinor>
 		<TableClothVersionPatch>0</TableClothVersionPatch>
@@ -21,6 +18,10 @@
 		<Version>$(TableClothSemVer)</Version>
 		<AssemblyVersion>$(TableClothVersion)</AssemblyVersion>
 		<FileVersion>$(TableClothVersion)</FileVersion>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<SolutionDir Condition="'$(SolutionDir)'==''">$(MSBuildThisFileDirectory)</SolutionDir>
 	</PropertyGroup>
 
 	<!-- Common Metadata -->
