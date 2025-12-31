@@ -650,4 +650,31 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="AboutWindow_OssLicenseText" xml:space="preserve">
     <value>오픈 소스 소프트웨어 라이선스</value>
   </data>
+  <data name="MappedFolder_SectionTitle" xml:space="preserve">
+    <value>폴더 매핑</value>
+  </data>
+  <data name="MappedFolder_Description" xml:space="preserve">
+    <value>샌드박스와 공유할 폴더를 추가합니다.</value>
+  </data>
+  <data name="MappedFolder_AddButton" xml:space="preserve">
+    <value>폴더 추가...</value>
+  </data>
+  <data name="MappedFolder_RemoveButton" xml:space="preserve">
+    <value>제거</value>
+  </data>
+  <data name="MappedFolder_ToggleReadOnlyButton" xml:space="preserve">
+    <value>읽기 전용 전환</value>
+  </data>
+  <data name="MappedFolder_ReadOnlyLabel" xml:space="preserve">
+    <value>읽기 전용</value>
+  </data>
+  <data name="MappedFolder_ReadWriteLabel" xml:space="preserve">
+    <value>읽기/쓰기</value>
+  </data>
+  <data name="MappedFolder_SelectFolder" xml:space="preserve">
+    <value>샌드박스에 매핑할 폴더를 선택하세요</value>
+  </data>
+  <data name="MappedFolder_AlreadyExists" xml:space="preserve">
+    <value>이 폴더는 이미 목록에 있습니다.</value>
+  </data>
 </root>

@@ -107,6 +107,23 @@ public sealed class SandboxBuilder(
             ReadOnly = bool.FalseString,
         });
 
+        // 사용자 지정 매핑 폴더 추가
+        if (tableClothConfig.MappedFolders != null)
+        {
+            foreach (var mappedFolder in tableClothConfig.MappedFolders)
+            {
+                if (!string.IsNullOrWhiteSpace(mappedFolder.HostFolder))
+                {
+                    sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
+                    {
+                        HostFolder = mappedFolder.HostFolder,
+                        SandboxFolder = mappedFolder.SandboxFolder,
+                        ReadOnly = mappedFolder.ReadOnly ? bool.TrueString : bool.FalseString,
+                    });
+                }
+            }
+        }
+
         if (tableClothConfig.CertPair != null &&
             tableClothConfig.CertPair.PublicKey != null &&
             tableClothConfig.CertPair.PrivateKey != null)

@@ -84,6 +84,11 @@ namespace TableCloth.Models.Configuration
         public string LicenseAgreedVersion { get; set; } = null;
 
         /// <summary>
+        /// 샌드박스에 매핑할 사용자 지정 폴더 목록입니다.
+        /// </summary>
+        public List<MappedFolderSetting> MappedFolders { get; set; } = new List<MappedFolderSetting>();
+
+        /// <summary>
         /// Disclaimer 알림을 표시해야 하는지 여부를 반환합니다.
         /// </summary>
         /// <param name="currentTime">현재 시간 (UTC)</param>
@@ -104,5 +109,26 @@ namespace TableCloth.Models.Configuration
         /// </summary>
         public bool ShouldNotifyDisclaimer()
             => ShouldNotifyDisclaimer(DateTime.UtcNow);
+    }
+
+    /// <summary>
+    /// 사용자 지정 매핑 폴더 설정을 나타냅니다.
+    /// </summary>
+    public class MappedFolderSetting
+    {
+        /// <summary>
+        /// 호스트 시스템의 폴더 경로입니다.
+        /// </summary>
+        public string HostFolder { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 샌드박스 내의 폴더 경로입니다. (선택사항)
+        /// </summary>
+        public string? SandboxFolder { get; set; } = null;
+
+        /// <summary>
+        /// 읽기 전용 여부입니다.
+        /// </summary>
+        public bool ReadOnly { get; set; } = true;
     }
 }

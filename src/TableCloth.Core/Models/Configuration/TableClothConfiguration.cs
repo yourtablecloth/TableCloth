@@ -64,5 +64,10 @@ namespace TableCloth.Models.Configuration
         /// 샌드박스 명세 파일 (WSB) 및 데이터 파일을 저장할 디렉터리 경로입니다.
         /// </summary>
         public string AssetsDirectoryPath { get; set; } = null;
+
+        /// <summary>
+        /// 샌드박스에 매핑할 사용자 지정 폴더 목록입니다.
+        /// </summary>
+        public ICollection<MappedFolderSetting> MappedFolders { get; set; } = new List<MappedFolderSetting>();
     }
 }

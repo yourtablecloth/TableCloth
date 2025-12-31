@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 
 namespace TableCloth.Models
@@ -21,7 +22,8 @@ namespace TableCloth.Models
             bool showCommandLineHelp = default,
             bool showVersionHelp = default,
             bool dryRun = default,
-            bool simulateFailure = false)
+            bool simulateFailure = false,
+            IEnumerable<MappedFolderSetting> mappedFolders = default)
         {
             RawArguments = rawArguments;
             SelectedServices = selectedServices ?? Enumerable.Empty<string>();
@@ -38,6 +40,7 @@ namespace TableCloth.Models
             ShowVersionHelp = showVersionHelp;
             DryRun = dryRun;
             SimulateFailure = simulateFailure;
+            MappedFolders = mappedFolders ?? Enumerable.Empty<MappedFolderSetting>();
         }
 
         public string[] RawArguments { get; private set; }
@@ -69,6 +72,8 @@ namespace TableCloth.Models
         public bool DryRun { get; private set; }
 
         public bool SimulateFailure { get; private set; }
+
+        public IEnumerable<MappedFolderSetting> MappedFolders { get; private set; } = new List<MappedFolderSetting>();
 
         public override string ToString()
         {

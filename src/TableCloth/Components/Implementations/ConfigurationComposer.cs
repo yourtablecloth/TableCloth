@@ -30,6 +30,7 @@ public sealed class ConfigurationComposer(
             InstallRaiDrive = viewModel.InstallRaiDrive,
             Companions = Array.Empty<CatalogCompanion>(),
             Services = viewModel.SelectedServices.ToList(),
+            MappedFolders = viewModel.MappedFolders.ToList(),
         };
     }
 
@@ -66,6 +67,7 @@ public sealed class ConfigurationComposer(
             InstallAdobeReader = argumentModel.InstallAdobeReader ?? default,
             InstallHancomOfficeViewer = argumentModel.InstallHancomOfficeViewer ?? default,
             InstallRaiDrive = argumentModel.InstallRaiDrive ?? default,
+            MappedFolders = argumentModel.MappedFolders?.ToList() ?? new(),
         };
     }
 }

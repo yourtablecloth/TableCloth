@@ -11,6 +11,9 @@
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             <converters:ServiceLogoConverter x:Key="ServiceLogoConverter" />
             <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
+            <converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
+            <converters:BooleanToBackgroundConverter x:Key="BooleanToBackgroundConverter" />
+            <converters:BooleanToReadOnlyTextConverter x:Key="BooleanToReadOnlyTextConverter" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/PresentationFramework.Aero2;component/themes/aero2.normalcolor.xaml" />

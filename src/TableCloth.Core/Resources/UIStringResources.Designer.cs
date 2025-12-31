@@ -1533,5 +1533,86 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("TitleText_Warning", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Mapped Folders과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MappedFolder_SectionTitle {
+            get {
+                return ResourceManager.GetString("MappedFolder_SectionTitle", resourceCulture) ?? "Mapped Folders";
+            }
+        }
+        
+        /// <summary>
+        ///   Add folders from your computer to share with the sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MappedFolder_Description {
+            get {
+                return ResourceManager.GetString("MappedFolder_Description", resourceCulture) ?? "Add folders from your computer to share with the sandbox.";
+            }
+        }
+        
+        /// <summary>
+        ///   Add Folder...과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MappedFolder_AddButton {
+            get {
+                return ResourceManager.GetString("MappedFolder_AddButton", resourceCulture) ?? "Add Folder...";
+            }
+        }
+        
+        /// <summary>
+        ///   Remove과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MappedFolder_RemoveButton {
+            get {
+                return ResourceManager.GetString("MappedFolder_RemoveButton", resourceCulture) ?? "Remove";
+            }
+        }
+        
+        /// <summary>
+        ///   Toggle Read-Only과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MappedFolder_ToggleReadOnlyButton {
+            get {
+                return ResourceManager.GetString("MappedFolder_ToggleReadOnlyButton", resourceCulture) ?? "Toggle Read-Only";
+            }
+        }
+        
+        /// <summary>
+        ///   Read-Only과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MappedFolder_ReadOnlyLabel {
+            get {
+                return ResourceManager.GetString("MappedFolder_ReadOnlyLabel", resourceCulture) ?? "Read-Only";
+            }
+        }
+        
+        /// <summary>
+        ///   Read-Write과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MappedFolder_ReadWriteLabel {
+            get {
+                return ResourceManager.GetString("MappedFolder_ReadWriteLabel", resourceCulture) ?? "Read-Write";
+            }
+        }
+        
+        /// <summary>
+        ///   Select a folder to map to the sandbox과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MappedFolder_SelectFolder {
+            get {
+                return ResourceManager.GetString("MappedFolder_SelectFolder", resourceCulture) ?? "Select a folder to map to the sandbox";
+            }
+        }
+        
+        /// <summary>
+        ///   This folder is already in the list.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MappedFolder_AlreadyExists {
+            get {
+                return ResourceManager.GetString("MappedFolder_AlreadyExists", resourceCulture) ?? "This folder is already in the list.";
+            }
+        }
     }
 }

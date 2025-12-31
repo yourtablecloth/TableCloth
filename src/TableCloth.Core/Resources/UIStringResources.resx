@@ -651,4 +651,31 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="AboutWindow_OssLicenseText" xml:space="preserve">
     <value>Open Source Software License</value>
   </data>
+  <data name="MappedFolder_SectionTitle" xml:space="preserve">
+    <value>Mapped Folders</value>
+  </data>
+  <data name="MappedFolder_Description" xml:space="preserve">
+    <value>Add folders from your computer to share with the sandbox.</value>
+  </data>
+  <data name="MappedFolder_AddButton" xml:space="preserve">
+    <value>Add Folder...</value>
+  </data>
+  <data name="MappedFolder_RemoveButton" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="MappedFolder_ToggleReadOnlyButton" xml:space="preserve">
+    <value>Toggle Read-Only</value>
+  </data>
+  <data name="MappedFolder_ReadOnlyLabel" xml:space="preserve">
+    <value>Read-Only</value>
+  </data>
+  <data name="MappedFolder_ReadWriteLabel" xml:space="preserve">
+    <value>Read-Write</value>
+  </data>
+  <data name="MappedFolder_SelectFolder" xml:space="preserve">
+    <value>Select a folder to map to the sandbox</value>
+  </data>
+  <data name="MappedFolder_AlreadyExists" xml:space="preserve">
+    <value>This folder is already in the list.</value>
+  </data>
 </root>

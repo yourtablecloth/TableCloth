@@ -2,20 +2,25 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Media;
 using TableCloth.Components;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
+using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
 
@@ -86,6 +91,13 @@ public partial class DetailPageViewModel : ObservableObject
         InstallHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
         InstallRaiDrive = currentConfig.InstallRaiDrive;
         LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
+
+        // 저장된 매핑 폴더 로드
+        MappedFolders.Clear();
+        foreach (var folder in currentConfig.MappedFolders ?? new List<MappedFolderSetting>())
+        {
+            MappedFolders.Add(folder);
+        }
 
         var targetFilePath = _sharedLocations.GetImageFilePath(selectedServiceId);
 
@@ -232,6 +244,12 @@ public partial class DetailPageViewModel : ObservableObject
     [ObservableProperty]
     private string _searchKeyword = string.Empty;
 
+    [ObservableProperty]
+    private ObservableCollection<MappedFolderSetting> _mappedFolders = new();
+
+    [ObservableProperty]
+    private MappedFolderSetting? _selectedMappedFolder;
+
     public bool ShouldNotifyDisclaimer
     {
         get
@@ -326,6 +344,10 @@ public partial class DetailPageViewModel : ObservableObject
                 currentConfig.LastUsedCertHash = viewModel.SelectedCertFile?.CertHash;
                 break;
 
+            case nameof(DetailPageViewModel.MappedFolders):
+                currentConfig.MappedFolders = viewModel.MappedFolders.ToList();
+                break;
+
             default:
                 return;
         }
@@ -407,5 +429,86 @@ public partial class DetailPageViewModel : ObservableObject
 
             await _preferencesManager.SavePreferencesAsync(settings);
         }
+    }
+
+    [RelayCommand]
+    private async Task AddMappedFolder()
+    {
+        var selectedPath = ShowFolderBrowserDialog();
+
+        if (string.IsNullOrWhiteSpace(selectedPath))
+            return;
+
+        // 중복 체크
+        if (MappedFolders.Any(f => string.Equals(f.HostFolder, selectedPath, StringComparison.OrdinalIgnoreCase)))
+        {
+            _appMessageBox.DisplayError(UIStringResources.MappedFolder_AlreadyExists, false);
+            return;
+        }
+
+        var newFolder = new MappedFolderSetting
+        {
+            HostFolder = selectedPath,
+            ReadOnly = true,
+        };
+
+        MappedFolders.Add(newFolder);
+        await SaveMappedFoldersAsync();
+    }
+
+    private static string? ShowFolderBrowserDialog()
+    {
+        var dialog = new OpenFolderDialog
+        {
+            Title = UIStringResources.MappedFolder_SelectFolder,
+            Multiselect = false,
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            return dialog.FolderName;
+        }
+
+        return null;
+    }
+
+    [RelayCommand]
+    private async Task RemoveMappedFolder()
+    {
+        if (SelectedMappedFolder == null)
+            return;
+
+        MappedFolders.Remove(SelectedMappedFolder);
+        SelectedMappedFolder = null;
+        await SaveMappedFoldersAsync();
+    }
+
+    [RelayCommand]
+    private async Task ToggleMappedFolderReadOnly()
+    {
+        if (SelectedMappedFolder == null)
+            return;
+
+        SelectedMappedFolder.ReadOnly = !SelectedMappedFolder.ReadOnly;
+        await SaveMappedFoldersAsync();
+
+        // UI 갱신을 위해 컬렉션 알림
+        var index = MappedFolders.IndexOf(SelectedMappedFolder);
+        if (index >= 0)
+        {
+            var item = SelectedMappedFolder;
+            MappedFolders.RemoveAt(index);
+            MappedFolders.Insert(index, item);
+            SelectedMappedFolder = item;
+        }
+    }
+
+    private async Task SaveMappedFoldersAsync()
+    {
+        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
+        currentConfig ??= _preferencesManager.GetDefaultPreferences();
+
+        currentConfig.MappedFolders = MappedFolders.ToList();
+        await _preferencesManager.SavePreferencesAsync(currentConfig);
     }
 }
