@@ -73,6 +73,12 @@ namespace Spork.ViewModels
         [ObservableProperty]
         private bool _showProgress;
 
+        [ObservableProperty]
+        private bool _isContentLoaded;
+
+        [ObservableProperty]
+        private Exception _contentLoadException;
+
         public bool ShowErrorMessageLink
             => !string.IsNullOrWhiteSpace(ErrorMessage) && Installed.HasValue && !Installed.Value;
 

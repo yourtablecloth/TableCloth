@@ -65,8 +65,13 @@ namespace Spork.Steps.Implementations
 
             IsRunning = true;
             var catalog = _resourceCacheManager.CatalogDocument;
+            var stepsList = composedSteps.ToList();
 
-            foreach (var eachItem in composedSteps)
+            // 1단계: 모든 다운로드를 백그라운드에서 병렬로 시작
+            var downloadTasks = StartBackgroundDownloads(stepsList, parsedArgs.DryRun, cancellationToken);
+
+            // 2단계: 설치는 순차적으로 진행 (다운로드 완료를 기다린 후 설치)
+            foreach (var eachItem in stepsList)
             {
                 try
                 {
@@ -74,22 +79,19 @@ namespace Spork.Steps.Implementations
                     eachItem.ShowProgress = true;
                     eachItem.ProgressRate = CalculateProgressRate(1, 0d);
 
+                    // 해당 Step의 다운로드 완료 대기
                     eachItem.StatusMessage = UIStringResources.Spork_Download_InProgress;
                     eachItem.ProgressRate = CalculateProgressRate(2, 0d);
-                    if (parsedArgs.DryRun && eachItem.Step.ShouldSimulateWhenDryRun)
-                    {
-                        eachItem.ProgressRate = CalculateProgressRate(2, 0.5d);
-                        await Task.Delay(TimeSpan.FromSeconds(0.5d), cancellationToken).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await eachItem.Step.LoadContentForStepAsync(
-                            eachItem.Argument,
-                            (value) => eachItem.ProgressRate = CalculateProgressRate(2, value),
-                            cancellationToken).ConfigureAwait(false);
-                    }
+
+                    await WaitForContentLoadAsync(eachItem, downloadTasks, cancellationToken).ConfigureAwait(false);
+
+                    // 다운로드 중 예외 발생 시 처리
+                    if (eachItem.ContentLoadException != null)
+                        throw eachItem.ContentLoadException;
+
                     eachItem.ProgressRate = CalculateProgressRate(2, 1d);
 
+                    // 설치 진행
                     eachItem.StatusMessage = UIStringResources.Spork_Install_InProgress;
                     eachItem.ProgressRate = CalculateProgressRate(3, 0d);
                     if (parsedArgs.DryRun && eachItem.Step.ShouldSimulateWhenDryRun)
@@ -132,6 +134,70 @@ namespace Spork.Steps.Implementations
             }
 
             return hasAnyFailure;
+        }
+
+        /// <summary>
+        /// 모든 Step의 다운로드를 백그라운드에서 병렬로 시작합니다.
+        /// </summary>
+        private Dictionary<StepItemViewModel, Task> StartBackgroundDownloads(
+            List<StepItemViewModel> steps,
+            bool isDryRun,
+            CancellationToken cancellationToken)
+        {
+            var downloadTasks = new Dictionary<StepItemViewModel, Task>();
+
+            foreach (var eachItem in steps)
+            {
+                var task = DownloadContentAsync(eachItem, isDryRun, cancellationToken);
+                downloadTasks[eachItem] = task;
+            }
+
+            return downloadTasks;
+        }
+
+        /// <summary>
+        /// 개별 Step의 콘텐츠를 다운로드합니다.
+        /// </summary>
+        private async Task DownloadContentAsync(
+            StepItemViewModel item,
+            bool isDryRun,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (isDryRun && item.Step.ShouldSimulateWhenDryRun)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(0.5d), cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    await item.Step.LoadContentForStepAsync(
+                        item.Argument,
+                        (value) => item.ProgressRate = CalculateProgressRate(2, value),
+                        cancellationToken).ConfigureAwait(false);
+                }
+
+                item.IsContentLoaded = true;
+            }
+            catch (Exception ex)
+            {
+                item.ContentLoadException = ex;
+                item.IsContentLoaded = true; // 완료로 표시하여 대기 중인 코드가 진행되도록 함
+            }
+        }
+
+        /// <summary>
+        /// 특정 Step의 다운로드 완료를 대기합니다.
+        /// </summary>
+        private async Task WaitForContentLoadAsync(
+            StepItemViewModel item,
+            Dictionary<StepItemViewModel, Task> downloadTasks,
+            CancellationToken cancellationToken)
+        {
+            if (downloadTasks.TryGetValue(item, out var downloadTask))
+            {
+                await downloadTask.ConfigureAwait(false);
+            }
         }
     }
 }
