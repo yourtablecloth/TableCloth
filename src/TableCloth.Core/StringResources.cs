@@ -69,6 +69,33 @@ namespace TableCloth.Resources
                 Environment.NewLine + buffer.ToString();
         }
 
+        public static string Error_MappedFolder_DuplicateLeafName(IEnumerable<IGrouping<string, string>> duplicateGroups)
+        {
+            var buffer = new StringBuilder();
+            foreach (var group in duplicateGroups)
+            {
+                foreach (var hostFolder in group)
+                    buffer.AppendLine($"- {hostFolder}");
+            }
+
+            return Error_MappedFolder_DuplicateLeafName_Message + Environment.NewLine +
+                Environment.NewLine + buffer.ToString();
+        }
+
+        // 폴더 매핑 중복 이름 오류 메시지 (리소스 파일에 추가하기 전까지 임시로 여기에 정의)
+        private static string Error_MappedFolder_DuplicateLeafName_Message
+        {
+            get
+            {
+                var culture = System.Globalization.CultureInfo.CurrentUICulture;
+                if (culture.Name.StartsWith("ko", StringComparison.OrdinalIgnoreCase))
+                {
+                    return "다음의 폴더 매핑에 동일한 폴더 이름이 존재합니다. Windows Sandbox는 기본 바탕 화면 위치에 동일한 이름의 폴더를 마운트할 수 없습니다. 다른 샌드박스 경로를 지정하거나 폴더 중 하나를 제외해 주세요:";
+                }
+                return "The following mapped folders have the same folder name. Windows Sandbox cannot mount folders with duplicate names to the default Desktop location. Please specify different sandbox paths for these folders or exclude one of them:";
+            }
+        }
+
         public static string Error_Unknown(string file, string member, int line)
             => string.Format(ErrorStrings.Error_Unknown, file, line, member);
 
@@ -95,6 +122,9 @@ namespace TableCloth.Resources
     // 로그 기록용 메시지 (로그를 데이터로 분석하는 경우를 고려하여 이 부분은 번역하지 않습니다.)
     partial class StringResources
     {
+        public static string TableCloth_Log_DuplicateMappedFolderLeafName_ProhibitTranslation(string leafName, IEnumerable<string> hostFolders)
+            => $"Duplicate mapped folder leaf names detected without explicit SandboxFolder paths. Folders with leaf name `{leafName}`: {string.Join(", ", hostFolders)}";
+
         public static string TableCloth_Log_WsbFileCreateFail_ProhibitTranslation(string wsbFilePath)
             => string.Format(LogStrings.TableCloth_Log_WsbFileCreateFail_ProhibitTranslation, wsbFilePath);
 

@@ -120,7 +120,9 @@ public sealed class SandboxLauncher(
             var mappedFoldersElement = root.Element("MappedFolders");
             if (mappedFoldersElement != null)
             {
-                foreach (var mappedFolderElement in mappedFoldersElement.Elements("MappedFolder"))
+                var mappedFolderElements = mappedFoldersElement.Elements("MappedFolder").ToList();
+
+                foreach (var mappedFolderElement in mappedFolderElements)
                 {
                     var hostFolder = mappedFolderElement.Element("HostFolder")?.Value;
 
@@ -131,6 +133,35 @@ public sealed class SandboxLauncher(
                         _logger.LogError("{reason}", reason);
                         return false;
                     }
+                }
+
+                // SandboxFolder가 지정되지 않은 매핑 폴더들 중에서 leaf 폴더 이름이 중복되는지 확인
+                // Windows Sandbox는 SandboxFolder가 지정되지 않으면 기본적으로 바탕 화면에 마운트하므로
+                // 동일한 leaf 이름을 가진 폴더가 있으면 충돌이 발생함
+                var foldersWithoutSandboxPath = mappedFolderElements
+                    .Where(x => string.IsNullOrEmpty(x.Element("SandboxFolder")?.Value))
+                    .Select(x => x.Element("HostFolder")?.Value)
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .Cast<string>()
+                    .ToList();
+
+                var duplicateLeafNames = foldersWithoutSandboxPath
+                    .GroupBy(hostFolder => Path.GetFileName(hostFolder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
+                             StringComparer.OrdinalIgnoreCase)
+                    .Where(g => g.Count() > 1)
+                    .ToList();
+
+                if (duplicateLeafNames.Count > 0)
+                {
+                    foreach (var group in duplicateLeafNames)
+                    {
+                        var logMessage = StringResources.TableCloth_Log_DuplicateMappedFolderLeafName_ProhibitTranslation(
+                            group.Key, group);
+                        _logger.LogError("{reason}", logMessage);
+                    }
+
+                    reason = StringResources.Error_MappedFolder_DuplicateLeafName(duplicateLeafNames);
+                    return false;
                 }
             }
 
