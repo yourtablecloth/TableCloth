@@ -104,13 +104,16 @@ public partial class DetailPageViewModel : ObservableObject
         if (File.Exists(targetFilePath))
             ServiceLogo = _resourceCacheManager.GetImage(selectedServiceId);
 
-        var allCerts = _certPairScanner.ScanX509Pairs(_certPairScanner.GetCandidateDirectories());
+        // 인증서 스캔을 백그라운드에서 수행하여 UI 블로킹 방지
         var lastUsedCertHash = currentConfig.LastUsedCertHash;
+        var allCerts = await Task.Run(() => 
+            _certPairScanner.ScanX509Pairs(_certPairScanner.GetCandidateDirectories()).ToList());
+        
         var selectedCert = default(X509CertPair?);
 
         if (!string.IsNullOrWhiteSpace(lastUsedCertHash))
             selectedCert = allCerts.FirstOrDefault(x => string.Equals(lastUsedCertHash, x.CertHash, StringComparison.Ordinal));
-        else if (allCerts.Count() < 2)
+        else if (allCerts.Count < 2)
             selectedCert = allCerts.Where(x => x.IsValid).FirstOrDefault();
 
         MapNpkiCert = (selectedCert != null);
