@@ -79,9 +79,9 @@ namespace Spork.ViewModels
         private readonly TaskFactory _taskFactory;
 
         [RelayCommand]
-        private void ShowErrorMessage()
+        private void ShowErrorMessage(string errorMessage)
         {
-            _appMessageBox.DisplayError(Convert.ToString(this), true);
+            _appMessageBox.DisplayError(errorMessage, true);
         }
 
         [RelayCommand]
