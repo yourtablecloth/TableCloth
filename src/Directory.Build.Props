@@ -6,7 +6,7 @@
 	<PropertyGroup>
 		<!-- Important: After changing the version information below, you must refresh the build using the Rebuild Entire Solution feature to reflect the change. -->
 		<TableClothVersionMajor>1</TableClothVersionMajor>
-		<TableClothVersionMinor>15</TableClothVersionMinor>
+		<TableClothVersionMinor>16</TableClothVersionMinor>
 		<TableClothVersionPatch>0</TableClothVersionPatch>
 		<TableClothVersionRevision>0</TableClothVersionRevision>
 
