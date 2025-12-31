@@ -18,6 +18,9 @@ public sealed class SharedLocations : ISharedLocations
     public string PreferencesFilePath
         => GetDataPath("Preferences.json");
 
+    public string CatalogCacheFilePath
+        => GetDataPath("CatalogCache.xml");
+
     public string GetTempPath()
         => GetDataPath("Sandbox");
 

@@ -20,7 +20,8 @@ namespace TableCloth.Components.Implementations;
 
 public sealed class ResourceResolver(
     ICatalogDeserializer catalogDeserializer,
-    IHttpClientFactory httpClientFactory) : IResourceResolver
+    IHttpClientFactory httpClientFactory,
+    ISharedLocations sharedLocations) : IResourceResolver
 {
     private DateTimeOffset? _catalogLastModified = default;
 
@@ -43,9 +44,17 @@ public sealed class ResourceResolver(
             httpRequest.Headers.UserAgent.TryParseAdd(ConstantStrings.UserAgentText);
 
             var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            httpResponse.EnsureSuccessStatusCode();
+
             _catalogLastModified = httpResponse.Content.Headers.LastModified;
 
-            using var catalogStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+            // 응답 내용을 바이트 배열로 읽어서 캐시 파일로 저장
+            var catalogContent = await httpResponse.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+            
+            // 로컬 캐시에 저장
+            await SaveCatalogCacheAsync(catalogContent, cancellationToken).ConfigureAwait(false);
+
+            using var catalogStream = new MemoryStream(catalogContent);
             var document = catalogDeserializer
                 .Deserialize(catalogStream, new UTF8Encoding(false))
                 .EnsureNotNull(StringResources.Error_With_Exception(ErrorStrings.Error_CatalogLoadFailure, null));
@@ -55,6 +64,24 @@ public sealed class ResourceResolver(
         catch (Exception ex)
         {
             return new ApiInvokeResult<CatalogDocument?>(ex);
+        }
+    }
+
+    private async Task SaveCatalogCacheAsync(byte[] content, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var cachePath = sharedLocations.CatalogCacheFilePath;
+            var cacheDirectory = Path.GetDirectoryName(cachePath);
+
+            if (!string.IsNullOrEmpty(cacheDirectory) && !Directory.Exists(cacheDirectory))
+                Directory.CreateDirectory(cacheDirectory);
+
+            await File.WriteAllBytesAsync(cachePath, content, cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            // 캐시 저장 실패는 무시
         }
     }
 

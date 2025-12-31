@@ -9,6 +9,7 @@ public interface ISharedLocations
     string SporkZipFilePath { get; }
     string ImagesZipFilePath { get; }
     string PreferencesFilePath { get; }
+    string CatalogCacheFilePath { get; }
 
     string GetImageDirectoryPath();
     string GetImageFilePath(string serviceId);
