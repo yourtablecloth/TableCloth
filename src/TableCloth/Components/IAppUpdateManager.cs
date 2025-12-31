@@ -32,7 +32,13 @@ public interface IAppUpdateManager
     Task DownloadAndApplyUpdatesAsync(IProgress<int>? progress = null, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// GitHub Releases 페이지 URL 반환 (Velopack 미설치 시 사용)
+    /// GitHub Releases 페이지 URL 반환
     /// </summary>
     Uri GetReleasesPageUrl();
+
+    /// <summary>
+    /// 현재 아키텍처에 맞는 최신 릴리스 다운로드 URL 반환
+    /// </summary>
+    /// <returns>다운로드 URL, 찾지 못한 경우 null</returns>
+    Task<Uri?> GetLatestReleaseDownloadUrlAsync(CancellationToken cancellationToken = default);
 }
