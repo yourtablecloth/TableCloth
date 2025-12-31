@@ -33,6 +33,9 @@ namespace Spork
 
         private async Task OnApplicationstartupAsync(object sender, StartupEventArgs e)
         {
+            if (Host == null)
+                throw new InvalidOperationException("Host is not initialized. Ensure SetupHost is called before application startup.");
+
             var appMessageBox = Host.Services.GetRequiredService<IAppMessageBox>();
             var commandLineArguments = Host.Services.GetRequiredService<ICommandLineArguments>();
             var parsedArgs = commandLineArguments.GetCurrent();

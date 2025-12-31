@@ -46,8 +46,6 @@ namespace Spork
                             answer = JsonSerializer.Deserialize<SporkAnswers>(answerFileContent);
                         }
                     }
-
-                    answer = default;
                 }
                 catch { answer = default; }
 
