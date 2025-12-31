@@ -84,7 +84,7 @@
                         <Style.Resources>
                             <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                                 <VisualBrush.Visual>
-                                    <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="{DynamicResource ControlDefaultForeground}" />
+                                    <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="LightGray" />
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Style.Resources>
@@ -93,7 +93,7 @@
                                 <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource ControlDefaultBackground}" />
+                                <Setter Property="Background" Value="White" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
