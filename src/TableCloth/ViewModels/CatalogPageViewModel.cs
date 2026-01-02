@@ -174,17 +174,17 @@ public partial class CatalogPageViewModel : ObservableObject
         => Services.Count > 0;
 
     [RelayCommand]
-    private async Task CatalogPageItemFavorite()
+    private async Task CatalogPageItemFavorite(CatalogInternetService? service)
     {
-        if (SelectedService == null)
+        if (service == null)
             return;
 
         var settings = await _preferencesManager.LoadPreferencesAsync();
         settings!.Favorites ??= new List<string>();
-        if (SelectedService.IsFavorite)
-            settings.Favorites.Add(SelectedService.Id);
-        else if (settings.Favorites.Contains(SelectedService.Id))
-            settings.Favorites.Remove(SelectedService.Id);
+        if (service.IsFavorite)
+            settings.Favorites.Add(service.Id);
+        else if (settings.Favorites.Contains(service.Id))
+            settings.Favorites.Remove(service.Id);
 
         await _preferencesManager.SavePreferencesAsync(settings);
     }
