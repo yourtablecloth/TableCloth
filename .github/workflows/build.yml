@@ -36,7 +36,7 @@ jobs:
         TAG_VERSION="${GITHUB_REF#refs/tags/v}"
         
         # Extract version from Directory.Build.props
-        PROPS_VERSION=$(grep -oP '(?<=<TableClothSemVer>)[^<]+' src/Directory.Build.props)
+        PROPS_VERSION=$(grep -oP '(?<=<TableClothSemVer>)[^<]+' src/Directory.Build.Props)
         
         echo "Tag version: $TAG_VERSION"
         echo "Props version: $PROPS_VERSION"

@@ -41,8 +41,8 @@ jobs:
           Write-Host "Found release version: $PACKAGE_VERSION"
 
           # Get Velopack Setup.exe installer URLs for each architecture
-          $x64Url = $latestRelease.assets | Where-Object { $_.name -match 'x64.*\.exe$' -and $_.name -notmatch 'arm64' } | Select-Object -First 1 -ExpandProperty browser_download_url
-          $arm64Url = $latestRelease.assets | Where-Object { $_.name -match 'arm64.*\.exe$' } | Select-Object -First 1 -ExpandProperty browser_download_url
+          $x64Url = $latestRelease.assets | Where-Object { $_.name -match '.*x64\.exe$' -and $_.name -notmatch 'arm64' } | Select-Object -First 1 -ExpandProperty browser_download_url
+          $arm64Url = $latestRelease.assets | Where-Object { $_.name -match '.*arm64\.exe$' } | Select-Object -First 1 -ExpandProperty browser_download_url
 
           if ([string]::IsNullOrEmpty($x64Url)) {
             Write-Host "x64 installer not found in release assets"
