@@ -9,6 +9,7 @@
 
 [![식탁보 프로젝트 빌드 상황](https://github.com/yourtablecloth/TableCloth/actions/workflows/build.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
 [![식탁보 최신 버전 다운로드](https://img.shields.io/github/v/release/yourtablecloth/tablecloth)](https://github.com/yourtablecloth/TableCloth/releases)
+[![UniGetUI에서 다운로드](https://img.shields.io/badge/UniGetUI-TableCloth-blue)](https://marticliment.com/unigetui/share?name=TableCloth&id=TableClothProject.TableCloth&sourceName=winget&managerName=WinGet)
 
 ![식탁보 실행 화면](docs/images/TableCloth.png)
 
@@ -22,7 +23,13 @@
 
 ## 일반적인 설치와 사용 방법 안내
 
-일반적인 설치와 사용 방법 안내는 [식탁보 홈페이지](https://yourtablecloth.github.io)에서 소개하고 있습니다.
+일반적인 설치와 사용 방법 안내는 [식탁보 홈페이지](https://yourtablecloth.app)에서 소개하고 있습니다.
+
+최신 버전을 간편하게 설치하고 자동 업데이트를 받으려면 [winget](https://learn.microsoft.com/windows/package-manager/winget/) 또는 [UniGetUI](https://github.com/marticliment/UniGetUI)를 통한 설치를 권장합니다.
+
+```powershell
+winget install TableClothProject.TableCloth
+```
 
 ## 빌드 환경
 
