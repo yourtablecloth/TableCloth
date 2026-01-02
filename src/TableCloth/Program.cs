@@ -22,11 +22,32 @@ namespace TableCloth;
 
 internal static class Program
 {
+    // 설정 백업 경로 (앱 디렉터리 외부에 저장)
+    private static string GetPreferencesBackupPath()
+    {
+        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        return Path.Combine(appDataPath, "TableCloth.backup", "Preferences.json");
+    }
+
     [STAThread]
     private static int Main(string[] args)
     {
         // Velopack 초기화 - 설치/업데이트/제거 시 처리
-        VelopackApp.Build().Run();
+        VelopackApp.Build()
+            .OnFirstRun(v => RestorePreferencesFromBackup())
+            .OnAfterInstallFastCallback(v => RestorePreferencesFromBackup())
+            .OnBeforeUninstallFastCallback(v => BackupPreferences())
+            .OnBeforeUpdateFastCallback(v => BackupPreferences())
+            .OnAfterUpdateFastCallback(v =>
+            {
+                // 업데이트 후 원본 파일이 없으면 백업에서 복원
+                var preferencesPath = GetPreferencesFilePath();
+                if (!File.Exists(preferencesPath))
+                {
+                    RestorePreferencesFromBackup();
+                }
+            })
+            .Run();
 
         // 라이선스 동의 여부 확인
         if (!CheckLicenseAgreement())
@@ -122,6 +143,60 @@ internal static class Program
         }
 
         return Environment.ExitCode;
+    }
+
+    /// <summary>
+    /// 설정 파일을 백업 위치에 복사
+    /// </summary>
+    private static void BackupPreferences()
+    {
+        try
+        {
+            var preferencesPath = GetPreferencesFilePath();
+            var backupPath = GetPreferencesBackupPath();
+
+            if (!File.Exists(preferencesPath))
+                return;
+
+            var backupDir = Path.GetDirectoryName(backupPath);
+            if (!string.IsNullOrEmpty(backupDir) && !Directory.Exists(backupDir))
+                Directory.CreateDirectory(backupDir);
+
+            File.Copy(preferencesPath, backupPath, overwrite: true);
+        }
+        catch
+        {
+            // 백업 실패는 무시
+        }
+    }
+
+    /// <summary>
+    /// 백업된 설정 파일을 원래 위치로 복원
+    /// </summary>
+    private static void RestorePreferencesFromBackup()
+    {
+        try
+        {
+            var preferencesPath = GetPreferencesFilePath();
+            var backupPath = GetPreferencesBackupPath();
+
+            if (!File.Exists(backupPath))
+                return;
+
+            // 원본 파일이 이미 있으면 복원하지 않음
+            if (File.Exists(preferencesPath))
+                return;
+
+            var preferencesDir = Path.GetDirectoryName(preferencesPath);
+            if (!string.IsNullOrEmpty(preferencesDir) && !Directory.Exists(preferencesDir))
+                Directory.CreateDirectory(preferencesDir);
+
+            File.Copy(backupPath, preferencesPath, overwrite: false);
+        }
+        catch
+        {
+            // 복원 실패는 무시
+        }
     }
 
     private static bool CheckLicenseAgreement()
