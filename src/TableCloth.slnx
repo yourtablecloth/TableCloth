@@ -7,8 +7,8 @@
     <File Path="Directory.Build.Props" />
   </Folder>
   <Project Path="Spork.Test/Spork.Test.csproj" Id="6408b389-54a0-4804-b42e-8853404d0b75">
-    <Platform Solution="*|ARM64" Project="ARM64" />
-    <Platform Solution="Release|x64" Project="x64" />
+    <Platform Solution="*|ARM64" Project="AnyCPU" />
+    <Platform Solution="*|x64" Project="AnyCPU" />
   </Project>
   <Project Path="Spork/Spork.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />

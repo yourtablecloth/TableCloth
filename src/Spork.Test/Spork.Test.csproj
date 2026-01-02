@@ -6,7 +6,6 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<UseVSTest>true</UseVSTest>
-		<Platforms>x64;ARM64</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>
