@@ -21,11 +21,19 @@
 
 이런 문제를 완화하고, 컴퓨터를 항상 안정적인 상태로 유지할 수 있도록 도와주기 위하여 이 프로젝트를 시작하게 되었습니다.
 
-## 일반적인 설치와 사용 방법 안내
+## 설치와 사용 방법 안내
 
-일반적인 설치와 사용 방법 안내는 [식탁보 홈페이지](https://yourtablecloth.app)에서 소개하고 있습니다.
+식탁보를 손쉽게 설치하고 사용하기 위해서는 UniGetUI 또는 Winget을 통한 설치 방법을 권장합니다.
 
-최신 버전을 간편하게 설치하고 자동 업데이트를 받으려면 [winget](https://learn.microsoft.com/windows/package-manager/winget/) 또는 [UniGetUI](https://github.com/marticliment/UniGetUI)를 통한 설치를 권장합니다.
+1. Windows 11 Pro, Education, Enterprise SKU 이상의 OS를 설치합니다.
+
+2. Windows Sandbox 옵션을 활성화합니다.
+
+3. <https://apps.microsoft.com/detail/XPFFTQ032PTPHF?hl=ko&gl=KR&ocid=pdpshare> 에서 최신 버전의 UniGetUI를 설치합니다.
+
+4. <https://marticliment.com/unigetui/share/?name=TableCloth&id=TableClothProject.TableCloth&sourceName=winget&managerName=WinGet> 에서 최신 버전의 식탁보 패키지를 설치합니다.
+
+만약 winget 명령줄을 사용하는 것이 익숙하다면 아래와 같이 설치하실 수 있습니다.
 
 ```powershell
 winget install TableClothProject.TableCloth

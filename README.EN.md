@@ -23,13 +23,17 @@ This project helps mitigate this problem and keep your computer sound and safe a
 
 ## Installation
 
-Installation and usage guide are introduced in [TableCloth Introduction Page(KO)](https://yourtablecloth.app).
+To easily install and use TableCloth, we recommend installing via UniGetUI or Winget.
 
-For easy installation and automatic updates, we recommend installing via [winget](https://learn.microsoft.com/windows/package-manager/winget/) or [UniGetUI](https://github.com/marticliment/UniGetUI).
+1. Install Windows 11 Pro, Education, or Enterprise SKU or higher.
 
-```powershell
-winget install TableClothProject.TableCloth
-```
+2. Enable the Windows Sandbox option.
+
+3. Install the latest version of UniGetUI from <https://apps.microsoft.com/detail/XPFFTQ032PTPHF?hl=ko&gl=KR&ocid=pdpshare>.
+
+4. Install the latest version of the TableCloth package from <https://marticliment.com/unigetui/share/?name=TableCloth&id=TableClothProject.TableCloth&sourceName=winget&managerName=WinGet>.
+
+If you are familiar with using the winget command line, you can install it as follows.
 
 ## Build Environment
 
