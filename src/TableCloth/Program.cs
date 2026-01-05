@@ -22,30 +22,24 @@ namespace TableCloth;
 
 internal static class Program
 {
-    // 설정 백업 경로 (앱 디렉터리 외부에 저장)
-    private static string GetPreferencesBackupPath()
-    {
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        return Path.Combine(appDataPath, "TableCloth.backup", "Preferences.json");
-    }
-
     [STAThread]
     private static int Main(string[] args)
     {
+        // 기존 설정 파일 마이그레이션 (TableCloth -> TableCloth.Data)
+        // Velopack 설치 디렉터리(TableCloth)와 설정 디렉터리(TableCloth.Data)를 분리하기 위함
+        MigratePreferencesToNewLocation();
+
         // Velopack 초기화 - 설치/업데이트/제거 시 처리
         VelopackApp.Build()
-            .OnFirstRun(v => RestorePreferencesFromBackup())
-            .OnAfterInstallFastCallback(v => RestorePreferencesFromBackup())
-            .OnBeforeUninstallFastCallback(v => BackupPreferences())
-            .OnBeforeUpdateFastCallback(v => BackupPreferences())
-            .OnAfterUpdateFastCallback(v =>
+            .OnFirstRun(v =>
             {
-                // 업데이트 후 원본 파일이 없으면 백업에서 복원
-                var preferencesPath = GetPreferencesFilePath();
-                if (!File.Exists(preferencesPath))
-                {
-                    RestorePreferencesFromBackup();
-                }
+                // 첫 실행 시 기존 설정 마이그레이션
+                MigratePreferencesToNewLocation();
+            })
+            .OnAfterInstallFastCallback(v =>
+            {
+                // 설치 후 기존 설정 마이그레이션
+                MigratePreferencesToNewLocation();
             })
             .Run();
 
@@ -146,56 +140,34 @@ internal static class Program
     }
 
     /// <summary>
-    /// 설정 파일을 백업 위치에 복사
+    /// 기존 TableCloth 디렉터리의 설정 파일을 TableCloth.Data로 마이그레이션합니다.
+    /// Velopack 설치 디렉터리와 설정 디렉터리를 분리하기 위함입니다.
     /// </summary>
-    private static void BackupPreferences()
+    private static void MigratePreferencesToNewLocation()
     {
         try
         {
-            var preferencesPath = GetPreferencesFilePath();
-            var backupPath = GetPreferencesBackupPath();
+            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var oldPath = Path.Combine(appDataPath, "TableCloth", "Preferences.json");
+            var newPath = GetPreferencesFilePath();
 
-            if (!File.Exists(preferencesPath))
+            // 새 경로에 이미 파일이 있으면 마이그레이션 불필요
+            if (File.Exists(newPath))
                 return;
 
-            var backupDir = Path.GetDirectoryName(backupPath);
-            if (!string.IsNullOrEmpty(backupDir) && !Directory.Exists(backupDir))
-                Directory.CreateDirectory(backupDir);
+            // 기존 경로에 파일이 있으면 마이그레이션
+            if (File.Exists(oldPath))
+            {
+                var newDir = Path.GetDirectoryName(newPath);
+                if (!string.IsNullOrEmpty(newDir) && !Directory.Exists(newDir))
+                    Directory.CreateDirectory(newDir);
 
-            File.Copy(preferencesPath, backupPath, overwrite: true);
+                File.Copy(oldPath, newPath, overwrite: false);
+            }
         }
         catch
         {
-            // 백업 실패는 무시
-        }
-    }
-
-    /// <summary>
-    /// 백업된 설정 파일을 원래 위치로 복원
-    /// </summary>
-    private static void RestorePreferencesFromBackup()
-    {
-        try
-        {
-            var preferencesPath = GetPreferencesFilePath();
-            var backupPath = GetPreferencesBackupPath();
-
-            if (!File.Exists(backupPath))
-                return;
-
-            // 원본 파일이 이미 있으면 복원하지 않음
-            if (File.Exists(preferencesPath))
-                return;
-
-            var preferencesDir = Path.GetDirectoryName(preferencesPath);
-            if (!string.IsNullOrEmpty(preferencesDir) && !Directory.Exists(preferencesDir))
-                Directory.CreateDirectory(preferencesDir);
-
-            File.Copy(backupPath, preferencesPath, overwrite: false);
-        }
-        catch
-        {
-            // 복원 실패는 무시
+            // 마이그레이션 실패는 무시
         }
     }
 
@@ -289,7 +261,7 @@ internal static class Program
     private static string GetPreferencesFilePath()
     {
         var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        return Path.Combine(appDataPath, "TableCloth", "Preferences.json");
+        return Path.Combine(appDataPath, "TableCloth.Data", "Preferences.json");
     }
 
     private static void RegisterFileAssociationsIfNeeded()

@@ -6,8 +6,10 @@ namespace TableCloth.Components.Implementations;
 
 public sealed class SharedLocations : ISharedLocations
 {
+    // Velopack은 LocalAppData\TableCloth에 앱을 설치하므로,
+    // 설정 파일은 LocalAppData\TableCloth.Data에 저장하여 업데이트 시 삭제되지 않도록 함
     public string AppDataDirectoryPath =>
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TableCloth");
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TableCloth.Data");
 
     private string GetDataPath(string relativePath) =>
         Path.Combine(AppDataDirectoryPath, relativePath);
