@@ -7,7 +7,7 @@
         xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Core"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
-        WindowStartupLocation="CenterOwner"
+        WindowStartupLocation="CenterScreen"
         Style="{DynamicResource MainWindowStyle}"
         MinWidth="800" MinHeight="600"
         Title="{x:Static res:UIStringResources.MainWindow_Title}" Width="800" Height="600"

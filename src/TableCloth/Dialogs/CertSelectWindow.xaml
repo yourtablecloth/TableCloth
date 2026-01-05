@@ -11,7 +11,8 @@
         Title="{x:Static res:UIStringResources.CertSelectWindow_Title}" Width="480" Height="320"
         MinWidth="640" MinHeight="480"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
-        d:DataContext="{d:DesignInstance Type=vm:CertSelectWindowViewModelForDesigner, IsDesignTimeCreatable=True}">
+        d:DataContext="{d:DesignInstance Type=vm:CertSelectWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
+        WindowStartupLocation="CenterOwner">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding CertSelectWindowLoadedCommand}">

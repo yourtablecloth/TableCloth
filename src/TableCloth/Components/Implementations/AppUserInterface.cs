@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using System.Windows;
 using TableCloth.Dialogs;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
@@ -12,27 +13,41 @@ namespace TableCloth.Components.Implementations;
 
 public sealed class AppUserInterface(
     IServiceProvider serviceProvider,
-    IResourceCacheManager resourceCacheManager) : IAppUserInterface
+    IResourceCacheManager resourceCacheManager,
+    IApplicationService applicationService) : IAppUserInterface
 {
+    private TWindow SetOwnerIfAvailable<TWindow>(TWindow window)
+        where TWindow : Window
+    {
+        var owner = applicationService.GetActiveWindow() ?? applicationService.GetMainWindow();
+
+        if (owner != null && !ReferenceEquals(owner, window))
+            window.Owner = owner;
+
+        return window;
+    }
+
     public AboutWindow CreateAboutWindow()
-        => serviceProvider.GetRequiredService<AboutWindow>();
+        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<AboutWindow>());
 
     public CertSelectWindow CreateCertSelectWindow(X509CertPair? previousCertPair)
     {
-        var window = serviceProvider.GetRequiredService<CertSelectWindow>();
+        var window = SetOwnerIfAvailable(serviceProvider.GetRequiredService<CertSelectWindow>());
+
         if (previousCertPair != null)
             window.ViewModel.PreviousCertPairHash = previousCertPair?.CertHash;
+
         return window;
     }
 
     public InputPasswordWindow CreateInputPasswordWindow()
-        => serviceProvider.GetRequiredService<InputPasswordWindow>();
+        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<InputPasswordWindow>());
 
     public DisclaimerWindow CreateDisclaimerWindow()
-        => serviceProvider.GetRequiredService<DisclaimerWindow>();
+        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<DisclaimerWindow>());
 
     public SplashScreen CreateSplashScreen()
-        => serviceProvider.GetRequiredService<SplashScreen>();
+        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<SplashScreen>());
 
     public CatalogPage CreateCatalogPage(string searchKeyword)
     {

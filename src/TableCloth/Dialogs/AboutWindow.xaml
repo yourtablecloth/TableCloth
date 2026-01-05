@@ -12,7 +12,7 @@
         d:DataContext="{d:DesignInstance Type=vm:AboutWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
         Style="{DynamicResource MainWindowStyle}"
         Title="{x:Static res:UIStringResources.AboutWindow_Title}" Width="640" Height="520" MinWidth="320" MinHeight="280"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding AboutWindowLoadedCommand}">
