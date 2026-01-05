@@ -8,6 +8,7 @@ var appId = "TableCloth";
 var solutionFile = "TableCloth.sln";
 var mainProject = Path.Combine("TableCloth", "TableCloth.csproj");
 var iconPath = Path.Combine("TableCloth", "Resources", "SandboxIcon.ico");
+var directoryBuildProps = "Directory.Build.Props";
 var platforms = new[] { "x64" };
 
 // Parse command line arguments
@@ -45,12 +46,15 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
     Console.WriteLine("========================================");
     Console.WriteLine();
 
+    // Install vpk CLI
+    _ = await RunCommandAsync("dotnet", "tool install -g vpk");
+
     // Get Git commit hash
     var gitCommit = await RunCommandAsync("git", "rev-parse --short HEAD");
     Console.WriteLine($"Git Commit: {gitCommit}");
 
-    // Extract version from project file
-    var projectVersion = GetProjectVersion(mainProject);
+    // Extract version from Directory.Build.props
+    var projectVersion = GetProjectVersion(directoryBuildProps);
     Console.WriteLine($"Project Version: {projectVersion}");
 
     // Convert to SemVer (Major.Minor.Patch)
@@ -58,10 +62,6 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
     var version = $"{versionParts[0]}.{versionParts[1]}.{versionParts[2]}";
     Console.WriteLine($"Build Version: {version}");
     Console.WriteLine();
-
-    // Create release notes
-    var releaseNotesPath = Path.Combine(scriptDir, "release_notes.md");
-    await CreateReleaseNotesAsync(releaseNotesPath, version, gitCommit);
 
     if (!skip)
     {
@@ -106,13 +106,9 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             await RunCommandAsync("vpk",
                 $"--yes pack -u {appId} -v {version} -p {publishDir} -e {appId}.exe " +
                 $"-o {releasesDir} --packTitle {appId} --packAuthors \"TableCloth Project\" " +
-                $"--icon {iconPath} --releaseNotes {releaseNotesPath}");
+                $"--icon {iconPath}");
         }
     }
-
-    // Cleanup
-    if (File.Exists(releaseNotesPath))
-        File.Delete(releaseNotesPath);
 
     // Open Releases folder
     var releasesPath = Path.Combine(scriptDir, "Releases");
@@ -143,24 +139,20 @@ string GetScriptDirectory()
     return Directory.GetCurrentDirectory();
 }
 
-string GetProjectVersion(string projectPath)
+string GetProjectVersion(string propsPath)
 {
-    var doc = XDocument.Load(projectPath);
-    var versionElement = doc.Descendants("Version").FirstOrDefault();
-    return versionElement?.Value ?? "1.0.0.0";
+    var doc = XDocument.Load(propsPath);
+    var ns = doc.Root?.Name.Namespace ?? XNamespace.None;
+    
+    // Directory.Build.props에서 개별 버전 컴포넌트 읽기
+    var major = doc.Descendants(ns + "TableClothVersionMajor").FirstOrDefault()?.Value ?? "1";
+    var minor = doc.Descendants(ns + "TableClothVersionMinor").FirstOrDefault()?.Value ?? "0";
+    var patch = doc.Descendants(ns + "TableClothVersionPatch").FirstOrDefault()?.Value ?? "0";
+    var revision = doc.Descendants(ns + "TableClothVersionRevision").FirstOrDefault()?.Value ?? "0";
+    
+    return $"{major}.{minor}.{patch}.{revision}";
 }
 
-async Task CreateReleaseNotesAsync(string path, string ver, string commit)
-{
-    var content = $"""
-        ## TableCloth v{ver}
-
-        Commit: {commit}
-
-        Built on: {DateTime.Now:yyyy-MM-dd HH:mm:ss}
-        """;
-    await File.WriteAllTextAsync(path, content);
-}
 
 async Task<string> RunCommandAsync(string command, string arguments)
 {
