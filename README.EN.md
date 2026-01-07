@@ -1,13 +1,16 @@
 # TableCloth - Use Your Computer Safely
 
 > Notice: Due to inflation and changes in Authenticode acceptance policies, the cost of renewing Authenticode certificates has become too high and we are unable to apply Codesign certificates to our application binaries. SmartScreen warnings may appear, or TableCloth may be automatically terminated or removed by running antivirus software. Please keep this in mind when using the application.
+
 > Notice: Due to a change in Microsoft Store policy, it has become difficult to update to the latest version of TableCloth. Please uninstall the Microsoft Store version of the TableCloth app and reinstall the version we release on GitHub to ensure you have access to the latest features.
+
 > Notice: With the release of version 1.13.0, the TableCloth project has changed to a dual license model. You can choose between AGPL 3.0 or a commercial license. If you use the commercial license, please contact us at the contact details in the license file.
 
-* [Korean Readme](README.md)
+* [Korean (한국어) Readme](README.md)
 * [English Readme](README.EN.md)
 
 [![Build Status](https://github.com/yourtablecloth/TableCloth/actions/workflows/build.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
+[![TableCloth Discord](https://img.shields.io/discord/1443777680418930761?label=Discord&logo=discord&color=7289DA)](https://discord.gg/eT2UnUXyTV)
 [![Downloads](https://img.shields.io/github/v/release/yourtablecloth/tablecloth)](https://github.com/yourtablecloth/TableCloth/releases)
 [![Download on UniGetUI](https://img.shields.io/badge/UniGetUI-TableCloth-blue)](https://marticliment.com/unigetui/share?name=TableCloth&id=TableClothProject.TableCloth&sourceName=winget&managerName=WinGet)
 
