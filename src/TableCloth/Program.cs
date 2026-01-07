@@ -9,9 +9,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using TableCloth.Bootstrap.Dialogs;
-using TableCloth.Dialogs;
 using TableCloth.Components;
 using TableCloth.Components.Implementations;
+using TableCloth.Dialogs;
 using TableCloth.Models.Configuration;
 using TableCloth.Pages;
 using TableCloth.Resources;
@@ -25,23 +25,8 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
-        // 기존 설정 파일 마이그레이션 (TableCloth -> TableCloth.Data)
-        // Velopack 설치 디렉터리(TableCloth)와 설정 디렉터리(TableCloth.Data)를 분리하기 위함
-        MigratePreferencesToNewLocation();
-
         // Velopack 초기화 - 설치/업데이트/제거 시 처리
-        VelopackApp.Build()
-            .OnFirstRun(v =>
-            {
-                // 첫 실행 시 기존 설정 마이그레이션
-                MigratePreferencesToNewLocation();
-            })
-            .OnAfterInstallFastCallback(v =>
-            {
-                // 설치 후 기존 설정 마이그레이션
-                MigratePreferencesToNewLocation();
-            })
-            .Run();
+        VelopackApp.Build().Run();
 
         // 라이선스 동의 여부 확인
         if (!CheckLicenseAgreement())
@@ -137,38 +122,6 @@ internal static class Program
         }
 
         return Environment.ExitCode;
-    }
-
-    /// <summary>
-    /// 기존 TableCloth 디렉터리의 설정 파일을 TableCloth.Data로 마이그레이션합니다.
-    /// Velopack 설치 디렉터리와 설정 디렉터리를 분리하기 위함입니다.
-    /// </summary>
-    private static void MigratePreferencesToNewLocation()
-    {
-        try
-        {
-            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var oldPath = Path.Combine(appDataPath, "TableCloth", "Preferences.json");
-            var newPath = GetPreferencesFilePath();
-
-            // 새 경로에 이미 파일이 있으면 마이그레이션 불필요
-            if (File.Exists(newPath))
-                return;
-
-            // 기존 경로에 파일이 있으면 마이그레이션
-            if (File.Exists(oldPath))
-            {
-                var newDir = Path.GetDirectoryName(newPath);
-                if (!string.IsNullOrEmpty(newDir) && !Directory.Exists(newDir))
-                    Directory.CreateDirectory(newDir);
-
-                File.Copy(oldPath, newPath, overwrite: false);
-            }
-        }
-        catch
-        {
-            // 마이그레이션 실패는 무시
-        }
     }
 
     private static bool CheckLicenseAgreement()
