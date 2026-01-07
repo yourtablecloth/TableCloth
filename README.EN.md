@@ -38,6 +38,14 @@ To easily install and use TableCloth, we recommend installing via UniGetUI or Wi
 
 If you are familiar with using the winget command line, you can install it as follows.
 
+## Guide to Updating Website Information
+
+If you encounter issues related to specific websites accessible via TableCloth, please report or contribute using one of the following methods:
+
+* **Recommended**: [Open an issue or submit a PR to the TableCloth Catalog repository](https://github.com/yourtablecloth/TableClothCatalog)
+* [Report via Google Forms](https://forms.gle/Pw6pBKhqF1e5Nesw6)
+* [Report/Discuss via the Discord channel](https://discord.gg/eT2UnUXyTV)
+
 ## Build Environment
 
 * Visual Studio 2026 or later

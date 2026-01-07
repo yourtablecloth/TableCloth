@@ -42,6 +42,14 @@
 winget install TableClothProject.TableCloth
 ```
 
+## 웹 사이트 정보 수정 안내
+
+식탁보에서 접속할 수 있는 특정 웹 사이트와 관련된 문제는 다음 중 한 가지 방법을 통하여 제보 또는 기여를 부탁드립니다.
+
+* **권장**: [식탁보 카탈로그 리포지터리에 이슈 등록 또는 PR 제출](https://github.com/yourtablecloth/TableClothCatalog)
+* [Google Forms를 통한 제보](https://forms.gle/Pw6pBKhqF1e5Nesw6)
+* [Discord 채널을 통한 제보/토론](https://discord.gg/eT2UnUXyTV)
+
 ## 빌드 환경
 
 * Visual Studio 2026 이상
