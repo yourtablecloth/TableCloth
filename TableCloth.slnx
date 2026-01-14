@@ -4,12 +4,12 @@
     <Platform Name="x64" />
   </Configurations>
   <Folder Name="/Solution Items/">
+    <File Path="../DEVREADME.md" />
+    <File Path="../README.EN.md" />
+    <File Path="../README.md" />
     <File Path="Directory.Build.Props" />
   </Folder>
-  <Project Path="src/Spork.Test/Spork.Test.csproj" Id="6408b389-54a0-4804-b42e-8853404d0b75">
-    <Platform Solution="*|ARM64" Project="AnyCPU" />
-    <Platform Solution="*|x64" Project="AnyCPU" />
-  </Project>
+  <Project Path="src/Spork.Test/Spork.Test.csproj" Id="6408b389-54a0-4804-b42e-8853404d0b75" />
   <Project Path="src/Spork/Spork.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
