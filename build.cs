@@ -5,11 +5,11 @@ using System.Xml.Linq;
 
 // Configuration
 var appId = "TableCloth";
-var solutionFile = "TableCloth.sln";
-var mainProject = Path.Combine("TableCloth", "TableCloth.csproj");
-var iconPath = Path.Combine("TableCloth", "Resources", "SandboxIcon.ico");
+var solutionFile = "TableCloth.slnx";
+var mainProject = Path.Combine("src", "TableCloth", "TableCloth.csproj");
+var iconPath = Path.Combine("src", "TableCloth", "Resources", "SandboxIcon.ico");
 var directoryBuildProps = "Directory.Build.Props";
-var platforms = new[] { "x64" };
+var platforms = new[] { "x64", "arm64" };
 
 // Parse command line arguments
 var includeDebug = args.Contains("--debug") || args.Contains("-d");
@@ -31,7 +31,7 @@ if (showHelp)
     return 0;
 }
 
-var configurations = includeDebug ? new[] { "Debug", "Release" } : new[] { "Release" };
+var configurations = includeDebug ? ["Debug", "Release"] : new[] { "Release" };
 
 await RunBuildAsync(configurations, platforms, skipBuild);
 return 0;
@@ -41,9 +41,9 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
     var scriptDir = GetScriptDirectory();
     Directory.SetCurrentDirectory(scriptDir);
 
-    Console.WriteLine("========================================");
-    Console.WriteLine("TableCloth Build Script (.NET 10)");
-    Console.WriteLine("========================================");
+    Console.WriteLine("=======================");
+    Console.WriteLine("TableCloth Build Script");
+    Console.WriteLine("=======================");
     Console.WriteLine();
 
     // Install vpk CLI

@@ -15,13 +15,18 @@ on:
         - 'docs/**'
         - 'src/**'
         - 'tools/**'
+        - '*.slnx'
+        - '*.cs'
+        - '*.props'
     pull_request:
         paths:
         - '.github/workflows/**'
         - 'docs/**'
         - 'src/**'
         - 'tools/**'
-
+        - '*.slnx'
+        - '*.cs'
+        - '*.props'
 jobs:
   validate-version:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -36,9 +41,9 @@ jobs:
         TAG_VERSION="${GITHUB_REF#refs/tags/v}"
         
         # Extract individual version components from Directory.Build.props
-        VERSION_MAJOR=$(grep -oP '(?<=<TableClothVersionMajor>)[^<]+' src/Directory.Build.Props)
-        VERSION_MINOR=$(grep -oP '(?<=<TableClothVersionMinor>)[^<]+' src/Directory.Build.Props)
-        VERSION_PATCH=$(grep -oP '(?<=<TableClothVersionPatch>)[^<]+' src/Directory.Build.Props)
+        VERSION_MAJOR=$(grep -oP '(?<=<TableClothVersionMajor>)[^<]+' Directory.Build.Props)
+        VERSION_MINOR=$(grep -oP '(?<=<TableClothVersionMinor>)[^<]+' Directory.Build.Props)
+        VERSION_PATCH=$(grep -oP '(?<=<TableClothVersionPatch>)[^<]+' Directory.Build.Props)
         
         # Combine to form SemVer
         PROPS_VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
