@@ -1,7 +1,9 @@
 name: TableCloth Build Pipeline
 
 permissions:
-  contents: read
+  contents: write
+  id-token: write
+  attestations: write
 
 on:
     push:
@@ -174,11 +176,90 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
+    # Generate SBOM (Release builds only, for tagged releases)
+    - name: Generate SBOM
+      if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
+      uses: anchore/sbom-action@v0
+      with:
+        path: releases
+        artifact-name: sbom-${{ matrix.platform }}.spdx.json
+        output-file: sbom-${{ matrix.platform }}.spdx.json
+        format: spdx-json
+
+    # Generate Build Attestation (Release builds only, for tagged releases)
+    - name: Attest build provenance
+      if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
+      uses: actions/attest-build-provenance@v1
+      with:
+        subject-path: 'releases/*.exe'
+
     # Upload the Velopack package
     - name: Upload build artifacts (Velopack)
       uses: actions/upload-artifact@v4
       with:
-        name: Velopack Package Nightly (${{ matrix.platform }}, ${{ matrix.configuration }})
+        name: Velopack-${{ matrix.platform }}-${{ matrix.configuration }}
         path: "releases/*"
         if-no-files-found: error
         retention-days: 5
+
+    # Upload SBOM as artifact (Release builds only, for tagged releases)
+    - name: Upload SBOM artifact
+      if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: SBOM-${{ matrix.platform }}
+        path: "sbom-${{ matrix.platform }}.spdx.json"
+        if-no-files-found: error
+        retention-days: 90
+
+  create-release:
+    needs: [validate-version, build]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Organize release assets
+      run: |
+        mkdir -p release-assets
+        
+        # Copy Release builds only (x64 and arm64)
+        if [ -d "artifacts/Velopack-x64-Release" ]; then
+          cp artifacts/Velopack-x64-Release/* release-assets/
+          echo "Copied x64 Release assets"
+        fi
+        
+        if [ -d "artifacts/Velopack-arm64-Release" ]; then
+          cp artifacts/Velopack-arm64-Release/* release-assets/
+          echo "Copied arm64 Release assets"
+        fi
+        
+        # Copy SBOM files
+        if [ -d "artifacts/SBOM-x64" ]; then
+          cp artifacts/SBOM-x64/* release-assets/
+          echo "Copied x64 SBOM"
+        fi
+        
+        if [ -d "artifacts/SBOM-arm64" ]; then
+          cp artifacts/SBOM-arm64/* release-assets/
+          echo "Copied arm64 SBOM"
+        fi
+        
+        ls -la release-assets/
+      shell: bash
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        draft: true
+        generate_release_notes: true
+        files: release-assets/*
+        fail_on_unmatched_files: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

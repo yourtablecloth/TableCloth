@@ -2,8 +2,11 @@ name: Submit to winget-pkgs repo
 
 on:
   workflow_dispatch:
-  release:
-    types: [published]
+    inputs:
+      release_tag:
+        description: 'Release tag to publish (e.g., v1.16.2)'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -24,25 +27,32 @@ jobs:
           $ErrorActionPreference = 'Stop'
           
           $PACKAGE_ID = "TableClothProject.TableCloth"
+          $RELEASE_TAG = "${{ inputs.release_tag }}"
 
-          # Fetching latest release from GitHub
-          $response = Invoke-WebRequest -Uri "https://api.github.com/repos/yourtablecloth/TableCloth/releases" -UseBasicParsing
-          $releases = $response.Content | ConvertFrom-Json
-          
-          # Find the latest release with version tag
-          $latestRelease = $releases | Where-Object { $_.tag_name -match '^v[0-9.]+$' } | Select-Object -First 1
-          
-          if ($null -eq $latestRelease) {
-            Write-Host "No valid release found"
+          # Validate tag format
+          if ($RELEASE_TAG -notmatch '^v[0-9.]+$') {
+            Write-Host "Invalid release tag format: $RELEASE_TAG"
+            Write-Host "Expected format: v1.2.3"
             exit 1
           }
 
-          $PACKAGE_VERSION = $latestRelease.tag_name -replace '^v', ''
-          Write-Host "Found release version: $PACKAGE_VERSION"
+          # Fetching specified release from GitHub
+          $response = Invoke-WebRequest -Uri "https://api.github.com/repos/yourtablecloth/TableCloth/releases/tags/$RELEASE_TAG" -UseBasicParsing
+          $release = $response.Content | ConvertFrom-Json
+          
+          # Check if release is published (not draft)
+          if ($release.draft -eq $true) {
+            Write-Host "Release $RELEASE_TAG is still in draft state"
+            Write-Host "Please publish the release before submitting to winget"
+            exit 1
+          }
+
+          $PACKAGE_VERSION = $RELEASE_TAG -replace '^v', ''
+          Write-Host "Processing release version: $PACKAGE_VERSION"
 
           # Get Velopack Setup.exe installer URLs for each architecture
-          $x64Url = $latestRelease.assets | Where-Object { $_.name -match '.*x64\.exe$' -and $_.name -notmatch 'arm64' } | Select-Object -First 1 -ExpandProperty browser_download_url
-          $arm64Url = $latestRelease.assets | Where-Object { $_.name -match '.*arm64\.exe$' } | Select-Object -First 1 -ExpandProperty browser_download_url
+          $x64Url = $release.assets | Where-Object { $_.name -match '.*x64\.exe$' -and $_.name -notmatch 'arm64' } | Select-Object -First 1 -ExpandProperty browser_download_url
+          $arm64Url = $release.assets | Where-Object { $_.name -match '.*arm64\.exe$' } | Select-Object -First 1 -ExpandProperty browser_download_url
 
           if ([string]::IsNullOrEmpty($x64Url)) {
             Write-Host "x64 installer not found in release assets"
