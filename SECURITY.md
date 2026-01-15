@@ -13,15 +13,22 @@
 
 ## 지원되는 버전
 
-식탁보는 롤링 릴리스 모델을 따릅니다. 다음 버전에 대해 보안 업데이트를 제공합니다:
+식탁보는 롤링 릴리스 모델을 따르며, **현재 배포 중인 최신 메이저/마이너 버전만 보안 지원 대상**입니다. 이전 버전 사용자는 최신 버전으로 업데이트해야 보안 업데이트와 지원을 받을 수 있습니다.
 
 | 버전 | 지원 여부 | 상태 |
 | ------- | ------------------ | ------ |
-| 1.16.x | :white_check_mark: | 현재 안정 버전 |
-| 1.15.x | :white_check_mark: | 보안 업데이트만 제공 |
-| < 1.15 | :x: | 더 이상 지원하지 않음 |
+| 최신 릴리스 | :white_check_mark: | 현재 안정 버전 (전체 지원) |
+| 이전 릴리스 | :x: | 지원 종료 - 즉시 업데이트 필요 |
 
-**권장 사항**: 항상 [GitHub Releases](https://github.com/yourtablecloth/TableCloth/releases)에서 최신 버전을 사용하거나 WinGet을 통해 설치하세요:
+> **현재 최신 버전 확인**: [GitHub Releases 페이지](https://github.com/yourtablecloth/TableCloth/releases/latest)에서 최신 버전을 확인하세요.
+
+**중요**:
+
+- 새로운 메이저/마이너 버전이 출시되면 이전 버전에 대한 지원은 즉시 종료됩니다.
+- 보안 취약점 수정은 최신 버전에만 적용됩니다.
+- 패치 버전 업데이트(예: x.y.0 → x.y.1)는 동일한 메이저/마이너 버전으로 간주됩니다.
+
+**권장 사항**: 항상 최신 버전을 사용하세요. [GitHub Releases](https://github.com/yourtablecloth/TableCloth/releases)에서 다운로드하거나 WinGet을 통해 설치하세요:
 
 ```powershell
 winget install TableClothProject.TableCloth
