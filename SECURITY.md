@@ -27,6 +27,15 @@
 winget install TableClothProject.TableCloth
 ```
 
+### Windows 운영체제 지원 정책
+
+**중요**: 식탁보는 Windows Sandbox 기능에 의존합니다. Microsoft는 2025년 10월 14일부로 Windows 10의 지원을 종료했습니다. 이에 따라:
+
+- ✅ **Windows 11**: 전체 보안 지원 및 업데이트 제공
+- ⚠️ **Windows 10**: 더 이상 보안 고려 대상이 아니며, 보안 이슈에 대한 수정 및 지원 제공하지 않음
+
+Windows 10 사용자는 보안을 위해 Windows 11로 업그레이드할 것을 강력히 권장합니다. Windows 10에서 발생하는 보안 취약점은 Microsoft의 공식 지원 종료로 인해 해결되지 않을 수 있습니다.
+
 ## 보안 기능
 
 ### 빌드 보안
@@ -99,7 +108,8 @@ winget install TableClothProject.TableCloth
    - 공식 소스(GitHub Releases 또는 WinGet)에서만 다운로드
    - 공급망 보안을 위해 SBOM 및 출처 증명 확인
 3. **Windows Sandbox 요구 사항**:
-   - Windows 11 Pro/Education/Enterprise 사용
+   - **Windows 11 Pro/Education/Enterprise 사용 권장** (필수)
+   - Windows 10은 Microsoft 지원 종료로 인해 보안 고려 대상에서 제외됨
    - 최신 샌드박스 보안 패치를 위해 Windows 업데이트 유지
 4. **SmartScreen 경고**:
    - 코드 서명 인증서 비용 문제로 식탁보 바이너리는 서명되지 않음
