@@ -1,14 +1,19 @@
 # 식탁보 (TableCloth) - 컴퓨터를 안전하게 사용하세요
 
-> 알립니다: 물가 상승과 Authenticode 수령 정책 변경으로 Authenticode 인증서 갱신 비용이 너무 높아져서 Codesign 인증서를 애플리케이션 바이너리에 적용이 불가한 상황입니다. SmartScreen 경고가 나타나거나, 실행 중인 안티바이러스 소프트웨어에 의해 식탁보가 자동으로 종료되거나 제거될 수 있으니 사용 시 참고 부탁드립니다.
-> 알립니다: Microsoft Store 정책 변경으로 인하여 식탁보 최신 버전 업데이트가 어렵게 되었습니다. Microsoft Store 버전 식탁보 앱은 삭제하고, GitHub에서 릴리즈하는 버전으로 재설치하면 최신 기능을 안정적으로 이용하실 수 있습니다.
-> 알립니다: 1.13.0 버전 출시와 함께 식탁보 프로젝트는 듀얼 라이선스 모델로 변경하였습니다. AGPL 3.0 또는 상용 라이선스 중 택할 수 있습니다. 상용 라이선스 사용 시, 라이선스 파일에 기재된 연락처로 연락 부탁드립니다.
-
 [![식탁보 프로젝트 빌드 상황](https://github.com/yourtablecloth/TableCloth/actions/workflows/build.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
 [![식탁보 Discord](https://img.shields.io/discord/1443777680418930761?label=Discord&logo=discord&color=7289DA)](https://discord.gg/eT2UnUXyTV)
 [![식탁보 후원](https://img.shields.io/github/sponsors/yourtablecloth)](https://github.com/sponsors/yourtablecloth)
 [![식탁보 최신 버전 다운로드](https://img.shields.io/github/v/release/yourtablecloth/tablecloth)](https://github.com/yourtablecloth/TableCloth/releases)
 [![UniGetUI에서 다운로드](https://img.shields.io/badge/UniGetUI-TableCloth-blue)](https://marticliment.com/unigetui/share?name=TableCloth&id=TableClothProject.TableCloth&sourceName=winget&managerName=WinGet)
+
+> [!IMPORTANT]
+> 물가 상승과 Authenticode 수령 정책 변경으로 Authenticode 인증서 갱신 비용이 너무 높아져서 Codesign 인증서를 애플리케이션 바이너리에 적용이 불가한 상황입니다. SmartScreen 경고가 나타나거나, 실행 중인 안티바이러스 소프트웨어에 의해 식탁보가 자동으로 종료되거나 제거될 수 있으니 사용 시 참고 부탁드립니다.
+---
+> [!IMPORTANT]
+> Microsoft Store 정책 변경으로 인하여 식탁보 최신 버전 업데이트가 어렵게 되었습니다. Microsoft Store 버전 식탁보 앱은 삭제하고, GitHub에서 릴리즈하는 버전으로 재설치하면 최신 기능을 안정적으로 이용하실 수 있습니다.
+---
+> [!IMPORTANT]
+> 1.13.0 버전 출시와 함께 식탁보 프로젝트는 듀얼 라이선스 모델로 변경하였습니다. AGPL 3.0 또는 상용 라이선스 중 택할 수 있습니다. 상용 라이선스 사용 시, 라이선스 파일에 기재된 연락처로 연락 부탁드립니다.
 
 ![식탁보 실행 화면](docs/images/TableCloth.png)
 
