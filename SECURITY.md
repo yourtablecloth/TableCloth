@@ -15,11 +15,11 @@
 
 식탁보는 롤링 릴리스 모델을 따릅니다. 다음 버전에 대해 보안 업데이트를 제공합니다:
 
-| 버전    | 지원 여부          | 상태 |
+| 버전 | 지원 여부 | 상태 |
 | ------- | ------------------ | ------ |
-| 1.16.x  | :white_check_mark: | 현재 안정 버전 |
-| 1.15.x  | :white_check_mark: | 보안 업데이트만 제공 |
-| < 1.15  | :x:                | 더 이상 지원하지 않음 |
+| 1.16.x | :white_check_mark: | 현재 안정 버전 |
+| 1.15.x | :white_check_mark: | 보안 업데이트만 제공 |
+| < 1.15 | :x: | 더 이상 지원하지 않음 |
 
 **권장 사항**: 항상 [GitHub Releases](https://github.com/yourtablecloth/TableCloth/releases)에서 최신 버전을 사용하거나 WinGet을 통해 설치하세요:
 
@@ -95,13 +95,13 @@ winget install TableClothProject.TableCloth
 식탁보 사용 시:
 
 1. **최신 버전 유지**: 항상 최신 버전 사용
-2. **다운로드 확인**: 
+2. **다운로드 확인**:
    - 공식 소스(GitHub Releases 또는 WinGet)에서만 다운로드
    - 공급망 보안을 위해 SBOM 및 출처 증명 확인
-3. **Windows Sandbox 요구 사항**: 
+3. **Windows Sandbox 요구 사항**:
    - Windows 11 Pro/Education/Enterprise 사용
    - 최신 샌드박스 보안 패치를 위해 Windows 업데이트 유지
-4. **SmartScreen 경고**: 
+4. **SmartScreen 경고**:
    - 코드 서명 인증서 비용 문제로 식탁보 바이너리는 서명되지 않음
    - 주의를 기울이고 공식 소스에서 다운로드 확인
 5. **안티바이러스 소프트웨어**: 일부 안티바이러스가 서명되지 않은 바이너리를 차단할 수 있음 - 필요시 예외 추가
