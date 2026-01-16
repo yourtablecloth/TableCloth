@@ -7,7 +7,7 @@
 [![UniGetUI에서 다운로드](https://img.shields.io/badge/UniGetUI-TableCloth-blue)](https://marticliment.com/unigetui/share?name=TableCloth&id=TableClothProject.TableCloth&sourceName=winget&managerName=WinGet)
 
 > [!IMPORTANT]
-> 물가 상승과 Authenticode 수령 정책 변경으로 Authenticode 인증서 갱신 비용이 너무 높아져서 Codesign 인증서를 애플리케이션 바이너리에 적용이 불가한 상황입니다. SmartScreen 경고가 나타나거나, 실행 중인 안티바이러스 소프트웨어에 의해 식탁보가 자동으로 종료되거나 제거될 수 있으니 사용 시 참고 부탁드립니다.
+> 2026년 1월 17일부로 코드 서명 인증서를 Certum을 통해 발급받게 되었습니다. 1.14.0 버전부터 최신 버전까지 코드 서명을 적용한 EXE 파일로 교체하여 업로드를 진행하였습니다.
 ---
 > [!IMPORTANT]
 > Microsoft Store 정책 변경으로 인하여 식탁보 최신 버전 업데이트가 어렵게 되었습니다. Microsoft Store 버전 식탁보 앱은 삭제하고, GitHub에서 릴리즈하는 버전으로 재설치하면 최신 기능을 안정적으로 이용하실 수 있습니다.
@@ -112,3 +112,4 @@ GitHub Sponsorship을 통하여 후원해주시면 지속적으로 프로젝트�
 
 * TableCloth Logo by [Icons8](https://img.icons8.com/color/96/000000/tablecloth.png)
 * Spork New Logo by [Freepik Flaticon](https://www.flaticon.com/free-icon/spork_5625701)
+
