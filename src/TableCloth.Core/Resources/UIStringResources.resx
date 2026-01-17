@@ -675,4 +675,13 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="MappedFolder_AlreadyExists" xml:space="preserve">
     <value>This folder is already in the list.</value>
   </data>
+  <data name="AboutWindow_SponsorsTitle" xml:space="preserve">
+    <value>Sponsors</value>
+  </data>
+  <data name="AboutWindow_LoadingSponsorsMessage" xml:space="preserve">
+    <value>Loading sponsor information...</value>
+  </data>
+  <data name="AboutWindow_MoreSponsorsTooltip" xml:space="preserve">
+    <value>And more sponsors... Thank you!</value>
+  </data>
 </root>

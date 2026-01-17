@@ -26,6 +26,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -62,8 +63,46 @@
             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CatalogVersion}" FontWeight="SemiBold" />
         </Grid>
 
+        <!-- Sponsors Section -->
+        <Grid Grid.Row="3" Margin="0 0 0 10" Visibility="{Binding HasSponsors, Converter={StaticResource booleanToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="{x:Static res:UIStringResources.AboutWindow_SponsorsTitle}" FontWeight="SemiBold" Margin="0 0 0 6" />
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ItemsControl Grid.Column="0" ItemsSource="{Binding Sponsors}" MaxHeight="36" ClipToBounds="True">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0 0 8 4" Padding="6 4" Background="{DynamicResource InfoBannerBackground}" CornerRadius="4" BorderBrush="{DynamicResource InfoBannerBorder}" BorderThickness="1">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="24" Height="24" Margin="0 0 6 0">
+                                        <Ellipse.Fill>
+                                            <ImageBrush ImageSource="{Binding AvatarUrl}" />
+                                        </Ellipse.Fill>
+                                    </Ellipse>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Grid.Column="1" Text="..." VerticalAlignment="Center" FontWeight="Bold" Margin="4 0 0 0" 
+                           Foreground="{DynamicResource InfoBannerLinkForeground}" ToolTip="{x:Static res:UIStringResources.AboutWindow_MoreSponsorsTooltip}" />
+            </Grid>
+        </Grid>
+
         <!-- License Info Section -->
-        <Grid Grid.Row="3" Margin="0 0 0 10">
+        <Grid Grid.Row="4" Margin="0 0 0 10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -82,7 +121,7 @@
         </Grid>
 
         <!-- Buttons -->
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />

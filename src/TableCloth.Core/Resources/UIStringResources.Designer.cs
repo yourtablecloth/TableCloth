@@ -106,6 +106,33 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Sponsors과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string AboutWindow_SponsorsTitle {
+            get {
+                return ResourceManager.GetString("AboutWindow_SponsorsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Loading sponsor information...과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string AboutWindow_LoadingSponsorsMessage {
+            get {
+                return ResourceManager.GetString("AboutWindow_LoadingSponsorsMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   And more sponsors... Thank you!과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string AboutWindow_MoreSponsorsTooltip {
+            get {
+                return ResourceManager.GetString("AboutWindow_MoreSponsorsTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   About This Program과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string AboutWindow_Title {

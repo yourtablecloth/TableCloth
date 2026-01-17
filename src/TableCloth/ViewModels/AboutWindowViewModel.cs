@@ -1,11 +1,14 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using TableCloth.Components;
+using TableCloth.Models.Sponsors;
 using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
@@ -22,12 +25,14 @@ public partial class AboutWindowViewModel : ObservableObject
         IResourceResolver resourceResolver,
         ILicenseDescriptor licenseDescriptor,
         IAppMessageBox appMessageBox,
-        IAppUpdateManager appUpdateManager)
+        IAppUpdateManager appUpdateManager,
+        IHttpClientFactory httpClientFactory)
     {
         _resourceResolver = resourceResolver;
         _licenseDescriptor = licenseDescriptor;
         _appMessageBox = appMessageBox;
         _appUpdateManager = appUpdateManager;
+        _httpClientFactory = httpClientFactory;
         _licenseDetails = UIStringResources.AboutWindow_LoadingLicensesMessage;
     }
 
@@ -35,6 +40,7 @@ public partial class AboutWindowViewModel : ObservableObject
     private readonly ILicenseDescriptor _licenseDescriptor = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
     private readonly IAppUpdateManager _appUpdateManager = default!;
+    private readonly IHttpClientFactory _httpClientFactory = default!;
 
     [RelayCommand]
     private async Task OnAboutWindowLoaded()
@@ -42,6 +48,56 @@ public partial class AboutWindowViewModel : ObservableObject
         AppVersion = Helpers.GetAppVersion();
         CatalogDate = _resourceResolver.CatalogLastModified?.ToString("yyyy-MM-dd HH:mm:ss") ?? CommonStrings.UnknownText;
         LicenseDetails = await _licenseDescriptor.GetLicenseDescriptionsAsync();
+        await LoadSponsorsAsync();
+    }
+
+    private static readonly Random _random = new Random();
+
+    private static List<T> Shuffle<T>(List<T> list)
+    {
+        var shuffled = new List<T>(list);
+        int n = shuffled.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = _random.Next(n + 1);
+            T value = shuffled[k];
+            shuffled[k] = shuffled[n];
+            shuffled[n] = value;
+        }
+        return shuffled;
+    }
+
+    private async Task LoadSponsorsAsync()
+    {
+        try
+        {
+            using var httpClient = _httpClientFactory.CreateTableClothHttpClient();
+            var response = await httpClient.GetAsync(CommonStrings.SponsorsJsonUrl);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                HasSponsors = false;
+                return;
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var sponsorsDocument = SponsorsDocument.Parse(json);
+
+            if (sponsorsDocument?.Sponsors != null && sponsorsDocument.Sponsors.Count > 0)
+            {
+                Sponsors = Shuffle(sponsorsDocument.Sponsors);
+                HasSponsors = true;
+            }
+            else
+            {
+                HasSponsors = false;
+            }
+        }
+        catch
+        {
+            HasSponsors = false;
+        }
     }
 
     [RelayCommand]
@@ -119,4 +175,10 @@ public partial class AboutWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private string _licenseDetails = string.Empty;
+
+    [ObservableProperty]
+    private List<SponsorInfo> _sponsors = new();
+
+    [ObservableProperty]
+    private bool _hasSponsors = false;
 }

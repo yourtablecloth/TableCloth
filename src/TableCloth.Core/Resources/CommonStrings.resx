@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -185,5 +185,8 @@
   </data>
   <data name="SponsorshipUrl" xml:space="preserve">
     <value>https://github.com/sponsors/yourtablecloth</value>
+  </data>
+  <data name="SponsorsJsonUrl" xml:space="preserve">
+    <value>https://yourtablecloth.app/sponsors.json</value>
   </data>
 </root>
