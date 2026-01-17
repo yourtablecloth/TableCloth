@@ -869,6 +869,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Loading catalog...과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MainWindow_LoadingCatalog {
+            get {
+                return ResourceManager.GetString("MainWindow_LoadingCatalog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Keep Your Computer Sound &amp; Safe!과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string MainWindow_Title {

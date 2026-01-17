@@ -356,6 +356,9 @@
   <data name="MainWindow_SelectSiteLabelText_Alt2" xml:space="preserve">
     <value>카탈로그 파일을 가져오지 못했어요!</value>
   </data>
+  <data name="MainWindow_LoadingCatalog" xml:space="preserve">
+    <value>카탈로그를 불러오는 중이에요...</value>
+  </data>
   <data name="MainWindow_Title" xml:space="preserve">
     <value>식탁보 - 컴퓨터를 안전하게 사용하세요!</value>
   </data>

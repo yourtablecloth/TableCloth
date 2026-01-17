@@ -1,4 +1,4 @@
-﻿using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,40 +60,57 @@ public partial class CatalogPageViewModel : ObservableObject
     [RelayCommand]
     private async Task CatalogPageLoaded()
     {
-        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
-        currentConfig ??= _preferencesManager.GetDefaultPreferences();
+        IsLoading = true;
+        HasCatalogLoadFailed = false;
 
-        var doc = _resourceCacheManager.CatalogDocument;
-        var services = doc.Services.OrderBy(service =>
+        try
         {
-            var fieldInfo = typeof(CatalogInternetServiceCategory).GetField(service.Category.ToString());
+            var currentConfig = await _preferencesManager.LoadPreferencesAsync();
+            currentConfig ??= _preferencesManager.GetDefaultPreferences();
 
-            if (fieldInfo == null)
-                return default;
+            var doc = _resourceCacheManager.CatalogDocument;
+            var services = doc.Services.OrderBy(service =>
+            {
+                var fieldInfo = typeof(CatalogInternetServiceCategory).GetField(service.Category.ToString());
 
-            var customAttribute = fieldInfo.GetCustomAttribute<EnumDisplayOrderAttribute>();
+                if (fieldInfo == null)
+                    return default;
 
-            if (customAttribute == null)
-                return default;
+                var customAttribute = fieldInfo.GetCustomAttribute<EnumDisplayOrderAttribute>();
 
-            return customAttribute.Order;
-        }).ToList();
+                if (customAttribute == null)
+                    return default;
 
-        ShowFavoritesOnly = currentConfig.ShowFavoritesOnly;
-        Services = services;
+                return customAttribute.Order;
+            }).ToList();
 
-        foreach (var eachFavoriteServce in services)
-            eachFavoriteServce.IsFavorite = currentConfig.Favorites.Contains(eachFavoriteServce.Id, StringComparer.OrdinalIgnoreCase);
+            ShowFavoritesOnly = currentConfig.ShowFavoritesOnly;
+            Services = services;
 
-        PropertyChanged += ViewModel_PropertyChanged;
+            foreach (var eachFavoriteServce in services)
+                eachFavoriteServce.IsFavorite = currentConfig.Favorites.Contains(eachFavoriteServce.Id, StringComparer.OrdinalIgnoreCase);
 
-        var view = (CollectionView)CollectionViewSource.GetDefaultView(Services);
-        if (view != null)
+            PropertyChanged += ViewModel_PropertyChanged;
+
+            var view = (CollectionView)CollectionViewSource.GetDefaultView(Services);
+            if (view != null)
+            {
+                view.Filter = (item) => CatalogInternetService.IsMatchedItem(item, SearchKeyword, ShowFavoritesOnly);
+
+                if (!view.GroupDescriptions.Contains(GroupDescription))
+                    view.GroupDescriptions.Add(GroupDescription);
+            }
+
+            if (!HasServices)
+                HasCatalogLoadFailed = true;
+        }
+        catch
         {
-            view.Filter = (item) => CatalogInternetService.IsMatchedItem(item, SearchKeyword, ShowFavoritesOnly);
-
-            if (!view.GroupDescriptions.Contains(GroupDescription))
-                view.GroupDescriptions.Add(GroupDescription);
+            HasCatalogLoadFailed = true;
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
@@ -166,6 +183,12 @@ public partial class CatalogPageViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _showFavoritesOnly = default;
+
+    [ObservableProperty]
+    private bool _isLoading = true;
+
+    [ObservableProperty]
+    private bool _hasCatalogLoadFailed = false;
 
     public CatalogInternetServiceCategory? SelectedServiceCategory
         => SelectedService?.Category;
