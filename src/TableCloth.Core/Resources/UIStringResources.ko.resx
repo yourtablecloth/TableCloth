@@ -677,4 +677,34 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="MappedFolder_AlreadyExists" xml:space="preserve">
     <value>이 폴더는 이미 목록에 있습니다.</value>
   </data>
+  <data name="AboutWindow_SponsorsTitle" xml:space="preserve">
+    <value>도움 주시는 분들</value>
+  </data>
+  <data name="AboutWindow_LoadingSponsorsMessage" xml:space="preserve">
+    <value>스폰서 정보를 불러오고 있습니다...</value>
+  </data>
+  <data name="AboutWindow_MoreSponsorsTooltip" xml:space="preserve">
+    <value>외 많은 분들... 고맙습니다!</value>
+  </data>
+  <data name="SiteReport_WindowTitle" xml:space="preserve">
+    <value>새 웹 사이트 제보</value>
+  </data>
+  <data name="SiteReport_Description" xml:space="preserve">
+    <value>보안 소프트웨어가 필요한 새로운 웹 사이트를 제보하시겠습니까? 아래 옵션 중 하나를 선택하여 제보해 주세요.</value>
+  </data>
+  <data name="SiteReport_GoogleFormsButton" xml:space="preserve">
+    <value>Google Forms로 제보하기</value>
+  </data>
+  <data name="SiteReport_GoogleFormsDescription" xml:space="preserve">
+    <value>빠르고 쉬운 제보 방법입니다. GitHub 계정이 필요하지 않습니다.</value>
+  </data>
+  <data name="SiteReport_GitHubIssueButton" xml:space="preserve">
+    <value>GitHub Issue로 제보하기</value>
+  </data>
+  <data name="SiteReport_GitHubIssueDescription" xml:space="preserve">
+    <value>상세한 제보나 기술적인 논의가 필요한 경우 사용합니다. GitHub 계정이 필요합니다.</value>
+  </data>
+  <data name="Button_ReportSiteButton" xml:space="preserve">
+    <value>사이트 제보</value>
+  </data>
 </root>

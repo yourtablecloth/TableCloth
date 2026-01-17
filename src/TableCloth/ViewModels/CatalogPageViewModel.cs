@@ -155,6 +155,13 @@ public partial class CatalogPageViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ReportSite()
+    {
+        var siteReportWindow = _appUserInterface.CreateSiteReportWindow();
+        siteReportWindow.ShowDialog();
+    }
+
+    [RelayCommand]
     private void ShowDebugInfo()
     {
         _appMessageBox.DisplayInfo(StringResources.TableCloth_DebugInformation(

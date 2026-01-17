@@ -102,6 +102,7 @@ internal static class Program
                 .AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>()
                 .AddWindow<AboutWindow, AboutWindowViewModel>()
                 .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
+                .AddWindow<SiteReportWindow>()
                 .AddWindow<MainWindow, MainWindowViewModel>()
                 .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
                 .AddPage<DetailPage, DetailPageViewModel>()

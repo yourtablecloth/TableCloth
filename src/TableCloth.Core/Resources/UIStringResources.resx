@@ -687,4 +687,25 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="AboutWindow_MoreSponsorsTooltip" xml:space="preserve">
     <value>And more sponsors... Thank you!</value>
   </data>
+  <data name="SiteReport_WindowTitle" xml:space="preserve">
+    <value>Report a New Website</value>
+  </data>
+  <data name="SiteReport_Description" xml:space="preserve">
+    <value>Would you like to report a new website that requires special security software? Choose one of the options below to submit your report.</value>
+  </data>
+  <data name="SiteReport_GoogleFormsButton" xml:space="preserve">
+    <value>Report via Google Forms</value>
+  </data>
+  <data name="SiteReport_GoogleFormsDescription" xml:space="preserve">
+    <value>Quick and easy way to report a new website. No GitHub account required.</value>
+  </data>
+  <data name="SiteReport_GitHubIssueButton" xml:space="preserve">
+    <value>Report via GitHub Issue</value>
+  </data>
+  <data name="SiteReport_GitHubIssueDescription" xml:space="preserve">
+    <value>For detailed reports or technical discussions. GitHub account required.</value>
+  </data>
+  <data name="Button_ReportSiteButton" xml:space="preserve">
+    <value>Report Site</value>
+  </data>
 </root>

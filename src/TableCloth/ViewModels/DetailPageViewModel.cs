@@ -1,4 +1,4 @@
-﻿using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -167,6 +167,13 @@ public partial class DetailPageViewModel : ObservableObject
 
         if (certSelectWindow.ViewModel.SelectedCertPair != null)
             SelectedCertFile = certSelectWindow.ViewModel.SelectedCertPair;
+    }
+
+    [RelayCommand]
+    private void ReportSite()
+    {
+        var siteReportWindow = _appUserInterface.CreateSiteReportWindow();
+        siteReportWindow.ShowDialog();
     }
 
     [ObservableProperty]

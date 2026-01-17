@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 using System.Windows;
@@ -42,6 +42,18 @@ internal static class Extensions
             services.AddTransient(viewModelImplementationFactory);
         else
             services.AddTransient<TViewModel>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddWindow<TWindow>(this IServiceCollection services,
+        Func<IServiceProvider, TWindow>? windowImplementationFactory = default)
+        where TWindow : Window
+    {
+        if (windowImplementationFactory != null)
+            services.AddTransient(windowImplementationFactory);
+        else
+            services.AddTransient<TWindow>();
 
         return services;
     }

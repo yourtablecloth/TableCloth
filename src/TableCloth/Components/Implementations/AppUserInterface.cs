@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Windows;
@@ -45,6 +45,9 @@ public sealed class AppUserInterface(
 
     public DisclaimerWindow CreateDisclaimerWindow()
         => SetOwnerIfAvailable(serviceProvider.GetRequiredService<DisclaimerWindow>());
+
+    public SiteReportWindow CreateSiteReportWindow()
+        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<SiteReportWindow>());
 
     public SplashScreen CreateSplashScreen()
         => SetOwnerIfAvailable(serviceProvider.GetRequiredService<SplashScreen>());

@@ -175,7 +175,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="45"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="45" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150" />
@@ -205,18 +205,32 @@
             <RadioButton Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Other}" Click="CategoryRadioButton_Click" Margin="8" BorderBrush="Transparent" Background="Transparent" IsChecked="{Binding Path=SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Other}" Content="{x:Static res:CommonStrings.DisplayName_Other}" />
             <CheckBox FocusVisualStyle="{x:Null}" Margin="8" IsChecked="{Binding ShowFavoritesOnly}" Content="{x:Static res:UIStringResources.MainWindow_Favorites}"></CheckBox>
         </StackPanel>
-        <UniformGrid Grid.Row="3" Grid.Column="0" Margin="4" Rows="1">
-            <Button Content="{x:Static res:UIStringResources.Button_AboutButton}" Command="{Binding AboutThisAppCommand}">
-                <Button.CommandParameter>
-                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
-                </Button.CommandParameter>
-            </Button>
-            <Button Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Margin="5 0 0 0 " Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Button.CommandParameter>
-                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
-                </Button.CommandParameter>
-            </Button>
-        </UniformGrid>
+        <StackPanel Grid.Row="3" Grid.Column="0" Margin="8" VerticalAlignment="Bottom">
+            <TextBlock Margin="0 2">
+                <Hyperlink Command="{Binding AboutThisAppCommand}">
+                    <Hyperlink.CommandParameter>
+                        <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                    </Hyperlink.CommandParameter>
+                    <Run Text="{x:Static res:UIStringResources.Button_AboutButton}" />
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock Margin="0 2">
+                <Hyperlink Command="{Binding ReportSiteCommand}">
+                    <Hyperlink.CommandParameter>
+                        <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                    </Hyperlink.CommandParameter>
+                    <Run Text="{x:Static res:UIStringResources.Button_ReportSiteButton}" />
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock Margin="0 2" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Hyperlink Command="{Binding ShowDebugInfoCommand}">
+                    <Hyperlink.CommandParameter>
+                        <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                    </Hyperlink.CommandParameter>
+                    <Run Text="{x:Static res:UIStringResources.Button_DebugButton}" />
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
         <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}" Width="Auto" Margin="0 8 8 8" VerticalContentAlignment="Center" GotKeyboardFocus="SiteCatalogFilter_GotKeyboardFocus" LostMouseCapture="SiteCatalogFilter_LostMouseCapture" LostKeyboardFocus="SiteCatalogFilter_LostKeyboardFocus" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" d:Visibility="Visible">
             <TextBox.Style>
                 <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">

@@ -1,4 +1,4 @@
-﻿using TableCloth.Dialogs;
+using TableCloth.Dialogs;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
@@ -17,5 +17,6 @@ public interface IAppUserInterface
     DetailPageViewModel CreateDetailPageViewModel(CatalogInternetService selectedService, CommandLineArgumentModel? commandLineArgumentModel);
     DisclaimerWindow CreateDisclaimerWindow();
     InputPasswordWindow CreateInputPasswordWindow();
+    SiteReportWindow CreateSiteReportWindow();
     SplashScreen CreateSplashScreen();
 }
