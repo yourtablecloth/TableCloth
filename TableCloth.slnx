@@ -4,10 +4,11 @@
     <Platform Name="x64" />
   </Configurations>
   <Folder Name="/Solution Items/">
-    <File Path="../DEVREADME.md" />
-    <File Path="../README.EN.md" />
-    <File Path="../README.md" />
+    <File Path="privacy.md" />
+    <File Path="README.md" />
+    <File Path="DEVELOPMENT.md" />
     <File Path="Directory.Build.Props" />
+    <File Path="SECURITY.md" />
   </Folder>
   <Project Path="src/Spork.Test/Spork.Test.csproj" Id="6408b389-54a0-4804-b42e-8853404d0b75" />
   <Project Path="src/Spork/Spork.csproj">
@@ -20,7 +21,7 @@
     <Platform Solution="*|x64" Project="x64" />
   </Project>
   <Project Path="src/TableCloth/TableCloth.csproj">
-    <BuildDependency Project="Spork/Spork.csproj" />
+    <BuildDependency Project="src/Spork/Spork.csproj" />
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
   </Project>
