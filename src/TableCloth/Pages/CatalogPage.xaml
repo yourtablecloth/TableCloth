@@ -1,4 +1,4 @@
-﻿<Page x:Class="TableCloth.Pages.CatalogPage"
+<Page x:Class="TableCloth.Pages.CatalogPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -183,23 +183,14 @@
             <ColumnDefinition Width="30*" />
         </Grid.ColumnDefinitions>
         
-        <!-- Sponsor Banner -->
+        <!-- Info Banner -->
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" 
-                Background="{DynamicResource ControlBrightDefaultBackground}" 
-                BorderBrush="{DynamicResource ControlBrightDefaultBorderBrush}" 
-                BorderThickness="0 0 0 1" Padding="8 6" Cursor="Hand"
-                MouseLeftButtonUp="SponsorBanner_MouseLeftButtonUp">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap">
-                    <Run Text="💖" />
-                    <Run Text="{x:Static res:UIStringResources.Sponsor_BannerMessage}" />
-                </TextBlock>
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Foreground="#E91E63" FontWeight="Bold" Text="{x:Static res:UIStringResources.Sponsor_BannerLinkText}" />
-            </Grid>
+                Background="{DynamicResource InfoBannerBackground}" 
+                BorderBrush="{DynamicResource InfoBannerBorder}" 
+                BorderThickness="0 0 0 1" Padding="8 6">
+            <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource InfoBannerForeground}">
+                <Run Text="ⓘ" FontWeight="Bold" Foreground="{DynamicResource InfoBannerLinkForeground}" /><Run Text=" " /><Run Text="{x:Static res:UIStringResources.Sponsor_BannerMessage}" /><Run Text=" " /><Hyperlink Click="SponsorBanner_MouseLeftButtonUp" Foreground="{DynamicResource InfoBannerLinkForeground}" FontWeight="SemiBold"><Run Text="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}" /></Hyperlink>
+            </TextBlock>
         </Border>
         
         <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="8 0 8 0" FontWeight="Bold" TextWrapping="Wrap" Visibility="{Binding HasServices, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{x:Static res:UIStringResources.CatalogPage_Instruction}" d:Visibility="Visible" />

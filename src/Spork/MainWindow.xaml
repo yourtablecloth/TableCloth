@@ -37,23 +37,14 @@
             <RowDefinition Height="55"/>
         </Grid.RowDefinitions>
         
-        <!-- Sponsor Banner -->
+        <!-- Info Banner -->
         <Border Grid.Row="0" Grid.ColumnSpan="2" 
-                Background="{DynamicResource ControlBrightDefaultBackground}" 
-                BorderBrush="{DynamicResource ControlBrightDefaultBorderBrush}" 
-                BorderThickness="0 0 0 1" Padding="8 6" Cursor="Hand"
-                MouseLeftButtonUp="SponsorBanner_MouseLeftButtonUp">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11">
-                    <Run Text="💖" />
-                    <Run Text="{x:Static res:UIStringResources.Sponsor_BannerShortMessage}" />
-                </TextBlock>
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="5 0 0 0" Foreground="#E91E63" FontWeight="Bold" FontSize="11" Text="{x:Static res:UIStringResources.Sponsor_BannerArrow}" />
-            </Grid>
+                Background="{DynamicResource InfoBannerBackground}" 
+                BorderBrush="{DynamicResource InfoBannerBorder}" 
+                BorderThickness="0 0 0 1" Padding="8 6">
+            <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource InfoBannerForeground}">
+                <Run Text="ⓘ" FontWeight="Bold" Foreground="{DynamicResource InfoBannerLinkForeground}" /><Run Text=" " /><Run Text="{x:Static res:UIStringResources.Sponsor_BannerShortMessage}" /><Run Text=" " /><Hyperlink Click="SponsorBanner_MouseLeftButtonUp" Foreground="{DynamicResource InfoBannerLinkForeground}" FontWeight="SemiBold" FontSize="11"><Run Text="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}" /></Hyperlink>
+            </TextBlock>
         </Border>
         
         <Label Grid.Row="1" Grid.ColumnSpan="2" Background="{Binding Source={x:Static SystemColors.ActiveBorderBrush}}" Foreground="{Binding Source={x:Static SystemColors.ActiveCaptionTextBrush}}">

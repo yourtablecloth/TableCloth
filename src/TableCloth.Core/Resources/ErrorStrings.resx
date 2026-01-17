@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -287,5 +287,8 @@ If the device or disk is stolen, forensics may reveal sensitive data, so be sure
   </data>
   <data name="Error_Sponge_NotEligible" xml:space="preserve">
     <value>This program is designed to run only in a Windows Sandbox environment.</value>
+  </data>
+  <data name="Error_MappedFolder_DuplicateLeafName" xml:space="preserve">
+    <value>The following mapped folders have the same folder name. Windows Sandbox cannot mount folders with duplicate names to the default Desktop location. Please specify different sandbox paths for these folders or exclude one of them:</value>
   </data>
 </root>

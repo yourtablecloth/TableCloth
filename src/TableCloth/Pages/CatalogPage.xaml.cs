@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -195,13 +195,13 @@ public partial class CatalogPage : Page
     private void SiteCatalog_LostFocus(object sender, RoutedEventArgs e)
         => UpdateLabelPopup();
 
-    private void SponsorBanner_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    private void SponsorBanner_MouseLeftButtonUp(object sender, RoutedEventArgs e)
     {
         try
         {
             Process.Start(new ProcessStartInfo
             {
-                FileName = "https://github.com/sponsors/yourtablecloth",
+                FileName = "https://yourtablecloth.app/#sponsor",
                 UseShellExecute = true,
             });
         }

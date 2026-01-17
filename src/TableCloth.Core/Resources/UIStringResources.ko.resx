@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -124,16 +124,13 @@
     <value>카탈로그 버전</value>
   </data>
   <data name="Sponsor_BannerMessage" xml:space="preserve">
-    <value>식탁보 프로젝트가 도움이 되셨나요? GitHub Sponsors를 통해 후원해주시면 프로젝트 지속에 큰 힘이 됩니다!</value>
-  </data>
-  <data name="Sponsor_BannerLinkText" xml:space="preserve">
-    <value>후원하기 →</value>
+    <value>개인 개발자가 유지·관리하는 무료 공개 소프트웨어입니다.</value>
   </data>
   <data name="Sponsor_BannerShortMessage" xml:space="preserve">
-    <value>식탁보 프로젝트 후원하기</value>
+    <value>개인 개발자가 유지·관리하는 무료 공개 소프트웨어입니다.</value>
   </data>
-  <data name="Sponsor_BannerArrow" xml:space="preserve">
-    <value>→</value>
+  <data name="Sponsor_BannerDetailLink" xml:space="preserve">
+    <value>(자세히...)</value>
   </data>
   <data name="AboutWindow_CopyrightText" xml:space="preserve">
     <value>© 2021-2025 rkttu.com. All rights reserved.</value>

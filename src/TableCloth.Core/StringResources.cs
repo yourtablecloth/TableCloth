@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -78,22 +78,8 @@ namespace TableCloth.Resources
                     buffer.AppendLine($"- {hostFolder}");
             }
 
-            return Error_MappedFolder_DuplicateLeafName_Message + Environment.NewLine +
+            return ErrorStrings.Error_MappedFolder_DuplicateLeafName + Environment.NewLine +
                 Environment.NewLine + buffer.ToString();
-        }
-
-        // 폴더 매핑 중복 이름 오류 메시지 (리소스 파일에 추가하기 전까지 임시로 여기에 정의)
-        private static string Error_MappedFolder_DuplicateLeafName_Message
-        {
-            get
-            {
-                var culture = System.Globalization.CultureInfo.CurrentUICulture;
-                if (culture.Name.StartsWith("ko", StringComparison.OrdinalIgnoreCase))
-                {
-                    return "다음의 폴더 매핑에 동일한 폴더 이름이 존재합니다. Windows Sandbox는 기본 바탕 화면 위치에 동일한 이름의 폴더를 마운트할 수 없습니다. 다른 샌드박스 경로를 지정하거나 폴더 중 하나를 제외해 주세요:";
-                }
-                return "The following mapped folders have the same folder name. Windows Sandbox cannot mount folders with duplicate names to the default Desktop location. Please specify different sandbox paths for these folders or exclude one of them:";
-            }
         }
 
         public static string Error_Unknown(string file, string member, int line)
