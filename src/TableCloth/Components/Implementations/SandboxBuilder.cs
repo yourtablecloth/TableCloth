@@ -186,6 +186,10 @@ rmdir /q ""{certStagingPath}""
 
         return $@"@echo off
 pushd ""%~dp0""
+
+REM Configure DNS servers (Google DNS, Cloudflare DNS)
+powershell -Command ""Get-NetAdapter | Where-Object {{$_.Status -eq 'Up'}} | Set-DnsClientServerAddress -ServerAddresses ('8.8.8.8','1.1.1.1')"" 2>nul
+
 {certFileMoveScript}
 ""{sporkFilePath}"" {idList} {string.Join(" ", switches)}
 :exit
