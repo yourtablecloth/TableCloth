@@ -1,4 +1,4 @@
-﻿using Spork.Browsers;
+using Spork.Browsers;
 using Spork.Components;
 using Spork.ViewModels;
 using System;
@@ -123,15 +123,13 @@ namespace Spork.Steps.Implementations
                 finally { eachItem.ShowProgress = false; }
             }
 
-            IsRunning = false;
+        IsRunning = false;
 
-            if (!hasAnyFailure)
-            {
-                var targets = parsedArgs.SelectedServices;
+            // 설치 성공 여부와 관계없이 항상 웹 사이트를 열어줍니다.
+            var targets = parsedArgs.SelectedServices;
 
-                foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
-                    Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(eachUrl, ProcessWindowStyle.Maximized));
-            }
+            foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
+                Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(eachUrl, ProcessWindowStyle.Maximized));
 
             return hasAnyFailure;
         }
