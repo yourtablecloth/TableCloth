@@ -87,7 +87,6 @@ namespace Spork
                     .AddSingleton<IMessageBoxService, MessageBoxService>()
                     .AddSingleton<IAppUserInterface, AppUserInterface>()
                     .AddSingleton<ILicenseDescriptor, LicenseDescriptor>()
-                    .AddSingleton<ICriticalServiceProtector, CriticalServiceProtector>()
                     .AddSingleton<IVisualThemeManager, VisualThemeManager>()
                     .AddSingleton<ISharedLocations, SharedLocations>()
                     .AddSingleton<IAppStartup, AppStartup>()
@@ -116,8 +115,7 @@ namespace Spork
                     .AddKeyedSingleton<IStep, PowerShellScriptRunStep>(nameof(PowerShellScriptRunStep))
                     .AddKeyedSingleton<IStep, PrepareDirectoriesStep>(nameof(PrepareDirectoriesStep))
                     .AddKeyedSingleton<IStep, ReloadEdgeStep>(nameof(ReloadEdgeStep))
-                    .AddKeyedSingleton<IStep, SetDesktopWallpaperStep>(nameof(SetDesktopWallpaperStep))
-                    .AddKeyedSingleton<IStep, TryProtectCriticalServicesStep>(nameof(TryProtectCriticalServicesStep));
+                    .AddKeyedSingleton<IStep, SetDesktopWallpaperStep>(nameof(SetDesktopWallpaperStep));
 
                 // UI
                 builder.Services

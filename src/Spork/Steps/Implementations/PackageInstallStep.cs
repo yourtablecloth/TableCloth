@@ -1,4 +1,4 @@
-﻿using Spork.Components;
+using Spork.Components;
 using Spork.ViewModels;
 using System;
 using System.Diagnostics;
@@ -97,13 +97,20 @@ namespace Spork.Steps.Implementations
                 process.Exited += (_sender, _e) =>
                 {
                     var realSender = _sender as Process;
-                    cpSource.SetResult(realSender.ExitCode);
+                    cpSource.TrySetResult(realSender.ExitCode);
                 };
 
                 if (!process.Start())
                     TableClothAppException.Throw(ErrorStrings.Error_Package_CanNotStart);
 
-                await cpSource.Task.ConfigureAwait(false);
+                // 프로세스가 이미 종료된 경우를 처리 (레이스 컨디션 방지)
+                if (process.HasExited)
+                    cpSource.TrySetResult(process.ExitCode);
+
+                using (cancellationToken.Register(() => cpSource.TrySetCanceled(cancellationToken)))
+                {
+                    await cpSource.Task.ConfigureAwait(false);
+                }
             }
         }
 

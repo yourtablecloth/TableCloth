@@ -1,4 +1,4 @@
-﻿using Spork.Components;
+using Spork.Components;
 using Spork.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -49,13 +49,6 @@ namespace Spork.Steps.Implementations
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_DisableSmartAppControl,
-                },
-                new StepItemViewModel()
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(TryProtectCriticalServicesStep)),
-                    Argument = new InstallItemViewModel(),
-                    TargetSiteName = UIStringResources.Option_Prerequisites,
-                    PackageName = UIStringResources.Install_TryProtectCriticalServices,
                 },
                 new StepItemViewModel()
                 {
