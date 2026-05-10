@@ -108,6 +108,18 @@
 	  <ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
 	</ItemGroup>
 
+	<Target Name="UpdateManifestVersion" BeforeTargets="PreBuild">
+		<PropertyGroup>
+			<!-- AssemblyVersion (from Directory.Build.Props) is already 4-part. -->
+			<ManifestVersion Condition="'$(ManifestVersion)' == ''">$(AssemblyVersion)</ManifestVersion>
+			<ManifestVersion Condition="'$(ManifestVersion)' == ''">1.0.0.0</ManifestVersion>
+		</PropertyGroup>
+		<WriteLinesToFile File="$(IntermediateOutputPath)app.manifest" Lines="$([System.IO.File]::ReadAllText('$(ProjectDir)app.manifest').Replace('$version$', '$(ManifestVersion)'))" Overwrite="true" />
+		<PropertyGroup>
+			<ApplicationManifest>$(IntermediateOutputPath)app.manifest</ApplicationManifest>
+		</PropertyGroup>
+	</Target>
+
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;" />
 	</Target>

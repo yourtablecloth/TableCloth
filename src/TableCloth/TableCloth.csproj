@@ -88,14 +88,11 @@
 	</ItemGroup>
 	<Target Name="UpdateManifestVersion" BeforeTargets="PreBuild">
 		<PropertyGroup>
-			<ManifestVersion Condition="'$(Version)' != ''">$(Version)</ManifestVersion>
-			<ManifestVersion Condition="'$(ManifestVersion)' == '' OR !$(ManifestVersion.Contains('.'))">1.0.0.0</ManifestVersion>
-			<ManifestVersion Condition="!$(ManifestVersion.Contains('.'))">$(ManifestVersion).0.0.0</ManifestVersion>
+			<!-- AssemblyVersion (from Directory.Build.Props) is already 4-part. -->
+			<ManifestVersion Condition="'$(ManifestVersion)' == ''">$(AssemblyVersion)</ManifestVersion>
+			<ManifestVersion Condition="'$(ManifestVersion)' == ''">1.0.0.0</ManifestVersion>
 		</PropertyGroup>
 		<WriteLinesToFile File="$(IntermediateOutputPath)app.manifest" Lines="$([System.IO.File]::ReadAllText('$(ProjectDir)app.manifest').Replace('$version$', '$(ManifestVersion)'))" Overwrite="true" />
-		<ItemGroup>
-			<None Remove="app.manifest" />
-		</ItemGroup>
 		<PropertyGroup>
 			<ApplicationManifest>$(IntermediateOutputPath)app.manifest</ApplicationManifest>
 		</PropertyGroup>
