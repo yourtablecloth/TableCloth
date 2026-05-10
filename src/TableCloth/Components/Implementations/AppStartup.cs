@@ -78,8 +78,13 @@ public sealed class AppStartup : IAppStartup
             else if (currentUICulture.Name.StartsWith("zh", StringComparison.Ordinal))
                 testUri = "http://www.baidu.com";
 
+            // Hard-cap the probe at 5s so users behind firewalls / blocked regions
+            // don't block app startup on HttpClient's default 100s timeout.
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutCts.CancelAfter(TimeSpan.FromSeconds(5));
+
             var client = _httpClientFactory.CreateTableClothHttpClient();
-            using var response = await client.GetAsync(new Uri(testUri, UriKind.Absolute), cancellationToken).ConfigureAwait(false);
+            using var response = await client.GetAsync(new Uri(testUri, UriKind.Absolute), timeoutCts.Token).ConfigureAwait(false);
             return response.IsSuccessStatusCode;
         }
         catch
