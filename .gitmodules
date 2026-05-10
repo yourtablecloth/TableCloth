@@ -1,0 +1,5 @@
+[submodule "external/TableClothCatalog"]
+	path = external/TableClothCatalog
+	url = https://github.com/yourtablecloth/TableClothCatalog.git
+	branch = main
+	shallow = true

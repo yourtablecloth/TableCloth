@@ -101,7 +101,43 @@
 		</PropertyGroup>
 	</Target>
 
+	<PropertyGroup>
+		<CatalogSubmoduleDir>$(SolutionDir)external\TableClothCatalog</CatalogSubmoduleDir>
+		<CatalogBuildOutputDir>$(MSBuildProjectDirectory)\obj\CatalogBuild</CatalogBuildOutputDir>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<_CatalogImageInputs Include="$(CatalogSubmoduleDir)\docs\images\**\*.png" />
+		<_CatalogImageInputs Include="$(CatalogSubmoduleDir)\docs\Catalog.xml" />
+		<_CatalogImageInputs Include="$(CatalogSubmoduleDir)\src\catalogutil.cs" />
+	</ItemGroup>
+
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;&#xD;&#xA;&#xD;&#xA;dir &quot;$(SolutionDir)Artifacts\Spork.zip&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)Artifacts\Spork.zip&quot; &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;&#xD;&#xA;curl.exe -L https://yourtablecloth.app/TableClothCatalog/Images.zip -o &quot;$(ProjectDir)Images.zip&quot;&#xD;&#xA;" />
+		<Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;" />
+
+		<Exec Command="dir &quot;$(SolutionDir)Artifacts\Spork.zip&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)Artifacts\Spork.zip&quot; &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Spork.zip&quot;" />
+	</Target>
+
+	<Target Name="BuildCatalogImagesZip" BeforeTargets="PreBuildEvent"
+	        Inputs="@(_CatalogImageInputs)"
+	        Outputs="$(ProjectDir)Images.zip">
+		<Error Condition="!Exists('$(CatalogSubmoduleDir)\src\catalogutil.cs')"
+		       Text="TableClothCatalog submodule not initialized at '$(CatalogSubmoduleDir)'. Run: git submodule update --init --depth 1 external/TableClothCatalog" />
+
+		<MakeDir Directories="$(CatalogBuildOutputDir)" />
+
+		<!--
+			catalogutil also runs schema/URL validations and may exit non-zero on transient
+			external-site failures. We tolerate that and verify Images.zip existence below.
+		-->
+		<Exec Command="dotnet run --file &quot;$(CatalogSubmoduleDir)\src\catalogutil.cs&quot; -- &quot;$(CatalogSubmoduleDir)\docs&quot; &quot;$(CatalogBuildOutputDir)&quot;"
+		      ContinueOnError="WarnAndContinue" />
+
+		<Error Condition="!Exists('$(CatalogBuildOutputDir)\Images.zip')"
+		       Text="Images.zip was not produced by catalogutil. Check the catalog submodule contents and the previous catalogutil output." />
+
+		<Copy SourceFiles="$(CatalogBuildOutputDir)\Images.zip"
+		      DestinationFiles="$(ProjectDir)Images.zip"
+		      SkipUnchangedFiles="true" />
 	</Target>
 </Project>
