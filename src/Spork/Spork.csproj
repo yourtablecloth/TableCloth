@@ -120,8 +120,26 @@
 		</PropertyGroup>
 	</Target>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="git.exe rev-parse HEAD &gt; &quot;$(ProjectDir)commit.txt&quot;" />
+	<Target Name="WriteCommitTxt" BeforeTargets="PreBuildEvent">
+		<!--
+			Capture HEAD commit ID without hard-failing when git is unavailable
+			(e.g. zip download instead of git clone) or the working tree is not a
+			git repository. ConsoleToMSBuild captures stdout into an item; we fall
+			back to "unknown" when the call fails or produces empty output. The
+			runtime side (Helpers.GetAppVersion) tolerates any commit.txt content.
+		-->
+		<Exec Command="git.exe rev-parse HEAD"
+		      ConsoleToMSBuild="true"
+		      ContinueOnError="true"
+		      IgnoreExitCode="true">
+			<Output TaskParameter="ConsoleOutput" ItemName="_GitHeadOutput" />
+			<Output TaskParameter="ExitCode" PropertyName="_GitHeadExitCode" />
+		</Exec>
+		<PropertyGroup>
+			<_CommitId Condition="'$(_GitHeadExitCode)' == '0'">@(_GitHeadOutput)</_CommitId>
+			<_CommitId Condition="'$(_CommitId)' == ''">unknown</_CommitId>
+		</PropertyGroup>
+		<WriteLinesToFile File="$(ProjectDir)commit.txt" Lines="$(_CommitId)" Overwrite="true" />
 	</Target>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
