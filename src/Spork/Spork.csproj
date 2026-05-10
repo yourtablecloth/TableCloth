@@ -143,7 +143,7 @@
 	</Target>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="if not exist &quot;$(TargetDir)System.Runtime.InteropServices.RuntimeInformation.dll&quot; copy /y &quot;$(SolutionDir)packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll&quot; &quot;$(TargetDir)System.Runtime.InteropServices.RuntimeInformation.dll&quot;&#xD;&#xA;&#xD;&#xA;echo Compressing '$(TargetDir)' into '$(SolutionDir)Artifacts\$(ProjectName).zip'...&#xD;&#xA;if not exist &quot;$(SolutionDir)Artifacts\&quot; mkdir &quot;$(SolutionDir)Artifacts\&quot;&#xD;&#xA;if exist &quot;$(SolutionDir)Artifacts\$(ProjectName).zip&quot; del /f /q &quot;$(SolutionDir)Artifacts\$(ProjectName).zip&quot;&#xD;&#xA;powershell.exe Add-Type -AssemblyName 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$(TargetDir)', '$(SolutionDir)Artifacts\$(ProjectName).zip')&#xD;&#xA;dir $(SolutionDir)Artifacts\$(ProjectName).zip" />
+		<Exec Command="echo Compressing '$(TargetDir)' into '$(SolutionDir)Artifacts\$(ProjectName).zip'...&#xD;&#xA;if not exist &quot;$(SolutionDir)Artifacts\&quot; mkdir &quot;$(SolutionDir)Artifacts\&quot;&#xD;&#xA;if exist &quot;$(SolutionDir)Artifacts\$(ProjectName).zip&quot; del /f /q &quot;$(SolutionDir)Artifacts\$(ProjectName).zip&quot;&#xD;&#xA;powershell.exe Add-Type -AssemblyName 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$(TargetDir)', '$(SolutionDir)Artifacts\$(ProjectName).zip')&#xD;&#xA;dir $(SolutionDir)Artifacts\$(ProjectName).zip" />
 	</Target>
 
 </Project>
