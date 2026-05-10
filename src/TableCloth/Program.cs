@@ -89,7 +89,7 @@ internal static class Program
                 .AddSingleton<IAppMessageBox, AppMessageBox>()
                 .AddSingleton<IMessageBoxService, MessageBoxService>()
                 .AddSingleton<INavigationService, NavigationService>()
-                .AddSingleton<IShortcutCrerator, ShortcutCrerator>()
+                .AddSingleton<IShortcutCreator, ShortcutCreator>()
                 .AddSingleton<ICommandLineArguments, CommandLineArguments>()
                 .AddSingleton<IApplicationService, ApplicationService>()
                 .AddSingleton<IArchiveExpander, ArchiveExpander>()

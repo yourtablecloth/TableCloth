@@ -8,10 +8,10 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Components.Implementations;
 
-public sealed class ShortcutCrerator(
+public sealed class ShortcutCreator(
     ICommandLineComposer commandLineComposer,
     ISharedLocations sharedLocations,
-    IAppMessageBox appMessageBox) : IShortcutCrerator
+    IAppMessageBox appMessageBox) : IShortcutCreator
 {
     public async Task<string?> CreateShortcutAsync(DetailPageViewModel viewModel, CancellationToken cancellationToken = default)
     {

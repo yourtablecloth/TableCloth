@@ -4,7 +4,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Components;
 
-public interface IShortcutCrerator
+public interface IShortcutCreator
 {
     Task<string?> CreateShortcutAsync(DetailPageViewModel viewModel, CancellationToken cancellationToken = default);
 

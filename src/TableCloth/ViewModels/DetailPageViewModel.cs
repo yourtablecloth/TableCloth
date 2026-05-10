@@ -42,7 +42,7 @@ public partial class DetailPageViewModel : ObservableObject
         IConfigurationComposer configurationComposer,
         ISandboxLauncher sandboxLauncher,
         INavigationService navigationService,
-        IShortcutCrerator shortcutCrerator,
+        IShortcutCreator shortcutCreator,
         IAppMessageBox appMessageBox,
         ICommandLineComposer commandLineComposer,
         TaskFactory taskFactory)
@@ -56,7 +56,7 @@ public partial class DetailPageViewModel : ObservableObject
         _configurationComposer = configurationComposer;
         _sandboxLauncher = sandboxLauncher;
         _navigationService = navigationService;
-        _shortcutCrerator = shortcutCrerator;
+        _shortcutCreator = shortcutCreator;
         _appMessageBox = appMessageBox;
         _commandLineComposer = commandLineComposer;
         _taskFactory = taskFactory;
@@ -286,7 +286,7 @@ public partial class DetailPageViewModel : ObservableObject
     private readonly IConfigurationComposer _configurationComposer = default!;
     private readonly ISandboxLauncher _sandboxLauncher = default!;
     private readonly INavigationService _navigationService = default!;
-    private readonly IShortcutCrerator _shortcutCrerator = default!;
+    private readonly IShortcutCreator _shortcutCreator = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
     private readonly ICommandLineComposer _commandLineComposer = default!;
     private readonly TaskFactory _taskFactory = default!;
@@ -389,8 +389,8 @@ public partial class DetailPageViewModel : ObservableObject
         if (SelectedServices.Count() > 1)
             _appMessageBox.DisplayInfo("Will create single site shortcut.");
 
-        await _shortcutCrerator.CreateShortcutAsync(this);
-        //await _shortcutCrerator.CreateResponseFileAsync(this);
+        await _shortcutCreator.CreateShortcutAsync(this);
+        //await _shortcutCreator.CreateResponseFileAsync(this);
     }
 
     [RelayCommand]
