@@ -1,0 +1,89 @@
+name: Bump TableClothCatalog Submodule
+
+on:
+  schedule:
+    # Every Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    name: Bump catalog submodule to latest main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Fetch full catalog history
+        run: |
+          set -e
+          cd external/TableClothCatalog
+          # Submodules are shallow-cloned; fetch full history so we can produce a
+          # readable changelog between the old and new pointers.
+          git fetch --unshallow 2>/dev/null || git fetch origin
+          git fetch origin main
+        shell: bash
+
+      - name: Bump submodule to origin/main
+        id: bump
+        run: |
+          set -euo pipefail
+
+          cd external/TableClothCatalog
+          OLD=$(git rev-parse HEAD)
+          git checkout origin/main
+          NEW=$(git rev-parse HEAD)
+          cd "$GITHUB_WORKSPACE"
+
+          if [ "$OLD" = "$NEW" ]; then
+            echo "Submodule already at latest origin/main."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "old=$OLD" >> "$GITHUB_OUTPUT"
+          echo "new=$NEW" >> "$GITHUB_OUTPUT"
+          echo "old_short=${OLD:0:7}" >> "$GITHUB_OUTPUT"
+          echo "new_short=${NEW:0:7}" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "log<<CATALOG_LOG_EOF"
+            (cd external/TableClothCatalog && git log --oneline --no-merges "${OLD}..${NEW}" 2>/dev/null) || echo "(commit history unavailable; see Compare link)"
+            echo "CATALOG_LOG_EOF"
+          } >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Create Pull Request
+        if: steps.bump.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: |
+            chore: bump TableClothCatalog submodule (${{ steps.bump.outputs.old_short }} → ${{ steps.bump.outputs.new_short }})
+          title: 'chore: bump TableClothCatalog submodule (${{ steps.bump.outputs.new_short }})'
+          body: |
+            Auto-generated PR to bump `external/TableClothCatalog` to the latest `main` branch.
+
+            - Old: [`${{ steps.bump.outputs.old_short }}`](https://github.com/yourtablecloth/TableClothCatalog/commit/${{ steps.bump.outputs.old }})
+            - New: [`${{ steps.bump.outputs.new_short }}`](https://github.com/yourtablecloth/TableClothCatalog/commit/${{ steps.bump.outputs.new }})
+            - [Compare on GitHub](https://github.com/yourtablecloth/TableClothCatalog/compare/${{ steps.bump.outputs.old }}...${{ steps.bump.outputs.new }})
+
+            ## Catalog changes
+
+            ```
+            ${{ steps.bump.outputs.log }}
+            ```
+
+            ---
+
+            > [!NOTE]
+            > PRs created by the default `GITHUB_TOKEN` do not trigger downstream workflows. To run CI on this PR, close and reopen it, or push an empty commit.
+          branch: chore/bump-catalog-submodule
+          delete-branch: true
+          base: main
