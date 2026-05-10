@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -9,7 +10,8 @@ using TableCloth.Resources;
 namespace TableCloth.Components.Implementations;
 
 public sealed class LicenseDescriptor(
-    IResourceResolver resourceResolver) : ILicenseDescriptor
+    IResourceResolver resourceResolver,
+    ILogger<LicenseDescriptor> logger) : ILicenseDescriptor
 {
     private static AssemblyName[] GetReferencedThirdPartyAssemblies()
     {
@@ -77,7 +79,11 @@ public sealed class LicenseDescriptor(
                         }
                     }
                 }
-                catch { /* Ignore errors */ }
+                catch (Exception ex)
+                {
+                    // GitHub API 호출 실패는 라이선스 설명 출력 자체를 막지 않도록 무시한다.
+                    logger.LogDebug(ex, "Failed to fetch GitHub license description for {RepoUrl}.", asmRepoUrl);
+                }
             }
 
             buffer.AppendLine();

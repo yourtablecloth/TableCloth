@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using Serilog;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -147,9 +148,11 @@ internal static class Program
 
             return true;
         }
-        catch
+        catch (Exception ex)
         {
-            // 오류 발생 시 라이선스 동의 창 표시
+            // 설정 파일 손상/권한 등으로 읽기에 실패하면 동의 창을 다시 띄운다.
+            // 부트스트랩 단계라 DI 로거가 아직 없으므로 Debug 출력에만 남긴다.
+            Debug.WriteLine($"[TableCloth] CheckLicenseAgreement failed: {ex}");
             return ShowLicenseAgreement();
         }
     }
@@ -206,9 +209,11 @@ internal static class Program
             var updatedJson = JsonSerializer.Serialize(preferences, options);
             File.WriteAllText(preferencesPath, updatedJson);
         }
-        catch
+        catch (Exception ex)
         {
-            // 저장 실패는 무시 - 다음 실행 시 다시 동의 요청
+            // 저장 실패는 무시 - 다음 실행 시 다시 동의 요청한다.
+            // 부트스트랩 단계라 DI 로거가 아직 없으므로 Debug 출력에만 남긴다.
+            Debug.WriteLine($"[TableCloth] SaveLicenseAgreement failed: {ex}");
         }
     }
 
@@ -264,9 +269,12 @@ internal static class Program
                 }
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // 레지스트리 등록 실패는 무시
+            // 레지스트리 권한/잠금 등으로 등록에 실패하면 .tclnk 더블클릭이 동작하지
+            // 않으나 앱 실행 자체에는 영향을 주지 않는다. 부트스트랩 단계라 DI
+            // 로거가 아직 없으므로 Debug 출력에만 남긴다.
+            Debug.WriteLine($"[TableCloth] RegisterFileAssociationsIfNeeded failed: {ex}");
         }
     }
 }
