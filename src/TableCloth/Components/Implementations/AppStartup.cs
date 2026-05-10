@@ -48,7 +48,14 @@ public sealed class AppStartup : IAppStartup
         {
             if (_mutex != null)
             {
-                _mutex.ReleaseMutex();
+                // Only release the mutex if this instance actually owns it.
+                // Otherwise ReleaseMutex throws ApplicationException
+                // ("Object synchronization method was called from an unsynchronized block of code").
+                if (_isFirstInstance)
+                {
+                    try { _mutex.ReleaseMutex(); }
+                    catch (ApplicationException) { }
+                }
                 _mutex.Dispose();
             }
         }
