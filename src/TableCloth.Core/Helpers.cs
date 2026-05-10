@@ -48,26 +48,25 @@ namespace TableCloth
                 var resourceNames = executingAssembly.GetManifestResourceNames();
                 var commitTextFileName = resourceNames.Where(x => x.EndsWith("commit.txt", StringComparison.Ordinal)).FirstOrDefault();
 
-                if (commitTextFileName != null)
+                if (commitTextFileName == null)
+                    return versionInfo;
+
+                var resourceStream = executingAssembly.GetManifestResourceStream(commitTextFileName);
+                if (resourceStream == null)
+                    return versionInfo;
+
+                using (resourceStream)
                 {
-                    var resourceStream = executingAssembly.GetManifestResourceStream(commitTextFileName);
-                    var commitId = string.Empty;
+                    var streamReader = new StreamReader(resourceStream, new UTF8Encoding(false), true);
+                    var commitId = streamReader.ReadToEnd().Trim();
 
-                    if (resourceStream == null)
-                        commitId = "Unknown Commit ID";
-                    else
-                    {
-                        using (resourceStream)
-                        {
-                            var streamReader = new StreamReader(resourceStream, new UTF8Encoding(false), true);
-                            commitId = streamReader.ReadToEnd().Trim();
+                    if (string.IsNullOrEmpty(commitId))
+                        return versionInfo;
 
-                            if (commitId.Length > 8)
-                                commitId = commitId.Substring(0, 8);
+                    if (commitId.Length > 8)
+                        commitId = commitId.Substring(0, 8);
 
-                            versionInfo = $"{versionInfo}, #{commitId.Substring(0, 8)}";
-                        }
-                    }
+                    versionInfo = $"{versionInfo}, #{commitId}";
                 }
             }
             catch { }
