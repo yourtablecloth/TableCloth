@@ -119,16 +119,8 @@ namespace Spork.Components.Implementations
                     break;
                 }
 
-                if (!parsedArgs.SelectedServices.Any())
-                {
-                    _appMessageBox.DisplayInfo(UIStringResources.Spork_No_Targets);
-
-                    Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(
-                        CommonStrings.UnboundHomeUrl, ProcessWindowStyle.Maximized));
-
-                    result = ApplicationStartupResultModel.FromHaltedResult(providedWarnings: warnings);
-                    return result;
-                }
+                // SelectedServices가 비어 있어도 종료하지 않는다.
+                // MainWindow가 카탈로그 모드로 진입하여 사용자가 직접 사이트를 선택하도록 한다.
             }
             catch (Exception ex)
             {

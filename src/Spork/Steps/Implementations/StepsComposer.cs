@@ -28,10 +28,15 @@ namespace Spork.Steps.Implementations
         private readonly IResourceCacheManager _resourceCacheManager;
 
         public IEnumerable<StepItemViewModel> ComposeSteps()
+            => ComposeStepsInternal(_commandLineArguments.GetCurrent().SelectedServices);
+
+        public IEnumerable<StepItemViewModel> ComposeStepsForSites(IEnumerable<string> selectedServiceIds)
+            => ComposeStepsInternal(selectedServiceIds ?? Enumerable.Empty<string>());
+
+        private IEnumerable<StepItemViewModel> ComposeStepsInternal(IEnumerable<string> targets)
         {
             var parsedArgs = _commandLineArguments.GetCurrent();
             var catalog = _resourceCacheManager.CatalogDocument;
-            var targets = parsedArgs.SelectedServices;
             var steps = new List<StepItemViewModel>();
 
             steps.AddRange(new[]

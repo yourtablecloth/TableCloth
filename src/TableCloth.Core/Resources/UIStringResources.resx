@@ -775,4 +775,10 @@ Create it now and continue?</value>
   <data name="Options_Section_Diagnostics" xml:space="preserve">
     <value>Diagnostics</value>
   </data>
+  <data name="SporkCatalog_Instruction" xml:space="preserve">
+    <value>Pick a website to install the required security software for it. You can return to this list later.</value>
+  </data>
+  <data name="SporkCatalog_StartButton" xml:space="preserve">
+    <value>Start</value>
+  </data>
 </root>

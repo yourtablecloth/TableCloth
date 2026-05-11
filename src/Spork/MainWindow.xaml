@@ -12,8 +12,8 @@
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
         Style="{DynamicResource MainWindowStyle}"
         ResizeMode="CanResize"
-        WindowStartupLocation="Manual" Top="0" Left="0"
-        Title="{x:Static res:UIStringResources.Spork_AppTitle}" Width="340" Height="480" MinWidth="340" MinHeight="480"
+        WindowStartupLocation="CenterScreen"
+        Title="{x:Static res:UIStringResources.Spork_AppTitle}" Width="720" Height="560" MinWidth="520" MinHeight="420"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -25,72 +25,167 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50*"/>
-            <ColumnDefinition Width="50*"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition d:Height="45" Height="{Binding ShowDryRunNotification, Converter={StaticResource BooleanToGridRowHeightConverter}, ConverterParameter='45'}" />
-            <RowDefinition Height="70"/>
-            <RowDefinition Height="300*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="55"/>
         </Grid.RowDefinitions>
-        
+
         <!-- Info Banner -->
-        <Border Grid.Row="0" Grid.ColumnSpan="2" 
-                Background="{DynamicResource InfoBannerBackground}" 
-                BorderBrush="{DynamicResource InfoBannerBorder}" 
+        <Border Grid.Row="0"
+                Background="{DynamicResource InfoBannerBackground}"
+                BorderBrush="{DynamicResource InfoBannerBorder}"
                 BorderThickness="0 0 0 1" Padding="8 6">
             <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource InfoBannerForeground}">
                 <Run Text="ⓘ" FontWeight="Bold" Foreground="{DynamicResource InfoBannerLinkForeground}" /><Run Text=" " /><Run Text="{x:Static res:UIStringResources.Sponsor_BannerShortMessage}" /><Run Text=" " /><Hyperlink Click="SponsorBanner_MouseLeftButtonUp" Foreground="{DynamicResource InfoBannerLinkForeground}" FontWeight="SemiBold" FontSize="11"><Run Text="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}" /></Hyperlink>
             </TextBlock>
         </Border>
-        
-        <Label Grid.Row="1" Grid.ColumnSpan="2" Background="{Binding Source={x:Static SystemColors.ActiveBorderBrush}}" Foreground="{Binding Source={x:Static SystemColors.ActiveCaptionTextBrush}}">
+
+        <Label Grid.Row="1" Background="{Binding Source={x:Static SystemColors.ActiveBorderBrush}}" Foreground="{Binding Source={x:Static SystemColors.ActiveCaptionTextBrush}}">
             <Label.Content>
                 <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 0 0" Text="{x:Static res:UIStringResources.Spork_DryRunInstructionMessage}" TextWrapping="Wrap" />
             </Label.Content>
         </Label>
-        <TextBlock HorizontalAlignment="Stretch" Padding="10" TextWrapping="WrapWithOverflow" Grid.ColumnSpan="2" Grid.Row="2" Text="{x:Static res:UIStringResources.Spork_AppInstructionMessage}" />
-        <ListBox x:Name="listView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="2" Grid.Row="3" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding InstallSteps}" d:ItemsSource="{Binding InstallStepsForDesigner}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Vertical" Width="{Binding ActualWidth, ElementName=listView, Converter={StaticResource widthConverter}}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="Flag" Text="{Binding Path='InstallFlags'}" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" Margin="0 0 5 0" FontWeight="Bold" />
-                            <TextBlock Text="{Binding Path='TargetSiteName'}" Margin="0 0 5 0" FontWeight="Bold" />
-                            <TextBlock Text="{Binding Path='PackageName'}" Margin="0 0 5 0" />
-                            <TextBlock Text="{Binding Path='StatusMessage'}" Margin="0 0 5 0" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" />
-                            <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path='ViewModel.ShowErrorMessageCommand'}"
-                                    CommandParameter="{Binding Path='ErrorMessage'}"
-                                    Content="{x:Static res:UIStringResources.Spork_ShowDetailError}"
-                                    Visibility="{Binding Path='ShowErrorMessageLink', Converter={StaticResource booleanToVisibilityConverter}}"
-                                    Margin="0 0 5 0" BorderThickness="0" Background="Transparent" Cursor="Hand" />
+
+        <!-- Catalog Mode -->
+        <Grid Grid.Row="2" Margin="10" Visibility="{Binding ShowCatalogView, Converter={StaticResource booleanToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="Wrap" Text="{x:Static res:UIStringResources.SporkCatalog_Instruction}" />
+
+            <TextBox Grid.Row="1" Margin="0 0 0 6" Padding="6 4" Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                        <Style.Resources>
+                            <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                <VisualBrush.Visual>
+                                    <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="LightGray" />
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Style.Resources>
+                        <Style.Triggers>
+                            <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+            <ListView Grid.Row="2" x:Name="CatalogList"
+                      ItemsSource="{Binding CatalogServices}" d:ItemsSource="{Binding CatalogServicesForDesigner}"
+                      SelectedItem="{Binding SelectedCatalogService}"
+                      SelectionMode="Single"
+                      VirtualizingPanel.IsContainerVirtualizable="True"
+                      VirtualizingPanel.IsVirtualizing="True"
+                      VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                      HorizontalContentAlignment="Stretch">
+                <ListView.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding CatalogItemActivateCommand}" />
+                </ListView.InputBindings>
+                <ListView.Template>
+                    <ControlTemplate>
+                        <ScrollViewer CanContentScroll="False" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ListView.Template>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Margin" Value="4" />
+                        <Setter Property="Padding" Value="6" />
+                        <Setter Property="MinWidth" Value="110" />
+                        <Setter Property="MinHeight" Value="48" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Width="110">
+                            <Grid.InputBindings>
+                                <MouseBinding MouseAction="LeftDoubleClick"
+                                              Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.CatalogItemActivateCommand}" />
+                            </Grid.InputBindings>
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                                <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding CategoryDisplayName}" FontSize="10" Foreground="Gray" Margin="0 2 0 0" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <ListView.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="2 6 0 2">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding ItemCount, StringFormat={x:Static res:UIStringResources.CatalogPage_ItemCountLabel}}" FontWeight="Bold" Margin="6 0 0 0" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListView.GroupStyle>
+            </ListView>
+        </Grid>
+
+        <!-- Steps Mode -->
+        <Grid Grid.Row="2" Margin="10" Visibility="{Binding ShowStepsView, Converter={StaticResource booleanToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="WrapWithOverflow" Text="{x:Static res:UIStringResources.Spork_AppInstructionMessage}" />
+            <ListBox Grid.Row="1" x:Name="listView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding InstallSteps}" d:ItemsSource="{Binding InstallStepsForDesigner}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical" Width="{Binding ActualWidth, ElementName=listView, Converter={StaticResource widthConverter}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="Flag" Text="{Binding Path='InstallFlags'}" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" Margin="0 0 5 0" FontWeight="Bold" />
+                                <TextBlock Text="{Binding Path='TargetSiteName'}" Margin="0 0 5 0" FontWeight="Bold" />
+                                <TextBlock Text="{Binding Path='PackageName'}" Margin="0 0 5 0" />
+                                <TextBlock Text="{Binding Path='StatusMessage'}" Margin="0 0 5 0" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" />
+                                <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path='ViewModel.ShowErrorMessageCommand'}"
+                                        CommandParameter="{Binding Path='ErrorMessage'}"
+                                        Content="{x:Static res:UIStringResources.Spork_ShowDetailError}"
+                                        Visibility="{Binding Path='ShowErrorMessageLink', Converter={StaticResource booleanToVisibilityConverter}}"
+                                        Margin="0 0 5 0" BorderThickness="0" Background="Transparent" Cursor="Hand" />
+                            </StackPanel>
+                            <ProgressBar Height="10" Margin="5 5 5 5" Value="{Binding ProgressRate}" Visibility="{Binding Path='ShowProgress', Converter={StaticResource booleanToVisibilityConverter}}" />
                         </StackPanel>
-                        <ProgressBar Height="10" Margin="5 5 5 5" Value="{Binding ProgressRate}" Visibility="{Binding Path='ShowProgress', Converter={StaticResource booleanToVisibilityConverter}}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0">
-            <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_AboutButton}" Command="{Binding AboutThisAppCommand}">
-                <Button.CommandParameter>
-                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
-                </Button.CommandParameter>
-            </Button>
-            <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource booleanToVisibilityConverter}}">
-                <Button.CommandParameter>
-                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
-                </Button.CommandParameter>
-            </Button>
-        </WrapPanel>
-        <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="4" Grid.Column="1">
-            <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Button_InstallButton}" Command="{Binding MainWindowInstallPackagesCommand}">
-                <Button.CommandParameter>
-                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
-                </Button.CommandParameter>
-            </Button>
-        </WrapPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+        <!-- Footer -->
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
+                <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_AboutButton}" Command="{Binding AboutThisAppCommand}" />
+                <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource booleanToVisibilityConverter}}" />
+            </WrapPanel>
+            <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1">
+                <!-- Catalog mode: 시작 -->
+                <Button Margin="0 0 10 0" Padding="14 5" Content="{x:Static res:UIStringResources.SporkCatalog_StartButton}"
+                        Command="{Binding CatalogItemActivateCommand}"
+                        Visibility="{Binding ShowCatalogView, Converter={StaticResource booleanToVisibilityConverter}}" />
+                <!-- Steps mode: 설치 -->
+                <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Button_InstallButton}"
+                        Command="{Binding MainWindowInstallPackagesCommand}"
+                        Visibility="{Binding ShowStepsView, Converter={StaticResource booleanToVisibilityConverter}}" />
+            </WrapPanel>
+        </Grid>
     </Grid>
 </Window>

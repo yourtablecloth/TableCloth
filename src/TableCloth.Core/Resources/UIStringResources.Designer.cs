@@ -1830,5 +1830,17 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("Options_Section_Diagnostics", resourceCulture);
             }
         }
+
+        public static string SporkCatalog_Instruction {
+            get {
+                return ResourceManager.GetString("SporkCatalog_Instruction", resourceCulture);
+            }
+        }
+
+        public static string SporkCatalog_StartButton {
+            get {
+                return ResourceManager.GetString("SporkCatalog_StartButton", resourceCulture);
+            }
+        }
     }
 }
