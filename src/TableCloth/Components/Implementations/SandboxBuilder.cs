@@ -64,6 +64,11 @@ public sealed class SandboxBuilder(
         // 호스트 빌드 시 만들어 두는 Images.zip을 그대로 풀어 둔다 (실패해도 catalog 자체는 동작).
         await ExpandImagesZipAsync(sharedLocations.ImagesZipFilePath, assetsDirectory, cancellationToken).ConfigureAwait(false);
 
+        // 카탈로그 폴백 스냅샷: 샌드박스 내부 네트워크 실패 시 Spork가 사용한다.
+        // 호스트의 CatalogCacheFilePath(직전 네트워크 성공 시 호스트가 캐시한 XML)를
+        // staging의 catalog 서브폴더로 복사해 둔다. 캐시가 없으면 폴백 없이 진행.
+        await CopyCatalogSnapshotAsync(sharedLocations.CatalogCacheFilePath, assetsDirectory, cancellationToken).ConfigureAwait(false);
+
         var batchFileContent = GenerateSandboxStartupScript(tableClothConfiguration);
         var batchFilePath = Path.Combine(assetsDirectory, "StartupScript.cmd");
         await File.WriteAllTextAsync(batchFilePath, batchFileContent, Encoding.Default, cancellationToken).ConfigureAwait(false);
@@ -261,6 +266,31 @@ popd
         catch (Exception)
         {
             // 아이콘이 없어도 카탈로그 UI는 동작해야 하므로 실패는 조용히 넘긴다.
+        }
+    }
+
+    private static async Task CopyCatalogSnapshotAsync(string sourcePath, string assetsDirectory, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(sourcePath) || !File.Exists(sourcePath))
+            return;
+
+        try
+        {
+            var snapshotDirectory = Path.Combine(assetsDirectory, "catalog");
+            if (!Directory.Exists(snapshotDirectory))
+                Directory.CreateDirectory(snapshotDirectory);
+
+            var destinationPath = Path.Combine(snapshotDirectory, "catalog.xml");
+
+            using (var source = File.OpenRead(sourcePath))
+            using (var destination = File.Create(destinationPath))
+            {
+                await source.CopyToAsync(destination, 81920, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        catch (Exception)
+        {
+            // 스냅샷 주입 실패가 샌드박스 시작을 막아서는 안 된다. Spork는 네트워크가 살아 있으면 정상 동작한다.
         }
     }
 
