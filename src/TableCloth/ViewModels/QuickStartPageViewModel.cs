@@ -152,7 +152,13 @@ public partial class QuickStartPageViewModel : ObservableObject
 
         await MigrateUserDataIfNeededAsync(currentConfig);
 
-        var mappedFolders = MappedFolders.ToList();
+        // 사용자 추가 폴더의 가용성을 검증한다.
+        // 존재하지 않거나 접근 불가한 항목은 메시지 박스를 띄우지 않고 리스트에서 조용히
+        // "사용 불가" 마킹만 남기고, 마운트 대상에서 제외한다.
+        RefreshUserFolderAvailability();
+
+        var availableUserFolders = MappedFolders.Where(f => !f.IsUnavailable).ToList();
+        var mappedFolders = new List<MappedFolderSetting>(availableUserFolders);
 
         // Data 디렉터리는 항상 RW로 마운트. 구 버전 Windows Sandbox 호환을 위해
         // SandboxFolder는 지정하지 않으며, 호스트 폴더의 leaf 이름(기본값: "Data")이
@@ -166,7 +172,7 @@ public partial class QuickStartPageViewModel : ObservableObject
 
         // NPKI 폴더가 존재하면 자동으로 RO 마운트. 마찬가지로 SandboxFolder는 지정하지 않고
         // 데스크톱의 "NPKI" 폴더로 노출되며, startup 스크립트가 이를
-        // SandboxMountPaths.NpkiCanonicalPath로 junction 링크하여 은행 소프트웨어가 인식하도록 한다.
+        // SandboxMountPaths.NpkiCanonicalPath로 xcopy 복사하여 은행 소프트웨어가 인식하도록 한다.
         var npkiHostPath = TryGetHostNpkiDirectoryPath();
         if (npkiHostPath != null)
         {
@@ -194,6 +200,35 @@ public partial class QuickStartPageViewModel : ObservableObject
         };
 
         await _sandboxLauncher.RunSandboxAsync(config);
+    }
+
+    private void RefreshUserFolderAvailability()
+    {
+        // MappedFolderSetting은 ObservableObject가 아니므로 IsUnavailable만 바꿔도 UI가 갱신되지 않는다.
+        // 기존 컬렉션 패턴(Remove + Insert)을 따라 인덱스 자리에 같은 인스턴스를 재삽입하여
+        // ListBox가 다시 그리도록 강제한다.
+        for (var i = 0; i < MappedFolders.Count; i++)
+        {
+            var folder = MappedFolders[i];
+            var unavailable = false;
+
+            try
+            {
+                unavailable = string.IsNullOrWhiteSpace(folder.HostFolder) || !Directory.Exists(folder.HostFolder);
+            }
+            catch
+            {
+                // 접근 권한 문제 등으로 검사 자체가 실패하면 사용 불가로 본다.
+                unavailable = true;
+            }
+
+            if (folder.IsUnavailable == unavailable)
+                continue;
+
+            folder.IsUnavailable = unavailable;
+            MappedFolders.RemoveAt(i);
+            MappedFolders.Insert(i, folder);
+        }
     }
 
     [RelayCommand]

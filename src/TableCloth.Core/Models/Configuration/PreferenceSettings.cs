@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace TableCloth.Models.Configuration
 {
@@ -137,5 +138,13 @@ namespace TableCloth.Models.Configuration
         /// 읽기 전용 여부입니다.
         /// </summary>
         public bool ReadOnly { get; set; } = true;
+
+        /// <summary>
+        /// 샌드박스 시작 직전 검증에서 호스트 폴더가 존재/접근 가능하지 않은 것으로 판정된 경우 true.
+        /// 런타임 상태이며 환경 설정 파일에 직렬화되지 않습니다 (다음 실행에 재검증).
+        /// 마운트는 조용히 건너뛰고, 리스트 UI에서만 "사용 불가" 마킹으로 사용자에게 알립니다.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsUnavailable { get; set; }
     }
 }

@@ -59,9 +59,27 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding HostFolder}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding HostFolder}" />
-                                <Border Grid.Column="1" BorderBrush="{Binding ReadOnly, Converter={StaticResource BooleanToBackgroundConverter}}" BorderThickness="1" CornerRadius="3" Padding="5 2" Margin="5 0 0 0">
+                                <TextBlock Grid.Column="0" Text="{Binding HostFolder}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding HostFolder}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsUnavailable}" Value="True">
+                                                    <Setter Property="Foreground" Value="Gray" />
+                                                    <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <!-- 사용 가능할 때: Read-Only/Read-Write 배지 -->
+                                <Border Grid.Column="1" BorderBrush="{Binding ReadOnly, Converter={StaticResource BooleanToBackgroundConverter}}" BorderThickness="1" CornerRadius="3" Padding="5 2" Margin="5 0 0 0"
+                                        Visibility="{Binding IsUnavailable, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                                     <TextBlock Text="{Binding ReadOnly, Converter={StaticResource BooleanToReadOnlyTextConverter}}" FontSize="11" />
+                                </Border>
+                                <!-- 직전 시작 시 호스트 폴더 검증에서 사용 불가로 판정된 경우: 배지로 안내 (마운트는 조용히 건너뜀) -->
+                                <Border Grid.Column="1" BorderBrush="Red" BorderThickness="1" CornerRadius="3" Padding="5 2" Margin="5 0 0 0"
+                                        Visibility="{Binding IsUnavailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <TextBlock Text="{x:Static res:UIStringResources.MappedFolder_Unavailable}" Foreground="Red" FontSize="11" />
                                 </Border>
                             </Grid>
                         </DataTemplate>

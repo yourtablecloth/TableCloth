@@ -912,7 +912,14 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("MappedFolder_AlreadyExists", resourceCulture);
             }
         }
-        
+
+        public static string MappedFolder_Unavailable {
+            get {
+                return ResourceManager.GetString("MappedFolder_Unavailable", resourceCulture);
+            }
+        }
+
+
         /// <summary>
         ///   Add folders from your computer to share with the sandbox. Added folders will appear as shortcuts on the sandbox desktop.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>

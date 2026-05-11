@@ -677,6 +677,9 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="MappedFolder_AlreadyExists" xml:space="preserve">
     <value>이 폴더는 이미 목록에 있습니다.</value>
   </data>
+  <data name="MappedFolder_Unavailable" xml:space="preserve">
+    <value>사용 불가</value>
+  </data>
   <data name="AboutWindow_SponsorsTitle" xml:space="preserve">
     <value>도움 주시는 분들</value>
   </data>
