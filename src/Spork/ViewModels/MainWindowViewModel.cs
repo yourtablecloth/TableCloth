@@ -265,10 +265,37 @@ namespace Spork.ViewModels
             if (SelectedCatalogService == null)
                 return;
 
+            // 모달 동안 사용자가 카탈로그를 다시 조작하지 못하도록 선택값을 잠시 보존하되,
+            // 모달이 닫힌 뒤에는 다음 사이트 선택을 위해 초기화한다.
             var siteId = SelectedCatalogService.Id;
+            var siteUrl = SelectedCatalogService.Url;
+
             await RecordUsageAsync(new[] { siteId });
-            var steps = _stepsComposer.ComposeStepsForSites(new[] { siteId });
-            await EnterStepsModeAsync(steps, showPrecautions: true);
+            var steps = _stepsComposer.ComposeStepsForSites(new[] { siteId }).ToList();
+
+            // 호환성 주의 사항은 모달 진입 전에 별도 다이얼로그로 안내한다.
+            var catalog = _resourceCacheManager.CatalogDocument;
+            var targets = new[] { siteId };
+            if (SharedExtensions.HasAnyCompatNotes(catalog, targets))
+            {
+                var precautions = _appUserInterface.CreatePrecautionsWindow(targets);
+                precautions.ShowDialog();
+            }
+
+            // 설치 진행을 화면 전환 없이 모달로 처리. 모달은 자체적으로 단계를 실행하고
+            // 성공 시 자동 닫기, 실패 시 닫기 버튼을 노출한다.
+            var installWindow = _appUserInterface.CreateInstallStepsWindow(steps, ShowDryRunNotification);
+            var result = installWindow.ShowDialog();
+
+            // 카탈로그 뷰는 모달 뒤에서 계속 보였으므로 별도 복귀 처리는 필요 없다.
+            // 다음 사이트를 자유롭게 고를 수 있도록 선택만 초기화한다.
+            SelectedCatalogService = null;
+
+            if (result == true && !string.IsNullOrWhiteSpace(siteUrl))
+            {
+                // 설치 성공: 대상 사이트를 브라우저로 열어 사용자가 바로 진행할 수 있게 한다.
+                TryOpenSiteUrls(new[] { siteUrl });
+            }
         }
 
         private async Task RecordUsageAsync(IEnumerable<string> siteIds)
@@ -316,36 +343,21 @@ namespace Spork.ViewModels
             if (InstallSteps == null || InstallSteps.Count == 0)
                 return;
 
-            // ReturnToCatalog가 상태를 초기화하기 전에 대상 사이트 URL을 미리 캡쳐한다.
+            // 이 경로는 명령줄(--select) 진입 전용이다. 카탈로그 진입은 모달
+            // (InstallStepsWindow)에서 별도로 단계를 실행한다.
             var targetUrls = ResolveTargetSiteUrls();
-
-            ShowReturnToCatalog = false;
             var hasAnyFailure = await _stepsPlayer.PlayStepsAsync(InstallSteps, ShowDryRunNotification);
 
             if (hasAnyFailure)
             {
-                // 오류가 감지된 경우는 사용자가 결과를 확인할 수 있게 StepsView를 유지한다.
-                // 카탈로그 진입의 경우 수동 "카탈로그로 돌아가기" 버튼만 노출하고 자동 복귀는 보류.
-                if (_enteredViaCatalog)
-                    ShowReturnToCatalog = true;
+                // 실패 시 StepsView를 유지하여 사용자가 결과를 확인할 수 있게 한다.
                 return;
             }
 
-            // 설치 성공: 보안 모듈이 적용된 상태에서 사용자가 실제로 사이트를 사용할 수 있도록
-            // 대상 사이트 URL을 (가능하면 Edge로) 자동으로 연다.
+            // 설치 성공: 대상 사이트 URL을 (가능하면 Edge로) 자동으로 연 뒤 외부 호출 측의
+            // 자동 종료 기대를 유지한다.
             TryOpenSiteUrls(targetUrls);
-
-            if (_enteredViaCatalog)
-            {
-                // 카탈로그 진입 + 성공: 다음 사이트를 이어서 사용할 수 있도록 카탈로그로 자동 복귀.
-                // 사용자는 이미 새로 열린 브라우저로 시선이 이동하므로 별도 버튼 클릭을 요구하지 않는다.
-                ReturnToCatalog();
-            }
-            else
-            {
-                // 명령줄(--select) 진입 + 성공: 외부 호출 측의 자동 종료 기대를 유지.
-                await RequestCloseAsync(this, EventArgs.Empty);
-            }
+            await RequestCloseAsync(this, EventArgs.Empty);
         }
 
         private IList<string> ResolveTargetSiteUrls()
@@ -384,19 +396,7 @@ namespace Spork.ViewModels
             }
         }
 
-        [RelayCommand]
-        private void ReturnToCatalog()
-        {
-            // 다음 사이트 선택을 위해 설치 상태를 초기화한다. 사용자 데이터(즐겨찾기/사용 기록)는
-            // 보존되므로 카탈로그 뷰는 이전 상호작용이 반영된 상태로 다시 보인다.
-            InstallSteps = new ObservableCollection<StepItemViewModel>();
-            SelectedCatalogService = null;
-            ShowReturnToCatalog = false;
-            ShowStepsView = false;
-            ShowCatalogView = true;
-        }
-
-        [RelayCommand]
+[RelayCommand]
         private void AboutThisApp()
         {
             var aboutWindow = _appUserInterface.CreateAboutWindow();
@@ -437,9 +437,6 @@ namespace Spork.ViewModels
 
         [ObservableProperty]
         private bool _showStepsView;
-
-        [ObservableProperty]
-        private bool _showReturnToCatalog;
 
         [ObservableProperty]
         private bool _showFavoritesOnly;

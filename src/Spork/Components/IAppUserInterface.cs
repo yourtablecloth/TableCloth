@@ -1,4 +1,5 @@
 ﻿using Spork.Dialogs;
+using Spork.ViewModels;
 using System.Collections.Generic;
 
 namespace Spork.Components
@@ -9,5 +10,6 @@ namespace Spork.Components
         MainWindow CreateMainWindow();
         PrecautionsWindow CreatePrecautionsWindow(IEnumerable<string> targetServiceIds = null);
         SiteReportWindow CreateSiteReportWindow();
+        InstallStepsWindow CreateInstallStepsWindow(IList<StepItemViewModel> steps, bool dryRun);
     }
 }

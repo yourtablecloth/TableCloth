@@ -789,4 +789,7 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="Spork_ShortcutDescription" xml:space="preserve">
     <value>이 샌드박스 안에서 식탁보 카탈로그를 다시 엽니다.</value>
   </data>
+  <data name="SporkInstallSteps_WindowTitle" xml:space="preserve">
+    <value>선택한 사이트 설치 진행</value>
+  </data>
 </root>

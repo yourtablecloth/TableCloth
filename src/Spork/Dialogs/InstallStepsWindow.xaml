@@ -1,0 +1,63 @@
+<Window x:Class="Spork.Dialogs.InstallStepsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Spork.ViewModels"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Core"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:InstallStepsWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
+        Style="{DynamicResource MainWindowStyle}"
+        Title="{x:Static res:UIStringResources.SporkInstallSteps_WindowTitle}"
+        Width="560" Height="440" MinWidth="420" MinHeight="320"
+        ResizeMode="CanResize"
+        WindowStartupLocation="CenterOwner">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding InstallStepsWindowLoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Margin="0 0 0 8" TextWrapping="Wrap"
+                   Text="{x:Static res:UIStringResources.Spork_AppInstructionMessage}" />
+
+        <ListBox Grid.Row="1" x:Name="StepsListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                 ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                 ItemsSource="{Binding InstallSteps}"
+                 d:ItemsSource="{Binding InstallStepsForDesigner}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical" Width="{Binding ActualWidth, ElementName=StepsListBox, Converter={StaticResource widthConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path='InstallFlags'}" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" Margin="0 0 5 0" FontWeight="Bold" />
+                            <TextBlock Text="{Binding Path='TargetSiteName'}" Margin="0 0 5 0" FontWeight="Bold" />
+                            <TextBlock Text="{Binding Path='PackageName'}" Margin="0 0 5 0" />
+                            <TextBlock Text="{Binding Path='StatusMessage'}" Margin="0 0 5 0" Foreground="{Binding Path='Installed', Converter={StaticResource stateToBrushConverter}}" />
+                            <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path='ViewModel.ShowErrorMessageCommand'}"
+                                    CommandParameter="{Binding Path='ErrorMessage'}"
+                                    Content="{x:Static res:UIStringResources.Spork_ShowDetailError}"
+                                    Visibility="{Binding Path='ShowErrorMessageLink', Converter={StaticResource booleanToVisibilityConverter}}"
+                                    Margin="0 0 5 0" BorderThickness="0" Background="Transparent" Cursor="Hand" />
+                        </StackPanel>
+                        <ProgressBar Height="10" Margin="5 5 5 5" Value="{Binding ProgressRate}"
+                                     Visibility="{Binding Path='ShowProgress', Converter={StaticResource booleanToVisibilityConverter}}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Button Grid.Row="2" Margin="0 10 0 0" Padding="14 6"
+                HorizontalAlignment="Right"
+                Content="{x:Static res:UIStringResources.Button_CloseButton}"
+                Command="{Binding CloseDialogCommand}"
+                IsCancel="True"
+                Visibility="{Binding ShowCloseButton, Converter={StaticResource booleanToVisibilityConverter}}" />
+    </Grid>
+</Window>

@@ -1860,5 +1860,11 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("Spork_ShortcutDescription", resourceCulture);
             }
         }
+
+        public static string SporkInstallSteps_WindowTitle {
+            get {
+                return ResourceManager.GetString("SporkInstallSteps_WindowTitle", resourceCulture);
+            }
+        }
     }
 }

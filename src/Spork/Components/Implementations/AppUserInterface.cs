@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Spork.Dialogs;
+using Spork.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -41,6 +42,14 @@ namespace Spork.Components.Implementations
 
         public SiteReportWindow CreateSiteReportWindow()
             => SetOwnerIfAvailable(_serviceProvider.GetRequiredService<SiteReportWindow>());
+
+        public InstallStepsWindow CreateInstallStepsWindow(IList<StepItemViewModel> steps, bool dryRun)
+        {
+            var window = SetOwnerIfAvailable(_serviceProvider.GetRequiredService<InstallStepsWindow>());
+            window.ViewModel.InstallSteps = steps ?? new List<StepItemViewModel>();
+            window.ViewModel.DryRun = dryRun;
+            return window;
+        }
 
         public MainWindow CreateMainWindow()
             => _serviceProvider.GetRequiredService<MainWindow>();

@@ -790,4 +790,7 @@ Create it now and continue?</value>
   <data name="Spork_ShortcutDescription" xml:space="preserve">
     <value>Re-open the TableCloth catalog inside this sandbox.</value>
   </data>
+  <data name="SporkInstallSteps_WindowTitle" xml:space="preserve">
+    <value>Installing for the selected site</value>
+  </data>
 </root>

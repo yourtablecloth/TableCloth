@@ -121,6 +121,7 @@ namespace Spork
                 builder.Services
                     .AddWindow<AboutWindow, AboutWindowViewModel>()
                     .AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>()
+                    .AddWindow<InstallStepsWindow, InstallStepsWindowViewModel>()
                     .AddWindow<MainWindow, MainWindowViewModel>()
                     .AddTransient<SiteReportWindow>()
                     .AddSingleton<Application>(sp => new App(sp.GetRequiredService<IHost>()));
