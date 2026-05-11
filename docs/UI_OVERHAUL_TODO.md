@@ -70,7 +70,8 @@
 - [x] `AppStartup`의 "no targets → 홈 URL 열고 종료" 조기 종료 제거 (카탈로그 뷰가 그 자리를 대체)
 - [x] `IStepsComposer.ComposeStepsForSites(IEnumerable<string>)` 오버로드 추가, 사용자가 카탈로그에서 선택한 사이트만으로 설치 단계 구성
 - [x] 카탈로그에서 사이트 선택 → 설치 모드(Steps 뷰)로 자동 전환 + 설치 자동 시작
-- [ ] 즐겨찾기/사용 기록 (Data 디렉터리 영속) 도입
+- [x] 즐겨찾기/사용 기록 (Data 디렉터리 영속) 도입 — `SporkUserData` 공유 모델 + `IUserDataStore`로 `user-data.json` 읽고 쓰기. 호스트는 기존 `PreferenceSettings.Favorites`를 첫 실행 시 Data 디렉터리로 1회성 마이그레이션
+- [x] 사이트 아이콘 표시 — 호스트가 `Images.zip`을 staging의 `assets/images/`로 풀고, Spork는 `ServiceLogoConverter`로 사이트 ID → PNG 이미지 해석. 카탈로그 카드에 아이콘 + 즐겨찾기 별 토글 표시. 카탈로그 상단에 "즐겨찾기만 보기" 체크박스
 - [ ] 카탈로그 데이터 폴백 로직 (네트워크 실패 시 호스트가 주입한 스냅샷 사용 — 하이브리드 방식)
 - [ ] 여러 사이트 순차 사용 UX 다듬기 (현재는 단일 사이트 선택 후 설치 → 종료)
 

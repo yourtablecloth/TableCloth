@@ -11,8 +11,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using TableCloth.Components;
+using System.Text.Json;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
+using TableCloth.Models.UserData;
 using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 
@@ -148,6 +150,8 @@ public partial class QuickStartPageViewModel : ObservableObject
         var currentConfig = await _preferencesManager.LoadPreferencesAsync();
         currentConfig ??= _preferencesManager.GetDefaultPreferences();
 
+        await MigrateUserDataIfNeededAsync(currentConfig);
+
         var mappedFolders = MappedFolders.ToList();
 
         // Data 디렉터리는 항상 RW로 마운트. 구 버전 Windows Sandbox 호환을 위해
@@ -215,6 +219,43 @@ public partial class QuickStartPageViewModel : ObservableObject
     {
         var siteReportWindow = _appUserInterface.CreateSiteReportWindow();
         siteReportWindow.ShowDialog();
+    }
+
+    /// <summary>
+    /// 직전 버전(호스트 측 <see cref="PreferenceSettings.Favorites"/>)에 보관되어 있던
+    /// 즐겨찾기 목록을 Data 디렉터리의 user-data.json으로 1회성 이전한다.
+    /// 이미 Data 디렉터리에 user-data.json이 존재하면 source-of-truth가 그쪽이므로 건드리지 않는다.
+    /// </summary>
+    private async Task MigrateUserDataIfNeededAsync(PreferenceSettings currentConfig)
+    {
+        try
+        {
+            var userDataPath = Path.Combine(_dataDirectoryHostPath, SporkUserData.FileName);
+
+            if (File.Exists(userDataPath))
+                return;
+
+            var legacyFavorites = currentConfig.Favorites ?? new List<string>();
+            if (legacyFavorites.Count == 0)
+                return;
+
+            var userData = new SporkUserData
+            {
+                Favorites = legacyFavorites.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
+                ShowFavoritesOnly = currentConfig.ShowFavoritesOnly,
+            };
+
+            using (var stream = File.Create(userDataPath))
+            {
+                await JsonSerializer.SerializeAsync(stream, userData, new JsonSerializerOptions { WriteIndented = true });
+            }
+        }
+        catch (Exception ex)
+        {
+            // 마이그레이션 실패가 샌드박스 실행을 막아서는 안 된다. 사용자는 샌드박스 안에서
+            // 즐겨찾기를 다시 등록할 수 있다.
+            _appMessageBox.DisplayError(ex, false);
+        }
     }
 
     private async Task<bool> EnsureDataDirectoryAsync()

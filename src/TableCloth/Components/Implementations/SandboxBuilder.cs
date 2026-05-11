@@ -60,6 +60,10 @@ public sealed class SandboxBuilder(
 
         tableClothConfiguration.AssetsDirectoryPath = assetsDirectory;
 
+        // Spork가 카탈로그 UI에서 사이트 아이콘을 표시하려면 assets/images에 png들이 있어야 한다.
+        // 호스트 빌드 시 만들어 두는 Images.zip을 그대로 풀어 둔다 (실패해도 catalog 자체는 동작).
+        await ExpandImagesZipAsync(sharedLocations.ImagesZipFilePath, assetsDirectory, cancellationToken).ConfigureAwait(false);
+
         var batchFileContent = GenerateSandboxStartupScript(tableClothConfiguration);
         var batchFilePath = Path.Combine(assetsDirectory, "StartupScript.cmd");
         await File.WriteAllTextAsync(batchFilePath, batchFileContent, Encoding.Default, cancellationToken).ConfigureAwait(false);
@@ -235,6 +239,28 @@ popd
         {
             appMessageBox.DisplayError(ex, true);
             return false;
+        }
+    }
+
+    private async Task ExpandImagesZipAsync(string imagesZipFilePath, string assetsDirectory, CancellationToken cancellationToken = default)
+    {
+        if (!File.Exists(imagesZipFilePath))
+            return;
+
+        var imagesTargetDirectory = Path.Combine(assetsDirectory, "images");
+
+        if (!Directory.Exists(imagesTargetDirectory))
+            Directory.CreateDirectory(imagesTargetDirectory);
+
+        try
+        {
+            await archiveExpander.ExpandArchiveAsync(
+                imagesZipFilePath, imagesTargetDirectory, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            // 아이콘이 없어도 카탈로그 UI는 동작해야 하므로 실패는 조용히 넘긴다.
         }
     }
 
