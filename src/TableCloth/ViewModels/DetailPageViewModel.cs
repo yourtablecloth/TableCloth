@@ -169,13 +169,6 @@ public partial class DetailPageViewModel : ObservableObject
             SelectedCertFile = certSelectWindow.ViewModel.SelectedCertPair;
     }
 
-    [RelayCommand]
-    private void ReportSite()
-    {
-        var siteReportWindow = _appUserInterface.CreateSiteReportWindow();
-        siteReportWindow.ShowDialog();
-    }
-
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Id))]
     [NotifyPropertyChangedFor(nameof(DisplayName))]

@@ -122,6 +122,7 @@ namespace Spork
                     .AddWindow<AboutWindow, AboutWindowViewModel>()
                     .AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>()
                     .AddWindow<MainWindow, MainWindowViewModel>()
+                    .AddTransient<SiteReportWindow>()
                     .AddSingleton<Application>(sp => new App(sp.GetRequiredService<IHost>()));
 
                 using (var _ = SentrySdk.Init(o =>

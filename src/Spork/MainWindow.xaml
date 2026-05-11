@@ -219,6 +219,10 @@
             </Grid.ColumnDefinitions>
             <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
                 <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_AboutButton}" Command="{Binding AboutThisAppCommand}" />
+                <!-- 사이트 제보: 카탈로그 모드에서만 노출 (사용자가 사이트 목록을 보고 있을 때 유효) -->
+                <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_ReportSiteButton}"
+                        Command="{Binding ReportSiteCommand}"
+                        Visibility="{Binding ShowCatalogView, Converter={StaticResource booleanToVisibilityConverter}}" />
                 <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource booleanToVisibilityConverter}}" />
             </WrapPanel>
             <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1">

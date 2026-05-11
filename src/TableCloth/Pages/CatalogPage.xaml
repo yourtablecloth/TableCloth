@@ -214,15 +214,7 @@
                     <Run Text="{x:Static res:UIStringResources.Button_AboutButton}" />
                 </Hyperlink>
             </TextBlock>
-            <TextBlock Margin="0 2">
-                <Hyperlink Command="{Binding ReportSiteCommand}">
-                    <Hyperlink.CommandParameter>
-                        <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
-                    </Hyperlink.CommandParameter>
-                    <Run Text="{x:Static res:UIStringResources.Button_ReportSiteButton}" />
-                </Hyperlink>
-            </TextBlock>
-            <TextBlock Margin="0 2" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}">
+<TextBlock Margin="0 2" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Hyperlink Command="{Binding ShowDebugInfoCommand}">
                     <Hyperlink.CommandParameter>
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />

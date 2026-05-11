@@ -8,5 +8,6 @@ namespace Spork.Components
         AboutWindow CreateAboutWindow();
         MainWindow CreateMainWindow();
         PrecautionsWindow CreatePrecautionsWindow(IEnumerable<string> targetServiceIds = null);
+        SiteReportWindow CreateSiteReportWindow();
     }
 }

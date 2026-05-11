@@ -49,9 +49,6 @@ public sealed class AppUserInterface(
     public DisclaimerWindow CreateDisclaimerWindow()
         => SetOwnerIfAvailable(serviceProvider.GetRequiredService<DisclaimerWindow>());
 
-    public SiteReportWindow CreateSiteReportWindow()
-        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<SiteReportWindow>());
-
     public SplashScreen CreateSplashScreen()
         => SetOwnerIfAvailable(serviceProvider.GetRequiredService<SplashScreen>());
 

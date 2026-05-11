@@ -90,12 +90,7 @@
                         <Run Text="{x:Static res:UIStringResources.Button_AboutButton}" />
                     </Hyperlink>
                 </TextBlock>
-                <TextBlock Margin="0 0 12 0" VerticalAlignment="Center">
-                    <Hyperlink Command="{Binding ReportSiteCommand}">
-                        <Run Text="{x:Static res:UIStringResources.Button_ReportSiteButton}" />
-                    </Hyperlink>
-                </TextBlock>
-                <TextBlock VerticalAlignment="Center" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}">
+<TextBlock VerticalAlignment="Center" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Hyperlink Command="{Binding ShowDebugInfoCommand}">
                         <Run Text="{x:Static res:UIStringResources.Button_DebugButton}" />
                     </Hyperlink>

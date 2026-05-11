@@ -20,6 +20,5 @@ public interface IAppUserInterface
     DetailPageViewModel CreateDetailPageViewModel(CatalogInternetService selectedService, CommandLineArgumentModel? commandLineArgumentModel);
     DisclaimerWindow CreateDisclaimerWindow();
     InputPasswordWindow CreateInputPasswordWindow();
-    SiteReportWindow CreateSiteReportWindow();
     SplashScreen CreateSplashScreen();
 }

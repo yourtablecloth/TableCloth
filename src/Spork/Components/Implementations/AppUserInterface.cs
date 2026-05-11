@@ -39,6 +39,9 @@ namespace Spork.Components.Implementations
             return window;
         }
 
+        public SiteReportWindow CreateSiteReportWindow()
+            => SetOwnerIfAvailable(_serviceProvider.GetRequiredService<SiteReportWindow>());
+
         public MainWindow CreateMainWindow()
             => _serviceProvider.GetRequiredService<MainWindow>();
     }

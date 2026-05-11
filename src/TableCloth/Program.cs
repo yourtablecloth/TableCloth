@@ -104,7 +104,6 @@ internal static class Program
                 .AddWindow<AboutWindow, AboutWindowViewModel>()
                 .AddWindow<OptionsWindow, OptionsWindowViewModel>()
                 .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
-                .AddWindow<SiteReportWindow>()
                 .AddWindow<MainWindow, MainWindowViewModel>()
                 .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
                 .AddPage<DetailPage, DetailPageViewModel>()

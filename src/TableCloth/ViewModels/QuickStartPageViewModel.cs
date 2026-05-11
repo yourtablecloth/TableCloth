@@ -214,13 +214,6 @@ public partial class QuickStartPageViewModel : ObservableObject
         aboutWindow.ShowDialog();
     }
 
-    [RelayCommand]
-    private void ReportSite()
-    {
-        var siteReportWindow = _appUserInterface.CreateSiteReportWindow();
-        siteReportWindow.ShowDialog();
-    }
-
     /// <summary>
     /// 직전 버전(호스트 측 <see cref="PreferenceSettings.Favorites"/>)에 보관되어 있던
     /// 즐겨찾기 목록을 Data 디렉터리의 user-data.json으로 1회성 이전한다.
