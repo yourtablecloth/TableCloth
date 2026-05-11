@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -64,6 +65,7 @@ namespace Spork.ViewModels
             IStepsPlayer stepsPlayer,
             IAppMessageBox appMessageBox,
             IUserDataStore userDataStore,
+            IShortcutCreator shortcutCreator,
             TaskFactory taskFactory)
         {
             _application = application;
@@ -75,6 +77,7 @@ namespace Spork.ViewModels
             _stepsPlayer = stepsPlayer;
             _appMessageBox = appMessageBox;
             _userDataStore = userDataStore;
+            _shortcutCreator = shortcutCreator;
             _taskFactory = taskFactory;
         }
 
@@ -87,7 +90,14 @@ namespace Spork.ViewModels
         private readonly IStepsPlayer _stepsPlayer;
         private readonly IAppMessageBox _appMessageBox;
         private readonly IUserDataStore _userDataStore;
+        private readonly IShortcutCreator _shortcutCreator;
         private readonly TaskFactory _taskFactory;
+
+        /// <summary>
+        /// 사용자가 카탈로그 UI를 통해 진입했는지(true) 또는 명령줄 --select로 진입했는지(false).
+        /// 카탈로그 진입의 경우 설치 완료 후 "카탈로그로 돌아가기" UX를 제공한다.
+        /// </summary>
+        private bool _enteredViaCatalog;
 
         private SporkUserData _userData = new SporkUserData();
         private bool _suppressUserDataSave;
@@ -122,17 +132,45 @@ namespace Spork.ViewModels
                 _suppressUserDataSave = false;
             }
 
+            // 사용자가 Spork를 닫은 뒤에도 샌드박스 안에서 다시 띄울 수 있도록 데스크톱에 바로가기를 만든다.
+            // 매 실행마다 호출되어도 기존 .lnk를 덮어쓰므로 안전.
+            await TryCreateSporkShortcutAsync();
+
             if (parsedArgs.SelectedServices.Any())
             {
-                // 명령줄로 사이트가 지정되어 들어온 경우: 종전대로 즉시 설치 흐름
+                // 명령줄로 사이트가 지정되어 들어온 경우: 종전대로 즉시 설치 흐름.
+                // 설치 성공 시 자동 종료 (--select 기반 바로가기/외부 호출 호환).
+                _enteredViaCatalog = false;
                 await RecordUsageAsync(parsedArgs.SelectedServices);
                 await EnterStepsModeAsync(_stepsComposer.ComposeSteps(), showPrecautions: true);
             }
             else
             {
-                // 명령줄에 사이트가 없으면: 카탈로그 UI를 보여주고 사용자가 선택하도록 함
+                // 명령줄에 사이트가 없으면: 카탈로그 UI를 보여주고 사용자가 선택하도록 함.
+                _enteredViaCatalog = true;
                 LoadCatalogForBrowsing();
                 ShowCatalogView = true;
+            }
+        }
+
+        private async Task TryCreateSporkShortcutAsync()
+        {
+            try
+            {
+                var sporkExePath = Assembly.GetExecutingAssembly().Location;
+                if (string.IsNullOrEmpty(sporkExePath) || !File.Exists(sporkExePath))
+                    return;
+
+                await _shortcutCreator.CreateShortcutOnDesktopAsync(
+                    destinationPath: sporkExePath,
+                    linkName: UIStringResources.Spork_ShortcutLinkName,
+                    iconFilePath: sporkExePath,
+                    description: UIStringResources.Spork_ShortcutDescription).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // 바로가기 생성 실패가 카탈로그/설치 흐름을 막아서는 안 된다.
+                _appMessageBox.DisplayError(ex, false);
             }
         }
 
@@ -274,10 +312,35 @@ namespace Spork.ViewModels
             if (InstallSteps == null || InstallSteps.Count == 0)
                 return;
 
+            ShowReturnToCatalog = false;
             var hasAnyFailure = await _stepsPlayer.PlayStepsAsync(InstallSteps, ShowDryRunNotification);
 
-            if (!hasAnyFailure)
+            if (hasAnyFailure)
+                return;
+
+            if (_enteredViaCatalog)
+            {
+                // 카탈로그를 통해 진입한 경우: 즉시 닫지 않고, 카탈로그로 돌아갈 수 있는 옵션을 제공한다.
+                // 사용자는 같은 샌드박스 안에서 추가 사이트를 이어서 사용할 수 있다.
+                ShowReturnToCatalog = true;
+            }
+            else
+            {
+                // 명령줄(--select)로 들어온 경우: 외부 호출 측이 기대하는 자동 종료 동작을 유지.
                 await RequestCloseAsync(this, EventArgs.Empty);
+            }
+        }
+
+        [RelayCommand]
+        private void ReturnToCatalog()
+        {
+            // 다음 사이트 선택을 위해 설치 상태를 초기화한다. 사용자 데이터(즐겨찾기/사용 기록)는
+            // 보존되므로 카탈로그 뷰는 이전 상호작용이 반영된 상태로 다시 보인다.
+            InstallSteps = new ObservableCollection<StepItemViewModel>();
+            SelectedCatalogService = null;
+            ShowReturnToCatalog = false;
+            ShowStepsView = false;
+            ShowCatalogView = true;
         }
 
         [RelayCommand]
@@ -314,6 +377,9 @@ namespace Spork.ViewModels
 
         [ObservableProperty]
         private bool _showStepsView;
+
+        [ObservableProperty]
+        private bool _showReturnToCatalog;
 
         [ObservableProperty]
         private bool _showFavoritesOnly;

@@ -73,7 +73,8 @@
 - [x] 즐겨찾기/사용 기록 (Data 디렉터리 영속) 도입 — `SporkUserData` 공유 모델 + `IUserDataStore`로 `user-data.json` 읽고 쓰기. 호스트는 기존 `PreferenceSettings.Favorites`를 첫 실행 시 Data 디렉터리로 1회성 마이그레이션
 - [x] 사이트 아이콘 표시 — 호스트가 `Images.zip`을 staging의 `assets/images/`로 풀고, Spork는 `ServiceLogoConverter`로 사이트 ID → PNG 이미지 해석. 카탈로그 카드에 아이콘 + 즐겨찾기 별 토글 표시. 카탈로그 상단에 "즐겨찾기만 보기" 체크박스
 - [x] 카탈로그 데이터 폴백 로직 (네트워크 실패 시 호스트가 주입한 스냅샷 사용 — 하이브리드 방식): 호스트가 wsb 생성 시점에 `CatalogCacheFilePath`를 staging의 `catalog/catalog.xml`로 복사, Spork의 `ResourceCacheManager`가 네트워크 실패 시 같은 디렉터리에서 읽어 들이도록 폴백
-- [ ] 여러 사이트 순차 사용 UX 다듬기 (현재는 단일 사이트 선택 후 설치 → 종료)
+- [x] 여러 사이트 순차 사용 UX: 카탈로그 진입 사용자는 설치 완료 후 자동 종료 대신 "카탈로그로 돌아가기" 버튼이 노출되어 다음 사이트를 이어서 선택 가능. 명령줄(--select) 진입은 종전대로 자동 종료(외부 호출 호환).
+- [x] 샌드박스 안에서 Spork 재실행용 데스크톱 바로가기 자동 생성 (`IShortcutCreator`로 Spork.exe를 가리키는 .lnk를 MainWindow 로드 시 1회 생성, 매번 덮어쓰는 안전 호출).
 
 ### Phase 4 — 데이터 / 설정 / 호환성
 - [ ] `PreferenceSettings`에 새 항목 추가 (`BackupFolder`, 퀵 스타트 기본값 등)

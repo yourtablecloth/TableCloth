@@ -1842,5 +1842,23 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("SporkCatalog_StartButton", resourceCulture);
             }
         }
+
+        public static string SporkCatalog_BackToCatalogButton {
+            get {
+                return ResourceManager.GetString("SporkCatalog_BackToCatalogButton", resourceCulture);
+            }
+        }
+
+        public static string Spork_ShortcutLinkName {
+            get {
+                return ResourceManager.GetString("Spork_ShortcutLinkName", resourceCulture);
+            }
+        }
+
+        public static string Spork_ShortcutDescription {
+            get {
+                return ResourceManager.GetString("Spork_ShortcutDescription", resourceCulture);
+            }
+        }
     }
 }

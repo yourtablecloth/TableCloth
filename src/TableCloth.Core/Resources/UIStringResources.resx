@@ -781,4 +781,13 @@ Create it now and continue?</value>
   <data name="SporkCatalog_StartButton" xml:space="preserve">
     <value>Start</value>
   </data>
+  <data name="SporkCatalog_BackToCatalogButton" xml:space="preserve">
+    <value>Back to Catalog</value>
+  </data>
+  <data name="Spork_ShortcutLinkName" xml:space="preserve">
+    <value>TableCloth Catalog</value>
+  </data>
+  <data name="Spork_ShortcutDescription" xml:space="preserve">
+    <value>Re-open the TableCloth catalog inside this sandbox.</value>
+  </data>
 </root>

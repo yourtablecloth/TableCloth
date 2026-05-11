@@ -780,4 +780,13 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="SporkCatalog_StartButton" xml:space="preserve">
     <value>시작</value>
   </data>
+  <data name="SporkCatalog_BackToCatalogButton" xml:space="preserve">
+    <value>카탈로그로 돌아가기</value>
+  </data>
+  <data name="Spork_ShortcutLinkName" xml:space="preserve">
+    <value>식탁보 카탈로그</value>
+  </data>
+  <data name="Spork_ShortcutDescription" xml:space="preserve">
+    <value>이 샌드박스 안에서 식탁보 카탈로그를 다시 엽니다.</value>
+  </data>
 </root>
