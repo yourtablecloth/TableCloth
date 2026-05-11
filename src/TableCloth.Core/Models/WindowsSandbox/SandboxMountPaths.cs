@@ -6,10 +6,15 @@ namespace TableCloth.Models.WindowsSandbox
     /// </summary>
     public static class SandboxMountPaths
     {
+        // Windows Sandbox는 SandboxFolder가 쓰기 가능한 위치에 있을 것을 요구한다.
+        // 사용자 프로필 하위(C:\Users\WDAGUtilityAccount\...)가 가장 자연스러우며,
+        // 다른 후보인 C:\ProgramData나 C:\Windows\Temp보다 위치가 명확하다.
+        private const string SandboxUserProfile = @"C:\Users\WDAGUtilityAccount";
+
         /// <summary>
         /// 식탁보 마운트의 샌드박스 내부 루트 경로입니다.
         /// </summary>
-        public const string Root = @"C:\TableCloth";
+        public const string Root = SandboxUserProfile + @"\TableCloth";
 
         /// <summary>
         /// 읽기 전용으로 마운트되는 App 디렉터리의 샌드박스 내부 경로입니다.
