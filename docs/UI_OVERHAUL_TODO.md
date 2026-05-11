@@ -84,6 +84,12 @@
 - [ ] Disclaimer/UpdateCheck/SponsorBanner 등 기존 부가 UI의 새 흐름 내 위치 결정
 - [ ] 수동 테스트 시나리오 작성 및 통과 확인
 
+## 설계 제약 (must-follow)
+
+- **wsb에 `<SandboxFolder>` 절대 출력 금지**. 구 버전 Windows Sandbox에서 wsb 로딩이 실패하기 때문이며, 모든 호스트 매핑 폴더는 샌드박스 사용자의 데스크톱 하위에 호스트 폴더의 leaf 이름으로 노출된다 (`C:\Users\WDAGUtilityAccount\Desktop\<leaf>`). 이 동작은 by-design이며, 향후 모든 마운트/스크립트 설계는 이를 전제로 한다.
+  - 표준 위치가 필요한 자료(예: NPKI를 `AppData\LocalLow\NPKI`로)는 wsb 마운트 옵션이 아니라 startup 스크립트의 `mklink /j`로 처리한다.
+  - 호스트 측 폴더의 leaf 이름이 곧 샌드박스 측 식별자다. 새 마운트 추가 시 leaf 충돌 가능성을 항상 검토.
+
 ## 결정 사항
 
 - [x] **카탈로그 데이터 전달 방식** (2026-05-11 결정): **하이브리드**. Spork가 카탈로그 로직을 소유하되, 호스트가 시작 시점에 카탈로그 스냅샷(약속된 경로에 읽기 전용 마운트)을 폴백으로 주입한다. Spork는 네트워크 우선, 실패 시 스냅샷으로 폴백.

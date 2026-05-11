@@ -150,22 +150,26 @@ public partial class QuickStartPageViewModel : ObservableObject
 
         var mappedFolders = MappedFolders.ToList();
 
-        // Data 디렉터리는 항상 RW로 마운트
+        // Data 디렉터리는 항상 RW로 마운트. 구 버전 Windows Sandbox 호환을 위해
+        // SandboxFolder는 지정하지 않으며, 호스트 폴더의 leaf 이름(기본값: "Data")이
+        // 그대로 샌드박스 데스크톱(SandboxMountPaths.DataDirectory)에 노출된다.
         mappedFolders.Insert(0, new MappedFolderSetting
         {
             HostFolder = _dataDirectoryHostPath,
-            SandboxFolder = SandboxMountPaths.DataDirectory,
+            SandboxFolder = null,
             ReadOnly = false,
         });
 
-        // NPKI 폴더가 존재하면 자동으로 RO 마운트
+        // NPKI 폴더가 존재하면 자동으로 RO 마운트. 마찬가지로 SandboxFolder는 지정하지 않고
+        // 데스크톱의 "NPKI" 폴더로 노출되며, startup 스크립트가 이를
+        // SandboxMountPaths.NpkiCanonicalPath로 junction 링크하여 은행 소프트웨어가 인식하도록 한다.
         var npkiHostPath = TryGetHostNpkiDirectoryPath();
         if (npkiHostPath != null)
         {
             mappedFolders.Insert(1, new MappedFolderSetting
             {
                 HostFolder = npkiHostPath,
-                SandboxFolder = SandboxNpkiPath,
+                SandboxFolder = null,
                 ReadOnly = true,
             });
         }
@@ -253,8 +257,6 @@ public partial class QuickStartPageViewModel : ObservableObject
         var candidate = Path.Combine(localLowPath, "NPKI");
         return Directory.Exists(candidate) ? candidate : null;
     }
-
-    private const string SandboxNpkiPath = @"C:\Users\WDAGUtilityAccount\AppData\LocalLow\NPKI";
 
     private static string? ShowFolderBrowserDialog(string title)
     {

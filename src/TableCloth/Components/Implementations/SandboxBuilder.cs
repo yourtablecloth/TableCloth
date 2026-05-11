@@ -184,6 +184,17 @@ rmdir /q ""{certStagingPath}""
         var sporkFilePath = Path.Combine(GetAssetsPathForSandbox(), "Spork.exe");
         var idList = string.Join(" ", serviceIdList);
 
+        // 식탁보 wsb는 <SandboxFolder>를 사용하지 않으므로 호스트의 NPKI 폴더는
+        // 데스크톱의 "NPKI" 폴더로 노출된다. 은행/금융 SW가 인식하는 표준 위치
+        // (%userprofile%\AppData\LocalLow\NPKI)로 디렉터리 junction을 만들어
+        // 동일하게 동작하도록 한다. 이미 존재할 경우 안전하게 교체한다.
+        var npkiJunctionScript = $@"
+if exist ""{SandboxMountPaths.NpkiDesktopMount}"" (
+    if exist ""{SandboxMountPaths.NpkiCanonicalPath}"" rmdir /s /q ""{SandboxMountPaths.NpkiCanonicalPath}""
+    if not exist ""%userprofile%\AppData\LocalLow"" mkdir ""%userprofile%\AppData\LocalLow""
+    mklink /j ""{SandboxMountPaths.NpkiCanonicalPath}"" ""{SandboxMountPaths.NpkiDesktopMount}""
+)";
+
         return $@"@echo off
 pushd ""%~dp0""
 
@@ -191,6 +202,7 @@ REM Configure DNS servers (Google DNS, Cloudflare DNS)
 powershell -Command ""Get-NetAdapter | Where-Object {{$_.Status -eq 'Up'}} | Set-DnsClientServerAddress -ServerAddresses ('8.8.8.8','1.1.1.1')"" 2>nul
 
 {certFileMoveScript}
+{npkiJunctionScript}
 ""{sporkFilePath}"" {idList} {string.Join(" ", switches)}
 :exit
 popd

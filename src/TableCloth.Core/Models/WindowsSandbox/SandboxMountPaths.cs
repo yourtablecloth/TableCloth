@@ -4,41 +4,62 @@ namespace TableCloth.Models.WindowsSandbox
     /// 식탁보가 항상 마운트하는 표준 디렉터리의 샌드박스 내부 경로 상수입니다.
     /// 호스트(TableCloth)와 샌드박스 내부(Spork) 양쪽에서 동일한 경로를 사용하기 위해 공유됩니다.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// 식탁보가 생성하는 wsb 파일은 구 버전 Windows Sandbox 호환성을 위해
+    /// <c>&lt;SandboxFolder&gt;</c> XML 요소를 의도적으로 사용하지 않습니다.
+    /// 그 결과 매핑된 호스트 폴더는 항상 샌드박스 사용자의 바탕 화면 하위에
+    /// 해당 호스트 폴더의 leaf 이름으로 노출됩니다(예: 호스트의 <c>...\TableCloth\Data</c>는
+    /// 샌드박스의 <c>C:\Users\WDAGUtilityAccount\Desktop\Data</c>에 마운트됨).
+    /// </para>
+    /// <para>
+    /// 따라서 본 클래스의 상수들은 "마운트 destination을 명시하기 위한 값"이 아니라,
+    /// "마운트가 끝난 뒤 샌드박스 내부에서 자료를 찾을 위치"를 가리키는 상수입니다.
+    /// 호스트 측 폴더의 leaf 이름이 곧 이 경로의 마지막 segment여야 합니다.
+    /// </para>
+    /// </remarks>
     public static class SandboxMountPaths
     {
-        // Windows Sandbox는 SandboxFolder가 쓰기 가능한 위치에 있을 것을 요구한다.
-        // 사용자 프로필 하위(C:\Users\WDAGUtilityAccount\...)가 가장 자연스러우며,
-        // 다른 후보인 C:\ProgramData나 C:\Windows\Temp보다 위치가 명확하다.
-        private const string SandboxUserProfile = @"C:\Users\WDAGUtilityAccount";
-
         /// <summary>
-        /// 식탁보 마운트의 샌드박스 내부 루트 경로입니다.
+        /// 샌드박스 사용자의 바탕 화면 경로입니다. 모든 매핑은 이 폴더 하위로 노출됩니다.
         /// </summary>
-        public const string Root = SandboxUserProfile + @"\TableCloth";
+        public const string SandboxDesktop = @"C:\Users\WDAGUtilityAccount\Desktop";
 
         /// <summary>
-        /// 읽기 전용으로 마운트되는 App 디렉터리의 샌드박스 내부 경로입니다.
-        /// Spork 실행 파일, 카탈로그 스냅샷, 부속 리소스가 위치합니다.
-        /// 매 실행마다 호스트가 새로 채워 넣습니다.
+        /// 식탁보 App 디렉터리의 샌드박스 노출 경로입니다.
+        /// Spork 실행 파일과 카탈로그 스냅샷이 이 위치에서 보입니다(매 실행마다 호스트가 새로 채움).
+        /// 호스트 측 폴더의 leaf 이름은 <c>App</c>이어야 합니다.
         /// </summary>
-        public const string AppDirectory = Root + @"\App";
+        public const string AppDirectory = SandboxDesktop + @"\App";
 
         /// <summary>
-        /// 읽기-쓰기로 마운트되는 Data 디렉터리의 샌드박스 내부 경로입니다.
-        /// 즐겨찾기, 사용 기록, 사용자 백업 등 영속 상태가 누적됩니다.
-        /// 호스트의 사용자 지정 폴더를 그대로 마운트합니다.
+        /// 식탁보 Data 디렉터리의 샌드박스 노출 경로입니다.
+        /// 즐겨찾기/사용 기록/사용자 백업이 누적되며 세션 간에 영속됩니다.
+        /// 호스트 측 폴더의 leaf 이름은 <c>Data</c>여야 합니다.
         /// </summary>
-        public const string DataDirectory = Root + @"\Data";
+        public const string DataDirectory = SandboxDesktop + @"\Data";
 
         /// <summary>
-        /// App 디렉터리 안에서 Spork 실행 파일이 위치하는 샌드박스 내부 경로입니다.
+        /// App 디렉터리 안의 Spork 실행 파일 경로입니다.
         /// </summary>
         public const string SporkExecutable = AppDirectory + @"\Spork.exe";
 
         /// <summary>
-        /// App 디렉터리 안에서 카탈로그 스냅샷(폴백 데이터)이 위치하는 샌드박스 내부 경로입니다.
+        /// App 디렉터리 안의 카탈로그 스냅샷(폴백 데이터) 위치입니다.
         /// 샌드박스 내부 네트워크 실패 시 Spork가 이 스냅샷으로 폴백합니다.
         /// </summary>
         public const string CatalogSnapshotDirectory = AppDirectory + @"\Catalog";
+
+        /// <summary>
+        /// NPKI 인증서가 노출되는 데스크톱 위치입니다.
+        /// 은행/금융 소프트웨어는 <c>%USERPROFILE%\AppData\LocalLow\NPKI</c>에서 인증서를 찾으므로,
+        /// startup 스크립트가 이 경로를 LocalLow\NPKI로 junction 링크해야 실제 사용 가능합니다.
+        /// </summary>
+        public const string NpkiDesktopMount = SandboxDesktop + @"\NPKI";
+
+        /// <summary>
+        /// 은행/금융 소프트웨어가 NPKI 인증서를 기대하는 샌드박스 내부 표준 경로입니다.
+        /// </summary>
+        public const string NpkiCanonicalPath = @"C:\Users\WDAGUtilityAccount\AppData\LocalLow\NPKI";
     }
 }
