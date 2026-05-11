@@ -14,6 +14,9 @@ namespace Spork.Dialogs
             viewModel.CloseRequested += ViewModel_CloseRequested;
         }
 
+        public PrecautionsWindowViewModel ViewModel
+            => (PrecautionsWindowViewModel)DataContext;
+
         private void ViewModel_CloseRequested(object sender, DialogRequestEventArgs e)
         {
             DialogResult = e.DialogResult;

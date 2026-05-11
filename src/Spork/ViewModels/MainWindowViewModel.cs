@@ -296,7 +296,7 @@ namespace Spork.ViewModels
 
             if (showPrecautions && SharedExtensions.HasAnyCompatNotes(catalog, targets))
             {
-                var window = _appUserInterface.CreatePrecautionsWindow();
+                var window = _appUserInterface.CreatePrecautionsWindow(targets);
                 window.ShowDialog();
             }
 

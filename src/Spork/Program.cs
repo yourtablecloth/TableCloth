@@ -115,8 +115,7 @@ namespace Spork
                     .AddKeyedSingleton<IStep, PackageInstallStep>(nameof(PackageInstallStep))
                     .AddKeyedSingleton<IStep, PowerShellScriptRunStep>(nameof(PowerShellScriptRunStep))
                     .AddKeyedSingleton<IStep, PrepareDirectoriesStep>(nameof(PrepareDirectoriesStep))
-                    .AddKeyedSingleton<IStep, ReloadEdgeStep>(nameof(ReloadEdgeStep))
-                    .AddKeyedSingleton<IStep, SetDesktopWallpaperStep>(nameof(SetDesktopWallpaperStep));
+                    .AddKeyedSingleton<IStep, ReloadEdgeStep>(nameof(ReloadEdgeStep));
 
                 // UI
                 builder.Services

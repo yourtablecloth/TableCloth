@@ -39,6 +39,8 @@ namespace Spork.Steps.Implementations
             var catalog = _resourceCacheManager.CatalogDocument;
             var steps = new List<StepItemViewModel>();
 
+            // SetDesktopWallpaperStep은 사이트 설치 단계가 아니라 wsb 부팅 시점
+            // (AppStartup.InitializeAsync)에서 1회만 적용되도록 옮겼다.
             steps.AddRange(new[]
             {
                 new StepItemViewModel()
@@ -54,13 +56,6 @@ namespace Spork.Steps.Implementations
                     Argument = new InstallItemViewModel(),
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_DisableSmartAppControl,
-                },
-                new StepItemViewModel()
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(SetDesktopWallpaperStep)),
-                    Argument = new InstallItemViewModel(),
-                    TargetSiteName = UIStringResources.Option_Prerequisites,
-                    PackageName = UIStringResources.Install_SetDesktopWallpaper,
                 },
             });
 

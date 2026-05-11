@@ -1,10 +1,14 @@
+using Microsoft.Extensions.Logging;
 using Spork.Browsers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +26,8 @@ namespace Spork.Components.Implementations
             IResourceCacheManager resourceCacheManager,
             IWebBrowserServiceFactory webBrowserServiceFactory,
             IShortcutCreator shortcutCreator,
-            ISharedLocations sharedLocations)
+            ISharedLocations sharedLocations,
+            ILogger<AppStartup> logger)
         {
             _appMessageBox = appMessageBox;
             _commandLineArguments = commandLineArguments;
@@ -32,6 +37,7 @@ namespace Spork.Components.Implementations
             _mutex = new Mutex(true, $"Global\\{GetType().FullName}", out this._isFirstInstance);
             _shortcutCreator = shortcutCreator;
             _sharedLocations = sharedLocations;
+            _logger = logger;
         }
 
         private readonly IAppMessageBox _appMessageBox;
@@ -41,6 +47,7 @@ namespace Spork.Components.Implementations
         private readonly IWebBrowserService _defaultWebBrowserService;
         private readonly IShortcutCreator _shortcutCreator;
         private readonly ISharedLocations _sharedLocations;
+        private readonly ILogger _logger;
 
         private bool _disposed;
         private readonly Mutex _mutex;
@@ -145,8 +152,44 @@ namespace Spork.Components.Implementations
                 return ApplicationStartupResultModel.FromException(ex, isCritical: true, providedWarnings: warnings);
             }
 
+            // 바탕화면 시그니처는 wsb 부팅 시점에 1회만 적용한다 (이전에는 사이트 설치 단계의
+            // 매 실행마다 같은 작업을 반복했음). 실패해도 카탈로그 진입은 막지 않는다.
+            TrySetSignatureWallpaper();
+
             result = ApplicationStartupResultModel.FromSucceedResult(providedWarnings: warnings);
             return await Task.FromResult(result).ConfigureAwait(false);
+        }
+
+        private void TrySetSignatureWallpaper()
+        {
+            try
+            {
+                var picturesDirectoryPath = _sharedLocations.GetPicturesDirectoryPath();
+
+                if (!Directory.Exists(picturesDirectoryPath))
+                    Directory.CreateDirectory(picturesDirectoryPath);
+
+                var wallpaperPath = Path.Combine(picturesDirectoryPath, "Signature.jpg");
+                Properties.Resources.Signature.Save(wallpaperPath, ImageFormat.Jpeg);
+
+                var result = NativeMethods.SystemParametersInfoW(
+                    NativeMethods.SetDesktopWallpaper, 0, wallpaperPath,
+                    NativeMethods.UpdateIniFile | NativeMethods.SendWinIniChange);
+
+                if (result == 0)
+                {
+                    var lastWin32Error = Marshal.GetLastWin32Error();
+                    _logger?.LogWarning(
+                        "SetDesktopWallpaper failed. SystemParametersInfoW says: {result} and GetLastWin32Error says: {lastWin32Error}",
+                        result, lastWin32Error);
+                }
+
+                NativeMethods.UpdatePerUserSystemParameters(IntPtr.Zero, IntPtr.Zero, "1, True", 0);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Failed to set signature wallpaper at sandbox boot");
+            }
         }
 
         private bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Spork.Dialogs;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace Spork.Components.Implementations
@@ -31,8 +32,12 @@ namespace Spork.Components.Implementations
         public AboutWindow CreateAboutWindow()
             => SetOwnerIfAvailable(_serviceProvider.GetRequiredService<AboutWindow>());
 
-        public PrecautionsWindow CreatePrecautionsWindow()
-            => SetOwnerIfAvailable(_serviceProvider.GetRequiredService<PrecautionsWindow>());
+        public PrecautionsWindow CreatePrecautionsWindow(IEnumerable<string> targetServiceIds = null)
+        {
+            var window = SetOwnerIfAvailable(_serviceProvider.GetRequiredService<PrecautionsWindow>());
+            window.ViewModel.TargetServiceIds = targetServiceIds;
+            return window;
+        }
 
         public MainWindow CreateMainWindow()
             => _serviceProvider.GetRequiredService<MainWindow>();

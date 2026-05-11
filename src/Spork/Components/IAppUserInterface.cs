@@ -1,4 +1,5 @@
 ﻿using Spork.Dialogs;
+using System.Collections.Generic;
 
 namespace Spork.Components
 {
@@ -6,6 +7,6 @@ namespace Spork.Components
     {
         AboutWindow CreateAboutWindow();
         MainWindow CreateMainWindow();
-        PrecautionsWindow CreatePrecautionsWindow();
+        PrecautionsWindow CreatePrecautionsWindow(IEnumerable<string> targetServiceIds = null);
     }
 }
