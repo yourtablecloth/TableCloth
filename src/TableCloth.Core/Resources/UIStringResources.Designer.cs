@@ -1704,5 +1704,71 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("TitleText_Warning", resourceCulture);
             }
         }
+
+        public static string QuickStart_Title {
+            get {
+                return ResourceManager.GetString("QuickStart_Title", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_Instruction {
+            get {
+                return ResourceManager.GetString("QuickStart_Instruction", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_Section_Certificate {
+            get {
+                return ResourceManager.GetString("QuickStart_Section_Certificate", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_Section_DataDirectory {
+            get {
+                return ResourceManager.GetString("QuickStart_Section_DataDirectory", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_Section_UserFolders {
+            get {
+                return ResourceManager.GetString("QuickStart_Section_UserFolders", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_Section_Options {
+            get {
+                return ResourceManager.GetString("QuickStart_Section_Options", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_DataDirectory_Description {
+            get {
+                return ResourceManager.GetString("QuickStart_DataDirectory_Description", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_DataDirectory_SelectFolderTitle {
+            get {
+                return ResourceManager.GetString("QuickStart_DataDirectory_SelectFolderTitle", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_DataDirectory_OpenButton {
+            get {
+                return ResourceManager.GetString("QuickStart_DataDirectory_OpenButton", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_DataDirectory_ResetButton {
+            get {
+                return ResourceManager.GetString("QuickStart_DataDirectory_ResetButton", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_LaunchButton {
+            get {
+                return ResourceManager.GetString("QuickStart_LaunchButton", resourceCulture);
+            }
+        }
     }
 }

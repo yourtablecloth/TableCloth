@@ -10,5 +10,6 @@ public interface INavigationService
     string GetPageFrameControlName();
     bool NavigateToCatalog(string searchKeyword);
     bool NavigateToDetail(string searchKeyword, CatalogInternetService selectedService, CommandLineArgumentModel? commandLineArgumentModel);
+    bool NavigateToQuickStart();
     void GoBack();
 }

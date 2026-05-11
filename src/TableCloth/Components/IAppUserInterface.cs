@@ -12,6 +12,8 @@ public interface IAppUserInterface
     AboutWindow CreateAboutWindow();
     CatalogPage CreateCatalogPage(string searchKeyword);
     CatalogPageViewModel CreateCatalogPageViewModel(string searchKeyword);
+    QuickStartPage CreateQuickStartPage();
+    QuickStartPageViewModel CreateQuickStartPageViewModel();
     CertSelectWindow CreateCertSelectWindow(X509CertPair? previousCertPair);
     DetailPage CreateDetailPage(string searchKeyword, CatalogInternetService selectedService, CommandLineArgumentModel? commandLineArgumentModel);
     DetailPageViewModel CreateDetailPageViewModel(CatalogInternetService selectedService, CommandLineArgumentModel? commandLineArgumentModel);

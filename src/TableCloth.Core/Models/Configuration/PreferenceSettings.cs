@@ -89,6 +89,13 @@ namespace TableCloth.Models.Configuration
         public List<MappedFolderSetting> MappedFolders { get; set; } = new List<MappedFolderSetting>();
 
         /// <summary>
+        /// 영속 상태(즐겨찾기, 사용 기록, 사용자 백업)를 저장하는 Data 디렉터리의 호스트 경로입니다.
+        /// 샌드박스 시작 시 항상 읽기-쓰기로 마운트됩니다.
+        /// null 또는 빈 문자열이면 호스트의 기본 Data 경로를 사용합니다.
+        /// </summary>
+        public string? DataDirectoryHostPath { get; set; } = null;
+
+        /// <summary>
         /// Disclaimer 알림을 표시해야 하는지 여부를 반환합니다.
         /// </summary>
         /// <param name="currentTime">현재 시간 (UTC)</param>

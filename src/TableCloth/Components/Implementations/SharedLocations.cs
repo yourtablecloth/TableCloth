@@ -6,8 +6,8 @@ namespace TableCloth.Components.Implementations;
 
 public sealed class SharedLocations : ISharedLocations
 {
-    // VelopackÀº LocalAppData\TableCloth¿¡ ¾ÛÀ» ¼³Ä¡ÇÏ¹Ç·Î,
-    // ¼³Á¤ ÆÄÀÏÀº LocalAppData\TableCloth.Data¿¡ ÀúÀåÇÏ¿© ¾÷µ¥ÀÌÆ® ½Ã »èÁ¦µÇÁö ¾Êµµ·Ï ÇÔ
+    // Velopackï¿½ï¿½ LocalAppData\TableClothï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½Ï¹Ç·ï¿½,
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ LocalAppData\TableCloth.Dataï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Êµï¿½ï¿½ï¿½ ï¿½ï¿½
     public string AppDataDirectoryPath =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TableCloth.Data");
 
@@ -66,4 +66,18 @@ public sealed class SharedLocations : ISharedLocations
 
     public string ImagesZipFilePath
         => Path.Combine(ExecutableDirectoryPath, "Images.zip");
+
+    public string DefaultDataDirectoryPath
+        => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "TableCloth",
+            "Data");
+
+    public string GetSandboxAppStagingPath(string sandboxStagingDirectory)
+        => Path.Combine(sandboxStagingDirectory, "App");
+
+    public string GetEffectiveDataDirectoryPath(string? configuredPath)
+        => string.IsNullOrWhiteSpace(configuredPath)
+            ? DefaultDataDirectoryPath
+            : configuredPath!;
 }

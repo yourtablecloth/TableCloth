@@ -48,10 +48,12 @@ public partial class MainWindowViewModel : ObservableObject
                 .FirstOrDefault();
         }
 
+        // --select <SiteId> 하위 호환: 기존 사용자/바로가기가 깨지지 않도록 SiteId가 들어오면
+        // 종전대로 DetailPage를 통해 진입한다. 그 외 일반 경우는 새 QuickStart 진입점을 사용한다.
         if (commandLineSelectedService != null)
             _navigationService.NavigateToDetail(string.Empty, commandLineSelectedService, parsedArg);
         else
-            _navigationService.NavigateToCatalog(string.Empty);
+            _navigationService.NavigateToQuickStart();
     }
 
     [RelayCommand]

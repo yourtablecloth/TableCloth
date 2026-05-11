@@ -39,6 +39,13 @@ public sealed class NavigationService(
         return frame.Navigate(page);
     }
 
+    public bool NavigateToQuickStart()
+    {
+        var frame = FindNavigationFrameFromMainWindow();
+        var page = appUserInterface.CreateQuickStartPage();
+        return frame.Navigate(page);
+    }
+
     public void GoBack()
     {
         var frame = FindNavigationFrameFromMainWindow();

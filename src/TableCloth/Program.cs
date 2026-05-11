@@ -107,6 +107,7 @@ internal static class Program
                 .AddWindow<MainWindow, MainWindowViewModel>()
                 .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
                 .AddPage<DetailPage, DetailPageViewModel>()
+                .AddPage<QuickStartPage, QuickStartPageViewModel>()
                 .AddWindow<SplashScreen, SplashScreenViewModel>()
                 .AddSingleton<Application>(sp => new App(sp.GetRequiredService<IHost>()));
 

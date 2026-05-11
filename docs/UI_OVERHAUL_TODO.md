@@ -39,13 +39,18 @@
 - [ ] 기존 코드 진입점 정리 (`MainWindowViewModel.MainWindowLoaded` → 카탈로그 진입 경로 파악 완료)
 
 ### Phase 1 — TableCloth 퀵 스타트 화면 도입
-- [ ] `QuickStartPage` (가칭) XAML/코드비하인드 신설
-- [ ] `QuickStartPageViewModel` 신설 (공동인증서/백업 폴더/사용자 폴더 3개 섹션)
-- [ ] 공동인증서 자동 검색 + 수동 지정 UX (기존 `IX509CertPairScanner` 재사용)
-- [ ] 데이터 백업 폴더 지정 UX (새 `PreferenceSettings` 항목)
-- [ ] 사용자 정의 매핑 폴더 UX (`MappedFolderSetting` 재사용, DetailPage 코드 참고)
-- [ ] `INavigationService`에서 카탈로그 대신 QuickStart로 진입하도록 변경
-- [ ] 커맨드라인으로 사이트 ID가 들어온 경우 처리 정책 결정 (기존 동작 호환 vs Deprecation)
+
+- [x] `QuickStartPage` XAML/코드비하인드 신설
+- [x] `QuickStartPageViewModel` 신설 (공동인증서/Data 디렉터리/사용자 폴더 3개 섹션 + 옵션)
+- [x] 공동인증서 자동 검색 + 수동 지정 UX (기존 `IX509CertPairScanner` 재사용)
+- [x] Data 디렉터리 지정 UX (`PreferenceSettings.DataDirectoryHostPath` 신설, 기본값 `Documents\TableCloth\Data`)
+- [x] 사용자 정의 매핑 폴더 UX (`MappedFolderSetting` 재사용, DetailPage 코드 패턴 답습)
+- [x] `INavigationService.NavigateToQuickStart()` 추가
+- [x] `IAppUserInterface.CreateQuickStartPage()` 추가, DI 등록(`Program.cs`)
+- [x] `MainWindowViewModel`: 일반 진입은 QuickStart, `--select <SiteId>`가 있을 때는 종전대로 DetailPage 유지
+- [x] `SandboxMountPaths` 상수(`C:\TableCloth\App` / `C:\TableCloth\Data`) 도입, `ISharedLocations`에 App 스테이징/Data 기본 경로 추가
+- [x] 빌드 통과 확인 (에러 0)
+- [ ] wsb 생성 시 App/Data 마운트 추가는 Phase 3 작업으로 분리
 
 ### Phase 2 — TableCloth에서 카탈로그/디테일 화면 제거 또는 격리
 - [ ] `CatalogPage` / `DetailPage` / 관련 ViewModel을 Spork 측으로 이관 또는 Deprecated 처리

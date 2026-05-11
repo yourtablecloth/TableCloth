@@ -66,6 +66,12 @@ public sealed class AppUserInterface(
         return viewModel;
     }
 
+    public QuickStartPage CreateQuickStartPage()
+        => serviceProvider.GetRequiredService<QuickStartPage>();
+
+    public QuickStartPageViewModel CreateQuickStartPageViewModel()
+        => serviceProvider.GetRequiredService<QuickStartPageViewModel>();
+
     public DetailPage CreateDetailPage(
         string searchKeyword,
         CatalogInternetService selectedService,

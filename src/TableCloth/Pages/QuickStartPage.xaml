@@ -1,0 +1,155 @@
+<Page x:Class="TableCloth.Pages.QuickStartPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+      xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Core"
+      xmlns:vm="clr-namespace:TableCloth.ViewModels"
+      xmlns:tablecloth="clr-namespace:TableCloth;assembly=TableCloth.Core"
+      mc:Ignorable="d"
+      d:DesignHeight="600" d:DesignWidth="800"
+      Title="{x:Static res:UIStringResources.QuickStart_Title}"
+      d:DataContext="{d:DesignInstance Type=vm:QuickStartPageViewModelForDesigner, IsDesignTimeCreatable=True}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding QuickStartPageLoadedCommand}">
+                <i:InvokeCommandAction.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}" />
+                </i:InvokeCommandAction.CommandParameter>
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Info Banner -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource InfoBannerBackground}"
+                BorderBrush="{DynamicResource InfoBannerBorder}"
+                BorderThickness="0 0 0 1" Padding="8 6">
+            <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Foreground="{DynamicResource InfoBannerForeground}">
+                <Run Text="ⓘ" FontWeight="Bold" Foreground="{DynamicResource InfoBannerLinkForeground}" /><Run Text=" " /><Run Text="{x:Static res:UIStringResources.Sponsor_BannerMessage}" /><Run Text=" " /><Hyperlink Click="SponsorBanner_MouseLeftButtonUp" Foreground="{DynamicResource InfoBannerLinkForeground}" FontWeight="SemiBold"><Run Text="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}" /></Hyperlink>
+            </TextBlock>
+        </Border>
+
+        <!-- Header / Instruction -->
+        <StackPanel Grid.Row="1" Margin="16 12 16 4">
+            <TextBlock FontSize="22" FontWeight="Bold" Text="{x:Static res:UIStringResources.QuickStart_Title}" />
+            <TextBlock Margin="0 4 0 0" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.QuickStart_Instruction}" />
+        </StackPanel>
+
+        <!-- Scrollable body -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="16 8 16 8">
+            <StackPanel>
+
+                <!-- Section: Certificate -->
+                <TextBlock FontWeight="Bold" FontSize="14" Margin="0 8 0 4" Text="{x:Static res:UIStringResources.QuickStart_Section_Certificate}" />
+                <Grid Margin="0 0 0 12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <CheckBox Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Button_MapNpkiCertButton}" IsChecked="{Binding MapNpkiCert}" />
+                    <Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="10 0 0 0" Padding="10 4" Content="{x:Static res:UIStringResources.Button_BrowseButton}" Command="{Binding CertSelectCommand}" IsEnabled="{Binding MapNpkiCert}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 6 0 0" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{Binding SelectedCertFile}" TextTrimming="CharacterEllipsis" IsEnabled="{Binding MapNpkiCert}" />
+                </Grid>
+
+                <!-- Section: Data Directory -->
+                <TextBlock FontWeight="Bold" FontSize="14" Margin="0 8 0 4" Text="{x:Static res:UIStringResources.QuickStart_Section_DataDirectory}" />
+                <TextBlock Margin="0 0 0 4" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.QuickStart_DataDirectory_Description}" />
+                <Grid Margin="0 0 0 12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" IsReadOnly="True" VerticalContentAlignment="Center" Padding="6 4" Text="{Binding DataDirectoryHostPath, Mode=OneWay}" />
+                    <Button Grid.Column="1" Margin="6 0 0 0" Padding="10 4" Content="{x:Static res:UIStringResources.Button_BrowseButton}" Command="{Binding BrowseDataDirectoryCommand}" />
+                    <Button Grid.Column="2" Margin="6 0 0 0" Padding="10 4" Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_OpenButton}" Command="{Binding OpenDataDirectoryCommand}" />
+                    <Button Grid.Column="3" Margin="6 0 0 0" Padding="10 4" Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_ResetButton}" Command="{Binding ResetDataDirectoryToDefaultCommand}" />
+                </Grid>
+
+                <!-- Section: User Folders -->
+                <TextBlock FontWeight="Bold" FontSize="14" Margin="0 8 0 4" Text="{x:Static res:UIStringResources.QuickStart_Section_UserFolders}" />
+                <TextBlock Margin="0 0 0 4" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.MappedFolder_Description}" />
+                <ListBox Height="120" Margin="0 0 0 6" ItemsSource="{Binding MappedFolders}" SelectedItem="{Binding SelectedMappedFolder}" HorizontalContentAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding HostFolder}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding HostFolder}" />
+                                <Border Grid.Column="1" BorderBrush="{Binding ReadOnly, Converter={StaticResource BooleanToBackgroundConverter}}" BorderThickness="1" CornerRadius="3" Padding="5 2" Margin="5 0 0 0">
+                                    <TextBlock Text="{Binding ReadOnly, Converter={StaticResource BooleanToReadOnlyTextConverter}}" FontSize="11" />
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 12">
+                    <Button Content="{x:Static res:UIStringResources.MappedFolder_AddButton}" Command="{Binding AddMappedFolderCommand}" Padding="10 5" Margin="0 0 6 0" />
+                    <Button Content="{x:Static res:UIStringResources.MappedFolder_RemoveButton}" Command="{Binding RemoveMappedFolderCommand}" IsEnabled="{Binding SelectedMappedFolder, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" Margin="0 0 6 0" />
+                    <Button Content="{x:Static res:UIStringResources.MappedFolder_ToggleReadOnlyButton}" Command="{Binding ToggleMappedFolderReadOnlyCommand}" IsEnabled="{Binding SelectedMappedFolder, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" />
+                </StackPanel>
+
+                <!-- Section: Options -->
+                <TextBlock FontWeight="Bold" FontSize="14" Margin="0 8 0 4" Text="{x:Static res:UIStringResources.QuickStart_Section_Options}" />
+                <WrapPanel Margin="0 0 0 4">
+                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_UseMicrophoneCheckboxText}" IsChecked="{Binding EnableMicrophone}" />
+                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_UseWebCameraCheckboxText}" IsChecked="{Binding EnableWebCam}" />
+                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_UsePrinterCheckboxText}" IsChecked="{Binding EnablePrinters}" />
+                </WrapPanel>
+                <WrapPanel Margin="0 0 0 12">
+                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_InstallEveryonesPrinter}" IsChecked="{Binding InstallEveryonesPrinter}" />
+                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_InstallAdobeReader}" IsChecked="{Binding InstallAdobeReader}" />
+                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_InstallHancomOfficeViewer}" IsChecked="{Binding InstallHancomOfficeViewer}" />
+                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_InstallRaiDrive}" IsChecked="{Binding InstallRaiDrive}" />
+                </WrapPanel>
+                <CheckBox Margin="0 0 0 8" Content="{x:Static res:UIStringResources.Option_UseAutoLogCollecting}" IsChecked="{Binding EnableLogAutoCollecting}" />
+                <TextBlock Margin="0 0 0 12" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.Option_TelemetryDescriptionText}" />
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer -->
+        <Grid Grid.Row="3" Margin="16 8 16 12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <TextBlock Margin="0 0 12 0" VerticalAlignment="Center">
+                    <Hyperlink Command="{Binding AboutThisAppCommand}">
+                        <Run Text="{x:Static res:UIStringResources.Button_AboutButton}" />
+                    </Hyperlink>
+                </TextBlock>
+                <TextBlock Margin="0 0 12 0" VerticalAlignment="Center">
+                    <Hyperlink Command="{Binding ReportSiteCommand}">
+                        <Run Text="{x:Static res:UIStringResources.Button_ReportSiteButton}" />
+                    </Hyperlink>
+                </TextBlock>
+                <TextBlock VerticalAlignment="Center" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Hyperlink Command="{Binding ShowDebugInfoCommand}">
+                        <Run Text="{x:Static res:UIStringResources.Button_DebugButton}" />
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+            <Button Grid.Column="2" Padding="20 8" FontWeight="Bold" Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Command="{Binding LaunchSandboxCommand}" />
+        </Grid>
+    </Grid>
+</Page>

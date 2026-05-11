@@ -707,4 +707,37 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="Button_ReportSiteButton" xml:space="preserve">
     <value>사이트 제보</value>
   </data>
+  <data name="QuickStart_Title" xml:space="preserve">
+    <value>빠른 시작</value>
+  </data>
+  <data name="QuickStart_Instruction" xml:space="preserve">
+    <value>공동인증서, 데이터 폴더, 함께 사용할 폴더만 지정하여 샌드박스를 바로 시작합니다. 사이트 선택은 샌드박스 안에서 진행합니다.</value>
+  </data>
+  <data name="QuickStart_Section_Certificate" xml:space="preserve">
+    <value>공동인증서</value>
+  </data>
+  <data name="QuickStart_Section_DataDirectory" xml:space="preserve">
+    <value>데이터 디렉터리</value>
+  </data>
+  <data name="QuickStart_Section_UserFolders" xml:space="preserve">
+    <value>사용자 폴더</value>
+  </data>
+  <data name="QuickStart_Section_Options" xml:space="preserve">
+    <value>옵션</value>
+  </data>
+  <data name="QuickStart_DataDirectory_Description" xml:space="preserve">
+    <value>즐겨찾기, 사용 기록, 사용자 백업 데이터가 이 폴더에 누적되어 샌드박스 세션 간에 유지됩니다.</value>
+  </data>
+  <data name="QuickStart_DataDirectory_SelectFolderTitle" xml:space="preserve">
+    <value>데이터 디렉터리로 사용할 폴더를 선택하세요</value>
+  </data>
+  <data name="QuickStart_DataDirectory_OpenButton" xml:space="preserve">
+    <value>열기</value>
+  </data>
+  <data name="QuickStart_DataDirectory_ResetButton" xml:space="preserve">
+    <value>기본값으로</value>
+  </data>
+  <data name="QuickStart_LaunchButton" xml:space="preserve">
+    <value>샌드박스 시작</value>
+  </data>
 </root>
