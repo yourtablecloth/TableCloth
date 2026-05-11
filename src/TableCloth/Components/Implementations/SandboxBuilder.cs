@@ -187,13 +187,13 @@ rmdir /q ""{certStagingPath}""
         // 식탁보 wsb는 <SandboxFolder>를 사용하지 않으므로 호스트의 NPKI 폴더는
         // 데스크톱의 "NPKI" 폴더로 노출된다. 은행/금융 SW가 인식하는 표준 위치
         // (%userprofile%\AppData\LocalLow\NPKI)로 디렉터리 junction을 만들어
-        // 동일하게 동작하도록 한다. 이미 존재할 경우 안전하게 교체한다.
+        // 동일하게 동작하도록 한다. CMD batch의 if-paren 블록은 LogonCommand 컨텍스트에서
+        // 파싱이 불안정할 수 있으므로 기존 cert 스크립트와 동일하게 단일 라인 if 패턴으로 작성한다.
         var npkiJunctionScript = $@"
-if exist ""{SandboxMountPaths.NpkiDesktopMount}"" (
-    if exist ""{SandboxMountPaths.NpkiCanonicalPath}"" rmdir /s /q ""{SandboxMountPaths.NpkiCanonicalPath}""
-    if not exist ""%userprofile%\AppData\LocalLow"" mkdir ""%userprofile%\AppData\LocalLow""
-    mklink /j ""{SandboxMountPaths.NpkiCanonicalPath}"" ""{SandboxMountPaths.NpkiDesktopMount}""
-)";
+if not exist ""{SandboxMountPaths.NpkiDesktopMount}"" goto __tc_skip_npki_link
+if not exist ""%userprofile%\AppData\LocalLow"" mkdir ""%userprofile%\AppData\LocalLow"" >nul 2>&1
+mklink /j ""{SandboxMountPaths.NpkiCanonicalPath}"" ""{SandboxMountPaths.NpkiDesktopMount}"" >nul 2>&1
+:__tc_skip_npki_link";
 
         return $@"@echo off
 pushd ""%~dp0""
