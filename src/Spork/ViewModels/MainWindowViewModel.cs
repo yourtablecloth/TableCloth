@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Spork.Browsers;
 using Spork.Components;
 using Spork.Steps;
 using System;
@@ -66,6 +67,7 @@ namespace Spork.ViewModels
             IAppMessageBox appMessageBox,
             IUserDataStore userDataStore,
             IShortcutCreator shortcutCreator,
+            IWebBrowserServiceFactory webBrowserServiceFactory,
             TaskFactory taskFactory)
         {
             _application = application;
@@ -78,6 +80,7 @@ namespace Spork.ViewModels
             _appMessageBox = appMessageBox;
             _userDataStore = userDataStore;
             _shortcutCreator = shortcutCreator;
+            _webBrowserServiceFactory = webBrowserServiceFactory;
             _taskFactory = taskFactory;
         }
 
@@ -91,6 +94,7 @@ namespace Spork.ViewModels
         private readonly IAppMessageBox _appMessageBox;
         private readonly IUserDataStore _userDataStore;
         private readonly IShortcutCreator _shortcutCreator;
+        private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
         private readonly TaskFactory _taskFactory;
 
         /// <summary>
@@ -312,22 +316,71 @@ namespace Spork.ViewModels
             if (InstallSteps == null || InstallSteps.Count == 0)
                 return;
 
+            // ReturnToCatalog가 상태를 초기화하기 전에 대상 사이트 URL을 미리 캡쳐한다.
+            var targetUrls = ResolveTargetSiteUrls();
+
             ShowReturnToCatalog = false;
             var hasAnyFailure = await _stepsPlayer.PlayStepsAsync(InstallSteps, ShowDryRunNotification);
 
             if (hasAnyFailure)
+            {
+                // 오류가 감지된 경우는 사용자가 결과를 확인할 수 있게 StepsView를 유지한다.
+                // 카탈로그 진입의 경우 수동 "카탈로그로 돌아가기" 버튼만 노출하고 자동 복귀는 보류.
+                if (_enteredViaCatalog)
+                    ShowReturnToCatalog = true;
                 return;
+            }
+
+            // 설치 성공: 보안 모듈이 적용된 상태에서 사용자가 실제로 사이트를 사용할 수 있도록
+            // 대상 사이트 URL을 (가능하면 Edge로) 자동으로 연다.
+            TryOpenSiteUrls(targetUrls);
 
             if (_enteredViaCatalog)
             {
-                // 카탈로그를 통해 진입한 경우: 즉시 닫지 않고, 카탈로그로 돌아갈 수 있는 옵션을 제공한다.
-                // 사용자는 같은 샌드박스 안에서 추가 사이트를 이어서 사용할 수 있다.
-                ShowReturnToCatalog = true;
+                // 카탈로그 진입 + 성공: 다음 사이트를 이어서 사용할 수 있도록 카탈로그로 자동 복귀.
+                // 사용자는 이미 새로 열린 브라우저로 시선이 이동하므로 별도 버튼 클릭을 요구하지 않는다.
+                ReturnToCatalog();
             }
             else
             {
-                // 명령줄(--select)로 들어온 경우: 외부 호출 측이 기대하는 자동 종료 동작을 유지.
+                // 명령줄(--select) 진입 + 성공: 외부 호출 측의 자동 종료 기대를 유지.
                 await RequestCloseAsync(this, EventArgs.Empty);
+            }
+        }
+
+        private IList<string> ResolveTargetSiteUrls()
+        {
+            var catalog = _resourceCacheManager.CatalogDocument;
+
+            IEnumerable<string> targetIds;
+            if (_enteredViaCatalog)
+                targetIds = SelectedCatalogService != null ? new[] { SelectedCatalogService.Id } : Enumerable.Empty<string>();
+            else
+                targetIds = _commandLineArguments.GetCurrent().SelectedServices;
+
+            var idSet = new HashSet<string>(targetIds ?? Enumerable.Empty<string>(), StringComparer.Ordinal);
+            return catalog.Services
+                .Where(s => idSet.Contains(s.Id))
+                .Select(s => s.Url)
+                .Where(u => !string.IsNullOrWhiteSpace(u))
+                .ToList();
+        }
+
+        private void TryOpenSiteUrls(IList<string> urls)
+        {
+            if (urls == null || urls.Count == 0)
+                return;
+
+            try
+            {
+                var browser = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
+                foreach (var url in urls)
+                    Process.Start(browser.CreateWebPageOpenRequest(url, ProcessWindowStyle.Maximized));
+            }
+            catch (Exception ex)
+            {
+                // 브라우저 실행 실패는 설치 흐름을 망치지 않도록 비치명적으로 처리한다.
+                _appMessageBox.DisplayError(ex, false);
             }
         }
 
