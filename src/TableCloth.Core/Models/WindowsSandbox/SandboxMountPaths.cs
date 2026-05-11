@@ -51,14 +51,20 @@ namespace TableCloth.Models.WindowsSandbox
         public const string CatalogSnapshotDirectory = AppDirectory + @"\Catalog";
 
         /// <summary>
-        /// NPKI 인증서가 노출되는 데스크톱 위치입니다.
-        /// 은행/금융 소프트웨어는 <c>%USERPROFILE%\AppData\LocalLow\NPKI</c>에서 인증서를 찾으므로,
-        /// startup 스크립트가 이 경로를 LocalLow\NPKI로 junction 링크해야 실제 사용 가능합니다.
+        /// 호스트의 NPKI 인증서 폴더가 RO로 마운트되는 샌드박스 데스크톱 위치입니다.
+        /// 은행/금융 소프트웨어는 <c>%USERPROFILE%\AppData\LocalLow\NPKI</c>에서 인증서를 찾기 때문에,
+        /// startup 스크립트가 이 폴더의 내용을 <see cref="NpkiCanonicalPath"/>로 <c>xcopy</c> 하여
+        /// 독립된 쓰기 가능 사본을 만들어 둡니다.
         /// </summary>
+        /// <remarks>
+        /// junction 링크 대신 사본을 만드는 이유는, junction은 결국 RO 마운트를 가리켜
+        /// 호스트 인증서를 그대로 노출하고 은행 SW가 NPKI에 쓰기 작업을 할 때 실패하기 때문입니다.
+        /// </remarks>
         public const string NpkiDesktopMount = SandboxDesktop + @"\NPKI";
 
         /// <summary>
         /// 은행/금융 소프트웨어가 NPKI 인증서를 기대하는 샌드박스 내부 표준 경로입니다.
+        /// startup 스크립트가 <see cref="NpkiDesktopMount"/>의 내용을 이 위치로 xcopy 합니다.
         /// </summary>
         public const string NpkiCanonicalPath = @"C:\Users\WDAGUtilityAccount\AppData\LocalLow\NPKI";
     }

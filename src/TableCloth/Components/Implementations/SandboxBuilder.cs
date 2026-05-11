@@ -194,15 +194,20 @@ rmdir /q ""{certStagingPath}""
         var idList = string.Join(" ", serviceIdList);
 
         // 식탁보 wsb는 <SandboxFolder>를 사용하지 않으므로 호스트의 NPKI 폴더는
-        // 데스크톱의 "NPKI" 폴더로 노출된다. 은행/금융 SW가 인식하는 표준 위치
-        // (%userprofile%\AppData\LocalLow\NPKI)로 디렉터리 junction을 만들어
-        // 동일하게 동작하도록 한다. CMD batch의 if-paren 블록은 LogonCommand 컨텍스트에서
-        // 파싱이 불안정할 수 있으므로 기존 cert 스크립트와 동일하게 단일 라인 if 패턴으로 작성한다.
+        // 데스크톱의 "NPKI" 폴더로 RO 마운트되어 노출된다. 은행/금융 SW가 인식하는 표준 위치
+        // (%userprofile%\AppData\LocalLow\NPKI)에는 junction이 아닌 **xcopy**로 독립 사본을
+        // 만들어 둔다. 이유:
+        //   - junction은 결국 RO 마운트를 가리키므로 호스트 인증서가 그대로 노출되고,
+        //     은행 SW가 NPKI에 쓰기 작업(인증서 갱신/캐시 등)을 할 때 실패한다.
+        //   - xcopy로 사본을 두면 샌드박스가 독립된 쓰기 가능 NPKI를 갖고, 사본에 대한
+        //     수정이 호스트로 새지 않는다.
+        // CMD batch의 if-paren 블록은 LogonCommand 컨텍스트에서 파싱이 불안정할 수 있으므로
+        // 기존 cert 스크립트와 동일하게 단일 라인 if + goto 패턴을 유지한다.
         var npkiJunctionScript = $@"
-if not exist ""{SandboxMountPaths.NpkiDesktopMount}"" goto __tc_skip_npki_link
+if not exist ""{SandboxMountPaths.NpkiDesktopMount}"" goto __tc_skip_npki_copy
 if not exist ""%userprofile%\AppData\LocalLow"" mkdir ""%userprofile%\AppData\LocalLow"" >nul 2>&1
-mklink /j ""{SandboxMountPaths.NpkiCanonicalPath}"" ""{SandboxMountPaths.NpkiDesktopMount}"" >nul 2>&1
-:__tc_skip_npki_link";
+xcopy /e /i /q /y ""{SandboxMountPaths.NpkiDesktopMount}"" ""{SandboxMountPaths.NpkiCanonicalPath}"" >nul 2>&1
+:__tc_skip_npki_copy";
 
         return $@"@echo off
 pushd ""%~dp0""
