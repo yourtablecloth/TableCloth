@@ -1,4 +1,3 @@
-using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,17 +5,15 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using TableCloth.Components;
-using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
+using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
@@ -31,21 +28,21 @@ public partial class QuickStartPageViewModel : ObservableObject
     [ActivatorUtilitiesConstructor]
     public QuickStartPageViewModel(
         IPreferencesManager preferencesManager,
-        IX509CertPairScanner certPairScanner,
-        IAppRestartManager appRestartManager,
         IAppUserInterface appUserInterface,
         ISharedLocations sharedLocations,
         ISandboxLauncher sandboxLauncher,
         IAppMessageBox appMessageBox,
+        IMessageBoxService messageBoxService,
+        IApplicationService applicationService,
         TaskFactory taskFactory)
     {
         _preferencesManager = preferencesManager;
-        _certPairScanner = certPairScanner;
-        _appRestartManager = appRestartManager;
         _appUserInterface = appUserInterface;
         _sharedLocations = sharedLocations;
         _sandboxLauncher = sandboxLauncher;
         _appMessageBox = appMessageBox;
+        _messageBoxService = messageBoxService;
+        _applicationService = applicationService;
         _taskFactory = taskFactory;
     }
 
@@ -60,37 +57,13 @@ public partial class QuickStartPageViewModel : ObservableObject
         var currentConfig = await _preferencesManager.LoadPreferencesAsync();
         currentConfig ??= _preferencesManager.GetDefaultPreferences();
 
-        EnableLogAutoCollecting = currentConfig.UseLogCollection;
-        EnableMicrophone = currentConfig.UseAudioRedirection;
-        EnableWebCam = currentConfig.UseVideoRedirection;
-        EnablePrinters = currentConfig.UsePrinterRedirection;
-        InstallEveryonesPrinter = currentConfig.InstallEveryonesPrinter;
-        InstallAdobeReader = currentConfig.InstallAdobeReader;
-        InstallHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
-        InstallRaiDrive = currentConfig.InstallRaiDrive;
-        LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
-
-        DataDirectoryHostPath = _sharedLocations.GetEffectiveDataDirectoryPath(currentConfig.DataDirectoryHostPath);
+        _dataDirectoryHostPath = _sharedLocations.GetEffectiveDataDirectoryPath(currentConfig.DataDirectoryHostPath);
 
         MappedFolders.Clear();
         foreach (var folder in currentConfig.MappedFolders ?? new List<MappedFolderSetting>())
             MappedFolders.Add(folder);
 
-        var lastUsedCertHash = currentConfig.LastUsedCertHash;
-        var allCerts = await Task.Run(() =>
-            _certPairScanner.ScanX509Pairs(_certPairScanner.GetCandidateDirectories()).ToList());
-
-        var selectedCert = default(X509CertPair?);
-
-        if (!string.IsNullOrWhiteSpace(lastUsedCertHash))
-            selectedCert = allCerts.FirstOrDefault(x => string.Equals(lastUsedCertHash, x.CertHash, StringComparison.Ordinal));
-        else if (allCerts.Count < 2)
-            selectedCert = allCerts.Where(x => x.IsValid).FirstOrDefault();
-
-        MapNpkiCert = (selectedCert != null);
-        SelectedCertFile = selectedCert;
-
-        PropertyChanged += ViewModel_PropertyChanged;
+        LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
         if (ShouldNotifyDisclaimer)
         {
@@ -98,69 +71,25 @@ public partial class QuickStartPageViewModel : ObservableObject
             var result = disclaimerWindow.ShowDialog();
 
             if (result.HasValue && result.Value)
-                LastDisclaimerAgreedTime = DateTime.UtcNow;
-        }
-    }
-
-    [RelayCommand]
-    private void CertSelect()
-    {
-        var certSelectWindow = _appUserInterface.CreateCertSelectWindow(SelectedCertFile);
-        var response = certSelectWindow.ShowDialog();
-
-        if (!response.HasValue || !response.Value)
-            return;
-
-        if (certSelectWindow.ViewModel.SelectedCertPair != null)
-            SelectedCertFile = certSelectWindow.ViewModel.SelectedCertPair;
-    }
-
-    [RelayCommand]
-    private async Task BrowseDataDirectory()
-    {
-        var selectedPath = ShowFolderBrowserDialog(UIStringResources.QuickStart_DataDirectory_SelectFolderTitle, DataDirectoryHostPath);
-
-        if (string.IsNullOrWhiteSpace(selectedPath))
-            return;
-
-        DataDirectoryHostPath = selectedPath;
-        await SaveDataDirectoryAsync();
-    }
-
-    [RelayCommand]
-    private async Task ResetDataDirectoryToDefault()
-    {
-        DataDirectoryHostPath = _sharedLocations.DefaultDataDirectoryPath;
-        await SaveDataDirectoryAsync(useDefault: true);
-    }
-
-    [RelayCommand]
-    private void OpenDataDirectory()
-    {
-        if (string.IsNullOrWhiteSpace(DataDirectoryHostPath))
-            return;
-
-        try
-        {
-            if (!Directory.Exists(DataDirectoryHostPath))
-                Directory.CreateDirectory(DataDirectoryHostPath);
-
-            Process.Start(new ProcessStartInfo
             {
-                FileName = DataDirectoryHostPath,
-                UseShellExecute = true,
-            });
+                LastDisclaimerAgreedTime = DateTime.UtcNow;
+                currentConfig.LastDisclaimerAgreedTime = LastDisclaimerAgreedTime;
+                await _preferencesManager.SavePreferencesAsync(currentConfig);
+            }
         }
-        catch (Exception ex)
-        {
-            _appMessageBox.DisplayError(ex, false);
-        }
+    }
+
+    [RelayCommand]
+    private void OpenOptions()
+    {
+        var optionsWindow = _appUserInterface.CreateOptionsWindow();
+        optionsWindow.ShowDialog();
     }
 
     [RelayCommand]
     private async Task AddMappedFolder()
     {
-        var selectedPath = ShowFolderBrowserDialog(UIStringResources.MappedFolder_SelectFolder, null);
+        var selectedPath = ShowFolderBrowserDialog(UIStringResources.MappedFolder_SelectFolder);
 
         if (string.IsNullOrWhiteSpace(selectedPath))
             return;
@@ -213,31 +142,47 @@ public partial class QuickStartPageViewModel : ObservableObject
     [RelayCommand]
     private async Task LaunchSandbox()
     {
-        if (!Directory.Exists(DataDirectoryHostPath))
-        {
-            try { Directory.CreateDirectory(DataDirectoryHostPath); }
-            catch (Exception ex)
-            {
-                _appMessageBox.DisplayError(ex, true);
-                return;
-            }
-        }
+        if (!await EnsureDataDirectoryAsync())
+            return;
 
-        var selectedCert = MapNpkiCert ? SelectedCertFile : null;
+        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
+        currentConfig ??= _preferencesManager.GetDefaultPreferences();
+
+        var mappedFolders = MappedFolders.ToList();
+
+        // Data 디렉터리는 항상 RW로 마운트
+        mappedFolders.Insert(0, new MappedFolderSetting
+        {
+            HostFolder = _dataDirectoryHostPath,
+            SandboxFolder = SandboxMountPaths.DataDirectory,
+            ReadOnly = false,
+        });
+
+        // NPKI 폴더가 존재하면 자동으로 RO 마운트
+        var npkiHostPath = TryGetHostNpkiDirectoryPath();
+        if (npkiHostPath != null)
+        {
+            mappedFolders.Insert(1, new MappedFolderSetting
+            {
+                HostFolder = npkiHostPath,
+                SandboxFolder = SandboxNpkiPath,
+                ReadOnly = true,
+            });
+        }
 
         var config = new TableClothConfiguration
         {
-            CertPair = selectedCert,
-            EnableMicrophone = EnableMicrophone,
-            EnableWebCam = EnableWebCam,
-            EnablePrinters = EnablePrinters,
-            InstallEveryonesPrinter = InstallEveryonesPrinter,
-            InstallAdobeReader = InstallAdobeReader,
-            InstallHancomOfficeViewer = InstallHancomOfficeViewer,
-            InstallRaiDrive = InstallRaiDrive,
+            CertPair = null,
+            EnableMicrophone = currentConfig.UseAudioRedirection,
+            EnableWebCam = currentConfig.UseVideoRedirection,
+            EnablePrinters = currentConfig.UsePrinterRedirection,
+            InstallEveryonesPrinter = currentConfig.InstallEveryonesPrinter,
+            InstallAdobeReader = currentConfig.InstallAdobeReader,
+            InstallHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer,
+            InstallRaiDrive = currentConfig.InstallRaiDrive,
             Companions = Array.Empty<CatalogCompanion>(),
             Services = Array.Empty<CatalogInternetService>(),
-            MappedFolders = MappedFolders.ToList(),
+            MappedFolders = mappedFolders,
         };
 
         await _sandboxLauncher.RunSandboxAsync(config);
@@ -246,9 +191,10 @@ public partial class QuickStartPageViewModel : ObservableObject
     [RelayCommand]
     private void ShowDebugInfo()
     {
+        var npki = TryGetHostNpkiDirectoryPath() ?? "(not found)";
         var debugInfo =
-            $"Data: {DataDirectoryHostPath}\n" +
-            $"Cert: {(MapNpkiCert ? SelectedCertFile?.SubjectNameForNpkiApp ?? "(none)" : "off")}\n" +
+            $"Data: {_dataDirectoryHostPath}\n" +
+            $"NPKI: {npki}\n" +
             $"User folders: {MappedFolders.Count}";
         _appMessageBox.DisplayInfo(debugInfo, MessageBoxButton.OK);
     }
@@ -267,7 +213,50 @@ public partial class QuickStartPageViewModel : ObservableObject
         siteReportWindow.ShowDialog();
     }
 
-    private static string? ShowFolderBrowserDialog(string title, string? initialDirectory)
+    private async Task<bool> EnsureDataDirectoryAsync()
+    {
+        if (Directory.Exists(_dataDirectoryHostPath))
+            return true;
+
+        var prompt = string.Format(UIStringResources.QuickStart_DataDirectory_CreatePrompt, _dataDirectoryHostPath);
+        var result = _messageBoxService.Show(
+            _applicationService.GetActiveWindow() ?? _applicationService.GetMainWindow(),
+            prompt,
+            UIStringResources.QuickStart_Title,
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question,
+            MessageBoxResult.Yes);
+
+        if (result != MessageBoxResult.Yes)
+            return false;
+
+        try
+        {
+            await Task.Run(() => Directory.CreateDirectory(_dataDirectoryHostPath));
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _appMessageBox.DisplayError(ex, true);
+            _appMessageBox.DisplayError(UIStringResources.QuickStart_DataDirectory_CreateFailed, false);
+            return false;
+        }
+    }
+
+    private static string? TryGetHostNpkiDirectoryPath()
+    {
+        var localLowPath = NativeMethods.GetKnownFolderPath(NativeMethods.LocalLowFolderGuid);
+
+        if (string.IsNullOrWhiteSpace(localLowPath))
+            return null;
+
+        var candidate = Path.Combine(localLowPath, "NPKI");
+        return Directory.Exists(candidate) ? candidate : null;
+    }
+
+    private const string SandboxNpkiPath = @"C:\Users\WDAGUtilityAccount\AppData\LocalLow\NPKI";
+
+    private static string? ShowFolderBrowserDialog(string title)
     {
         var dialog = new OpenFolderDialog
         {
@@ -275,22 +264,10 @@ public partial class QuickStartPageViewModel : ObservableObject
             Multiselect = false,
         };
 
-        if (!string.IsNullOrWhiteSpace(initialDirectory) && Directory.Exists(initialDirectory))
-            dialog.InitialDirectory = initialDirectory;
-
         if (dialog.ShowDialog() == true)
             return dialog.FolderName;
 
         return null;
-    }
-
-    private async Task SaveDataDirectoryAsync(bool useDefault = false)
-    {
-        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
-        currentConfig ??= _preferencesManager.GetDefaultPreferences();
-
-        currentConfig.DataDirectoryHostPath = useDefault ? null : DataDirectoryHostPath;
-        await _preferencesManager.SavePreferencesAsync(currentConfig);
     }
 
     private async Task SaveMappedFoldersAsync()
@@ -301,39 +278,6 @@ public partial class QuickStartPageViewModel : ObservableObject
         currentConfig.MappedFolders = MappedFolders.ToList();
         await _preferencesManager.SavePreferencesAsync(currentConfig);
     }
-
-    [ObservableProperty]
-    private string _dataDirectoryHostPath = string.Empty;
-
-    [ObservableProperty]
-    private bool _mapNpkiCert;
-
-    [ObservableProperty]
-    private X509CertPair? _selectedCertFile;
-
-    [ObservableProperty]
-    private bool _enableLogAutoCollecting;
-
-    [ObservableProperty]
-    private bool _enableMicrophone;
-
-    [ObservableProperty]
-    private bool _enableWebCam;
-
-    [ObservableProperty]
-    private bool _enablePrinters;
-
-    [ObservableProperty]
-    private bool _installEveryonesPrinter;
-
-    [ObservableProperty]
-    private bool _installAdobeReader;
-
-    [ObservableProperty]
-    private bool _installHancomOfficeViewer;
-
-    [ObservableProperty]
-    private bool _installRaiDrive;
 
     [ObservableProperty]
     private DateTime? _lastDisclaimerAgreedTime;
@@ -358,81 +302,14 @@ public partial class QuickStartPageViewModel : ObservableObject
         }
     }
 
+    private string _dataDirectoryHostPath = string.Empty;
+
     private readonly IPreferencesManager _preferencesManager = default!;
-    private readonly IX509CertPairScanner _certPairScanner = default!;
-    private readonly IAppRestartManager _appRestartManager = default!;
     private readonly IAppUserInterface _appUserInterface = default!;
     private readonly ISharedLocations _sharedLocations = default!;
     private readonly ISandboxLauncher _sandboxLauncher = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
+    private readonly IMessageBoxService _messageBoxService = default!;
+    private readonly IApplicationService _applicationService = default!;
     private readonly TaskFactory _taskFactory = default!;
-
-    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        => OnViewModelPropertyChangedAsync(sender, e).SafeFireAndForget();
-
-    private async Task OnViewModelPropertyChangedAsync(object? sender, PropertyChangedEventArgs e)
-    {
-        var viewModel = sender as QuickStartPageViewModel;
-        ArgumentNullException.ThrowIfNull(viewModel);
-
-        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
-        currentConfig ??= _preferencesManager.GetDefaultPreferences();
-
-        var reserveRestart = false;
-
-        switch (e.PropertyName)
-        {
-            case nameof(EnableLogAutoCollecting):
-                currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
-                reserveRestart = _appRestartManager.AskRestart();
-                break;
-
-            case nameof(EnableMicrophone):
-                currentConfig.UseAudioRedirection = viewModel.EnableMicrophone;
-                break;
-
-            case nameof(EnableWebCam):
-                currentConfig.UseVideoRedirection = viewModel.EnableWebCam;
-                break;
-
-            case nameof(EnablePrinters):
-                currentConfig.UsePrinterRedirection = viewModel.EnablePrinters;
-                break;
-
-            case nameof(InstallEveryonesPrinter):
-                currentConfig.InstallEveryonesPrinter = viewModel.InstallEveryonesPrinter;
-                break;
-
-            case nameof(InstallAdobeReader):
-                currentConfig.InstallAdobeReader = viewModel.InstallAdobeReader;
-                break;
-
-            case nameof(InstallHancomOfficeViewer):
-                currentConfig.InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer;
-                break;
-
-            case nameof(InstallRaiDrive):
-                currentConfig.InstallRaiDrive = viewModel.InstallRaiDrive;
-                break;
-
-            case nameof(LastDisclaimerAgreedTime):
-                currentConfig.LastDisclaimerAgreedTime = viewModel.LastDisclaimerAgreedTime;
-                break;
-
-            case nameof(SelectedCertFile):
-                currentConfig.LastUsedCertHash = viewModel.SelectedCertFile?.CertHash;
-                break;
-
-            default:
-                return;
-        }
-
-        await _preferencesManager.SavePreferencesAsync(currentConfig);
-
-        if (reserveRestart)
-        {
-            _appRestartManager.ReserveRestart();
-            await viewModel.RequestCloseAsync(viewModel, e);
-        }
-    }
 }

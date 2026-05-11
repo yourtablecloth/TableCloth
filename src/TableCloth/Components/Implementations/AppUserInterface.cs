@@ -30,6 +30,9 @@ public sealed class AppUserInterface(
     public AboutWindow CreateAboutWindow()
         => SetOwnerIfAvailable(serviceProvider.GetRequiredService<AboutWindow>());
 
+    public OptionsWindow CreateOptionsWindow()
+        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<OptionsWindow>());
+
     public CertSelectWindow CreateCertSelectWindow(X509CertPair? previousCertPair)
     {
         var window = SetOwnerIfAvailable(serviceProvider.GetRequiredService<CertSelectWindow>());

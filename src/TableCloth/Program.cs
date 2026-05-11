@@ -102,6 +102,7 @@ internal static class Program
                 .AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>()
                 .AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>()
                 .AddWindow<AboutWindow, AboutWindowViewModel>()
+                .AddWindow<OptionsWindow, OptionsWindowViewModel>()
                 .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
                 .AddWindow<SiteReportWindow>()
                 .AddWindow<MainWindow, MainWindowViewModel>()

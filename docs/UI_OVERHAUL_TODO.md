@@ -41,16 +41,21 @@
 ### Phase 1 — TableCloth 퀵 스타트 화면 도입
 
 - [x] `QuickStartPage` XAML/코드비하인드 신설
-- [x] `QuickStartPageViewModel` 신설 (공동인증서/Data 디렉터리/사용자 폴더 3개 섹션 + 옵션)
-- [x] 공동인증서 자동 검색 + 수동 지정 UX (기존 `IX509CertPairScanner` 재사용)
+- [x] `QuickStartPageViewModel` 신설 (사용자 폴더 + 옵션 진입)
 - [x] Data 디렉터리 지정 UX (`PreferenceSettings.DataDirectoryHostPath` 신설, 기본값 `Documents\TableCloth\Data`)
 - [x] 사용자 정의 매핑 폴더 UX (`MappedFolderSetting` 재사용, DetailPage 코드 패턴 답습)
 - [x] `INavigationService.NavigateToQuickStart()` 추가
 - [x] `IAppUserInterface.CreateQuickStartPage()` 추가, DI 등록(`Program.cs`)
 - [x] `MainWindowViewModel`: 일반 진입은 QuickStart, `--select <SiteId>`가 있을 때는 종전대로 DetailPage 유지
 - [x] `SandboxMountPaths` 상수(`C:\TableCloth\App` / `C:\TableCloth\Data`) 도입, `ISharedLocations`에 App 스테이징/Data 기본 경로 추가
+
+#### Phase 1.5 — 퀵 스타트 UI 단순화 (2026-05-11)
+
+- [x] 인증서 섹션 제거: `%userprofile%\AppData\LocalLow\NPKI`가 호스트에 존재하면 매 시작 시 자동 RO 마운트되도록 `LaunchSandbox`에서 처리
+- [x] Data 디렉터리 표시 제거: 사용자에게 노출하지 않고 내부에서 계산된 경로 사용. 디렉터리가 없으면 시작 시 Yes/No 생성 유도 흐름
+- [x] 옵션(장치 공유/보조 프로그램/진단)은 별도 `OptionsWindow` 다이얼로그로 이전, 퀵 스타트에는 "옵션..." 진입 버튼만 노출
 - [x] 빌드 통과 확인 (에러 0)
-- [ ] wsb 생성 시 App/Data 마운트 추가는 Phase 3 작업으로 분리
+- [ ] wsb 생성 시 App/Data 표준 마운트 적용은 Phase 3 작업으로 분리
 
 ### Phase 2 — TableCloth에서 카탈로그/디테일 화면 제거 또는 격리
 - [ ] `CatalogPage` / `DetailPage` / 관련 ViewModel을 Spork 측으로 이관 또는 Deprecated 처리

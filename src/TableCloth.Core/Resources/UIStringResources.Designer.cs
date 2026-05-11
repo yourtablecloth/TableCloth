@@ -1770,5 +1770,65 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("QuickStart_LaunchButton", resourceCulture);
             }
         }
+
+        public static string QuickStart_OptionsButton {
+            get {
+                return ResourceManager.GetString("QuickStart_OptionsButton", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_DataDirectory_CreatePrompt {
+            get {
+                return ResourceManager.GetString("QuickStart_DataDirectory_CreatePrompt", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_DataDirectory_CreateFailed {
+            get {
+                return ResourceManager.GetString("QuickStart_DataDirectory_CreateFailed", resourceCulture);
+            }
+        }
+
+        public static string Options_Title {
+            get {
+                return ResourceManager.GetString("Options_Title", resourceCulture);
+            }
+        }
+
+        public static string Options_CloseButton {
+            get {
+                return ResourceManager.GetString("Options_CloseButton", resourceCulture);
+            }
+        }
+
+        public static string Options_Section_DeviceSharing {
+            get {
+                return ResourceManager.GetString("Options_Section_DeviceSharing", resourceCulture);
+            }
+        }
+
+        public static string Options_Section_DeviceSharing_Description {
+            get {
+                return ResourceManager.GetString("Options_Section_DeviceSharing_Description", resourceCulture);
+            }
+        }
+
+        public static string Options_Section_Companions {
+            get {
+                return ResourceManager.GetString("Options_Section_Companions", resourceCulture);
+            }
+        }
+
+        public static string Options_Section_Companions_Description {
+            get {
+                return ResourceManager.GetString("Options_Section_Companions_Description", resourceCulture);
+            }
+        }
+
+        public static string Options_Section_Diagnostics {
+            get {
+                return ResourceManager.GetString("Options_Section_Diagnostics", resourceCulture);
+            }
+        }
     }
 }

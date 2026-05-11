@@ -1,0 +1,59 @@
+<Window x:Class="TableCloth.Dialogs.OptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:TableCloth.ViewModels"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Core"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:OptionsWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
+        Style="{DynamicResource MainWindowStyle}"
+        Title="{x:Static res:UIStringResources.Options_Title}" Width="520" Height="500" MinWidth="420" MinHeight="420"
+        ResizeMode="CanResize" WindowStartupLocation="CenterOwner">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OptionsWindowLoadedCommand}">
+                <i:InvokeCommandAction.CommandParameter>
+                    <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                </i:InvokeCommandAction.CommandParameter>
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+
+                <!-- Device sharing -->
+                <TextBlock FontWeight="Bold" FontSize="14" Margin="0 0 0 4" Text="{x:Static res:UIStringResources.Options_Section_DeviceSharing}" />
+                <TextBlock Margin="0 0 0 6" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.Options_Section_DeviceSharing_Description}" />
+                <CheckBox Margin="0 2" Content="{x:Static res:UIStringResources.Option_UseMicrophoneCheckboxText}" IsChecked="{Binding EnableMicrophone}" />
+                <CheckBox Margin="0 2" Content="{x:Static res:UIStringResources.Option_UseWebCameraCheckboxText}" IsChecked="{Binding EnableWebCam}" />
+                <CheckBox Margin="0 2 0 12" Content="{x:Static res:UIStringResources.Option_UsePrinterCheckboxText}" IsChecked="{Binding EnablePrinters}" />
+
+                <!-- Companion installers -->
+                <TextBlock FontWeight="Bold" FontSize="14" Margin="0 0 0 4" Text="{x:Static res:UIStringResources.Options_Section_Companions}" />
+                <TextBlock Margin="0 0 0 6" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.Options_Section_Companions_Description}" />
+                <CheckBox Margin="0 2" Content="{x:Static res:UIStringResources.Option_InstallEveryonesPrinter}" IsChecked="{Binding InstallEveryonesPrinter}" />
+                <CheckBox Margin="0 2" Content="{x:Static res:UIStringResources.Option_InstallAdobeReader}" IsChecked="{Binding InstallAdobeReader}" />
+                <CheckBox Margin="0 2" Content="{x:Static res:UIStringResources.Option_InstallHancomOfficeViewer}" IsChecked="{Binding InstallHancomOfficeViewer}" />
+                <CheckBox Margin="0 2 0 12" Content="{x:Static res:UIStringResources.Option_InstallRaiDrive}" IsChecked="{Binding InstallRaiDrive}" />
+
+                <!-- Diagnostics -->
+                <TextBlock FontWeight="Bold" FontSize="14" Margin="0 0 0 4" Text="{x:Static res:UIStringResources.Options_Section_Diagnostics}" />
+                <TextBlock Margin="0 0 0 6" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.Option_TelemetryDescriptionText}" />
+                <CheckBox Margin="0 2" Content="{x:Static res:UIStringResources.Option_UseAutoLogCollecting}" IsChecked="{Binding EnableLogAutoCollecting}" />
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 12 0 0">
+            <Button x:Name="CloseButton" Padding="14 6" Content="{x:Static res:UIStringResources.Options_CloseButton}" Click="CloseButton_Click" IsDefault="True" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+</Window>

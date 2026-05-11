@@ -48,43 +48,10 @@
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="16 8 16 8">
             <StackPanel>
 
-                <!-- Section: Certificate -->
-                <TextBlock FontWeight="Bold" FontSize="14" Margin="0 8 0 4" Text="{x:Static res:UIStringResources.QuickStart_Section_Certificate}" />
-                <Grid Margin="0 0 0 12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <CheckBox Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Button_MapNpkiCertButton}" IsChecked="{Binding MapNpkiCert}" />
-                    <Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="10 0 0 0" Padding="10 4" Content="{x:Static res:UIStringResources.Button_BrowseButton}" Command="{Binding CertSelectCommand}" IsEnabled="{Binding MapNpkiCert}" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 6 0 0" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{Binding SelectedCertFile}" TextTrimming="CharacterEllipsis" IsEnabled="{Binding MapNpkiCert}" />
-                </Grid>
-
-                <!-- Section: Data Directory -->
-                <TextBlock FontWeight="Bold" FontSize="14" Margin="0 8 0 4" Text="{x:Static res:UIStringResources.QuickStart_Section_DataDirectory}" />
-                <TextBlock Margin="0 0 0 4" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.QuickStart_DataDirectory_Description}" />
-                <Grid Margin="0 0 0 12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" IsReadOnly="True" VerticalContentAlignment="Center" Padding="6 4" Text="{Binding DataDirectoryHostPath, Mode=OneWay}" />
-                    <Button Grid.Column="1" Margin="6 0 0 0" Padding="10 4" Content="{x:Static res:UIStringResources.Button_BrowseButton}" Command="{Binding BrowseDataDirectoryCommand}" />
-                    <Button Grid.Column="2" Margin="6 0 0 0" Padding="10 4" Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_OpenButton}" Command="{Binding OpenDataDirectoryCommand}" />
-                    <Button Grid.Column="3" Margin="6 0 0 0" Padding="10 4" Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_ResetButton}" Command="{Binding ResetDataDirectoryToDefaultCommand}" />
-                </Grid>
-
                 <!-- Section: User Folders -->
                 <TextBlock FontWeight="Bold" FontSize="14" Margin="0 8 0 4" Text="{x:Static res:UIStringResources.QuickStart_Section_UserFolders}" />
                 <TextBlock Margin="0 0 0 4" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.MappedFolder_Description}" />
-                <ListBox Height="120" Margin="0 0 0 6" ItemsSource="{Binding MappedFolders}" SelectedItem="{Binding SelectedMappedFolder}" HorizontalContentAlignment="Stretch">
+                <ListBox MinHeight="160" Margin="0 0 0 6" ItemsSource="{Binding MappedFolders}" SelectedItem="{Binding SelectedMappedFolder}" HorizontalContentAlignment="Stretch">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -106,22 +73,6 @@
                     <Button Content="{x:Static res:UIStringResources.MappedFolder_ToggleReadOnlyButton}" Command="{Binding ToggleMappedFolderReadOnlyCommand}" IsEnabled="{Binding SelectedMappedFolder, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" />
                 </StackPanel>
 
-                <!-- Section: Options -->
-                <TextBlock FontWeight="Bold" FontSize="14" Margin="0 8 0 4" Text="{x:Static res:UIStringResources.QuickStart_Section_Options}" />
-                <WrapPanel Margin="0 0 0 4">
-                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_UseMicrophoneCheckboxText}" IsChecked="{Binding EnableMicrophone}" />
-                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_UseWebCameraCheckboxText}" IsChecked="{Binding EnableWebCam}" />
-                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_UsePrinterCheckboxText}" IsChecked="{Binding EnablePrinters}" />
-                </WrapPanel>
-                <WrapPanel Margin="0 0 0 12">
-                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_InstallEveryonesPrinter}" IsChecked="{Binding InstallEveryonesPrinter}" />
-                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_InstallAdobeReader}" IsChecked="{Binding InstallAdobeReader}" />
-                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_InstallHancomOfficeViewer}" IsChecked="{Binding InstallHancomOfficeViewer}" />
-                    <CheckBox Margin="0 0 16 4" Content="{x:Static res:UIStringResources.Option_InstallRaiDrive}" IsChecked="{Binding InstallRaiDrive}" />
-                </WrapPanel>
-                <CheckBox Margin="0 0 0 8" Content="{x:Static res:UIStringResources.Option_UseAutoLogCollecting}" IsChecked="{Binding EnableLogAutoCollecting}" />
-                <TextBlock Margin="0 0 0 12" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.Option_TelemetryDescriptionText}" />
-
             </StackPanel>
         </ScrollViewer>
 
@@ -130,6 +81,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Horizontal">
@@ -149,7 +101,8 @@
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
-            <Button Grid.Column="2" Padding="20 8" FontWeight="Bold" Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Command="{Binding LaunchSandboxCommand}" />
+            <Button Grid.Column="2" Margin="0 0 8 0" Padding="14 8" Content="{x:Static res:UIStringResources.QuickStart_OptionsButton}" Command="{Binding OpenOptionsCommand}" />
+            <Button Grid.Column="3" Padding="20 8" FontWeight="Bold" Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Command="{Binding LaunchSandboxCommand}" />
         </Grid>
     </Grid>
 </Page>

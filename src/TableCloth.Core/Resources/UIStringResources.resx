@@ -741,4 +741,38 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="QuickStart_LaunchButton" xml:space="preserve">
     <value>Launch Sandbox</value>
   </data>
+  <data name="QuickStart_OptionsButton" xml:space="preserve">
+    <value>Options...</value>
+  </data>
+  <data name="QuickStart_DataDirectory_CreatePrompt" xml:space="preserve">
+    <value>The Data directory does not exist yet:
+
+{0}
+
+Create it now and continue?</value>
+  </data>
+  <data name="QuickStart_DataDirectory_CreateFailed" xml:space="preserve">
+    <value>Could not create the Data directory. Open Options and pick a different path.</value>
+  </data>
+  <data name="Options_Title" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="Options_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Options_Section_DeviceSharing" xml:space="preserve">
+    <value>Device Sharing</value>
+  </data>
+  <data name="Options_Section_DeviceSharing_Description" xml:space="preserve">
+    <value>Share host devices with the sandbox. Each option increases the sandbox's surface area; enable only what you need.</value>
+  </data>
+  <data name="Options_Section_Companions" xml:space="preserve">
+    <value>Companion Software</value>
+  </data>
+  <data name="Options_Section_Companions_Description" xml:space="preserve">
+    <value>Automatically install these helper applications right after the sandbox starts.</value>
+  </data>
+  <data name="Options_Section_Diagnostics" xml:space="preserve">
+    <value>Diagnostics</value>
+  </data>
 </root>
