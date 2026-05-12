@@ -53,12 +53,7 @@ public partial class QuickStartPageViewModel : ObservableObject
     [RelayCommand]
     private async Task QuickStartPageLoaded()
     {
-        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
-        currentConfig ??= _preferencesManager.GetDefaultPreferences();
-
-        _dataDirectoryHostPath = _sharedLocations.GetEffectiveDataDirectoryPath(currentConfig.DataDirectoryHostPath);
-
-        LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
+        await RefreshFromPreferencesAsync();
 
         if (ShouldNotifyDisclaimer)
         {
@@ -68,19 +63,43 @@ public partial class QuickStartPageViewModel : ObservableObject
             if (result.HasValue && result.Value)
             {
                 LastDisclaimerAgreedTime = DateTime.UtcNow;
+                var currentConfig = await _preferencesManager.LoadPreferencesAsync();
+                currentConfig ??= _preferencesManager.GetDefaultPreferences();
                 currentConfig.LastDisclaimerAgreedTime = LastDisclaimerAgreedTime;
                 await _preferencesManager.SavePreferencesAsync(currentConfig);
             }
         }
     }
 
+    /// <summary>
+    /// 환경 설정과 호스트 상태를 다시 읽어 QuickStart에 표시되는 상태(예: NPKI 공유 상태 라벨)를 갱신한다.
+    /// 옵션 창에서 변경이 있은 뒤 호출되어 사용자가 그 결과를 바로 확인할 수 있게 한다.
+    /// </summary>
+    private async Task RefreshFromPreferencesAsync()
+    {
+        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
+        currentConfig ??= _preferencesManager.GetDefaultPreferences();
+
+        _dataDirectoryHostPath = _sharedLocations.GetEffectiveDataDirectoryPath(currentConfig.DataDirectoryHostPath);
+        LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
+
+        var npkiHostPath = TryGetHostNpkiDirectoryPath();
+        if (!currentConfig.ShareNpkiFolder)
+            NpkiStatusText = UIStringResources.QuickStart_NpkiStatus_NotSharing;
+        else if (npkiHostPath == null)
+            NpkiStatusText = UIStringResources.QuickStart_NpkiStatus_NoFolder;
+        else
+            NpkiStatusText = UIStringResources.QuickStart_NpkiStatus_Sharing;
+    }
+
     [RelayCommand]
-    private void OpenOptions()
+    private async Task OpenOptions()
     {
         // 옵션 창은 자체적으로 환경 설정을 읽고 매핑 폴더 목록을 표시·편집한다.
-        // QuickStart는 launch 시 환경 설정에서 다시 읽으므로 별도 동기화가 필요 없다.
+        // 닫힌 직후엔 QuickStart도 환경 설정을 다시 읽어 NPKI 공유 상태 등 표시값을 동기화한다.
         var optionsWindow = _appUserInterface.CreateOptionsWindow();
         optionsWindow.ShowDialog();
+        await RefreshFromPreferencesAsync();
     }
 
     [RelayCommand]
@@ -113,11 +132,12 @@ public partial class QuickStartPageViewModel : ObservableObject
             ReadOnly = false,
         });
 
-        // NPKI 폴더가 존재하면 자동으로 RO 마운트. SandboxFolder는 지정하지 않고
-        // 데스크톱의 "NPKI" 폴더로 노출되며, startup 스크립트가 이를
-        // SandboxMountPaths.NpkiCanonicalPath로 xcopy 복사하여 은행 소프트웨어가 인식하도록 한다.
+        // NPKI 폴더는 사용자가 옵션에서 공유를 끄지 않았고 호스트에 실제 폴더가 있을 때만 RO 마운트한다.
+        // SandboxFolder는 지정하지 않으며, 데스크톱의 "NPKI" 폴더로 노출되며,
+        // startup 스크립트가 이를 SandboxMountPaths.NpkiCanonicalPath로 xcopy 복사하여
+        // 은행 소프트웨어가 인식하도록 한다.
         var npkiHostPath = TryGetHostNpkiDirectoryPath();
-        if (npkiHostPath != null)
+        if (currentConfig.ShareNpkiFolder && npkiHostPath != null)
         {
             mappedFolders.Insert(1, new MappedFolderSetting
             {
@@ -254,6 +274,13 @@ public partial class QuickStartPageViewModel : ObservableObject
 
     [ObservableProperty]
     private DateTime? _lastDisclaimerAgreedTime;
+
+    /// <summary>
+    /// QuickStart 화면에 노출되는 NPKI 공유 상태 안내 문구. 옵션 창에서 토글이 변경되거나
+    /// 호스트의 NPKI 폴더 유무가 변할 때 <see cref="RefreshFromPreferencesAsync"/>가 갱신한다.
+    /// </summary>
+    [ObservableProperty]
+    private string _npkiStatusText = string.Empty;
 
     public bool ShouldNotifyDisclaimer
     {

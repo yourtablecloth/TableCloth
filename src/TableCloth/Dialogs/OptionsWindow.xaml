@@ -78,6 +78,16 @@
                 </Grid>
             </TabItem>
 
+            <!-- 인증서 (NPKI 공유) -->
+            <TabItem Header="{x:Static res:UIStringResources.Options_Section_Certificate}">
+                <StackPanel Margin="12">
+                    <TextBlock Margin="0 0 0 8" TextWrapping="Wrap"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               Text="{x:Static res:UIStringResources.Options_Section_Certificate_Description}" />
+                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_ShareNpkiCheckbox}" IsChecked="{Binding ShareNpkiFolder}" />
+                </StackPanel>
+            </TabItem>
+
             <!-- 장치 공유 -->
             <TabItem Header="{x:Static res:UIStringResources.Options_Section_DeviceSharing}">
                 <StackPanel Margin="12">

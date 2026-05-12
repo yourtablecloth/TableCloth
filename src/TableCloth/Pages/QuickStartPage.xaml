@@ -37,7 +37,7 @@
             </TextBlock>
         </Border>
 
-        <!-- Centered hero with title + instruction + launch button -->
+        <!-- Centered hero with title + instruction + launch button + NPKI 공유 상태 링크 -->
         <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="520" Margin="24">
             <TextBlock HorizontalAlignment="Center" TextAlignment="Center" FontSize="28" FontWeight="Bold" Text="{x:Static res:UIStringResources.QuickStart_Title}" />
             <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0 12 0 24" TextWrapping="Wrap"
@@ -46,6 +46,12 @@
             <Button HorizontalAlignment="Center" MinWidth="220" Padding="28 12" FontSize="16" FontWeight="Bold"
                     Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}"
                     Command="{Binding LaunchSandboxCommand}" />
+            <!-- NPKI 공유 상태: 현재 상태를 문장으로 보여주고, 클릭하면 옵션 창이 열려 토글 가능 -->
+            <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0 16 0 0" TextWrapping="Wrap">
+                <Hyperlink Command="{Binding OpenOptionsCommand}">
+                    <Run Text="{Binding NpkiStatusText, Mode=OneWay}" />
+                </Hyperlink>
+            </TextBlock>
         </StackPanel>
 
         <!-- Footer: 모두 하이퍼링크로 통일하여 시각적 강조를 시작 버튼으로 집중시킨다 -->

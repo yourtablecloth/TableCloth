@@ -59,6 +59,7 @@ public partial class OptionsWindowViewModel : ObservableObject
             InstallHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
             InstallRaiDrive = currentConfig.InstallRaiDrive;
             EnableLogAutoCollecting = currentConfig.UseLogCollection;
+            ShareNpkiFolder = currentConfig.ShareNpkiFolder;
 
             // 사용자 폴더 목록을 환경 설정에서 로드하고 가용성을 검증해 화면에 표시한다.
             MappedFolders.Clear();
@@ -197,6 +198,9 @@ public partial class OptionsWindowViewModel : ObservableObject
     private bool _enableLogAutoCollecting;
 
     [ObservableProperty]
+    private bool _shareNpkiFolder;
+
+    [ObservableProperty]
     private ObservableCollection<MappedFolderSetting> _mappedFolders = new();
 
     [ObservableProperty]
@@ -257,6 +261,10 @@ public partial class OptionsWindowViewModel : ObservableObject
             case nameof(EnableLogAutoCollecting):
                 currentConfig.UseLogCollection = viewModel.EnableLogAutoCollecting;
                 reserveRestart = _appRestartManager.AskRestart();
+                break;
+
+            case nameof(ShareNpkiFolder):
+                currentConfig.ShareNpkiFolder = viewModel.ShareNpkiFolder;
                 break;
 
             default:

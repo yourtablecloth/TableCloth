@@ -744,6 +744,24 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="QuickStart_LaunchButton" xml:space="preserve">
     <value>Launch Sandbox</value>
   </data>
+  <data name="QuickStart_NpkiStatus_Sharing" xml:space="preserve">
+    <value>Joint certificate folder is being shared with the sandbox.</value>
+  </data>
+  <data name="QuickStart_NpkiStatus_NotSharing" xml:space="preserve">
+    <value>Joint certificate folder is not shared with the sandbox.</value>
+  </data>
+  <data name="QuickStart_NpkiStatus_NoFolder" xml:space="preserve">
+    <value>No joint certificate folder was found on the host, so nothing is shared.</value>
+  </data>
+  <data name="Options_Section_Certificate" xml:space="preserve">
+    <value>Certificate</value>
+  </data>
+  <data name="Options_Section_Certificate_Description" xml:space="preserve">
+    <value>Share the host's joint certificate folder (%USERPROFILE%\AppData\LocalLow\NPKI) with the sandbox so banking/public service sites can authenticate. The host folder is mounted read-only; a writable copy is created inside the sandbox.</value>
+  </data>
+  <data name="Option_ShareNpkiCheckbox" xml:space="preserve">
+    <value>Share joint certificate (NPKI) folder with the sandbox</value>
+  </data>
   <data name="QuickStart_OptionsButton" xml:space="preserve">
     <value>Options...</value>
   </data>

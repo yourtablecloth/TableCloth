@@ -1778,6 +1778,42 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string QuickStart_NpkiStatus_Sharing {
+            get {
+                return ResourceManager.GetString("QuickStart_NpkiStatus_Sharing", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_NpkiStatus_NotSharing {
+            get {
+                return ResourceManager.GetString("QuickStart_NpkiStatus_NotSharing", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_NpkiStatus_NoFolder {
+            get {
+                return ResourceManager.GetString("QuickStart_NpkiStatus_NoFolder", resourceCulture);
+            }
+        }
+
+        public static string Options_Section_Certificate {
+            get {
+                return ResourceManager.GetString("Options_Section_Certificate", resourceCulture);
+            }
+        }
+
+        public static string Options_Section_Certificate_Description {
+            get {
+                return ResourceManager.GetString("Options_Section_Certificate_Description", resourceCulture);
+            }
+        }
+
+        public static string Option_ShareNpkiCheckbox {
+            get {
+                return ResourceManager.GetString("Option_ShareNpkiCheckbox", resourceCulture);
+            }
+        }
+
         public static string QuickStart_OptionsButton {
             get {
                 return ResourceManager.GetString("QuickStart_OptionsButton", resourceCulture);

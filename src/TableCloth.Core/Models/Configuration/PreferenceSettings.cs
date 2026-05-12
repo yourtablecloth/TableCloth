@@ -97,6 +97,13 @@ namespace TableCloth.Models.Configuration
         public string? DataDirectoryHostPath { get; set; } = null;
 
         /// <summary>
+        /// 호스트의 공동인증서 폴더(<c>%USERPROFILE%\AppData\LocalLow\NPKI</c>)를 샌드박스로 공유할지 여부입니다.
+        /// true일 때만 시작 시 NPKI 폴더가 마운트되며, 호스트에 폴더 자체가 없으면 자동으로 건너뛰어집니다.
+        /// 기본값은 true (인터넷 뱅킹/공공 사이트 사용을 위한 핵심 동작이므로).
+        /// </summary>
+        public bool ShareNpkiFolder { get; set; } = true;
+
+        /// <summary>
         /// Disclaimer 알림을 표시해야 하는지 여부를 반환합니다.
         /// </summary>
         /// <param name="currentTime">현재 시간 (UTC)</param>
