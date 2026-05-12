@@ -141,28 +141,33 @@ TableCloth.exe <future-verb>      → 후속 확장 모듈 (필요 시)
 - [x] `Spork.zip` 생성 PostBuild 파이프라인은 그대로 유지 (Phase 4에서 제거 예정)
 - [x] 빌드 0 에러 (SYSLIB0014/SYSLIB0057 사전 존재 경고만 잔존, Phase 2 범위 외)
 
-### Phase 3 — 진입점 통합 (verb-based CLI)
+### Phase 3 — 진입점 통합 (verb-based CLI) (2026-05-12)
 
-- [ ] [TableCloth/Program.cs](../src/TableCloth/Program.cs)를 `System.CommandLine` 루트 + sub-command 구조로 재작성
-  - 루트 핸들러: `builder.UseTableCloth()`
-  - `spork` 서브커맨드 핸들러: `builder.UseSpork()`
-- [ ] 공통 부트스트랩 (`HostBootstrap.Run` 또는 유사) — 로깅(Serilog/Sentry), 설정 바인딩, Velopack 초기화 등은 verb 분기 전 1회 실행
-- [ ] 각 verb의 `IHostedService` 구현이 자기 모듈의 `System.Windows.Application` 인스턴스를 생성·실행 (두 Application이 동시에 살지 않도록 보장)
-- [ ] 기존 TableCloth CLI 옵션(예: `--select`)을 루트 명령의 옵션으로 이전
-- [ ] 기존 Spork CLI 옵션을 `spork` 서브커맨드의 옵션으로 이전
-- [ ] `Spork` 프로젝트 제거 또는 향후 단독 출시용 placeholder로 비활성화
-- [ ] 두 verb를 통합 진입점에서 각각 실행 회귀 확인
+원래 `System.CommandLine` RootCommand로 감싸는 안을 검토했으나, 두 모듈이 각자 자체
+`CommandLineArguments`(RootCommand) 컴포넌트로 옵션을 파싱하기 때문에 디스패처는 verb 토큰만
+소비하면 충분하다. 단순 분기로 처리(`args[0] == "spork"`)하여 의존성/추상화 최소화.
 
-### Phase 4 — 샌드박스 통합
+- [x] [TableCloth/Program.cs](../src/TableCloth/Program.cs)를 verb 디스패처로 재작성 — `args[0]`이 `spork`이면 RunSpork, 아니면 RunTableCloth
+  - 루트 핸들러(RunTableCloth): Velopack + 라이선스 + 파일 연결 + `builder.UseTableCloth()`
+  - `spork` 핸들러(RunSpork): `builder.UseSpork()` (SporkAnswers/컬처/Sentry 등 부트스트랩은 UseSpork() 내부)
+- [x] TableCloth.Core `Helpers`에 `SetEffectiveCommandLineArguments` 추가 — 각 모듈의 CommandLineArguments는 `Helpers.GetCommandLineArguments()`를 호출하므로 디스패처가 verb 토큰을 소비한 나머지 인수만 노출하도록 우회 경로 제공
+- [x] [TableCloth.csproj](../src/TableCloth/TableCloth.csproj)에 `Spork.App` ProjectReference 추가
+- [x] SporkAnswers.json 로드 + 컬처 설정 로직을 `Spork/Program.cs`에서 `UseSpork()`로 이전 — 단독 Spork.exe와 통합 진입점 모두 동일 부트스트랩
+- [x] `Spork` 프로젝트는 단독 출시 후보로 유지(Phase 8 옵션). Phase 4에서 Spork.zip은 폐기하지만 Spork.exe 자체는 슬림한 진입점으로 남김
+- [x] 빌드 0 에러 (커밋 `d5ac3eb`)
 
-- [ ] [SandboxBuilder.cs:227-253](../src/TableCloth/Components/Implementations/SandboxBuilder.cs) — `Spork.zip` 추출 단계 제거
-- [ ] [SandboxBuilder.cs](../src/TableCloth/Components/Implementations/SandboxBuilder.cs)에서 호스트 설치 폴더(또는 staging 복사본)를 read-only로 마운트하도록 변경
-- [ ] [SandboxBuilder.cs:220](../src/TableCloth/Components/Implementations/SandboxBuilder.cs) — Spork 호출 배치를 `TableCloth.exe spork <args>`로 변경
-- [ ] StartupScript.cmd 생성 로직 (Spork 인자 전달부) 갱신
-- [ ] [Spork.csproj:152-154](../src/Spork/Spork.csproj) — `Spork.zip` 생성 PostBuild target 제거
-- [ ] [TableCloth.csproj:134](../src/TableCloth/TableCloth.csproj) — `Spork.zip` PreBuild 복사 제거
-- [ ] `Spork.zip`을 참조하던 `<Content Include="Spork.zip">` 제거
-- [ ] 샌드박스에서 verb 호출 회귀 확인 (NPKI 마운트, Catalog 흐름 포함)
+### Phase 4 — 샌드박스 통합 (2026-05-12)
+
+- [x] [SandboxBuilder.cs](../src/TableCloth.App/Components/Implementations/SandboxBuilder.cs) — `ExpandSporkAssetZipAsync` 폐기 → `CopyTableClothInstallToStagingAsync` 신설. 실행 중인 TableCloth.exe 디렉터리 전체를 staging의 `App` 폴더로 재귀 복사
+- [x] staging 서브폴더 leaf 이름을 `assets` → `App`으로 정규화 (`SandboxMountPaths.AppDirectory`와 일치)
+- [x] StartupScript 마지막 줄을 `Spork.exe ...` → `TableCloth.exe spork ...`로 변경 (`SandboxMountPaths.AppDirectory + TableCloth.exe`)
+- [x] [Spork.csproj](../src/Spork/Spork.csproj) — `Spork.zip` 생성 PostBuild target 제거
+- [x] [TableCloth.csproj](../src/TableCloth/TableCloth.csproj) — `Spork.zip` PreBuild 복사, `<Content Include="Spork.zip">`, `<None Remove="Spork.zip">` 모두 제거
+- [x] [ISharedLocations/SharedLocations](../src/TableCloth.App/Components/ISharedLocations.cs) — `SporkZipFilePath` 멤버 제거
+- [x] [AppStartup.HasRequirementsMetAsync](../src/TableCloth.App/Components/Implementations/AppStartup.cs) — Spork.zip 존재 확인 단계 제거
+- [x] [TableCloth.csproj](../src/TableCloth/TableCloth.csproj)에 `SelfContained=true` + 조건부 `RuntimeIdentifier` 설정 — 빌드 출력에 .NET 10 데스크톱 런타임이 동봉되어 샌드박스 안에서 별도 설치 없이 실행 가능
+- [x] 빌드 0 에러 (커밋 `3f5672f`)
+- [ ] 실제 샌드박스 실행 회귀 확인 (사용자 검증)
 
 ### Phase 5 — 단일 파일 publish
 
