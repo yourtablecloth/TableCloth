@@ -28,6 +28,13 @@ public sealed class SandboxBuilder(
     /// </summary>
     private const string AppLeafName = "App";
 
+    /// <summary>
+    /// framework-dependent 빌드를 샌드박스에서 실행하기 위해 호스트 dotnet 설치 폴더를 노출하는 leaf 이름.
+    /// 샌드박스 안에서는 <c>C:\Users\WDAGUtilityAccount\Desktop\dotnet</c>로 노출되며,
+    /// StartupScript가 이 경로를 <c>DOTNET_ROOT</c> 환경 변수로 설정한다.
+    /// </summary>
+    private const string HostDotnetLeafName = "dotnet";
+
     private static string GetCertificateStagingPathForSandbox()
         => Path.Combine(SandboxMountPaths.AppDirectory, "certs");
 
@@ -51,14 +58,19 @@ public sealed class SandboxBuilder(
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
 
-        // 통합 단일 바이너리 모델: 호스트 TableCloth 설치 폴더 전체(실행 파일 + 런타임 + Spork.App.dll 등)를
-        // 세션 staging의 App 폴더로 복사. 샌드박스는 이 App 폴더를 read-only로 마운트하여 동일 폴더의
-        // TableCloth.exe를 'spork' verb로 실행한다. (이전 Spork.zip 풀어넣기 파이프라인은 폐기됨.)
+        // 통합 단일 바이너리 모델: 호스트 TableCloth 설치 폴더 전체(실행 파일 + 부속 DLL)를
+        // 세션 staging의 App 폴더로 복사. 샌드박스는 이 App 폴더를 RO 마운트하여 동일 폴더의
+        // TableCloth.exe를 'spork' verb로 실행한다. self-contained 게시물이면 런타임도 함께 복사되므로
+        // 별도 처리 불필요. framework-dependent 빌드(개발 단계 기본)면 호스트의 dotnet 설치 폴더를
+        // 추가로 RO 마운트하고 StartupScript가 DOTNET_ROOT 환경 변수를 설정해 런타임을 공급한다.
         var appDirectory = Path.Combine(outputDirectory, AppLeafName);
         if (!await CopyTableClothInstallToStagingAsync(sharedLocations.ExecutableDirectoryPath, appDirectory, cancellationToken).ConfigureAwait(false))
             return default;
 
         tableClothConfiguration.AssetsDirectoryPath = appDirectory;
+        tableClothConfiguration.HostDotnetRootPath = RequiresHostDotnetMount(appDirectory)
+            ? TryResolveHostDotnetRoot()
+            : null;
 
         // Spork가 카탈로그 UI에서 사이트 아이콘을 표시하려면 App/images에 png들이 있어야 한다.
         // 호스트 빌드 시 만들어 두는 Images.zip을 그대로 풀어 둔다 (실패해도 catalog 자체는 동작).
@@ -115,6 +127,18 @@ public sealed class SandboxBuilder(
             HostFolder = tableClothConfig.AssetsDirectoryPath,
             ReadOnly = bool.FalseString,
         });
+
+        // framework-dependent 빌드 실행 시 호스트의 dotnet 설치 폴더를 RO로 마운트해 런타임 공급.
+        // leaf 이름이 "dotnet"이므로 샌드박스 안에서는 SandboxMountPaths.SandboxDesktop\dotnet로 노출된다.
+        if (!string.IsNullOrEmpty(tableClothConfig.HostDotnetRootPath) &&
+            Directory.Exists(tableClothConfig.HostDotnetRootPath))
+        {
+            sandboxConfig.MappedFolders.Add(new SandboxMappedFolder
+            {
+                HostFolder = tableClothConfig.HostDotnetRootPath,
+                ReadOnly = bool.TrueString,
+            });
+        }
 
         // 사용자 지정 매핑 폴더 추가
         if (tableClothConfig.MappedFolders != null)
@@ -211,12 +235,20 @@ if not exist ""%userprofile%\AppData\LocalLow"" mkdir ""%userprofile%\AppData\Lo
 xcopy /e /i /q /y ""{SandboxMountPaths.NpkiDesktopMount}"" ""{SandboxMountPaths.NpkiCanonicalPath}"" >nul 2>&1
 :__tc_skip_npki_copy";
 
+        // framework-dependent 빌드일 때 호스트 dotnet 마운트가 추가됐다면 DOTNET_ROOT 노출.
+        // self-contained 게시물이면 HostDotnetRootPath가 null이므로 set 라인이 들어가지 않는다.
+        var dotnetRootScript = string.IsNullOrEmpty(tableClothConfiguration.HostDotnetRootPath)
+            ? string.Empty
+            : $@"set DOTNET_ROOT={SandboxMountPaths.SandboxDesktop}\{HostDotnetLeafName}
+set PATH=%DOTNET_ROOT%;%PATH%";
+
         return $@"@echo off
 pushd ""%~dp0""
 
 REM Configure DNS servers (Google DNS, Cloudflare DNS)
 powershell -Command ""Get-NetAdapter | Where-Object {{$_.Status -eq 'Up'}} | Set-DnsClientServerAddress -ServerAddresses ('8.8.8.8','1.1.1.1')"" 2>nul
 
+{dotnetRootScript}
 {certFileMoveScript}
 {npkiJunctionScript}
 ""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
@@ -275,6 +307,52 @@ popd
         using var src = new FileStream(source, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
         using var dst = new FileStream(destination, FileMode.Create, FileAccess.Write, FileShare.None, 81920, useAsync: true);
         await src.CopyToAsync(dst, 81920, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// staging의 App 폴더(또는 게시 출력)에 .NET 호스팅 런타임(<c>hostfxr.dll</c>)이 동봉돼 있는지로
+    /// self-contained 여부를 판정한다. 동봉돼 있지 않으면 호스트의 dotnet 설치를 추가 마운트해야 한다.
+    /// </summary>
+    private static bool RequiresHostDotnetMount(string appDirectory)
+    {
+        if (!Directory.Exists(appDirectory))
+            return false;
+
+        // self-contained 게시는 apphost와 같은 폴더에 hostfxr.dll을 둔다.
+        // framework-dependent 빌드는 동일 폴더에 hostfxr.dll이 없으며 호스트의 dotnet 설치에서 찾는다.
+        var hostfxr = Path.Combine(appDirectory, "hostfxr.dll");
+        return !File.Exists(hostfxr);
+    }
+
+    /// <summary>
+    /// 호스트 측 .NET 설치 루트(<c>dotnet</c> 폴더)를 우선순위에 따라 탐색해 반환한다.
+    /// DOTNET_ROOT 환경 변수 → 시스템 설치(<c>%ProgramFiles%\dotnet</c>) → 사용자 설치
+    /// (<c>%LocalAppData%\Microsoft\dotnet</c>) 순으로 시도한다.
+    /// 어느 경로도 유효하지 않으면 <see langword="null"/>을 반환한다.
+    /// </summary>
+    private static string? TryResolveHostDotnetRoot()
+    {
+        var fromEnv = Environment.GetEnvironmentVariable("DOTNET_ROOT");
+        if (!string.IsNullOrWhiteSpace(fromEnv) && Directory.Exists(fromEnv))
+            return fromEnv;
+
+        var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+        if (!string.IsNullOrEmpty(programFiles))
+        {
+            var systemInstall = Path.Combine(programFiles, "dotnet");
+            if (Directory.Exists(systemInstall))
+                return systemInstall;
+        }
+
+        var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        if (!string.IsNullOrEmpty(localAppData))
+        {
+            var userInstall = Path.Combine(localAppData, "Microsoft", "dotnet");
+            if (Directory.Exists(userInstall))
+                return userInstall;
+        }
+
+        return null;
     }
 
     private async Task ExpandImagesZipAsync(string imagesZipFilePath, string assetsDirectory, CancellationToken cancellationToken = default)

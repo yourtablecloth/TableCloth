@@ -5,8 +5,6 @@
 		<StartupObject>TableCloth.Program</StartupObject>
 		<ApplicationIcon>App.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
-		<Platforms>x64;ARM64</Platforms>
 		<UseWPF>True</UseWPF>
 		<Description>Keep Your Computer Sound &amp; Safe!</Description>
 		<ProductName>TableCloth</ProductName>
@@ -19,15 +17,13 @@
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 
 		<!--
-			샌드박스가 호스트의 TableCloth 설치 폴더(= 실행 중인 프로세스 디렉터리)를 그대로 마운트해
-			'TableCloth.exe spork'를 호출하는 모델이므로, 빌드 출력에 .NET 10 런타임이 포함돼 있어야
-			샌드박스 안에서 별도 런타임 설치 없이 동작한다. 따라서 build 시점에 self-contained로 게시.
-			RID는 Platform에 맞춰 조건부로 설정한다.
+			프로젝트 수준은 AnyCPU + framework-dependent로 유지(향후 Native AOT/Avalonia 전환 시
+			RID/번들 결정을 CI에 위임하기 위함). 배포용 self-contained 게시는 CI/CD가
+			`dotnet publish -r win-x64 -p:SelfContained=true` 식으로 명시한다.
+			샌드박스 안에서 framework-dependent로 실행해야 할 때는 SandboxBuilder가 호스트의
+			dotnet 설치 폴더를 함께 마운트하고 DOTNET_ROOT 환경 변수를 설정한다.
 		-->
-		<SelfContained>true</SelfContained>
-		<UseAppHost>true</UseAppHost>
-		<RuntimeIdentifier Condition="'$(Platform)' == 'x64'">win-x64</RuntimeIdentifier>
-		<RuntimeIdentifier Condition="'$(Platform)' == 'ARM64'">win-arm64</RuntimeIdentifier>
+		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
 	</PropertyGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="commit.txt">
