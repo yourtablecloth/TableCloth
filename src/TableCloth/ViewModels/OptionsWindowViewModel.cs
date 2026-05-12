@@ -200,6 +200,13 @@ public partial class OptionsWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _shareNpkiFolder;
 
+    /// <summary>
+    /// 인증서 탭의 설명 문구. 리소스 문자열에 포함된 <c>%USERPROFILE%</c> 같은 환경 변수를
+    /// 실제 경로로 치환하여 사용자가 자신의 경로를 곧바로 확인할 수 있게 한다.
+    /// </summary>
+    public string CertificateSectionDescription { get; }
+        = Environment.ExpandEnvironmentVariables(UIStringResources.Options_Section_Certificate_Description);
+
     [ObservableProperty]
     private ObservableCollection<MappedFolderSetting> _mappedFolders = new();
 
