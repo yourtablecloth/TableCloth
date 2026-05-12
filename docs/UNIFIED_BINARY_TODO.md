@@ -68,13 +68,32 @@ TableCloth.exe <future-verb>      → 후속 확장 모듈 (필요 시)
 
 ### Phase 1 — `TableCloth.App` 라이브러리 추출
 
-호환성 리스크가 가장 작은 단계. 진입점 분리 전에 라이브러리화부터 진행한다.
+호환성 리스크가 가장 작은 단계. 진입점 분리 전에 라이브러리화부터 진행한다. 진행 방식은 (c) → (b): 먼저 빈 라이브러리 + `UseTableCloth()` 골격으로 컴파일되는 구조를 확립하고, 그 위에 영역별(Components → ViewModels → Views)로 점진 이동.
 
-- [ ] `src/TableCloth.App/TableCloth.App.csproj` 신규 (라이브러리, `net10.0-windows10.0.18362.0`, `UseWPF=true`)
-- [ ] 현재 [TableCloth](../src/TableCloth/) 내부 구현(Services, Components, ViewModels, Views, Resources 등)을 `TableCloth.App`으로 이전
-- [ ] `App.xaml` / `App.xaml.cs`도 `TableCloth.App`으로 이전 (진입점이 인스턴스화하는 형태로)
-- [ ] `TableCloth.App.DependencyInjection.UseTableClothExtensions.UseTableCloth(this HostApplicationBuilder)` 확장 메서드 작성 — 현재 [Program.cs](../src/TableCloth/Program.cs)의 ServiceCollection 구성을 이쪽으로 옮김
-- [ ] 진입점 `TableCloth` 프로젝트는 임시로 `Program.cs`만 남기고 부트스트랩에서 `builder.UseTableCloth().Build().Run()` 호출
+#### Phase 1.0 — CPM 도입 (2026-05-12)
+
+- [x] `Directory.Packages.props` 작성, 메인 3개 프로젝트(TableCloth/TableCloth.Core/Spork)의 모든 PackageReference에서 Version 속성 제거
+- [x] TableCloth.Test/Spork.Test는 MSTest.Sdk 충돌로 `ManagePackageVersionsCentrally=false`로 opt-out
+- [x] `CentralPackageTransitivePinningEnabled`는 의도적으로 비활성화 — 활성화 시 TableCloth.Test와 Serilog MSB3277 충돌, Phase 3 통합 시점에 highest-wins으로 4.3.0 자연 수렴
+- [x] 전체 솔루션 빌드 통과 (0 에러)
+
+#### Phase 1.1 — `TableCloth.App` 골격 확립 (2026-05-12)
+
+- [x] `src/TableCloth.App/TableCloth.App.csproj` 신규 (라이브러리, `net10.0-windows10.0.18362.0`, `UseWPF=true`, `TableCloth.Core` 참조)
+- [x] `TableCloth.App.DependencyInjection.UseTableClothExtensions.UseTableCloth(this IHostApplicationBuilder)` 확장 메서드 골격 작성 (현재 no-op)
+- [x] TableCloth.slnx와 TableCloth.csproj에 ProjectReference 추가
+- [x] Program.cs에 `builder.UseTableCloth()` 호출 추가하여 호출 계약 확립
+- [x] WPF `App` 클래스 → `TableClothApplication`으로 개명 (네임스페이스 `TableCloth.App`과 충돌 해소). 참조 3곳: App.xaml `x:Class`, App.xaml.cs, Program.cs DI 등록
+- [x] 빌드 통과 (0 에러, 0 경고)
+
+#### Phase 1.2 — 영역별 내부 구현 이전 (진행 예정)
+
+- [ ] **Components / Services 이전** — Implementations + 인터페이스를 `TableCloth.App.Components`로 이동, `UseTableCloth()`로 등록 흡수
+- [ ] **ViewModels 이전** — `TableCloth.App.ViewModels`로 이동
+- [ ] **Views (Windows / Pages / Dialogs) 이전** — `TableCloth.App.Views`로 이동, WPF Resource/ResourceDictionary 정합성 유지
+- [ ] **App.xaml / App.xaml.cs (TableClothApplication) 이전** — `TableCloth.App`으로 이동, 진입점은 인스턴스화만 담당
+- [ ] **Resources / Converters / 헬퍼 이전**
+- [ ] 진입점 `TableCloth` 프로젝트는 `Program.cs`만 남기고 부트스트랩에서 `builder.UseTableCloth().Build()` 호출
 - [ ] 빌드/실행 회귀 확인 (현재 UX와 동일하게 동작해야 함)
 
 ### Phase 2 — Spork .NET 10 전환 + `Spork.App` 라이브러리 추출
