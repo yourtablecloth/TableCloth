@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+#nullable enable
+
 namespace TableCloth
 {
     public static class Helpers
@@ -17,8 +19,22 @@ namespace TableCloth
 #endif
             ;
 
+        private static string[]? _effectiveCommandLineArguments;
+
+        /// <summary>
+        /// verb 기반 디스패처가 발리언트 토큰을 소비한 뒤 모듈에 전달할 "유효" 인수 배열을 설정한다.
+        /// 단일 바이너리 진입점이 <c>TableCloth.exe spork --foo bar</c>의 "spork" 토큰을 소비하고
+        /// <c>["--foo", "bar"]</c>만 모듈에 노출하고 싶을 때 사용한다.
+        /// </summary>
+        public static void SetEffectiveCommandLineArguments(string[] args)
+            => _effectiveCommandLineArguments = args ?? Array.Empty<string>();
+
+        /// <summary>
+        /// verb 디스패처가 설정한 유효 인수가 있으면 그것을, 없으면 OS 프로세스 인수에서
+        /// 실행 파일 경로(arg 0)를 제외한 나머지를 반환한다.
+        /// </summary>
         public static string[] GetCommandLineArguments()
-            => Environment.GetCommandLineArgs().Skip(1).ToArray();
+            => _effectiveCommandLineArguments ?? Environment.GetCommandLineArgs().Skip(1).ToArray();
 
         public static bool IsWindowsSandboxRunning()
             => Process.GetProcesses().Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase)).Any();

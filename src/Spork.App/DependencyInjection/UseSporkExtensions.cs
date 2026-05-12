@@ -11,9 +11,18 @@ using Spork.Dialogs;
 using Spork.Steps;
 using Spork.Steps.Implementations;
 using Spork.ViewModels;
+using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using TableCloth.Models.Answers;
 using TableCloth.Resources;
+
+#nullable enable
 
 namespace Spork.App.DependencyInjection;
 
@@ -29,6 +38,10 @@ public static class UseSporkExtensions
     /// </summary>
     public static IHostApplicationBuilder UseSpork(this IHostApplicationBuilder builder)
     {
+        // SporkAnswers.json은 호스트가 샌드박스 staging에 미리 떨궈둔 진입 파라미터 파일.
+        // 본 메서드 진입 시점(WPF Application.Run 직전)에 로드해 스레드 컬처를 설정한다.
+        ApplySporkAnswersIfPresent();
+
         // Sentry SDK 초기화 + Serilog/Console 로그 싱크. 기존 진입점에서 그대로 옮긴 패턴
         // (using 블록의 즉시 dispose 거동은 Sentry SDK 글로벌 상태와 함께 검토 대상이나 본 Phase
         //  범위 외이므로 동작을 보존한다).
@@ -96,5 +109,44 @@ public static class UseSporkExtensions
             .AddSingleton<Application>(sp => new SporkApplication(sp.GetRequiredService<IHost>()));
 
         return builder;
+    }
+
+    private static void ApplySporkAnswersIfPresent()
+    {
+        SporkAnswers? answer = default;
+
+        try
+        {
+            // Spork.exe(또는 통합된 TableCloth.exe spork)와 동일 디렉터리.
+            // 단일 파일 게시에서도 안전한 AppContext.BaseDirectory 사용.
+            var answerFilePath = Path.Combine(AppContext.BaseDirectory, "SporkAnswers.json");
+
+            if (File.Exists(answerFilePath))
+            {
+                using var answerFileContent = File.OpenRead(answerFilePath);
+                answer = JsonSerializer.Deserialize<SporkAnswers>(answerFileContent);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[Spork] SporkAnswers.json load failed: {ex}");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(answer?.HostUILocale))
+            return;
+
+        try
+        {
+            var desiredCulture = new CultureInfo(answer.HostUILocale);
+            Thread.CurrentThread.CurrentCulture = desiredCulture;
+            Thread.CurrentThread.CurrentUICulture = desiredCulture;
+            CultureInfo.DefaultThreadCurrentCulture = desiredCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = desiredCulture;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[Spork] Apply culture '{answer.HostUILocale}' failed: {ex}");
+        }
     }
 }

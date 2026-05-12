@@ -1,9 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
+using Spork.App.DependencyInjection;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Windows;
 using TableCloth.App.DependencyInjection;
@@ -16,8 +18,31 @@ namespace TableCloth;
 
 internal static class Program
 {
+    private const string SporkVerb = "spork";
+
     [STAThread]
     private static int Main(string[] args)
+    {
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+        {
+            MessageBox.Show(
+                e.ExceptionObject?.ToString() ?? "Unknown Error",
+                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        };
+
+        args ??= Helpers.GetCommandLineArguments();
+
+        // verb 디스패치: 첫 토큰이 `spork`이면 Spork 모듈로 라우팅, 그렇지 않으면 TableCloth 호스트 모드.
+        // System.CommandLine으로 감싸지 않고 단순 분기를 사용한 이유는, 두 모듈이 각자 자체
+        // CommandLineArguments(System.CommandLine RootCommand)로 옵션을 파싱하기 때문. 디스패처는
+        // 단지 verb 토큰을 소비하고 남은 인수를 Helpers.SetEffectiveCommandLineArguments로 노출한다.
+        if (args.Length > 0 && string.Equals(args[0], SporkVerb, StringComparison.OrdinalIgnoreCase))
+            return RunSpork(args.Skip(1).ToArray());
+
+        return RunTableCloth(args);
+    }
+
+    private static int RunTableCloth(string[] args)
     {
         // Velopack 초기화 - 설치/업데이트/제거 시 처리
         VelopackApp.Build().Run();
@@ -34,18 +59,37 @@ internal static class Program
 
         try
         {
-            AppDomain.CurrentDomain.UnhandledException += (_, e) =>
-            {
-                MessageBox.Show(
-                    e.ExceptionObject?.ToString() ?? "Unknown Error",
-                    "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            };
+            Helpers.SetEffectiveCommandLineArguments(args);
 
-            args ??= Helpers.GetCommandLineArguments();
             var builder = Host.CreateApplicationBuilder(args);
-
-            // TableCloth 모듈 합성: 로깅/HTTP/Components/ViewModels/Views/Application 일괄 등록.
             builder.UseTableCloth();
+
+            using var appHost = builder.Build();
+            appHost.Start();
+            var app = appHost.Services.GetRequiredService<Application>();
+            app.Run();
+            appHost.StopAsync().GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                ex?.ToString() ?? "Unknown Error",
+                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        return Environment.ExitCode;
+    }
+
+    private static int RunSpork(string[] args)
+    {
+        try
+        {
+            // 모듈의 CommandLineArguments는 Helpers.GetCommandLineArguments()를 호출해 인수를 읽는다.
+            // verb 토큰('spork')이 소비된 뒤의 인수만 모듈에 노출되도록 명시.
+            Helpers.SetEffectiveCommandLineArguments(args);
+
+            var builder = Host.CreateApplicationBuilder(args);
+            builder.UseSpork();
 
             using var appHost = builder.Build();
             appHost.Start();

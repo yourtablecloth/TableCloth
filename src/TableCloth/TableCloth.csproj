@@ -50,6 +50,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Spork.App\Spork.App.csproj" />
 	  <ProjectReference Include="..\TableCloth.App\TableCloth.App.csproj" />
 	  <ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
 	</ItemGroup>
