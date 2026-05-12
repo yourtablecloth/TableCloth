@@ -284,6 +284,27 @@ namespace Spork.ViewModels
         }
 
         [RelayCommand]
+        private void ShowCertificateDetails(X509CertPair pair)
+        {
+            // Windows 표준 인증서 속성 창(crystui DisplayCertificate)을 띄운다. 만료 여부와 상관없이
+            // 모든 인증서는 상세 보기가 가능해야 한다.
+            if (pair == null || pair.PublicKey == null || pair.PublicKey.Length == 0)
+                return;
+
+            try
+            {
+                using (var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(pair.PublicKey))
+                {
+                    System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate(cert);
+                }
+            }
+            catch (Exception ex)
+            {
+                _appMessageBox.DisplayError(ex, false);
+            }
+        }
+
+        [RelayCommand]
         private void OpenCompanionUrl(CatalogCompanion companion)
         {
             // 보조 프로그램은 저작권/EULA 동의 흐름을 사용자가 직접 거쳐야 하므로 자동 설치하지 않는다.

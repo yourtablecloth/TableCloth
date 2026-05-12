@@ -223,7 +223,8 @@
                             <ItemsControl ItemsSource="{Binding CatalogCertificates}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <!-- 만료된 인증서는 TextBlock 전체에 취소선 + 회색 처리. Run에 자동 상속. -->
+                                        <!-- 각 항목은 Hyperlink로 노출, 클릭 시 Windows 표준 인증서 속성 창 표시.
+                                             만료된 인증서는 TextBlock 전체에 취소선 + 회색 처리. Run에 자동 상속. -->
                                         <TextBlock Margin="6 4" TextWrapping="Wrap" ToolTip="{Binding Availability}">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
@@ -235,13 +236,16 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </TextBlock.Style>
-                                            <Run FontWeight="SemiBold" Text="{Binding CommonName, Mode=OneWay}" />
-                                            <Run Text=" · " />
-                                            <Run Text="{Binding Organization, Mode=OneWay}" />
-                                            <LineBreak />
-                                            <Run FontSize="10" Foreground="Gray" Text="{Binding NotBefore, StringFormat=yyyy-MM-dd, Mode=OneWay}" />
-                                            <Run FontSize="10" Foreground="Gray" Text=" ~ " />
-                                            <Run FontSize="10" Foreground="Gray" Text="{Binding NotAfter, StringFormat=yyyy-MM-dd, Mode=OneWay}" />
+                                            <Hyperlink Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.ShowCertificateDetailsCommand}"
+                                                       CommandParameter="{Binding}">
+                                                <Run FontWeight="SemiBold" Text="{Binding CommonName, Mode=OneWay}" />
+                                                <Run Text=" · " />
+                                                <Run Text="{Binding Organization, Mode=OneWay}" />
+                                                <LineBreak />
+                                                <Run FontSize="10" Text="{Binding NotBefore, StringFormat=yyyy-MM-dd, Mode=OneWay}" />
+                                                <Run FontSize="10" Text=" ~ " />
+                                                <Run FontSize="10" Text="{Binding NotAfter, StringFormat=yyyy-MM-dd, Mode=OneWay}" />
+                                            </Hyperlink>
                                         </TextBlock>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

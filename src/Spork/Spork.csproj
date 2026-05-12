@@ -92,6 +92,7 @@
 		<Reference Include="PresentationFramework.Aero2" />
 		<Reference Include="System.ComponentModel.DataAnnotations" />
 		<Reference Include="System.Drawing" />
+		<Reference Include="System.Security" />
 		<Reference Include="System.ServiceProcess" />
 		<Reference Include="UIAutomationProvider" />
 	</ItemGroup>
