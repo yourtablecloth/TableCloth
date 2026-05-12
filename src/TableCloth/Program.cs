@@ -1,23 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
-using Serilog;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows;
 using TableCloth.App.DependencyInjection;
 using TableCloth.Bootstrap.Dialogs;
-using TableCloth.Components;
-using TableCloth.Components.Implementations;
-using TableCloth.Dialogs;
 using TableCloth.Models.Configuration;
-using TableCloth.Pages;
 using TableCloth.Resources;
-using TableCloth.ViewModels;
 using Velopack;
 
 namespace TableCloth;
@@ -52,69 +44,8 @@ internal static class Program
             args ??= Helpers.GetCommandLineArguments();
             var builder = Host.CreateApplicationBuilder(args);
 
-            // Phase 1 — TableCloth.App 모듈 합성 진입점 확립.
-            // 현재는 no-op이며, Components/ViewModels/Views를 점진 이전하면서 채워진다.
+            // TableCloth 모듈 합성: 로깅/HTTP/Components/ViewModels/Views/Application 일괄 등록.
             builder.UseTableCloth();
-
-            builder.Logging
-                .AddSerilog(dispose: true)
-                .AddConsole();
-
-            // Add Logging
-            builder.Services.AddLogging();
-
-            // Add HTTP Service
-            builder.Services.AddHttpClient(
-                nameof(ConstantStrings.UserAgentText),
-                c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
-            builder.Services.AddHttpClient(
-                nameof(ConstantStrings.FamiliarUserAgentText),
-                c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.FamiliarUserAgentText));
-            builder.Services.AddHttpClient(
-                nameof(StringResources.TableCloth_GitHubRestUAString),
-                c => c.DefaultRequestHeaders.Add("User-Agent", StringResources.TableCloth_GitHubRestUAString));
-
-            // Add Components
-            builder.Services
-                .AddSingleton<IAppUserInterface, AppUserInterface>()
-                .AddSingleton<IAppUpdateManager, AppUpdateManager>()
-                .AddSingleton<ISharedLocations, SharedLocations>()
-                .AddSingleton<IPreferencesManager, PreferencesManager>()
-                .AddSingleton<IX509CertPairScanner, X509CertPairScanner>()
-                .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
-                .AddSingleton<ISandboxBuilder, SandboxBuilder>()
-                .AddSingleton<ISandboxLauncher, SandboxLauncher>()
-                .AddSingleton<ISandboxCleanupManager, SandboxCleanupManager>()
-                .AddSingleton<IAppStartup, AppStartup>()
-                .AddSingleton<IResourceResolver, ResourceResolver>()
-                .AddSingleton<ILicenseDescriptor, LicenseDescriptor>()
-                .AddSingleton<IAppRestartManager, AppRestartManager>()
-                .AddSingleton<ICommandLineComposer, CommandLineComposer>()
-                .AddSingleton<IConfigurationComposer, ConfigurationComposer>()
-                .AddSingleton<IVisualThemeManager, VisualThemeManager>()
-                .AddSingleton<IAppMessageBox, AppMessageBox>()
-                .AddSingleton<IMessageBoxService, MessageBoxService>()
-                .AddSingleton<INavigationService, NavigationService>()
-                .AddSingleton<IShortcutCreator, ShortcutCreator>()
-                .AddSingleton<ICommandLineArguments, CommandLineArguments>()
-                .AddSingleton<IApplicationService, ApplicationService>()
-                .AddSingleton<IArchiveExpander, ArchiveExpander>()
-                .AddSingleton<ICatalogDeserializer, CatalogDeserializer>()
-                .AddSingleton(_ => new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext()));
-
-            // UI
-            builder.Services
-                .AddWindow<DisclaimerWindow, DisclaimerWindowViewModel>()
-                .AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>()
-                .AddWindow<AboutWindow, AboutWindowViewModel>()
-                .AddWindow<OptionsWindow, OptionsWindowViewModel>()
-                .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
-                .AddWindow<MainWindow, MainWindowViewModel>()
-                .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
-                .AddPage<DetailPage, DetailPageViewModel>()
-                .AddPage<QuickStartPage, QuickStartPageViewModel>()
-                .AddWindow<SplashScreen, SplashScreenViewModel>()
-                .AddSingleton<Application>(sp => new TableClothApplication(sp.GetRequiredService<IHost>()));
 
             using var appHost = builder.Build();
             appHost.Start();

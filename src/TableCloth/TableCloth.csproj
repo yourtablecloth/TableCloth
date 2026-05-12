@@ -19,7 +19,6 @@
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Remove="Resources\SandboxIcon.png" />
 		<None Remove="Spork.zip" />
 	</ItemGroup>
 	<ItemGroup>
@@ -56,35 +55,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ApplicationDefinition Remove="App.xaml" />
-		<Page Include="App.xaml" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\TableCloth.App\TableCloth.App.csproj" />
 	  <ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Resource Include="Resources\SandboxIcon.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Update="Components\Implementations\LicenseDescriptor.cs">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</Compile>
-		<Compile Update="Properties\Resources.Designer.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>Resources.resx</DependentUpon>
-		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Update="Properties\Resources.resx">
-			<Generator>ResXFileCodeGenerator</Generator>
-			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
 	</ItemGroup>
 	<Target Name="UpdateManifestVersion" BeforeTargets="PreBuild">
 		<PropertyGroup>
