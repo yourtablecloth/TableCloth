@@ -58,7 +58,6 @@ namespace Spork.ViewModels
 
         [ActivatorUtilitiesConstructor]
         public MainWindowViewModel(
-            Application application,
             IResourceCacheManager resourceCacheManager,
             IAppUserInterface appUserInterface,
             IVisualThemeManager visualThemeManager,
@@ -72,7 +71,7 @@ namespace Spork.ViewModels
             IX509CertScanner certScanner,
             TaskFactory taskFactory)
         {
-            _application = application;
+            // Application은 DI로 받지 않고 WPF 표준 정적 참조 사용 (Spork.App ApplicationService와 동일 사유).
             _resourceCacheManager = resourceCacheManager;
             _appUserInterface = appUserInterface;
             _visualThemeManager = visualThemeManager;
@@ -87,7 +86,9 @@ namespace Spork.ViewModels
             _taskFactory = taskFactory;
         }
 
-        private readonly Application _application;
+        private static Application _application
+            => Application.Current
+               ?? throw new InvalidOperationException("Application.Current is not yet available.");
         private readonly IResourceCacheManager _resourceCacheManager;
         private readonly IAppUserInterface _appUserInterface;
         private readonly IVisualThemeManager _visualThemeManager;
