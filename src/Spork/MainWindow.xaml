@@ -203,15 +203,18 @@
                         <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="Wrap"
                                    Foreground="{DynamicResource ControlSecondaryForeground}"
                                    Text="{x:Static res:UIStringResources.SporkCatalog_Companions_Description}" />
-                        <ListView Grid.Row="1" x:Name="CompanionsList"
-                                  ItemsSource="{Binding CatalogCompanions}"
-                                  SelectedItem="{Binding SelectedCatalogCompanion}"
-                                  SelectionMode="Single"
-                                  HorizontalContentAlignment="Stretch">
-                            <ListView.InputBindings>
+                        <!-- ListView (View 미지정 시 기본 GridView 동작이 끼어들어 텍스트가 사라지는 케이스를
+                             피하기 위해 ListBox 사용. 컬럼 헤더가 필요 없는 단순 리스트엔 ListBox가 더 안전. -->
+                        <ListBox Grid.Row="1" x:Name="CompanionsList"
+                                 ItemsSource="{Binding CatalogCompanions}"
+                                 SelectedItem="{Binding SelectedCatalogCompanion}"
+                                 SelectionMode="Single"
+                                 HorizontalContentAlignment="Stretch"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <ListBox.InputBindings>
                                 <KeyBinding Key="Return" Command="{Binding CompanionItemActivateCommand}" />
-                            </ListView.InputBindings>
-                            <ListView.ItemTemplate>
+                            </ListBox.InputBindings>
+                            <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Grid>
                                         <Grid.InputBindings>
@@ -224,8 +227,8 @@
                                         </StackPanel>
                                     </Grid>
                                 </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </Grid>
                 </TabItem>
             </TabControl>
