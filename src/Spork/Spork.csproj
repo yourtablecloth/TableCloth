@@ -64,10 +64,9 @@
 	</ItemGroup>
 
 	<!--
-		Spork에는 별도의 PreBuild 타깃이 없으므로 표준 PreBuildEvent에 직접 연결한다.
-		(TableCloth.csproj에는 Spork.zip 복사용 PreBuild 타깃이 따로 있어 그쪽 manifest 치환은
-		BeforeTargets="PreBuild"로 동작하지만, Spork.csproj의 PreBuild는 commit.txt 작성 통합 때
-		WriteCommitTxt로 이름이 바뀌면서 사라졌다.)
+		MSBuild 표준 확장 지점인 PreBuildEvent에 직접 hook해 app.manifest의 $version$ 플레이스홀더를
+		AssemblyVersion으로 치환한다. (Phase 4에서 두 프로젝트 모두 사용자 정의 'PreBuild' 타깃을
+		폐기했으므로 PreBuildEvent로 직접 연결.)
 	-->
 	<Target Name="UpdateManifestVersion" BeforeTargets="PreBuildEvent">
 		<PropertyGroup>

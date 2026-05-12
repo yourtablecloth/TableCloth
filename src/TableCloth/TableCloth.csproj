@@ -55,7 +55,13 @@
 	  <ProjectReference Include="..\TableCloth.App\TableCloth.App.csproj" />
 	  <ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
 	</ItemGroup>
-	<Target Name="UpdateManifestVersion" BeforeTargets="PreBuild">
+	<!--
+		Phase 4에서 'PreBuild'라는 이름의 사용자 타깃(Spork.zip 복사)을 삭제했기 때문에,
+		종전대로 BeforeTargets="PreBuild"를 쓰면 hook할 대상이 없어 본 타깃이 실행되지 않는다.
+		(원본 app.manifest의 $version$ 플레이스홀더가 그대로 살아남아 Windows가 매니페스트를 거부함.)
+		MSBuild 표준 확장 지점인 PreBuildEvent에 직접 hook하도록 변경.
+	-->
+	<Target Name="UpdateManifestVersion" BeforeTargets="PreBuildEvent">
 		<PropertyGroup>
 			<!-- AssemblyVersion (from Directory.Build.Props) is already 4-part. -->
 			<ManifestVersion Condition="'$(ManifestVersion)' == ''">$(AssemblyVersion)</ManifestVersion>
