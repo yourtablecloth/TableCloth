@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
@@ -17,9 +16,8 @@ namespace Spork.Converters
     {
         private static readonly Lazy<string> ImagesDirectory = new Lazy<string>(() =>
         {
-            var location = Assembly.GetExecutingAssembly().Location;
-            var dir = Path.GetDirectoryName(location) ?? string.Empty;
-            return Path.Combine(dir, "images");
+            // 단일 파일 게시에서도 안전한 AppContext.BaseDirectory 사용
+            return Path.Combine(AppContext.BaseDirectory, "images");
         });
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

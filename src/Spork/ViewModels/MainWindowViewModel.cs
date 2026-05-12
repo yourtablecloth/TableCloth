@@ -165,7 +165,8 @@ namespace Spork.ViewModels
         {
             try
             {
-                var sporkExePath = Assembly.GetExecutingAssembly().Location;
+                // 단일 파일 게시에서 Assembly.Location은 빈 문자열을 반환하므로 Environment.ProcessPath 사용
+                var sporkExePath = Environment.ProcessPath;
                 if (string.IsNullOrEmpty(sporkExePath) || !File.Exists(sporkExePath))
                     return;
 

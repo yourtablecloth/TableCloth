@@ -5,13 +5,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml;
 using TableCloth;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
-
-using MonoHttpUtility = Mono.Web.HttpUtility;
 
 namespace Spork.Components.Implementations
 {
@@ -34,7 +33,7 @@ namespace Spork.Components.Implementations
             var httpClient = _httpClientFactory.CreateTableClothHttpClient();
             var uriBuilder = new UriBuilder(new Uri(ConstantStrings.CatalogUrl, UriKind.Absolute));
 
-            var queryKeyValues = MonoHttpUtility.ParseQueryString(uriBuilder.Query);
+            var queryKeyValues = HttpUtility.ParseQueryString(uriBuilder.Query);
             queryKeyValues[ConstantStrings.QueryString_Timestamp_Key] = DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
             uriBuilder.Query = queryKeyValues.ToString();
 

@@ -1,32 +1,32 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net48</TargetFramework>
+		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
 		<RootNamespace>Spork</RootNamespace>
 		<AssemblyName>Spork</AssemblyName>
-		<UseWPF>true</UseWPF>
-		<Platforms>x64;ARM64</Platforms>
-		<UseWindowsForms>false</UseWindowsForms>
-		<LangVersion>12.0</LangVersion>
-		<Deterministic>true</Deterministic>
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 		<StartupObject>Spork.Program</StartupObject>
 		<ApplicationIcon>App.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+		<Platforms>x64;ARM64</Platforms>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>false</UseWindowsForms>
+		<LangVersion>preview</LangVersion>
+		<Deterministic>true</Deterministic>
+		<SignAssembly>False</SignAssembly>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<RunPostBuildEvent>Always</RunPostBuildEvent>
-		<DefineConstants>$(DefineConstants);NETFX</DefineConstants>
 
 		<!-- Assembly Info -->
 		<Title>TableCloth Spork</Title>
 		<Description>This program is a tool that installs the requested installers at once in the sandbox.</Description>
 
-		<!-- COM Interop -->
+		<!-- COM Interop (decorative on .NET 10 without EnableComHosting; kept for legacy compatibility) -->
 		<ComVisible>true</ComVisible>
 	</PropertyGroup>
 
-	<!-- GUID for COM Interop -->
+	<!-- GUID for COM Interop (legacy decoration; harmless on .NET 10 without EnableComHosting) -->
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.InteropServices.GuidAttribute">
 			<_Parameter1>36e7b617-ca94-4ecb-ad65-39fe94ce265b</_Parameter1>
@@ -70,31 +70,12 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" />
 		<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
-		<PackageReference Include="Mono.HttpUtility" />
 		<PackageReference Include="Sentry" />
 		<PackageReference Include="Sentry.Serilog" />
 		<PackageReference Include="Serilog" />
 		<PackageReference Include="Serilog.Extensions.Logging" />
 		<PackageReference Include="System.CommandLine" />
-		<PackageReference Include="System.Text.Json" />
-		<!-- Explicit versions to resolve MSB3277 conflicts -->
-		<PackageReference Include="System.Collections.Immutable" />
-		<PackageReference Include="System.Reflection.Metadata" />
-		<PackageReference Include="System.Resources.Extensions" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-		<PackageReference Include="Microsoft.Extensions.Options" />
-		<PackageReference Include="Microsoft.Extensions.Primitives" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Reference Include="PresentationFramework.Aero2" />
-		<Reference Include="System.ComponentModel.DataAnnotations" />
-		<Reference Include="System.Drawing" />
-		<Reference Include="System.Security" />
-		<Reference Include="System.ServiceProcess" />
-		<Reference Include="UIAutomationProvider" />
+		<!-- System.Drawing.Common, System.Text.Json은 net10-windows 런타임에 포함되어 명시 참조 불필요 (NU1510). -->
 	</ItemGroup>
 
 	<ItemGroup>
@@ -106,7 +87,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
 	</ItemGroup>
 
 	<!--

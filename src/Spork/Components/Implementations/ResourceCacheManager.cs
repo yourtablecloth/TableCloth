@@ -90,8 +90,8 @@ namespace Spork.Components.Implementations
 
         private static string GetSnapshotFilePath()
         {
-            var exeDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
-            return Path.Combine(exeDirectory, "catalog", "catalog.xml");
+            // 단일 파일 게시에서도 안전한 AppContext.BaseDirectory 사용
+            return Path.Combine(AppContext.BaseDirectory, "catalog", "catalog.xml");
         }
 
         public CatalogDocument CatalogDocument

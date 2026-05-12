@@ -35,8 +35,8 @@ namespace Spork
 
                 try
                 {
-                    // Get the directory where Spork.exe is located
-                    var exeDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                    // Spork.exe와 동일 디렉터리 (단일 파일 게시에서도 안전한 AppContext.BaseDirectory 사용)
+                    var exeDirectory = AppContext.BaseDirectory;
                     var answerFilePath = Path.Combine(exeDirectory, "SporkAnswers.json");
 
                     if (File.Exists(answerFilePath))
