@@ -26,7 +26,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TabControl Grid.Row="0">
+        <TabControl Grid.Row="0" SelectedIndex="{Binding InitialTabIndex}">
             <!-- 사용자 폴더 -->
             <TabItem Header="{x:Static res:UIStringResources.QuickStart_Section_UserFolders}">
                 <Grid Margin="12">

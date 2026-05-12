@@ -46,9 +46,10 @@
             <Button HorizontalAlignment="Center" MinWidth="220" Padding="28 12" FontSize="16" FontWeight="Bold"
                     Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}"
                     Command="{Binding LaunchSandboxCommand}" />
-            <!-- NPKI 공유 상태: 현재 상태를 문장으로 보여주고, 클릭하면 옵션 창이 열려 토글 가능 -->
+            <!-- NPKI 공유 상태: 현재 상태를 문장으로 보여주고, 클릭하면 옵션 창의 인증서 탭이 바로 열린다.
+                 CommandParameter는 OptionsTabKeys.Certificate 문자열과 일치해야 한다. -->
             <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0 16 0 0" TextWrapping="Wrap">
-                <Hyperlink Command="{Binding OpenOptionsCommand}">
+                <Hyperlink Command="{Binding OpenOptionsCommand}" CommandParameter="Certificate">
                     <Run Text="{Binding NpkiStatusText, Mode=OneWay}" />
                 </Hyperlink>
             </TextBlock>

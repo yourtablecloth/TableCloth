@@ -10,7 +10,7 @@ namespace TableCloth.Components;
 public interface IAppUserInterface
 {
     AboutWindow CreateAboutWindow();
-    OptionsWindow CreateOptionsWindow();
+    OptionsWindow CreateOptionsWindow(string? initialTabKey = null);
     CatalogPage CreateCatalogPage(string searchKeyword);
     CatalogPageViewModel CreateCatalogPageViewModel(string searchKeyword);
     QuickStartPage CreateQuickStartPage();

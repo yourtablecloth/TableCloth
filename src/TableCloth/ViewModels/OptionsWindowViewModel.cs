@@ -17,6 +17,19 @@ using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
 
+/// <summary>
+/// 옵션 창의 탭을 호출 측이 식별하기 위한 키 상수. 문자열을 그대로 비교하므로
+/// 새 탭 추가 시 키를 새로 정의하고 <see cref="OptionsWindowViewModel.ResolveTabIndex"/>의
+/// 매핑도 함께 갱신해야 한다.
+/// </summary>
+public static class OptionsTabKeys
+{
+    public const string UserFolders = nameof(UserFolders);
+    public const string Certificate = nameof(Certificate);
+    public const string DeviceSharing = nameof(DeviceSharing);
+    public const string Diagnostics = nameof(Diagnostics);
+}
+
 [Obsolete("This class is reserved for design-time usage.", false)]
 public partial class OptionsWindowViewModelForDesigner : OptionsWindowViewModel { }
 
@@ -41,6 +54,27 @@ public partial class OptionsWindowViewModel : ObservableObject
 
     public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
         => await _taskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+
+    /// <summary>
+    /// 탭 키 문자열을 <see cref="InitialTabIndex"/>로 적용한다. XAML의 TabControl에 정의된
+    /// 탭 순서(사용자 폴더 / 인증서 / 장치 공유 / 진단)와 동기화되어야 한다.
+    /// </summary>
+    public void SetInitialTab(string? tabKey)
+    {
+        InitialTabIndex = ResolveTabIndex(tabKey);
+    }
+
+    private static int ResolveTabIndex(string? tabKey)
+    {
+        return tabKey switch
+        {
+            OptionsTabKeys.UserFolders => 0,
+            OptionsTabKeys.Certificate => 1,
+            OptionsTabKeys.DeviceSharing => 2,
+            OptionsTabKeys.Diagnostics => 3,
+            _ => 0,
+        };
+    }
 
     [RelayCommand]
     private async Task OptionsWindowLoaded()
@@ -199,6 +233,13 @@ public partial class OptionsWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _shareNpkiFolder;
+
+    /// <summary>
+    /// 옵션 창이 처음 열릴 때 선택될 탭 인덱스. <see cref="OptionsTabKeys"/>의 키와 매핑된다.
+    /// 호출 측이 지정하지 않으면 0(첫 탭 = 사용자 폴더).
+    /// </summary>
+    [ObservableProperty]
+    private int _initialTabIndex;
 
     /// <summary>
     /// 인증서 탭의 설명 문구. 리소스 문자열에 포함된 <c>%USERPROFILE%</c> 같은 환경 변수를

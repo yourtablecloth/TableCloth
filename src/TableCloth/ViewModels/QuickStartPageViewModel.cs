@@ -93,11 +93,12 @@ public partial class QuickStartPageViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task OpenOptions()
+    private async Task OpenOptions(string? targetTabKey)
     {
         // 옵션 창은 자체적으로 환경 설정을 읽고 매핑 폴더 목록을 표시·편집한다.
         // 닫힌 직후엔 QuickStart도 환경 설정을 다시 읽어 NPKI 공유 상태 등 표시값을 동기화한다.
-        var optionsWindow = _appUserInterface.CreateOptionsWindow();
+        // targetTabKey가 지정되면 옵션 창이 해당 탭을 미리 선택한 상태로 열린다.
+        var optionsWindow = _appUserInterface.CreateOptionsWindow(targetTabKey);
         optionsWindow.ShowDialog();
         await RefreshFromPreferencesAsync();
     }

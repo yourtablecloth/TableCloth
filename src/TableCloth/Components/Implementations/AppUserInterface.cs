@@ -30,8 +30,12 @@ public sealed class AppUserInterface(
     public AboutWindow CreateAboutWindow()
         => SetOwnerIfAvailable(serviceProvider.GetRequiredService<AboutWindow>());
 
-    public OptionsWindow CreateOptionsWindow()
-        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<OptionsWindow>());
+    public OptionsWindow CreateOptionsWindow(string? initialTabKey = null)
+    {
+        var window = SetOwnerIfAvailable(serviceProvider.GetRequiredService<OptionsWindow>());
+        window.ViewModel.SetInitialTab(initialTabKey);
+        return window;
+    }
 
     public CertSelectWindow CreateCertSelectWindow(X509CertPair? previousCertPair)
     {
