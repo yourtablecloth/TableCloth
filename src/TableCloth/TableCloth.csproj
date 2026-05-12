@@ -38,20 +38,15 @@
 		<InternalsVisibleTo Include="TableCloth.SpecFlow" />
 	</ItemGroup>
 
+	<!--
+		진입점 TableCloth.exe는 부트스트랩(Velopack 초기화/라이선스 동의/파일 연결 등록)과
+		Host 빌드만 담당하므로 직접 참조 패키지는 최소화. 나머지는 TableCloth.App을 통해
+		transitive로 들어온다.
+	-->
 	<ItemGroup>
-		<PackageReference Include="AsyncAwaitBestPractices.MVVM" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" />
-		<PackageReference Include="Microsoft.Extensions.Http" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
-		<PackageReference Include="PnPeople.Security" />
-		<PackageReference Include="Sentry.Serilog" />
-		<PackageReference Include="Serilog.Extensions.Logging" />
-		<PackageReference Include="Serilog.Sinks.File" />
-		<PackageReference Include="System.CommandLine" />
-		<PackageReference Include="System.Management" />
 		<PackageReference Include="Velopack" />
-		<PackageReference Include="XamlRadialProgressBar" />
 	</ItemGroup>
 
 	<ItemGroup>
