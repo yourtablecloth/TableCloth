@@ -2,11 +2,18 @@ using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Components;
+using TableCloth.Models.Configuration;
+using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
 
@@ -21,10 +28,12 @@ public partial class OptionsWindowViewModel : ObservableObject
     public OptionsWindowViewModel(
         IPreferencesManager preferencesManager,
         IAppRestartManager appRestartManager,
+        IAppMessageBox appMessageBox,
         TaskFactory taskFactory)
     {
         _preferencesManager = preferencesManager;
         _appRestartManager = appRestartManager;
+        _appMessageBox = appMessageBox;
         _taskFactory = taskFactory;
     }
 
@@ -50,6 +59,14 @@ public partial class OptionsWindowViewModel : ObservableObject
             InstallHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
             InstallRaiDrive = currentConfig.InstallRaiDrive;
             EnableLogAutoCollecting = currentConfig.UseLogCollection;
+
+            // 사용자 폴더 목록을 환경 설정에서 로드하고 가용성을 검증해 화면에 표시한다.
+            MappedFolders.Clear();
+            foreach (var folder in currentConfig.MappedFolders ?? new List<MappedFolderSetting>())
+            {
+                folder.IsUnavailable = !FolderIsAccessible(folder.HostFolder);
+                MappedFolders.Add(folder);
+            }
         }
         finally
         {
@@ -63,6 +80,96 @@ public partial class OptionsWindowViewModel : ObservableObject
     private async Task CloseDialog()
     {
         await RequestCloseAsync(this, EventArgs.Empty);
+    }
+
+    [RelayCommand]
+    private async Task AddMappedFolder()
+    {
+        var selectedPath = ShowFolderBrowserDialog(UIStringResources.MappedFolder_SelectFolder);
+
+        if (string.IsNullOrWhiteSpace(selectedPath))
+            return;
+
+        if (MappedFolders.Any(f => string.Equals(f.HostFolder, selectedPath, StringComparison.OrdinalIgnoreCase)))
+        {
+            _appMessageBox.DisplayError(UIStringResources.MappedFolder_AlreadyExists, false);
+            return;
+        }
+
+        MappedFolders.Add(new MappedFolderSetting
+        {
+            HostFolder = selectedPath,
+            ReadOnly = true,
+            IsUnavailable = !FolderIsAccessible(selectedPath),
+        });
+
+        await SaveMappedFoldersAsync();
+    }
+
+    [RelayCommand]
+    private async Task RemoveMappedFolder()
+    {
+        if (SelectedMappedFolder == null)
+            return;
+
+        MappedFolders.Remove(SelectedMappedFolder);
+        SelectedMappedFolder = null;
+        await SaveMappedFoldersAsync();
+    }
+
+    [RelayCommand]
+    private async Task ToggleMappedFolderReadOnly()
+    {
+        if (SelectedMappedFolder == null)
+            return;
+
+        SelectedMappedFolder.ReadOnly = !SelectedMappedFolder.ReadOnly;
+        await SaveMappedFoldersAsync();
+
+        // MappedFolderSetting은 ObservableObject가 아니므로 ListBox 갱신을 위해 항목을 재배치한다.
+        var index = MappedFolders.IndexOf(SelectedMappedFolder);
+        if (index >= 0)
+        {
+            var item = SelectedMappedFolder;
+            MappedFolders.RemoveAt(index);
+            MappedFolders.Insert(index, item);
+            SelectedMappedFolder = item;
+        }
+    }
+
+    private static string? ShowFolderBrowserDialog(string title)
+    {
+        var dialog = new OpenFolderDialog
+        {
+            Title = title,
+            Multiselect = false,
+        };
+
+        if (dialog.ShowDialog() == true)
+            return dialog.FolderName;
+
+        return null;
+    }
+
+    private static bool FolderIsAccessible(string path)
+    {
+        try
+        {
+            return !string.IsNullOrWhiteSpace(path) && Directory.Exists(path);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private async Task SaveMappedFoldersAsync()
+    {
+        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
+        currentConfig ??= _preferencesManager.GetDefaultPreferences();
+
+        currentConfig.MappedFolders = MappedFolders.ToList();
+        await _preferencesManager.SavePreferencesAsync(currentConfig);
     }
 
     [ObservableProperty]
@@ -89,9 +196,16 @@ public partial class OptionsWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _enableLogAutoCollecting;
 
+    [ObservableProperty]
+    private ObservableCollection<MappedFolderSetting> _mappedFolders = new();
+
+    [ObservableProperty]
+    private MappedFolderSetting? _selectedMappedFolder;
+
     private bool _suppressSave;
     private readonly IPreferencesManager _preferencesManager = default!;
     private readonly IAppRestartManager _appRestartManager = default!;
+    private readonly IAppMessageBox _appMessageBox = default!;
     private readonly TaskFactory _taskFactory = default!;
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)

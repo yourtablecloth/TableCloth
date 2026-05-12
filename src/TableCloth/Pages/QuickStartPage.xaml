@@ -23,7 +23,6 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -38,68 +37,22 @@
             </TextBlock>
         </Border>
 
-        <!-- Header / Instruction -->
-        <StackPanel Grid.Row="1" Margin="16 12 16 4">
-            <TextBlock FontSize="22" FontWeight="Bold" Text="{x:Static res:UIStringResources.QuickStart_Title}" />
-            <TextBlock Margin="0 4 0 0" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.QuickStart_Instruction}" />
+        <!-- Centered hero with title + instruction + launch button -->
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="520" Margin="24">
+            <TextBlock HorizontalAlignment="Center" TextAlignment="Center" FontSize="28" FontWeight="Bold" Text="{x:Static res:UIStringResources.QuickStart_Title}" />
+            <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0 12 0 24" TextWrapping="Wrap"
+                       Foreground="{DynamicResource ControlSecondaryForeground}"
+                       Text="{x:Static res:UIStringResources.QuickStart_Instruction}" />
+            <Button HorizontalAlignment="Center" MinWidth="220" Padding="28 12" FontSize="16" FontWeight="Bold"
+                    Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}"
+                    Command="{Binding LaunchSandboxCommand}" />
         </StackPanel>
 
-        <!-- Scrollable body -->
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="16 8 16 8">
-            <StackPanel>
-
-                <!-- Section: User Folders -->
-                <TextBlock FontWeight="Bold" FontSize="14" Margin="0 8 0 4" Text="{x:Static res:UIStringResources.QuickStart_Section_UserFolders}" />
-                <TextBlock Margin="0 0 0 4" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.MappedFolder_Description}" />
-                <ListBox MinHeight="160" Margin="0 0 0 6" ItemsSource="{Binding MappedFolders}" SelectedItem="{Binding SelectedMappedFolder}" HorizontalContentAlignment="Stretch">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding HostFolder}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding HostFolder}">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsUnavailable}" Value="True">
-                                                    <Setter Property="Foreground" Value="Gray" />
-                                                    <Setter Property="TextDecorations" Value="Strikethrough" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                                <!-- 사용 가능할 때: Read-Only/Read-Write 배지 -->
-                                <Border Grid.Column="1" BorderBrush="{Binding ReadOnly, Converter={StaticResource BooleanToBackgroundConverter}}" BorderThickness="1" CornerRadius="3" Padding="5 2" Margin="5 0 0 0"
-                                        Visibility="{Binding IsUnavailable, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-                                    <TextBlock Text="{Binding ReadOnly, Converter={StaticResource BooleanToReadOnlyTextConverter}}" FontSize="11" />
-                                </Border>
-                                <!-- 직전 시작 시 호스트 폴더 검증에서 사용 불가로 판정된 경우: 배지로 안내 (마운트는 조용히 건너뜀) -->
-                                <Border Grid.Column="1" BorderBrush="Red" BorderThickness="1" CornerRadius="3" Padding="5 2" Margin="5 0 0 0"
-                                        Visibility="{Binding IsUnavailable, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <TextBlock Text="{x:Static res:UIStringResources.MappedFolder_Unavailable}" Foreground="Red" FontSize="11" />
-                                </Border>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <StackPanel Orientation="Horizontal" Margin="0 0 0 12">
-                    <Button Content="{x:Static res:UIStringResources.MappedFolder_AddButton}" Command="{Binding AddMappedFolderCommand}" Padding="10 5" Margin="0 0 6 0" />
-                    <Button Content="{x:Static res:UIStringResources.MappedFolder_RemoveButton}" Command="{Binding RemoveMappedFolderCommand}" IsEnabled="{Binding SelectedMappedFolder, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" Margin="0 0 6 0" />
-                    <Button Content="{x:Static res:UIStringResources.MappedFolder_ToggleReadOnlyButton}" Command="{Binding ToggleMappedFolderReadOnlyCommand}" IsEnabled="{Binding SelectedMappedFolder, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" />
-                </StackPanel>
-
-            </StackPanel>
-        </ScrollViewer>
-
         <!-- Footer -->
-        <Grid Grid.Row="3" Margin="16 8 16 12">
+        <Grid Grid.Row="2" Margin="16 8 16 12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Horizontal">
@@ -108,14 +61,13 @@
                         <Run Text="{x:Static res:UIStringResources.Button_AboutButton}" />
                     </Hyperlink>
                 </TextBlock>
-<TextBlock VerticalAlignment="Center" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock VerticalAlignment="Center" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Hyperlink Command="{Binding ShowDebugInfoCommand}">
                         <Run Text="{x:Static res:UIStringResources.Button_DebugButton}" />
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
-            <Button Grid.Column="2" Margin="0 0 8 0" Padding="14 8" Content="{x:Static res:UIStringResources.QuickStart_OptionsButton}" Command="{Binding OpenOptionsCommand}" />
-            <Button Grid.Column="3" Padding="20 8" FontWeight="Bold" Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Command="{Binding LaunchSandboxCommand}" />
+            <Button Grid.Column="2" Padding="14 6" Content="{x:Static res:UIStringResources.QuickStart_OptionsButton}" Command="{Binding OpenOptionsCommand}" />
         </Grid>
     </Grid>
 </Page>
