@@ -53,7 +53,8 @@ public partial class LicenseWindow : Window
         if (appliedLightTheme.HasValue)
         {
             string themeName = appliedLightTheme.Value ? "ColourfulLightTheme" : "ColourfulDarkTheme";
-            var uri = new Uri($"Themes/{themeName}.xaml", UriKind.Relative);
+            // pack URI에 어셈블리 한정자 명시 (TableCloth.App;component) — 진입점이 아니라 라이브러리에 리소스가 있음.
+            var uri = new Uri($"/TableCloth.App;component/Themes/{themeName}.xaml", UriKind.Relative);
             var themeDict = new ResourceDictionary() { Source = uri };
             this.Resources.MergedDictionaries.Clear();
             this.Resources.MergedDictionaries.Add(themeDict);

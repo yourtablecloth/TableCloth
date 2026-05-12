@@ -30,7 +30,10 @@ internal static class ThemesController
                 if (_currentThemeDictionary != null)
                     Application.Current.Resources.MergedDictionaries.Remove(_currentThemeDictionary);
 
-                var uri = new Uri($"Themes/{themeName}.xaml", UriKind.Relative);
+                // 어셈블리가 진입점(TableCloth.exe)이 아니라 TableCloth.App 라이브러리에 있으므로
+                // pack URI에 `;component/` 어셈블리 한정자를 명시. 누락 시 WPF가 진입점 어셈블리에서
+                // 리소스를 찾고 실패하여 catch {} 블록에 묻혀 테마 자체가 미적용된다.
+                var uri = new Uri($"/TableCloth.App;component/Themes/{themeName}.xaml", UriKind.Relative);
                 _currentThemeDictionary = new ResourceDictionary() { Source = uri };
                 Application.Current.Resources.MergedDictionaries.Add(_currentThemeDictionary);
             }

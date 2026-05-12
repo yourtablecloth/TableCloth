@@ -33,7 +33,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Image Height="100" Margin="0,0,0,20" Source="/Resources/SandboxIcon.png"/>
+                <Image Height="100" Margin="0,0,0,20" Source="/TableCloth.App;component/Resources/SandboxIcon.png"/>
                 <TextBlock Text="{x:Static res:CommonStrings.AppName}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
                 <TextBlock Text="{Binding AppVersion}" TextAlignment="Center" />
                 <TextBlock Text="{Binding Source={x:Static res:UIStringResources.Build_Debug}}" TextAlignment="Center" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource BooleanToVisibilityConverter}}" />
