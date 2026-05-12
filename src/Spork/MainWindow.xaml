@@ -121,7 +121,9 @@
                     <DataTemplate>
                         <Grid Width="96" MinHeight="100">
                             <Grid.InputBindings>
-                                <MouseBinding MouseAction="LeftDoubleClick"
+                                <!-- 단일 클릭으로 즉시 실행. 즐겨찾기 별(ToggleButton)을 클릭하는 경우는
+                                     해당 Button이 마우스 이벤트를 자체 처리하므로 여기까지 도달하지 않는다. -->
+                                <MouseBinding MouseAction="LeftClick"
                                               Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.CatalogItemActivateCommand}" />
                             </Grid.InputBindings>
                             <Grid.RowDefinitions>
@@ -218,18 +220,27 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
-                <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_AboutButton}" Command="{Binding AboutThisAppCommand}" />
+                <TextBlock Margin="10 0 0 0" VerticalAlignment="Center">
+                    <Hyperlink Command="{Binding AboutThisAppCommand}">
+                        <Run Text="{x:Static res:UIStringResources.Button_AboutButton}" />
+                    </Hyperlink>
+                </TextBlock>
                 <!-- 사이트 제보: 카탈로그 모드에서만 노출 (사용자가 사이트 목록을 보고 있을 때 유효) -->
-                <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_ReportSiteButton}"
-                        Command="{Binding ReportSiteCommand}"
-                        Visibility="{Binding ShowCatalogView, Converter={StaticResource booleanToVisibilityConverter}}" />
-                <Button Margin="10 0 0 0" Padding="5" Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource booleanToVisibilityConverter}}" />
+                <TextBlock Margin="12 0 0 0" VerticalAlignment="Center"
+                           Visibility="{Binding ShowCatalogView, Converter={StaticResource booleanToVisibilityConverter}}">
+                    <Hyperlink Command="{Binding ReportSiteCommand}">
+                        <Run Text="{x:Static res:UIStringResources.Button_ReportSiteButton}" />
+                    </Hyperlink>
+                </TextBlock>
+                <TextBlock Margin="12 0 0 0" VerticalAlignment="Center"
+                           Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource booleanToVisibilityConverter}}">
+                    <Hyperlink Command="{Binding ShowDebugInfoCommand}">
+                        <Run Text="{x:Static res:UIStringResources.Button_DebugButton}" />
+                    </Hyperlink>
+                </TextBlock>
             </WrapPanel>
             <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1">
-                <!-- Catalog mode: 시작 -->
-                <Button Margin="0 0 10 0" Padding="14 5" Content="{x:Static res:UIStringResources.SporkCatalog_StartButton}"
-                        Command="{Binding CatalogItemActivateCommand}"
-                        Visibility="{Binding ShowCatalogView, Converter={StaticResource booleanToVisibilityConverter}}" />
+                <!-- 카탈로그 모드는 사이트 클릭으로 바로 실행되므로 별도 "시작" 버튼 없음. -->
                 <!-- Steps mode: 설치 (명령줄 select 인자 진입 시에만 사용. 카탈로그 진입은 모달로 처리). -->
                 <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Button_InstallButton}"
                         Command="{Binding MainWindowInstallPackagesCommand}"

@@ -90,20 +90,7 @@
                 </StackPanel>
             </TabItem>
 
-            <!-- 보조 프로그램 -->
-            <TabItem Header="{x:Static res:UIStringResources.Options_Section_Companions}">
-                <StackPanel Margin="12">
-                    <TextBlock Margin="0 0 0 8" TextWrapping="Wrap"
-                               Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.Options_Section_Companions_Description}" />
-                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_InstallEveryonesPrinter}" IsChecked="{Binding InstallEveryonesPrinter}" />
-                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_InstallAdobeReader}" IsChecked="{Binding InstallAdobeReader}" />
-                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_InstallHancomOfficeViewer}" IsChecked="{Binding InstallHancomOfficeViewer}" />
-                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_InstallRaiDrive}" IsChecked="{Binding InstallRaiDrive}" />
-                </StackPanel>
-            </TabItem>
-
-            <!-- 진단 -->
+<!-- 진단 -->
             <TabItem Header="{x:Static res:UIStringResources.Options_Section_Diagnostics}">
                 <StackPanel Margin="12">
                     <TextBlock Margin="0 0 0 8" TextWrapping="Wrap"

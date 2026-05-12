@@ -48,7 +48,7 @@
                     Command="{Binding LaunchSandboxCommand}" />
         </StackPanel>
 
-        <!-- Footer -->
+        <!-- Footer: 모두 하이퍼링크로 통일하여 시각적 강조를 시작 버튼으로 집중시킨다 -->
         <Grid Grid.Row="2" Margin="16 8 16 12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -67,7 +67,11 @@
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
-            <Button Grid.Column="2" Padding="14 6" Content="{x:Static res:UIStringResources.QuickStart_OptionsButton}" Command="{Binding OpenOptionsCommand}" />
+            <TextBlock Grid.Column="2" VerticalAlignment="Center">
+                <Hyperlink Command="{Binding OpenOptionsCommand}">
+                    <Run Text="{x:Static res:UIStringResources.QuickStart_OptionsButton}" />
+                </Hyperlink>
+            </TextBlock>
         </Grid>
     </Grid>
 </Page>
