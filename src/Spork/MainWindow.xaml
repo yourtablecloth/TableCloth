@@ -203,32 +203,23 @@
                         <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="Wrap"
                                    Foreground="{DynamicResource ControlSecondaryForeground}"
                                    Text="{x:Static res:UIStringResources.SporkCatalog_Companions_Description}" />
-                        <!-- ListView (View 미지정 시 기본 GridView 동작이 끼어들어 텍스트가 사라지는 케이스를
-                             피하기 위해 ListBox 사용. 컬럼 헤더가 필요 없는 단순 리스트엔 ListBox가 더 안전. -->
-                        <ListBox Grid.Row="1" x:Name="CompanionsList"
-                                 ItemsSource="{Binding CatalogCompanions}"
-                                 SelectedItem="{Binding SelectedCatalogCompanion}"
-                                 SelectionMode="Single"
-                                 HorizontalContentAlignment="Stretch"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                            <ListBox.InputBindings>
-                                <KeyBinding Key="Return" Command="{Binding CompanionItemActivateCommand}" />
-                            </ListBox.InputBindings>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Grid.InputBindings>
-                                            <MouseBinding MouseAction="LeftClick"
-                                                          Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.CompanionItemActivateCommand}" />
-                                        </Grid.InputBindings>
-                                        <StackPanel Orientation="Vertical" Margin="4 4">
-                                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
-                                            <TextBlock Text="{Binding Url}" FontSize="10" Foreground="Gray" TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <!-- 보조 프로그램은 저작권/EULA 동의 흐름 때문에 자동 설치하지 않고
+                             공식 다운로드 페이지로 안내한다. 각 항목은 하이퍼링크 형태로 노출. -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding CatalogCompanions}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Margin="6 4">
+                                            <Hyperlink Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.OpenCompanionUrlCommand}"
+                                                       CommandParameter="{Binding}"
+                                                       ToolTip="{Binding Url}">
+                                                <Run Text="{Binding DisplayName}" />
+                                            </Hyperlink>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
                     </Grid>
                 </TabItem>
             </TabControl>

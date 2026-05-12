@@ -267,26 +267,22 @@ namespace Spork.ViewModels
         }
 
         [RelayCommand]
-        private async Task CompanionItemActivate()
+        private void OpenCompanionUrl(CatalogCompanion companion)
         {
-            if (SelectedCatalogCompanion == null)
+            // 보조 프로그램은 저작권/EULA 동의 흐름을 사용자가 직접 거쳐야 하므로 자동 설치하지 않는다.
+            // 대신 공식 다운로드 페이지를 브라우저로 열어 사용자가 직접 진행하도록 한다.
+            if (companion == null || string.IsNullOrWhiteSpace(companion.Url))
                 return;
 
-            var companion = SelectedCatalogCompanion;
-            var companionId = companion.Id;
-
-            if (!string.IsNullOrWhiteSpace(companionId))
-                await RecordUsageAsync(new[] { companionId });
-
-            var steps = _stepsComposer.ComposeStepsForCompanion(companion).ToList();
-
-            // 보조 프로그램은 호환성 주의 사항이 없으므로 PrecautionsWindow는 건너뛴다.
-            var installWindow = _appUserInterface.CreateInstallStepsWindow(steps, ShowDryRunNotification);
-            installWindow.ShowDialog();
-
-            // 보조 프로그램은 별도로 열 사이트 URL이 없다. 모달 종료 후 카탈로그 뷰가 그대로 유지되며,
-            // 다음 항목을 자유롭게 고를 수 있도록 선택만 초기화한다.
-            SelectedCatalogCompanion = null;
+            try
+            {
+                var browser = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
+                Process.Start(browser.CreateWebPageOpenRequest(companion.Url, ProcessWindowStyle.Maximized));
+            }
+            catch (Exception ex)
+            {
+                _appMessageBox.DisplayError(ex, false);
+            }
         }
 
         [RelayCommand]
@@ -482,9 +478,6 @@ namespace Spork.ViewModels
 
         [ObservableProperty]
         private IList<CatalogCompanion> _catalogCompanions = new List<CatalogCompanion>();
-
-        [ObservableProperty]
-        private CatalogCompanion _selectedCatalogCompanion;
 
         [ObservableProperty]
         private string _searchKeyword = string.Empty;

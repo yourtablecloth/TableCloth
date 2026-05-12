@@ -803,6 +803,6 @@ Create it now and continue?</value>
     <value>Companion Software</value>
   </data>
   <data name="SporkCatalog_Companions_Description" xml:space="preserve">
-    <value>Click an item to install it in this sandbox.</value>
+    <value>Common helper applications used with Korean internet banking, public sector, and e-government services. Click an item to open its official download page in the browser. Each vendor's license terms apply.</value>
   </data>
 </root>

@@ -802,6 +802,6 @@ https://github.com/yourtablecloth/TableCloth</value>
     <value>보조 프로그램</value>
   </data>
   <data name="SporkCatalog_Companions_Description" xml:space="preserve">
-    <value>항목을 클릭하면 이 샌드박스에 설치됩니다.</value>
+    <value>국내 인터넷 뱅킹·공공·전자정부 환경에서 자주 쓰이는 보조 소프트웨어입니다. 항목을 클릭하면 공식 다운로드 페이지가 브라우저로 열리며, 각 공급사의 라이선스에 동의한 뒤 직접 내려받아 설치하시면 됩니다.</value>
   </data>
 </root>

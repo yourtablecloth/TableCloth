@@ -34,52 +34,6 @@ namespace Spork.Steps.Implementations
         public IEnumerable<StepItemViewModel> ComposeStepsForSites(IEnumerable<string> selectedServiceIds)
             => ComposeStepsInternal(selectedServiceIds ?? Enumerable.Empty<string>());
 
-        public IEnumerable<StepItemViewModel> ComposeStepsForCompanion(CatalogCompanion companion)
-        {
-            if (companion == null)
-                yield break;
-
-            // 사이트 설치와 동일한 prereq를 거쳐 환경을 정돈한 뒤,
-            yield return new StepItemViewModel
-            {
-                Step = _stepsFactory.GetStepByName(nameof(PrepareDirectoriesStep)),
-                Argument = new InstallItemViewModel(),
-                TargetSiteName = UIStringResources.Option_Prerequisites,
-                PackageName = UIStringResources.Install_PrepareEnvironment,
-            };
-
-            yield return new StepItemViewModel
-            {
-                Step = _stepsFactory.GetStepByName(nameof(DisableSmartAppControlStep)),
-                Argument = new InstallItemViewModel(),
-                TargetSiteName = UIStringResources.Option_Prerequisites,
-                PackageName = UIStringResources.Install_DisableSmartAppControl,
-            };
-
-            // 보조 프로그램은 PackageInstallStep 하나로 처리한다.
-            // Url과 Arguments는 CatalogCompanion의 동일 명 속성을 그대로 사용.
-            yield return new StepItemViewModel
-            {
-                Step = _stepsFactory.GetStepByName(nameof(PackageInstallStep)),
-                Argument = new PackageInstallItemViewModel
-                {
-                    PackageUrl = companion.Url,
-                    Arguments = companion.Arguments,
-                },
-                TargetSiteName = companion.DisplayName,
-                PackageName = companion.DisplayName,
-            };
-
-            // 사이트 설치와 마찬가지로 정책 반영을 위해 Edge를 한 번 재시작한다.
-            yield return new StepItemViewModel
-            {
-                Step = _stepsFactory.GetStepByName(nameof(ReloadEdgeStep)),
-                Argument = new InstallItemViewModel(),
-                TargetSiteName = UIStringResources.Option_Config,
-                PackageName = UIStringResources.Install_ReloadMicrosoftEdge,
-            };
-        }
-
         private IEnumerable<StepItemViewModel> ComposeStepsInternal(IEnumerable<string> targets)
         {
             var parsedArgs = _commandLineArguments.GetCurrent();
