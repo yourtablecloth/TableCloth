@@ -6,6 +6,8 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<UseVSTest>true</UseVSTest>
+		<!-- MSTest.Sdk implicit PackageReference overrides use inline Version; opt out of CPM. -->
+		<ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
 	</PropertyGroup>
 
 	<ItemGroup>

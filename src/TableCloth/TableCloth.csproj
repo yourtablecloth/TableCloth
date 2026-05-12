@@ -40,19 +40,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
-		<PackageReference Include="PnPeople.Security" Version="1.1.0" />
-		<PackageReference Include="Sentry.Serilog" Version="6.0.0" />
-		<PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
-		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-		<PackageReference Include="System.CommandLine" Version="2.0.1" />
-		<PackageReference Include="System.Management" Version="10.0.1" />
-		<PackageReference Include="Velopack" Version="0.0.1298" />
-		<PackageReference Include="XamlRadialProgressBar" Version="1.0.3" />
+		<PackageReference Include="AsyncAwaitBestPractices.MVVM" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" />
+		<PackageReference Include="Microsoft.Extensions.Http" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+		<PackageReference Include="PnPeople.Security" />
+		<PackageReference Include="Sentry.Serilog" />
+		<PackageReference Include="Serilog.Extensions.Logging" />
+		<PackageReference Include="Serilog.Sinks.File" />
+		<PackageReference Include="System.CommandLine" />
+		<PackageReference Include="System.Management" />
+		<PackageReference Include="Velopack" />
+		<PackageReference Include="XamlRadialProgressBar" />
 	</ItemGroup>
 
 	<ItemGroup>
