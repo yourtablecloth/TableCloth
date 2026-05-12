@@ -11,7 +11,8 @@
         Style="{DynamicResource MainWindowStyle}"
         Title="{x:Static res:UIStringResources.SporkInstallSteps_WindowTitle}"
         Width="560" Height="440" MinWidth="420" MinHeight="320"
-        ResizeMode="CanResize"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">

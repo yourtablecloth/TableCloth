@@ -130,8 +130,10 @@
                         <!-- ListView의 selection 처리 때문에 자식 InputBindings(LeftClick)는
                              선택 변화 시 일부 클릭이 무시될 수 있어, 코드비하인드의
                              CatalogItem_MouseLeftButtonUp이 직접 처리한다. 즐겨찾기 별을 누르면
-                             ToggleButton이 e.Handled=true로 표시하므로 이 핸들러는 발화되지 않는다. -->
+                             ToggleButton이 e.Handled=true로 표시하므로 이 핸들러는 발화되지 않는다.
+                             Cursor=Hand로 클릭 가능 항목임을 시각적으로 알린다(하이퍼링크 동선과 동등). -->
                         <Grid Width="96" MinHeight="100" Background="Transparent"
+                              Cursor="Hand"
                               MouseLeftButtonUp="CatalogItem_MouseLeftButtonUp">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="48" />

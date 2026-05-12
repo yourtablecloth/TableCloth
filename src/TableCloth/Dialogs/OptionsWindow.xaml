@@ -10,7 +10,7 @@
         d:DataContext="{d:DesignInstance Type=vm:OptionsWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
         Style="{DynamicResource MainWindowStyle}"
         Title="{x:Static res:UIStringResources.Options_Title}" Width="560" Height="520" MinWidth="460" MinHeight="440"
-        ResizeMode="CanResize" WindowStartupLocation="CenterOwner">
+        ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding OptionsWindowLoadedCommand}">

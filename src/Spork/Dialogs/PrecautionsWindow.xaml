@@ -10,8 +10,9 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:PrecautionsWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
         Style="{DynamicResource MainWindowStyle}"
-        ResizeMode="CanMinimize"
-        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
         Title="{x:Static res:UIStringResources.Spork_PrecautionWindowText}" Width="640" Height="480"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <i:Interaction.Triggers>
