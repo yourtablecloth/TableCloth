@@ -1,4 +1,4 @@
-<Application x:Class="TableCloth.App"
+<Application x:Class="TableCloth.TableClothApplication"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:TableCloth.Converters"

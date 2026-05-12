@@ -1,4 +1,4 @@
-﻿using AsyncAwaitBestPractices;
+using AsyncAwaitBestPractices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -9,15 +9,15 @@ using TableCloth.Events;
 
 namespace TableCloth;
 
-public partial class App : Application
+public partial class TableClothApplication : Application
 {
-    public App()
+    public TableClothApplication()
     {
         InitializeComponent();
     }
 
     [ActivatorUtilitiesConstructor]
-    public App(IHost host)
+    public TableClothApplication(IHost host)
         : this()
     {
         Host = host.EnsureArgumentNotNull("Host initialization not done.", nameof(host));
@@ -32,7 +32,7 @@ public partial class App : Application
         SafeFireAndForgetExtensions.Initialize();
         SafeFireAndForgetExtensions.SetDefaultExceptionHandling((thrownException) =>
         {
-            var logger = host.Services.GetRequiredService<ILogger<App>>();
+            var logger = host.Services.GetRequiredService<ILogger<TableClothApplication>>();
             logger.LogError(thrownException, "Unexpected error occurred.");
 
             if (Helpers.IsDevelopmentBuild)

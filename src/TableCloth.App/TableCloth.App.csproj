@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<LangVersion>preview</LangVersion>
+		<Nullable>enable</Nullable>
+		<Deterministic>true</Deterministic>
+		<RootNamespace>TableCloth.App</RootNamespace>
+		<Description>TableCloth host launcher module — registered into the unified binary via builder.UseTableCloth().</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Hosting" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+	</ItemGroup>
+
+</Project>

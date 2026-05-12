@@ -9,6 +9,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using TableCloth.App.DependencyInjection;
 using TableCloth.Bootstrap.Dialogs;
 using TableCloth.Components;
 using TableCloth.Components.Implementations;
@@ -50,6 +51,10 @@ internal static class Program
 
             args ??= Helpers.GetCommandLineArguments();
             var builder = Host.CreateApplicationBuilder(args);
+
+            // Phase 1 — TableCloth.App 모듈 합성 진입점 확립.
+            // 현재는 no-op이며, Components/ViewModels/Views를 점진 이전하면서 채워진다.
+            builder.UseTableCloth();
 
             builder.Logging
                 .AddSerilog(dispose: true)
@@ -109,7 +114,7 @@ internal static class Program
                 .AddPage<DetailPage, DetailPageViewModel>()
                 .AddPage<QuickStartPage, QuickStartPageViewModel>()
                 .AddWindow<SplashScreen, SplashScreenViewModel>()
-                .AddSingleton<Application>(sp => new App(sp.GetRequiredService<IHost>()));
+                .AddSingleton<Application>(sp => new TableClothApplication(sp.GetRequiredService<IHost>()));
 
             using var appHost = builder.Build();
             appHost.Start();
