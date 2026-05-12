@@ -52,41 +52,49 @@
         <Grid Grid.Row="2" Margin="10" Visibility="{Binding ShowCatalogView, Converter={StaticResource booleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="Wrap" Text="{x:Static res:UIStringResources.SporkCatalog_Instruction}" />
 
-            <Grid Grid.Row="1" Margin="0 0 0 6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" Padding="6 4" Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
-                            <Style.Resources>
-                                <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
-                                    <VisualBrush.Visual>
-                                        <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="LightGray" />
-                                    </VisualBrush.Visual>
-                                </VisualBrush>
-                            </Style.Resources>
-                            <Style.Triggers>
-                                <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
-                                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-                <CheckBox Grid.Column="1" Margin="8 0 0 0" VerticalAlignment="Center"
-                          Content="{x:Static res:UIStringResources.MainWindow_Favorites}"
-                          IsChecked="{Binding ShowFavoritesOnly}" />
-            </Grid>
+            <TabControl Grid.Row="1">
+                <!-- 웹 사이트 카탈로그 -->
+                <TabItem Header="{x:Static res:UIStringResources.SporkCatalog_Tab_Sites}">
+                    <Grid Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
-            <ListView Grid.Row="2" x:Name="CatalogList"
+                        <Grid Grid.Row="0" Margin="0 0 0 6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Padding="6 4" Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                        <Style.Resources>
+                                            <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                                <VisualBrush.Visual>
+                                                    <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="LightGray" />
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Style.Resources>
+                                        <Style.Triggers>
+                                            <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <CheckBox Grid.Column="1" Margin="8 0 0 0" VerticalAlignment="Center"
+                                      Content="{x:Static res:UIStringResources.MainWindow_Favorites}"
+                                      IsChecked="{Binding ShowFavoritesOnly}" />
+                        </Grid>
+
+                        <ListView Grid.Row="1" x:Name="CatalogList"
                       ItemsSource="{Binding CatalogServices}" d:ItemsSource="{Binding CatalogServicesForDesigner}"
                       SelectedItem="{Binding SelectedCatalogService}"
                       SelectionMode="Single"
@@ -181,7 +189,46 @@
                         </GroupStyle.HeaderTemplate>
                     </GroupStyle>
                 </ListView.GroupStyle>
-            </ListView>
+                        </ListView>
+                    </Grid>
+                </TabItem>
+
+                <!-- 보조 프로그램 카탈로그 -->
+                <TabItem Header="{x:Static res:UIStringResources.SporkCatalog_Tab_Companions}">
+                    <Grid Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.SporkCatalog_Companions_Description}" />
+                        <ListView Grid.Row="1" x:Name="CompanionsList"
+                                  ItemsSource="{Binding CatalogCompanions}"
+                                  SelectedItem="{Binding SelectedCatalogCompanion}"
+                                  SelectionMode="Single"
+                                  HorizontalContentAlignment="Stretch">
+                            <ListView.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding CompanionItemActivateCommand}" />
+                            </ListView.InputBindings>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.InputBindings>
+                                            <MouseBinding MouseAction="LeftClick"
+                                                          Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.CompanionItemActivateCommand}" />
+                                        </Grid.InputBindings>
+                                        <StackPanel Orientation="Vertical" Margin="4 4">
+                                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Url}" FontSize="10" Foreground="Gray" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </TabItem>
+            </TabControl>
         </Grid>
 
         <!-- Steps Mode -->

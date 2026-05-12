@@ -1873,5 +1873,23 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("SporkInstallSteps_WindowTitle", resourceCulture);
             }
         }
+
+        public static string SporkCatalog_Tab_Sites {
+            get {
+                return ResourceManager.GetString("SporkCatalog_Tab_Sites", resourceCulture);
+            }
+        }
+
+        public static string SporkCatalog_Tab_Companions {
+            get {
+                return ResourceManager.GetString("SporkCatalog_Tab_Companions", resourceCulture);
+            }
+        }
+
+        public static string SporkCatalog_Companions_Description {
+            get {
+                return ResourceManager.GetString("SporkCatalog_Companions_Description", resourceCulture);
+            }
+        }
     }
 }

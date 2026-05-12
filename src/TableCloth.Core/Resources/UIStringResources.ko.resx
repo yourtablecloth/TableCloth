@@ -795,4 +795,13 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="SporkInstallSteps_WindowTitle" xml:space="preserve">
     <value>선택한 사이트 설치 진행</value>
   </data>
+  <data name="SporkCatalog_Tab_Sites" xml:space="preserve">
+    <value>웹 사이트</value>
+  </data>
+  <data name="SporkCatalog_Tab_Companions" xml:space="preserve">
+    <value>보조 프로그램</value>
+  </data>
+  <data name="SporkCatalog_Companions_Description" xml:space="preserve">
+    <value>항목을 클릭하면 이 샌드박스에 설치됩니다.</value>
+  </data>
 </root>

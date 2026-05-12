@@ -214,6 +214,13 @@ namespace Spork.ViewModels
                     view.GroupDescriptions.Add(CatalogGroupDescription);
             }
 
+            // 보조 프로그램 목록도 동일 카탈로그 문서에서 가져온다 (XML의 <Companions> 요소).
+            // 아이콘이 없어 단순 텍스트 리스트로 노출되며 카테고리 그룹화는 없다.
+            CatalogCompanions = (catalog.Companions ?? new List<CatalogCompanion>())
+                .Where(c => !string.IsNullOrWhiteSpace(c?.DisplayName))
+                .OrderBy(c => c.DisplayName, StringComparer.CurrentCultureIgnoreCase)
+                .ToList();
+
             PropertyChanged -= ViewModel_PropertyChanged;
             PropertyChanged += ViewModel_PropertyChanged;
         }
@@ -257,6 +264,29 @@ namespace Spork.ViewModels
             // 필터가 ShowFavoritesOnly일 때 즉시 반영
             var view = CollectionViewSource.GetDefaultView(CatalogServices);
             view?.Refresh();
+        }
+
+        [RelayCommand]
+        private async Task CompanionItemActivate()
+        {
+            if (SelectedCatalogCompanion == null)
+                return;
+
+            var companion = SelectedCatalogCompanion;
+            var companionId = companion.Id;
+
+            if (!string.IsNullOrWhiteSpace(companionId))
+                await RecordUsageAsync(new[] { companionId });
+
+            var steps = _stepsComposer.ComposeStepsForCompanion(companion).ToList();
+
+            // 보조 프로그램은 호환성 주의 사항이 없으므로 PrecautionsWindow는 건너뛴다.
+            var installWindow = _appUserInterface.CreateInstallStepsWindow(steps, ShowDryRunNotification);
+            installWindow.ShowDialog();
+
+            // 보조 프로그램은 별도로 열 사이트 URL이 없다. 모달 종료 후 카탈로그 뷰가 그대로 유지되며,
+            // 다음 항목을 자유롭게 고를 수 있도록 선택만 초기화한다.
+            SelectedCatalogCompanion = null;
         }
 
         [RelayCommand]
@@ -449,6 +479,12 @@ namespace Spork.ViewModels
 
         [ObservableProperty]
         private CatalogInternetService _selectedCatalogService;
+
+        [ObservableProperty]
+        private IList<CatalogCompanion> _catalogCompanions = new List<CatalogCompanion>();
+
+        [ObservableProperty]
+        private CatalogCompanion _selectedCatalogCompanion;
 
         [ObservableProperty]
         private string _searchKeyword = string.Empty;

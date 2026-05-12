@@ -796,4 +796,13 @@ Create it now and continue?</value>
   <data name="SporkInstallSteps_WindowTitle" xml:space="preserve">
     <value>Installing for the selected site</value>
   </data>
+  <data name="SporkCatalog_Tab_Sites" xml:space="preserve">
+    <value>Websites</value>
+  </data>
+  <data name="SporkCatalog_Tab_Companions" xml:space="preserve">
+    <value>Companion Software</value>
+  </data>
+  <data name="SporkCatalog_Companions_Description" xml:space="preserve">
+    <value>Click an item to install it in this sandbox.</value>
+  </data>
 </root>
