@@ -6,7 +6,6 @@ public interface ISharedLocations
     string ApplicationLogPath { get; }
     string ExecutableDirectoryPath { get; }
     string ExecutableFilePath { get; }
-    string SporkZipFilePath { get; }
     string ImagesZipFilePath { get; }
     string PreferencesFilePath { get; }
     string CatalogCacheFilePath { get; }

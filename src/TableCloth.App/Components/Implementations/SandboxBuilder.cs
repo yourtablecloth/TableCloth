@@ -21,15 +21,17 @@ public sealed class SandboxBuilder(
     IArchiveExpander archiveExpander,
     ISharedLocations sharedLocations) : ISandboxBuilder
 {
-    private readonly string _wdagUtilityAccountPath = @"C:\Users\WDAGUtilityAccount";
+    /// <summary>
+    /// 호스트 측 per-session staging 폴더 안에서 TableCloth 바이너리 + 런타임 + 세션 자료가 모이는 leaf 이름.
+    /// 이 leaf 이름이 곧 샌드박스 측 노출 경로의 마지막 세그먼트가 되므로
+    /// <see cref="SandboxMountPaths.AppDirectory"/>(<c>Desktop\App</c>)와 일치해야 한다.
+    /// </summary>
+    private const string AppLeafName = "App";
 
-    private string GetAssetsPathForSandbox()
-        => Path.Combine(_wdagUtilityAccountPath, "Desktop", "Assets");
+    private static string GetCertificateStagingPathForSandbox()
+        => Path.Combine(SandboxMountPaths.AppDirectory, "certs");
 
-    private string GetCertificateStagingPathForSandbox()
-        => Path.Combine(_wdagUtilityAccountPath, "Desktop", "Assets", "certs");
-
-    private string GetNPKIPathForSandbox(X509CertPair certPair)
+    private static string GetNPKIPathForSandbox(X509CertPair certPair)
     {
         // Note: 샌드박스 안에서 사용할 경로를 조립하는 것이므로 SHGetKnownFolderPath API를 사용하면 안됩니다.
         var candidatePath = Path.Join("AppData", "LocalLow", "NPKI", certPair.Organization);
@@ -37,7 +39,7 @@ public sealed class SandboxBuilder(
         if (certPair.IsPersonalCert)
             candidatePath = Path.Join(candidatePath, "USER", certPair.SubjectNameForNpkiApp);
 
-        return Path.Join(_wdagUtilityAccountPath, candidatePath);
+        return Path.Join(@"C:\Users\WDAGUtilityAccount", candidatePath);
     }
 
     public async Task<string?> GenerateSandboxConfigurationAsync(
@@ -49,31 +51,29 @@ public sealed class SandboxBuilder(
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
 
-        // Spork 실행 파일은 assets 디렉터리에 압축 해제
-        var sporkZipFilePath = Path.Combine(sharedLocations.ExecutableDirectoryPath, "Spork.zip");
-        if (!await ExpandSporkAssetZipAsync(sporkZipFilePath, outputDirectory, cancellationToken).ConfigureAwait(false))
+        // 통합 단일 바이너리 모델: 호스트 TableCloth 설치 폴더 전체(실행 파일 + 런타임 + Spork.App.dll 등)를
+        // 세션 staging의 App 폴더로 복사. 샌드박스는 이 App 폴더를 read-only로 마운트하여 동일 폴더의
+        // TableCloth.exe를 'spork' verb로 실행한다. (이전 Spork.zip 풀어넣기 파이프라인은 폐기됨.)
+        var appDirectory = Path.Combine(outputDirectory, AppLeafName);
+        if (!await CopyTableClothInstallToStagingAsync(sharedLocations.ExecutableDirectoryPath, appDirectory, cancellationToken).ConfigureAwait(false))
             return default;
 
-        var assetsDirectory = Path.Combine(outputDirectory, "assets");
-        if (!Directory.Exists(assetsDirectory))
-            Directory.CreateDirectory(assetsDirectory);
+        tableClothConfiguration.AssetsDirectoryPath = appDirectory;
 
-        tableClothConfiguration.AssetsDirectoryPath = assetsDirectory;
-
-        // Spork가 카탈로그 UI에서 사이트 아이콘을 표시하려면 assets/images에 png들이 있어야 한다.
+        // Spork가 카탈로그 UI에서 사이트 아이콘을 표시하려면 App/images에 png들이 있어야 한다.
         // 호스트 빌드 시 만들어 두는 Images.zip을 그대로 풀어 둔다 (실패해도 catalog 자체는 동작).
-        await ExpandImagesZipAsync(sharedLocations.ImagesZipFilePath, assetsDirectory, cancellationToken).ConfigureAwait(false);
+        await ExpandImagesZipAsync(sharedLocations.ImagesZipFilePath, appDirectory, cancellationToken).ConfigureAwait(false);
 
         // 카탈로그 폴백 스냅샷: 샌드박스 내부 네트워크 실패 시 Spork가 사용한다.
         // 호스트의 CatalogCacheFilePath(직전 네트워크 성공 시 호스트가 캐시한 XML)를
         // staging의 catalog 서브폴더로 복사해 둔다. 캐시가 없으면 폴백 없이 진행.
-        await CopyCatalogSnapshotAsync(sharedLocations.CatalogCacheFilePath, assetsDirectory, cancellationToken).ConfigureAwait(false);
+        await CopyCatalogSnapshotAsync(sharedLocations.CatalogCacheFilePath, appDirectory, cancellationToken).ConfigureAwait(false);
 
         var batchFileContent = GenerateSandboxStartupScript(tableClothConfiguration);
-        var batchFilePath = Path.Combine(assetsDirectory, "StartupScript.cmd");
+        var batchFilePath = Path.Combine(appDirectory, "StartupScript.cmd");
         await File.WriteAllTextAsync(batchFilePath, batchFileContent, Encoding.Default, cancellationToken).ConfigureAwait(false);
 
-        var sporkAnswerJsonPath = Path.Combine(assetsDirectory, "SporkAnswers.json");
+        var sporkAnswerJsonPath = Path.Combine(appDirectory, "SporkAnswers.json");
         var sporkAnswerJsonContent = await SerializeSporkAnswersJsonAsync(new SporkAnswers
         {
             HostUILocale = CultureInfo.CurrentUICulture.Name,
@@ -149,7 +149,7 @@ public sealed class SandboxBuilder(
             await File.WriteAllBytesAsync(destKeyFileName, tableClothConfig.CertPair.PrivateKey, cancellationToken).ConfigureAwait(false);
         }
 
-        sandboxConfig.LogonCommand.Add(Path.Combine(GetAssetsPathForSandbox(), "StartupScript.cmd"));
+        sandboxConfig.LogonCommand.Add(Path.Combine(SandboxMountPaths.AppDirectory, "StartupScript.cmd"));
         return sandboxConfig;
     }
 
@@ -190,7 +190,9 @@ rmdir /q ""{certStagingPath}""
 
         var serviceIdList = (tableClothConfiguration.Services ?? Enumerable.Empty<CatalogInternetService>())
             .Select(x => x.Id).Distinct();
-        var sporkFilePath = Path.Combine(GetAssetsPathForSandbox(), "Spork.exe");
+        // 샌드박스 안에서는 호스트 설치 폴더가 그대로 노출된 Desktop\App\TableCloth.exe를 'spork' verb로 실행.
+        // verb 디스패처가 'spork' 토큰을 소비하고 나머지 인수를 Spork.App 모듈로 전달한다.
+        var tableClothExeInSandbox = Path.Combine(SandboxMountPaths.AppDirectory, "TableCloth.exe");
         var idList = string.Join(" ", serviceIdList);
 
         // 식탁보 wsb는 <SandboxFolder>를 사용하지 않으므로 호스트의 NPKI 폴더는
@@ -217,31 +219,47 @@ powershell -Command ""Get-NetAdapter | Where-Object {{$_.Status -eq 'Up'}} | Set
 
 {certFileMoveScript}
 {npkiJunctionScript}
-""{sporkFilePath}"" {idList} {string.Join(" ", switches)}
+""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
 :exit
 popd
 @echo on
 ";
     }
 
-    private async Task<bool> ExpandSporkAssetZipAsync(string zipFilePath, string outputDirectory, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// 호스트의 TableCloth 설치 폴더(실행 중인 프로세스의 디렉터리) 전체를 세션 staging의 App 폴더로 복사한다.
+    /// 자기 자신을 다시 실행하는 형태이므로 self-contained 게시 출력이어야 .NET 10 런타임이 동봉되어
+    /// 샌드박스 안에서 별도 런타임 설치 없이 동작한다.
+    /// </summary>
+    private async Task<bool> CopyTableClothInstallToStagingAsync(string sourceDirectory, string destinationDirectory, CancellationToken cancellationToken = default)
     {
-        if (!File.Exists(zipFilePath))
+        if (!Directory.Exists(sourceDirectory))
             return false;
-
-        if (!Directory.Exists(outputDirectory))
-            Directory.CreateDirectory(outputDirectory);
-
-        var sporkAssetsDirectory = Path.Combine(outputDirectory, "assets");
-
-        if (!Directory.Exists(sporkAssetsDirectory))
-            Directory.CreateDirectory(sporkAssetsDirectory);
 
         try
         {
-            await archiveExpander.ExpandArchiveAsync(
-                zipFilePath, sporkAssetsDirectory, cancellationToken)
-                .ConfigureAwait(false);
+            if (!Directory.Exists(destinationDirectory))
+                Directory.CreateDirectory(destinationDirectory);
+
+            foreach (var sourceFile in Directory.EnumerateFiles(sourceDirectory, "*", SearchOption.AllDirectories))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var relativePath = Path.GetRelativePath(sourceDirectory, sourceFile);
+
+                // 진입점 폴더에 함께 놓인 카탈로그 이미지 zip은 호스트 빌드 결과물이므로
+                // 샌드박스 측에는 풀린 형태(아래 ExpandImagesZipAsync)로 별도 제공한다.
+                // 또한 호스트 사용 전용 설정/로그 등이 발견되면 여기서 필터링.
+                if (string.Equals(relativePath, "Images.zip", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var destinationFile = Path.Combine(destinationDirectory, relativePath);
+                var destinationParent = Path.GetDirectoryName(destinationFile);
+                if (!string.IsNullOrEmpty(destinationParent) && !Directory.Exists(destinationParent))
+                    Directory.CreateDirectory(destinationParent);
+
+                await CopyFileAsync(sourceFile, destinationFile, cancellationToken).ConfigureAwait(false);
+            }
 
             return true;
         }
@@ -250,6 +268,13 @@ popd
             appMessageBox.DisplayError(ex, true);
             return false;
         }
+    }
+
+    private static async Task CopyFileAsync(string source, string destination, CancellationToken cancellationToken)
+    {
+        using var src = new FileStream(source, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
+        using var dst = new FileStream(destination, FileMode.Create, FileAccess.Write, FileShare.None, 81920, useAsync: true);
+        await src.CopyToAsync(dst, 81920, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task ExpandImagesZipAsync(string imagesZipFilePath, string assetsDirectory, CancellationToken cancellationToken = default)

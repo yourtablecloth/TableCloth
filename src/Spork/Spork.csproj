@@ -112,8 +112,10 @@
 		<WriteLinesToFile File="$(ProjectDir)commit.txt" Lines="$(_CommitId)" Overwrite="true" />
 	</Target>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="echo Compressing '$(TargetDir)' into '$(SolutionDir)Artifacts\$(ProjectName).zip'...&#xD;&#xA;if not exist &quot;$(SolutionDir)Artifacts\&quot; mkdir &quot;$(SolutionDir)Artifacts\&quot;&#xD;&#xA;if exist &quot;$(SolutionDir)Artifacts\$(ProjectName).zip&quot; del /f /q &quot;$(SolutionDir)Artifacts\$(ProjectName).zip&quot;&#xD;&#xA;powershell.exe Add-Type -AssemblyName 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$(TargetDir)', '$(SolutionDir)Artifacts\$(ProjectName).zip')&#xD;&#xA;dir $(SolutionDir)Artifacts\$(ProjectName).zip" />
-	</Target>
+	<!--
+		Spork.zip을 만들던 PostBuild 타깃은 Phase 4에서 폐기.
+		샌드박스는 이제 TableCloth.exe(verb=spork)를 호스트 설치 폴더에서 직접 마운트해 실행한다.
+		Spork.exe는 단독 출시 후보로 남아 있으나 zip 패키징은 더 이상 필요하지 않다.
+	-->
 
 </Project>

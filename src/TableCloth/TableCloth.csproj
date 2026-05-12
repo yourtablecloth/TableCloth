@@ -17,19 +17,24 @@
 		<Deterministic>true</Deterministic>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+
+		<!--
+			샌드박스가 호스트의 TableCloth 설치 폴더(= 실행 중인 프로세스 디렉터리)를 그대로 마운트해
+			'TableCloth.exe spork'를 호출하는 모델이므로, 빌드 출력에 .NET 10 런타임이 포함돼 있어야
+			샌드박스 안에서 별도 런타임 설치 없이 동작한다. 따라서 build 시점에 self-contained로 게시.
+			RID는 Platform에 맞춰 조건부로 설정한다.
+		-->
+		<SelfContained>true</SelfContained>
+		<UseAppHost>true</UseAppHost>
+		<RuntimeIdentifier Condition="'$(Platform)' == 'x64'">win-x64</RuntimeIdentifier>
+		<RuntimeIdentifier Condition="'$(Platform)' == 'ARM64'">win-arm64</RuntimeIdentifier>
 	</PropertyGroup>
-	<ItemGroup>
-		<None Remove="Spork.zip" />
-	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="commit.txt">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</EmbeddedResource>
 		<Content Include="Images.zip">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="Spork.zip">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 
@@ -99,9 +104,10 @@
 		<WriteLinesToFile File="$(ProjectDir)commit.txt" Lines="$(_CommitId)" Overwrite="true" />
 	</Target>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent" DependsOnTargets="WriteCommitTxt">
-		<Exec Command="dir &quot;$(SolutionDir)Artifacts\Spork.zip&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)Artifacts\Spork.zip&quot; &quot;$(ProjectDir)Spork.zip&quot;&#xD;&#xA;dir &quot;$(ProjectDir)Spork.zip&quot;" />
-	</Target>
+	<!--
+		Spork.zip을 Artifacts에서 복사해 진입점 옆에 놓던 PreBuild 타깃은 Phase 4에서 폐기.
+		샌드박스는 TableCloth.exe 자체 폴더를 마운트해 'spork' verb로 실행한다.
+	-->
 
 	<Target Name="BuildCatalogImagesZip" BeforeTargets="PreBuildEvent"
 	        Inputs="@(_CatalogImageInputs)"

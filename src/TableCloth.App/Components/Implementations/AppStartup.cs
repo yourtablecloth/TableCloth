@@ -105,12 +105,8 @@ public sealed class AppStartup : IAppStartup
     {
         var result = default(ApplicationStartupResultModel);
 
-        if (!File.Exists(_sharedLocations.SporkZipFilePath))
-        {
-            result = ApplicationStartupResultModel.FromErrorMessage(
-                ErrorStrings.Error_Spork_Missing, isCritical: true, providedWarnings: warnings);
-            return result;
-        }
+        // Spork.zip 존재 확인 단계는 Phase 4에서 폐기됨. 통합 단일 바이너리에서는 Spork 모듈이
+        // TableCloth.exe와 한 어셈블리 그래프에 묶여 있어 별도 zip 산출물이 더 이상 없다.
 
         if (!File.Exists(_sharedLocations.ImagesZipFilePath))
         {
