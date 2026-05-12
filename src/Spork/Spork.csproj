@@ -20,17 +20,7 @@
 		<!-- Assembly Info -->
 		<Title>TableCloth Spork</Title>
 		<Description>This program is a tool that installs the requested installers at once in the sandbox.</Description>
-
-		<!-- COM Interop (decorative on .NET 10 without EnableComHosting; kept for legacy compatibility) -->
-		<ComVisible>true</ComVisible>
 	</PropertyGroup>
-
-	<!-- GUID for COM Interop (legacy decoration; harmless on .NET 10 without EnableComHosting) -->
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.InteropServices.GuidAttribute">
-			<_Parameter1>36e7b617-ca94-4ecb-ad65-39fe94ce265b</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
 		<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>

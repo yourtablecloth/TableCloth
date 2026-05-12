@@ -6,10 +6,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Security;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth;
@@ -112,7 +109,12 @@ namespace Spork.Components.Implementations
         {
             var result = default(ApplicationStartupResultModel);
             var parsedArgs = _commandLineArguments.GetCurrent();
-            ServicePointManager.ServerCertificateValidationCallback += ValidateRemoteCertificate;
+
+            // net48 시절에는 ServicePointManager.ServerCertificateValidationCallback이 HttpClient에도
+            // 적용됐지만 .NET Core/5+ 이후로는 HttpClient가 SocketsHttpHandler를 거치므로 이 콜백이 무시된다.
+            // 따라서 본 라인은 .NET 10에서 죽은 코드이고, 같은 보호를 회복하려면 AddHttpClient에서
+            // HttpClientHandler.ServerCertificateCustomValidationCallback을 직접 구성해야 한다.
+            // 우선 무동작 코드를 제거하고, 필요해질 때 HttpClient 측에 cert 검증 정책을 추가하는 식으로 분리한다.
 
             const int retryCount = 3;
 
@@ -192,14 +194,5 @@ namespace Spork.Components.Implementations
             }
         }
 
-        private bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
-        {
-            // If the certificate is a valid, signed certificate, return true.
-            if (error == SslPolicyErrors.None)
-                return true;
-
-            _appMessageBox.DisplayError(StringResources.Error_X509CertError(cert.Subject, error.ToString()), false);
-            return false;
-        }
     }
 }

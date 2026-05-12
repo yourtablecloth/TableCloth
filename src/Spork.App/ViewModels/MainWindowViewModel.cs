@@ -295,7 +295,8 @@ namespace Spork.ViewModels
 
             try
             {
-                using (var cert = new System.Security.Cryptography.X509Certificates.X509Certificate2(pair.PublicKey))
+                // SYSLIB0057: new X509Certificate2(byte[])는 .NET 9+에서 obsolete. X509CertificateLoader를 사용.
+                using (var cert = System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadCertificate(pair.PublicKey))
                 {
                     System.Security.Cryptography.X509Certificates.X509Certificate2UI.DisplayCertificate(cert);
                 }
