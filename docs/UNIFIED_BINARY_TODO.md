@@ -105,19 +105,41 @@ TableCloth.exe <future-verb>      → 후속 확장 모듈 (필요 시)
 - [x] InternalsVisibleTo로 TableCloth/Test 프로젝트가 라이브러리 내부 API에 접근 가능하게 설정
 - [x] 빌드 0 에러 (pre-existing `PreferenceSettings.cs` 의 CS8632 2건만 남음 — Phase 1 범위 외)
 
-### Phase 2 — Spork .NET 10 전환 + `Spork.App` 라이브러리 추출
+### Phase 2 — Spork .NET 10 전환 + `Spork.App` 라이브러리 추출 (2026-05-12)
 
-- [ ] [Spork.csproj](../src/Spork/Spork.csproj) `TargetFramework`을 `net10.0-windows10.0.18362.0`으로 변경
-- [ ] `LangVersion=12.0` 제거 (TableCloth와 동일하게 `preview`로 통일하거나 기본값 사용)
-- [ ] net48 의존성 정리:
-  - [ ] `Mono.HttpUtility` 제거 → 표준 라이브러리 또는 `System.Web.HttpUtility` 대체
-  - [ ] 명시적으로 박혀 있던 `System.Collections.Immutable`, `System.Reflection.Metadata` 등 resolution-only 패키지 제거 (10.0에선 불필요)
-- [ ] `src/Spork.App/Spork.App.csproj` 신규 (라이브러리)
-- [ ] Spork 내부 구현 전부를 `Spork.App`으로 이전 (Services, Components, ViewModels, Views, Resources, App.xaml 등)
-- [ ] `Spork.App.DependencyInjection.UseSporkExtensions.UseSpork(this HostApplicationBuilder)` 확장 메서드 작성
-- [ ] 기존 `Spork` 프로젝트는 잠정적으로 `Program.cs`만 남기고 라이브러리 호출 — Phase 3에서 단일 진입점으로 흡수될 예정 (또는 향후 단독 출시용으로 보존)
-- [ ] Spork 단독 실행 회귀 확인 (.NET 10 변환만 적용된 상태로 기존 흐름 유지되는지)
-- [ ] `Spork.zip` 생성 PostBuild 파이프라인은 이 시점에서는 그대로 유지 (Phase 4에서 제거)
+#### Phase 2.0 — .NET 10 전환 (커밋 `e83a08b`)
+
+- [x] [Spork.csproj](../src/Spork/Spork.csproj) `TargetFramework`을 `net10.0-windows10.0.18362.0`으로 변경
+- [x] [Spork.Test.csproj](../src/Spork.Test/Spork.Test.csproj)도 net10으로 전환 (참조 호환성)
+- [x] `LangVersion=12.0` → `preview` (TableCloth와 통일)
+- [x] net48 잔재 정리:
+  - [x] `AutoGenerateBindingRedirects`, `GenerateResourceUsePreserializedResources`, `DefineConstants;NETFX` 제거
+  - [x] GAC `<Reference Include>` 모두 제거 (PresentationFramework.Aero2 / System.ComponentModel.DataAnnotations / System.Drawing / System.Security / System.ServiceProcess / UIAutomationProvider)
+  - [x] explicit BCL pin 모두 제거 (`System.Collections.Immutable`, `System.Reflection.Metadata`, `System.Resources.Extensions`, `Microsoft.Extensions.Configuration.Abstractions` 등 resolution-only)
+  - [x] `Mono.HttpUtility` 제거 → [ResourceResolver.cs:14,37](../src/Spork.App/Components/Implementations/ResourceResolver.cs)의 `ParseQueryString`을 `System.Web.HttpUtility`로 교체
+  - [x] `App.config` 삭제 (`supportedRuntime`/`AutoGenerateBindingRedirects`는 .NET 10에서 무관)
+- [x] `System.Drawing.Common`, `System.Text.Json`은 net10-windows 런타임 포함이라 NU1510 경고 → 명시 PackageReference 제거
+- [x] Assembly.Location 4건 정리:
+  - [Program.cs:39](../src/Spork/Program.cs), [Components/Implementations/ResourceCacheManager.cs](../src/Spork.App/Components/Implementations/ResourceCacheManager.cs), [Converters/ServiceLogoConverter.cs](../src/Spork.App/Converters/ServiceLogoConverter.cs) → `AppContext.BaseDirectory`
+  - [ViewModels/MainWindowViewModel.cs](../src/Spork.App/ViewModels/MainWindowViewModel.cs) (Spork.exe 단축 아이콘 타겟) → `Environment.ProcessPath`
+
+#### Phase 2.1 — `Spork.App` 라이브러리 추출 (커밋 `572ff98`)
+
+- [x] `src/Spork.App/Spork.App.csproj` 신규 (라이브러리, `net10.0-windows10.0.18362.0`, `UseWPF=true`, `RootNamespace=Spork`)
+- [x] Spork 내부 구현 전부 일괄 이동 (TableCloth.App 패턴과 동일):
+  - [x] `Browsers/` (IWebBrowserService/IWebBrowserServiceFactory + 구현)
+  - [x] `Components/` (15개 인터페이스 + 구현)
+  - [x] `Steps/` (IStep + 8 step 구현 + Composer/Player/Factory)
+  - [x] `ViewModels/`, `Themes/`, `Converters/`, `Controls/`, `Dialogs/`
+  - [x] `MainWindow`, `App.xaml`/`App.xaml.cs`, `Extensions.cs`, `Properties/`, `Resources/`
+- [x] `App` 클래스 → `SporkApplication` 개명 (Spork.App 네임스페이스 충돌 해소). 3곳 변경: App.xaml `x:Class`, App.xaml.cs, Program.cs DI 등록
+- [x] `Spork.App.DependencyInjection.UseSporkExtensions.UseSpork(this IHostApplicationBuilder)` 확장 메서드 작성 — Sentry 초기화 + Serilog 로깅 + HTTP 클라이언트 + Components 15 + Browsers + Steps 11 + Windows 4 + `SporkApplication` 일괄 등록
+- [x] [Themes/ThemesController.cs](../src/Spork.App/Themes/ThemesController.cs)의 ResourceDictionary URI에 `/Spork.App;component/` 어셈블리 한정자 명시 — Phase 1.2의 TableCloth.App 디자인 탈락 함정 예방
+- [x] Spork.csproj 진입점 트림 — PackageReference 21개 → 3개(`Microsoft.Extensions.DependencyInjection`/`Microsoft.Extensions.Hosting`/`Sentry`). WPF Resource/Page/Properties 메타 항목 모두 Spork.App.csproj로 이전. ProjectReference 추가.
+- [x] Spork/Program.cs 최소화 — SporkAnswers.json 로드 + 컬처 설정 + UnhandledException + `builder.UseSpork()` + Build/Run
+- [x] InternalsVisibleTo로 Spork/Spork.Test가 라이브러리 내부 API에 접근 가능하게 설정
+- [x] `Spork.zip` 생성 PostBuild 파이프라인은 그대로 유지 (Phase 4에서 제거 예정)
+- [x] 빌드 0 에러 (SYSLIB0014/SYSLIB0057 사전 존재 경고만 잔존, Phase 2 범위 외)
 
 ### Phase 3 — 진입점 통합 (verb-based CLI)
 
