@@ -65,6 +65,18 @@ namespace Spork.ViewModels
         public bool DryRun { get; set; }
 
         /// <summary>
+        /// 모달 상단에 표시할 대상 이름(예: 사이트 표시명). null이면 영역이 숨겨집니다.
+        /// </summary>
+        [ObservableProperty]
+        private string _targetTitle;
+
+        /// <summary>
+        /// 모달 상단의 아이콘 해석에 사용되는 키(보통 서비스 ID). ServiceLogoConverter가 이미지로 변환합니다.
+        /// </summary>
+        [ObservableProperty]
+        private string _targetIconKey;
+
+        /// <summary>
         /// 설치가 성공한 경우 true, 실패한 경우 false. 아직 실행되지 않았으면 null.
         /// </summary>
         public bool? Succeeded { get; private set; }

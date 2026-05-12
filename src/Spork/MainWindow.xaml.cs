@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using TableCloth.Models.Catalog;
 
 namespace Spork
 {
@@ -43,6 +44,25 @@ namespace Spork
                 });
             }
             catch { }
+        }
+
+        /// <summary>
+        /// 사이트 카탈로그 항목 클릭 핸들러. WPF의 ListView는 내부적으로 마우스 이벤트를 흡수하여
+        /// 자식 Grid의 InputBindings(MouseAction=LeftClick)가 안정적으로 발화되지 않는 경우가 있다.
+        /// 코드비하인드에서 직접 처리하여 단일 클릭만으로 즉시 실행되도록 한다.
+        /// 즐겨찾기 별(ToggleButton)을 누른 경우에는 ToggleButton이 먼저 e.Handled = true로 표시하므로
+        /// 이 핸들러는 발화되지 않는다.
+        /// </summary>
+        private void CatalogItem_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Handled)
+                return;
+            if (sender is not FrameworkElement element || element.DataContext is not CatalogInternetService service)
+                return;
+
+            ViewModel.SelectedCatalogService = service;
+            if (ViewModel.CatalogItemActivateCommand.CanExecute(null))
+                ViewModel.CatalogItemActivateCommand.Execute(null);
         }
     }
 }

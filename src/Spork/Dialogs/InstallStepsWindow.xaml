@@ -21,14 +21,30 @@
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Margin="0 0 0 8" TextWrapping="Wrap"
+        <!-- 대상 사이트 헤더: TargetTitle이 있을 때만 노출 (없으면 cmd-line 호출 등 일반 경로) -->
+        <Grid Grid.Row="0" Margin="0 0 0 10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Image Grid.Column="0" Width="40" Height="40" Margin="0 0 12 0"
+                   RenderOptions.BitmapScalingMode="Fant" VerticalAlignment="Center"
+                   Source="{Binding TargetIconKey, Converter={StaticResource ServiceLogoConverter}}" />
+            <TextBlock Grid.Column="1" Text="{Binding TargetTitle}"
+                       FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
+        </Grid>
+
+        <TextBlock Grid.Row="1" Margin="0 0 0 8" TextWrapping="Wrap"
+                   Foreground="{DynamicResource ControlSecondaryForeground}"
                    Text="{x:Static res:UIStringResources.Spork_AppInstructionMessage}" />
 
-        <ListBox Grid.Row="1" x:Name="StepsListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+        <ListBox Grid.Row="2" x:Name="StepsListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                  ItemsSource="{Binding InstallSteps}"
                  d:ItemsSource="{Binding InstallStepsForDesigner}">
@@ -53,7 +69,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <Button Grid.Row="2" Margin="0 10 0 0" Padding="14 6"
+        <Button Grid.Row="3" Margin="0 10 0 0" Padding="14 6"
                 HorizontalAlignment="Right"
                 Content="{x:Static res:UIStringResources.Button_CloseButton}"
                 Command="{Binding CloseDialogCommand}"

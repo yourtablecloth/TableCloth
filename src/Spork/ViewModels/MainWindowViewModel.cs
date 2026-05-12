@@ -310,7 +310,12 @@ namespace Spork.ViewModels
 
             // 설치 진행을 화면 전환 없이 모달로 처리. 모달은 자체적으로 단계를 실행하고
             // 성공 시 자동 닫기, 실패 시 닫기 버튼을 노출한다.
-            var installWindow = _appUserInterface.CreateInstallStepsWindow(steps, ShowDryRunNotification);
+            // 어떤 사이트를 준비하는지 사용자가 알 수 있도록 표시명과 아이콘 키를 함께 전달한다.
+            var installWindow = _appUserInterface.CreateInstallStepsWindow(
+                steps,
+                ShowDryRunNotification,
+                targetTitle: SelectedCatalogService.DisplayName,
+                targetIconKey: siteId);
             var result = installWindow.ShowDialog();
 
             // 카탈로그 뷰는 모달 뒤에서 계속 보였으므로 별도 복귀 처리는 필요 없다.

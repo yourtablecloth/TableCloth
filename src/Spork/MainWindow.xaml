@@ -127,13 +127,12 @@
                 </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Width="96" MinHeight="100">
-                            <Grid.InputBindings>
-                                <!-- 단일 클릭으로 즉시 실행. 즐겨찾기 별(ToggleButton)을 클릭하는 경우는
-                                     해당 Button이 마우스 이벤트를 자체 처리하므로 여기까지 도달하지 않는다. -->
-                                <MouseBinding MouseAction="LeftClick"
-                                              Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.CatalogItemActivateCommand}" />
-                            </Grid.InputBindings>
+                        <!-- ListView의 selection 처리 때문에 자식 InputBindings(LeftClick)는
+                             선택 변화 시 일부 클릭이 무시될 수 있어, 코드비하인드의
+                             CatalogItem_MouseLeftButtonUp이 직접 처리한다. 즐겨찾기 별을 누르면
+                             ToggleButton이 e.Handled=true로 표시하므로 이 핸들러는 발화되지 않는다. -->
+                        <Grid Width="96" MinHeight="100" Background="Transparent"
+                              MouseLeftButtonUp="CatalogItem_MouseLeftButtonUp">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="48" />
                                 <RowDefinition Height="*" />

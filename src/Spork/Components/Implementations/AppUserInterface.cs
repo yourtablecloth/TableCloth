@@ -43,11 +43,13 @@ namespace Spork.Components.Implementations
         public SiteReportWindow CreateSiteReportWindow()
             => SetOwnerIfAvailable(_serviceProvider.GetRequiredService<SiteReportWindow>());
 
-        public InstallStepsWindow CreateInstallStepsWindow(IList<StepItemViewModel> steps, bool dryRun)
+        public InstallStepsWindow CreateInstallStepsWindow(IList<StepItemViewModel> steps, bool dryRun, string targetTitle = null, string targetIconKey = null)
         {
             var window = SetOwnerIfAvailable(_serviceProvider.GetRequiredService<InstallStepsWindow>());
             window.ViewModel.InstallSteps = steps ?? new List<StepItemViewModel>();
             window.ViewModel.DryRun = dryRun;
+            window.ViewModel.TargetTitle = targetTitle;
+            window.ViewModel.TargetIconKey = targetIconKey;
             return window;
         }
 

@@ -10,6 +10,6 @@ namespace Spork.Components
         MainWindow CreateMainWindow();
         PrecautionsWindow CreatePrecautionsWindow(IEnumerable<string> targetServiceIds = null);
         SiteReportWindow CreateSiteReportWindow();
-        InstallStepsWindow CreateInstallStepsWindow(IList<StepItemViewModel> steps, bool dryRun);
+        InstallStepsWindow CreateInstallStepsWindow(IList<StepItemViewModel> steps, bool dryRun, string targetTitle = null, string targetIconKey = null);
     }
 }
