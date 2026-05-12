@@ -236,8 +236,23 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </TextBlock.Style>
+                                            <!-- 인증서 항목은 클릭 가능하지만 시각적으로는 일반 텍스트처럼 보이게 한다.
+                                                 기본 상태에서는 밑줄/링크 색을 제거하고 부모 TextBlock의 Foreground를
+                                                 그대로 상속받아 만료(회색+취소선) 스타일이 자연스럽게 적용되게 한다.
+                                                 마우스 호버 시에만 밑줄을 그려 클릭 가능함을 알린다. -->
                                             <Hyperlink Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.ShowCertificateDetailsCommand}"
                                                        CommandParameter="{Binding}">
+                                                <Hyperlink.Style>
+                                                    <Style TargetType="Hyperlink">
+                                                        <Setter Property="TextDecorations" Value="{x:Null}" />
+                                                        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TextBlock}}" />
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="TextDecorations" Value="Underline" />
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Hyperlink.Style>
                                                 <Run FontWeight="SemiBold" Text="{Binding CommonName, Mode=OneWay}" />
                                                 <Run Text=" · " />
                                                 <Run Text="{Binding Organization, Mode=OneWay}" />
