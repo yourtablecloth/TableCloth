@@ -86,15 +86,24 @@ TableCloth.exe <future-verb>      → 후속 확장 모듈 (필요 시)
 - [x] WPF `App` 클래스 → `TableClothApplication`으로 개명 (네임스페이스 `TableCloth.App`과 충돌 해소). 참조 3곳: App.xaml `x:Class`, App.xaml.cs, Program.cs DI 등록
 - [x] 빌드 통과 (0 에러, 0 경고)
 
-#### Phase 1.2 — 영역별 내부 구현 이전 (진행 예정)
+#### Phase 1.2 — 영역별 내부 구현 이전 (2026-05-12)
 
-- [ ] **Components / Services 이전** — Implementations + 인터페이스를 `TableCloth.App.Components`로 이동, `UseTableCloth()`로 등록 흡수
-- [ ] **ViewModels 이전** — `TableCloth.App.ViewModels`로 이동
-- [ ] **Views (Windows / Pages / Dialogs) 이전** — `TableCloth.App.Views`로 이동, WPF Resource/ResourceDictionary 정합성 유지
-- [ ] **App.xaml / App.xaml.cs (TableClothApplication) 이전** — `TableCloth.App`으로 이동, 진입점은 인스턴스화만 담당
-- [ ] **Resources / Converters / 헬퍼 이전**
-- [ ] 진입점 `TableCloth` 프로젝트는 `Program.cs`만 남기고 부트스트랩에서 `builder.UseTableCloth().Build()` 호출
-- [ ] 빌드/실행 회귀 확인 (현재 UX와 동일하게 동작해야 함)
+영역별 점진 이동을 계획했으나, Components 인터페이스들이 Views/ViewModels 구상 타입을 직접 참조하고 있어(`IAppUserInterface`, `IShortcutCreator`, `ICommandLineComposer`, `INavigationService` 등) 모듈 단위 일괄 이동이 필수임이 드러남. 한 커밋(`90d8a96`)으로 일괄 이동.
+
+- [x] **Components 이전** (인터페이스 + 구현 + `Internals/Win32*` 헬퍼) — 네임스페이스 `TableCloth.Components.*` 그대로 유지
+- [x] **ViewModels 이전** — 10개 뷰모델 모두
+- [x] **Views 이전** — Pages (CatalogPage, DetailPage, QuickStartPage), Dialogs (About, CertSelect, Disclaimer, InputPassword, Options), Bootstrap/Dialogs (LicenseWindow), MainWindow, SplashScreen, Themes (4개 + 컨트롤러)
+- [x] **Converters / Controls 이전** — 8개 컨버터 + RichTextBoxHelper
+- [x] **App.xaml + App.xaml.cs (`TableClothApplication`) 이전** — `TableCloth.App` 어셈블리로 이동, 진입점은 DI에서 `Application` 싱글톤만 해소
+- [x] **Properties (Resources.resx/Designer.cs/AssemblyInfo.cs/launchSettings.json) 이전**
+- [x] **Resources (SandboxIcon.png/.ico) 이전**
+- [x] **Extensions.cs (AddWindow/AddPage/InitServiceProvider 등 헬퍼) 이전**
+- [x] DI 등록을 `UseTableCloth()` 확장 메서드로 일괄 흡수 — 로깅(Serilog), HTTP 클라이언트 3종, Components 25종, Windows/Pages 11종, `Application` 싱글톤
+- [x] 진입점 `Program.cs`를 부트스트랩(Velopack/License/FileAssociation) + `builder.UseTableCloth()` + Build/Run 흐름으로 최소화
+- [x] `TableCloth.csproj` 직접 PackageReference를 Microsoft.Extensions.DependencyInjection / Microsoft.Extensions.Hosting / Velopack 3개로 축소 (커밋 `c1ddc66`)
+- [x] WPF Resource/Page/EmbeddedResource SDK 메타 항목들 `TableCloth.csproj` → `TableCloth.App.csproj` 이전
+- [x] InternalsVisibleTo로 TableCloth/Test 프로젝트가 라이브러리 내부 API에 접근 가능하게 설정
+- [x] 빌드 0 에러 (pre-existing `PreferenceSettings.cs` 의 CS8632 2건만 남음 — Phase 1 범위 외)
 
 ### Phase 2 — Spork .NET 10 전환 + `Spork.App` 라이브러리 추출
 
