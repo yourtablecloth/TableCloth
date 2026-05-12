@@ -14,7 +14,7 @@
 
 **목표**: 두 앱을 단일 .exe 바이너리로 통합하고, 내부 구현은 모듈식 클래스 라이브러리로 분리한다. 진입점은 `System.CommandLine` 기반 verb 분기로 동작 모드를 결정하며, 각 모듈은 `builder.UseTableCloth()` / `builder.UseSpork()` 형태의 확장 메서드로 DI 컨테이너에 합성된다.
 
-```
+```text
 TableCloth.exe                    → 기본 TableCloth 모드 (호스트 런처)
 TableCloth.exe spork <args>       → Spork 모드 (샌드박스 내부 에이전트)
 TableCloth.exe <future-verb>      → 후속 확장 모듈 (필요 시)
@@ -40,12 +40,21 @@ TableCloth.exe <future-verb>      → 후속 확장 모듈 (필요 시)
 
 이 리팩토링이 성립하려면 다음 항목들이 .NET 10에서 동작하거나 대체 가능해야 한다.
 
-- [ ] **PnPeople.Security 1.1.0**: TableCloth가 사용 중. .NET 10 호환성 확인. 비호환 시 대체/포크 검토.
-- [ ] **Mono.HttpUtility 1.0.0.1**: Spork만 사용. .NET 10에서는 `System.Web.HttpUtility` (System.Web.HttpUtility NuGet 또는 BCL)로 대체 가능한지 확인.
-- [ ] **Serilog 버전 정렬**: Spork 4.3.0 vs TableCloth가 transitive로 끌어오는 버전. 두 모듈을 한 어셈블리 그래프에 합치려면 단일 버전으로 통일 필요. CPM(`Directory.Packages.props`) 도입 검토.
-- [ ] **Velopack 단일 파일 + self-contained 게시 호환성**: 현재 Velopack 워크플로가 `PublishSingleFile=true` + `IncludeNativeLibrariesForSelfExtract=true` 출력을 그대로 받아 패키징할 수 있는지 검증.
-- [ ] **WPF 단일 파일 게시 시 알려진 함정**: `Assembly.Location` 사용 코드 전수 검색 → `AppContext.BaseDirectory` 또는 `Environment.ProcessPath`로 교체. 트리밍은 끄기 (`PublishTrimmed=false`).
-- [ ] **Sentry / Velopack의 단일 파일 모드 동작**: 둘 다 어셈블리 위치를 probe하는 경향이 있음. 실제 게시물로 회귀 테스트.
+- [x] **PnPeople.Security 1.1.0** — `netstandard2.0` 단일 어셈블리. .NET 10에서 그대로 사용 가능. **결론: 변경 없음.**
+- [x] **Mono.HttpUtility 1.0.0.1** — `net40` 단일 어셈블리. Spork 내 사용처는 [ResourceResolver.cs:14,37](../src/Spork/Components/Implementations/ResourceResolver.cs#L14-L37)의 `ParseQueryString` 1회뿐이고, 이미 [TableCloth ResourceResolver.cs:38](../src/TableCloth/Components/Implementations/ResourceResolver.cs#L38)이 .NET BCL의 `System.Web.HttpUtility.ParseQueryString`을 동일 시그니처로 호출 중. **결론: Mono.HttpUtility PackageReference 제거 + `System.Web.HttpUtility`로 호출 교체.**
+- [x] **Serilog 버전 정렬** — 의존성 트리:
+  - `Serilog.Extensions.Logging 10.0.0` → `Serilog 4.2.0` (TableCloth 측 transitive)
+  - `Sentry.Serilog 6.0.0` → `Serilog 2.10.0` (양쪽 공통 transitive)
+  - Spork는 `Serilog 4.3.0` 명시
+  - NuGet의 highest-wins으로 자연 해소되지만, 두 모듈을 한 어셈블리 그래프로 합치려면 명시 핀이 필요. **결론: CPM 도입 + Serilog 4.3.0 핀.**
+- [x] **Velopack 0.0.1298 단일 파일 + self-contained 게시 호환성** — `net6.0/net8.0/net9.0/netstandard2.0/net462` 빌드 보유, net10 호환. Velopack 자체가 self-contained + single-file을 1급 시나리오로 지원. **결론: 호환성 무문제, 실제 게시물로 Phase 5에서 회귀 검증.**
+- [x] **WPF 단일 파일 게시 시 알려진 함정** — `Assembly.Location` 사용처 전수 검사 결과 Spork 4건만 발견 (TableCloth/TableCloth.Core 0건):
+  - [src/Spork/Components/Implementations/ResourceCacheManager.cs:93](../src/Spork/Components/Implementations/ResourceCacheManager.cs#L93) — 디렉터리 경로 → `AppContext.BaseDirectory`
+  - [src/Spork/Converters/ServiceLogoConverter.cs:20](../src/Spork/Converters/ServiceLogoConverter.cs#L20) — 디렉터리 경로 → `AppContext.BaseDirectory`
+  - [src/Spork/ViewModels/MainWindowViewModel.cs:168](../src/Spork/ViewModels/MainWindowViewModel.cs#L168) — `sporkExePath` 단축 아이콘 타겟 → `Environment.ProcessPath` (verb 통합 후엔 `TableCloth.exe spork` 호출 형태로 인자 포함 재구성 필요)
+  - [src/Spork/Program.cs:39](../src/Spork/Program.cs#L39) — 디렉터리 경로 → `AppContext.BaseDirectory`
+  - 트리밍은 `PublishTrimmed=false` 고정. **결론: 4건 교체 작업은 Phase 2(Spork.App 추출) 시점에 일괄 처리.**
+- [x] **Sentry 6.0.0 단일 파일 모드 동작** — `net10.0` 전용 빌드 보유, 최신 버전 라인이라 self-extract 모드와 single-file 모드 모두 1급 지원. 단일 파일 + self-contained 환경에서의 stack frame symbol 처리도 6.x에서 안정. **결론: 호환성 무문제, Phase 5 게시물로 회귀 검증.**
 
 ## 작업 항목
 
@@ -53,9 +62,9 @@ TableCloth.exe <future-verb>      → 후속 확장 모듈 (필요 시)
 
 - [x] 작업 브랜치 `feature/unified-binary-verbs` 생성
 - [x] 본 진척 관리 문서 작성
-- [ ] 위 "의존성 / 호환성 사전 점검" 항목 전부 결론 도출
-- [ ] CPM(Central Package Management) 도입 여부 결정 — 도입한다면 `Directory.Packages.props` 추가 및 두 프로젝트의 `PackageReference` 버전 표기 제거
-- [ ] 각 모듈의 WPF `Application` 인스턴스 경계에 대한 설계 노트 (verb별 `IHostedService`가 자기 App.xaml 인스턴스화)
+- [x] 위 "의존성 / 호환성 사전 점검" 항목 전부 결론 도출 (2026-05-12)
+- [x] CPM(Central Package Management) 도입 결정 — Phase 1 시작 시점에 `Directory.Packages.props` 추가하고 두 프로젝트의 `PackageReference`에서 `Version` 속성 제거. Serilog는 `4.3.0`으로 핀.
+- [x] 각 모듈의 WPF `Application` 인스턴스 경계 설계 결정 — verb별 `IHostedService`가 `App.xaml`을 인스턴스화하고 `Application.Run(MainWindow)` 호출. 한 프로세스에서는 정확히 한 verb만 활성화되므로 `Application.Current`는 모듈당 단일 인스턴스로 유지됨.
 
 ### Phase 1 — `TableCloth.App` 라이브러리 추출
 
@@ -149,3 +158,6 @@ TableCloth.exe <future-verb>      → 후속 확장 모듈 (필요 시)
 
 - 2026-05-12 — verb 기반 단일 바이너리 + 모듈식 DI(UseXxx) 아키텍처로 확정. shim/하드링크 옵션은 불필요해져 폐기.
 - 2026-05-12 — 두 앱은 self-contained 단일 파일로 게시하되 verb 분기로 하나의 .exe에 통합. 출력 폴더 머지 방식(이전 안)은 폐기.
+- 2026-05-12 — Phase 0 호환성 점검 결과: PnPeople.Security/Velopack/Sentry 모두 .NET 10 호환 확인. Mono.HttpUtility는 `System.Web.HttpUtility`로 교체(사용처 1군데). Assembly.Location 4건은 Spork에 집중, Phase 2에서 일괄 교체.
+- 2026-05-12 — CPM 도입 확정. Serilog는 4.3.0 핀(Spork 현행). Phase 1에서 `Directory.Packages.props` 추가.
+- 2026-05-12 — WPF Application 경계: verb별 `IHostedService`가 자기 모듈의 `Application` 인스턴스를 생성/실행. 한 프로세스 한 모듈 원칙.
