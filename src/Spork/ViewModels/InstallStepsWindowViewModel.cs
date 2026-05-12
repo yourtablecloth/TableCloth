@@ -52,6 +52,7 @@ namespace Spork.ViewModels
         private readonly IStepsPlayer _stepsPlayer;
         private readonly IAppMessageBox _appMessageBox;
         private readonly TaskFactory _taskFactory;
+        private CancellationTokenSource _installCts;
 
         /// <summary>
         /// 모달을 띄우기 직전에 호출 측이 채워 넣는 설치 단계 목록입니다.
@@ -89,20 +90,42 @@ namespace Spork.ViewModels
                 return;
             }
 
-            var hasFailure = await _stepsPlayer.PlayStepsAsync(InstallSteps, DryRun);
-            Succeeded = !hasFailure;
+            _installCts = new CancellationTokenSource();
+            var token = _installCts.Token;
 
-            if (!hasFailure)
+            try
             {
-                // 사용자가 100% 완료된 상태를 잠깐 확인할 수 있도록 짧은 지연 후 자동 닫기.
-                await Task.Delay(TimeSpan.FromMilliseconds(800));
-                await RaiseCloseAsync(true);
+                var hasFailure = await _stepsPlayer.PlayStepsAsync(InstallSteps, DryRun, token).ConfigureAwait(true);
+                Succeeded = !hasFailure;
+
+                if (!hasFailure)
+                {
+                    // 사용자가 100% 완료된 상태를 잠깐 확인할 수 있도록 짧은 지연 후 자동 닫기.
+                    // 지연 자체도 취소 대상이라 사용자가 도중에 닫으면 즉시 빠진다.
+                    await Task.Delay(TimeSpan.FromMilliseconds(800), token).ConfigureAwait(true);
+                    await RaiseCloseAsync(true);
+                }
+                else
+                {
+                    // 실패: 사용자가 결과를 확인하고 직접 닫을 수 있도록 닫기 버튼을 노출.
+                    ShowCloseButton = true;
+                }
             }
-            else
+            catch (OperationCanceledException)
             {
-                // 실패: 사용자가 결과를 확인하고 직접 닫을 수 있도록 닫기 버튼을 노출.
-                ShowCloseButton = true;
+                // 사용자가 창을 닫아 취소된 케이스. Window는 이미 닫히는 중이므로 추가 동작 없이 빠진다.
+                Succeeded = false;
             }
+        }
+
+        /// <summary>
+        /// 진행 중인 설치 단계를 취소합니다. <see cref="InstallStepsWindow"/>의 Closing 이벤트에서 호출됩니다.
+        /// 이미 완료/취소된 경우는 안전하게 무시됩니다.
+        /// </summary>
+        public void CancelInstall()
+        {
+            try { _installCts?.Cancel(); }
+            catch (ObjectDisposedException) { /* 이미 dispose 된 경우 */ }
         }
 
         [RelayCommand]
