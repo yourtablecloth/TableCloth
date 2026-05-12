@@ -175,65 +175,10 @@ namespace Spork.Steps.Implementations
                 },
             });
 
-            if (parsedArgs.InstallAdobeReader.HasValue &&
-                parsedArgs.InstallAdobeReader.Value)
-            {
-                steps.Add(new StepItemViewModel()
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(OpenWebSiteStep)),
-                    Argument = new OpenWebSiteItemViewModel
-                    {
-                        TargetUrl = CommonStrings.AdobeReaderUrl,
-                    },
-                    TargetSiteName = UIStringResources.Option_Addin,
-                    PackageName = UIStringResources.Option_InstallAdobeReader,
-                });
-            }
-
-            if (parsedArgs.InstallEveryonesPrinter.HasValue &&
-                parsedArgs.InstallEveryonesPrinter.Value)
-            {
-                steps.Add(new StepItemViewModel()
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(OpenWebSiteStep)),
-                    Argument = new OpenWebSiteItemViewModel
-                    {
-                        TargetUrl = CommonStrings.EveryonesPrinterUrl,
-                    },
-                    TargetSiteName = UIStringResources.Option_Addin,
-                    PackageName = UIStringResources.Option_InstallEveryonesPrinter,
-                });
-            }
-
-            if (parsedArgs.InstallHancomOfficeViewer.HasValue &&
-                parsedArgs.InstallHancomOfficeViewer.Value)
-            {
-                steps.Add(new StepItemViewModel()
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(OpenWebSiteStep)),
-                    Argument = new OpenWebSiteItemViewModel
-                    {
-                        TargetUrl = CommonStrings.HancomOfficeViewerUrl,
-                    },
-                    TargetSiteName = UIStringResources.Option_Addin,
-                    PackageName = UIStringResources.Option_InstallHancomOfficeViewer,
-                });
-            }
-
-            if (parsedArgs.InstallRaiDrive.HasValue &&
-                parsedArgs.InstallRaiDrive.Value)
-            {
-                steps.Add(new StepItemViewModel()
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(OpenWebSiteStep)),
-                    Argument = new OpenWebSiteItemViewModel
-                    {
-                        TargetUrl = CommonStrings.RaiDriveUrl,
-                    },
-                    TargetSiteName = UIStringResources.Option_Addin,
-                    PackageName = UIStringResources.Option_InstallRaiDrive,
-                });
-            }
+            // 보조 프로그램(Adobe Reader / 모두의 프린터 / 한컴오피스 뷰어 / RaiDrive) 자동 설치 step은
+            // 카탈로그의 <Companions> 목록 + 보조 프로그램 탭의 PackageInstallStep 흐름으로 대체되었다.
+            // (기존 OpenWebSiteStep 방식은 다운로드 페이지만 열고 실제 설치를 사용자에게 떠넘기던
+            //  애매한 흐름이라 제거한다.)
 
             return steps;
         }
