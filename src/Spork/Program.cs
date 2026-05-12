@@ -95,6 +95,7 @@ namespace Spork
                     .AddSingleton<ICommandLineArguments, CommandLineArguments>()
                     .AddSingleton<IApplicationService, ApplicationService>()
                     .AddSingleton<IUserDataStore, UserDataStore>()
+                    .AddSingleton<IX509CertScanner, X509CertScanner>()
                     .AddSingleton<IShortcutCreator, ShortcutCreator>()
                     .AddSingleton(_ => new TaskFactory(TaskScheduler.FromCurrentSynchronizationContext()));
 

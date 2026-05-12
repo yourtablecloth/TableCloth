@@ -194,6 +194,62 @@
                     </Grid>
                 </TabItem>
 
+                <!-- 공동인증서 카탈로그 -->
+                <TabItem Header="{x:Static res:UIStringResources.SporkCatalog_Tab_Certificates}">
+                    <Grid Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.SporkCatalog_Certificates_Description}" />
+                        <!-- 비어 있을 때 안내 메시지 (Count==0일 때만 노출) -->
+                        <TextBlock Grid.Row="1" Margin="0 12 0 0" TextAlignment="Center"
+                                   Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.SporkCatalog_Certificates_Empty}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CatalogCertificates.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding CatalogCertificates}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <!-- 만료된 인증서는 TextBlock 전체에 취소선 + 회색 처리. Run에 자동 상속. -->
+                                        <TextBlock Margin="6 4" TextWrapping="Wrap" ToolTip="{Binding Availability}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding HasExpired}" Value="True">
+                                                            <Setter Property="TextDecorations" Value="Strikethrough" />
+                                                            <Setter Property="Foreground" Value="Gray" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                            <Run FontWeight="SemiBold" Text="{Binding CommonName, Mode=OneWay}" />
+                                            <Run Text=" · " />
+                                            <Run Text="{Binding Organization, Mode=OneWay}" />
+                                            <LineBreak />
+                                            <Run FontSize="10" Foreground="Gray" Text="{Binding NotBefore, StringFormat=yyyy-MM-dd, Mode=OneWay}" />
+                                            <Run FontSize="10" Foreground="Gray" Text=" ~ " />
+                                            <Run FontSize="10" Foreground="Gray" Text="{Binding NotAfter, StringFormat=yyyy-MM-dd, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+
                 <!-- 보조 프로그램 카탈로그 -->
                 <TabItem Header="{x:Static res:UIStringResources.SporkCatalog_Tab_Companions}">
                     <Grid Margin="6">

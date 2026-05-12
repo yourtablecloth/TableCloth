@@ -822,4 +822,13 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="SporkCatalog_Companions_Description" xml:space="preserve">
     <value>국내 인터넷 뱅킹·공공·전자정부 환경에서 자주 쓰이는 보조 소프트웨어입니다. 항목을 클릭하면 공식 다운로드 페이지가 브라우저로 열리며, 각 공급사의 라이선스에 동의한 뒤 직접 내려받아 설치하시면 됩니다.</value>
   </data>
+  <data name="SporkCatalog_Tab_Certificates" xml:space="preserve">
+    <value>공동인증서</value>
+  </data>
+  <data name="SporkCatalog_Certificates_Description" xml:space="preserve">
+    <value>현재 샌드박스에 복사된 공동인증서 목록입니다. 만료된 인증서는 취소선으로 표시됩니다.</value>
+  </data>
+  <data name="SporkCatalog_Certificates_Empty" xml:space="preserve">
+    <value>샌드박스에 공동인증서가 없습니다.</value>
+  </data>
 </root>

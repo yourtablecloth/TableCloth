@@ -18,6 +18,7 @@ using System.Windows;
 using System.Windows.Data;
 using TableCloth;
 using TableCloth.Models.Catalog;
+using TableCloth.Models.Configuration;
 using TableCloth.Models.UserData;
 using TableCloth.Resources;
 
@@ -68,6 +69,7 @@ namespace Spork.ViewModels
             IUserDataStore userDataStore,
             IShortcutCreator shortcutCreator,
             IWebBrowserServiceFactory webBrowserServiceFactory,
+            IX509CertScanner certScanner,
             TaskFactory taskFactory)
         {
             _application = application;
@@ -81,6 +83,7 @@ namespace Spork.ViewModels
             _userDataStore = userDataStore;
             _shortcutCreator = shortcutCreator;
             _webBrowserServiceFactory = webBrowserServiceFactory;
+            _certScanner = certScanner;
             _taskFactory = taskFactory;
         }
 
@@ -95,6 +98,7 @@ namespace Spork.ViewModels
         private readonly IUserDataStore _userDataStore;
         private readonly IShortcutCreator _shortcutCreator;
         private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
+        private readonly IX509CertScanner _certScanner;
         private readonly TaskFactory _taskFactory;
 
         /// <summary>
@@ -220,6 +224,19 @@ namespace Spork.ViewModels
                 .Where(c => !string.IsNullOrWhiteSpace(c?.DisplayName))
                 .OrderBy(c => c.DisplayName, StringComparer.CurrentCultureIgnoreCase)
                 .ToList();
+
+            // 샌드박스의 NPKI 폴더(시작 스크립트가 호스트의 NPKI를 xcopy해 둠)를 스캔하여
+            // 현재 사용 가능한 인증서를 카탈로그 탭에서 보여준다. 만료된 인증서도 포함되며
+            // UI는 취소선으로 구분한다.
+            try
+            {
+                CatalogCertificates = _certScanner.ScanSandboxNpkiCertificates().ToList();
+            }
+            catch
+            {
+                // 인증서 스캔 실패는 카탈로그 자체 흐름을 막지 않는다.
+                CatalogCertificates = new List<X509CertPair>();
+            }
 
             PropertyChanged -= ViewModel_PropertyChanged;
             PropertyChanged += ViewModel_PropertyChanged;
@@ -483,6 +500,9 @@ namespace Spork.ViewModels
 
         [ObservableProperty]
         private IList<CatalogCompanion> _catalogCompanions = new List<CatalogCompanion>();
+
+        [ObservableProperty]
+        private IList<X509CertPair> _catalogCertificates = new List<X509CertPair>();
 
         [ObservableProperty]
         private string _searchKeyword = string.Empty;

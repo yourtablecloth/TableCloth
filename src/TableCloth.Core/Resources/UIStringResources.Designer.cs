@@ -1927,5 +1927,23 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("SporkCatalog_Companions_Description", resourceCulture);
             }
         }
+
+        public static string SporkCatalog_Tab_Certificates {
+            get {
+                return ResourceManager.GetString("SporkCatalog_Tab_Certificates", resourceCulture);
+            }
+        }
+
+        public static string SporkCatalog_Certificates_Description {
+            get {
+                return ResourceManager.GetString("SporkCatalog_Certificates_Description", resourceCulture);
+            }
+        }
+
+        public static string SporkCatalog_Certificates_Empty {
+            get {
+                return ResourceManager.GetString("SporkCatalog_Certificates_Empty", resourceCulture);
+            }
+        }
     }
 }

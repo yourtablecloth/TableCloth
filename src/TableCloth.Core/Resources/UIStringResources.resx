@@ -823,4 +823,13 @@ Create it now and continue?</value>
   <data name="SporkCatalog_Companions_Description" xml:space="preserve">
     <value>Common helper applications used with Korean internet banking, public sector, and e-government services. Click an item to open its official download page in the browser. Each vendor's license terms apply.</value>
   </data>
+  <data name="SporkCatalog_Tab_Certificates" xml:space="preserve">
+    <value>Joint Certificates</value>
+  </data>
+  <data name="SporkCatalog_Certificates_Description" xml:space="preserve">
+    <value>Joint certificates currently copied into the sandbox. Expired certificates are marked with a strikethrough.</value>
+  </data>
+  <data name="SporkCatalog_Certificates_Empty" xml:space="preserve">
+    <value>No joint certificates were found in the sandbox.</value>
+  </data>
 </root>
