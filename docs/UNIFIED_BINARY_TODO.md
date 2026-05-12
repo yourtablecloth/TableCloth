@@ -165,9 +165,26 @@ TableCloth.exe <future-verb>      → 후속 확장 모듈 (필요 시)
 - [x] [TableCloth.csproj](../src/TableCloth/TableCloth.csproj) — `Spork.zip` PreBuild 복사, `<Content Include="Spork.zip">`, `<None Remove="Spork.zip">` 모두 제거
 - [x] [ISharedLocations/SharedLocations](../src/TableCloth.App/Components/ISharedLocations.cs) — `SporkZipFilePath` 멤버 제거
 - [x] [AppStartup.HasRequirementsMetAsync](../src/TableCloth.App/Components/Implementations/AppStartup.cs) — Spork.zip 존재 확인 단계 제거
-- [x] [TableCloth.csproj](../src/TableCloth/TableCloth.csproj)에 `SelfContained=true` + 조건부 `RuntimeIdentifier` 설정 — 빌드 출력에 .NET 10 데스크톱 런타임이 동봉되어 샌드박스 안에서 별도 설치 없이 실행 가능
+- [x] [TableCloth.csproj](../src/TableCloth/TableCloth.csproj)에 `SelfContained=true` + 조건부 `RuntimeIdentifier` 설정 (커밋 `3f5672f`)
 - [x] 빌드 0 에러 (커밋 `3f5672f`)
 - [ ] 실제 샌드박스 실행 회귀 확인 (사용자 검증)
+
+#### Phase 4.1 — 프로젝트 수준 AnyCPU 통일 + 개발 단계 호스트 dotnet 주입 (2026-05-12, 커밋 `5c4b1b8`)
+
+Phase 4에서 도입한 자동 self-contained 정책을 향후 Native AOT / Avalonia 전환 부담을
+줄이기 위해 되돌리고, RID/번들 결정을 CI/CD publish 시점으로 위임.
+
+- [x] [TableCloth.csproj](../src/TableCloth/TableCloth.csproj): `SelfContained` / 조건부 `RuntimeIdentifier` / `UseAppHost` / `Platforms` 제거. `RuntimeIdentifiers`(복수, publish 후보)만 유지.
+- [x] [Spork.csproj](../src/Spork/Spork.csproj): `Platforms`, x64/ARM64 `PlatformTarget` 조건부 블록 제거.
+- [x] [TableCloth.Test.csproj](../src/TableCloth.Test/TableCloth.Test.csproj), [Spork.Test.csproj](../src/Spork.Test/Spork.Test.csproj): `Platforms` 제거.
+- [x] [TableCloth.slnx](../TableCloth.slnx): `<Configurations>` 블록과 각 Project의 Platform 매핑 삭제.
+- [x] **개발 단계 보완** — [SandboxBuilder.cs](../src/TableCloth.App/Components/Implementations/SandboxBuilder.cs):
+  - staging의 App 폴더에 `hostfxr.dll` 동봉 여부로 self-contained 판정 (`RequiresHostDotnetMount`)
+  - framework-dependent로 판정되면 호스트의 dotnet 설치 폴더를 RO 마운트로 추가하고 StartupScript에 `DOTNET_ROOT`/`PATH` 환경 변수 설정
+  - 호스트 dotnet 탐색 우선순위: `DOTNET_ROOT` 환경 변수 → `%ProgramFiles%\dotnet` → `%LocalAppData%\Microsoft\dotnet`
+- [x] [TableClothConfiguration.cs](../src/TableCloth.Core/Models/Configuration/TableClothConfiguration.cs): `HostDotnetRootPath` 속성 추가 (null이면 self-contained 모드)
+- [x] 빌드 0 에러
+- 향후 CI/CD에서 배포물 게시 시 `dotnet publish -r win-x64 -p:SelfContained=true` 식으로 RID/번들 지정. release 배포물은 `hostfxr.dll`이 동봉되므로 SandboxBuilder가 자동으로 호스트 dotnet 마운트 단계 생략.
 
 ### Phase 5 — 단일 파일 publish
 
