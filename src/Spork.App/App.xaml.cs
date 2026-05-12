@@ -11,14 +11,14 @@ using TableCloth;
 
 namespace Spork
 {
-    public partial class App : Application
+    public partial class SporkApplication : Application
     {
-        internal App()
+        internal SporkApplication()
         {
             InitializeComponent();
         }
 
-        public App(IHost host) : this()
+        public SporkApplication(IHost host) : this()
         {
             SetupHost(host);
         }

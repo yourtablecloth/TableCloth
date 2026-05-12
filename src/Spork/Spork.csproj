@@ -53,29 +53,14 @@
 		<PlatformTarget>ARM64</PlatformTarget>
 	</PropertyGroup>
 
+	<!--
+		진입점 Spork.exe는 부트스트랩(Sentry 초기화)과 Host 빌드만 담당하므로 직접 참조
+		패키지는 최소화. 나머지는 Spork.App을 통해 transitive로 들어온다.
+	-->
 	<ItemGroup>
-		<PackageReference Include="AsyncAwaitBestPractices.MVVM" />
-		<PackageReference Include="CommunityToolkit.Mvvm" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" />
-		<PackageReference Include="Microsoft.Extensions.Http" />
-		<PackageReference Include="Microsoft.Extensions.Logging" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" />
-		<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
 		<PackageReference Include="Sentry" />
-		<PackageReference Include="Sentry.Serilog" />
-		<PackageReference Include="Serilog" />
-		<PackageReference Include="Serilog.Extensions.Logging" />
-		<PackageReference Include="System.CommandLine" />
-		<!-- System.Drawing.Common, System.Text.Json은 net10-windows 런타임에 포함되어 명시 참조 불필요 (NU1510). -->
 	</ItemGroup>
 
 	<ItemGroup>
@@ -83,10 +68,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="Resources\Signature.jpg" />
-	</ItemGroup>
-
-	<ItemGroup>
+		<ProjectReference Include="..\Spork.App\Spork.App.csproj" />
 		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
 	</ItemGroup>
 

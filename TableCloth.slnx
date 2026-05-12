@@ -10,6 +10,7 @@
     <File Path="Directory.Build.Props" />
     <File Path="SECURITY.md" />
   </Folder>
+  <Project Path="src/Spork.App/Spork.App.csproj" />
   <Project Path="src/Spork.Test/Spork.Test.csproj" Id="6408b389-54a0-4804-b42e-8853404d0b75" />
   <Project Path="src/Spork/Spork.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
