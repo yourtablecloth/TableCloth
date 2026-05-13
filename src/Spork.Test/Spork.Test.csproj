@@ -12,7 +12,12 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
-		<ProjectReference Include="..\Spork\Spork.csproj" />
+		<!--
+			실제 테스트 대상(Spork.Components.Implementations.CommandLineArguments 등)은 Spork.App
+			라이브러리에 있으므로 그쪽을 참조한다. 진입점 Spork.csproj(단독 출시용)는 테스트
+			의존성이 아니다.
+		-->
+		<ProjectReference Include="..\Spork.App\Spork.App.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
