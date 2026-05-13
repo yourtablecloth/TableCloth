@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using TableCloth;
 
+// ctor에서 캐시한 서비스 필드(`?` 어노테이션)와 Host 속성 인식용. Spork.App 본체는 nullable
+// 컨텍스트로 전환할 준비가 안 된 파일이 많아 annotations만 활성화.
+#nullable enable annotations
+
 namespace Spork
 {
     public partial class SporkApplication : Application

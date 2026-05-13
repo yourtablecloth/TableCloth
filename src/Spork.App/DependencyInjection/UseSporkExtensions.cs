@@ -15,10 +15,13 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Net.Http;
+using System.Net.Security;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using TableCloth;
 using TableCloth.Models.Answers;
 using TableCloth.Resources;
 
@@ -59,12 +62,17 @@ public static class UseSporkExtensions
 
         builder.Services.AddLogging();
 
+        // .NET Core/5+ 부터 HttpClient는 ServicePointManager 콜백을 무시하므로, net48 시절 Spork이
+        // 가졌던 "서버 인증서 오류 시 사용자에게 안내 후 거절" 동작을 HttpClientHandler 레벨에서
+        // 복원. 두 HttpClient 모두 동일한 검증 정책을 사용.
         builder.Services.AddHttpClient(
             nameof(ConstantStrings.UserAgentText),
-            c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText));
+            c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.UserAgentText))
+            .ConfigurePrimaryHttpMessageHandler(CreateServerCertValidatingHandler);
         builder.Services.AddHttpClient(
             nameof(ConstantStrings.FamiliarUserAgentText),
-            c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.FamiliarUserAgentText));
+            c => c.DefaultRequestHeaders.Add("User-Agent", ConstantStrings.FamiliarUserAgentText))
+            .ConfigurePrimaryHttpMessageHandler(CreateServerCertValidatingHandler);
 
         builder.Services
             .AddSingleton<IAppMessageBox, AppMessageBox>()
@@ -109,6 +117,39 @@ public static class UseSporkExtensions
             .AddSingleton<Application>(sp => new SporkApplication(sp.GetRequiredService<IHost>()));
 
         return builder;
+    }
+
+    /// <summary>
+    /// HttpClient 한 개에 대해 서버 인증서 검증 핸들러를 만든다. 검증 실패 시 IAppMessageBox로
+    /// 사용자에게 알림을 띄우고 연결을 거절(false 반환). IAppMessageBox는 콜백 시점에 비로소
+    /// IServiceProvider에서 해소하므로 DI 등록 순서와 무관하게 동작한다.
+    /// </summary>
+    private static HttpClientHandler CreateServerCertValidatingHandler(IServiceProvider sp)
+    {
+        return new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (request, cert, chain, errors) =>
+            {
+                if (errors == SslPolicyErrors.None)
+                    return true;
+
+                try
+                {
+                    var appMessageBox = sp.GetService<IAppMessageBox>();
+                    if (appMessageBox != null && cert != null)
+                    {
+                        appMessageBox.DisplayError(
+                            StringResources.Error_X509CertError(cert.Subject, errors.ToString()),
+                            false);
+                    }
+                }
+                catch
+                {
+                    // 알림 채널 자체가 비정상이어도 검증 결과는 false로 유지하여 안전한 쪽을 택한다.
+                }
+                return false;
+            }
+        };
     }
 
     private static void ApplySporkAnswersIfPresent()
