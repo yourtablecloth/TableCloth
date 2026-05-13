@@ -22,6 +22,20 @@
 		<Description>This program is a tool that installs the requested installers at once in the sandbox.</Description>
 	</PropertyGroup>
 
+	<!--
+		Phase 8 — Spork 단독 게시 정책. TableCloth.csproj와 동일하게 RuntimeIdentifier가 명시된
+		경우(=실제 publish 호출)에만 활성화되어 `dotnet build`에는 영향을 주지 않는다.
+		단독 출시 흐름:
+		  dotnet publish src/Spork -c Release -r win-x64 -p:SelfContained=true -o publish/spork/win-x64
+	-->
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+		<PublishSingleFile>true</PublishSingleFile>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<PublishTrimmed>false</PublishTrimmed>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
 		<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
 		<DebugType>full</DebugType>

@@ -250,13 +250,14 @@ Phase 5 검증을 마치고 코드베이스의 net48 시절 잔재를 전수 점
 - [x] **CI 파이프라인 검토** — [.github/workflows/build.yml](../.github/workflows/build.yml)은 이미 `-r win-{platform}` + `--self-contained` + `-p:PublishSingleFile=true` + `-p:PublishReadyToRun=true` 명시로 Phase 5 정책과 정합. csproj 조건부 PropertyGroup과 중복이지만 CI에서는 explicit-is-better-in-CI 원칙으로 유지. [winget_publish.yml](../.github/workflows/winget_publish.yml), [bump_catalog_submodule.yml](../.github/workflows/bump_catalog_submodule.yml)은 릴리스/카탈로그 운영 워크플로라 본 리팩토링 영향 없음
 - [ ] 코드 서명 / 릴리스 노트 템플릿 — 현행 CI 흐름과 충돌하지 않으므로 별도 시점에 별도 PR로 분리 처리 권장
 
-### Phase 8 (옵션) — Spork 단독 출시 준비
+### Phase 8 (옵션) — Spork 단독 출시 준비 (2026-05-13 부분 착수)
 
-이 단계는 필요해질 때 착수.
-
-- [ ] `src/Spork/Program.cs`를 얇은 진입점(`builder.UseSpork().Build().Run()`)으로 부활 또는 신규 작성
-- [ ] 별도 게시 프로파일 (Spork-only single-file self-contained)
-- [ ] 별도 릴리스 채널/패키징
+- [x] `src/Spork/Program.cs`를 얇은 진입점(`builder.UseSpork().Build().Run()`)으로 유지 — Phase 2.1에서 이미 슬림화되어 있음
+- [x] **[Spork.slnx](../Spork.slnx) 신설** — Spork 진입점 + Spork.App + 공유 코어 + Spork.Test만 묶은 단독 솔루션. 메인 `TableCloth.slnx`와 무관하게 독립 빌드/게시 가능:
+  - `dotnet build Spork.slnx`
+  - `dotnet publish src/Spork -c Release -r win-x64 -p:SelfContained=true -o publish/spork/win-x64`
+- [x] **Spork.csproj에 Phase 5와 동일한 조건부 publish PropertyGroup 추가** — `RuntimeIdentifier != ''`일 때 PublishSingleFile / IncludeNativeLibrariesForSelfExtract / EnableCompressionInSingleFile / PublishReadyToRun / PublishTrimmed=false 자동 활성화. 단독 publish 결과 `Spork.exe` 91.9 MB 단일 파일 산출 검증
+- [ ] 별도 릴리스 채널/패키징 (Velopack `vpk pack`을 Spork-only 패키지 ID로) — 필요해질 때 별도 PR로 분리
 
 ## 의사결정 로그
 
