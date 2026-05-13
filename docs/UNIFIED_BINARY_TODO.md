@@ -239,12 +239,16 @@ Phase 5 검증을 마치고 코드베이스의 net48 시절 잔재를 전수 점
 - [ ] ~~C. 하이브리드~~ — 미채택
 - [ ] GitHub Actions / 로컬 빌드 스크립트 갱신은 Phase 7의 "CI 파이프라인" 항목으로 이전
 
-### Phase 7 — 정리 / 문서화
+### Phase 7 — 정리 / 문서화 (2026-05-13, 커밋 `e246132`)
 
-- [ ] `Spork` 프로젝트 디렉터리/이름 정리 (제거 or 단독 출시용 placeholder)
-- [ ] 미사용 NuGet/리소스/스크립트 제거
-- [ ] [README.md](../README.md), [DEVELOPMENT.md](../DEVELOPMENT.md) 갱신 — 빌드/실행/디버그 절차, 새 모듈 구조 설명
-- [ ] 코드 서명 / CI 파이프라인 / 릴리스 노트 템플릿 갱신
+- [x] **Spork 프로젝트 정리** — 이미 4파일(`App.ico`/`Program.cs`/`Spork.csproj`/`app.manifest`)로 슬림한 단독 출시 후보 상태. Phase 8을 위해 그대로 보존, 변경 없음
+- [x] **미사용 NuGet/스크립트 잔재 제거**:
+  - [Directory.Packages.props](../Directory.Packages.props)에서 어느 프로젝트도 직접 참조하지 않는 PackageVersion 9개 제거 (net48 시절 explicit BCL pin): `Microsoft.Extensions.Configuration.Abstractions` / `DependencyInjection.Abstractions` / `Logging.Abstractions` / `Options` / `Primitives`, `System.Collections.Immutable`, `System.Drawing.Common`, `System.Reflection.Metadata`, `System.Resources.Extensions`
+  - [build.cs](../build.cs) 잔재 정리: `-p:Platform={platform}` 제거 (Phase 4.1에서 csproj Platforms 삭제), `-p:PublishSingleFile=false` override 제거 (Phase 5의 csproj 조건부 PropertyGroup에 위임), iconPath를 `src/TableCloth/Resources` → `src/TableCloth.App/Resources`로 이전 반영
+- [x] **[README.md](../README.md) 갱신** — `.NET Framework 4.8 SDK` 요구사항 제거, `DEVREADME.md` 깨진 링크 → `DEVELOPMENT.md`
+- [x] **[DEVELOPMENT.md](../DEVELOPMENT.md) 갱신** — 프로젝트 구조 / 진입점 디스패치 / 빌드·게시 시나리오 / 단위 테스트 / 아키텍처 결정 배경 섹션 추가, `UNIFIED_BINARY_TODO.md` 링크
+- [x] **CI 파이프라인 검토** — [.github/workflows/build.yml](../.github/workflows/build.yml)은 이미 `-r win-{platform}` + `--self-contained` + `-p:PublishSingleFile=true` + `-p:PublishReadyToRun=true` 명시로 Phase 5 정책과 정합. csproj 조건부 PropertyGroup과 중복이지만 CI에서는 explicit-is-better-in-CI 원칙으로 유지. [winget_publish.yml](../.github/workflows/winget_publish.yml), [bump_catalog_submodule.yml](../.github/workflows/bump_catalog_submodule.yml)은 릴리스/카탈로그 운영 워크플로라 본 리팩토링 영향 없음
+- [ ] 코드 서명 / 릴리스 노트 템플릿 — 현행 CI 흐름과 충돌하지 않으므로 별도 시점에 별도 PR로 분리 처리 권장
 
 ### Phase 8 (옵션) — Spork 단독 출시 준비
 
