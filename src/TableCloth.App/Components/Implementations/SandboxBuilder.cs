@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -68,9 +69,22 @@ public sealed class SandboxBuilder(
             return default;
 
         tableClothConfiguration.AssetsDirectoryPath = appDirectory;
-        tableClothConfiguration.HostDotnetRootPath = RequiresHostDotnetMount(appDirectory)
-            ? TryResolveHostDotnetRoot()
-            : null;
+
+        // framework-dependent 빌드면 호스트 dotnet 설치에서 host/+shared/(10.*)만 hardlink로 복제한
+        // 슬림 미러를 staging 안에 만들고 그것을 마운트 대상으로 사용. 호스트 dotnet 통째 마운트
+        // (대표 ~2.5 GB, 그중 1.5 GB는 미사용 SDK)에 비해 마운트 표면이 ~5분의 1로 줄어 sandbox
+        // 첫 enumerate 비용 감소.
+        if (RequiresHostDotnetMount(appDirectory))
+        {
+            var hostDotnetRoot = TryResolveHostDotnetRoot();
+            tableClothConfiguration.HostDotnetRootPath = hostDotnetRoot is null
+                ? null
+                : await BuildSlimDotnetMirrorAsync(hostDotnetRoot, outputDirectory, cancellationToken).ConfigureAwait(false);
+        }
+        else
+        {
+            tableClothConfiguration.HostDotnetRootPath = null;
+        }
 
         // Spork가 카탈로그 UI에서 사이트 아이콘을 표시하려면 App/images에 png들이 있어야 한다.
         // 호스트 빌드 시 만들어 두는 Images.zip을 그대로 풀어 둔다 (실패해도 catalog 자체는 동작).
@@ -302,11 +316,99 @@ popd
         }
     }
 
+    /// <summary>
+    /// 가능한 경우 NTFS 하드링크로 즉시 복제하고, 같은 볼륨이 아니거나 파일 시스템이 하드링크를
+    /// 지원하지 않으면 byte 복사로 폴백한다. 하드링크는 거의 비용이 0이고 디스크 사용량을 차지하지
+    /// 않으며, 샌드박스의 RO 마운트 측에서는 일반 파일과 구분되지 않는다.
+    /// </summary>
     private static async Task CopyFileAsync(string source, string destination, CancellationToken cancellationToken)
     {
+        if (TryCreateHardLink(destination, source))
+            return;
+
         using var src = new FileStream(source, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
         using var dst = new FileStream(destination, FileMode.Create, FileAccess.Write, FileShare.None, 81920, useAsync: true);
         await src.CopyToAsync(dst, 81920, cancellationToken).ConfigureAwait(false);
+    }
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true, EntryPoint = "CreateHardLinkW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool CreateHardLinkW(string lpFileName, string lpExistingFileName, IntPtr lpSecurityAttributes);
+
+    private static bool TryCreateHardLink(string destination, string source)
+    {
+        try { return CreateHardLinkW(destination, source, IntPtr.Zero); }
+        catch { return false; }
+    }
+
+    /// <summary>
+    /// 호스트의 <c>%ProgramFiles%\dotnet</c>(또는 사용자 설치 경로) 전체(대표 ~2.5 GB, 1.5 GB가 미사용
+    /// SDK)를 그대로 마운트하는 대신, 샌드박스에 노출할 최소 슬림 미러를 staging 안에 만든다.
+    /// 포함 범위:
+    /// <list type="bullet">
+    ///   <item><c>host/</c> 전체 — hostfxr.dll 등 ~1.4 MB</item>
+    ///   <item><c>shared/Microsoft.NETCore.App/10.*</c> — net10 런타임</item>
+    ///   <item><c>shared/Microsoft.WindowsDesktop.App/10.*</c> — net10 WPF/WinForms 런타임</item>
+    /// </list>
+    /// SDK 폴더와 net6/net8 등 구버전 런타임은 의도적으로 제외. 파일은 가능하면 NTFS 하드링크로
+    /// 복제하므로 시간/공간 비용이 거의 0이다.
+    /// </summary>
+    private static async Task<string?> BuildSlimDotnetMirrorAsync(
+        string hostDotnetRoot, string outputDirectory, CancellationToken cancellationToken)
+    {
+        var slimRoot = Path.Combine(outputDirectory, HostDotnetLeafName);
+        if (Directory.Exists(slimRoot))
+            Directory.Delete(slimRoot, recursive: true);
+        Directory.CreateDirectory(slimRoot);
+
+        var hostSrc = Path.Combine(hostDotnetRoot, "host");
+        if (Directory.Exists(hostSrc))
+            await MirrorDirectoryAsync(hostSrc, Path.Combine(slimRoot, "host"), cancellationToken).ConfigureAwait(false);
+
+        var sharedSrc = Path.Combine(hostDotnetRoot, "shared");
+        if (Directory.Exists(sharedSrc))
+        {
+            foreach (var sharedApp in new[] { "Microsoft.NETCore.App", "Microsoft.WindowsDesktop.App" })
+            {
+                var appSrc = Path.Combine(sharedSrc, sharedApp);
+                if (!Directory.Exists(appSrc))
+                    continue;
+
+                foreach (var versionDir in Directory.GetDirectories(appSrc))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var versionName = Path.GetFileName(versionDir);
+                    // 본 프로세스가 net10 빌드이므로 10.* 런타임만 미러링. 구버전(6.x/8.x/9.x)은 sandbox에서 사용되지 않음.
+                    if (!versionName.StartsWith("10.", StringComparison.Ordinal))
+                        continue;
+
+                    var versionDst = Path.Combine(slimRoot, "shared", sharedApp, versionName);
+                    await MirrorDirectoryAsync(versionDir, versionDst, cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
+        return slimRoot;
+    }
+
+    private static async Task MirrorDirectoryAsync(string source, string destination, CancellationToken cancellationToken)
+    {
+        if (!Directory.Exists(destination))
+            Directory.CreateDirectory(destination);
+
+        foreach (var srcFile in Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var relative = Path.GetRelativePath(source, srcFile);
+            var dstFile = Path.Combine(destination, relative);
+
+            var dstParent = Path.GetDirectoryName(dstFile);
+            if (!string.IsNullOrEmpty(dstParent) && !Directory.Exists(dstParent))
+                Directory.CreateDirectory(dstParent);
+
+            await CopyFileAsync(srcFile, dstFile, cancellationToken).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
