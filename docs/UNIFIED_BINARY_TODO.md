@@ -186,18 +186,28 @@ Phase 4에서 도입한 자동 self-contained 정책을 향후 Native AOT / Aval
 - [x] 빌드 0 에러
 - 향후 CI/CD에서 배포물 게시 시 `dotnet publish -r win-x64 -p:SelfContained=true` 식으로 RID/번들 지정. release 배포물은 `hostfxr.dll`이 동봉되므로 SandboxBuilder가 자동으로 호스트 dotnet 마운트 단계 생략.
 
-### Phase 5 — 단일 파일 publish
+### Phase 5 — 단일 파일 publish (2026-05-13)
 
-- [ ] 진입점 `TableCloth.csproj`에 publish 속성 추가:
+게시 정책 의사결정:
+
+- **Velopack 옵션 A 채택** — 기존 설치/업데이트 UX 그대로 유지
+- **PublishSingleFile=true** — TableCloth.exe 한 파일로 자기 추출
+- **PublishReadyToRun=true** — R2R 코드 생성으로 cold start 개선
+
+- [x] 진입점 [TableCloth.csproj](../src/TableCloth/TableCloth.csproj)에 `RuntimeIdentifier != ''` 조건부 PropertyGroup 추가 — `dotnet build` (dev) 영향 없이 `dotnet publish -r <rid>` 시점에만 활성화:
   - `PublishSingleFile=true`
   - `IncludeNativeLibrariesForSelfExtract=true`
-  - `SelfContained=true`
-  - `PublishTrimmed=false` (WPF + reflection-heavy XAML)
-  - `PublishReadyToRun=true` (선택, cold start 개선)
-- [ ] 코드베이스 전수 검색 — `Assembly.GetExecutingAssembly().Location`, `Assembly.GetEntryAssembly().Location`, `typeof(X).Assembly.Location` 사용처를 `AppContext.BaseDirectory` 또는 `Environment.ProcessPath`로 교체
-- [ ] Sentry/Velopack의 어셈블리 location 의존 동작이 single-file 모드에서 정상인지 검증
-- [ ] win-x64 / win-arm64 두 RID 모두 게시물 검증
-- [ ] 첫 실행 시 자기-추출 캐시 위치 / 권한 / 사이즈 측정
+  - `EnableCompressionInSingleFile=true`
+  - `PublishReadyToRun=true`
+  - `PublishTrimmed=false`
+  - `SelfContained`/`RuntimeIdentifier`는 의도적으로 csproj에 두지 않음 (CI/CD가 `-r`/`-p:SelfContained=true`로 명시)
+- [x] `Assembly.Location` 사용처 전수 검색 — Phase 0에서 이미 정리, 추가 잔재 없음
+- [x] win-x64 게시 검증 — `dotnet publish -c Release -r win-x64 -p:SelfContained=true` 성공, `TableCloth.exe` 93.7 MB 단일 파일 산출
+- [x] [SandboxBuilder.RequiresHostDotnetMount](../src/TableCloth.App/Components/Implementations/SandboxBuilder.cs) 보강 — single-file 게시 시 `hostfxr.dll`이 exe 내부에 묶여 폴더에 없으므로, `Assembly.Location`이 빈 문자열인 경우 single-file = 자동 self-contained로 판정해 호스트 dotnet 마운트 단계를 건너뛰도록 단축 경로 추가
+- [ ] Sentry/Velopack single-file 모드 동작 — 사용자 검증 단계
+- [ ] win-arm64 RID 게시 검증
+- [ ] 첫 실행 자기-추출 캐시 동작 / 사이즈 / cold start 측정
+- 권장 publish 명령 (CI/CD): `dotnet publish src/TableCloth -c Release -r win-x64 -p:SelfContained=true -o publish/win-x64` + `vpk pack -packId TableCloth -mainExe TableCloth.exe -packDir publish/win-x64 ...`
 
 ### Phase 6 — Velopack 정책 결정
 
