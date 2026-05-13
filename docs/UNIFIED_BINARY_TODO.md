@@ -167,7 +167,7 @@ TableCloth.exe <future-verb>      → 후속 확장 모듈 (필요 시)
 - [x] [AppStartup.HasRequirementsMetAsync](../src/TableCloth.App/Components/Implementations/AppStartup.cs) — Spork.zip 존재 확인 단계 제거
 - [x] [TableCloth.csproj](../src/TableCloth/TableCloth.csproj)에 `SelfContained=true` + 조건부 `RuntimeIdentifier` 설정 (커밋 `3f5672f`)
 - [x] 빌드 0 에러 (커밋 `3f5672f`)
-- [ ] 실제 샌드박스 실행 회귀 확인 (사용자 검증)
+- [x] 실제 샌드박스 실행 회귀 확인 — Phase 4.2의 후속 버그 fix들을 거쳐 정상 동작 확인 (2026-05-12)
 
 #### Phase 4.1 — 프로젝트 수준 AnyCPU 통일 + 개발 단계 호스트 dotnet 주입 (2026-05-12, 커밋 `5c4b1b8`)
 
@@ -185,6 +185,17 @@ Phase 4에서 도입한 자동 self-contained 정책을 향후 Native AOT / Aval
 - [x] [TableClothConfiguration.cs](../src/TableCloth.Core/Models/Configuration/TableClothConfiguration.cs): `HostDotnetRootPath` 속성 추가 (null이면 self-contained 모드)
 - [x] 빌드 0 에러
 - 향후 CI/CD에서 배포물 게시 시 `dotnet publish -r win-x64 -p:SelfContained=true` 식으로 RID/번들 지정. release 배포물은 `hostfxr.dll`이 동봉되므로 SandboxBuilder가 자동으로 호스트 dotnet 마운트 단계 생략.
+
+#### Phase 4.2 — 사용자 검증 중 발견된 런타임 회귀 수정 (2026-05-12)
+
+샌드박스에서 `TableCloth.exe spork`를 실제 실행해 검증하는 과정에서 발견된 net48 → net10 마이그레이션 잔재 및 패턴 차이를 순차적으로 해소.
+
+- [x] **WPF 리소스 URI 누락 한정자** (커밋 `9f71078`) — TableCloth.App 측 [SplashScreen.xaml](../src/TableCloth.App/SplashScreen.xaml) 이미지, [Themes/ThemesController.cs](../src/TableCloth.App/Themes/ThemesController.cs), [Bootstrap/Dialogs/LicenseWindow.xaml.cs](../src/TableCloth.App/Bootstrap/Dialogs/LicenseWindow.xaml.cs)의 ResourceDictionary URI에 `/TableCloth.App;component/` 어셈블리 한정자 명시 — 진입점이 아닌 라이브러리에 리소스가 있어 기본 pack URI가 못 찾던 문제 (디자인 탈락 증상)
+- [x] **UpdateManifestVersion hook 끊김** (커밋 `6491717`) — Phase 4의 Spork.zip PreBuild 타깃 삭제 부수로 `BeforeTargets="PreBuild"`가 hook할 대상이 사라져 매니페스트 `$version$` 플레이스홀더가 그대로 출력에 들어가 Windows가 실행 거부. `BeforeTargets="PreBuildEvent"`로 복구
+- [x] **PresentationFramework.Aero2 strong-name 참조** (커밋 `6b4a4da`) — Spork.App [App.xaml:21](../src/Spork.App/App.xaml) ResourceDictionary Source에 박혀 있던 net48 시절 `Version=3.0.0.0, PublicKeyToken=31bf3856ad364e35, ProcessorArchitecture=MSIL` 식별자를 단순 형식(`/PresentationFramework.Aero2;component/...`)으로 정렬
+- [x] **SporkApplication Host == null** (커밋 `2272c03`) — `: this()` 체인이 `InitializeComponent`를 먼저 호출하고 `SetupHost`가 뒤에 오는 구조라 Application_Startup이 어떤 경로로 발사되어도 Host 필드가 보장되지 않음. 1-arg ctor 본문에서 Host와 IServiceProvider를 `InitializeComponent` **이전**에 먼저 설정하도록 정렬
+- [x] **SporkApplication SP disposed in async continuation** (커밋 `4e5b1b2`) — `Application_Startup`이 SafeFireAndForget 비동기로 흘러가면서 ctor 종료 후 시점에 `Host.Services.GetRequiredService`를 재호출. ObjectDisposedException 회피를 위해 모든 의존성을 ctor에서 미리 캐시
+- [x] **SporkApplication ↔ ApplicationService 순환 의존성** (커밋 `da0bc60`) — Spork.App의 `ApplicationService`와 `MainWindowViewModel`이 ctor에서 `Application`을 DI로 받아오는데, SporkApplication factory가 재귀 호출되며 "Cannot create more than one Application instance"가 발생. 두 클래스 모두 `Application.Current` 정적 참조로 전환해 단방향 그래프 확립. TableCloth.App 측도 같은 패턴이라 일관성 차원에서 같이 정렬
 
 ### Phase 5 — 단일 파일 publish (2026-05-13)
 
@@ -209,15 +220,24 @@ Phase 4에서 도입한 자동 self-contained 정책을 향후 Native AOT / Aval
 - [ ] 첫 실행 자기-추출 캐시 동작 / 사이즈 / cold start 측정
 - 권장 publish 명령 (CI/CD): `dotnet publish src/TableCloth -c Release -r win-x64 -p:SelfContained=true -o publish/win-x64` + `vpk pack -packId TableCloth -mainExe TableCloth.exe -packDir publish/win-x64 ...`
 
-### Phase 6 — Velopack 정책 결정
+#### Phase 5.1 — net48 잔재 종합 정리 (2026-05-13, 커밋 `ced4205` + `45cb9fb`)
 
-세 가지 옵션 중 택일하여 빌드 파이프라인 확정:
+Phase 5 검증을 마치고 코드베이스의 net48 시절 잔재를 전수 점검·제거. Explore 에이전트로 종합 스캔 후 일괄 처리.
 
-- [ ] **A. Velopack 유지 + 단일 파일 게시물 패키징**: 현재 설치/업데이트 UX 그대로 유지, 내부적으로 .exe 1개를 설치.
-- [ ] **B. Velopack 제거 + 순수 portable .exe 배포**: 사용자가 .exe 1개를 다운로드해 어디서나 실행. 업데이트는 in-app 체크 + 수동 교체 또는 자체 갱신 트릭.
-- [ ] **C. 하이브리드**: portable .exe를 primary로 두고, "설치" 액션 시 시작 메뉴 등록·자동 업데이트 활성화.
+- [x] **SYSLIB0014 dead code 제거** — [AppStartup.cs](../src/Spork.App/Components/Implementations/AppStartup.cs)의 `ServicePointManager.ServerCertificateValidationCallback` 라인과 `ValidateRemoteCertificate` 메서드 제거. .NET Core/5+ HttpClient는 SocketsHttpHandler를 거치므로 ServicePointManager 콜백이 무시되어 silent regression 상태였음
+- [x] **HttpClient 측 cert 검증 복원** — [UseSporkExtensions.cs](../src/Spork.App/DependencyInjection/UseSporkExtensions.cs)의 두 `AddHttpClient`에 `ConfigurePrimaryHttpMessageHandler` 추가, `HttpClientHandler.ServerCertificateCustomValidationCallback`으로 net48 시절 보호 동작(잘못된 cert 시 안내 + 거절) 복원. `IAppMessageBox`는 콜백 시점에 IServiceProvider lazy 해소
+- [x] **SYSLIB0057 X509Certificate2 ctor obsolete** — [MainWindowViewModel.cs:298](../src/Spork.App/ViewModels/MainWindowViewModel.cs#L298)의 `new X509Certificate2(byte[])`를 `X509CertificateLoader.LoadCertificate(byte[])`로 교체
+- [x] **#if NETFX dead branch 제거** — [X509CertPairScanner.cs](../src/TableCloth.App/Components/Implementations/X509CertPairScanner.cs)에서 net48 분기 제거, modern 경로(`X509CertificateLoader.LoadPkcs12FromFile`)만 유지
+- [x] **무용 ComVisible 데코레이션 제거** — [TableCloth.App AssemblyInfo.cs](../src/TableCloth.App/Properties/AssemblyInfo.cs)와 [Spork.csproj](../src/Spork/Spork.csproj)의 `[assembly: ComVisible]` / `[assembly: Guid]` / `ComVisible=true` 제거. `EnableComHosting` 없이는 의미 없는 net48 잔재
+- [x] **Settings.Designer.cs/Settings.settings 삭제** — Spork.App/Properties의 `ApplicationSettingsBase` 기반 빈 클래스로 미사용
+- [x] **CS8632 12 → 3건 감소** — [SporkApplication App.xaml.cs](../src/Spork.App/App.xaml.cs)에 `#nullable enable annotations` 적용. TableCloth.Core 모델은 `= null` 초기화 패턴이 cascading을 유발하여 의도적 미적용 (잔여 3건은 TableCloth.Core 전체 nullable 마이그레이션과 함께 후속 정리)
 
-결정 후 GitHub Actions / 로컬 빌드 스크립트 갱신.
+### Phase 6 — Velopack 정책 결정 (2026-05-13, Phase 5에서 채택)
+
+- [x] **A. Velopack 유지 + 단일 파일 게시물 패키징** — 현재 설치/업데이트 UX 그대로 유지, 내부적으로 self-contained 단일 파일 .exe 1개를 설치. Phase 5 csproj 조건부 PropertyGroup이 이 시나리오를 직접 지원
+- [ ] ~~B. Velopack 제거 + 순수 portable .exe 배포~~ — 미채택
+- [ ] ~~C. 하이브리드~~ — 미채택
+- [ ] GitHub Actions / 로컬 빌드 스크립트 갱신은 Phase 7의 "CI 파이프라인" 항목으로 이전
 
 ### Phase 7 — 정리 / 문서화
 
@@ -243,3 +263,7 @@ Phase 4에서 도입한 자동 self-contained 정책을 향후 Native AOT / Aval
 - 2026-05-12 — Phase 0 호환성 점검 결과: PnPeople.Security/Velopack/Sentry 모두 .NET 10 호환 확인. Mono.HttpUtility는 `System.Web.HttpUtility`로 교체(사용처 1군데). Assembly.Location 4건은 Spork에 집중, Phase 2에서 일괄 교체.
 - 2026-05-12 — CPM 도입 확정. Serilog는 4.3.0 핀(Spork 현행). Phase 1에서 `Directory.Packages.props` 추가.
 - 2026-05-12 — WPF Application 경계: verb별 `IHostedService`가 자기 모듈의 `Application` 인스턴스를 생성/실행. 한 프로세스 한 모듈 원칙.
+- 2026-05-12 — Phase 4에서 빌드 시 자동 self-contained로 박은 정책은 향후 Native AOT / Avalonia 전환 부담 때문에 Phase 4.1에서 되돌림. RID/번들 결정은 CI/CD publish 시점으로 위임, 개발 단계는 호스트 dotnet 마운트로 보완.
+- 2026-05-12 — SporkApplication 패턴: 의존성을 ctor에서 미리 캐시하고 `Application.Current` 정적 참조를 사용해 SP disposed/순환 의존성 함정 회피. TableCloth.App도 일관성 차원에서 같은 패턴.
+- 2026-05-13 — Phase 6 Velopack 정책: 옵션 A 채택(Velopack 유지 + 단일 파일 self-contained 게시). Phase 5의 csproj 조건부 PropertyGroup이 이 시나리오 직접 지원.
+- 2026-05-13 — net48 잔재 잔여 처리는 Phase 5.1에서 일괄 정리. TableCloth.Core 모델의 nullable 정합성은 별도 후속 작업으로 분리.
