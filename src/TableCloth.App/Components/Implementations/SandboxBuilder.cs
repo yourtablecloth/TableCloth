@@ -313,13 +313,27 @@ popd
     /// staging의 App 폴더(또는 게시 출력)에 .NET 호스팅 런타임(<c>hostfxr.dll</c>)이 동봉돼 있는지로
     /// self-contained 여부를 판정한다. 동봉돼 있지 않으면 호스트의 dotnet 설치를 추가 마운트해야 한다.
     /// </summary>
+    /// <remarks>
+    /// 세 가지 게시 형태를 모두 처리:
+    /// <list type="number">
+    ///   <item>single-file self-contained — 런타임이 exe 안에 묶여 있음. 호스트 실행 시
+    ///         <c>Assembly.Location</c>이 빈 문자열로 보이는 것으로 식별. 추가 마운트 불필요.</item>
+    ///   <item>multi-file self-contained — 폴더에 <c>hostfxr.dll</c>이 함께 있음. 추가 마운트 불필요.</item>
+    ///   <item>framework-dependent (dev 빌드 기본) — <c>hostfxr.dll</c>이 없음. 호스트 dotnet 마운트 필요.</item>
+    /// </list>
+    /// </remarks>
     private static bool RequiresHostDotnetMount(string appDirectory)
     {
         if (!Directory.Exists(appDirectory))
             return false;
 
-        // self-contained 게시는 apphost와 같은 폴더에 hostfxr.dll을 둔다.
-        // framework-dependent 빌드는 동일 폴더에 hostfxr.dll이 없으며 호스트의 dotnet 설치에서 찾는다.
+        // single-file 게시는 진입 어셈블리의 Location이 빈 문자열로 보인다.
+        // 이 경우 런타임은 exe 내부에 묶여 있으므로 추가 마운트 불필요.
+        var entryAssemblyLocation = typeof(SandboxBuilder).Assembly.Location;
+        if (string.IsNullOrEmpty(entryAssemblyLocation))
+            return false;
+
+        // multi-file 형태: hostfxr.dll이 같은 폴더에 있으면 self-contained로 판정.
         var hostfxr = Path.Combine(appDirectory, "hostfxr.dll");
         return !File.Exists(hostfxr);
     }

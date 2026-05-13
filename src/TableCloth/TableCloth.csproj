@@ -25,6 +25,26 @@
 		-->
 		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
 	</PropertyGroup>
+
+	<!--
+		Phase 5 — 게시 정책. RuntimeIdentifier가 명시된 경우(=실제 publish 호출)에만 활성화되어
+		`dotnet build`(dev 사이클)에는 영향을 주지 않는다. Velopack 배포 흐름:
+		  dotnet publish src/TableCloth -c Release -r win-x64 -p:SelfContained=true -o publish/win-x64
+		  vpk pack -packId TableCloth -mainExe TableCloth.exe -packDir publish/win-x64 ...
+
+		- PublishSingleFile=true            : TableCloth.exe 한 파일로 자기 추출
+		- IncludeNativeLibrariesForSelfExtract=true : WPF 네이티브 바이너리(wpfgfx 등)를 함께 동봉
+		- EnableCompressionInSingleFile=true: 압축으로 ~50% 사이즈 감소 (cold start 약간 느려짐)
+		- PublishReadyToRun=true            : R2R 코드 생성으로 cold start 개선 (사이즈 약간 증가)
+		- PublishTrimmed=false              : WPF/XAML은 리플렉션이 강해 트리밍은 위험
+	-->
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+		<PublishSingleFile>true</PublishSingleFile>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<PublishTrimmed>false</PublishTrimmed>
+	</PropertyGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="commit.txt">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
