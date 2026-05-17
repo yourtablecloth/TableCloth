@@ -167,6 +167,15 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("Build_Debug", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   All required packages for this site are already installed. Re-entry will skip installation steps.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string CatalogCard_InstalledTooltip {
+            get {
+                return ResourceManager.GetString("CatalogCard_InstalledTooltip", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   About과(와) 유사한 지역화된 문자열을 찾습니다.
@@ -831,7 +840,25 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("MainWindow_Favorites", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Force Reinstall과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MainWindow_ForceReinstall {
+            get {
+                return ResourceManager.GetString("MainWindow_ForceReinstall", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   When checked, previously installed packages will be reinstalled instead of skipped.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string MainWindow_ForceReinstallTooltip {
+            get {
+                return ResourceManager.GetString("MainWindow_ForceReinstallTooltip", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Just run it.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>

@@ -1,13 +1,22 @@
 ﻿using Microsoft.Win32;
+using Spork.Components;
 using Spork.ViewModels;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using TableCloth.Models.UserData;
 
 namespace Spork.Steps.Implementations
 {
     public sealed class EdgeExtensionInstallStep : StepBase<EdgeExtensionInstallItemViewModel>
     {
+        public EdgeExtensionInstallStep(IInstallRecordStore installRecordStore)
+        {
+            _installRecordStore = installRecordStore;
+        }
+
+        private readonly IInstallRecordStore _installRecordStore;
+
         public override Task<bool> EvaluateRequiredStepAsync(EdgeExtensionInstallItemViewModel _, CancellationToken cancellationToken = default)
             => Task.FromResult(true);
 
@@ -30,6 +39,9 @@ namespace Spork.Steps.Implementations
                 using (regKey.CreateSubKey(viewModel.EdgeExtensionId)) { }
                 regKey.SetValue("update_url", viewModel.EdgeCrxUrl);
             }
+
+            _installRecordStore.AddInstalledFingerprint(
+                PackageFingerprints.ForEdgeExtension(viewModel.EdgeExtensionId));
 
             return Task.CompletedTask;
         }

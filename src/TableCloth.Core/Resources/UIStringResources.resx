@@ -123,6 +123,9 @@
   <data name="AboutWindow_CatalogDateText" xml:space="preserve">
     <value>Catalog Version</value>
   </data>
+  <data name="CatalogCard_InstalledTooltip" xml:space="preserve">
+    <value>All required packages for this site are already installed. Re-entry will skip installation steps.</value>
+  </data>
   <data name="Sponsor_BannerMessage" xml:space="preserve">
     <value>This is free open-source software maintained by an individual developer.</value>
   </data>
@@ -343,6 +346,12 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   </data>
   <data name="MainWindow_Favorites" xml:space="preserve">
     <value>Show Only Favorites</value>
+  </data>
+  <data name="MainWindow_ForceReinstall" xml:space="preserve">
+    <value>Force Reinstall</value>
+  </data>
+  <data name="MainWindow_ForceReinstallTooltip" xml:space="preserve">
+    <value>When checked, previously installed packages will be reinstalled instead of skipped.</value>
   </data>
   <data name="MainWindow_JustRunItemText" xml:space="preserve">
     <value>Just run it.</value>

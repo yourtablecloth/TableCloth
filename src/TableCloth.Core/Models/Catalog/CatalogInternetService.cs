@@ -9,7 +9,7 @@ namespace TableCloth.Models.Catalog
     /// <summary>
     /// 특정 서비스 및 해당 서비스용 소프트웨어에 대한 정보를 담는 XML 요소를 나타냅니다.
     /// </summary>
-    public sealed class CatalogInternetService
+    public sealed class CatalogInternetService : System.ComponentModel.INotifyPropertyChanged
     {
         private static readonly char[] SearchKeywordsSeparators = new char[] { ';', };
 
@@ -41,6 +41,33 @@ namespace TableCloth.Models.Catalog
         public string CompatibilityNotes { get; set; } = null;
 
         public bool IsFavorite { get; set; }
+
+        /// <summary>
+        /// 카탈로그가 정의한 모든 패키지/Edge 확장/CustomBootstrap 스크립트가 영속 저장소에 fingerprint
+        /// 로 기록되어 있어 다음 진입 시 StepsComposer 가 모두 건너뛸 상태인지 여부.
+        /// 카탈로그 진입 직후와 설치 완료 후 catalog 뷰로 돌아올 때 MainWindowViewModel 이 재계산해
+        /// UI 배지의 표시 여부를 결정한다.
+        /// </summary>
+        /// <remarks>
+        /// 단일 INotifyPropertyChanged 트리거가 필요한 유일한 멤버이므로 ObservableObject 전체 도입 대신
+        /// 수동 PropertyChanged 발화. WPF 바인딩은 이 이벤트로 자동 갱신된다.
+        /// </remarks>
+        public bool IsAllInstalled
+        {
+            get => _isAllInstalled;
+            set
+            {
+                if (_isAllInstalled == value)
+                    return;
+                _isAllInstalled = value;
+                PropertyChanged?.Invoke(this, IsAllInstalledChangedArgs);
+            }
+        }
+        private bool _isAllInstalled;
+        private static readonly System.ComponentModel.PropertyChangedEventArgs IsAllInstalledChangedArgs
+            = new System.ComponentModel.PropertyChangedEventArgs(nameof(IsAllInstalled));
+
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// 서비스를 이용하기 위해 설치해야 하는 소프트웨어 정보 목록

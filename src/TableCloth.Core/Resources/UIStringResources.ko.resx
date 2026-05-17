@@ -123,6 +123,9 @@
   <data name="AboutWindow_CatalogDateText" xml:space="preserve">
     <value>카탈로그 버전</value>
   </data>
+  <data name="CatalogCard_InstalledTooltip" xml:space="preserve">
+    <value>이 사이트에 필요한 모든 패키지가 설치되어 있습니다. 재진입 시 설치 단계를 건너뜁니다.</value>
+  </data>
   <data name="Sponsor_BannerMessage" xml:space="preserve">
     <value>개인 개발자가 유지·관리하는 무료 공개 소프트웨어입니다.</value>
   </data>
@@ -343,6 +346,12 @@
   </data>
   <data name="MainWindow_Favorites" xml:space="preserve">
     <value>즐겨찾기만 표시</value>
+  </data>
+  <data name="MainWindow_ForceReinstall" xml:space="preserve">
+    <value>강제 재설치</value>
+  </data>
+  <data name="MainWindow_ForceReinstallTooltip" xml:space="preserve">
+    <value>체크하면 이전에 설치한 패키지도 건너뛰지 않고 다시 설치합니다.</value>
   </data>
   <data name="MainWindow_JustRunItemText" xml:space="preserve">
     <value>그냥 실행해주세요.</value>

@@ -66,6 +66,7 @@ namespace Spork.ViewModels
             IStepsPlayer stepsPlayer,
             IAppMessageBox appMessageBox,
             IUserDataStore userDataStore,
+            IInstallRecordStore installRecordStore,
             IShortcutCreator shortcutCreator,
             IWebBrowserServiceFactory webBrowserServiceFactory,
             IX509CertScanner certScanner,
@@ -80,6 +81,7 @@ namespace Spork.ViewModels
             _stepsPlayer = stepsPlayer;
             _appMessageBox = appMessageBox;
             _userDataStore = userDataStore;
+            _installRecordStore = installRecordStore;
             _shortcutCreator = shortcutCreator;
             _webBrowserServiceFactory = webBrowserServiceFactory;
             _certScanner = certScanner;
@@ -97,6 +99,7 @@ namespace Spork.ViewModels
         private readonly IStepsPlayer _stepsPlayer;
         private readonly IAppMessageBox _appMessageBox;
         private readonly IUserDataStore _userDataStore;
+        private readonly IInstallRecordStore _installRecordStore;
         private readonly IShortcutCreator _shortcutCreator;
         private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
         private readonly IX509CertScanner _certScanner;
@@ -108,14 +111,10 @@ namespace Spork.ViewModels
         /// </summary>
         private bool _enteredViaCatalog;
 
-        private SporkUserData _userData = new SporkUserData();
+        // 사용자 데이터는 IUserDataStore.Current 가 단일 진실. _userData 는 그 단축 참조.
+        // 디바운스 저장도 IUserDataStore.ScheduleSave 가 담당한다.
+        private SporkUserData _userData => _userDataStore.Current;
         private bool _suppressUserDataSave;
-
-        // 즐겨찾기/사용 기록 변경마다 mounted 호스트 폴더로 즉시 JSON 쓰기는 100ms+ 지연이 흔하다.
-        // 빠른 클릭들을 단일 쓰기로 합치는 디바운서. 다음 클릭이 들어오면 보류 중인 쓰기를 취소하고
-        // 새 타이머를 시작한다.
-        private CancellationTokenSource _userDataSaveDebounceCts;
-        private const int UserDataSaveDebounceMs = 250;
 
         private static readonly PropertyGroupDescription CatalogGroupDescription =
             new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
@@ -136,7 +135,8 @@ namespace Spork.ViewModels
 
             await NotifyWindowLoadedAsync(this, EventArgs.Empty);
 
-            _userData = await _userDataStore.LoadAsync();
+            await _userDataStore.EnsureLoadedAsync();
+            await _installRecordStore.EnsureLoadedAsync();
             _suppressUserDataSave = true;
             try
             {
@@ -214,6 +214,13 @@ namespace Spork.ViewModels
             foreach (var service in ordered)
                 service.IsFavorite = favSet.Contains(service.Id);
 
+            // 카탈로그가 생성하는 모든 fingerprint 를 수집해 영속 저장소에서 더 이상 유효하지 않은 항목을 청소.
+            // 무한 누적 방지 + 카탈로그에서 사이트/패키지가 제거되면 자동으로 기록도 삭제됨.
+            _installRecordStore.PruneStaleFingerprints(CollectActiveCatalogFingerprints(ordered));
+
+            // 각 사이트의 설치 완료 여부를 계산해 카탈로그 카드의 배지 표시 상태를 결정.
+            RefreshIsAllInstalledFlags(ordered);
+
             CatalogServices = ordered;
 
             var view = (CollectionView)CollectionViewSource.GetDefaultView(CatalogServices);
@@ -262,7 +269,7 @@ namespace Spork.ViewModels
             if (string.Equals(nameof(ShowFavoritesOnly), e.PropertyName, StringComparison.Ordinal) && !_suppressUserDataSave)
             {
                 _userData.ShowFavoritesOnly = ShowFavoritesOnly;
-                ScheduleUserDataSave();
+                _userDataStore.ScheduleSave();
             }
         }
 
@@ -294,52 +301,52 @@ namespace Spork.ViewModels
             }
 
             // 디스크 쓰기는 디바운스 + fire-and-forget. 빠른 클릭 시 마지막 상태 1회만 저장.
-            ScheduleUserDataSave();
+            _userDataStore.ScheduleSave();
+        }
+
+        // 디바운스 저장 로직은 IUserDataStore.ScheduleSave 로 이전됨. UI 측은 변형 후 호출만 하면 된다.
+
+        /// <summary>
+        /// 현재 카탈로그가 만들어내는 모든 install fingerprint 를 수집한다. lazy prune 입력으로 사용.
+        /// </summary>
+        private static IEnumerable<string> CollectActiveCatalogFingerprints(IEnumerable<CatalogInternetService> services)
+        {
+            foreach (var service in services ?? Enumerable.Empty<CatalogInternetService>())
+                foreach (var fp in CollectFingerprintsForService(service))
+                    yield return fp;
         }
 
         /// <summary>
-        /// 사용자 데이터를 디바운스 후 비동기 저장한다. 새 호출이 들어오면 이전 보류 중인 쓰기를 취소하고
-        /// 타이머를 다시 시작한다. mounted 호스트 폴더(Desktop\Data) 쓰기 지연을 UI 클릭 응답성에서 분리.
+        /// 한 사이트가 카탈로그 상 정의하는 모든 fingerprint(패키지/Edge 확장/CustomBootstrap). 본 사이트의
+        /// 설치 완료 여부 판정과 prune 입력 양쪽에서 같은 규칙을 공유한다.
         /// </summary>
-        private void ScheduleUserDataSave()
+        private static IEnumerable<string> CollectFingerprintsForService(CatalogInternetService service)
         {
-            // 이전 보류 중인 쓰기 취소 후 새 토큰 발급.
-            var previous = Interlocked.Exchange(ref _userDataSaveDebounceCts, new CancellationTokenSource());
-            previous?.Cancel();
-            previous?.Dispose();
+            if (service == null)
+                yield break;
 
-            var cts = _userDataSaveDebounceCts;
-            var token = cts.Token;
+            foreach (var package in service.Packages ?? Enumerable.Empty<CatalogPackageInformation>())
+                yield return PackageFingerprints.ForPackage(package.Url, package.Arguments);
 
-            // _userData는 UI 스레드에서만 변형되므로, 백그라운드 직렬화 중 컬렉션이 변형되는 race를 막기 위해
-            // UI 스레드 시점의 컬렉션 스냅샷을 캡처해 전달한다. 작은 객체라 깊은 복사 비용은 무시 가능.
-            var snapshot = CloneUserData(_userData);
+            foreach (var extension in service.EdgeExtensions ?? Enumerable.Empty<CatalogEdgeExtensionInformation>())
+                yield return PackageFingerprints.ForEdgeExtension(extension.ExtensionId);
 
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    await Task.Delay(UserDataSaveDebounceMs, token).ConfigureAwait(false);
-                    await _userDataStore.SaveAsync(snapshot, token).ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-                    // 후속 클릭에 의해 supersede됨. 정상 흐름.
-                }
-            }, token);
+            if (!string.IsNullOrWhiteSpace(service.CustomBootstrap))
+                yield return PackageFingerprints.ForPowerShellScript(service.CustomBootstrap);
         }
 
-        private static SporkUserData CloneUserData(SporkUserData source)
+        /// <summary>
+        /// 각 사이트의 IsAllInstalled 플래그를 영속 저장소의 fingerprint 집합과 비교해 갱신한다.
+        /// 정의된 fingerprint 가 0개인 사이트(설치할 게 없는 카탈로그 항목)는 trivially 설치 완료로 본다.
+        /// </summary>
+        private void RefreshIsAllInstalledFlags(IEnumerable<CatalogInternetService> services)
         {
-            return new SporkUserData
+            foreach (var service in services ?? Enumerable.Empty<CatalogInternetService>())
             {
-                SchemaVersion = source.SchemaVersion,
-                ShowFavoritesOnly = source.ShowFavoritesOnly,
-                Favorites = source.Favorites != null ? new List<string>(source.Favorites) : new List<string>(),
-                LastUsedAt = source.LastUsedAt != null
-                    ? new Dictionary<string, DateTime>(source.LastUsedAt)
-                    : new Dictionary<string, DateTime>(),
-            };
+                var serviceFingerprints = CollectFingerprintsForService(service).ToList();
+                service.IsAllInstalled = serviceFingerprints.Count > 0
+                    && serviceFingerprints.All(_installRecordStore.IsInstalled);
+            }
         }
 
         [RelayCommand]
@@ -416,6 +423,10 @@ namespace Spork.ViewModels
                 targetIconKey: siteId);
             var result = installWindow.ShowDialog();
 
+            // 모달 동안 install Step 들이 fingerprint 를 기록했을 수 있으므로 배지 상태를 즉시 재계산.
+            // 방금 설치 완료한 사이트는 이 호출 직후 카드에 체크 배지가 표시된다.
+            RefreshIsAllInstalledFlags(CatalogServices);
+
             // 카탈로그 뷰는 모달 뒤에서 계속 보였으므로 별도 복귀 처리는 필요 없다.
             // 다음 사이트를 자유롭게 고를 수 있도록 선택만 초기화한다.
             SelectedCatalogService = null;
@@ -427,7 +438,7 @@ namespace Spork.ViewModels
             }
         }
 
-        private async Task RecordUsageAsync(IEnumerable<string> siteIds)
+        private Task RecordUsageAsync(IEnumerable<string> siteIds)
         {
             var now = DateTime.UtcNow;
             _userData.LastUsedAt ??= new Dictionary<string, DateTime>();
@@ -439,7 +450,8 @@ namespace Spork.ViewModels
                 _userData.LastUsedAt[id] = now;
             }
 
-            await _userDataStore.SaveAsync(_userData);
+            _userDataStore.ScheduleSave();
+            return Task.CompletedTask;
         }
 
         private async Task EnterStepsModeAsync(IEnumerable<StepItemViewModel> steps, bool showPrecautions)
@@ -569,6 +581,20 @@ namespace Spork.ViewModels
 
         [ObservableProperty]
         private bool _showFavoritesOnly;
+
+        /// <summary>
+        /// 카탈로그 상단의 "강제 재설치" 체크박스 바인딩. <see langword="true"/>이면 StepsComposer 가
+        /// fingerprint 일치 여부를 무시하고 모든 패키지/확장/스크립트를 다시 설치한다.
+        /// 세션 전용 토글 — <see cref="IUserDataStore"/>에는 영속되지 않는다.
+        /// </summary>
+        [ObservableProperty]
+        private bool _forceReinstall;
+
+        partial void OnForceReinstallChanged(bool value)
+        {
+            // 토글이 StepsComposer 가 다음 진입 시 참조하는 IInstallRecordStore.ForceReinstall 로 즉시 전파.
+            _installRecordStore.ForceReinstall = value;
+        }
 
         [ObservableProperty]
         private IList<StepItemViewModel> _installSteps = new ObservableCollection<StepItemViewModel>();

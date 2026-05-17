@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TableCloth.Models.Catalog;
+using TableCloth.Models.UserData;
 using TableCloth.Resources;
 
 namespace Spork.Steps.Implementations
@@ -15,18 +16,21 @@ namespace Spork.Steps.Implementations
             TaskFactory taskFactory,
             IStepsFactory stepsFactory,
             ICommandLineArguments commandLineArguments,
-            IResourceCacheManager resourceCacheManager)
+            IResourceCacheManager resourceCacheManager,
+            IInstallRecordStore installRecordStore)
         {
             _taskFactory = taskFactory;
             _stepsFactory = stepsFactory;
             _commandLineArguments = commandLineArguments;
             _resourceCacheManager = resourceCacheManager;
+            _installRecordStore = installRecordStore;
         }
 
         private readonly TaskFactory _taskFactory;
         private readonly IStepsFactory _stepsFactory;
         private readonly ICommandLineArguments _commandLineArguments;
         private readonly IResourceCacheManager _resourceCacheManager;
+        private readonly IInstallRecordStore _installRecordStore;
 
         public IEnumerable<StepItemViewModel> ComposeSteps()
             => ComposeStepsInternal(_commandLineArguments.GetCurrent().SelectedServices);
@@ -66,6 +70,14 @@ namespace Spork.Steps.Implementations
                 },
             });
 
+            // 같은 사이트를 반복 진입하는 워크플로에서 매번 같은 패키지를 재설치하지 않도록,
+            // 이미 설치된 fingerprint 와 일치하는 항목은 본 단계에서 제외한다.
+            // ForceReinstall 토글이 켜져 있으면 모든 항목을 다시 포함한다.
+            var forceReinstall = _installRecordStore.ForceReinstall;
+
+            bool ShouldInclude(string fingerprint)
+                => forceReinstall || !_installRecordStore.IsInstalled(fingerprint);
+
             foreach (var eachTargetName in targets)
             {
                 var targetService = catalog.Services.FirstOrDefault(x => string.Equals(eachTargetName, x.Id, StringComparison.Ordinal));
@@ -73,35 +85,40 @@ namespace Spork.Steps.Implementations
                 if (targetService == null)
                     continue;
 
-                steps.AddRange(targetService.Packages.Select(eachPackage => new StepItemViewModel()
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(PackageInstallStep)),
-                    Argument = new PackageInstallItemViewModel
+                steps.AddRange(targetService.Packages
+                    .Where(eachPackage => ShouldInclude(PackageFingerprints.ForPackage(eachPackage.Url, eachPackage.Arguments)))
+                    .Select(eachPackage => new StepItemViewModel()
                     {
-                        PackageUrl = eachPackage.Url,
-                        Arguments = eachPackage.Arguments,
-                    },
-                    TargetSiteName = targetService.DisplayName,
-                    TargetSiteUrl = targetService.Url,
-                    PackageName = eachPackage.Name,
-                }));
+                        Step = _stepsFactory.GetStepByName(nameof(PackageInstallStep)),
+                        Argument = new PackageInstallItemViewModel
+                        {
+                            PackageUrl = eachPackage.Url,
+                            Arguments = eachPackage.Arguments,
+                        },
+                        TargetSiteName = targetService.DisplayName,
+                        TargetSiteUrl = targetService.Url,
+                        PackageName = eachPackage.Name,
+                    }));
 
-                steps.AddRange(targetService.EdgeExtensions.Select(eachEdgeExtension => new StepItemViewModel()
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(EdgeExtensionInstallStep)),
-                    Argument = new EdgeExtensionInstallItemViewModel
+                steps.AddRange(targetService.EdgeExtensions
+                    .Where(eachEdgeExtension => ShouldInclude(PackageFingerprints.ForEdgeExtension(eachEdgeExtension.ExtensionId)))
+                    .Select(eachEdgeExtension => new StepItemViewModel()
                     {
-                        EdgeExtensionId = eachEdgeExtension.ExtensionId,
-                        EdgeCrxUrl = eachEdgeExtension.CrxUrl,
-                    },
-                    TargetSiteName = targetService.DisplayName,
-                    TargetSiteUrl = targetService.Url,
-                    PackageName = eachEdgeExtension.Name,
-                }));
+                        Step = _stepsFactory.GetStepByName(nameof(EdgeExtensionInstallStep)),
+                        Argument = new EdgeExtensionInstallItemViewModel
+                        {
+                            EdgeExtensionId = eachEdgeExtension.ExtensionId,
+                            EdgeCrxUrl = eachEdgeExtension.CrxUrl,
+                        },
+                        TargetSiteName = targetService.DisplayName,
+                        TargetSiteUrl = targetService.Url,
+                        PackageName = eachEdgeExtension.Name,
+                    }));
 
                 var bootstrapData = targetService.CustomBootstrap;
 
-                if (!string.IsNullOrWhiteSpace(bootstrapData))
+                if (!string.IsNullOrWhiteSpace(bootstrapData)
+                    && ShouldInclude(PackageFingerprints.ForPowerShellScript(bootstrapData)))
                 {
                     steps.Add(new StepItemViewModel()
                     {

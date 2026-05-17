@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth;
+using TableCloth.Models.UserData;
 using TableCloth.Resources;
 
 namespace Spork.Steps.Implementations
@@ -15,14 +16,17 @@ namespace Spork.Steps.Implementations
     {
         public PackageInstallStep(
             ISharedLocations sharedLocations,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            IInstallRecordStore installRecordStore)
         {
             _sharedLocations = sharedLocations;
             _httpClientFactory = httpClientFactory;
+            _installRecordStore = installRecordStore;
         }
 
-        private ISharedLocations _sharedLocations;
-        private IHttpClientFactory _httpClientFactory;
+        private readonly ISharedLocations _sharedLocations;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IInstallRecordStore _installRecordStore;
 
         public override Task<bool> EvaluateRequiredStepAsync(PackageInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
             => Task.FromResult(true);
@@ -112,6 +116,11 @@ namespace Spork.Steps.Implementations
                     await cpSource.Task.ConfigureAwait(false);
                 }
             }
+
+            // 설치 성공(예외 미발생) 시점에 fingerprint 기록. 다음 진입부터 StepsComposer 가 본 패키지를
+            // 건너뛴다. AddInstalledFingerprint 는 lock 으로 보호되며 추가 시 ScheduleSave 자동 호출.
+            _installRecordStore.AddInstalledFingerprint(
+                PackageFingerprints.ForPackage(viewModel.PackageUrl, viewModel.Arguments));
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth;
+using TableCloth.Models.UserData;
 using TableCloth.Resources;
 
 namespace Spork.Steps.Implementations
@@ -14,12 +15,15 @@ namespace Spork.Steps.Implementations
     public sealed class PowerShellScriptRunStep : StepBase<PowerShellScriptInstallItemViewModel>
     {
         public PowerShellScriptRunStep(
-            ISharedLocations sharedLocations)
+            ISharedLocations sharedLocations,
+            IInstallRecordStore installRecordStore)
         {
             _sharedLocations = sharedLocations;
+            _installRecordStore = installRecordStore;
         }
 
         private readonly ISharedLocations _sharedLocations;
+        private readonly IInstallRecordStore _installRecordStore;
 
         public override Task<bool> EvaluateRequiredStepAsync(PowerShellScriptInstallItemViewModel viewModel, CancellationToken cancellationToken = default)
             => Task.FromResult(true);
@@ -72,6 +76,9 @@ namespace Spork.Steps.Implementations
 
                 await cpSource.Task.ConfigureAwait(false);
             }
+
+            _installRecordStore.AddInstalledFingerprint(
+                PackageFingerprints.ForPowerShellScript(viewModel.ScriptContent));
         }
 
         public override bool ShouldSimulateWhenDryRun
