@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  CPM walk-up barrier for external/ submodules.
+
+  catalogutil.cs (file-based app under external/TableClothCatalog/src/) declares
+  inline package versions via `#:package <name>@<version>` directives. The repo
+  root's Directory.Packages.props turns on ManagePackageVersionsCentrally, which
+  forbids Version on PackageReference and breaks the catalogutil compile during
+  the TableCloth build's BuildCatalogImagesZip target.
+
+  Per NuGet rules, the nearest Directory.Packages.props wins. Placing this file
+  at the external/ boundary lets file-based apps in submodules resolve their
+  own package versions without inheriting the main solution's CPM.
+-->
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>
