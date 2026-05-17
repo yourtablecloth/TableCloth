@@ -140,18 +140,21 @@ jobs:
     - name: Get version
       id: get_version
       run: |
-        $version = (Get-Item "publish\TableCloth.exe").VersionInfo.ProductVersion
-        # Remove any suffix after + sign for semver compatibility
-        $version = $version -replace '\+.*$', ''
-        # Convert 4-part version (e.g., 1.14.0.0) to 3-part SemVer2 (e.g., 1.14.0)
-        $versionParts = $version -split '\.'
-        if ($versionParts.Count -ge 3) {
-          $version = "$($versionParts[0]).$($versionParts[1]).$($versionParts[2])"
-        }
-        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+        $info = (Get-Item "publish\TableCloth.exe").VersionInfo
+        # 4-part FileVersion (e.g., 1.16.3.0) — used in release filename
+        $fullVersion = $info.FileVersion
+        # 3-part SemVer2 (e.g., 1.16.3) — required by Velopack --packVersion
+        $semverParts = ($info.ProductVersion -replace '\+.*$', '') -split '\.'
+        $semver = if ($semverParts.Count -ge 3) {
+          "$($semverParts[0]).$($semverParts[1]).$($semverParts[2])"
+        } else { $info.ProductVersion }
+        echo "VERSION=$semver" >> $env:GITHUB_OUTPUT
+        echo "FULL_VERSION=$fullVersion" >> $env:GITHUB_OUTPUT
       shell: pwsh
 
     # Create Velopack release package
+    # --channel keeps x64 and arm64 outputs from colliding when both are
+    # copied into the same release-assets/ directory by the create-release job.
     - name: Create Velopack package
       run: |
         vpk pack `
@@ -159,10 +162,24 @@ jobs:
           --packVersion ${{ steps.get_version.outputs.VERSION }} `
           --packDir publish `
           --mainExe TableCloth.exe `
+          --channel ${{ env.Platform }} `
           --outputDir releases
       shell: pwsh
       env:
         Configuration: ${{ matrix.configuration }}
+
+    # Rename Velopack Setup.exe to the required release filename format:
+    # TableCloth_<full-version>_<configuration>_<arch>.exe
+    - name: Rename Setup.exe to release format
+      run: |
+        $src = "releases\TableCloth-${{ env.Platform }}-Setup.exe"
+        $dst = "releases\TableCloth_${{ steps.get_version.outputs.FULL_VERSION }}_${{ matrix.configuration }}_${{ env.Platform }}.exe"
+        if (-not (Test-Path $src)) {
+          throw "Expected Velopack output not found: $src"
+        }
+        Move-Item -LiteralPath $src -Destination $dst
+        Write-Host "Renamed: $dst"
+      shell: pwsh
 
     # Generate SBOM (Release builds only, for tagged releases)
     - name: Generate SBOM
@@ -251,3 +268,25 @@ jobs:
         fail_on_unmatched_files: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Prepend UNSIGNED marker to draft release notes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG: ${{ github.ref_name }}
+      run: |
+        existing=$(gh release view "$TAG" --json body --jq .body)
+        marker=$(cat <<EOF
+        > [!WARNING]
+        > **UNSIGNED — DO NOT PUBLISH**
+        >
+        > Release assets are not yet code-signed. Run \`tools/sign-release.ps1 -Tag $TAG\` locally before publishing.
+        >
+        > Pre-publish checklist:
+        > - [ ] All \`.exe\` assets re-uploaded after \`signtool sign\`
+        > - [ ] \`signtool verify /pa /all\` passed for every asset
+        > - [ ] Removed this UNSIGNED marker block
+
+        EOF
+        )
+        printf '%s\n%s' "$marker" "$existing" | gh release edit "$TAG" --notes-file -
+      shell: bash
