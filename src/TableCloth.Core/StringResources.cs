@@ -136,6 +136,9 @@ namespace TableCloth.Resources
         public static string AlternateIfWhitespaceString(string content, string alternateText = default)
             => (string.IsNullOrWhiteSpace(content) ? (string.IsNullOrWhiteSpace(alternateText) ? CommonStrings.UnknownText : alternateText) : content);
 
+        public static string Spork_ForceReinstall_Confirm(string siteDisplayName)
+            => string.Format(UIStringResources.Spork_ForceReinstall_Confirm, AlternateIfWhitespaceString(siteDisplayName));
+
         public static string TableCloth_DebugInformation(
             string processName,
             string rawCommandLine,

@@ -49,8 +49,6 @@ namespace Spork.Components.Implementations
 
         public InstallRecord Current => _current;
 
-        public bool ForceReinstall { get; set; }
-
         public async Task EnsureLoadedAsync(CancellationToken cancellationToken = default)
         {
             if (_isLoaded)

@@ -396,13 +396,44 @@ namespace Spork.ViewModels
             if (SelectedCatalogService == null)
                 return;
 
-            // 모달 동안 사용자가 카탈로그를 다시 조작하지 못하도록 선택값을 잠시 보존하되,
-            // 모달이 닫힌 뒤에는 다음 사이트 선택을 위해 초기화한다.
-            var siteId = SelectedCatalogService.Id;
-            var siteUrl = SelectedCatalogService.Url;
+            await EnterCatalogInstallFlowAsync(SelectedCatalogService, forceReinstall: false);
+        }
+
+        /// <summary>
+        /// 카탈로그 카드의 녹색 체크 배지 위로 마우스를 올리면 새로 고침 아이콘으로 morph 되고,
+        /// 클릭 시 본 명령이 발화한다. 확인 다이얼로그로 사용자 의사를 한 번 받은 뒤 강제 재설치 흐름을
+        /// 진행한다. 배지는 IsAllInstalled=true 일 때만 표시되므로 본 명령의 대상은 항상
+        /// "이미 모든 패키지가 설치된 사이트" 이다.
+        /// </summary>
+        [RelayCommand]
+        private async Task ForceReinstallSite(CatalogInternetService service)
+        {
+            if (service == null)
+                return;
+
+            var confirm = _appMessageBox.DisplayQuestion(
+                StringResources.Spork_ForceReinstall_Confirm(service.DisplayName),
+                MessageBoxButton.YesNo,
+                MessageBoxResult.No);
+
+            if (confirm != MessageBoxResult.Yes)
+                return;
+
+            await EnterCatalogInstallFlowAsync(service, forceReinstall: true);
+        }
+
+        /// <summary>
+        /// 카탈로그에서 한 사이트의 설치 흐름을 진행하는 공통 코드. 카드 클릭(force=false)과
+        /// 배지 클릭(force=true) 양쪽 진입점이 본 메서드를 거친다.
+        /// </summary>
+        private async Task EnterCatalogInstallFlowAsync(CatalogInternetService service, bool forceReinstall)
+        {
+            // 모달 동안 다음 사이트 선택을 위해 선택값을 마지막에 초기화한다.
+            var siteId = service.Id;
+            var siteUrl = service.Url;
 
             await RecordUsageAsync(new[] { siteId });
-            var steps = _stepsComposer.ComposeStepsForSites(new[] { siteId }).ToList();
+            var steps = _stepsComposer.ComposeStepsForSites(new[] { siteId }, forceReinstall).ToList();
 
             // 호환성 주의 사항은 모달 진입 전에 별도 다이얼로그로 안내한다.
             var catalog = _resourceCacheManager.CatalogDocument;
@@ -415,11 +446,10 @@ namespace Spork.ViewModels
 
             // 설치 진행을 화면 전환 없이 모달로 처리. 모달은 자체적으로 단계를 실행하고
             // 성공 시 자동 닫기, 실패 시 닫기 버튼을 노출한다.
-            // 어떤 사이트를 준비하는지 사용자가 알 수 있도록 표시명과 아이콘 키를 함께 전달한다.
             var installWindow = _appUserInterface.CreateInstallStepsWindow(
                 steps,
                 ShowDryRunNotification,
-                targetTitle: SelectedCatalogService.DisplayName,
+                targetTitle: service.DisplayName,
                 targetIconKey: siteId);
             var result = installWindow.ShowDialog();
 
@@ -427,8 +457,6 @@ namespace Spork.ViewModels
             // 방금 설치 완료한 사이트는 이 호출 직후 카드에 체크 배지가 표시된다.
             RefreshIsAllInstalledFlags(CatalogServices);
 
-            // 카탈로그 뷰는 모달 뒤에서 계속 보였으므로 별도 복귀 처리는 필요 없다.
-            // 다음 사이트를 자유롭게 고를 수 있도록 선택만 초기화한다.
             SelectedCatalogService = null;
 
             if (result == true && !string.IsNullOrWhiteSpace(siteUrl))
@@ -581,20 +609,6 @@ namespace Spork.ViewModels
 
         [ObservableProperty]
         private bool _showFavoritesOnly;
-
-        /// <summary>
-        /// 카탈로그 상단의 "강제 재설치" 체크박스 바인딩. <see langword="true"/>이면 StepsComposer 가
-        /// fingerprint 일치 여부를 무시하고 모든 패키지/확장/스크립트를 다시 설치한다.
-        /// 세션 전용 토글 — <see cref="IUserDataStore"/>에는 영속되지 않는다.
-        /// </summary>
-        [ObservableProperty]
-        private bool _forceReinstall;
-
-        partial void OnForceReinstallChanged(bool value)
-        {
-            // 토글이 StepsComposer 가 다음 진입 시 참조하는 IInstallRecordStore.ForceReinstall 로 즉시 전파.
-            _installRecordStore.ForceReinstall = value;
-        }
 
         [ObservableProperty]
         private IList<StepItemViewModel> _installSteps = new ObservableCollection<StepItemViewModel>();

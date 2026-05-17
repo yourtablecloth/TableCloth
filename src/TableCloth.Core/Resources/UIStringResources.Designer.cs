@@ -176,7 +176,26 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("CatalogCard_InstalledTooltip", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Click to reinstall all packages for this site.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string CatalogCard_ForceReinstallTooltip {
+            get {
+                return ResourceManager.GetString("CatalogCard_ForceReinstallTooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Reinstall all packages for "{0}"? Previously installed packages will be reinstalled.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Spork_ForceReinstall_Confirm {
+            get {
+                return ResourceManager.GetString("Spork_ForceReinstall_Confirm", resourceCulture);
+            }
+        }
+
+
         /// <summary>
         ///   About과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
@@ -838,24 +857,6 @@ namespace TableCloth.Resources {
         public static string MainWindow_Favorites {
             get {
                 return ResourceManager.GetString("MainWindow_Favorites", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Force Reinstall과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string MainWindow_ForceReinstall {
-            get {
-                return ResourceManager.GetString("MainWindow_ForceReinstall", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   When checked, previously installed packages will be reinstalled instead of skipped.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string MainWindow_ForceReinstallTooltip {
-            get {
-                return ResourceManager.GetString("MainWindow_ForceReinstallTooltip", resourceCulture);
             }
         }
 

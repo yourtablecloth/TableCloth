@@ -70,7 +70,6 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBox Grid.Column="0" Padding="6 4" Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}">
                                 <TextBox.Style>
@@ -93,10 +92,6 @@
                             <CheckBox Grid.Column="1" Margin="8 0 0 0" VerticalAlignment="Center"
                                       Content="{x:Static res:UIStringResources.MainWindow_Favorites}"
                                       IsChecked="{Binding ShowFavoritesOnly}" />
-                            <CheckBox Grid.Column="2" Margin="8 0 0 0" VerticalAlignment="Center"
-                                      Content="{x:Static res:UIStringResources.MainWindow_ForceReinstall}"
-                                      ToolTip="{x:Static res:UIStringResources.MainWindow_ForceReinstallTooltip}"
-                                      IsChecked="{Binding ForceReinstall}" />
                         </Grid>
 
                         <ListView Grid.Row="1" x:Name="CatalogList"
@@ -146,18 +141,46 @@
                             </Grid.RowDefinitions>
                             <Image Grid.Row="0" Source="{Binding Id, Mode=OneWay, Converter={StaticResource ServiceLogoConverter}}"
                                    RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
-                            <!-- Installed indicator (top-left). 영속 저장소의 fingerprint 와 카탈로그 항목이
-                                 모두 일치할 때만 표시. 우상단의 즐겨찾기 별과 시각적으로 분리되도록 좌측에 배치. -->
-                            <Grid Grid.Row="0" Width="16" Height="16"
-                                  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2"
-                                  IsHitTestVisible="False"
-                                  Visibility="{Binding IsAllInstalled, Converter={StaticResource booleanToVisibilityConverter}}"
-                                  ToolTip="{x:Static res:UIStringResources.CatalogCard_InstalledTooltip}">
-                                <Ellipse Fill="#2EA043" />
-                                <Path Stretch="Uniform" Margin="3" Stroke="White" StrokeThickness="2"
-                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                                      Data="M 1 5 L 4 8 L 9 2" />
-                            </Grid>
+                            <!-- Installed indicator + force-reinstall action (top-left).
+                                 평상시: 녹색 체크 배지(이미 완전 설치된 사이트).
+                                 hover: 새로 고침 아이콘으로 morph → 클릭 시 confirm 후 강제 재설치.
+                                 즐겨찾기 별(우상단)과 시각적으로 분리되도록 좌측 배치. -->
+                            <Button Grid.Row="0" Width="16" Height="16"
+                                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2"
+                                    Cursor="Hand" Background="Transparent" BorderBrush="Transparent"
+                                    Padding="0" Focusable="False"
+                                    Visibility="{Binding IsAllInstalled, Converter={StaticResource booleanToVisibilityConverter}}"
+                                    ToolTip="{x:Static res:UIStringResources.CatalogCard_InstalledTooltip}"
+                                    Command="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.ForceReinstallSiteCommand}"
+                                    CommandParameter="{Binding}">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Grid x:Name="BadgeRoot">
+                                            <Ellipse x:Name="BadgeFill" Fill="#2EA043" />
+                                            <!-- Default content: check mark -->
+                                            <Path x:Name="CheckGlyph" Stretch="Uniform" Margin="3" Stroke="White" StrokeThickness="2"
+                                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                                  Data="M 1 5 L 4 8 L 9 2" />
+                                            <!-- Hover content: refresh / circular-arrow glyph. 두 개의 호 + 화살촉. -->
+                                            <Path x:Name="RefreshGlyph" Stretch="Uniform" Margin="3" Stroke="White" StrokeThickness="1.6"
+                                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                                  Fill="White" Visibility="Collapsed"
+                                                  Data="M 8 2 A 4 4 0 1 1 4 6 L 5.6 6 L 4 8 L 2.4 6 L 4 6 A 3 3 0 1 0 7 3 Z" />
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="BadgeFill" Property="Fill" Value="#1F6FEB" />
+                                                <Setter TargetName="CheckGlyph" Property="Visibility" Value="Collapsed" />
+                                                <Setter TargetName="RefreshGlyph" Property="Visibility" Value="Visible" />
+                                                <Setter TargetName="BadgeRoot" Property="ToolTip" Value="{x:Static res:UIStringResources.CatalogCard_ForceReinstallTooltip}" />
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="BadgeFill" Property="Fill" Value="#1158C7" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
                             <!-- Favorite star toggle -->
                             <ToggleButton Grid.Row="0" Width="14" Height="14" IsChecked="{Binding IsFavorite}"
                                           HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2"

@@ -33,12 +33,12 @@ namespace Spork.Steps.Implementations
         private readonly IInstallRecordStore _installRecordStore;
 
         public IEnumerable<StepItemViewModel> ComposeSteps()
-            => ComposeStepsInternal(_commandLineArguments.GetCurrent().SelectedServices);
+            => ComposeStepsInternal(_commandLineArguments.GetCurrent().SelectedServices, forceReinstall: false);
 
-        public IEnumerable<StepItemViewModel> ComposeStepsForSites(IEnumerable<string> selectedServiceIds)
-            => ComposeStepsInternal(selectedServiceIds ?? Enumerable.Empty<string>());
+        public IEnumerable<StepItemViewModel> ComposeStepsForSites(IEnumerable<string> selectedServiceIds, bool forceReinstall = false)
+            => ComposeStepsInternal(selectedServiceIds ?? Enumerable.Empty<string>(), forceReinstall);
 
-        private IEnumerable<StepItemViewModel> ComposeStepsInternal(IEnumerable<string> targets)
+        private IEnumerable<StepItemViewModel> ComposeStepsInternal(IEnumerable<string> targets, bool forceReinstall)
         {
             var parsedArgs = _commandLineArguments.GetCurrent();
             var catalog = _resourceCacheManager.CatalogDocument;
@@ -72,9 +72,7 @@ namespace Spork.Steps.Implementations
 
             // 같은 사이트를 반복 진입하는 워크플로에서 매번 같은 패키지를 재설치하지 않도록,
             // 이미 설치된 fingerprint 와 일치하는 항목은 본 단계에서 제외한다.
-            // ForceReinstall 토글이 켜져 있으면 모든 항목을 다시 포함한다.
-            var forceReinstall = _installRecordStore.ForceReinstall;
-
+            // forceReinstall 파라미터가 true 면 사용자가 명시적으로 재설치를 요청한 케이스라 모든 항목 포함.
             bool ShouldInclude(string fingerprint)
                 => forceReinstall || !_installRecordStore.IsInstalled(fingerprint);
 

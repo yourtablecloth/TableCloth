@@ -32,12 +32,6 @@ namespace Spork.Components
         /// </summary>
         InstallRecord Current { get; }
 
-        /// <summary>
-        /// transient UI 상태. <see langword="true"/>이면 StepsComposer 가 fingerprint 일치 여부와 무관하게
-        /// 모든 install Step 을 다시 포함한다. 디스크에 저장되지 않음.
-        /// </summary>
-        bool ForceReinstall { get; set; }
-
         /// <summary>디스크에서 1회 로드. 이미 로드되어 있으면 no-op.</summary>
         Task EnsureLoadedAsync(CancellationToken cancellationToken = default);
 
