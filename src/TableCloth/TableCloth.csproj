@@ -29,9 +29,13 @@
 	<!--
 		Phase 5 — 게시 정책. RuntimeIdentifier가 명시된 경우(=실제 publish 호출)에만 활성화되어
 		`dotnet build`(dev 사이클)에는 영향을 주지 않는다. Velopack 배포 흐름:
-		  dotnet publish src/TableCloth -c Release -r win-x64 -p:SelfContained=true -o publish/win-x64
+		  dotnet publish src/TableCloth -c Release -r win-x64 -o publish/win-x64
 		  vpk pack -packId TableCloth -mainExe TableCloth.exe -packDir publish/win-x64 ...
 
+		- SelfContained=true                : .NET 런타임 동봉 (샌드박스 안에서 별도 설치 불필요).
+		                                      .NET 8+ 부터는 -r 만으로 self-contained가 켜지지 않아
+		                                      EnableCompressionInSingleFile 조합 시 오류 — 본 PropertyGroup
+		                                      안에서 명시적으로 켜 두어 publish 명령이 빠뜨려도 안전.
 		- PublishSingleFile=true            : TableCloth.exe 한 파일로 자기 추출
 		- IncludeNativeLibrariesForSelfExtract=true : WPF 네이티브 바이너리(wpfgfx 등)를 함께 동봉
 		- EnableCompressionInSingleFile=true: 압축으로 ~50% 사이즈 감소 (cold start 약간 느려짐)
@@ -39,6 +43,7 @@
 		- PublishTrimmed=false              : WPF/XAML은 리플렉션이 강해 트리밍은 위험
 	-->
 	<PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+		<SelfContained>true</SelfContained>
 		<PublishSingleFile>true</PublishSingleFile>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>

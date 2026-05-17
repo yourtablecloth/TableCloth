@@ -26,9 +26,13 @@
 		Phase 8 — Spork 단독 게시 정책. TableCloth.csproj와 동일하게 RuntimeIdentifier가 명시된
 		경우(=실제 publish 호출)에만 활성화되어 `dotnet build`에는 영향을 주지 않는다.
 		단독 출시 흐름:
-		  dotnet publish src/Spork -c Release -r win-x64 -p:SelfContained=true -o publish/spork/win-x64
+		  dotnet publish src/Spork -c Release -r win-x64 -o publish/spork/win-x64
+
+		SelfContained 는 본 PropertyGroup 안에서 명시적으로 켜 둔다. .NET 8+ 부터는 -r 만으로
+		self-contained가 켜지지 않아 EnableCompressionInSingleFile 와 조합 시 빌드 오류가 난다.
 	-->
 	<PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+		<SelfContained>true</SelfContained>
 		<PublishSingleFile>true</PublishSingleFile>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
