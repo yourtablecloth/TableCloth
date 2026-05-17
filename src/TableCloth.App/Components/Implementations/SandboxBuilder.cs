@@ -215,12 +215,18 @@ public sealed class SandboxBuilder(
         var idList = string.Join(" ", serviceIdList);
 
         // framework-dependent 빌드일 때 호스트 dotnet 마운트가 추가됐다면 DOTNET_ROOT 노출.
-        // 환경 변수는 .NET 호스트가 exe를 띄우기 *전에* 설정되어야 하므로 batch에 남긴다.
-        // self-contained 게시물이면 HostDotnetRootPath가 null이므로 set 라인이 들어가지 않는다.
+        // - set: 현 batch 프로세스 트리(LogonCommand 흐름)에서 즉시 사용. .NET 호스트가 exe를 띄우기
+        //   *전에* 설정되어야 하므로 batch 에 남긴다. self-contained 게시물이면 HostDotnetRootPath 가
+        //   null 이므로 본 라인이 들어가지 않는다.
+        // - setx: 사용자 단위(HKCU\Environment) 영구 등록 + WM_SETTINGCHANGE 브로드캐스트. 데스크톱
+        //   바로가기로 새로 띄우는 인스턴스(LogonCommand 흐름 밖)도 DOTNET_ROOT 를 상속받아 dev 빌드의
+        //   재실행 시나리오가 동작한다. sandbox VHD 안 HKCU 라 호스트 머신엔 영향 없음. stdout 의
+        //   "SUCCESS: ..." 메시지는 nul 로 흡수.
         var dotnetRootScript = string.IsNullOrEmpty(tableClothConfiguration.HostDotnetRootPath)
             ? string.Empty
             : $@"set DOTNET_ROOT={SandboxMountPaths.SandboxDesktop}\{HostDotnetLeafName}
 set PATH=%DOTNET_ROOT%;%PATH%
+setx DOTNET_ROOT ""{SandboxMountPaths.SandboxDesktop}\{HostDotnetLeafName}"" >nul 2>&1
 ";
 
         // 부팅 직후 LogonCommand는 powershell.exe 콜드 스타트 + 모듈 로드로만 수 초가 소모된다.
