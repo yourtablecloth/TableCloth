@@ -77,7 +77,14 @@ namespace Spork.ViewModels
         private string _targetIconKey;
 
         /// <summary>
-        /// 설치가 성공한 경우 true, 실패한 경우 false. 아직 실행되지 않았으면 null.
+        /// 설치 진행 상태:
+        /// <list type="bullet">
+        ///   <item><see langword="true"/> — 모든 단계 성공.</item>
+        ///   <item><see langword="false"/> — 일부/전체 단계 실패. 사용자가 결과 화면을 본 뒤 닫음.</item>
+        ///   <item><see langword="null"/> — 진행 중 또는 사용자가 모달을 닫아 취소함.</item>
+        /// </list>
+        /// 호출 측은 <c>HasValue</c> 로 "시도된 설치" 여부를 판정한다. 시도된 설치(성공/실패 모두)는
+        /// 사이트가 열려야 하지만, 사용자가 명시적으로 취소했다면 열지 않는다.
         /// </summary>
         public bool? Succeeded { get; private set; }
 
@@ -126,7 +133,8 @@ namespace Spork.ViewModels
             catch (OperationCanceledException)
             {
                 // 사용자가 창을 닫아 취소된 케이스. Window는 이미 닫히는 중이므로 추가 동작 없이 빠진다.
-                Succeeded = false;
+                // Succeeded 는 null 로 유지하여 호출 측이 "시도된 실패(false)"와 "취소(null)"를 구분할
+                // 수 있게 한다 — 실패는 사이트가 열려야 하지만 취소는 사용자 의사 존중.
             }
         }
 

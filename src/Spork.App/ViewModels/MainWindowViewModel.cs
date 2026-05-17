@@ -456,7 +456,7 @@ namespace Spork.ViewModels
                 ShowDryRunNotification,
                 targetTitle: service.DisplayName,
                 targetIconKey: siteId);
-            var result = installWindow.ShowDialog();
+            installWindow.ShowDialog();
 
             // 모달 동안 install Step 들이 fingerprint 를 기록했을 수 있으므로 배지 상태를 즉시 재계산.
             // 방금 설치 완료한 사이트는 이 호출 직후 카드에 체크 배지가 표시된다.
@@ -464,11 +464,11 @@ namespace Spork.ViewModels
 
             SelectedCatalogService = null;
 
-            if (result == true && !string.IsNullOrWhiteSpace(siteUrl))
-            {
-                // 설치 성공: 대상 사이트를 브라우저로 열어 사용자가 바로 진행할 수 있게 한다.
+            // 설치가 시도된 경우(성공/실패 무관)엔 사이트를 열어 사용자가 바로 진행/문제 해결할 수 있게 한다.
+            // VM.Succeeded 가 null 이면 사용자가 모달을 닫아 취소한 케이스라 자동 오픈을 건너뛴다.
+            var installAttempted = installWindow.ViewModel.Succeeded.HasValue;
+            if (installAttempted && !string.IsNullOrWhiteSpace(siteUrl))
                 TryOpenSiteUrls(new[] { siteUrl });
-            }
         }
 
         private Task RecordUsageAsync(IEnumerable<string> siteIds)
