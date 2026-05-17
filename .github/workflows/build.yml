@@ -168,17 +168,27 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Rename Velopack Setup.exe to the required release filename format:
-    # TableCloth_<full-version>_<configuration>_<arch>.exe
-    - name: Rename Setup.exe to release format
+    # Rename Velopack Setup.exe and Portable.zip to the required release format:
+    # TableCloth_<full-version>_<configuration>_<arch>{.exe,_Portable.zip}
+    - name: Rename Velopack outputs to release format
       run: |
-        $src = "releases\TableCloth-${{ env.Platform }}-Setup.exe"
-        $dst = "releases\TableCloth_${{ steps.get_version.outputs.FULL_VERSION }}_${{ matrix.configuration }}_${{ env.Platform }}.exe"
-        if (-not (Test-Path $src)) {
-          throw "Expected Velopack output not found: $src"
+        $prefix = "TableCloth_${{ steps.get_version.outputs.FULL_VERSION }}_${{ matrix.configuration }}_${{ env.Platform }}"
+
+        $setupSrc = "releases\TableCloth-${{ env.Platform }}-Setup.exe"
+        $setupDst = "releases\$prefix.exe"
+        if (-not (Test-Path $setupSrc)) {
+          throw "Expected Velopack Setup not found: $setupSrc"
         }
-        Move-Item -LiteralPath $src -Destination $dst
-        Write-Host "Renamed: $dst"
+        Move-Item -LiteralPath $setupSrc -Destination $setupDst
+        Write-Host "Renamed: $setupDst"
+
+        $portableSrc = "releases\TableCloth-${{ env.Platform }}-Portable.zip"
+        $portableDst = "releases\${prefix}_Portable.zip"
+        if (-not (Test-Path $portableSrc)) {
+          throw "Expected Velopack Portable not found: $portableSrc"
+        }
+        Move-Item -LiteralPath $portableSrc -Destination $portableDst
+        Write-Host "Renamed: $portableDst"
       shell: pwsh
 
     # Generate SBOM (Release builds only, for tagged releases)
@@ -269,13 +279,27 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Prepend UNSIGNED marker to draft release notes
+    - name: Compute full version for download links
+      id: ver
+      run: |
+        VERSION_MAJOR=$(grep -oP '(?<=<TableClothVersionMajor>)[^<]+' Directory.Build.Props)
+        VERSION_MINOR=$(grep -oP '(?<=<TableClothVersionMinor>)[^<]+' Directory.Build.Props)
+        VERSION_PATCH=$(grep -oP '(?<=<TableClothVersionPatch>)[^<]+' Directory.Build.Props)
+        VERSION_REVISION=$(grep -oP '(?<=<TableClothVersionRevision>)[^<]+' Directory.Build.Props)
+        FULL_VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${VERSION_REVISION}"
+        echo "FULL_VERSION=$FULL_VERSION" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Prepend Downloads section and UNSIGNED marker to draft release notes
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TAG: ${{ github.ref_name }}
+        FULL_VERSION: ${{ steps.ver.outputs.FULL_VERSION }}
+        REPO: ${{ github.repository }}
       run: |
         existing=$(gh release view "$TAG" --json body --jq .body)
-        marker=$(cat <<EOF
+        base="https://github.com/${REPO}/releases/download/${TAG}"
+        prefix=$(cat <<EOF
         > [!WARNING]
         > **UNSIGNED — DO NOT PUBLISH**
         >
@@ -286,7 +310,19 @@ jobs:
         > - [ ] \`signtool verify /pa /all\` passed for every asset
         > - [ ] Removed this UNSIGNED marker block
 
+        ## Downloads
+
+        **Installer** (recommended — supports auto-update)
+        - x64: [TableCloth_${FULL_VERSION}_Release_x64.exe](${base}/TableCloth_${FULL_VERSION}_Release_x64.exe)
+        - arm64: [TableCloth_${FULL_VERSION}_Release_arm64.exe](${base}/TableCloth_${FULL_VERSION}_Release_arm64.exe)
+
+        **Portable** (no installation; no auto-update)
+        - x64: [TableCloth_${FULL_VERSION}_Release_x64_Portable.zip](${base}/TableCloth_${FULL_VERSION}_Release_x64_Portable.zip)
+        - arm64: [TableCloth_${FULL_VERSION}_Release_arm64_Portable.zip](${base}/TableCloth_${FULL_VERSION}_Release_arm64_Portable.zip)
+
+        > The remaining assets (\`*.nupkg\`, \`RELEASES-*\`, \`releases.*.json\`, \`assets.*.json\`, \`sbom-*\`) are auto-update metadata and SBOM artifacts — end users do not download them directly.
+
         EOF
         )
-        printf '%s\n%s' "$marker" "$existing" | gh release edit "$TAG" --notes-file -
+        printf '%s\n%s' "$prefix" "$existing" | gh release edit "$TAG" --notes-file -
       shell: bash
