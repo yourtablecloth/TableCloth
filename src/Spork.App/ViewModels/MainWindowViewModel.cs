@@ -177,9 +177,14 @@ namespace Spork.ViewModels
                 if (string.IsNullOrEmpty(sporkExePath) || !File.Exists(sporkExePath))
                     return;
 
+                // TableCloth.exe 가 entry 일 때는 'spork' verb 가 인자에 반드시 들어가야 한다.
+                // 인자 없이 TableCloth.exe 를 띄우면 호스트 런처 모드로 들어가버려 sandbox 안에서는
+                // 의미 있는 동작을 못한다. BrandStrings.ShortcutArguments 가 entry 종류에 따라 알맞은
+                // 인자를 돌려준다(TableCloth → "spork", Spork 단독 → "").
                 await _shortcutCreator.CreateShortcutOnDesktopAsync(
                     destinationPath: sporkExePath,
                     linkName: BrandStrings.ShortcutLinkName,
+                    arguments: BrandStrings.ShortcutArguments,
                     iconFilePath: sporkExePath,
                     description: BrandStrings.ShortcutDescription).ConfigureAwait(false);
             }

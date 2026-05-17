@@ -57,6 +57,16 @@ namespace Spork.Components
             ? UIStringResources.TableCloth_ShortcutDescription
             : UIStringResources.Spork_ShortcutDescription;
 
+        /// <summary>
+        /// 바탕화면 바로가기에 전달할 커맨드라인 인자.
+        /// TableCloth.exe 가 entry 면 verb 디스패처를 거치므로 <c>spork</c> 토큰이 반드시 필요하다.
+        /// 빠뜨리면 바로가기가 호스트 런처 모드로 빠져 sandbox 안 흐름이 깨진다.
+        /// Spork.exe 단독 entry 라면 자체가 Spork 진입점이라 인자가 필요 없다.
+        /// </summary>
+        public static string ShortcutArguments => _isTableClothEntry
+            ? "spork"
+            : string.Empty;
+
         public static string TitleText_Error => _isTableClothEntry
             ? UIStringResources.TitleText_Error
             : UIStringResources.Spork_TitleText_Error;
