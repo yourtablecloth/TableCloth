@@ -111,6 +111,12 @@ namespace Spork.ViewModels
         private SporkUserData _userData = new SporkUserData();
         private bool _suppressUserDataSave;
 
+        // 즐겨찾기/사용 기록 변경마다 mounted 호스트 폴더로 즉시 JSON 쓰기는 100ms+ 지연이 흔하다.
+        // 빠른 클릭들을 단일 쓰기로 합치는 디바운서. 다음 클릭이 들어오면 보류 중인 쓰기를 취소하고
+        // 새 타이머를 시작한다.
+        private CancellationTokenSource _userDataSaveDebounceCts;
+        private const int UserDataSaveDebounceMs = 250;
+
         private static readonly PropertyGroupDescription CatalogGroupDescription =
             new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
 
@@ -256,12 +262,12 @@ namespace Spork.ViewModels
             if (string.Equals(nameof(ShowFavoritesOnly), e.PropertyName, StringComparison.Ordinal) && !_suppressUserDataSave)
             {
                 _userData.ShowFavoritesOnly = ShowFavoritesOnly;
-                _ = _userDataStore.SaveAsync(_userData);
+                ScheduleUserDataSave();
             }
         }
 
         [RelayCommand]
-        private async Task ToggleFavorite(CatalogInternetService service)
+        private void ToggleFavorite(CatalogInternetService service)
         {
             if (service == null || string.IsNullOrWhiteSpace(service.Id))
                 return;
@@ -278,11 +284,62 @@ namespace Spork.ViewModels
                 _userData.Favorites.RemoveAll(x => string.Equals(x, service.Id, StringComparison.OrdinalIgnoreCase));
             }
 
-            await _userDataStore.SaveAsync(_userData);
+            // ShowFavoritesOnly가 켜져 있을 때만 필터 결과가 바뀌므로 그때만 refresh. 그렇지 않으면
+            // 별 아이콘은 IsFavorite 바인딩으로 즉시 갱신되고 카탈로그 가시성은 변하지 않는다.
+            // (refresh는 266개 항목 필터 재평가 + 그룹 재구성을 UI 스레드에서 수행하므로 회피 가치가 크다.)
+            if (ShowFavoritesOnly)
+            {
+                var view = CollectionViewSource.GetDefaultView(CatalogServices);
+                view?.Refresh();
+            }
 
-            // 필터가 ShowFavoritesOnly일 때 즉시 반영
-            var view = CollectionViewSource.GetDefaultView(CatalogServices);
-            view?.Refresh();
+            // 디스크 쓰기는 디바운스 + fire-and-forget. 빠른 클릭 시 마지막 상태 1회만 저장.
+            ScheduleUserDataSave();
+        }
+
+        /// <summary>
+        /// 사용자 데이터를 디바운스 후 비동기 저장한다. 새 호출이 들어오면 이전 보류 중인 쓰기를 취소하고
+        /// 타이머를 다시 시작한다. mounted 호스트 폴더(Desktop\Data) 쓰기 지연을 UI 클릭 응답성에서 분리.
+        /// </summary>
+        private void ScheduleUserDataSave()
+        {
+            // 이전 보류 중인 쓰기 취소 후 새 토큰 발급.
+            var previous = Interlocked.Exchange(ref _userDataSaveDebounceCts, new CancellationTokenSource());
+            previous?.Cancel();
+            previous?.Dispose();
+
+            var cts = _userDataSaveDebounceCts;
+            var token = cts.Token;
+
+            // _userData는 UI 스레드에서만 변형되므로, 백그라운드 직렬화 중 컬렉션이 변형되는 race를 막기 위해
+            // UI 스레드 시점의 컬렉션 스냅샷을 캡처해 전달한다. 작은 객체라 깊은 복사 비용은 무시 가능.
+            var snapshot = CloneUserData(_userData);
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(UserDataSaveDebounceMs, token).ConfigureAwait(false);
+                    await _userDataStore.SaveAsync(snapshot, token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    // 후속 클릭에 의해 supersede됨. 정상 흐름.
+                }
+            }, token);
+        }
+
+        private static SporkUserData CloneUserData(SporkUserData source)
+        {
+            return new SporkUserData
+            {
+                SchemaVersion = source.SchemaVersion,
+                ShowFavoritesOnly = source.ShowFavoritesOnly,
+                Favorites = source.Favorites != null ? new List<string>(source.Favorites) : new List<string>(),
+                LastUsedAt = source.LastUsedAt != null
+                    ? new Dictionary<string, DateTime>(source.LastUsedAt)
+                    : new Dictionary<string, DateTime>(),
+            };
         }
 
         [RelayCommand]
