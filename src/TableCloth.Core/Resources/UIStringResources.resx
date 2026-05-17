@@ -299,6 +299,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="InputPasswordWindow_Title" xml:space="preserve">
     <value>Enter the password to convert the PFX certificate</value>
   </data>
+  <data name="Install_AllowEdgeLocalNetworkAccess" xml:space="preserve">
+    <value>Allow Edge Local Network Access</value>
+  </data>
   <data name="Install_ConfigASTx" xml:space="preserve">
     <value>Config AhnLab Safe Transaction</value>
   </data>

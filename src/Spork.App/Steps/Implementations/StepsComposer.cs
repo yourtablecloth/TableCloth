@@ -58,6 +58,15 @@ namespace Spork.Steps.Implementations
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_DisableSmartAppControl,
                 },
+                // Local Network Access(127.0.0.1 등) 프롬프트를 자동 허용하는 Edge 정책을 미리 적용.
+                // 후속 ReloadEdgeStep이 msedge를 재기동하면 새 인스턴스부터 정책이 즉시 반영된다.
+                new StepItemViewModel()
+                {
+                    Step = _stepsFactory.GetStepByName(nameof(AllowEdgeLocalNetworkAccessStep)),
+                    Argument = new InstallItemViewModel(),
+                    TargetSiteName = UIStringResources.Option_Prerequisites,
+                    PackageName = UIStringResources.Install_AllowEdgeLocalNetworkAccess,
+                },
             });
 
             foreach (var eachTargetName in targets)

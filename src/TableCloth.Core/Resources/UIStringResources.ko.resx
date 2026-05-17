@@ -299,6 +299,9 @@
   <data name="InputPasswordWindow_Title" xml:space="preserve">
     <value>PFX 인증서 변환을 위한 비밀 번호 입력</value>
   </data>
+  <data name="Install_AllowEdgeLocalNetworkAccess" xml:space="preserve">
+    <value>Edge 로컬 네트워크 액세스 허용</value>
+  </data>
   <data name="Install_ConfigASTx" xml:space="preserve">
     <value>AhnLab Safe Transaction 설정</value>
   </data>
