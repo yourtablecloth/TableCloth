@@ -1,8 +1,10 @@
 <Solution>
-  <Configurations>
-    <Platform Name="ARM64" />
-    <Platform Name="x64" />
-  </Configurations>
+  <!--
+    메인 솔루션 — TableCloth.exe 단일 바이너리(verb 디스패처)와 모듈 라이브러리들을 묶는다.
+    단독 출시 후보인 Spork.exe(src/Spork/Spork.csproj)는 본 솔루션에 포함되지 않고
+    별도 Spork.slnx에서 빌드된다. Spork.App.csproj만 TableCloth.exe의 'spork' verb
+    구현체로 포함.
+  -->
   <Folder Name="/Solution Items/">
     <File Path="privacy.md" />
     <File Path="README.md" />
@@ -10,19 +12,11 @@
     <File Path="Directory.Build.Props" />
     <File Path="SECURITY.md" />
   </Folder>
+  <Project Path="src/Spork.App/Spork.App.csproj" />
+  <Project Path="src/Spork.Sandbox/Spork.Sandbox.csproj" />
   <Project Path="src/Spork.Test/Spork.Test.csproj" Id="6408b389-54a0-4804-b42e-8853404d0b75" />
-  <Project Path="src/Spork/Spork.csproj">
-    <Platform Solution="*|ARM64" Project="ARM64" />
-    <Platform Solution="*|x64" Project="x64" />
-  </Project>
+  <Project Path="src/TableCloth.App/TableCloth.App.csproj" />
   <Project Path="src/TableCloth.Core/TableCloth.Core.csproj" Id="97e346c7-479b-447e-a32e-3364e745ccf7" />
-  <Project Path="src/TableCloth.Test/TableCloth.Test.csproj" Id="08999632-fb58-4460-91c0-2c63df47e86b">
-    <Platform Solution="*|ARM64" Project="ARM64" />
-    <Platform Solution="*|x64" Project="x64" />
-  </Project>
-  <Project Path="src/TableCloth/TableCloth.csproj">
-    <BuildDependency Project="src/Spork/Spork.csproj" />
-    <Platform Solution="*|ARM64" Project="ARM64" />
-    <Platform Solution="*|x64" Project="x64" />
-  </Project>
+  <Project Path="src/TableCloth.Test/TableCloth.Test.csproj" Id="08999632-fb58-4460-91c0-2c63df47e86b" />
+  <Project Path="src/TableCloth/TableCloth.csproj" />
 </Solution>

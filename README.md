@@ -55,7 +55,6 @@ winget install TableClothProject.TableCloth
 
 * Visual Studio 2026 이상
 * .NET 10.0 SDK
-* .NET Framework 4.8 SDK
 
 ## 테스트 환경
 
@@ -63,7 +62,7 @@ winget install TableClothProject.TableCloth
 * 지원되는 SKU: Pro, Edu and Enterprise
 * 반드시 Windows Sandbox를 실행할 수 있는 환경이어야 합니다.
 
-## [개발자 가이드](./DEVREADME.md)
+## [개발자 가이드](./DEVELOPMENT.md)
 
 ## 스폰서
 

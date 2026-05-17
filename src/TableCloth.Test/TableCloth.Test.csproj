@@ -6,7 +6,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<UseVSTest>true</UseVSTest>
-		<Platforms>x64;ARM64</Platforms>
+		<!-- MSTest.Sdk implicit PackageReference overrides use inline Version; opt out of CPM. -->
+		<ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
 	</PropertyGroup>
 
 	<ItemGroup>

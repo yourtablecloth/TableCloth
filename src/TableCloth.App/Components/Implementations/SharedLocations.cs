@@ -1,0 +1,77 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+
+namespace TableCloth.Components.Implementations;
+
+public sealed class SharedLocations : ISharedLocations
+{
+    // Velopack�� LocalAppData\TableCloth�� ���� ��ġ�ϹǷ�,
+    // ���� ������ LocalAppData\TableCloth.Data�� �����Ͽ� ������Ʈ �� �������� �ʵ��� ��
+    public string AppDataDirectoryPath =>
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TableCloth.Data");
+
+    private string GetDataPath(string relativePath) =>
+        Path.Combine(AppDataDirectoryPath, relativePath);
+
+    public string ApplicationLogPath
+        => GetDataPath("ApplicationLog.jsonl");
+
+    public string PreferencesFilePath
+        => GetDataPath("Preferences.json");
+
+    public string CatalogCacheFilePath
+        => GetDataPath("CatalogCache.xml");
+
+    public string GetTempPath()
+        => GetDataPath("Sandbox");
+
+    public string GetImageDirectoryPath()
+        => GetDataPath("images");
+
+    public string GetImageFilePath(string serviceId)
+        => Path.Combine(GetImageDirectoryPath(), $"{serviceId}.png");
+
+    public string GetIconFilePath(string serviceId)
+        => Path.Combine(GetImageDirectoryPath(), $"{serviceId}.ico");
+
+    public string ExecutableFilePath
+    {
+        get
+        {
+            var mainModule = Process.GetCurrentProcess().MainModule;
+            ArgumentNullException.ThrowIfNull(mainModule);
+
+            var fileName = mainModule.FileName;
+            ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
+            return fileName;
+        }
+    }
+
+    public string ExecutableDirectoryPath
+    {
+        get
+        {
+            var directoryName = Path.GetDirectoryName(ExecutableFilePath);
+            ArgumentNullException.ThrowIfNullOrEmpty(directoryName);
+            return directoryName;
+        }
+    }
+
+    public string ImagesZipFilePath
+        => Path.Combine(ExecutableDirectoryPath, "Images.zip");
+
+    public string DefaultDataDirectoryPath
+        => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "TableCloth",
+            "Data");
+
+    public string GetSandboxAppStagingPath(string sandboxStagingDirectory)
+        => Path.Combine(sandboxStagingDirectory, "App");
+
+    public string GetEffectiveDataDirectoryPath(string? configuredPath)
+        => string.IsNullOrWhiteSpace(configuredPath)
+            ? DefaultDataDirectoryPath
+            : configuredPath!;
+}

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Central Package Management (CPM)
+	https://learn.microsoft.com/nuget/consume-packages/central-package-management
+
+	This file is the single source of truth for NuGet package versions across all
+	main projects in the solution. Projects opt in by setting their PackageReference
+	entries without a Version attribute; opt out with ManagePackageVersionsCentrally=false.
+
+	The test projects (TableCloth.Test / Spork.Test) opt out for now because they rely
+	on MSTest.Sdk's implicit PackageReference Update syntax with inline versions; folding
+	those into CPM would require careful migration that's orthogonal to the unified binary
+	refactor.
+-->
+<Project>
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+		<!--
+			Transitive pinning is intentionally disabled. Enabling it lifts TableCloth's
+			transitively-resolved Serilog (4.2.0 via Serilog.Extensions.Logging 10.0.0)
+			up to the centrally-pinned 4.3.0, which then conflicts with TableCloth.Test
+			(MSTest.Sdk-managed, opted out of CPM) and surfaces MSB3277. Spork already
+			pins Serilog 4.3.0 via direct reference; the unified-binary merge in Phase 3
+			will let highest-wins resolution converge to 4.3.0 naturally.
+		-->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageVersion Include="AsyncAwaitBestPractices.MVVM" Version="10.0.0" />
+		<PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Configuration.CommandLine" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+		<PackageVersion Include="PnPeople.Security" Version="1.1.0" />
+		<PackageVersion Include="Sentry" Version="6.0.0" />
+		<PackageVersion Include="Sentry.Serilog" Version="6.0.0" />
+		<PackageVersion Include="Serilog" Version="4.3.0" />
+		<PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
+		<PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
+		<PackageVersion Include="System.CommandLine" Version="2.0.1" />
+		<PackageVersion Include="System.Management" Version="10.0.1" />
+		<PackageVersion Include="System.Security.AccessControl" Version="6.0.1" />
+		<PackageVersion Include="System.Text.Json" Version="10.0.1" />
+		<PackageVersion Include="Velopack" Version="0.0.1298" />
+		<PackageVersion Include="XamlRadialProgressBar" Version="1.0.3" />
+	</ItemGroup>
+</Project>

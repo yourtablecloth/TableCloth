@@ -7,8 +7,10 @@ using System.Xml.Linq;
 var appId = "TableCloth";
 var solutionFile = "TableCloth.slnx";
 var mainProject = Path.Combine("src", "TableCloth", "TableCloth.csproj");
-var iconPath = Path.Combine("src", "TableCloth", "Resources", "SandboxIcon.ico");
+// Resources 폴더는 Phase 1.2에서 TableCloth.App으로 이전됨.
+var iconPath = Path.Combine("src", "TableCloth.App", "Resources", "SandboxIcon.ico");
 var directoryBuildProps = "Directory.Build.Props";
+// 프로젝트 수준은 AnyCPU이고 publish 시점에 RID로 결정. 여기서는 RID 접미사로 사용.
 var platforms = new[] { "x64", "arm64" };
 
 // Parse command line arguments
@@ -85,18 +87,19 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
 
             if (!skip)
             {
-                // Build solution
+                // Build solution (AnyCPU; csproj는 RID/SelfContained를 publish 시점에만 활성화)
                 Console.WriteLine();
                 Console.WriteLine("Building solution...");
-                await RunCommandAsync("dotnet", 
-                    $"build {solutionFile} -c {config} -p:Platform={platform}");
+                await RunCommandAsync("dotnet",
+                    $"build {solutionFile} -c {config}");
 
-                // Publish TableCloth
+                // Publish TableCloth — TableCloth.csproj의 조건부 PropertyGroup이 RID 명시 시
+                // PublishSingleFile=true / PublishReadyToRun=true / EnableCompressionInSingleFile=true 등을
+                // 자동 활성화한다. 여기서는 RID와 SelfContained만 명시.
                 Console.WriteLine();
                 Console.WriteLine("Publishing TableCloth...");
                 await RunCommandAsync("dotnet",
-                    $"publish {mainProject} -c {config} -r win-{platform} --self-contained " +
-                    $"-p:PublishSingleFile=false -p:PublishReadyToRun=true -p:Platform={platform} " +
+                    $"publish {mainProject} -c {config} -r win-{platform} -p:SelfContained=true " +
                     $"-o {publishDir}");
             }
 

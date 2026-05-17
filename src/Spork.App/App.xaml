@@ -1,0 +1,30 @@
+<Application x:Class="Spork.SporkApplication"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Spork.Converters"
+             Startup="Application_Startup">
+    <Application.Resources>
+        <ResourceDictionary>
+            <converters:BooleanToGridRowHeightConverter x:Key="BooleanToGridRowHeightConverter" />
+            <converters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+            <converters:StateToBrushConverter x:Key="stateToBrushConverter" />
+            <converters:WidthConverter x:Key="widthConverter" />
+            <converters:ServiceLogoConverter x:Key="ServiceLogoConverter" />
+
+            <!-- Info Banner Colors (Light Mode) -->
+            <SolidColorBrush x:Key="InfoBannerBackground" Color="#EFF6FF" />
+            <SolidColorBrush x:Key="InfoBannerForeground" Color="#0F172A" />
+            <SolidColorBrush x:Key="InfoBannerLinkForeground" Color="#1D4ED8" />
+            <SolidColorBrush x:Key="InfoBannerBorder" Color="#BFDBFE" />
+
+            <ResourceDictionary.MergedDictionaries>
+                <!--
+                    .NET 10에서는 PresentationFramework.Aero2의 어셈블리 식별(Version/PublicKeyToken 등)이
+                    net48 시절과 달라 strong-name 참조가 실패한다. TableCloth.App.xaml과 같은 단순 형식으로
+                    런타임이 제공하는 그 어셈블리에 그대로 바인딩되게 한다.
+                -->
+                <ResourceDictionary Source="/PresentationFramework.Aero2;component/themes/aero2.normalcolor.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,37 +1,40 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net48</TargetFramework>
+		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
 		<RootNamespace>Spork</RootNamespace>
 		<AssemblyName>Spork</AssemblyName>
-		<UseWPF>true</UseWPF>
-		<Platforms>x64;ARM64</Platforms>
-		<UseWindowsForms>false</UseWindowsForms>
-		<LangVersion>12.0</LangVersion>
-		<Deterministic>true</Deterministic>
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 		<StartupObject>Spork.Program</StartupObject>
 		<ApplicationIcon>App.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>false</UseWindowsForms>
+		<LangVersion>preview</LangVersion>
+		<Deterministic>true</Deterministic>
+		<SignAssembly>False</SignAssembly>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<RunPostBuildEvent>Always</RunPostBuildEvent>
-		<DefineConstants>$(DefineConstants);NETFX</DefineConstants>
 
 		<!-- Assembly Info -->
 		<Title>TableCloth Spork</Title>
 		<Description>This program is a tool that installs the requested installers at once in the sandbox.</Description>
-
-		<!-- COM Interop -->
-		<ComVisible>true</ComVisible>
 	</PropertyGroup>
 
-	<!-- GUID for COM Interop -->
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.InteropServices.GuidAttribute">
-			<_Parameter1>36e7b617-ca94-4ecb-ad65-39fe94ce265b</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
+	<!--
+		Phase 8 — Spork 단독 게시 정책. TableCloth.csproj와 동일하게 RuntimeIdentifier가 명시된
+		경우(=실제 publish 호출)에만 활성화되어 `dotnet build`에는 영향을 주지 않는다.
+		단독 출시 흐름:
+		  dotnet publish src/Spork -c Release -r win-x64 -p:SelfContained=true -o publish/spork/win-x64
+	-->
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+		<PublishSingleFile>true</PublishSingleFile>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<PublishTrimmed>false</PublishTrimmed>
+	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
 		<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
@@ -45,56 +48,14 @@
 		<DebugType>pdbonly</DebugType>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Platform)' == 'x64'">
-		<PlatformTarget>x64</PlatformTarget>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Platform)' == 'ARM64'">
-		<PlatformTarget>ARM64</PlatformTarget>
-	</PropertyGroup>
-
+	<!--
+		진입점 Spork.exe는 부트스트랩(Sentry 초기화)과 Host 빌드만 담당하므로 직접 참조
+		패키지는 최소화. 나머지는 Spork.App을 통해 transitive로 들어온다.
+	-->
 	<ItemGroup>
-		<PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="10.0.0" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
-		<PackageReference Include="Mono.HttpUtility" Version="1.0.0.1" />
-		<PackageReference Include="Sentry" Version="6.0.0" />
-		<PackageReference Include="Sentry.Serilog" Version="6.0.0" />
-		<PackageReference Include="Serilog" Version="4.3.0" />
-		<PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
-		<PackageReference Include="System.CommandLine" Version="2.0.1" />
-		<PackageReference Include="System.Text.Json" Version="10.0.1" />
-		<!-- Explicit versions to resolve MSB3277 conflicts -->
-		<PackageReference Include="System.Collections.Immutable" Version="10.0.1" />
-		<PackageReference Include="System.Reflection.Metadata" Version="10.0.1" />
-		<PackageReference Include="System.Resources.Extensions" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="10.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Primitives" Version="10.0.1" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Reference Include="PresentationFramework.Aero2" />
-		<Reference Include="System.ComponentModel.DataAnnotations" />
-		<Reference Include="System.Drawing" />
-		<Reference Include="System.Security" />
-		<Reference Include="System.ServiceProcess" />
-		<Reference Include="UIAutomationProvider" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" />
+		<PackageReference Include="Sentry" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -102,18 +63,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="Resources\Signature.jpg" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+		<ProjectReference Include="..\Spork.App\Spork.App.csproj" />
+		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
 	</ItemGroup>
 
 	<!--
-		Spork에는 별도의 PreBuild 타깃이 없으므로 표준 PreBuildEvent에 직접 연결한다.
-		(TableCloth.csproj에는 Spork.zip 복사용 PreBuild 타깃이 따로 있어 그쪽 manifest 치환은
-		BeforeTargets="PreBuild"로 동작하지만, Spork.csproj의 PreBuild는 commit.txt 작성 통합 때
-		WriteCommitTxt로 이름이 바뀌면서 사라졌다.)
+		MSBuild 표준 확장 지점인 PreBuildEvent에 직접 hook해 app.manifest의 $version$ 플레이스홀더를
+		AssemblyVersion으로 치환한다. (Phase 4에서 두 프로젝트 모두 사용자 정의 'PreBuild' 타깃을
+		폐기했으므로 PreBuildEvent로 직접 연결.)
 	-->
 	<Target Name="UpdateManifestVersion" BeforeTargets="PreBuildEvent">
 		<PropertyGroup>
@@ -149,8 +106,10 @@
 		<WriteLinesToFile File="$(ProjectDir)commit.txt" Lines="$(_CommitId)" Overwrite="true" />
 	</Target>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="echo Compressing '$(TargetDir)' into '$(SolutionDir)Artifacts\$(ProjectName).zip'...&#xD;&#xA;if not exist &quot;$(SolutionDir)Artifacts\&quot; mkdir &quot;$(SolutionDir)Artifacts\&quot;&#xD;&#xA;if exist &quot;$(SolutionDir)Artifacts\$(ProjectName).zip&quot; del /f /q &quot;$(SolutionDir)Artifacts\$(ProjectName).zip&quot;&#xD;&#xA;powershell.exe Add-Type -AssemblyName 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('$(TargetDir)', '$(SolutionDir)Artifacts\$(ProjectName).zip')&#xD;&#xA;dir $(SolutionDir)Artifacts\$(ProjectName).zip" />
-	</Target>
+	<!--
+		Spork.zip을 만들던 PostBuild 타깃은 Phase 4에서 폐기.
+		샌드박스는 이제 TableCloth.exe(verb=spork)를 호스트 설치 폴더에서 직접 마운트해 실행한다.
+		Spork.exe는 단독 출시 후보로 남아 있으나 zip 패키징은 더 이상 필요하지 않다.
+	-->
 
 </Project>

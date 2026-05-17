@@ -1,0 +1,77 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>false</UseWindowsForms>
+		<LangVersion>preview</LangVersion>
+		<Deterministic>true</Deterministic>
+		<!--
+			RootNamespace는 의도적으로 'Spork'로 설정. 본 라이브러리의 어셈블리 이름은
+			'Spork.App'이지만 내부 파일들은 기존 'Spork.Components', 'Spork.ViewModels',
+			'Spork.Steps' 등의 네임스페이스를 그대로 유지하기 위함. 진입점 프로젝트(Spork)와
+			공통 네임스페이스 공간을 공유하므로 using 문 수정 없이 파일 이동이 가능하다.
+		-->
+		<RootNamespace>Spork</RootNamespace>
+		<Description>Spork sandbox agent module — registered into the unified binary via builder.UseSpork() or via a standalone Spork.exe entry point.</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AsyncAwaitBestPractices.MVVM" />
+		<PackageReference Include="CommunityToolkit.Mvvm" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" />
+		<PackageReference Include="Microsoft.Extensions.Http" />
+		<PackageReference Include="Microsoft.Extensions.Logging" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" />
+		<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+		<PackageReference Include="Sentry" />
+		<PackageReference Include="Sentry.Serilog" />
+		<PackageReference Include="Serilog" />
+		<PackageReference Include="Serilog.Extensions.Logging" />
+		<PackageReference Include="System.CommandLine" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- 진입점(Spork) 프로젝트와 테스트가 본 라이브러리의 internal API에 접근 가능하게 한다. -->
+		<InternalsVisibleTo Include="Spork" />
+		<InternalsVisibleTo Include="Spork.Test" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ApplicationDefinition Remove="App.xaml" />
+		<Page Include="App.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="Resources\Signature.jpg" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+</Project>

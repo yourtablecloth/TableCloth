@@ -66,6 +66,14 @@ namespace TableCloth.Models.Configuration
         public string AssetsDirectoryPath { get; set; } = null;
 
         /// <summary>
+        /// framework-dependent 빌드 실행 시 샌드박스에 RO 마운트할 호스트 측 dotnet 설치 폴더 경로.
+        /// SandboxBuilder가 staging 복사 직후 자동 감지해 채워 넣으며, self-contained 빌드(빌드 출력에
+        /// hostfxr.dll이 동봉된 경우)에선 <see langword="null"/>로 남는다. 값이 있으면 StartupScript가
+        /// 샌드박스 내부에 DOTNET_ROOT 환경 변수를 설정한다.
+        /// </summary>
+        public string? HostDotnetRootPath { get; set; } = null;
+
+        /// <summary>
         /// 샌드박스에 매핑할 사용자 지정 폴더 목록입니다.
         /// </summary>
         public ICollection<MappedFolderSetting> MappedFolders { get; set; } = new List<MappedFolderSetting>();

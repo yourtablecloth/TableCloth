@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
+		<UseWPF>false</UseWPF>
+		<UseWindowsForms>false</UseWindowsForms>
+		<LangVersion>preview</LangVersion>
+		<Deterministic>true</Deterministic>
+		<!--
+			RootNamespace는 Spork.App과 동일하게 'Spork'. 본 라이브러리는 Windows Sandbox 환경 안에서만
+			필요한 부팅 초기화(DNS netsh 강제 설정, 인증서 NPKI 배치, NPKI RO 마운트 사본화)를 담당한다.
+			단독 출시 Spork.exe(비-샌드박스 재단 릴리스 후보)는 이 어셈블리를 참조하지 않으며,
+			따라서 sandbox 전용 코드 경로가 standalone 바이너리에 포함되지 않는다.
+		-->
+		<RootNamespace>Spork</RootNamespace>
+		<Description>Windows Sandbox 진입 직후 한 번 실행하는 부팅 초기화 모듈. TableCloth.exe spork verb 핸들러가 builder.UseSandboxBootstrap()으로 ISandboxBootstrap 기본(noop) 등록을 실제 구현으로 교체한다. 단독 Spork.exe 릴리스는 본 어셈블리를 참조하지 않는다.</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" />
+		<PackageReference Include="Microsoft.Extensions.Logging" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Spork.App\Spork.App.csproj" />
+		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+	</ItemGroup>
+
+</Project>

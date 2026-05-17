@@ -299,6 +299,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="InputPasswordWindow_Title" xml:space="preserve">
     <value>Enter the password to convert the PFX certificate</value>
   </data>
+  <data name="Install_AllowEdgeLocalNetworkAccess" xml:space="preserve">
+    <value>Allow Edge Local Network Access</value>
+  </data>
   <data name="Install_ConfigASTx" xml:space="preserve">
     <value>Config AhnLab Safe Transaction</value>
   </data>
@@ -644,9 +647,6 @@ You may choose the appropriate license from the above.
 For detailed license information, please refer to:
 
 https://github.com/yourtablecloth/TableCloth</value>
-  </data>
-  <data name="Install_DisableSmartAppControl" xml:space="preserve">
-    <value>Turning Off Smart App Control</value>
   </data>
   <data name="AboutWindow_OssLicenseText" xml:space="preserve">
     <value>Open Source Software License</value>

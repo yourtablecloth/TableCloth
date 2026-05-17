@@ -621,6 +621,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Allow Edge Local Network Access과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Install_AllowEdgeLocalNetworkAccess {
+            get {
+                return ResourceManager.GetString("Install_AllowEdgeLocalNetworkAccess", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Config AhnLab Safe Transaction과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Install_ConfigASTx {
@@ -629,16 +638,7 @@ namespace TableCloth.Resources {
             }
         }
         
-        /// <summary>
-        ///   Turning Off Smart App Control과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Install_DisableSmartAppControl {
-            get {
-                return ResourceManager.GetString("Install_DisableSmartAppControl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
+/// <summary>
         ///   Enabling Internet Explorer Mode과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Install_EnableIEMode {
