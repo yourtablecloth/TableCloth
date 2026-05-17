@@ -226,9 +226,17 @@ set PATH=%DOTNET_ROOT%;%PATH%
         // 부팅 직후 LogonCommand는 powershell.exe 콜드 스타트 + 모듈 로드로만 수 초가 소모된다.
         // 따라서 batch는 환경 변수 + exe 실행만 담당하고, 나머지(DNS 설정, NPKI 복사, 인증서 배치)는
         // Spork.App 내부 ISandboxBootstrap이 UI 진입 시점에 직접 처리한다.
+        //
+        // 예외: Smart App Control(SAC) 비활성화는 *반드시* TableCloth.exe 실행 전에 끝나야 한다.
+        // citool --refresh가 호출되면 커널 CI가 실행 중인 모든 프로세스를 새 정책으로 재평가하는데,
+        // single-file + EV 미서명 상태의 TableCloth.exe는 untrusted로 분류되어 강제 종료된다.
+        // reg.exe + citool.exe는 System32의 EV 서명 바이너리라 SAC가 신뢰하므로 batch 단계에서
+        // 호출하는 것이 안전.
         return $@"@echo off
 pushd ""%~dp0""
-{dotnetRootScript}""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
+{dotnetRootScript}reg add ""HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy"" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1
+""%SystemRoot%\System32\citool.exe"" --refresh >nul 2>&1
+""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
 popd
 @echo on
 ";

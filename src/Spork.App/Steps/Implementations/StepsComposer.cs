@@ -51,13 +51,10 @@ namespace Spork.Steps.Implementations
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_PrepareEnvironment,
                 },
-                new StepItemViewModel()
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(DisableSmartAppControlStep)),
-                    Argument = new InstallItemViewModel(),
-                    TargetSiteName = UIStringResources.Option_Prerequisites,
-                    PackageName = UIStringResources.Install_DisableSmartAppControl,
-                },
+                // Smart App Control 비활성화는 본 단계에서 처리하지 않는다. citool --refresh 가
+                // 실행 중인 Spork 프로세스를 untrusted로 재평가해 강제 종료시키는 사례가 잦아
+                // StartupScript.cmd 의 reg.exe + citool.exe 호출로 옮겼다. EV 서명된 System32
+                // 바이너리는 SAC 가 신뢰하므로 batch 단계에서 안전하게 실행된다.
                 // Local Network Access(127.0.0.1 등) 프롬프트를 자동 허용하는 Edge 정책을 미리 적용.
                 // 후속 ReloadEdgeStep이 msedge를 재기동하면 새 인스턴스부터 정책이 즉시 반영된다.
                 new StepItemViewModel()

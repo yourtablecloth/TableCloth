@@ -648,9 +648,6 @@ For detailed license information, please refer to:
 
 https://github.com/yourtablecloth/TableCloth</value>
   </data>
-  <data name="Install_DisableSmartAppControl" xml:space="preserve">
-    <value>Turning Off Smart App Control</value>
-  </data>
   <data name="AboutWindow_OssLicenseText" xml:space="preserve">
     <value>Open Source Software License</value>
   </data>
