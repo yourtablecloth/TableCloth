@@ -99,3 +99,23 @@ dotnet test src/Spork.Test/Spork.Test.csproj
 ### 아키텍처 결정 배경
 
 본 통합 구조와 단계별 마이그레이션의 상세 내역은 [docs/UNIFIED_BINARY_TODO.md](./docs/UNIFIED_BINARY_TODO.md)에 기록되어 있습니다.
+
+## Known Issues
+
+### Windows Sandbox 첫 부팅 시 inner 데스크톱이 작게 렌더링됨
+
+`.wsb` 로 sandbox 가 시작될 때, sandbox 내부 데스크톱 해상도가 호스트 측 클라이언트 영역과 즉시 동기화되지 않아 화면 일부에만 작게 렌더링되는 경우가 있습니다. `WindowsSandboxClient.exe`(또는 24H2+ 의 `WindowsSandbox.exe`) 자체의 OS 버그로 식탁보 / 포카락 측에서 발생시키는 문제가 아니며 공식 fix 는 없습니다.
+
+**수동 우회 (사용자 액션)**:
+
+- sandbox 윈도우를 잡고 크기를 살짝 조절하면 즉시 정상화됩니다.
+- 또는 윈도우를 최대화(Maximize) 했다가 다시 원래 크기로 복원(Restore) 합니다.
+- 또는 타이틀 바를 더블 클릭(=최대화/복원 토글)합니다.
+
+**자동 우회 시도 이력**:
+
+호스트 측에서 sandbox 메인 윈도우를 찾아 `ShowWindow(SW_MAXIMIZE)` → `SW_RESTORE` 를 자동으로 발화시키는 `SandboxRenderNudger` 보정 로직을 한 차례 도입했지만, sandbox 측의 첫 페인트 타이밍 / 윈도우 핸들 등장 순서 / UWP wrapper 유무 등 변수가 많아 실제 환경에서 신뢰성 있게 동작하지 않는 것이 확인되어 제거했습니다(commit history 참고). 향후 재시도 시 다음 접근들을 고려해볼 수 있습니다:
+
+- `WindowsSandboxClient` 가 만드는 자식 윈도우(렌더 surface) 까지 깊이 탐색해 그쪽에 redraw 신호 전달
+- `UIAutomation` 으로 sandbox 윈도우 트리 확인 후 적절한 시점 식별
+- Windows Sandbox 자체에 fix 가 반영되기를 기다림 (Microsoft Feedback Hub 보고 권장)
