@@ -32,7 +32,7 @@ namespace Spork.Components.Implementations
             return (MessageBoxResult)_applicationService.DispatchInvoke(new Func<MessageBoxResult>(() =>
             {
                 return _messageBoxService.Show(
-                    _applicationService.GetMainWindow(), message, UIStringResources.TitleText_Info,
+                    _applicationService.GetMainWindow(), message, BrandStrings.TitleText_Info,
                     messageBoxButton, MessageBoxImage.Information,
                     MessageBoxResult.OK);
             }), new object[] { });
@@ -64,7 +64,7 @@ namespace Spork.Components.Implementations
                 message = StringResources.Error_Unknown(file, member, line);
 
             var owner = Application.Current.MainWindow;
-            var title = isCritical ? UIStringResources.TitleText_Error : UIStringResources.TitleText_Warning;
+            var title = isCritical ? BrandStrings.TitleText_Error : BrandStrings.TitleText_Warning;
             var image = isCritical ? MessageBoxImage.Stop : MessageBoxImage.Warning;
 
             return (MessageBoxResult)_applicationService.DispatchInvoke(new Func<MessageBoxResult>(() =>
@@ -80,7 +80,7 @@ namespace Spork.Components.Implementations
             return (MessageBoxResult)_applicationService.DispatchInvoke(new Func<MessageBoxResult>(() =>
             {
                 return _messageBoxService.Show(
-                    _applicationService.GetMainWindow(), message, UIStringResources.TitleText_Question,
+                    _applicationService.GetMainWindow(), message, BrandStrings.TitleText_Question,
                     messageBoxButton, MessageBoxImage.Question, defaultAnswer);
             }), new object[] { });
         }

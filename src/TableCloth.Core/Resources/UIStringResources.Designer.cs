@@ -1336,7 +1336,7 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   This program is a tool that installs the requested installers into the sandbox at once. Press the Install button to start the installation.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Installation in progress. Please wait...과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Spork_AppInstructionMessage {
             get {
@@ -1350,6 +1350,51 @@ namespace TableCloth.Resources {
         public static string Spork_AppTitle {
             get {
                 return ResourceManager.GetString("Spork_AppTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   TableCloth과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_SandboxAppTitle {
+            get {
+                return ResourceManager.GetString("TableCloth_SandboxAppTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Spork Error과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Spork_TitleText_Error {
+            get {
+                return ResourceManager.GetString("Spork_TitleText_Error", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Spork Info과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Spork_TitleText_Info {
+            get {
+                return ResourceManager.GetString("Spork_TitleText_Info", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Spork Question과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Spork_TitleText_Question {
+            get {
+                return ResourceManager.GetString("Spork_TitleText_Question", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Spork Warning과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Spork_TitleText_Warning {
+            get {
+                return ResourceManager.GetString("Spork_TitleText_Warning", resourceCulture);
             }
         }
         
@@ -1377,6 +1422,15 @@ namespace TableCloth.Resources {
         public static string Spork_DryRunInstructionMessage {
             get {
                 return ResourceManager.GetString("Spork_DryRunInstructionMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   TableCloth is running in dry run mode.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_DryRunInstructionMessage {
+            get {
+                return ResourceManager.GetString("TableCloth_DryRunInstructionMessage", resourceCulture);
             }
         }
         
@@ -1920,15 +1974,39 @@ namespace TableCloth.Resources {
             }
         }
 
+        /// <summary>
+        ///   Spork과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
         public static string Spork_ShortcutLinkName {
             get {
                 return ResourceManager.GetString("Spork_ShortcutLinkName", resourceCulture);
             }
         }
 
+        /// <summary>
+        ///   Re-open the Spork catalog inside this sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
         public static string Spork_ShortcutDescription {
             get {
                 return ResourceManager.GetString("Spork_ShortcutDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   TableCloth과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_ShortcutLinkName {
+            get {
+                return ResourceManager.GetString("TableCloth_ShortcutLinkName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Re-open the TableCloth catalog inside this sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_ShortcutDescription {
+            get {
+                return ResourceManager.GetString("TableCloth_ShortcutDescription", resourceCulture);
             }
         }
 

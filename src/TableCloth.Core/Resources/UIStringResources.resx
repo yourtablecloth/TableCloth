@@ -456,16 +456,34 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
     <value>Searching for a joint certificate file...</value>
   </data>
   <data name="Spork_AppInstructionMessage" xml:space="preserve">
-    <value>This program is a tool that installs the requested installers into the sandbox at once. Press the Install button to start the installation.</value>
+    <value>Installation in progress. Please wait...</value>
   </data>
   <data name="Spork_AppTitle" xml:space="preserve">
     <value>Spork</value>
+  </data>
+  <data name="TableCloth_SandboxAppTitle" xml:space="preserve">
+    <value>TableCloth</value>
+  </data>
+  <data name="Spork_TitleText_Error" xml:space="preserve">
+    <value>Spork Error</value>
+  </data>
+  <data name="Spork_TitleText_Info" xml:space="preserve">
+    <value>Spork Info</value>
+  </data>
+  <data name="Spork_TitleText_Question" xml:space="preserve">
+    <value>Spork Question</value>
+  </data>
+  <data name="Spork_TitleText_Warning" xml:space="preserve">
+    <value>Spork Warning</value>
   </data>
   <data name="Spork_CustomScript_Title" xml:space="preserve">
     <value>Separate installation script</value>
   </data>
   <data name="Spork_Download_InProgress" xml:space="preserve">
     <value>Downloading...</value>
+  </data>
+  <data name="TableCloth_DryRunInstructionMessage" xml:space="preserve">
+    <value>TableCloth is running in dry run mode.</value>
   </data>
   <data name="Spork_DryRunInstructionMessage" xml:space="preserve">
     <value>Spork is running in dry run mode.</value>
@@ -815,9 +833,15 @@ Create it now and continue?</value>
     <value>Back to Catalog</value>
   </data>
   <data name="Spork_ShortcutLinkName" xml:space="preserve">
-    <value>TableCloth Catalog</value>
+    <value>Spork</value>
   </data>
   <data name="Spork_ShortcutDescription" xml:space="preserve">
+    <value>Re-open the Spork catalog inside this sandbox.</value>
+  </data>
+  <data name="TableCloth_ShortcutLinkName" xml:space="preserve">
+    <value>TableCloth</value>
+  </data>
+  <data name="TableCloth_ShortcutDescription" xml:space="preserve">
     <value>Re-open the TableCloth catalog inside this sandbox.</value>
   </data>
   <data name="SporkInstallSteps_WindowTitle" xml:space="preserve">

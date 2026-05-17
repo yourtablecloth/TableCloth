@@ -68,7 +68,17 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("Error_Already_TableCloth_Running", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Spork is already running.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Error_Already_Spork_Running {
+            get {
+                return ResourceManager.GetString("Error_Already_Spork_Running", resourceCulture);
+            }
+        }
+
+
         /// <summary>
         ///   The data could not be copied because the clipboard was not ready.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>

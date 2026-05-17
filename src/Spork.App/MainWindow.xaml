@@ -8,12 +8,13 @@
         xmlns:tablecloth="clr-namespace:TableCloth;assembly=TableCloth.Core"
         xmlns:vm="clr-namespace:Spork.ViewModels"
         xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Core"
+        xmlns:brand="clr-namespace:Spork.Components"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
         Style="{DynamicResource MainWindowStyle}"
         ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"
-        Title="{x:Static res:UIStringResources.Spork_AppTitle}" Width="720" Height="560" MinWidth="520" MinHeight="420"
+        Title="{x:Static brand:BrandStrings.AppTitle}" Width="720" Height="560" MinWidth="520" MinHeight="420"
         TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -44,7 +45,7 @@
 
         <Label Grid.Row="1" Background="{Binding Source={x:Static SystemColors.ActiveBorderBrush}}" Foreground="{Binding Source={x:Static SystemColors.ActiveCaptionTextBrush}}">
             <Label.Content>
-                <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 0 0" Text="{x:Static res:UIStringResources.Spork_DryRunInstructionMessage}" TextWrapping="Wrap" />
+                <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5 0 0 0" Text="{x:Static brand:BrandStrings.DryRunInstructionMessage}" TextWrapping="Wrap" />
             </Label.Content>
         </Label>
 

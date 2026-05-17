@@ -179,9 +179,9 @@ namespace Spork.ViewModels
 
                 await _shortcutCreator.CreateShortcutOnDesktopAsync(
                     destinationPath: sporkExePath,
-                    linkName: UIStringResources.Spork_ShortcutLinkName,
+                    linkName: BrandStrings.ShortcutLinkName,
                     iconFilePath: sporkExePath,
-                    description: UIStringResources.Spork_ShortcutDescription).ConfigureAwait(false);
+                    description: BrandStrings.ShortcutDescription).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

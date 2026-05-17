@@ -98,7 +98,7 @@ namespace Spork.Components.Implementations
             if (!this._isFirstInstance)
             {
                 result = ApplicationStartupResultModel.FromErrorMessage(
-                    ErrorStrings.Error_Already_TableCloth_Running, isCritical: true, providedWarnings: warnings);
+                    BrandStrings.Error_Already_Running, isCritical: true, providedWarnings: warnings);
                 return result;
             }
 
