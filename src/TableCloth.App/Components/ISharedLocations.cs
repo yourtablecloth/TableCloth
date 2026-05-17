@@ -20,7 +20,6 @@ public interface ISharedLocations
     string GetImageFilePath(string serviceId);
     string GetIconFilePath(string serviceId);
     string GetTempPath();
-    string GetCertificateStagingDirectoryPath();
 
     /// <summary>
     /// 샌드박스 시작 시 App 디렉터리로 마운트할 호스트 측 스테이징 경로를 반환합니다.

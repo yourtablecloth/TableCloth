@@ -24,6 +24,7 @@ namespace Spork.Components.Implementations
             IWebBrowserServiceFactory webBrowserServiceFactory,
             IShortcutCreator shortcutCreator,
             ISharedLocations sharedLocations,
+            ISandboxBootstrap sandboxBootstrap,
             ILogger<AppStartup> logger)
         {
             _appMessageBox = appMessageBox;
@@ -34,6 +35,7 @@ namespace Spork.Components.Implementations
             _mutex = new Mutex(true, $"Global\\{GetType().FullName}", out this._isFirstInstance);
             _shortcutCreator = shortcutCreator;
             _sharedLocations = sharedLocations;
+            _sandboxBootstrap = sandboxBootstrap;
             _logger = logger;
         }
 
@@ -44,6 +46,7 @@ namespace Spork.Components.Implementations
         private readonly IWebBrowserService _defaultWebBrowserService;
         private readonly IShortcutCreator _shortcutCreator;
         private readonly ISharedLocations _sharedLocations;
+        private readonly ISandboxBootstrap _sandboxBootstrap;
         private readonly ILogger _logger;
 
         private bool _disposed;
@@ -115,6 +118,11 @@ namespace Spork.Components.Implementations
             // 따라서 본 라인은 .NET 10에서 죽은 코드이고, 같은 보호를 회복하려면 AddHttpClient에서
             // HttpClientHandler.ServerCertificateCustomValidationCallback을 직접 구성해야 한다.
             // 우선 무동작 코드를 제거하고, 필요해질 때 HttpClient 측에 cert 검증 정책을 추가하는 식으로 분리한다.
+
+            // StartupScript.cmd에서 PowerShell로 처리하던 부팅 준비 작업(DNS 설정, 인증서 NPKI 배치,
+            // NPKI 마운트 사본화)을 .NET 측으로 옮긴 진입점. PowerShell 콜드 스타트 수 초를 절약한다.
+            // 모든 단계는 best-effort라 카탈로그 로드를 막지 않는다.
+            await _sandboxBootstrap.RunAsync(cancellationToken).ConfigureAwait(false);
 
             const int retryCount = 3;
 

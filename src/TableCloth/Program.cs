@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
 using Spork.App.DependencyInjection;
+using Spork.Sandbox;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -90,6 +91,10 @@ internal static class Program
 
             var builder = Host.CreateApplicationBuilder(args);
             builder.UseSpork();
+            // UseSpork()가 등록한 ISandboxBootstrap의 noop 기본 구현을 실제 sandbox 구현으로 교체.
+            // 본 호출은 TableCloth.exe(통합 진입점)에서만 일어나며, 단독 Spork.exe는 Spork.Sandbox를
+            // 참조하지 않으므로 noop 그대로 사용된다.
+            builder.UseSandboxBootstrap();
 
             using var appHost = builder.Build();
             appHost.Start();

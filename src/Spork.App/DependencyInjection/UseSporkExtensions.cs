@@ -82,6 +82,10 @@ public static class UseSporkExtensions
             .AddSingleton<IVisualThemeManager, VisualThemeManager>()
             .AddSingleton<ISharedLocations, SharedLocations>()
             .AddSingleton<IAppStartup, AppStartup>()
+            // 기본 등록은 noop. TableCloth.exe spork verb 핸들러는 직후에 builder.UseSandboxBootstrap()
+            // (Spork.Sandbox 어셈블리)을 호출하여 실제 sandbox 구현으로 교체한다. 단독 Spork.exe는
+            // 본 등록을 그대로 사용해 sandbox 전용 코드를 끌고 가지 않는다.
+            .AddSingleton<ISandboxBootstrap, NoopSandboxBootstrap>()
             .AddSingleton<IResourceResolver, ResourceResolver>()
             .AddSingleton<IResourceCacheManager, ResourceCacheManager>()
             .AddSingleton<ICommandLineArguments, CommandLineArguments>()

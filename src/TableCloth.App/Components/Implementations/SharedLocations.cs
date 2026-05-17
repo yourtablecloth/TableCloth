@@ -26,9 +26,6 @@ public sealed class SharedLocations : ISharedLocations
     public string GetTempPath()
         => GetDataPath("Sandbox");
 
-    public string GetCertificateStagingDirectoryPath()
-        => Path.Combine(GetTempPath(), "assets", "certs");
-
     public string GetImageDirectoryPath()
         => GetDataPath("images");
 

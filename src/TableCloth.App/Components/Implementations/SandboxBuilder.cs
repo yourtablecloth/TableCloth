@@ -35,19 +35,13 @@ public sealed class SandboxBuilder(
     /// </summary>
     private const string HostDotnetLeafName = "dotnet";
 
-    private static string GetCertificateStagingPathForSandbox()
-        => Path.Combine(SandboxMountPaths.AppDirectory, "certs");
-
-    private static string GetNPKIPathForSandbox(X509CertPair certPair)
-    {
-        // Note: 샌드박스 안에서 사용할 경로를 조립하는 것이므로 SHGetKnownFolderPath API를 사용하면 안됩니다.
-        var candidatePath = Path.Join("AppData", "LocalLow", "NPKI", certPair.Organization);
-
-        if (certPair.IsPersonalCert)
-            candidatePath = Path.Join(candidatePath, "USER", certPair.SubjectNameForNpkiApp);
-
-        return Path.Join(@"C:\Users\WDAGUtilityAccount", candidatePath);
-    }
+    /// <summary>
+    /// 인증서 staging은 App 디렉터리 하위 <c>certs</c>로 통일. App 디렉터리가 그대로 샌드박스
+    /// <c>Desktop\App</c>으로 노출되므로, 호스트가 여기 쓴 파일은 추가 마운트 없이 그대로 보인다.
+    /// 샌드박스 진입 후 Spork.App의 ISandboxBootstrap이 NPKI 표준 경로로 옮긴다.
+    /// </summary>
+    private static string GetCertificateStagingPathOnHost(string appDirectory)
+        => Path.Combine(appDirectory, "certs");
 
     public async Task<string?> GenerateSandboxConfigurationAsync(
         string outputDirectory,
@@ -81,30 +75,33 @@ public sealed class SandboxBuilder(
         // staging의 catalog 서브폴더로 복사해 둔다. 캐시가 없으면 폴백 없이 진행.
         await CopyCatalogSnapshotAsync(sharedLocations.CatalogCacheFilePath, appDirectory, cancellationToken).ConfigureAwait(false);
 
+        // 인증서가 있으면 App\certs 하위로 떨궈둔다. App 폴더가 그대로 샌드박스 Desktop\App로
+        // 노출되므로 추가 마운트 없이 Spork가 AppContext.BaseDirectory\certs에서 그대로 읽는다.
+        var sporkAnswers = new SporkAnswers
+        {
+            HostUILocale = CultureInfo.CurrentUICulture.Name,
+        };
+        await StageCertPairAsync(appDirectory, tableClothConfiguration.CertPair, sporkAnswers, cancellationToken).ConfigureAwait(false);
+
         var batchFileContent = GenerateSandboxStartupScript(tableClothConfiguration);
         var batchFilePath = Path.Combine(appDirectory, "StartupScript.cmd");
         await File.WriteAllTextAsync(batchFilePath, batchFileContent, Encoding.Default, cancellationToken).ConfigureAwait(false);
 
         var sporkAnswerJsonPath = Path.Combine(appDirectory, "SporkAnswers.json");
-        var sporkAnswerJsonContent = await SerializeSporkAnswersJsonAsync(new SporkAnswers
-        {
-            HostUILocale = CultureInfo.CurrentUICulture.Name,
-
-        }, cancellationToken).ConfigureAwait(false);
+        var sporkAnswerJsonContent = await SerializeSporkAnswersJsonAsync(sporkAnswers, cancellationToken).ConfigureAwait(false);
         await File.WriteAllTextAsync(sporkAnswerJsonPath, sporkAnswerJsonContent, cancellationToken).ConfigureAwait(false);
 
         var wsbFilePath = Path.Combine(outputDirectory, "InternetBankingSandbox.wsb");
         var serializedXml = SerializeSandboxSpec(
-            await BootstrapSandboxConfigurationAsync(tableClothConfiguration, cancellationToken).ConfigureAwait(false),
+            BootstrapSandboxConfiguration(tableClothConfiguration),
             excludedDirectories);
         await File.WriteAllTextAsync(wsbFilePath, serializedXml, cancellationToken).ConfigureAwait(false);
 
         return wsbFilePath;
     }
 
-    private async Task<SandboxConfiguration> BootstrapSandboxConfigurationAsync(
-        TableClothConfiguration tableClothConfig,
-        CancellationToken cancellationToken = default)
+    private static SandboxConfiguration BootstrapSandboxConfiguration(
+        TableClothConfiguration tableClothConfig)
     {
         const string Enable = "Enable";
         const string Disable = "Disable";
@@ -157,46 +154,44 @@ public sealed class SandboxBuilder(
             }
         }
 
-        if (tableClothConfig.CertPair != null &&
-            tableClothConfig.CertPair.PublicKey != null &&
-            tableClothConfig.CertPair.PrivateKey != null)
-        {
-            var certStagingDirectoryPath = sharedLocations.GetCertificateStagingDirectoryPath();
-            if (Directory.Exists(certStagingDirectoryPath))
-                Directory.Delete(certStagingDirectoryPath, true);
-            Directory.CreateDirectory(certStagingDirectoryPath);
-
-            var destDerFilePath = Path.Combine(certStagingDirectoryPath, "signCert.der");
-            var destKeyFileName = Path.Combine(certStagingDirectoryPath, "signPri.key");
-
-            await File.WriteAllBytesAsync(destDerFilePath, tableClothConfig.CertPair.PublicKey, cancellationToken).ConfigureAwait(false);
-            await File.WriteAllBytesAsync(destKeyFileName, tableClothConfig.CertPair.PrivateKey, cancellationToken).ConfigureAwait(false);
-        }
-
         sandboxConfig.LogonCommand.Add(Path.Combine(SandboxMountPaths.AppDirectory, "StartupScript.cmd"));
         return sandboxConfig;
+    }
+
+    /// <summary>
+    /// 호스트가 가진 인증서 쌍을 staging의 <c>App\certs</c>로 떨어뜨리고, NPKI 경로 조립에 필요한
+    /// 식별자(O / SubjectNameForNpkiApp / IsPersonalCert)를 <see cref="SporkAnswers"/>에 채워 넣는다.
+    /// 실제 배치(NPKI 표준 경로 + Desktop\Certificates 복사)는 샌드박스 안에서 Spork.App이 처리한다.
+    /// </summary>
+    private static async Task StageCertPairAsync(
+        string appDirectory,
+        X509CertPair? certPair,
+        SporkAnswers sporkAnswers,
+        CancellationToken cancellationToken)
+    {
+        if (certPair?.PublicKey == null || certPair.PrivateKey == null)
+            return;
+
+        var certStagingDirectoryPath = GetCertificateStagingPathOnHost(appDirectory);
+        if (Directory.Exists(certStagingDirectoryPath))
+            Directory.Delete(certStagingDirectoryPath, true);
+        Directory.CreateDirectory(certStagingDirectoryPath);
+
+        var destDerFilePath = Path.Combine(certStagingDirectoryPath, "signCert.der");
+        var destKeyFileName = Path.Combine(certStagingDirectoryPath, "signPri.key");
+
+        await File.WriteAllBytesAsync(destDerFilePath, certPair.PublicKey, cancellationToken).ConfigureAwait(false);
+        await File.WriteAllBytesAsync(destKeyFileName, certPair.PrivateKey, cancellationToken).ConfigureAwait(false);
+
+        sporkAnswers.HasCertPair = true;
+        sporkAnswers.CertOrganization = certPair.Organization;
+        sporkAnswers.CertIsPersonalCert = certPair.IsPersonalCert;
+        sporkAnswers.CertSubjectNameForNpkiApp = certPair.SubjectNameForNpkiApp;
     }
 
     private string GenerateSandboxStartupScript(TableClothConfiguration tableClothConfiguration)
     {
         ArgumentNullException.ThrowIfNull(tableClothConfiguration);
-
-        var certFileMoveScript = string.Empty;
-
-        if (tableClothConfiguration.CertPair != null)
-        {
-            var npkiDirectoryPathInSandbox = GetNPKIPathForSandbox(tableClothConfiguration.CertPair);
-            var desktopDirectoryPathInSandbox = "%userprofile%\\Desktop\\Certificates";
-            var certStagingPath = GetCertificateStagingPathForSandbox();
-            var providedCertFilePath = Path.Combine(certStagingPath, "*.*");
-            certFileMoveScript = $@"
-if not exist ""{npkiDirectoryPathInSandbox}"" mkdir ""{npkiDirectoryPathInSandbox}""
-if not exist ""{desktopDirectoryPathInSandbox}"" mkdir ""{desktopDirectoryPathInSandbox}""
-copy /y ""{providedCertFilePath}"" ""{npkiDirectoryPathInSandbox}""
-move /y ""{providedCertFilePath}"" ""{desktopDirectoryPathInSandbox}""
-rmdir /q ""{certStagingPath}""
-";
-        }
 
         var switches = new List<string>();
 
@@ -219,40 +214,21 @@ rmdir /q ""{certStagingPath}""
         var tableClothExeInSandbox = Path.Combine(SandboxMountPaths.AppDirectory, "TableCloth.exe");
         var idList = string.Join(" ", serviceIdList);
 
-        // 식탁보 wsb는 <SandboxFolder>를 사용하지 않으므로 호스트의 NPKI 폴더는
-        // 데스크톱의 "NPKI" 폴더로 RO 마운트되어 노출된다. 은행/금융 SW가 인식하는 표준 위치
-        // (%userprofile%\AppData\LocalLow\NPKI)에는 junction이 아닌 **xcopy**로 독립 사본을
-        // 만들어 둔다. 이유:
-        //   - junction은 결국 RO 마운트를 가리키므로 호스트 인증서가 그대로 노출되고,
-        //     은행 SW가 NPKI에 쓰기 작업(인증서 갱신/캐시 등)을 할 때 실패한다.
-        //   - xcopy로 사본을 두면 샌드박스가 독립된 쓰기 가능 NPKI를 갖고, 사본에 대한
-        //     수정이 호스트로 새지 않는다.
-        // CMD batch의 if-paren 블록은 LogonCommand 컨텍스트에서 파싱이 불안정할 수 있으므로
-        // 기존 cert 스크립트와 동일하게 단일 라인 if + goto 패턴을 유지한다.
-        var npkiJunctionScript = $@"
-if not exist ""{SandboxMountPaths.NpkiDesktopMount}"" goto __tc_skip_npki_copy
-if not exist ""%userprofile%\AppData\LocalLow"" mkdir ""%userprofile%\AppData\LocalLow"" >nul 2>&1
-xcopy /e /i /q /y ""{SandboxMountPaths.NpkiDesktopMount}"" ""{SandboxMountPaths.NpkiCanonicalPath}"" >nul 2>&1
-:__tc_skip_npki_copy";
-
         // framework-dependent 빌드일 때 호스트 dotnet 마운트가 추가됐다면 DOTNET_ROOT 노출.
+        // 환경 변수는 .NET 호스트가 exe를 띄우기 *전에* 설정되어야 하므로 batch에 남긴다.
         // self-contained 게시물이면 HostDotnetRootPath가 null이므로 set 라인이 들어가지 않는다.
         var dotnetRootScript = string.IsNullOrEmpty(tableClothConfiguration.HostDotnetRootPath)
             ? string.Empty
             : $@"set DOTNET_ROOT={SandboxMountPaths.SandboxDesktop}\{HostDotnetLeafName}
-set PATH=%DOTNET_ROOT%;%PATH%";
+set PATH=%DOTNET_ROOT%;%PATH%
+";
 
+        // 부팅 직후 LogonCommand는 powershell.exe 콜드 스타트 + 모듈 로드로만 수 초가 소모된다.
+        // 따라서 batch는 환경 변수 + exe 실행만 담당하고, 나머지(DNS 설정, NPKI 복사, 인증서 배치)는
+        // Spork.App 내부 ISandboxBootstrap이 UI 진입 시점에 직접 처리한다.
         return $@"@echo off
 pushd ""%~dp0""
-
-REM Configure DNS servers (Google DNS, Cloudflare DNS)
-powershell -Command ""Get-NetAdapter | Where-Object {{$_.Status -eq 'Up'}} | Set-DnsClientServerAddress -ServerAddresses ('8.8.8.8','1.1.1.1')"" 2>nul
-
-{dotnetRootScript}
-{certFileMoveScript}
-{npkiJunctionScript}
-""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
-:exit
+{dotnetRootScript}""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
 popd
 @echo on
 ";

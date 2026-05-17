@@ -72,6 +72,13 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Spork.App\Spork.App.csproj" />
+	  <!--
+	    Spork.Sandbox는 Windows Sandbox 부팅 초기화(DNS, NPKI, 인증서 배치) 전용 모듈.
+	    TableCloth.exe에서만 참조하여 'spork' verb 핸들러가 builder.UseSandboxBootstrap()으로
+	    ISandboxBootstrap 기본 noop 등록을 실제 구현으로 교체한다. 단독 출시 Spork.exe는
+	    본 어셈블리를 참조하지 않으므로 sandbox 전용 코드가 standalone 바이너리에 포함되지 않는다.
+	  -->
+	  <ProjectReference Include="..\Spork.Sandbox\Spork.Sandbox.csproj" />
 	  <ProjectReference Include="..\TableCloth.App\TableCloth.App.csproj" />
 	  <ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
 	</ItemGroup>
