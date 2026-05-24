@@ -27,6 +27,7 @@ public partial class InputPasswordWindowViewModel : ObservableObject
     {
         _certPairScanner = certPairScanner;
         _appMessageBox = appMessageBox;
+        _taskFactory = taskFactory;
     }
 
     public event EventHandler? ViewLoaded;
