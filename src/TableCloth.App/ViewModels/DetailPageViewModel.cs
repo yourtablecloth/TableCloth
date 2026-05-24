@@ -90,6 +90,7 @@ public partial class DetailPageViewModel : ObservableObject
         InstallAdobeReader = currentConfig.InstallAdobeReader;
         InstallHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
         InstallRaiDrive = currentConfig.InstallRaiDrive;
+        EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration;
         LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
         // 저장된 매핑 폴더 로드
@@ -239,6 +240,9 @@ public partial class DetailPageViewModel : ObservableObject
     private bool _installRaiDrive;
 
     [ObservableProperty]
+    private bool _enableSandboxGpuAcceleration;
+
+    [ObservableProperty]
     private DateTime? _lastDisclaimerAgreedTime;
 
     [ObservableProperty]
@@ -337,6 +341,10 @@ public partial class DetailPageViewModel : ObservableObject
 
             case nameof(DetailPageViewModel.InstallRaiDrive):
                 currentConfig.InstallRaiDrive = viewModel.InstallRaiDrive;
+                break;
+
+            case nameof(DetailPageViewModel.EnableSandboxGpuAcceleration):
+                currentConfig.EnableSandboxGpuAcceleration = viewModel.EnableSandboxGpuAcceleration;
                 break;
 
             case nameof(DetailPageViewModel.LastDisclaimerAgreedTime):

@@ -106,12 +106,17 @@ public sealed class SandboxBuilder(
         const string Enable = "Enable";
         const string Disable = "Disable";
 
+        // vGPU 기본값은 Disable. 호스트 GPU 공유는 사용자가 명시적으로 옵션을 켤 때만 활성화한다.
+        // - Disable: 샌드박스에 호스트 GPU 어댑터가 전혀 노출되지 않음. 소프트웨어 렌더링(WARP)으로 동작하므로
+        //   특정 NVIDIA 드라이버 등에서 보고된 Edge 흰 화면 같은 비결정적 GPU 경로 문제를 회피한다.
+        // - Default: WSB가 호스트 OS 기본 정책에 따라 vGPU를 공유한다(보통 호스트 GPU 어댑터 노출).
+        //   GPU 가속이 필요한 시각화/미디어 작업 등에서만 켠다.
         var sandboxConfig = new SandboxConfiguration
         {
             AudioInput = tableClothConfig.EnableMicrophone ? Enable : Disable,
             VideoInput = tableClothConfig.EnableWebCam ? Enable : Disable,
             PrinterRedirection = tableClothConfig.EnablePrinters ? Enable : Disable,
-            VirtualGpu = Disable,
+            VirtualGpu = tableClothConfig.EnableSandboxGpuAcceleration ? "Default" : Disable,
         };
 
         if (!Directory.Exists(tableClothConfig.AssetsDirectoryPath))
@@ -238,10 +243,22 @@ setx DOTNET_ROOT ""{SandboxMountPaths.SandboxDesktop}\{HostDotnetLeafName}"" >nu
         // single-file + EV 미서명 상태의 TableCloth.exe는 untrusted로 분류되어 강제 종료된다.
         // reg.exe + citool.exe는 System32의 EV 서명 바이너리라 SAC가 신뢰하므로 batch 단계에서
         // 호출하는 것이 안전.
+        //
+        // GPU 가속 OFF(기본)일 때 vGPU Disable 만으로는 부족할 수 있어 Edge 정책도 함께 적용해
+        // 다층 차단한다. Edge는 vGPU가 없어도 WARP/소프트웨어 GPU 경로를 시도하며, 이 경로가
+        // 일부 환경에서 흰 화면이나 렌더링 지연을 유발할 수 있기 때문에 정책 키로 명시적으로
+        // 하드웨어 가속을 끄는 것이 가장 안전하다. msedge.exe가 처음 뜨기 전에 정책이 들어가야
+        // 새 프로세스가 정책을 읽기 때문에 batch 단계에서 적용한다(LogonCommand 시점엔 Edge가
+        // 아직 없으므로 재시작 무관).
+        var disableEdgeGpuScript = !tableClothConfiguration.EnableSandboxGpuAcceleration
+            ? @"reg add ""HKLM\SOFTWARE\Policies\Microsoft\Edge"" /v HardwareAccelerationModeEnabled /t REG_DWORD /d 0 /f >nul 2>&1
+"
+            : string.Empty;
+
         return $@"@echo off
 pushd ""%~dp0""
 {dotnetRootScript}reg add ""HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy"" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1
-""%SystemRoot%\System32\citool.exe"" --refresh >nul 2>&1
+{disableEdgeGpuScript}""%SystemRoot%\System32\citool.exe"" --refresh >nul 2>&1
 ""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
 popd
 @echo on

@@ -158,6 +158,7 @@ public partial class QuickStartPageViewModel : ObservableObject
             InstallAdobeReader = currentConfig.InstallAdobeReader,
             InstallHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer,
             InstallRaiDrive = currentConfig.InstallRaiDrive,
+            EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration,
             Companions = Array.Empty<CatalogCompanion>(),
             Services = Array.Empty<CatalogInternetService>(),
             MappedFolders = mappedFolders,

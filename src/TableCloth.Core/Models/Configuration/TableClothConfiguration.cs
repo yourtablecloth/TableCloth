@@ -77,5 +77,12 @@ namespace TableCloth.Models.Configuration
         /// 샌드박스에 매핑할 사용자 지정 폴더 목록입니다.
         /// </summary>
         public ICollection<MappedFolderSetting> MappedFolders { get; set; } = new List<MappedFolderSetting>();
+
+        /// <summary>
+        /// 샌드박스 GPU 가속 사용 여부. true이면 WSB가 <c>&lt;vGPU&gt;Default&lt;/vGPU&gt;</c>로 호스트 GPU를
+        /// 공유하고 Edge 하드웨어 가속도 그대로 사용합니다. false(기본)이면 <c>&lt;vGPU&gt;Disable&lt;/vGPU&gt;</c>로
+        /// 호스트 GPU 공유를 막고 StartupScript가 Edge 하드웨어 가속 정책도 함께 끕니다.
+        /// </summary>
+        public bool EnableSandboxGpuAcceleration { get; set; }
     }
 }

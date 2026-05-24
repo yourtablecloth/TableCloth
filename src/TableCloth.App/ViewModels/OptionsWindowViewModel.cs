@@ -27,6 +27,7 @@ public static class OptionsTabKeys
     public const string UserFolders = nameof(UserFolders);
     public const string Certificate = nameof(Certificate);
     public const string DeviceSharing = nameof(DeviceSharing);
+    public const string Compatibility = nameof(Compatibility);
     public const string Diagnostics = nameof(Diagnostics);
 }
 
@@ -71,7 +72,8 @@ public partial class OptionsWindowViewModel : ObservableObject
             OptionsTabKeys.UserFolders => 0,
             OptionsTabKeys.Certificate => 1,
             OptionsTabKeys.DeviceSharing => 2,
-            OptionsTabKeys.Diagnostics => 3,
+            OptionsTabKeys.Compatibility => 3,
+            OptionsTabKeys.Diagnostics => 4,
             _ => 0,
         };
     }
@@ -94,6 +96,7 @@ public partial class OptionsWindowViewModel : ObservableObject
             InstallRaiDrive = currentConfig.InstallRaiDrive;
             EnableLogAutoCollecting = currentConfig.UseLogCollection;
             ShareNpkiFolder = currentConfig.ShareNpkiFolder;
+            EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration;
 
             // 사용자 폴더 목록을 환경 설정에서 로드하고 가용성을 검증해 화면에 표시한다.
             MappedFolders.Clear();
@@ -234,6 +237,9 @@ public partial class OptionsWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _shareNpkiFolder;
 
+    [ObservableProperty]
+    private bool _enableSandboxGpuAcceleration;
+
     /// <summary>
     /// 옵션 창이 처음 열릴 때 선택될 탭 인덱스. <see cref="OptionsTabKeys"/>의 키와 매핑된다.
     /// 호출 측이 지정하지 않으면 0(첫 탭 = 사용자 폴더).
@@ -313,6 +319,10 @@ public partial class OptionsWindowViewModel : ObservableObject
 
             case nameof(ShareNpkiFolder):
                 currentConfig.ShareNpkiFolder = viewModel.ShareNpkiFolder;
+                break;
+
+            case nameof(EnableSandboxGpuAcceleration):
+                currentConfig.EnableSandboxGpuAcceleration = viewModel.EnableSandboxGpuAcceleration;
                 break;
 
             default:

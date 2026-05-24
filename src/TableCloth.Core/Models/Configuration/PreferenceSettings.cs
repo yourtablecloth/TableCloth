@@ -104,6 +104,18 @@ namespace TableCloth.Models.Configuration
         public bool ShareNpkiFolder { get; set; } = true;
 
         /// <summary>
+        /// 샌드박스에서 GPU 가속(vGPU + Edge 하드웨어 가속)을 사용할지 여부.
+        /// 기본값은 false — 즉 호환성·안정성을 우선시하여 GPU를 끄고 소프트웨어 렌더링으로 동작합니다.
+        /// false일 때: WSB가 <c>&lt;vGPU&gt;Disable&lt;/vGPU&gt;</c>로 호스트 GPU 공유를 막고,
+        /// StartupScript가 Edge 정책(<c>HardwareAccelerationModeEnabled=0</c>)을 적용해 Edge가
+        /// 소프트웨어 렌더링을 강제하도록 합니다. 일부 GPU 환경(특정 NVIDIA 드라이버 등)에서
+        /// 보고된 Edge 흰 화면 증상이나 vGPU 관련 비결정적 동작을 회피하기 위한 기본 동작입니다.
+        /// true로 켜면 호스트 GPU를 샌드박스와 공유(<c>&lt;vGPU&gt;Default&lt;/vGPU&gt;</c>)하고 Edge가
+        /// 정상적으로 GPU 가속을 사용합니다. 가속이 필요한 시각화 작업·미디어 재생 등에서만 켜는 것을 권장합니다.
+        /// </summary>
+        public bool EnableSandboxGpuAcceleration { get; set; } = false;
+
+        /// <summary>
         /// Disclaimer 알림을 표시해야 하는지 여부를 반환합니다.
         /// </summary>
         /// <param name="currentTime">현재 시간 (UTC)</param>

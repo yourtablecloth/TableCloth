@@ -1956,6 +1956,30 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string Options_Section_Compatibility {
+            get {
+                return ResourceManager.GetString("Options_Section_Compatibility", resourceCulture);
+            }
+        }
+
+        public static string Options_Section_Compatibility_Description {
+            get {
+                return ResourceManager.GetString("Options_Section_Compatibility_Description", resourceCulture);
+            }
+        }
+
+        public static string Option_EnableSandboxGpuAccelerationCheckbox {
+            get {
+                return ResourceManager.GetString("Option_EnableSandboxGpuAccelerationCheckbox", resourceCulture);
+            }
+        }
+
+        public static string Option_EnableSandboxGpuAccelerationCheckbox_Description {
+            get {
+                return ResourceManager.GetString("Option_EnableSandboxGpuAccelerationCheckbox_Description", resourceCulture);
+            }
+        }
+
         public static string SporkCatalog_Instruction {
             get {
                 return ResourceManager.GetString("SporkCatalog_Instruction", resourceCulture);

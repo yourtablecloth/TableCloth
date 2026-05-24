@@ -28,6 +28,7 @@ public sealed class ConfigurationComposer(
             InstallAdobeReader = viewModel.InstallAdobeReader,
             InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer,
             InstallRaiDrive = viewModel.InstallRaiDrive,
+            EnableSandboxGpuAcceleration = viewModel.EnableSandboxGpuAcceleration,
             Companions = Array.Empty<CatalogCompanion>(),
             Services = viewModel.SelectedServices.ToList(),
             MappedFolders = viewModel.MappedFolders.ToList(),

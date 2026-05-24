@@ -822,6 +822,18 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="Options_Section_Diagnostics" xml:space="preserve">
     <value>진단</value>
   </data>
+  <data name="Options_Section_Compatibility" xml:space="preserve">
+    <value>호환성</value>
+  </data>
+  <data name="Options_Section_Compatibility_Description" xml:space="preserve">
+    <value>샌드박스의 동작 방식을 호스트 환경에 맞춰 조정하는 설정입니다. 식탁보는 안정성을 우선시하는 기본값을 적용하며, 필요한 경우에만 켜는 것을 권장합니다.</value>
+  </data>
+  <data name="Option_EnableSandboxGpuAccelerationCheckbox" xml:space="preserve">
+    <value>샌드박스에서 GPU 가속 사용</value>
+  </data>
+  <data name="Option_EnableSandboxGpuAccelerationCheckbox_Description" xml:space="preserve">
+    <value>식탁보는 호환성과 안정성을 위해 샌드박스의 GPU 가속을 기본적으로 끕니다 (WSB의 vGPU 비활성화 + Edge 하드웨어 가속 정책 차단). 일부 GPU 환경(특정 NVIDIA 드라이버 등)에서 보고된 Edge 흰 화면 문제와 vGPU 관련 비결정적 동작을 회피하기 위함입니다. 켜면 호스트 GPU를 샌드박스와 공유하고 Edge가 GPU 가속을 사용합니다. 시각화 작업이나 미디어 재생 등 가속이 꼭 필요할 때만 켜세요. 다음 샌드박스 실행부터 적용됩니다.</value>
+  </data>
   <data name="SporkCatalog_Instruction" xml:space="preserve">
     <value>접속하려는 사이트를 선택하세요. 선택한 사이트에 필요한 보안 프로그램이 자동으로 설치됩니다. 나중에 이 목록으로 돌아올 수 있습니다.</value>
   </data>

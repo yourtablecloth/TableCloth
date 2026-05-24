@@ -823,6 +823,18 @@ Create it now and continue?</value>
   <data name="Options_Section_Diagnostics" xml:space="preserve">
     <value>Diagnostics</value>
   </data>
+  <data name="Options_Section_Compatibility" xml:space="preserve">
+    <value>Compatibility</value>
+  </data>
+  <data name="Options_Section_Compatibility_Description" xml:space="preserve">
+    <value>Tune how the sandbox behaves to match your host environment. TableCloth ships defaults that prioritize stability — turn these on only when you actually need them.</value>
+  </data>
+  <data name="Option_EnableSandboxGpuAccelerationCheckbox" xml:space="preserve">
+    <value>Use GPU acceleration in the sandbox</value>
+  </data>
+  <data name="Option_EnableSandboxGpuAccelerationCheckbox_Description" xml:space="preserve">
+    <value>TableCloth turns GPU acceleration off by default for stability: the WSB file disables vGPU (no host GPU is shared into the sandbox) and a policy forces Microsoft Edge to use software rendering. This avoids the blank-screen Edge issue reported on some GPU setups (notably certain NVIDIA drivers) and other non-deterministic vGPU behavior. Enable this to share the host GPU into the sandbox and let Edge use hardware acceleration — recommended only when you need it (heavy visualization, media playback). Takes effect on the next sandbox launch.</value>
+  </data>
   <data name="SporkCatalog_Instruction" xml:space="preserve">
     <value>Pick a website to install the required security software for it. You can return to this list later.</value>
   </data>
