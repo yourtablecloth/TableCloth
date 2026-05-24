@@ -682,7 +682,7 @@ https://github.com/yourtablecloth/TableCloth</value>
     <value>Mapped Folders</value>
   </data>
   <data name="MappedFolder_Description" xml:space="preserve">
-    <value>Add folders from your computer to share with the sandbox. Added folders will appear as shortcuts on the sandbox desktop.</value>
+    <value>Add host folders to share with the sandbox. Folders are mounted under the sandbox Desktop using their original folder name (for example, D:\Work appears as Desktop\Work), not at the same absolute path as on the host.</value>
   </data>
   <data name="MappedFolder_AddButton" xml:space="preserve">
     <value>Add Folder...</value>

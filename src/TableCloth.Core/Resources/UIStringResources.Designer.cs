@@ -949,7 +949,7 @@ namespace TableCloth.Resources {
 
 
         /// <summary>
-        ///   Add folders from your computer to share with the sandbox. Added folders will appear as shortcuts on the sandbox desktop.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   Add host folders to share with the sandbox. Folders are mounted under the sandbox Desktop using their original folder name (for example, D:\Work appears as Desktop\Work), not at the same absolute path as on the host.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string MappedFolder_Description {
             get {

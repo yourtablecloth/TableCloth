@@ -681,7 +681,7 @@ https://github.com/yourtablecloth/TableCloth</value>
     <value>폴더 매핑</value>
   </data>
   <data name="MappedFolder_Description" xml:space="preserve">
-    <value>샌드박스와 공유할 폴더를 추가합니다. 추가된 폴더는 샌드박스 내 바탕 화면에 바로 가기로 연결됩니다.</value>
+    <value>샌드박스와 공유할 호스트 폴더를 추가합니다. 호스트와 동일한 경로가 아니라, 샌드박스의 바탕 화면(Desktop) 아래에 원본 폴더 이름 그대로 마운트되어 보입니다(예: D:\Work → 바탕 화면\Work).</value>
   </data>
   <data name="MappedFolder_AddButton" xml:space="preserve">
     <value>폴더 추가...</value>
