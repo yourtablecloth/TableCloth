@@ -138,6 +138,13 @@ if (x64Url is null || arm64Url is null)
 WriteLine($"x64   설치 관리자: {x64Url}");
 WriteLine($"arm64 설치 관리자: {arm64Url}");
 
+// --- 5.5) winget-pkgs 포크 동기화 (드리프트 방지) ---
+//   wingetcreate 는 PAT 소유자의 winget-pkgs 포크에 PR 브랜치를 만든다. 포크 master
+//   가 upstream 보다 크게 뒤처지면(winget-pkgs 는 매우 활발해 금세 수십만 커밋 뒤처짐)
+//   제출이 실패할 수 있으므로, 매 제출 전에 merge-upstream 으로 fast-forward 한다.
+//   (인증 헤더가 아직 설정돼 있는 이 시점에서 수행. 실패해도 계속 진행한다.)
+await SyncWingetFork();
+
 // --- 6) wingetcreate 단독 exe 다운로드 ---
 using var tmp = Fs.TempDir();
 var exe = Path.Combine(tmp.Path, "wingetcreate.exe");
@@ -234,12 +241,37 @@ async Task<bool> VersionExistsInWinget(string version)
         $"winget contents API 응답 {(int)resp.StatusCode} {resp.ReasonPhrase}");
 }
 
+// PAT 소유자의 winget-pkgs 포크 master 를 upstream(microsoft/winget-pkgs)과
+// fast-forward 동기화한다. 포크가 없거나 동기화가 실패해도(경고만) 진행을 막지 않는다.
+// (Authorization 헤더가 설정된 상태에서 호출되어야 한다.)
+async Task SyncWingetFork()
+{
+    try
+    {
+        var me = await Http.GetJson<GhUser>("https://api.github.com/user", GhJson.Default);
+        var url = $"https://api.github.com/repos/{me.login}/winget-pkgs/merge-upstream";
+        using var body = new StringContent(
+            "{\"branch\":\"master\"}", System.Text.Encoding.UTF8, "application/json");
+        using var resp = await Http.Client.PostAsync(url, body);
+        if (resp.IsSuccessStatusCode)
+            WriteLine($"포크 {me.login}/winget-pkgs master 를 upstream 과 동기화했습니다.");
+        else
+            WriteLine($"::warning::포크 동기화 응답 {(int)resp.StatusCode} {resp.ReasonPhrase} — 계속 진행합니다.");
+    }
+    catch (Exception ex)
+    {
+        WriteLine($"::warning::포크 동기화 건너뜀: {ex.Message} — 계속 진행합니다.");
+    }
+}
+
 // =============================================================================
 // GitHub 릴리스 API 응답 (System.Text.Json source-gen; 필요한 필드만 매핑)
 // =============================================================================
 
 internal sealed record GhRelease(string tag_name, bool draft, bool prerelease, GhAsset[] assets);
 internal sealed record GhAsset(string name, string browser_download_url);
+internal sealed record GhUser(string login);
 
 [JsonSerializable(typeof(GhRelease))]
+[JsonSerializable(typeof(GhUser))]
 internal partial class GhJson : JsonSerializerContext;
