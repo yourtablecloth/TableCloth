@@ -1,10 +1,18 @@
 name: Submit to winget-pkgs repo
 
+# 정식 릴리스(released: 비-draft, 비-prerelease)가 게시되면 winget 매니페스트 업데이트
+# PR 을 자동으로 microsoft/winget-pkgs 에 제출한다. 수동 재제출을 위해
+# workflow_dispatch(release_tag 입력)도 함께 지원한다.
+#
+# 실제 로직은 .NET 10 file-based app(tools/winget/submit-winget.cs, Cadenza SDK)에
+# 들어 있고, 이 워크플로는 런타임을 준비하고 그 스크립트를 호출하기만 한다.
 on:
+  release:
+    types: [released]
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Release tag to publish (e.g., v1.16.2)'
+        description: 'Release tag to publish (e.g., v1.20.0)'
         required: true
         type: string
 
@@ -15,61 +23,29 @@ jobs:
   winget:
     name: Publish winget package
     runs-on: windows-latest
+    # released 트리거는 이미 draft/prerelease 를 제외하지만, 향후 published 로
+    # 바꾸더라도 안전하도록 방어적으로 한 번 더 가드한다. 수동 dispatch 는 항상 실행.
+    if: ${{ github.event_name == 'workflow_dispatch' || (!github.event.release.prerelease && !github.event.release.draft) }}
     steps:
-      - name: Install wingetcreate
-        run: |
-          winget install --accept-source-agreements wingetcreate
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Submit TableCloth WinGet Package Submission
-        env:
-          GITHUB_PAT: ${{ secrets.TABLECLOTH_GITHUB_PAT }}
-        run: |
-          $ErrorActionPreference = 'Stop'
-          
-          $PACKAGE_ID = "TableClothProject.TableCloth"
-          $RELEASE_TAG = "${{ inputs.release_tag }}"
+      # .NET 10 SDK: Cadenza file-based app 실행용 (dotnet run --file).
+      # .NET 6 런타임: wingetcreate.exe 가 .NET 6 프레임워크 종속인데,
+      #   windows-latest 러너 이미지에서 .NET 6 런타임이 제거(2025-08)되어
+      #   명시 설치가 필요하다. 6.x SDK 설치 시 6.0 런타임이 함께 제공된다.
+      - name: Setup .NET (10 SDK + 6 runtime)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.x
+            10.0.x
 
-          # Validate tag format
-          if ($RELEASE_TAG -notmatch '^v[0-9.]+$') {
-            Write-Host "Invalid release tag format: $RELEASE_TAG"
-            Write-Host "Expected format: v1.2.3"
-            exit 1
-          }
-
-          # Fetching specified release from GitHub
-          $response = Invoke-WebRequest -Uri "https://api.github.com/repos/yourtablecloth/TableCloth/releases/tags/$RELEASE_TAG" -UseBasicParsing
-          $release = $response.Content | ConvertFrom-Json
-          
-          # Check if release is published (not draft)
-          if ($release.draft -eq $true) {
-            Write-Host "Release $RELEASE_TAG is still in draft state"
-            Write-Host "Please publish the release before submitting to winget"
-            exit 1
-          }
-
-          $PACKAGE_VERSION = $RELEASE_TAG -replace '^v', ''
-          Write-Host "Processing release version: $PACKAGE_VERSION"
-
-          # Get Velopack Setup.exe installer URLs for each architecture
-          $x64Url = $release.assets | Where-Object { $_.name -match '.*x64\.exe$' -and $_.name -notmatch 'arm64' } | Select-Object -First 1 -ExpandProperty browser_download_url
-          $arm64Url = $release.assets | Where-Object { $_.name -match '.*arm64\.exe$' } | Select-Object -First 1 -ExpandProperty browser_download_url
-
-          if ([string]::IsNullOrEmpty($x64Url)) {
-            Write-Host "x64 installer not found in release assets"
-            exit 1
-          }
-
-          Write-Host "x64 Installer URL: $x64Url"
-
-          # Build installer URLs string for wingetcreate
-          if (-not [string]::IsNullOrEmpty($arm64Url)) {
-            Write-Host "arm64 Installer URL: $arm64Url"
-            $INSTALLER_URLS = "$x64Url|x64 $arm64Url|arm64"
-          } else {
-            Write-Host "arm64 installer not found, submitting x64 only"
-            $INSTALLER_URLS = "$x64Url|x64"
-          }
-
-          # Update package using wingetcreate
-          wingetcreate update "$PACKAGE_ID" --version "$PACKAGE_VERSION" --urls $INSTALLER_URLS --submit --token "$env:GITHUB_PAT"
+      - name: Submit winget manifest PR
         shell: pwsh
+        env:
+          # release 이벤트면 release.tag_name, 수동 dispatch 면 inputs.release_tag
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+          # winget-pkgs 포크/PR 권한이 있는 classic PAT (public_repo 스코프)
+          GITHUB_PAT: ${{ secrets.TABLECLOTH_GITHUB_PAT }}
+        run: dotnet run --file tools/winget/submit-winget.cs

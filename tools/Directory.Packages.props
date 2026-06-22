@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  CPM walk-up barrier for tools/ file-based apps.
+
+  tools/winget/submit-winget.cs (and any future file-based `dotnet run` script
+  under tools/) runs from the repo root, so MSBuild walks up and finds the repo
+  root's Directory.Packages.props, which turns on ManagePackageVersionsCentrally.
+  CPM forbids a Version attribute on PackageReference, which collides with the
+  PackageReference (and inline #:package versions) injected by the Cadenza SDK
+  and breaks the file-based app's restore/compile (NU1008).
+
+  Per NuGet's nearest-wins rule the closest Directory.Packages.props wins.
+  Placing this disabled file at the tools/ boundary lets file-based scripts here
+  resolve their own package versions without inheriting the main solution's CPM.
+
+  Mirrors external/Directory.Packages.props (commit 57cc829).
+-->
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>
