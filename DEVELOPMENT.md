@@ -63,7 +63,8 @@ src/
   Spork.App/         ← Spork 샌드박스 에이전트 모듈 (UI/서비스 라이브러리)
                        UseSpork() 확장 메서드로 DI 합성
   TableCloth.Core/   ← 공유 인프라 (netstandard2.0): Helpers, Resources, Models, Events
-  Spork/             ← Spork 단독 출시용 얇은 진입점 (현재는 옵션, 평소 배포에는 미사용)
+  Spork/             ← Spork 단독 배포/재사용 아티팩트용 얇은 진입점
+                       (Velopack 으로 별도 패키징되어 TableCloth 와 같은 릴리스에 함께 게시)
   TableCloth.Test/   ← TableCloth 측 단위 테스트 (MSTest)
   Spork.Test/        ← Spork 측 단위 테스트 (MSTest)
 ```
@@ -86,8 +87,10 @@ return RunTableCloth(args);
 | 샌드박스 테스트 (개발) | `dotnet build` 후 호스트에서 실행 | `SandboxBuilder`가 자동으로 호스트 `%ProgramFiles%\dotnet` 마운트 + `DOTNET_ROOT` 설정해 샌드박스에 런타임 공급 |
 | 배포 게시 | `dotnet publish src/TableCloth -c Release -r win-x64 -p:SelfContained=true -o publish/win-x64` | single-file self-contained `TableCloth.exe` (~93MB) — `TableCloth.csproj`의 조건부 PropertyGroup이 PublishSingleFile/PublishReadyToRun/IncludeNativeLibrariesForSelfExtract/EnableCompressionInSingleFile/PublishTrimmed=false를 자동 활성화 |
 | Velopack 패키징 | `vpk pack -packId TableCloth -mainExe TableCloth.exe -packDir publish/win-x64 ...` | 설치/업데이트 패키지 |
+| Spork 단독 게시 | `dotnet publish src/Spork -c Release -r win-x64 -p:SelfContained=true -o publish/spork/win-x64` | single-file self-contained `Spork.exe` (~92MB) — `Spork.csproj`의 조건부 PropertyGroup이 TableCloth 와 동일하게 자동 활성화 |
+| Spork Velopack 패키징 | `vpk pack -packId Spork -mainExe Spork.exe -packDir publish/spork/win-x64 ...` | TableCloth 와 같은 릴리스에 함께 게시되는 별도 설치/업데이트 패키지 |
 
-로컬에서 위 흐름을 한 번에 돌리려면 [`build.cmd`](./build.cmd)를 사용합니다.
+로컬에서 위 흐름(TableCloth + Spork 모두)을 한 번에 돌리려면 [`build.cmd`](./build.cmd)를 사용합니다.
 
 ### 단위 테스트
 

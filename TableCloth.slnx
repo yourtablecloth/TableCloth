@@ -1,9 +1,9 @@
 <Solution>
   <!--
-    메인 솔루션 — TableCloth.exe 단일 바이너리(verb 디스패처)와 모듈 라이브러리들을 묶는다.
-    단독 출시 후보인 Spork.exe(src/Spork/Spork.csproj)는 본 솔루션에 포함되지 않고
-    별도 Spork.slnx에서 빌드된다. Spork.App.csproj만 TableCloth.exe의 'spork' verb
-    구현체로 포함.
+    유일한 솔루션 — TableCloth.exe 단일 바이너리(verb 디스패처)와 모듈 라이브러리들,
+    그리고 단독 배포/재사용 아티팩트인 Spork.exe(src/Spork/Spork.csproj)를 한 솔루션에
+    묶는다. Spork.exe 는 build.cs/build.yml 에서 Velopack 으로 별도 패키징되어 TableCloth 와
+    같은 릴리스에 함께 게시된다. (구 Spork.slnx 는 본 솔루션으로 통합되어 제거됨)
   -->
   <Folder Name="/Solution Items/">
     <File Path="privacy.md" />
@@ -15,6 +15,7 @@
   <Project Path="src/Spork.App/Spork.App.csproj" />
   <Project Path="src/Spork.Sandbox/Spork.Sandbox.csproj" />
   <Project Path="src/Spork.Test/Spork.Test.csproj" Id="6408b389-54a0-4804-b42e-8853404d0b75" />
+  <Project Path="src/Spork/Spork.csproj" />
   <Project Path="src/TableCloth.App/TableCloth.App.csproj" />
   <Project Path="src/TableCloth.Core/TableCloth.Core.csproj" Id="97e346c7-479b-447e-a32e-3364e745ccf7" />
   <Project Path="src/TableCloth.Test/TableCloth.Test.csproj" Id="08999632-fb58-4460-91c0-2c63df47e86b" />
