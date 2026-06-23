@@ -43,9 +43,10 @@ $env:TABLECLOTH_SIGN_SUBJECT = 'Jung Hyun Nam'   # 필수 (또는 --sign-subject
 ```
 
 - ⚠️ `--sign`에 주체가 없거나(`TABLECLOTH_SIGN_SUBJECT`/`--sign-subject`) `CurrentUser\My`에 개인 키 인증서가 없으면 **빌드 전에 즉시 실패**한다(안전장치).
-- 결과: `Releases\Release\x64\`, `Releases\Release\arm64\` 에
-  - 서명된 `TableCloth_<4파트버전>_Release_<arch>.exe` + `_Portable.zip`
-  - **+ Velopack 메타데이터**(`.nupkg`, `RELEASES-<arch>`, `releases.<arch>.json`, `assets.<arch>.json`)
+- ⚠️ **연속 릴리스 주의**: Velopack 은 `Releases` 폴더에 남은 이전 버전 산출물을 보고 델타를 만들어 버전을 섞는다. 새 릴리스 전에 `Releases\`(와 `publish\`)를 비우고 빌드한다.
+- 결과: `Releases\Release\x64\`, `Releases\Release\arm64\` 에 **TableCloth 와 Spork 두 앱**이 함께 —
+  - 서명된 `TableCloth_<4파트버전>_Release_<arch>.exe` / `Spork_<버전>_Release_<arch>.exe` (+ 각 `_Portable.zip`)
+  - **+ Velopack 메타데이터**(`.nupkg`, `RELEASES-*`, `releases.*.json`, `assets.*.json`) — Spork 는 채널 `spork-<arch>` 라 TableCloth(채널 `<arch>`)와 이름이 겹치지 않는다.
   - 서명 범위: 앱 바이너리 + `Update.exe` + `Setup.exe` (Release 구성만).
 
 ## 4. 서명 자산 업로드 (CI 미서명본 교체)
@@ -54,7 +55,7 @@ $env:TABLECLOTH_SIGN_SUBJECT = 'Jung Hyun Nam'   # 필수 (또는 --sign-subject
 gh release upload vX.Y.Z Releases\Release\x64\* Releases\Release\arm64\* --clobber
 ```
 
-- 이 glob은 **설치 관리자 + Portable + Velopack 메타데이터 전체**를 올린다. 파일명이 CI와 동일한 4-part 버전이라 `--clobber`가 정확히 **교체**한다(중복 추가가 아님). nupkg/메타데이터도 로컬 서명본으로 교체되어 설치 관리자와 일관된다.
+- 이 glob은 **두 앱(TableCloth + Spork)의 설치 관리자 + Portable + Velopack 메타데이터 전체**를 올린다. 파일명이 CI와 동일한 4-part 버전이라 `--clobber`가 정확히 **교체**한다(중복 추가가 아님). nupkg/메타데이터도 로컬 서명본으로 교체되어 설치 관리자와 일관된다.
 - SBOM은 CI 빌드 산출물이 그대로 유지된다(하이브리드).
 
 ## 5. 게시

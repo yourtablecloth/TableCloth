@@ -253,11 +253,19 @@ Phase 5 검증을 마치고 코드베이스의 net48 시절 잔재를 전수 점
 ### Phase 8 (옵션) — Spork 단독 출시 준비 (2026-05-13 부분 착수)
 
 - [x] `src/Spork/Program.cs`를 얇은 진입점(`builder.UseSpork().Build().Run()`)으로 유지 — Phase 2.1에서 이미 슬림화되어 있음
-- [x] **[Spork.slnx](../Spork.slnx) 신설** — Spork 진입점 + Spork.App + 공유 코어 + Spork.Test만 묶은 단독 솔루션. 메인 `TableCloth.slnx`와 무관하게 독립 빌드/게시 가능:
-  - `dotnet build Spork.slnx`
-  - `dotnet publish src/Spork -c Release -r win-x64 -p:SelfContained=true -o publish/spork/win-x64`
+- [x] ~~**[Spork.slnx] 신설**~~ — 단독 솔루션을 만들었으나 고유 프로젝트가 `Spork.csproj` 하나뿐이라, **Phase 9에서 `TableCloth.slnx`로 통합하고 제거함**
 - [x] **Spork.csproj에 Phase 5와 동일한 조건부 publish PropertyGroup 추가** — `RuntimeIdentifier != ''`일 때 PublishSingleFile / IncludeNativeLibrariesForSelfExtract / EnableCompressionInSingleFile / PublishReadyToRun / PublishTrimmed=false 자동 활성화. 단독 publish 결과 `Spork.exe` 91.9 MB 단일 파일 산출 검증
-- [ ] 별도 릴리스 채널/패키징 (Velopack `vpk pack`을 Spork-only 패키지 ID로) — 필요해질 때 별도 PR로 분리
+- [x] 별도 릴리스 채널/패키징 (Velopack `vpk pack`을 Spork-only 패키지 ID로) — **Phase 9에서 구현**
+
+### Phase 9 — Spork 단독 패키징 + 솔루션 통합 (2026-06-23)
+
+standalone `Spork.exe` 를 **배포/재사용 아티팩트**로서 TableCloth 와 같은 Velopack 형태로 패키징하고, 이를 위해 별도 `Spork.slnx` 를 메인 솔루션으로 통합한다. (릴리스: TableCloth 와 **같은 릴리스·같은 버전**)
+
+- [x] **솔루션 통합** — `Spork.csproj` 를 `TableCloth.slnx` 에 추가, `Spork.slnx` 삭제, `Spork_*_wpftmp.csproj` 잔재 정리. 솔루션 파일은 빌드 컨테이너일 뿐이라 같은 솔루션에서도 `Spork.csproj` 만 독립 publish/pack 가능
+- [x] **build.cs** — 플랫폼 루프에 Spork publish(`-r win-<arch> -p:SelfContained=true`) + `vpk pack --packId Spork --channel spork-<arch>` + rename(`Spork_<버전>_Release_<arch>.exe`) 추가. `--sign` 시 Spork 도 전체 서명. TableCloth 와 같은 출력 폴더에 두되 채널(`spork-<arch>`)로 메타데이터(`releases.<channel>.json` 등) 충돌 회피
+- [x] **build.yml** — Release 구성에 Spork publish/pack/rename 스텝 추가(같은 `releases/` 폴더 → SBOM/attest/업로드가 자동 포함), 릴리스 노트 Downloads 에 Spork 항목 추가
+- [x] **문서** — `DEVELOPMENT.md`(빌드/게시 표 + 프로젝트 구조), `RELEASING.md`(두 앱 산출물 + 연속 릴리스 시 Releases 정리 주의) 갱신
+- 범위 밖: Spork winget 제출, 독립 버전 관리 (배포/재사용 아티팩트 용도라 불필요)
 
 ## 의사결정 로그
 
