@@ -84,7 +84,7 @@
                         <Style.Resources>
                             <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                                 <VisualBrush.Visual>
-                                    <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="LightGray" />
+                                    <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="{DynamicResource ControlSecondaryForeground}" />
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Style.Resources>
@@ -210,7 +210,7 @@
                     </Grid.RowDefinitions>
                     
                     <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Bold" Text="{x:Static res:UIStringResources.MappedFolder_SectionTitle}" Margin="5 0 0 5" />
-                    <TextBlock Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Margin="5 0 0 5" Foreground="Gray" Text="{x:Static res:UIStringResources.MappedFolder_Description}" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Margin="5 0 0 5" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.MappedFolder_Description}" />
                     
                     <ListBox Grid.Row="2" Grid.Column="1" Margin="5" ItemsSource="{Binding MappedFolders}" SelectedItem="{Binding SelectedMappedFolder}" HorizontalContentAlignment="Stretch">
                         <ListBox.ItemTemplate>

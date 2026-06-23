@@ -78,7 +78,7 @@
                                         <Style.Resources>
                                             <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                                                 <VisualBrush.Visual>
-                                                    <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="LightGray" />
+                                                    <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="{DynamicResource ControlSecondaryForeground}" />
                                                 </VisualBrush.Visual>
                                             </VisualBrush>
                                         </Style.Resources>
@@ -214,7 +214,7 @@
                             </ToggleButton>
                             <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch" Margin="0 4 0 0">
                                 <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" TextAlignment="Center" MaxHeight="34" />
-                                <TextBlock Text="{Binding CategoryDisplayName}" FontSize="10" Foreground="Gray" Margin="0 2 0 0" TextAlignment="Center" />
+                                <TextBlock Text="{Binding CategoryDisplayName}" FontSize="10" Foreground="{DynamicResource ControlSecondaryForeground}" Margin="0 2 0 0" TextAlignment="Center" />
                             </StackPanel>
                         </Grid>
                     </DataTemplate>

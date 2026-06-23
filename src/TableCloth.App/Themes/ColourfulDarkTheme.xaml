@@ -12,6 +12,12 @@
     <SolidColorBrush x:Key="ContainerBackground"                 Color="#FF272727"/>
     <SolidColorBrush x:Key="ContainerBorder"                     Color="#FF2B2B2B"/>
     <SolidColorBrush x:Key="ControlDefaultForeground"            Color="#FFEBEBEB" />
+    <!-- Secondary(muted) foreground + Info Banner (Dark) -->
+    <SolidColorBrush x:Key="ControlSecondaryForeground" Color="#FFA8A8A8" />
+    <SolidColorBrush x:Key="InfoBannerBackground"       Color="#FF1E2733" />
+    <SolidColorBrush x:Key="InfoBannerForeground"       Color="#FFE5E7EB" />
+    <SolidColorBrush x:Key="InfoBannerLinkForeground"   Color="#FF60A5FA" />
+    <SolidColorBrush x:Key="InfoBannerBorder"           Color="#FF334155" />
 
     <SolidColorBrush x:Key="ControlDarkerBackground"             Color="#FF2A2A2A" />
     <SolidColorBrush x:Key="ControlDarkerBorderBrush"            Color="#FF2F2F2F" />

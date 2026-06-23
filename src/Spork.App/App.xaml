@@ -11,12 +11,6 @@
             <converters:WidthConverter x:Key="widthConverter" />
             <converters:ServiceLogoConverter x:Key="ServiceLogoConverter" />
 
-            <!-- Info Banner Colors (Light Mode) -->
-            <SolidColorBrush x:Key="InfoBannerBackground" Color="#EFF6FF" />
-            <SolidColorBrush x:Key="InfoBannerForeground" Color="#0F172A" />
-            <SolidColorBrush x:Key="InfoBannerLinkForeground" Color="#1D4ED8" />
-            <SolidColorBrush x:Key="InfoBannerBorder" Color="#BFDBFE" />
-
             <ResourceDictionary.MergedDictionaries>
                 <!--
                     .NET 10에서는 PresentationFramework.Aero2의 어셈블리 식별(Version/PublicKeyToken 등)이

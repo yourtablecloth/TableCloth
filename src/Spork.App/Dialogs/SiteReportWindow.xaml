@@ -43,7 +43,7 @@
                                    Margin="0 0 0 5" />
                         <TextBlock Text="{x:Static res:UIStringResources.SiteReport_GoogleFormsDescription}"
                                    TextWrapping="Wrap"
-                                   Foreground="Gray"
+                                   Foreground="{DynamicResource ControlSecondaryForeground}"
                                    FontSize="12" />
                     </StackPanel>
                     <TextBlock Grid.Column="1"
@@ -73,7 +73,7 @@
                                    Margin="0 0 0 5" />
                         <TextBlock Text="{x:Static res:UIStringResources.SiteReport_GitHubIssueDescription}"
                                    TextWrapping="Wrap"
-                                   Foreground="Gray"
+                                   Foreground="{DynamicResource ControlSecondaryForeground}"
                                    FontSize="12" />
                     </StackPanel>
                     <TextBlock Grid.Column="1"

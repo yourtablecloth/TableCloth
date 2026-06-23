@@ -15,12 +15,6 @@
             <converters:BooleanToBackgroundConverter x:Key="BooleanToBackgroundConverter" />
             <converters:BooleanToReadOnlyTextConverter x:Key="BooleanToReadOnlyTextConverter" />
 
-            <!-- Info Banner Colors (Light Mode) -->
-            <SolidColorBrush x:Key="InfoBannerBackground" Color="#EFF6FF" />
-            <SolidColorBrush x:Key="InfoBannerForeground" Color="#0F172A" />
-            <SolidColorBrush x:Key="InfoBannerLinkForeground" Color="#1D4ED8" />
-            <SolidColorBrush x:Key="InfoBannerBorder" Color="#BFDBFE" />
-
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/PresentationFramework.Aero2;component/themes/aero2.normalcolor.xaml" />
             </ResourceDictionary.MergedDictionaries>

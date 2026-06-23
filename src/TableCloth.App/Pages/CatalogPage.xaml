@@ -229,7 +229,7 @@
                     <Style.Resources>
                         <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                             <VisualBrush.Visual>
-                                <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="LightGray" />
+                                <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="{DynamicResource ControlSecondaryForeground}" />
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </Style.Resources>

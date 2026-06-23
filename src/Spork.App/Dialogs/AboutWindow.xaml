@@ -44,7 +44,7 @@
         <!-- Legal Notice Section -->
         <StackPanel Grid.Row="1" Margin="0 0 0 10">
             <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_CopyrightText}" />
-            <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_TrademarkText}" Foreground="Gray" FontSize="11" />
+            <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_TrademarkText}" Foreground="{DynamicResource ControlSecondaryForeground}" FontSize="11" />
         </StackPanel>
         
         <!-- Version Info Section -->
