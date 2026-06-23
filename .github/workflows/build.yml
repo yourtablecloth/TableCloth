@@ -191,6 +191,50 @@ jobs:
         Write-Host "Renamed: $portableDst"
       shell: pwsh
 
+    # --- Spork: 단독 배포/재사용 아티팩트 (TableCloth 와 같은 릴리스에 함께 게시) ---
+    # Release 구성에서만 패키징한다 (Debug/비-릴리스 푸시에서는 불필요).
+    - name: Publish Spork project
+      if: matrix.configuration == 'Release'
+      run: dotnet publish $env:Spork_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration -o publish-spork
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    # Spork Velopack 패키지. 채널을 spork-<arch> 로 두어 TableCloth(채널 <arch>)와
+    # 메타데이터(releases.<channel>.json / RELEASES-<channel>) 이름이 겹치지 않게 한다.
+    # 같은 releases/ 폴더에 패킹되므로 이후 SBOM/attest/업로드가 자동으로 함께 처리한다.
+    - name: Create Velopack package (Spork)
+      if: matrix.configuration == 'Release'
+      run: |
+        vpk pack `
+          --packId Spork `
+          --packVersion ${{ steps.get_version.outputs.VERSION }} `
+          --packDir publish-spork `
+          --mainExe Spork.exe `
+          --channel spork-${{ env.Platform }} `
+          --outputDir releases
+      shell: pwsh
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    # Rename Spork outputs: Spork_<full-version>_<config>_<arch>{.exe,_Portable.zip}
+    - name: Rename Spork Velopack outputs to release format
+      if: matrix.configuration == 'Release'
+      run: |
+        $prefix = "Spork_${{ steps.get_version.outputs.FULL_VERSION }}_${{ matrix.configuration }}_${{ env.Platform }}"
+
+        $setupSrc = "releases\Spork-spork-${{ env.Platform }}-Setup.exe"
+        $setupDst = "releases\$prefix.exe"
+        if (-not (Test-Path $setupSrc)) { throw "Expected Spork Setup not found: $setupSrc" }
+        Move-Item -LiteralPath $setupSrc -Destination $setupDst
+        Write-Host "Renamed: $setupDst"
+
+        $portableSrc = "releases\Spork-spork-${{ env.Platform }}-Portable.zip"
+        $portableDst = "releases\${prefix}_Portable.zip"
+        if (-not (Test-Path $portableSrc)) { throw "Expected Spork Portable not found: $portableSrc" }
+        Move-Item -LiteralPath $portableSrc -Destination $portableDst
+        Write-Host "Renamed: $portableDst"
+      shell: pwsh
+
     # Generate SBOM (Release builds only, for tagged releases)
     - name: Generate SBOM
       if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
@@ -319,6 +363,12 @@ jobs:
         **Portable** (no installation; no auto-update)
         - x64: [TableCloth_${FULL_VERSION}_Release_x64_Portable.zip](${base}/TableCloth_${FULL_VERSION}_Release_x64_Portable.zip)
         - arm64: [TableCloth_${FULL_VERSION}_Release_arm64_Portable.zip](${base}/TableCloth_${FULL_VERSION}_Release_arm64_Portable.zip)
+
+        **Spork** (단독 도구 — 샌드박스 없이 설치 관리자를 일괄 실행)
+        - x64 설치 관리자: [Spork_${FULL_VERSION}_Release_x64.exe](${base}/Spork_${FULL_VERSION}_Release_x64.exe)
+        - arm64 설치 관리자: [Spork_${FULL_VERSION}_Release_arm64.exe](${base}/Spork_${FULL_VERSION}_Release_arm64.exe)
+        - x64 Portable: [Spork_${FULL_VERSION}_Release_x64_Portable.zip](${base}/Spork_${FULL_VERSION}_Release_x64_Portable.zip)
+        - arm64 Portable: [Spork_${FULL_VERSION}_Release_arm64_Portable.zip](${base}/Spork_${FULL_VERSION}_Release_arm64_Portable.zip)
 
         > The remaining assets (\`*.nupkg\`, \`RELEASES-*\`, \`releases.*.json\`, \`assets.*.json\`, \`sbom-*\`) are auto-update metadata and SBOM artifacts — end users do not download them directly.
 

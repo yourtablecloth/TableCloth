@@ -8,6 +8,8 @@ using System.Xml.Linq;
 var appId = "TableCloth";
 var solutionFile = "TableCloth.slnx";
 var mainProject = Path.Combine("src", "TableCloth", "TableCloth.csproj");
+// Spork 단독 배포/재사용 아티팩트 진입점 (TableCloth 와 같은 릴리스에 별도 패키징).
+var sporkProject = Path.Combine("src", "Spork", "Spork.csproj");
 // Resources 폴더는 Phase 1.2에서 TableCloth.App으로 이전됨.
 var iconPath = Path.Combine("src", "TableCloth.App", "Resources", "SandboxIcon.ico");
 var directoryBuildProps = "Directory.Build.Props";
@@ -172,6 +174,57 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             RenameRelease(
                 Path.Combine(releasesDir, $"TableCloth-{platform}-Portable.zip"),
                 Path.Combine(releasesDir, $"{assetPrefix}_Portable.zip"));
+
+            // === Spork 단독 배포/재사용 아티팩트 (TableCloth 와 동일한 Velopack 형태) ===
+            // Spork.csproj 의 조건부 PropertyGroup 이 TableCloth 와 동일하게 단일 파일
+            // self-contained 게시를 활성화한다. TableCloth 와 같은 출력 폴더에 함께 두되,
+            // 채널을 'spork-<arch>' 로 구분해 메타데이터 이름 충돌을 피한다(같은 릴리스 업로드 가능).
+            var sporkPublishDir = Path.Combine("publish", "spork", config, $"win-{platform}");
+            var sporkReleasesDir = releasesDir;
+            var sporkIcon = Path.Combine("src", "Spork", "App.ico");
+
+            if (!skip)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Publishing Spork...");
+                await RunCommandAsync("dotnet",
+                    $"publish {sporkProject} -c {config} -r win-{platform} -p:SelfContained=true " +
+                    $"-o {sporkPublishDir}");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Creating Velopack package (Spork)...");
+            var sporkPackArgs = new List<string>
+            {
+                "--yes", "pack",
+                "-u", "Spork",
+                "-v", version,
+                "-p", sporkPublishDir,
+                "-e", "Spork.exe",
+                "-o", sporkReleasesDir,
+                "--packTitle", "TableCloth Spork",
+                "--packAuthors", "TableCloth Project",
+                "--icon", sporkIcon,
+                // 채널을 'spork-<arch>' 로 두어 TableCloth(채널 '<arch>')와 메타데이터
+                // (releases.<channel>.json / RELEASES-<channel> / assets.<channel>.json)
+                // 이름이 겹치지 않게 한다 — 둘을 같은 GitHub 릴리스에 올릴 수 있어야 하므로.
+                "--channel", $"spork-{platform}",
+            };
+            if (doSign && config == "Release")
+            {
+                sporkPackArgs.Add("--signParams");
+                sporkPackArgs.Add($"/n \"{signSubject}\" /fd sha256 /tr {timestampUrl} /td sha256");
+                Console.WriteLine($"  Signing enabled (subject: {signSubject})");
+            }
+            await RunCommandArgsAsync("vpk", sporkPackArgs);
+
+            var sporkPrefix = $"Spork_{projectVersion}_{config}_{platform}";
+            RenameRelease(
+                Path.Combine(sporkReleasesDir, $"Spork-spork-{platform}-Setup.exe"),
+                Path.Combine(sporkReleasesDir, $"{sporkPrefix}.exe"));
+            RenameRelease(
+                Path.Combine(sporkReleasesDir, $"Spork-spork-{platform}-Portable.zip"),
+                Path.Combine(sporkReleasesDir, $"{sporkPrefix}_Portable.zip"));
         }
     }
 
