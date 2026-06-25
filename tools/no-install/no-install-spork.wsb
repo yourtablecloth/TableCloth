@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  무설치(no-install) Spork 코어 — Windows Sandbox 설정 템플릿
+
+  목적: TableCloth 호스트 앱 설치 없이, 웹 브라우저 + Windows Sandbox 만으로 단독 Spork 를
+        코어로 실행한다. (.wsb 는 XML 이므로 브라우저로 받아 더블클릭하면 WSB 가 띄운다.)
+
+  보안 결정:
+    - MappedFolders 를 "처음부터 넣지 않는다". 폴더 마운트가 없으면 이 .wsb 는 호스트 파일
+      접근 권한을 전혀 갖지 않아, 악성 .wsb 의 호스트 유출 벡터가 원천 차단된다.
+    - 그 결과 파일 기반 NPKI 인증서는 이 환경에 들어올 수 없다(WSB 는 USB passthrough 미지원).
+      이 레인의 자연스러운/권장 인증 경로는 "모바일 인증"이며, 파일이 아예 없어 가장 안전하다.
+
+  자리표시자(배포 웹앱이 치환):
+    __SPORK_BOOTSTRAP_URL__  — tools/no-install/spork-bootstrap.ps1 의 공개 HTTPS URL.
+                               (해당 스크립트 안의 포터블 zip URL 도 웹앱이 치환/해석한다.)
+
+  스코프: "GitHub 최신 릴리스 태그 확인 → 포터블 zip URL 해석 → 자리표시자 치환 → HTTPS 호스팅"은
+          별도 웹 애플리케이션(yourtablecloth.app)의 책임이며 TableCloth repo 스코프 밖이다.
+          본 파일은 그 웹앱이 의존하는 "형태(template)"를 repo 가 소유하기 위한 것이다.
+
+  주의(닭-달걀): Spork 를 받으려면 네트워크가 필요한데, Spork 내부의 공용 DNS 보정은 Spork 를
+                 받은 "뒤"에야 돈다. 그래서 부트스트랩 스크립트가 다운로드 "전"에 DNS 를 먼저 세팅한다.
+-->
+<Configuration>
+  <Networking>Enable</Networking>
+  <vGPU>Disable</vGPU>
+  <LogonCommand>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; Invoke-WebRequest -Uri '__SPORK_BOOTSTRAP_URL__' -OutFile $env:TEMP\spork-bootstrap.ps1; powershell.exe -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\spork-bootstrap.ps1"</Command>
+  </LogonCommand>
+</Configuration>

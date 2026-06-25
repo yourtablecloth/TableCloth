@@ -1,6 +1,7 @@
 #!/usr/bin/env dotnet run
 
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Linq;
 
@@ -181,7 +182,8 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             // 채널을 'spork-<arch>' 로 구분해 메타데이터 이름 충돌을 피한다(같은 릴리스 업로드 가능).
             var sporkPublishDir = Path.Combine("publish", "spork", config, $"win-{platform}");
             var sporkReleasesDir = releasesDir;
-            var sporkIcon = Path.Combine("src", "Spork", "App.ico");
+            // 단일 바이너리 통합 후 '포카락' 브랜드 폐기 — Spork 패키지/바로가기 아이콘도 식탁보와 동일하게.
+            var sporkIcon = iconPath;
 
             if (!skip)
             {
@@ -190,6 +192,57 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
                 await RunCommandAsync("dotnet",
                     $"publish {sporkProject} -c {config} -r win-{platform} -p:SelfContained=true " +
                     $"-o {sporkPublishDir}");
+
+                // (선택) 무설치/오프라인 폴백용 카탈로그 스냅샷 동봉.
+                // Spork.ResourceCacheManager 는 네트워크 실패 시 AppContext.BaseDirectory\catalog\catalog.xml
+                // 로 폴백한다. 무설치 시나리오(모드 2 패턴 B)엔 호스트가 주입하는 스냅샷이 없으므로
+                // 포터블 산출물에 카탈로그 한 부를 미리 넣어 둔다. external 서브모듈이 없으면(소스 zip
+                // 다운로드 등) 조용히 건너뛴다 — 네트워크가 살아 있으면 Spork 는 정상 동작한다.
+                var catalogSnapshotSource = Path.Combine("external", "TableClothCatalog", "docs", "Catalog.xml");
+                if (File.Exists(catalogSnapshotSource))
+                {
+                    var catalogSnapshotDir = Path.Combine(sporkPublishDir, "catalog");
+                    Directory.CreateDirectory(catalogSnapshotDir);
+                    File.Copy(catalogSnapshotSource, Path.Combine(catalogSnapshotDir, "catalog.xml"), overwrite: true);
+                    Console.WriteLine($"  Bundled catalog snapshot: {catalogSnapshotSource}");
+                }
+                else
+                {
+                    Console.WriteLine($"  (skip) catalog snapshot source missing: {catalogSnapshotSource}");
+                }
+
+                // 카탈로그 사이트 아이콘 동봉(오프라인). 단독 Spork 의 ServiceLogoConverter 는
+                // AppContext.BaseDirectory\images\{id}.png 를 1순위로 읽으므로, 포터블 산출물에 아이콘을
+                // 미리 넣어두면 무설치 환경에서도 첫 화면부터 로컬 아이콘이 즉시 그려진다(원격 다운로드 불필요).
+                // 소스는 TableCloth 게시 출력의 Images.zip(우선) 또는 repo 의 src/TableCloth/Images.zip.
+                // 변환기가 쓰는 .png 만 추출(.ico 제외). 소스가 없으면 best-effort 로 건너뛴다(원격 폴백 동작).
+                var imagesZipSource = new[]
+                {
+                    Path.Combine(publishDir, "Images.zip"),
+                    Path.Combine("src", "TableCloth", "Images.zip"),
+                }.FirstOrDefault(File.Exists);
+
+                if (imagesZipSource != null)
+                {
+                    var sporkImagesDir = Path.Combine(sporkPublishDir, "images");
+                    Directory.CreateDirectory(sporkImagesDir);
+                    var iconCount = 0;
+                    using (var archive = ZipFile.OpenRead(imagesZipSource))
+                    {
+                        foreach (var entry in archive.Entries)
+                        {
+                            if (string.IsNullOrEmpty(entry.Name)) continue;
+                            if (!entry.Name.EndsWith(".png", StringComparison.OrdinalIgnoreCase)) continue;
+                            entry.ExtractToFile(Path.Combine(sporkImagesDir, entry.Name), overwrite: true);
+                            iconCount++;
+                        }
+                    }
+                    Console.WriteLine($"  Bundled {iconCount} catalog icons from {imagesZipSource}");
+                }
+                else
+                {
+                    Console.WriteLine("  (skip) Images.zip source missing — Spork will load catalog icons remotely.");
+                }
             }
 
             Console.WriteLine();
@@ -218,6 +271,9 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             }
             await RunCommandArgsAsync("vpk", sporkPackArgs);
 
+            // ⚠️ 공개 다운로드 계약(public contract): 아래 포터블 zip 자산명은 무설치 웹앱
+            // (yourtablecloth.app)의 다운로더가 의존한다. 변경 시 웹앱이 조용히 깨지므로 신중히.
+            // 규칙/예시는 docs/PORTABLE_MODE2_TODO.md 의 "다운로드 자산명 계약" 절 참조.
             var sporkPrefix = $"Spork_{projectVersion}_{config}_{platform}";
             RenameRelease(
                 Path.Combine(sporkReleasesDir, $"Spork-spork-{platform}-Setup.exe"),
