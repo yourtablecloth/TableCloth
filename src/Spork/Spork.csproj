@@ -17,9 +17,10 @@
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<RunPostBuildEvent>Always</RunPostBuildEvent>
 
-		<!-- Assembly Info -->
-		<Title>TableCloth Spork</Title>
-		<Description>This program is a tool that installs the requested installers at once in the sandbox.</Description>
+		<!-- Assembly Info — 단일 바이너리 통합 후 '포카락' 브랜드 폐기, 식탁보로 통일.
+		     (AssemblyName 은 'Spork' 유지: exe 파일명/verb 디스패치/바로가기 인자 등 기능적 식별자) -->
+		<Title>TableCloth</Title>
+		<Description>Keep Your Computer Sound &amp; Safe!</Description>
 	</PropertyGroup>
 
 	<!--
