@@ -262,6 +262,27 @@ namespace Spork.ViewModels
             PropertyChanged += ViewModel_PropertyChanged;
         }
 
+        /// <summary>
+        /// 카탈로그 문서를 네트워크에서 다시 받아 카탈로그 UI(사이트/보조프로그램/인증서)를 재구성한다.
+        /// 무설치/단독 시나리오에서 처음엔 비어 보이거나 일부 아이콘이 빠졌을 때 사용자가 직접 갱신할 수 있게 한다.
+        /// AsyncRelayCommand 는 기본적으로 동시 실행을 막으므로 진행 중 버튼은 자동 비활성화된다.
+        /// </summary>
+        [RelayCommand]
+        private async Task RefreshCatalog()
+        {
+            try
+            {
+                // LoadCatalogDocumentAsync 는 매번 네트워크를 우선 시도하고 실패 시 스냅샷으로 폴백한다.
+                await _resourceCacheManager.LoadCatalogDocumentAsync();
+                LoadCatalogForBrowsing();
+            }
+            catch (Exception ex)
+            {
+                // 갱신 실패가 기존에 보이던 카탈로그를 깨서는 안 된다. 사용자에게만 알리고 현재 상태 유지.
+                _appMessageBox.DisplayError(ex, false);
+            }
+        }
+
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (string.Equals(nameof(SearchKeyword), e.PropertyName, StringComparison.Ordinal) ||

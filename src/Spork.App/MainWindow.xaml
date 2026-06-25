@@ -71,6 +71,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBox Grid.Column="0" Padding="6 4" Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}">
                                 <TextBox.Style>
@@ -93,6 +94,9 @@
                             <CheckBox Grid.Column="1" Margin="8 0 0 0" VerticalAlignment="Center"
                                       Content="{x:Static res:UIStringResources.MainWindow_Favorites}"
                                       IsChecked="{Binding ShowFavoritesOnly}" />
+                            <Button Grid.Column="2" Margin="8 0 0 0" Padding="10 4" VerticalAlignment="Center"
+                                    Content="{x:Static res:UIStringResources.SporkCatalog_RefreshButton}"
+                                    Command="{Binding RefreshCatalogCommand}" />
                         </Grid>
 
                         <ListView Grid.Row="1" x:Name="CatalogList"
@@ -140,7 +144,7 @@
                                 <RowDefinition Height="48" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Image Grid.Row="0" Source="{Binding Id, Mode=OneWay, Converter={StaticResource ServiceLogoConverter}}"
+                            <Image Grid.Row="0" Source="{Binding Mode=OneWay, Converter={StaticResource ServiceLogoConverter}}"
                                    RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
                             <!-- Installed indicator + force-reinstall action (top-left).
                                  평상시: 녹색 체크 배지(이미 완전 설치된 사이트).
