@@ -245,12 +245,12 @@ namespace Spork.ViewModels
                 .OrderBy(c => c.DisplayName, StringComparer.CurrentCultureIgnoreCase)
                 .ToList();
 
-            // 샌드박스의 NPKI 폴더(시작 스크립트가 호스트의 NPKI를 xcopy해 둠)를 스캔하여
-            // 현재 사용 가능한 인증서를 카탈로그 탭에서 보여준다. 만료된 인증서도 포함되며
-            // UI는 취소선으로 구분한다.
+            // 현재 환경의 NPKI 위치들(WSB canonical / 실제 LocalLow / Desktop\NPKI 마운트 / USB)을
+            // 스캔하여 사용 가능한 인증서를 카탈로그 탭에서 보여준다. 모드 1(식탁보+WSB)은 물론
+            // 사용자가 직접 만든 VM(모드 2)에서도 동작한다. 만료된 인증서도 포함되며 UI는 취소선으로 구분한다.
             try
             {
-                CatalogCertificates = _certScanner.ScanSandboxNpkiCertificates().ToList();
+                CatalogCertificates = _certScanner.ScanLocalNpkiCertificates().ToList();
             }
             catch
             {
