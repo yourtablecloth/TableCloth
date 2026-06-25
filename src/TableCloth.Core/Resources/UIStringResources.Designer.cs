@@ -1345,15 +1345,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Spork과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Spork_AppTitle {
-            get {
-                return ResourceManager.GetString("Spork_AppTitle", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   TableCloth과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string TableCloth_SandboxAppTitle {
@@ -1362,41 +1353,6 @@ namespace TableCloth.Resources {
             }
         }
 
-        /// <summary>
-        ///   Spork Error과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Spork_TitleText_Error {
-            get {
-                return ResourceManager.GetString("Spork_TitleText_Error", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Spork Info과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Spork_TitleText_Info {
-            get {
-                return ResourceManager.GetString("Spork_TitleText_Info", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Spork Question과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Spork_TitleText_Question {
-            get {
-                return ResourceManager.GetString("Spork_TitleText_Question", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Spork Warning과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Spork_TitleText_Warning {
-            get {
-                return ResourceManager.GetString("Spork_TitleText_Warning", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Separate installation script과(와) 유사한 지역화된 문자열을 찾습니다.
@@ -1416,15 +1372,6 @@ namespace TableCloth.Resources {
             }
         }
         
-        /// <summary>
-        ///   Spork is running in dry run mode.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Spork_DryRunInstructionMessage {
-            get {
-                return ResourceManager.GetString("Spork_DryRunInstructionMessage", resourceCulture);
-            }
-        }
-
         /// <summary>
         ///   TableCloth is running in dry run mode.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
@@ -1998,21 +1945,9 @@ namespace TableCloth.Resources {
             }
         }
 
-        /// <summary>
-        ///   Spork과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Spork_ShortcutLinkName {
+        public static string SporkCatalog_RefreshButton {
             get {
-                return ResourceManager.GetString("Spork_ShortcutLinkName", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Re-open the Spork catalog inside this sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Spork_ShortcutDescription {
-            get {
-                return ResourceManager.GetString("Spork_ShortcutDescription", resourceCulture);
+                return ResourceManager.GetString("SporkCatalog_RefreshButton", resourceCulture);
             }
         }
 

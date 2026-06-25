@@ -120,9 +120,6 @@
   <data name="Error_Already_TableCloth_Running" xml:space="preserve">
     <value>The TableCloth program is already running.</value>
   </data>
-  <data name="Error_Already_Spork_Running" xml:space="preserve">
-    <value>Spork is already running.</value>
-  </data>
   <data name="Error_Cannot_CopyToClipboard" xml:space="preserve">
     <value>The data could not be copied because the clipboard was not ready.</value>
   </data>

@@ -458,23 +458,8 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Spork_AppInstructionMessage" xml:space="preserve">
     <value>Installation in progress. Please wait...</value>
   </data>
-  <data name="Spork_AppTitle" xml:space="preserve">
-    <value>Spork</value>
-  </data>
   <data name="TableCloth_SandboxAppTitle" xml:space="preserve">
     <value>TableCloth</value>
-  </data>
-  <data name="Spork_TitleText_Error" xml:space="preserve">
-    <value>Spork Error</value>
-  </data>
-  <data name="Spork_TitleText_Info" xml:space="preserve">
-    <value>Spork Info</value>
-  </data>
-  <data name="Spork_TitleText_Question" xml:space="preserve">
-    <value>Spork Question</value>
-  </data>
-  <data name="Spork_TitleText_Warning" xml:space="preserve">
-    <value>Spork Warning</value>
   </data>
   <data name="Spork_CustomScript_Title" xml:space="preserve">
     <value>Separate installation script</value>
@@ -484,9 +469,6 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   </data>
   <data name="TableCloth_DryRunInstructionMessage" xml:space="preserve">
     <value>TableCloth is running in dry run mode.</value>
-  </data>
-  <data name="Spork_DryRunInstructionMessage" xml:space="preserve">
-    <value>Spork is running in dry run mode.</value>
   </data>
   <data name="Spork_Install_Failed" xml:space="preserve">
     <value>Fail</value>
@@ -844,17 +826,14 @@ Create it now and continue?</value>
   <data name="SporkCatalog_BackToCatalogButton" xml:space="preserve">
     <value>Back to Catalog</value>
   </data>
-  <data name="Spork_ShortcutLinkName" xml:space="preserve">
-    <value>Spork</value>
-  </data>
-  <data name="Spork_ShortcutDescription" xml:space="preserve">
-    <value>Re-open the Spork catalog inside this sandbox.</value>
+  <data name="SporkCatalog_RefreshButton" xml:space="preserve">
+    <value>Refresh</value>
   </data>
   <data name="TableCloth_ShortcutLinkName" xml:space="preserve">
     <value>TableCloth</value>
   </data>
   <data name="TableCloth_ShortcutDescription" xml:space="preserve">
-    <value>Re-open the TableCloth catalog inside this sandbox.</value>
+    <value>Re-open the TableCloth catalog inside this environment.</value>
   </data>
   <data name="SporkInstallSteps_WindowTitle" xml:space="preserve">
     <value>Installing for the selected site</value>
@@ -872,9 +851,9 @@ Create it now and continue?</value>
     <value>Joint Certificates</value>
   </data>
   <data name="SporkCatalog_Certificates_Description" xml:space="preserve">
-    <value>Joint certificates currently copied into the sandbox. Expired certificates are marked with a strikethrough.</value>
+    <value>Joint certificates currently copied into this environment. Expired certificates are marked with a strikethrough.</value>
   </data>
   <data name="SporkCatalog_Certificates_Empty" xml:space="preserve">
-    <value>No joint certificates were found in the sandbox.</value>
+    <value>No joint certificates were found in this environment.</value>
   </data>
 </root>
