@@ -7,10 +7,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using TableCloth.Components;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
@@ -25,6 +27,7 @@ namespace TableCloth.ViewModels;
 public static class OptionsTabKeys
 {
     public const string UserFolders = nameof(UserFolders);
+    public const string DataDirectory = nameof(DataDirectory);
     public const string Certificate = nameof(Certificate);
     public const string DeviceSharing = nameof(DeviceSharing);
     public const string Compatibility = nameof(Compatibility);
@@ -43,11 +46,13 @@ public partial class OptionsWindowViewModel : ObservableObject
         IPreferencesManager preferencesManager,
         IAppRestartManager appRestartManager,
         IAppMessageBox appMessageBox,
+        ISharedLocations sharedLocations,
         TaskFactory taskFactory)
     {
         _preferencesManager = preferencesManager;
         _appRestartManager = appRestartManager;
         _appMessageBox = appMessageBox;
+        _sharedLocations = sharedLocations;
         _taskFactory = taskFactory;
     }
 
@@ -58,7 +63,7 @@ public partial class OptionsWindowViewModel : ObservableObject
 
     /// <summary>
     /// 탭 키 문자열을 <see cref="InitialTabIndex"/>로 적용한다. XAML의 TabControl에 정의된
-    /// 탭 순서(사용자 폴더 / 인증서 / 장치 공유 / 진단)와 동기화되어야 한다.
+    /// 탭 순서(사용자 폴더 / 데이터 디렉터리 / 인증서 / 장치 공유 / 호환성 / 진단)와 동기화되어야 한다.
     /// </summary>
     public void SetInitialTab(string? tabKey)
     {
@@ -70,10 +75,11 @@ public partial class OptionsWindowViewModel : ObservableObject
         return tabKey switch
         {
             OptionsTabKeys.UserFolders => 0,
-            OptionsTabKeys.Certificate => 1,
-            OptionsTabKeys.DeviceSharing => 2,
-            OptionsTabKeys.Compatibility => 3,
-            OptionsTabKeys.Diagnostics => 4,
+            OptionsTabKeys.DataDirectory => 1,
+            OptionsTabKeys.Certificate => 2,
+            OptionsTabKeys.DeviceSharing => 3,
+            OptionsTabKeys.Compatibility => 4,
+            OptionsTabKeys.Diagnostics => 5,
             _ => 0,
         };
     }
@@ -97,6 +103,8 @@ public partial class OptionsWindowViewModel : ObservableObject
             EnableLogAutoCollecting = currentConfig.UseLogCollection;
             ShareNpkiFolder = currentConfig.ShareNpkiFolder;
             EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration;
+
+            RefreshDataDirectoryDisplay(currentConfig.DataDirectoryHostPath);
 
             // 사용자 폴더 목록을 환경 설정에서 로드하고 가용성을 검증해 화면에 표시한다.
             MappedFolders.Clear();
@@ -175,6 +183,95 @@ public partial class OptionsWindowViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private async Task SelectDataDirectory()
+    {
+        var selectedPath = ShowFolderBrowserDialog(UIStringResources.QuickStart_DataDirectory_SelectFolderTitle);
+
+        if (string.IsNullOrWhiteSpace(selectedPath))
+            return;
+
+        await SaveDataDirectoryAsync(selectedPath);
+        RefreshDataDirectoryDisplay(selectedPath);
+    }
+
+    [RelayCommand]
+    private async Task ResetDataDirectory()
+    {
+        await SaveDataDirectoryAsync(null);
+        RefreshDataDirectoryDisplay(null);
+    }
+
+    [RelayCommand]
+    private void OpenDataDirectory()
+    {
+        var path = DataDirectoryDisplayPath;
+        if (string.IsNullOrWhiteSpace(path))
+            return;
+
+        // 폴더가 아직 없을 때 부모 폴더를 대신 여는 혼란을 막는다.
+        // 존재하지 않으면 명확히 알리고, 사용자가 원하면 만들어서 연다.
+        if (!Directory.Exists(path))
+        {
+            var prompt = string.Format(UIStringResources.QuickStart_DataDirectory_OpenMissingPrompt, path);
+            if (_appMessageBox.DisplayInfo(prompt, MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                Directory.CreateDirectory(path);
+            }
+            catch (Exception ex)
+            {
+                _appMessageBox.DisplayError(ex, false);
+                return;
+            }
+        }
+
+        OpenInExplorer(path);
+    }
+
+    /// <summary>
+    /// 환경 설정의 Data 경로 설정값을 화면 상태(현재 경로/기본값 여부/비로컬 경고)로 반영한다.
+    /// <paramref name="configuredPath"/>가 비어 있으면 호스트 기본 Data 경로가 표시된다.
+    /// </summary>
+    private void RefreshDataDirectoryDisplay(string? configuredPath)
+    {
+        DataDirectoryDisplayPath = _sharedLocations.GetEffectiveDataDirectoryPath(configuredPath);
+        DataDirectoryIsCustom = !string.IsNullOrWhiteSpace(configuredPath);
+        DataDirectoryIsNonLocal = !_sharedLocations.IsMountableDataDirectory(DataDirectoryDisplayPath);
+    }
+
+    private async Task SaveDataDirectoryAsync(string? hostPath)
+    {
+        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
+        currentConfig ??= _preferencesManager.GetDefaultPreferences();
+
+        currentConfig.DataDirectoryHostPath = string.IsNullOrWhiteSpace(hostPath) ? null : hostPath;
+        await _preferencesManager.SavePreferencesAsync(currentConfig);
+    }
+
+    private static void OpenInExplorer(string path)
+    {
+        try
+        {
+            // 호출 측(OpenDataDirectory)이 존재를 보장한 뒤에만 부른다. 만에 하나 사라졌으면
+            // 엉뚱한 폴더를 여는 대신 조용히 무시한다.
+            if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
+                return;
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = path,
+                UseShellExecute = true,
+            });
+        }
+        catch
+        {
+            // 탐색기 열기는 보조 동작이므로 실패해도 조용히 무시한다.
+        }
+    }
+
     private static string? ShowFolderBrowserDialog(string title)
     {
         var dialog = new OpenFolderDialog
@@ -241,6 +338,25 @@ public partial class OptionsWindowViewModel : ObservableObject
     private bool _enableSandboxGpuAcceleration;
 
     /// <summary>
+    /// 데이터 디렉터리 탭에 표시되는 현재 유효 Data 경로(설정값이 없으면 호스트 기본 경로).
+    /// </summary>
+    [ObservableProperty]
+    private string _dataDirectoryDisplayPath = string.Empty;
+
+    /// <summary>
+    /// 현재 Data 경로가 사용자가 직접 지정한 경로인지 여부. true일 때만 "기본값으로" 버튼이 활성화된다.
+    /// </summary>
+    [ObservableProperty]
+    private bool _dataDirectoryIsCustom;
+
+    /// <summary>
+    /// 현재 Data 경로가 로컬 고정 디스크가 아닌 곳에 있어 샌드박스가 마운트하지 못할 수 있는지 여부.
+    /// true이면 데이터 디렉터리 탭에 경고 문구를 노출한다.
+    /// </summary>
+    [ObservableProperty]
+    private bool _dataDirectoryIsNonLocal;
+
+    /// <summary>
     /// 옵션 창이 처음 열릴 때 선택될 탭 인덱스. <see cref="OptionsTabKeys"/>의 키와 매핑된다.
     /// 호출 측이 지정하지 않으면 0(첫 탭 = 사용자 폴더).
     /// </summary>
@@ -264,6 +380,7 @@ public partial class OptionsWindowViewModel : ObservableObject
     private readonly IPreferencesManager _preferencesManager = default!;
     private readonly IAppRestartManager _appRestartManager = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
+    private readonly ISharedLocations _sharedLocations = default!;
     private readonly TaskFactory _taskFactory = default!;
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)

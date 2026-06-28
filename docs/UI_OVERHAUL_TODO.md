@@ -57,6 +57,14 @@
 - [x] 빌드 통과 확인 (에러 0)
 - [ ] wsb 생성 시 App/Data 표준 마운트 적용은 Phase 3 작업으로 분리
 
+#### Phase 1.6 — Data 디렉터리 사용자 지정 재도입 (이슈 #282)
+
+- [x] 문서 폴더가 네트워크/클라우드 드라이브로 강제 리디렉션된 환경에서 Data 경로를 바꿀 수 없던 문제 해결
+- [x] `OptionsWindow`에 "데이터 디렉터리" 탭 신설(현재 경로 표시 + 폴더 선택/기본값으로/열기, `DataDirectoryHostPath` 저장). 기존 고아 리소스 문자열 재사용
+- [x] 비로컬(네트워크/클라우드/이동식·UNC) 경로 경고 문구 노출(휴리스틱, 비차단)
+- [x] 시작 시 자동 경로에 폴더 생성을 거부하거나 생성에 실패하면 데이터 디렉터리 탭으로 안내(`OpenOptions(DataDirectory)`)
+- [x] 기본 경로(`Documents\TableCloth\Data`)는 유지 — 기존 사용자 데이터 마이그레이션 불필요
+
 ### Phase 2 — TableCloth에서 카탈로그/디테일 화면 제거 또는 격리
 - [ ] `CatalogPage` / `DetailPage` / 관련 ViewModel을 Spork 측으로 이관 또는 Deprecated 처리
 - [ ] `MainWindowViewModel`의 카탈로그 의존성 정리

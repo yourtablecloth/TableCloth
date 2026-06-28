@@ -78,6 +78,29 @@
                 </Grid>
             </TabItem>
 
+            <!-- 데이터 디렉터리 -->
+            <TabItem Header="{x:Static res:UIStringResources.QuickStart_Section_DataDirectory}">
+                <StackPanel Margin="12">
+                    <TextBlock Margin="0 0 0 8" TextWrapping="Wrap"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               Text="{x:Static res:UIStringResources.QuickStart_DataDirectory_Description}" />
+                    <TextBlock Margin="0 4 0 2" FontWeight="SemiBold"
+                               Text="{x:Static res:UIStringResources.QuickStart_DataDirectory_CurrentPathLabel}" />
+                    <TextBox Margin="0 0 0 8" IsReadOnly="True" TextWrapping="Wrap"
+                             Text="{Binding DataDirectoryDisplayPath, Mode=OneWay}" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_SelectButton}" Command="{Binding SelectDataDirectoryCommand}" Padding="10 5" Margin="0 0 6 0" />
+                        <Button Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_ResetButton}" Command="{Binding ResetDataDirectoryCommand}" IsEnabled="{Binding DataDirectoryIsCustom}" Padding="10 5" Margin="0 0 6 0" />
+                        <Button Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_OpenButton}" Command="{Binding OpenDataDirectoryCommand}" Padding="10 5" />
+                    </StackPanel>
+                    <Border Margin="0 10 0 0" BorderBrush="Red" BorderThickness="1" CornerRadius="3" Padding="8"
+                            Visibility="{Binding DataDirectoryIsNonLocal, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock TextWrapping="Wrap" Foreground="Red"
+                                   Text="{x:Static res:UIStringResources.QuickStart_DataDirectory_NonLocalWarning}" />
+                    </Border>
+                </StackPanel>
+            </TabItem>
+
             <!-- 인증서 (NPKI 공유) -->
             <TabItem Header="{x:Static res:UIStringResources.Options_Section_Certificate}">
                 <StackPanel Margin="12">

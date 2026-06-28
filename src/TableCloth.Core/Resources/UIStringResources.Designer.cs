@@ -1801,6 +1801,24 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string QuickStart_DataDirectory_SelectButton {
+            get {
+                return ResourceManager.GetString("QuickStart_DataDirectory_SelectButton", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_DataDirectory_CurrentPathLabel {
+            get {
+                return ResourceManager.GetString("QuickStart_DataDirectory_CurrentPathLabel", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_DataDirectory_NonLocalWarning {
+            get {
+                return ResourceManager.GetString("QuickStart_DataDirectory_NonLocalWarning", resourceCulture);
+            }
+        }
+
         public static string QuickStart_LaunchButton {
             get {
                 return ResourceManager.GetString("QuickStart_LaunchButton", resourceCulture);
@@ -1858,6 +1876,12 @@ namespace TableCloth.Resources {
         public static string QuickStart_DataDirectory_CreateFailed {
             get {
                 return ResourceManager.GetString("QuickStart_DataDirectory_CreateFailed", resourceCulture);
+            }
+        }
+
+        public static string QuickStart_DataDirectory_OpenMissingPrompt {
+            get {
+                return ResourceManager.GetString("QuickStart_DataDirectory_OpenMissingPrompt", resourceCulture);
             }
         }
 

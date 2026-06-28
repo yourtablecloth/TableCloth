@@ -106,6 +106,16 @@ public partial class QuickStartPageViewModel : ObservableObject
     [RelayCommand]
     private async Task LaunchSandbox()
     {
+        // 데이터 폴더가 로컬 고정 디스크가 아니면(네트워크/클라우드/이동식 드라이브, UNC) Windows
+        // 샌드박스가 마운트하지 못한다. 클라우드 동기화 폴더 등은 폴더 생성 자체는 성공할 수 있으므로,
+        // 생성을 유도하기 전에 먼저 검사해 옵션의 데이터 디렉터리 탭으로 안내하고 실행을 멈춘다. (이슈 #282)
+        if (!_sharedLocations.IsMountableDataDirectory(_dataDirectoryHostPath))
+        {
+            _appMessageBox.DisplayError(UIStringResources.QuickStart_DataDirectory_NonLocalWarning, false);
+            await OpenOptions(OptionsTabKeys.DataDirectory);
+            return;
+        }
+
         if (!await EnsureDataDirectoryAsync())
             return;
 
@@ -236,17 +246,24 @@ public partial class QuickStartPageViewModel : ObservableObject
             MessageBoxResult.Yes);
 
         if (result != MessageBoxResult.Yes)
+        {
+            // 사용자가 자동 선택된 경로에 폴더 생성을 거부했다면(예: 문서 폴더가 네트워크/클라우드
+            // 드라이브로 리디렉션된 환경), 경로를 직접 바꿀 수 있는 옵션 창의 데이터 디렉터리 탭으로 안내한다.
+            await OpenOptions(OptionsTabKeys.DataDirectory);
             return false;
+        }
 
         try
         {
             await Task.Run(() => Directory.CreateDirectory(_dataDirectoryHostPath));
             return true;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _appMessageBox.DisplayError(ex, true);
+            // 다른 경로 선택으로 회복 가능한 상황이므로 심각(빨강) 예외창은 띄우지 않는다.
+            // 친화적 안내 한 개만 보여준 뒤, 경로를 바꿀 수 있는 데이터 디렉터리 탭으로 유도한다.
             _appMessageBox.DisplayError(UIStringResources.QuickStart_DataDirectory_CreateFailed, false);
+            await OpenOptions(OptionsTabKeys.DataDirectory);
             return false;
         }
     }

@@ -34,4 +34,12 @@ public interface ISharedLocations
     /// </summary>
     /// <param name="configuredPath">환경 설정에 저장된 호스트 경로(빈 값이면 기본 경로 사용).</param>
     string GetEffectiveDataDirectoryPath(string? configuredPath);
+
+    /// <summary>
+    /// 주어진 경로가 Windows 샌드박스로 마운트 가능한 위치(로컬 고정 디스크)에 있는지 판별합니다.
+    /// 네트워크/이동식 드라이브나 UNC 경로는 샌드박스가 마운트하지 못하므로 false를 반환합니다.
+    /// 클라우드 가상 드라이브처럼 판별이 불확실한 경우에는 거짓 차단/경고를 피하기 위해 true를 반환합니다.
+    /// </summary>
+    /// <param name="path">검사할 호스트 경로.</param>
+    bool IsMountableDataDirectory(string? path);
 }

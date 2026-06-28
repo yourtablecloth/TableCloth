@@ -750,6 +750,15 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="QuickStart_DataDirectory_ResetButton" xml:space="preserve">
     <value>Reset to Default</value>
   </data>
+  <data name="QuickStart_DataDirectory_SelectButton" xml:space="preserve">
+    <value>Select Folder...</value>
+  </data>
+  <data name="QuickStart_DataDirectory_CurrentPathLabel" xml:space="preserve">
+    <value>Current path</value>
+  </data>
+  <data name="QuickStart_DataDirectory_NonLocalWarning" xml:space="preserve">
+    <value>This folder is not on a local fixed disk. Windows Sandbox cannot mount folders on network, cloud, or removable drives, so it is recommended to pick a folder on a local disk (e.g. C:).</value>
+  </data>
   <data name="QuickStart_LaunchButton" xml:space="preserve">
     <value>Launch Sandbox</value>
   </data>
@@ -783,6 +792,13 @@ Create it now and continue?</value>
   </data>
   <data name="QuickStart_DataDirectory_CreateFailed" xml:space="preserve">
     <value>Could not create the Data directory. Open Options and pick a different path.</value>
+  </data>
+  <data name="QuickStart_DataDirectory_OpenMissingPrompt" xml:space="preserve">
+    <value>This folder does not exist yet:
+
+{0}
+
+Create it and open it now?</value>
   </data>
   <data name="Options_Title" xml:space="preserve">
     <value>Options</value>
