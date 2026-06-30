@@ -24,6 +24,11 @@
 .PARAMETER TimestampUrl
   RFC 3161 timestamp authority. Defaults to Certum's.
 
+.PARAMETER Repo
+  Target GitHub repository (owner/name). Defaults to yourtablecloth/TableCloth.
+  Passed explicitly to gh because the work dir is a temp folder with no git
+  remotes; without it gh fails with "no git remotes found".
+
 .EXAMPLE
   $env:TABLECLOTH_SIGN_SUBJECT = 'Jung Hyun, Nam'
   .\tools\sign-release.ps1 -Tag v1.14.0
@@ -33,6 +38,7 @@ param(
   [Parameter(Mandatory)][string]$Tag,
   [string]$SubjectName = $env:TABLECLOTH_SIGN_SUBJECT,
   [string]$TimestampUrl = 'http://time.certum.pl',
+  [string]$Repo = 'yourtablecloth/TableCloth',
   [string]$WorkDir = (Join-Path $env:TEMP "tablecloth-sign-$Tag")
 )
 
@@ -63,7 +69,7 @@ New-Item -ItemType Directory -Path $WorkDir | Out-Null
 Push-Location $WorkDir
 try {
   Write-Host "Downloading $Tag assets to $WorkDir..." -ForegroundColor Cyan
-  & gh release download $Tag --pattern '*.exe'
+  & gh release download $Tag --repo $Repo --pattern '*.exe'
   if ($LASTEXITCODE -ne 0) { throw 'gh release download failed.' }
 
   $assets = @(Get-ChildItem -File -Filter *.exe)
@@ -81,7 +87,7 @@ try {
   if ($LASTEXITCODE -ne 0) { throw 'signtool verify failed.' }
 
   Write-Host "Re-uploading signed assets to release $Tag..." -ForegroundColor Cyan
-  & gh release upload $Tag $files --clobber
+  & gh release upload $Tag $files --repo $Repo --clobber
   if ($LASTEXITCODE -ne 0) { throw 'gh release upload failed.' }
 
   Write-Host ''
