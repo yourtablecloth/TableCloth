@@ -1,0 +1,16 @@
+sandbox-dark-wallpaper.jpg
+==========================
+
+Photo by Ty Rethy (@contigotheseagull) on Unsplash.
+Source : https://unsplash.com/photos/PC67Im71yVk
+Author : https://unsplash.com/@contigotheseagull
+License: Unsplash License — https://unsplash.com/license
+
+The Unsplash License grants a free, irrevocable, nonexclusive, worldwide
+copyright license to download, copy, modify, distribute, perform, and use
+the photo for free, including for commercial purposes, without permission
+from or attributing the photographer or Unsplash. It does NOT allow selling
+unmodified copies, nor compiling photos to replicate a similar/competing
+service. Attribution is appreciated and provided here and in docs/CREDITS.md.
+
+Used by TableCloth as the Windows Sandbox dark-mode desktop wallpaper (issue #246).

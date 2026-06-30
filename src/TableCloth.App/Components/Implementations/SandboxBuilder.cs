@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -81,8 +82,10 @@ public sealed class SandboxBuilder(
         var sporkAnswers = new SporkAnswers
         {
             HostUILocale = CultureInfo.CurrentUICulture.Name,
-            // 호스트의 라이트/다크 선호를 함께 실어 보내, 샌드박스 부팅 시 시작 시점 테마를 맞춘다(이슈 #246).
+            // 호스트의 라이트/다크 선호와 고대비 구성표를 함께 실어 보내, 샌드박스 부팅 시
+            // 시작 시점 테마를 맞춘다(이슈 #246).
             HostUsesLightTheme = DetectHostUsesLightTheme(),
+            HostHighContrastScheme = DetectHostHighContrastScheme(),
         };
         await StageCertPairAsync(appDirectory, tableClothConfiguration.CertPair, sporkAnswers, cancellationToken).ConfigureAwait(false);
 
@@ -123,6 +126,54 @@ public sealed class SandboxBuilder(
         catch
         {
             return null;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct HIGHCONTRAST
+    {
+        public uint cbSize;
+        public uint dwFlags;
+        public IntPtr lpszDefaultScheme;
+    }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool SystemParametersInfoW(uint uiAction, uint uiParam, ref HIGHCONTRAST pvParam, uint fWinIni);
+
+    private const uint SPI_GETHIGHCONTRAST = 0x0042;
+    private const uint HCF_HIGHCONTRASTON = 0x00000001;
+
+    /// <summary>
+    /// 호스트의 고대비 상태를 <c>SPI_GETHIGHCONTRAST</c>로 읽는다. 켜져 있으면 구성표 이름
+    /// (예: "고대비 검정")을 반환하고, 꺼져 있거나 읽기에 실패하면 <see langword="null"/>을 반환한다.
+    /// </summary>
+    private static string DetectHostHighContrastScheme()
+    {
+        var buffer = Marshal.AllocHGlobal(256 * sizeof(char));
+        try
+        {
+            var hc = new HIGHCONTRAST
+            {
+                cbSize = (uint)Marshal.SizeOf<HIGHCONTRAST>(),
+                dwFlags = 0,
+                lpszDefaultScheme = buffer,
+            };
+
+            if (!SystemParametersInfoW(SPI_GETHIGHCONTRAST, hc.cbSize, ref hc, 0))
+                return null;
+
+            if ((hc.dwFlags & HCF_HIGHCONTRASTON) == 0)
+                return null; // 고대비 꺼짐
+
+            return Marshal.PtrToStringUni(hc.lpszDefaultScheme);
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
         }
     }
 

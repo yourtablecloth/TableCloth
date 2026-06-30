@@ -49,7 +49,11 @@ namespace Spork.Sandbox
 
             // 호스트의 라이트/다크 선호를 시작 시점에 게스트 테마로 반영(이슈 #246). 가장 먼저 적용해
             // 이후 띄워질 앱(은행 사이트 등)과 Spork 자체 UI가 올바른 테마로 시작하도록 한다.
+            // 다크 모드면 지정 배경 이미지도 함께 적용한다.
             TryApplyHostTheme();
+
+            // 호스트가 고대비를 쓰고 있으면 같은 구성표로 맞춘다(베스트에포트).
+            TryApplyHighContrast();
 
             // DNS 설정은 fire-and-forget. catalog HTTP 호출 전에 끝나는 게 이상적이지만 그렇지 못해도
             // catalog 로드는 1.5s × 3회 retry 백오프가 있어 자체 회복 가능. UI 진입(splash)을 막지 않는
@@ -229,6 +233,27 @@ namespace Spork.Sandbox
         private static extern IntPtr SendMessageTimeoutW(
             IntPtr hWnd, uint msg, IntPtr wParam, string lParam, uint flags, uint timeout, out IntPtr result);
 
+        private const uint SpiSetDeskWallpaper = 0x0014;
+        private const uint SpiSetHighContrast = 0x0043;
+        private const uint SpifUpdateIniFile = 0x0001;
+        private const uint SpifSendChange = 0x0002;
+        private const uint HcfHighContrastOn = 0x00000001;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct HIGHCONTRAST
+        {
+            public uint cbSize;
+            public uint dwFlags;
+            public IntPtr lpszDefaultScheme;
+        }
+
+        // 같은 user32!SystemParametersInfoW 이지만 pvParam 형태가 달라 관리 시그니처를 둘로 나눈다.
+        [DllImport("user32.dll", EntryPoint = "SystemParametersInfoW", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool SystemParametersInfoString(uint uiAction, uint uiParam, string pvParam, uint fWinIni);
+
+        [DllImport("user32.dll", EntryPoint = "SystemParametersInfoW", SetLastError = true)]
+        private static extern bool SystemParametersInfoHighContrast(uint uiAction, uint uiParam, ref HIGHCONTRAST pvParam, uint fWinIni);
+
         /// <summary>
         /// 호스트가 <see cref="SporkAnswers.HostUsesLightTheme"/>로 전달한 라이트/다크 선호를
         /// 게스트의 <c>HKCU\...\Themes\Personalize</c>에 적용하고, 설정 앱과 동일하게
@@ -258,11 +283,79 @@ namespace Spork.Sandbox
                 SendMessageTimeoutW((IntPtr)HwndBroadcast, WmSettingChange, IntPtr.Zero,
                     "ImmersiveColorSet", SmtoAbortIfHung, 1000u, out _);
 
+                // 다크 모드로 시작하면 번들된 배경 이미지를 적용한다(이슈 #246).
+                if (!usesLightTheme)
+                    TryApplyDarkWallpaper();
+
                 _logger.LogDebug("Applied host theme to sandbox: {Theme}.", usesLightTheme ? "Light" : "Dark");
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Failed to apply host theme to sandbox.");
+            }
+        }
+
+        /// <summary>
+        /// 다크 모드 시작 시 App\Assets\sandbox-dark-wallpaper.jpg 를 바탕 화면 이미지로 적용한다.
+        /// 이미지 라이선스/크레디트는 docs/CREDITS.md 참조(Unsplash License, 사진: Ty Rethy).
+        /// </summary>
+        private void TryApplyDarkWallpaper()
+        {
+            try
+            {
+                var wallpaperPath = Path.Combine(AppContext.BaseDirectory, "Assets", "sandbox-dark-wallpaper.jpg");
+                if (!File.Exists(wallpaperPath))
+                {
+                    _logger.LogDebug("Dark wallpaper not found at {Path}; skipping.", wallpaperPath);
+                    return;
+                }
+
+                // SPI_SETDESKWALLPAPER 는 JPG 경로를 받아 내부적으로 적용한다.
+                SystemParametersInfoString(SpiSetDeskWallpaper, 0u, wallpaperPath,
+                    SpifUpdateIniFile | SpifSendChange);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to apply dark wallpaper.");
+            }
+        }
+
+        /// <summary>
+        /// 호스트가 고대비를 쓰고 있으면(<see cref="SporkAnswers.HostHighContrastScheme"/> 비어있지 않음)
+        /// 같은 구성표 이름으로 게스트 고대비를 켠다. 베스트에포트 — 고대비의 프로그래밍 방식 적용은
+        /// 환경에 따라 완전하지 않을 수 있다(이슈 #246).
+        /// </summary>
+        private void TryApplyHighContrast()
+        {
+            var schemePtr = IntPtr.Zero;
+            try
+            {
+                var answers = LoadSporkAnswers();
+                var scheme = answers?.HostHighContrastScheme;
+                if (string.IsNullOrWhiteSpace(scheme))
+                    return;
+
+                schemePtr = Marshal.StringToHGlobalUni(scheme);
+                var hc = new HIGHCONTRAST
+                {
+                    cbSize = (uint)Marshal.SizeOf<HIGHCONTRAST>(),
+                    dwFlags = HcfHighContrastOn,
+                    lpszDefaultScheme = schemePtr,
+                };
+
+                SystemParametersInfoHighContrast(SpiSetHighContrast, hc.cbSize, ref hc,
+                    SpifUpdateIniFile | SpifSendChange);
+
+                _logger.LogDebug("Applied high contrast scheme to sandbox: {Scheme}.", scheme);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to apply high contrast to sandbox.");
+            }
+            finally
+            {
+                if (schemePtr != IntPtr.Zero)
+                    Marshal.FreeHGlobal(schemePtr);
             }
         }
 

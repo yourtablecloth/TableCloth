@@ -57,6 +57,14 @@
 		<Content Include="Images.zip">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<!--
+			이슈 #246: 다크 모드로 시작하는 샌드박스의 바탕 화면 이미지.
+			출력 폴더로 복사되면 SandboxBuilder의 staging 복사(AllDirectories)로 App\Assets에 함께 떨궈지고,
+			샌드박스 부팅 시 SandboxBootstrap이 SPI_SETDESKWALLPAPER로 적용한다. 라이선스/크레디트: docs/CREDITS.md.
+		-->
+		<Content Include="Assets\sandbox-dark-wallpaper.jpg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<ItemGroup>

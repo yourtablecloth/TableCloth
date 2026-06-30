@@ -18,6 +18,15 @@ namespace TableCloth.Models.Answers
         public bool? HostUsesLightTheme { get; set; } = null;
 
         /// <summary>
+        /// 호스트에서 고대비(High Contrast)가 켜져 있을 때의 고대비 구성표 이름
+        /// (<c>SPI_GETHIGHCONTRAST</c>의 <c>lpszDefaultScheme</c>, 예: "고대비 검정").
+        /// 고대비가 꺼져 있거나 알 수 없으면 <see langword="null"/>이다. 값이 있으면 샌드박스 부팅 시
+        /// 같은 이름으로 <c>SPI_SETHIGHCONTRAST</c>를 적용한다(호스트와 동일 OS·로캘이라 이름이 호환됨).
+        /// 베스트에포트: 고대비의 프로그래밍 방식 적용은 환경에 따라 완전하지 않을 수 있다(이슈 #246).
+        /// </summary>
+        public string HostHighContrastScheme { get; set; } = null;
+
+        /// <summary>
         /// 호스트가 인증서 쌍을 전달했는지 여부. <see langword="true"/>이면 staging의
         /// <c>App\certs\signCert.der</c>·<c>signPri.key</c>가 함께 떨어져 있고, 샌드박스 진입 시
         /// 아래 cert 관련 필드를 사용해 NPKI 표준 경로로 배치한다.
