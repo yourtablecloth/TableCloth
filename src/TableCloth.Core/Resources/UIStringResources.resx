@@ -699,6 +699,21 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="AboutWindow_MoreSponsorsTooltip" xml:space="preserve">
     <value>And more sponsors... Thank you!</value>
   </data>
+  <data name="AboutWindow_AnonymousSponsorsFormat" xml:space="preserve">
+    <value>and {0} anonymous ❤️</value>
+  </data>
+  <data name="AboutWindow_ContributorsTitle" xml:space="preserve">
+    <value>Contributors</value>
+  </data>
+  <data name="AboutWindow_MoreContributorsTooltip" xml:space="preserve">
+    <value>And more contributors... Thank you!</value>
+  </data>
+  <data name="AboutWindow_AnonymousContributorsFormat" xml:space="preserve">
+    <value>and {0} anonymous</value>
+  </data>
+  <data name="Button_DiscordButton" xml:space="preserve">
+    <value>Discord</value>
+  </data>
   <data name="SiteReport_WindowTitle" xml:space="preserve">
     <value>Report a New Website</value>
   </data>

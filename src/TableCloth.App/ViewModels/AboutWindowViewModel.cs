@@ -49,6 +49,7 @@ public partial class AboutWindowViewModel : ObservableObject
         CatalogDate = _resourceResolver.CatalogLastModified?.ToString("yyyy-MM-dd HH:mm:ss") ?? CommonStrings.UnknownText;
         LicenseDetails = await _licenseDescriptor.GetLicenseDescriptionsAsync();
         await LoadSponsorsAsync();
+        await LoadContributorsAsync();
     }
 
     private static readonly Random _random = new Random();
@@ -84,10 +85,19 @@ public partial class AboutWindowViewModel : ObservableObject
             var json = await response.Content.ReadAsStringAsync();
             var sponsorsDocument = SponsorsDocument.Parse(json);
 
-            if (sponsorsDocument?.Sponsors != null && sponsorsDocument.Sponsors.Count > 0)
+            if (sponsorsDocument != null)
             {
-                Sponsors = Shuffle(sponsorsDocument.Sponsors);
-                HasSponsors = true;
+                if (sponsorsDocument.Sponsors != null && sponsorsDocument.Sponsors.Count > 0)
+                    Sponsors = Shuffle(sponsorsDocument.Sponsors);
+
+                if (sponsorsDocument.AnonymousCount > 0)
+                {
+                    AnonymousSponsorsText = string.Format(UIStringResources.AboutWindow_AnonymousSponsorsFormat, sponsorsDocument.AnonymousCount);
+                    HasAnonymousSponsors = true;
+                }
+
+                // 공개 후원자가 있거나 익명 후원자가 있으면 섹션을 노출한다.
+                HasSponsors = Sponsors.Count > 0 || HasAnonymousSponsors;
             }
             else
             {
@@ -97,6 +107,47 @@ public partial class AboutWindowViewModel : ObservableObject
         catch
         {
             HasSponsors = false;
+        }
+    }
+
+    private async Task LoadContributorsAsync()
+    {
+        try
+        {
+            using var httpClient = _httpClientFactory.CreateTableClothHttpClient();
+            var response = await httpClient.GetAsync(CommonStrings.ContributorsJsonUrl);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                HasContributors = false;
+                return;
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var document = ContributorsDocument.Parse(json);
+
+            if (document != null)
+            {
+                // 기여자는 기여 횟수 내림차순(생성기 정렬)을 유지한다. 후원자와 달리 섞지 않는다.
+                if (document.Contributors != null && document.Contributors.Count > 0)
+                    Contributors = document.Contributors;
+
+                if (document.AnonymousCount > 0)
+                {
+                    AnonymousContributorsText = string.Format(UIStringResources.AboutWindow_AnonymousContributorsFormat, document.AnonymousCount);
+                    HasAnonymousContributors = true;
+                }
+
+                HasContributors = Contributors.Count > 0 || HasAnonymousContributors;
+            }
+            else
+            {
+                HasContributors = false;
+            }
+        }
+        catch
+        {
+            HasContributors = false;
         }
     }
 
@@ -167,6 +218,12 @@ public partial class AboutWindowViewModel : ObservableObject
         Process.Start(new ProcessStartInfo(CommonStrings.SponsorshipUrl) { UseShellExecute = true });
     }
 
+    [RelayCommand]
+    private void OpenDiscord()
+    {
+        Process.Start(new ProcessStartInfo(CommonStrings.DiscordUrl) { UseShellExecute = true });
+    }
+
     [ObservableProperty]
     private string _appVersion = string.Empty;
 
@@ -181,4 +238,22 @@ public partial class AboutWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _hasSponsors = false;
+
+    [ObservableProperty]
+    private string _anonymousSponsorsText = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasAnonymousSponsors = false;
+
+    [ObservableProperty]
+    private List<ContributorInfo> _contributors = new();
+
+    [ObservableProperty]
+    private bool _hasContributors = false;
+
+    [ObservableProperty]
+    private string _anonymousContributorsText = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasAnonymousContributors = false;
 }

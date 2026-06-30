@@ -257,7 +257,25 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("SponsorsJsonUrl", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   https://yourtablecloth.app/contributors.json과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string ContributorsJsonUrl {
+            get {
+                return ResourceManager.GetString("ContributorsJsonUrl", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   https://discord.gg/eT2UnUXyTV과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string DiscordUrl {
+            get {
+                return ResourceManager.GetString("DiscordUrl", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   https://www.google.com/과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>

@@ -27,6 +27,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -96,13 +97,61 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock Grid.Column="1" Text="..." VerticalAlignment="Center" FontWeight="Bold" Margin="4 0 0 0" 
-                           Foreground="{DynamicResource InfoBannerLinkForeground}" ToolTip="{x:Static res:UIStringResources.AboutWindow_MoreSponsorsTooltip}" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="..." VerticalAlignment="Center" FontWeight="Bold" Margin="4 0 0 0"
+                               Foreground="{DynamicResource InfoBannerLinkForeground}" ToolTip="{x:Static res:UIStringResources.AboutWindow_MoreSponsorsTooltip}" />
+                    <TextBlock Text="{Binding AnonymousSponsorsText}" VerticalAlignment="Center" Margin="6 0 0 0"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               Visibility="{Binding HasAnonymousSponsors, Converter={StaticResource booleanToVisibilityConverter}}" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <!-- Contributors Section -->
+        <Grid Grid.Row="4" Margin="0 0 0 10" Visibility="{Binding HasContributors, Converter={StaticResource booleanToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="{x:Static res:UIStringResources.AboutWindow_ContributorsTitle}" FontWeight="SemiBold" Margin="0 0 0 6" />
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ItemsControl Grid.Column="0" ItemsSource="{Binding Contributors}" MaxHeight="36" ClipToBounds="True">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0 0 8 4" Padding="6 4" Background="{DynamicResource InfoBannerBackground}" CornerRadius="4" BorderBrush="{DynamicResource InfoBannerBorder}" BorderThickness="1">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="24" Height="24" Margin="0 0 6 0">
+                                        <Ellipse.Fill>
+                                            <ImageBrush ImageSource="{Binding AvatarUrl}" />
+                                        </Ellipse.Fill>
+                                    </Ellipse>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="..." VerticalAlignment="Center" FontWeight="Bold" Margin="4 0 0 0"
+                               Foreground="{DynamicResource InfoBannerLinkForeground}" ToolTip="{x:Static res:UIStringResources.AboutWindow_MoreContributorsTooltip}" />
+                    <TextBlock Text="{Binding AnonymousContributorsText}" VerticalAlignment="Center" Margin="6 0 0 0"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               Visibility="{Binding HasAnonymousContributors, Converter={StaticResource booleanToVisibilityConverter}}" />
+                </StackPanel>
             </Grid>
         </Grid>
 
         <!-- License Info Section -->
-        <Grid Grid.Row="4" Margin="0 0 0 10">
+        <Grid Grid.Row="5" Margin="0 0 0 10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -121,13 +170,18 @@
         </Grid>
 
         <!-- Buttons -->
-        <Grid Grid.Row="5">
+        <Grid Grid.Row="6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" HorizontalAlignment="Left" Orientation="Horizontal">
                 <Button Padding="10 4" Margin="0 0 5 0" Command="{Binding OpenAppHomepageCommand}" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}">
+                    <Button.CommandParameter>
+                        <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
+                    </Button.CommandParameter>
+                </Button>
+                <Button Padding="10 4" Command="{Binding OpenDiscordCommand}" Content="{x:Static res:UIStringResources.Button_DiscordButton}">
                     <Button.CommandParameter>
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                     </Button.CommandParameter>

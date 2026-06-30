@@ -54,6 +54,7 @@ namespace Spork.ViewModels
             CatalogVersion = _resourceResolver.CatalogLastModified?.ToString() ?? CommonStrings.UnknownText;
             LicenseDescription = _licenseDescriptor.GetLicenseDescriptions();
             await LoadSponsorsAsync();
+            await LoadContributorsAsync();
         }
 
         private static readonly Random _random = new Random();
@@ -89,10 +90,18 @@ namespace Spork.ViewModels
                 var json = await response.Content.ReadAsStringAsync();
                 var sponsorsDocument = SponsorsDocument.Parse(json);
 
-                if (sponsorsDocument?.Sponsors != null && sponsorsDocument.Sponsors.Count > 0)
+                if (sponsorsDocument != null)
                 {
-                    Sponsors = Shuffle(sponsorsDocument.Sponsors);
-                    HasSponsors = true;
+                    if (sponsorsDocument.Sponsors != null && sponsorsDocument.Sponsors.Count > 0)
+                        Sponsors = Shuffle(sponsorsDocument.Sponsors);
+
+                    if (sponsorsDocument.AnonymousCount > 0)
+                    {
+                        AnonymousSponsorsText = string.Format(UIStringResources.AboutWindow_AnonymousSponsorsFormat, sponsorsDocument.AnonymousCount);
+                        HasAnonymousSponsors = true;
+                    }
+
+                    HasSponsors = Sponsors.Count > 0 || HasAnonymousSponsors;
                 }
                 else
                 {
@@ -102,6 +111,47 @@ namespace Spork.ViewModels
             catch
             {
                 HasSponsors = false;
+            }
+        }
+
+        private async Task LoadContributorsAsync()
+        {
+            try
+            {
+                using var httpClient = _httpClientFactory.CreateTableClothHttpClient();
+                var response = await httpClient.GetAsync(CommonStrings.ContributorsJsonUrl);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    HasContributors = false;
+                    return;
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                var document = ContributorsDocument.Parse(json);
+
+                if (document != null)
+                {
+                    // 기여자는 기여 횟수 내림차순(생성기 정렬)을 유지한다. 후원자와 달리 섞지 않는다.
+                    if (document.Contributors != null && document.Contributors.Count > 0)
+                        Contributors = document.Contributors;
+
+                    if (document.AnonymousCount > 0)
+                    {
+                        AnonymousContributorsText = string.Format(UIStringResources.AboutWindow_AnonymousContributorsFormat, document.AnonymousCount);
+                        HasAnonymousContributors = true;
+                    }
+
+                    HasContributors = Contributors.Count > 0 || HasAnonymousContributors;
+                }
+                else
+                {
+                    HasContributors = false;
+                }
+            }
+            catch
+            {
+                HasContributors = false;
             }
         }
 
@@ -125,6 +175,12 @@ namespace Spork.ViewModels
             Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(CommonStrings.SponsorshipUrl));
         }
 
+        [RelayCommand]
+        private void OpenDiscord()
+        {
+            Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(CommonStrings.DiscordUrl));
+        }
+
         [ObservableProperty]
         private string _appVersion = CommonStrings.UnknownText;
 
@@ -142,5 +198,23 @@ namespace Spork.ViewModels
 
         [ObservableProperty]
         private bool _hasSponsors = false;
+
+        [ObservableProperty]
+        private string _anonymousSponsorsText = string.Empty;
+
+        [ObservableProperty]
+        private bool _hasAnonymousSponsors = false;
+
+        [ObservableProperty]
+        private List<ContributorInfo> _contributors = new List<ContributorInfo>();
+
+        [ObservableProperty]
+        private bool _hasContributors = false;
+
+        [ObservableProperty]
+        private string _anonymousContributorsText = string.Empty;
+
+        [ObservableProperty]
+        private bool _hasAnonymousContributors = false;
     }
 }

@@ -113,7 +113,37 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("AboutWindow_MoreSponsorsTooltip", resourceCulture);
             }
         }
-        
+
+        public static string AboutWindow_AnonymousSponsorsFormat {
+            get {
+                return ResourceManager.GetString("AboutWindow_AnonymousSponsorsFormat", resourceCulture);
+            }
+        }
+
+        public static string AboutWindow_ContributorsTitle {
+            get {
+                return ResourceManager.GetString("AboutWindow_ContributorsTitle", resourceCulture);
+            }
+        }
+
+        public static string AboutWindow_MoreContributorsTooltip {
+            get {
+                return ResourceManager.GetString("AboutWindow_MoreContributorsTooltip", resourceCulture);
+            }
+        }
+
+        public static string AboutWindow_AnonymousContributorsFormat {
+            get {
+                return ResourceManager.GetString("AboutWindow_AnonymousContributorsFormat", resourceCulture);
+            }
+        }
+
+        public static string Button_DiscordButton {
+            get {
+                return ResourceManager.GetString("Button_DiscordButton", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Open Source Software License과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>

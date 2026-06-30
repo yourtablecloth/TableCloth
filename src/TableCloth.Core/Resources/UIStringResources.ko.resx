@@ -698,6 +698,21 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="AboutWindow_MoreSponsorsTooltip" xml:space="preserve">
     <value>외 많은 분들... 고맙습니다!</value>
   </data>
+  <data name="AboutWindow_AnonymousSponsorsFormat" xml:space="preserve">
+    <value>외 익명 {0}명 ❤️</value>
+  </data>
+  <data name="AboutWindow_ContributorsTitle" xml:space="preserve">
+    <value>함께 만든 분들</value>
+  </data>
+  <data name="AboutWindow_MoreContributorsTooltip" xml:space="preserve">
+    <value>외 많은 분들... 고맙습니다!</value>
+  </data>
+  <data name="AboutWindow_AnonymousContributorsFormat" xml:space="preserve">
+    <value>외 익명 {0}명</value>
+  </data>
+  <data name="Button_DiscordButton" xml:space="preserve">
+    <value>Discord</value>
+  </data>
   <data name="SiteReport_WindowTitle" xml:space="preserve">
     <value>새 웹 사이트 제보</value>
   </data>

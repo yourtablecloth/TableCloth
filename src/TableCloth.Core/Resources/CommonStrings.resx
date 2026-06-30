@@ -189,4 +189,10 @@
   <data name="SponsorsJsonUrl" xml:space="preserve">
     <value>https://yourtablecloth.app/sponsors.json</value>
   </data>
+  <data name="ContributorsJsonUrl" xml:space="preserve">
+    <value>https://yourtablecloth.app/contributors.json</value>
+  </data>
+  <data name="DiscordUrl" xml:space="preserve">
+    <value>https://discord.gg/eT2UnUXyTV</value>
+  </data>
 </root>

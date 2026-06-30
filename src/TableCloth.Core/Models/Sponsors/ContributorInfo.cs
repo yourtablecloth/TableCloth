@@ -5,23 +5,22 @@ using System.Text.Json;
 
 namespace TableCloth.Models.Sponsors
 {
-    public sealed class SponsorsDocument
+    /// <summary>
+    /// yourtablecloth.app/contributors.json 의 파싱 결과.
+    /// 생성기(yourtablecloth.github.io)가 REST /contributors?anon=true 로 TableCloth +
+    /// TableClothCatalog 기여자를 합산해 만든다. 이메일만 있는 익명 기여자는 신원 없이
+    /// <see cref="AnonymousCount"/> 로만 집계된다.
+    /// </summary>
+    public sealed class ContributorsDocument
     {
         public DateTimeOffset GeneratedAt { get; set; }
         public int TotalCount { get; set; }
-
-        /// <summary>
-        /// 비공개(익명) 후원자 수. 신원을 노출하지 않고 집계만 표시하기 위한 값으로,
-        /// 생성기(yourtablecloth.github.io)가 privacyLevel=PRIVATE 후원자를 세어 채운다.
-        /// 구 버전 JSON에는 없을 수 있으므로 없으면 0이다.
-        /// </summary>
         public int AnonymousCount { get; set; }
+        public List<ContributorInfo> Contributors { get; set; } = new List<ContributorInfo>();
 
-        public List<SponsorInfo> Sponsors { get; set; } = new List<SponsorInfo>();
-
-        public static SponsorsDocument Parse(string json)
+        public static ContributorsDocument Parse(string json)
         {
-            var result = new SponsorsDocument();
+            var result = new ContributorsDocument();
             var bytes = Encoding.UTF8.GetBytes(json);
             var reader = new Utf8JsonReader(bytes);
 
@@ -42,8 +41,12 @@ namespace TableCloth.Models.Sponsors
                             if (reader.TokenType == JsonTokenType.Number)
                                 result.TotalCount = reader.GetInt32();
                             break;
-                        case "sponsors":
-                            result.Sponsors = ParseSponsors(ref reader);
+                        case "anonymousCount":
+                            if (reader.TokenType == JsonTokenType.Number)
+                                result.AnonymousCount = reader.GetInt32();
+                            break;
+                        case "contributors":
+                            result.Contributors = ParseContributors(ref reader);
                             break;
                     }
                 }
@@ -52,12 +55,12 @@ namespace TableCloth.Models.Sponsors
             return result;
         }
 
-        private static List<SponsorInfo> ParseSponsors(ref Utf8JsonReader reader)
+        private static List<ContributorInfo> ParseContributors(ref Utf8JsonReader reader)
         {
-            var sponsors = new List<SponsorInfo>();
+            var contributors = new List<ContributorInfo>();
 
             if (reader.TokenType != JsonTokenType.StartArray)
-                return sponsors;
+                return contributors;
 
             while (reader.Read())
             {
@@ -66,26 +69,25 @@ namespace TableCloth.Models.Sponsors
 
                 if (reader.TokenType == JsonTokenType.StartObject)
                 {
-                    sponsors.Add(SponsorInfo.Parse(ref reader));
+                    contributors.Add(ContributorInfo.Parse(ref reader));
                 }
             }
 
-            return sponsors;
+            return contributors;
         }
     }
 
-    public sealed class SponsorInfo
+    public sealed class ContributorInfo
     {
         public string Login { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string AvatarUrl { get; set; } = string.Empty;
         public string ProfileUrl { get; set; } = string.Empty;
-        public SponsorTier Tier { get; set; } = new SponsorTier();
-        public DateTimeOffset Since { get; set; }
+        public int Contributions { get; set; }
 
-        internal static SponsorInfo Parse(ref Utf8JsonReader reader)
+        internal static ContributorInfo Parse(ref Utf8JsonReader reader)
         {
-            var result = new SponsorInfo();
+            var result = new ContributorInfo();
 
             while (reader.Read())
             {
@@ -111,56 +113,9 @@ namespace TableCloth.Models.Sponsors
                         case "profileUrl":
                             result.ProfileUrl = reader.GetString() ?? string.Empty;
                             break;
-                        case "tier":
-                            result.Tier = SponsorTier.Parse(ref reader);
-                            break;
-                        case "since":
-                            if (reader.TokenType == JsonTokenType.String)
-                                result.Since = reader.GetDateTimeOffset();
-                            break;
-                    }
-                }
-            }
-
-            return result;
-        }
-    }
-
-    public sealed class SponsorTier
-    {
-        public string Name { get; set; } = string.Empty;
-        public int MonthlyPrice { get; set; }
-        public bool IsOneTime { get; set; }
-
-        internal static SponsorTier Parse(ref Utf8JsonReader reader)
-        {
-            var result = new SponsorTier();
-
-            if (reader.TokenType != JsonTokenType.StartObject)
-                return result;
-
-            while (reader.Read())
-            {
-                if (reader.TokenType == JsonTokenType.EndObject)
-                    break;
-
-                if (reader.TokenType == JsonTokenType.PropertyName)
-                {
-                    var propertyName = reader.GetString();
-                    reader.Read();
-
-                    switch (propertyName)
-                    {
-                        case "name":
-                            result.Name = reader.GetString() ?? string.Empty;
-                            break;
-                        case "monthlyPrice":
+                        case "contributions":
                             if (reader.TokenType == JsonTokenType.Number)
-                                result.MonthlyPrice = reader.GetInt32();
-                            break;
-                        case "isOneTime":
-                            if (reader.TokenType == JsonTokenType.True || reader.TokenType == JsonTokenType.False)
-                                result.IsOneTime = reader.GetBoolean();
+                                result.Contributions = reader.GetInt32();
                             break;
                     }
                 }
@@ -170,4 +125,3 @@ namespace TableCloth.Models.Sponsors
         }
     }
 }
-
