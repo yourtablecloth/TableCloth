@@ -299,25 +299,55 @@ namespace Spork.Sandbox
         /// 다크 모드 시작 시 App\Assets\sandbox-dark-wallpaper.jpg 를 바탕 화면 이미지로 적용한다.
         /// 이미지 라이선스/크레디트는 docs/CREDITS.md 참조(Unsplash License, 사진: Ty Rethy).
         /// </summary>
+        /// <remarks>
+        /// 부팅 직후에는 셸(explorer)이 초기화되며 기본 배경을 한 번 덮어쓰는 타이밍 경합이 있어,
+        /// 한 번만 적용하면 곧바로 기본 이미지로 되돌아간다. 그래서 (1) <c>HKCU\Control Panel\Desktop</c>에
+        /// 경로를 먼저 기록해 셸이 이 이미지를 읽도록 하고, (2) 부팅 안정화까지 수 초간 여러 번 재적용해
+        /// 우리 이미지가 마지막으로 적용되도록 한다.
+        /// </remarks>
         private void TryApplyDarkWallpaper()
         {
+            var wallpaperPath = Path.Combine(AppContext.BaseDirectory, "Assets", "sandbox-dark-wallpaper.jpg");
+            if (!File.Exists(wallpaperPath))
+            {
+                _logger.LogDebug("Dark wallpaper not found at {Path}; skipping.", wallpaperPath);
+                return;
+            }
+
+            // 셸이 초기화 시 읽도록 레지스트리에 먼저 기록한다(WallpaperStyle 10 = 채우기).
             try
             {
-                var wallpaperPath = Path.Combine(AppContext.BaseDirectory, "Assets", "sandbox-dark-wallpaper.jpg");
-                if (!File.Exists(wallpaperPath))
-                {
-                    _logger.LogDebug("Dark wallpaper not found at {Path}; skipping.", wallpaperPath);
-                    return;
-                }
-
-                // SPI_SETDESKWALLPAPER 는 JPG 경로를 받아 내부적으로 적용한다.
-                SystemParametersInfoString(SpiSetDeskWallpaper, 0u, wallpaperPath,
-                    SpifUpdateIniFile | SpifSendChange);
+                using var deskKey = Registry.CurrentUser.CreateSubKey(@"Control Panel\Desktop");
+                deskKey.SetValue("Wallpaper", wallpaperPath, RegistryValueKind.String);
+                deskKey.SetValue("WallpaperStyle", "10", RegistryValueKind.String);
+                deskKey.SetValue("TileWallpaper", "0", RegistryValueKind.String);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to apply dark wallpaper.");
+                _logger.LogDebug(ex, "Failed to write wallpaper registry values.");
             }
+
+            // 셸이 기본 배경을 덮어쓰는 부팅 경합을 이겨내기 위해, 안정화될 때까지 몇 차례 재적용한다.
+            _ = Task.Run(async () =>
+            {
+                int[] delaysMs = { 0, 2000, 5000, 10000 };
+                foreach (var delay in delaysMs)
+                {
+                    if (delay > 0)
+                        await Task.Delay(delay).ConfigureAwait(false);
+
+                    try
+                    {
+                        // SPI_SETDESKWALLPAPER 는 JPG 경로를 받아 내부적으로 적용한다.
+                        SystemParametersInfoString(SpiSetDeskWallpaper, 0u, wallpaperPath,
+                            SpifUpdateIniFile | SpifSendChange);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogDebug(ex, "Wallpaper re-apply failed.");
+                    }
+                }
+            });
         }
 
         /// <summary>
