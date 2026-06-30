@@ -1,9 +1,11 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using Spork.Components;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,6 +46,10 @@ namespace Spork.Sandbox
                 _logger.LogDebug("SandboxBootstrap skipped — not running inside Windows Sandbox.");
                 return Task.CompletedTask;
             }
+
+            // 호스트의 라이트/다크 선호를 시작 시점에 게스트 테마로 반영(이슈 #246). 가장 먼저 적용해
+            // 이후 띄워질 앱(은행 사이트 등)과 Spork 자체 UI가 올바른 테마로 시작하도록 한다.
+            TryApplyHostTheme();
 
             // DNS 설정은 fire-and-forget. catalog HTTP 호출 전에 끝나는 게 이상적이지만 그렇지 못해도
             // catalog 로드는 1.5s × 3회 retry 백오프가 있어 자체 회복 가능. UI 진입(splash)을 막지 않는
@@ -211,6 +217,52 @@ namespace Spork.Sandbox
             {
                 var target = Path.Combine(destination, Path.GetFileName(dir));
                 CopyDirectoryRecursive(dir, target);
+            }
+        }
+
+        // --- 이슈 #246: 호스트 라이트/다크 테마를 시작 시점에 게스트로 반영 ---
+        private const int HwndBroadcast = 0xFFFF;
+        private const uint WmSettingChange = 0x001A;
+        private const uint SmtoAbortIfHung = 0x0002;
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern IntPtr SendMessageTimeoutW(
+            IntPtr hWnd, uint msg, IntPtr wParam, string lParam, uint flags, uint timeout, out IntPtr result);
+
+        /// <summary>
+        /// 호스트가 <see cref="SporkAnswers.HostUsesLightTheme"/>로 전달한 라이트/다크 선호를
+        /// 게스트의 <c>HKCU\...\Themes\Personalize</c>에 적용하고, 설정 앱과 동일하게
+        /// <c>WM_SETTINGCHANGE("ImmersiveColorSet")</c>를 브로드캐스트해 이미 떠 있는 셸/앱을 갱신한다.
+        /// 값이 <see langword="null"/>(알 수 없음)이면 샌드박스 기본 테마를 유지한다.
+        /// 한계: RDP에는 호스트 테마 전이를 세션으로 전달할 채널이 없어 "시작 시점 일치"까지만 가능하다.
+        /// </summary>
+        private void TryApplyHostTheme()
+        {
+            try
+            {
+                var answers = LoadSporkAnswers();
+                if (answers?.HostUsesLightTheme is not bool usesLightTheme)
+                    return;
+
+                var mode = usesLightTheme ? 1 : 0;
+                using (var personalizeKey = Registry.CurrentUser.CreateSubKey(
+                    @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+                {
+                    // 설정 앱이 라이트/다크 토글 시 함께 바꾸는 두 값(앱 테마 + 시스템 테마)을 같이 맞춘다.
+                    personalizeKey.SetValue("AppsUseLightTheme", mode, RegistryValueKind.DWord);
+                    personalizeKey.SetValue("SystemUsesLightTheme", mode, RegistryValueKind.DWord);
+                }
+
+                // 이미 떠 있는 explorer/앱이 새 테마를 다시 읽도록 알림(설정 앱과 동일 메커니즘).
+                // 응답 없는 창에서 멈추지 않도록 SendMessageTimeout + ABORTIFHUNG + 1s 타임아웃.
+                SendMessageTimeoutW((IntPtr)HwndBroadcast, WmSettingChange, IntPtr.Zero,
+                    "ImmersiveColorSet", SmtoAbortIfHung, 1000u, out _);
+
+                _logger.LogDebug("Applied host theme to sandbox: {Theme}.", usesLightTheme ? "Light" : "Dark");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to apply host theme to sandbox.");
             }
         }
 

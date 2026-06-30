@@ -1,3 +1,4 @@
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -80,6 +81,8 @@ public sealed class SandboxBuilder(
         var sporkAnswers = new SporkAnswers
         {
             HostUILocale = CultureInfo.CurrentUICulture.Name,
+            // 호스트의 라이트/다크 선호를 함께 실어 보내, 샌드박스 부팅 시 시작 시점 테마를 맞춘다(이슈 #246).
+            HostUsesLightTheme = DetectHostUsesLightTheme(),
         };
         await StageCertPairAsync(appDirectory, tableClothConfiguration.CertPair, sporkAnswers, cancellationToken).ConfigureAwait(false);
 
@@ -98,6 +101,29 @@ public sealed class SandboxBuilder(
         await File.WriteAllTextAsync(wsbFilePath, serializedXml, cancellationToken).ConfigureAwait(false);
 
         return wsbFilePath;
+    }
+
+    /// <summary>
+    /// 호스트의 라이트/다크 선호를 <c>HKCU\...\Themes\Personalize\AppsUseLightTheme</c>에서 읽는다.
+    /// (VisualThemeManager가 자기 UI 테마 판별에 쓰는 것과 동일한 값.) 키가 없거나 읽기에 실패하면
+    /// <see langword="null"/>(알 수 없음)을 반환해 샌드박스 테마를 강제로 바꾸지 않게 한다.
+    /// </summary>
+    private static bool? DetectHostUsesLightTheme()
+    {
+        try
+        {
+            using var personalizeKey = Registry.CurrentUser.OpenSubKey(
+                @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", false);
+
+            if (personalizeKey?.GetValue("AppsUseLightTheme") is int appsUseLightTheme)
+                return appsUseLightTheme > 0;
+
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private static SandboxConfiguration BootstrapSandboxConfiguration(
