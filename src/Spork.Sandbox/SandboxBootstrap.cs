@@ -49,7 +49,7 @@ namespace Spork.Sandbox
 
             // 호스트의 라이트/다크 선호를 시작 시점에 게스트 테마로 반영(이슈 #246). 가장 먼저 적용해
             // 이후 띄워질 앱(은행 사이트 등)과 Spork 자체 UI가 올바른 테마로 시작하도록 한다.
-            // 다크 모드면 지정 배경 이미지도 함께 적용한다.
+            // (다크 배경 이미지는 되돌림 방지를 위해 시작 배치 StartupScript.cmd 에서 정책으로 설정한다.)
             TryApplyHostTheme();
 
             // 호스트가 고대비를 쓰고 있으면 같은 구성표로 맞춘다(베스트에포트).
@@ -233,7 +233,6 @@ namespace Spork.Sandbox
         private static extern IntPtr SendMessageTimeoutW(
             IntPtr hWnd, uint msg, IntPtr wParam, string lParam, uint flags, uint timeout, out IntPtr result);
 
-        private const uint SpiSetDeskWallpaper = 0x0014;
         private const uint SpiSetHighContrast = 0x0043;
         private const uint SpifUpdateIniFile = 0x0001;
         private const uint SpifSendChange = 0x0002;
@@ -247,20 +246,8 @@ namespace Spork.Sandbox
             public IntPtr lpszDefaultScheme;
         }
 
-        // 같은 user32!SystemParametersInfoW 이지만 pvParam 형태가 달라 관리 시그니처를 둘로 나눈다.
-        [DllImport("user32.dll", EntryPoint = "SystemParametersInfoW", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern bool SystemParametersInfoString(uint uiAction, uint uiParam, string pvParam, uint fWinIni);
-
         [DllImport("user32.dll", EntryPoint = "SystemParametersInfoW", SetLastError = true)]
         private static extern bool SystemParametersInfoHighContrast(uint uiAction, uint uiParam, ref HIGHCONTRAST pvParam, uint fWinIni);
-
-        private const uint SpiGetDeskWallpaper = 0x0073;
-
-        [DllImport("user32.dll", EntryPoint = "SystemParametersInfoW", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern bool SystemParametersInfoGet(uint uiAction, uint uiParam, System.Text.StringBuilder pvParam, uint fWinIni);
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern IntPtr FindWindowW(string lpClassName, string lpWindowName);
 
         /// <summary>
         /// 호스트가 <see cref="SporkAnswers.HostUsesLightTheme"/>로 전달한 라이트/다크 선호를
@@ -291,67 +278,12 @@ namespace Spork.Sandbox
                 SendMessageTimeoutW((IntPtr)HwndBroadcast, WmSettingChange, IntPtr.Zero,
                     "ImmersiveColorSet", SmtoAbortIfHung, 1000u, out _);
 
-                // 다크 모드로 시작하면 번들된 배경 이미지를 적용한다(이슈 #246).
-                if (!usesLightTheme)
-                    TryApplyDarkWallpaper();
-
                 _logger.LogDebug("Applied host theme to sandbox: {Theme}.", usesLightTheme ? "Light" : "Dark");
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Failed to apply host theme to sandbox.");
             }
-        }
-
-        /// <summary>
-        /// 다크 모드 시작 시 App\Assets\sandbox-dark-wallpaper.jpg 를 바탕 화면 이미지로 적용한다.
-        /// 이미지 라이선스/크레디트는 docs/CREDITS.md 참조(Unsplash License, 사진: Ty Rethy).
-        /// </summary>
-        /// <remarks>
-        /// 배경 이미지의 "최초 설정"은 시작 배치(StartupScript.cmd)가 셸 초기화 전에
-        /// <c>HKCU\Control Panel\Desktop</c>에 기록해 두므로, 이상적으로는 셸이 처음부터 이 이미지를
-        /// 그린다(추가 적용 불필요). 다만 배치와 셸 초기화의 순서 경합에서 셸이 기본 배경을 먼저 그린
-        /// 경우를 대비해, 셸이 뜬 뒤 <b>현재 배경이 우리 이미지가 아닐 때만 한 번</b> 보정 적용한다
-        /// (이미 우리 이미지면 재적용하지 않아 화면 깜빡임을 만들지 않는다).
-        /// </remarks>
-        private void TryApplyDarkWallpaper()
-        {
-            var wallpaperPath = Path.Combine(AppContext.BaseDirectory, "Assets", "sandbox-dark-wallpaper.jpg");
-            if (!File.Exists(wallpaperPath))
-            {
-                _logger.LogDebug("Dark wallpaper not found at {Path}; skipping.", wallpaperPath);
-                return;
-            }
-
-            _ = Task.Run(async () =>
-            {
-                // 셸(Progman)이 떠서 기본 배경 적용이 끝날 때까지 기다린 뒤 한 번만 확인한다.
-                for (var i = 0; i < 40 && FindWindowW("Progman", null) == IntPtr.Zero; i++)
-                    await Task.Delay(250).ConfigureAwait(false);
-                await Task.Delay(1000).ConfigureAwait(false);
-
-                try
-                {
-                    // 배치가 심어둔 값을 셸이 이미 그렸다면(현재 배경 == 우리 이미지) 아무것도 하지 않는다.
-                    if (string.Equals(GetCurrentWallpaper(), wallpaperPath, StringComparison.OrdinalIgnoreCase))
-                        return;
-
-                    // 셸이 기본 배경을 그린 경우에 한해 딱 한 번 보정 적용한다.
-                    SystemParametersInfoString(SpiSetDeskWallpaper, 0u, wallpaperPath,
-                        SpifUpdateIniFile | SpifSendChange);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogDebug(ex, "Wallpaper corrective apply failed.");
-                }
-            });
-        }
-
-        private static string GetCurrentWallpaper()
-        {
-            var buffer = new System.Text.StringBuilder(260);
-            SystemParametersInfoGet(SpiGetDeskWallpaper, (uint)buffer.Capacity, buffer, 0);
-            return buffer.ToString();
         }
 
         /// <summary>

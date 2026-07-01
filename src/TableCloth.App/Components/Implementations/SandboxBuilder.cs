@@ -333,13 +333,18 @@ setx DOTNET_ROOT ""{SandboxMountPaths.SandboxDesktop}\{HostDotnetLeafName}"" >nu
             : string.Empty;
 
         // 이슈 #246: 다크 모드로 시작할 때 바탕 화면 이미지를 "최초 설정 시점"에 분기해 둔다.
-        // 셸(explorer)이 부팅 시 HKCU\Control Panel\Desktop 을 읽어 배경을 그리므로, 셸 초기화 전인
-        // 이 batch 단계에서 레지스트리에 미리 기록해 두면 셸이 처음부터 이 이미지를 그린다(깜빡임 없이).
-        // 이미지는 staging 으로 App\Assets 에 함께 들어간다(엔트리 프로젝트 Content).
+        // 단순히 HKCU\Control Panel\Desktop 만 써 두면, 로그온 시점에 테마가 기본 배경을 (이 batch보다)
+        // 늦게 다시 적용해 우리 이미지를 덮어써 버린다. 그래서 "데스크톱 배경 강제" 사용자 정책
+        // (Policies\System\Wallpaper)까지 함께 심는다. 이 정책이 있으면 셸이 이 이미지를 적용하고
+        // 테마가 덮어써도 정책이 우선하므로 기본 배경으로 되돌아가지 않는다(재적용 루프 불필요).
+        // 스타일(채우기)은 Control Panel\Desktop\WallpaperStyle 에서 읽는다. 이미지는 staging 으로
+        // App\Assets 에 함께 들어간다(엔트리 프로젝트 Content).
         var darkWallpaperScript = DetectHostUsesLightTheme() == false
             ? $@"reg add ""HKCU\Control Panel\Desktop"" /v Wallpaper /t REG_SZ /d ""{SandboxMountPaths.AppDirectory}\Assets\sandbox-dark-wallpaper.jpg"" /f >nul 2>&1
 reg add ""HKCU\Control Panel\Desktop"" /v WallpaperStyle /t REG_SZ /d ""10"" /f >nul 2>&1
 reg add ""HKCU\Control Panel\Desktop"" /v TileWallpaper /t REG_SZ /d ""0"" /f >nul 2>&1
+reg add ""HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System"" /v Wallpaper /t REG_SZ /d ""{SandboxMountPaths.AppDirectory}\Assets\sandbox-dark-wallpaper.jpg"" /f >nul 2>&1
+reg add ""HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System"" /v WallpaperStyle /t REG_SZ /d ""10"" /f >nul 2>&1
 "
             : string.Empty;
 
