@@ -1211,7 +1211,13 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("Option_UsePrinterCheckboxText", resourceCulture);
             }
         }
-        
+
+        public static string Option_UsePrinterCheckbox_Description {
+            get {
+                return ResourceManager.GetString("Option_UsePrinterCheckbox_Description", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Using video input - be careful about exposing personal information!과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>

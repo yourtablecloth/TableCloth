@@ -120,6 +120,11 @@
                     <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UseMicrophoneCheckboxText}" IsChecked="{Binding EnableMicrophone}" />
                     <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UseWebCameraCheckboxText}" IsChecked="{Binding EnableWebCam}" />
                     <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UsePrinterCheckboxText}" IsChecked="{Binding EnablePrinters}" />
+                    <!-- '프린터 연결'을 켜면 샌드박스 안에서 프린터 소프트웨어(모두의 프린터 등)가 준비된다고
+                         오해하기 쉬워, 호스트 프린터 공유와 가상 프린터 앱 설치의 차이를 항상 보이도록 안내한다(이슈 #242). -->
+                    <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               Text="{x:Static res:UIStringResources.Option_UsePrinterCheckbox_Description}" />
                 </StackPanel>
             </TabItem>
 

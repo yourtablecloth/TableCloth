@@ -437,6 +437,9 @@
   <data name="Option_UsePrinterCheckboxText" xml:space="preserve">
     <value>프린터 같이 사용하기</value>
   </data>
+  <data name="Option_UsePrinterCheckbox_Description" xml:space="preserve">
+    <value>이 옵션은 호스트 PC에 연결된 프린터를 샌드박스에서 함께 쓰도록 공유합니다. '모두의 프린터' 같은 가상 프린터 앱을 샌드박스에 설치하는 것과는 다릅니다. 그런 프린터 소프트웨어는 샌드박스 안에서 직접 내려받아 설치해야 하며, 설치 전 최신 Microsoft Visual C++ 재배포판이 필요할 수 있습니다.</value>
+  </data>
   <data name="Option_UseWebCameraCheckboxText" xml:space="preserve">
     <value>비디오 입력 사용하기 - 개인 정보 노출에 주의하세요!</value>
   </data>

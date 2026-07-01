@@ -437,6 +437,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Option_UsePrinterCheckboxText" xml:space="preserve">
     <value>Using with printers</value>
   </data>
+  <data name="Option_UsePrinterCheckbox_Description" xml:space="preserve">
+    <value>This shares the printers connected to your host PC so the sandbox can use them. It is not the same as installing a virtual printer app (such as 'Everyone's Printer') inside the sandbox. Such printer software must be downloaded and installed inside the sandbox, and may require the latest Microsoft Visual C++ Redistributable first.</value>
+  </data>
   <data name="Option_UseWebCameraCheckboxText" xml:space="preserve">
     <value>Using video input - be careful about exposing personal information!</value>
   </data>
