@@ -15,10 +15,6 @@ namespace TableCloth.Models
             bool? enablePrinters = default,
             string certPrivateKeyPath = default,
             string certPublicKeyPath = default,
-            bool? installEveryonesPrinter = default,
-            bool? installAdobeReader = default,
-            bool? installHancomOfficeViewer = default,
-            bool? installRaiDrive = default,
             bool showCommandLineHelp = default,
             bool showVersionHelp = default,
             bool dryRun = default,
@@ -32,10 +28,6 @@ namespace TableCloth.Models
             EnablePrinters = enablePrinters;
             CertPrivateKeyPath = certPrivateKeyPath;
             CertPublicKeyPath = certPublicKeyPath;
-            InstallEveryonesPrinter = installEveryonesPrinter;
-            InstallAdobeReader = installAdobeReader;
-            InstallHancomOfficeViewer = installHancomOfficeViewer;
-            InstallRaiDrive = installRaiDrive;
             ShowCommandLineHelp = showCommandLineHelp;
             ShowVersionHelp = showVersionHelp;
             DryRun = dryRun;
@@ -54,14 +46,6 @@ namespace TableCloth.Models
         public string CertPrivateKeyPath { get; private set; } = null;
 
         public string CertPublicKeyPath { get; private set; } = null;
-
-        public bool? InstallEveryonesPrinter { get; private set; }
-
-        public bool? InstallAdobeReader { get; private set; }
-
-        public bool? InstallHancomOfficeViewer { get; private set; }
-
-        public bool? InstallRaiDrive { get; private set; }
 
         public bool ShowCommandLineHelp { get; private set; }
 
@@ -103,15 +87,6 @@ namespace TableCloth.Models
                     options.Add(ConstantStrings.TableCloth_Switch_CertPrivateKey);
                     options.Add(CertPrivateKeyPath);
                 }
-
-                if (InstallEveryonesPrinter.HasValue && InstallEveryonesPrinter.Value)
-                    options.Add(ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter);
-                if (InstallAdobeReader.HasValue && InstallAdobeReader.Value)
-                    options.Add(ConstantStrings.TableCloth_Switch_InstallAdobeReader);
-                if (InstallHancomOfficeViewer.HasValue && InstallHancomOfficeViewer.Value)
-                    options.Add(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer);
-                if (InstallRaiDrive.HasValue && InstallRaiDrive.Value)
-                    options.Add(ConstantStrings.TableCloth_Switch_InstallRaiDrive);
 
                 if (DryRun)
                     options.Add(ConstantStrings.TableCloth_Switch_DryRun);

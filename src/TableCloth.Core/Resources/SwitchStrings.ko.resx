@@ -145,18 +145,6 @@
   <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
     <value>이 도움말을 표시합니다.</value>
   </data>
-  <data name="TableCloth_Switch_InstallAdobeReader_Help" xml:space="preserve">
-    <value>Adobe Reader 설치를 샌드박스 시작 후 실행합니다.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallEveryonesPrinter_Help" xml:space="preserve">
-    <value>모두의 프린터 설치를 샌드박스 시작 후 실행합니다.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallHancomOfficeViewer_Help" xml:space="preserve">
-    <value>한컴오피스 뷰어 설치를 샌드박스 시작 후 실행합니다.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallRaiDrive_Help" xml:space="preserve">
-    <value>RaiDrive 설치를 샌드박스 시작 후 실행합니다.</value>
-  </data>
   <data name="TableCloth_Switch_OptionList_Begin" xml:space="preserve">
     <value>옵션: </value>
   </data>

@@ -31,26 +31,6 @@ namespace TableCloth.Models.Configuration
         public bool EnablePrinters { get; set; }
 
         /// <summary>
-        /// 모두의 프린터 설치를 샌드박스 시작 후 자동 실행할 지 여부입니다.
-        /// </summary>
-        public bool InstallEveryonesPrinter { get; set; }
-
-        /// <summary>
-        /// Adobe Reader 설치를 샌드박스 시작 후 자동 실행할 지 여부입니다.
-        /// </summary>
-        public bool InstallAdobeReader { get; set; }
-
-        /// <summary>
-        /// 한컴오피스 뷰어 설치를 샌드박스 시작 후 자동 실행할 지 여부입니다.
-        /// </summary>
-        public bool InstallHancomOfficeViewer { get; set; }
-
-        /// <summary>
-        /// RaiDrive 설치를 샌드박스 시작 후 자동 실행할 지 여부입니다.
-        /// </summary>
-        public bool InstallRaiDrive { get; set; }
-
-        /// <summary>
         /// 같이 설치하는 공통 소프트웨어에 관한 정보입니다.
         /// </summary>
         public ICollection<CatalogCompanion> Companions { get; set; } = new List<CatalogCompanion>();

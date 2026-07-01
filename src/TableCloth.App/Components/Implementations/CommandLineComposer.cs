@@ -28,14 +28,6 @@ public sealed class CommandLineComposer(
             options.Add(ConstantStrings.TableCloth_Switch_EnableCamera);
         if (viewModel.EnablePrinters)
             options.Add(ConstantStrings.TableCloth_Switch_EnablePrinter);
-        if (viewModel.InstallEveryonesPrinter)
-            options.Add(ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter);
-        if (viewModel.InstallAdobeReader)
-            options.Add(ConstantStrings.TableCloth_Switch_InstallAdobeReader);
-        if (viewModel.InstallHancomOfficeViewer)
-            options.Add(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer);
-        if (viewModel.InstallRaiDrive)
-            options.Add(ConstantStrings.TableCloth_Switch_InstallRaiDrive);
         if (viewModel.MapNpkiCert)
             options.Add(ConstantStrings.TableCloth_Switch_EnableCert);
 

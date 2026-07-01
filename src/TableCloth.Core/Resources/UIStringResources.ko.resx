@@ -404,18 +404,6 @@
   <data name="Option_Config" xml:space="preserve">
     <value>사후 설정</value>
   </data>
-  <data name="Option_InstallAdobeReader" xml:space="preserve">
-    <value>Adobe Reader 설치하기</value>
-  </data>
-  <data name="Option_InstallEveryonesPrinter" xml:space="preserve">
-    <value>모두의 프린터 설치하기</value>
-  </data>
-  <data name="Option_InstallHancomOfficeViewer" xml:space="preserve">
-    <value>한컴오피스 뷰어 설치하기</value>
-  </data>
-  <data name="Option_InstallRaiDrive" xml:space="preserve">
-    <value>RaiDrive 설치하기</value>
-  </data>
   <data name="Option_Prerequisites" xml:space="preserve">
     <value>사전 작업</value>
   </data>
@@ -571,18 +559,6 @@
   </data>
   <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
     <value>지금 보고 있는 도움말을 표시합니다.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallAdobeReader_Help" xml:space="preserve">
-    <value>Adobe Reader 설치를 시도합니다.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallEveryonesPrinter_Help" xml:space="preserve">
-    <value>모두의 프린터 설치를 시도합니다.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallHancomOfficeViewer_Help" xml:space="preserve">
-    <value>한컴오피스 뷰어 설치를 시도합니다.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallRaiDrive_Help" xml:space="preserve">
-    <value>RaiDrive 설치를 시도합니다.</value>
   </data>
   <data name="TableCloth_Switch_SimulateFailure_Help" xml:space="preserve">
     <value>임의의 확률로 오류 발생을 시뮬레이션합니다. 이 옵션은 개발자용 기능입니다.</value>

@@ -1114,42 +1114,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Install Adobe Reader과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Option_InstallAdobeReader {
-            get {
-                return ResourceManager.GetString("Option_InstallAdobeReader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Install Everyones Printer과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Option_InstallEveryonesPrinter {
-            get {
-                return ResourceManager.GetString("Option_InstallEveryonesPrinter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Install Hancom Office Viewer과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Option_InstallHancomOfficeViewer {
-            get {
-                return ResourceManager.GetString("Option_InstallHancomOfficeViewer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Install RaiDrive과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Option_InstallRaiDrive {
-            get {
-                return ResourceManager.GetString("Option_InstallRaiDrive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Prerequisites과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string Option_Prerequisites {
@@ -1720,42 +1684,6 @@ namespace TableCloth.Resources {
         public static string TableCloth_Switch_Help_Help {
             get {
                 return ResourceManager.GetString("TableCloth_Switch_Help_Help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Attempt to install Adobe Reader.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallAdobeReader_Help {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallAdobeReader_Help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Attempt to install Everyones&apos; Printer.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallEveryonesPrinter_Help {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallEveryonesPrinter_Help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Attempt to install HancomOffice Viewer.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallHancomOfficeViewer_Help {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallHancomOfficeViewer_Help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Attempt to install RaiDrive.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallRaiDrive_Help {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallRaiDrive_Help", resourceCulture);
             }
         }
         

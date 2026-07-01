@@ -24,10 +24,6 @@ public sealed class ConfigurationComposer(
             EnableMicrophone = viewModel.EnableMicrophone,
             EnableWebCam = viewModel.EnableWebCam,
             EnablePrinters = viewModel.EnablePrinters,
-            InstallEveryonesPrinter = viewModel.InstallEveryonesPrinter,
-            InstallAdobeReader = viewModel.InstallAdobeReader,
-            InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer,
-            InstallRaiDrive = viewModel.InstallRaiDrive,
             EnableSandboxGpuAcceleration = viewModel.EnableSandboxGpuAcceleration,
             Companions = Array.Empty<CatalogCompanion>(),
             Services = viewModel.SelectedServices.ToList(),
@@ -64,10 +60,6 @@ public sealed class ConfigurationComposer(
             EnableWebCam = argumentModel.EnableWebCam ?? default,
             EnablePrinters = argumentModel.EnablePrinters ?? default,
             CertPair = certPair,
-            InstallEveryonesPrinter = argumentModel.InstallEveryonesPrinter ?? default,
-            InstallAdobeReader = argumentModel.InstallAdobeReader ?? default,
-            InstallHancomOfficeViewer = argumentModel.InstallHancomOfficeViewer ?? default,
-            InstallRaiDrive = argumentModel.InstallRaiDrive ?? default,
             MappedFolders = argumentModel.MappedFolders?.ToList() ?? new(),
         };
     }

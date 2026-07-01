@@ -145,18 +145,6 @@
   <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
     <value>Show this help.</value>
   </data>
-  <data name="TableCloth_Switch_InstallAdobeReader_Help" xml:space="preserve">
-    <value>Run the Adobe Reader installation after starting the sandbox.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallEveryonesPrinter_Help" xml:space="preserve">
-    <value>Run the Everyone's Printer installation after starting the sandbox.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallHancomOfficeViewer_Help" xml:space="preserve">
-    <value>Run the Hancom Office Viewer installation after starting the sandbox.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallRaiDrive_Help" xml:space="preserve">
-    <value>Run the RaiDrive installation after starting the sandbox.</value>
-  </data>
   <data name="TableCloth_Switch_OptionList_Begin" xml:space="preserve">
     <value>Options: </value>
   </data>

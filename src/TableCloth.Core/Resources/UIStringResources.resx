@@ -404,18 +404,6 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Option_Config" xml:space="preserve">
     <value>Post Config</value>
   </data>
-  <data name="Option_InstallAdobeReader" xml:space="preserve">
-    <value>Install Adobe Reader</value>
-  </data>
-  <data name="Option_InstallEveryonesPrinter" xml:space="preserve">
-    <value>Install Everyones Printer</value>
-  </data>
-  <data name="Option_InstallHancomOfficeViewer" xml:space="preserve">
-    <value>Install Hancom Office Viewer</value>
-  </data>
-  <data name="Option_InstallRaiDrive" xml:space="preserve">
-    <value>Install RaiDrive</value>
-  </data>
   <data name="Option_Prerequisites" xml:space="preserve">
     <value>Prerequisites</value>
   </data>
@@ -572,18 +560,6 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   </data>
   <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
     <value>Displays the help you're viewing.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallAdobeReader_Help" xml:space="preserve">
-    <value>Attempt to install Adobe Reader.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallEveryonesPrinter_Help" xml:space="preserve">
-    <value>Attempt to install Everyones' Printer.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallHancomOfficeViewer_Help" xml:space="preserve">
-    <value>Attempt to install HancomOffice Viewer.</value>
-  </data>
-  <data name="TableCloth_Switch_InstallRaiDrive_Help" xml:space="preserve">
-    <value>Attempt to install RaiDrive.</value>
   </data>
   <data name="TableCloth_Switch_SimulateFailure_Help" xml:space="preserve">
     <value>Simulates the occurrence of an error with random probability. This option is a developer feature.</value>

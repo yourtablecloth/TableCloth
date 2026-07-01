@@ -242,22 +242,6 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="30" />
-                        <RowDefinition Height="30" />
-                        <RowDefinition Height="30" />
-                        <RowDefinition Height="30" />
-                    </Grid.RowDefinitions>
-                    <CheckBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_InstallEveryonesPrinter}" IsChecked="{Binding Path='InstallEveryonesPrinter'}" />
-                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_InstallAdobeReader}" IsChecked="{Binding Path='InstallAdobeReader'}" />
-                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_InstallHancomOfficeViewer}" IsChecked="{Binding Path='InstallHancomOfficeViewer'}" />
-                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_InstallRaiDrive}" IsChecked="{Binding Path='InstallRaiDrive'}" />
-                </Grid>
-                <Grid Margin="8">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="120" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
                         <RowDefinition Height="50" />
                         <RowDefinition Height="30" />
                     </Grid.RowDefinitions>

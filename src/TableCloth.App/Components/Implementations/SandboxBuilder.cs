@@ -277,18 +277,6 @@ public sealed class SandboxBuilder(
 
         var switches = new List<string>();
 
-        if (tableClothConfiguration.InstallEveryonesPrinter)
-            switches.Add(ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter);
-
-        if (tableClothConfiguration.InstallAdobeReader)
-            switches.Add(ConstantStrings.TableCloth_Switch_InstallAdobeReader);
-
-        if (tableClothConfiguration.InstallHancomOfficeViewer)
-            switches.Add(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer);
-
-        if (tableClothConfiguration.InstallRaiDrive)
-            switches.Add(ConstantStrings.TableCloth_Switch_InstallRaiDrive);
-
         var serviceIdList = (tableClothConfiguration.Services ?? Enumerable.Empty<CatalogInternetService>())
             .Select(x => x.Id).Distinct();
         // 샌드박스 안에서는 호스트 설치 폴더가 그대로 노출된 Desktop\App\TableCloth.exe를 'spork' verb로 실행.

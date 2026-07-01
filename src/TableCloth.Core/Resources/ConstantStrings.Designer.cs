@@ -196,42 +196,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   --install-adobe-reader과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallAdobeReader {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallAdobeReader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   --install-everyones-printer과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallEveryonesPrinter {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallEveryonesPrinter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   --install-hancom-office-viewer과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallHancomOfficeViewer {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallHancomOfficeViewer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   --install-rai-drive과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallRaiDrive {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallRaiDrive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   --과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string TableCloth_Switch_Prefix {

@@ -96,10 +96,6 @@ public partial class OptionsWindowViewModel : ObservableObject
             EnableMicrophone = currentConfig.UseAudioRedirection;
             EnableWebCam = currentConfig.UseVideoRedirection;
             EnablePrinters = currentConfig.UsePrinterRedirection;
-            InstallEveryonesPrinter = currentConfig.InstallEveryonesPrinter;
-            InstallAdobeReader = currentConfig.InstallAdobeReader;
-            InstallHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
-            InstallRaiDrive = currentConfig.InstallRaiDrive;
             EnableLogAutoCollecting = currentConfig.UseLogCollection;
             ShareNpkiFolder = currentConfig.ShareNpkiFolder;
             EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration;
@@ -317,18 +313,6 @@ public partial class OptionsWindowViewModel : ObservableObject
     private bool _enablePrinters;
 
     [ObservableProperty]
-    private bool _installEveryonesPrinter;
-
-    [ObservableProperty]
-    private bool _installAdobeReader;
-
-    [ObservableProperty]
-    private bool _installHancomOfficeViewer;
-
-    [ObservableProperty]
-    private bool _installRaiDrive;
-
-    [ObservableProperty]
     private bool _enableLogAutoCollecting;
 
     [ObservableProperty]
@@ -411,22 +395,6 @@ public partial class OptionsWindowViewModel : ObservableObject
 
             case nameof(EnablePrinters):
                 currentConfig.UsePrinterRedirection = viewModel.EnablePrinters;
-                break;
-
-            case nameof(InstallEveryonesPrinter):
-                currentConfig.InstallEveryonesPrinter = viewModel.InstallEveryonesPrinter;
-                break;
-
-            case nameof(InstallAdobeReader):
-                currentConfig.InstallAdobeReader = viewModel.InstallAdobeReader;
-                break;
-
-            case nameof(InstallHancomOfficeViewer):
-                currentConfig.InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer;
-                break;
-
-            case nameof(InstallRaiDrive):
-                currentConfig.InstallRaiDrive = viewModel.InstallRaiDrive;
                 break;
 
             case nameof(EnableLogAutoCollecting):

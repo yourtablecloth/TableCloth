@@ -177,22 +177,6 @@
     <value>--ignore--</value>
     <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
-  <data name="TableCloth_Switch_InstallAdobeReader" xml:space="preserve">
-    <value>--install-adobe-reader</value>
-    <comment>(Important) Please do not translate this item without intend.</comment>
-  </data>
-  <data name="TableCloth_Switch_InstallEveryonesPrinter" xml:space="preserve">
-    <value>--install-everyones-printer</value>
-    <comment>(Important) Please do not translate this item without intend.</comment>
-  </data>
-  <data name="TableCloth_Switch_InstallHancomOfficeViewer" xml:space="preserve">
-    <value>--install-hancom-office-viewer</value>
-    <comment>(Important) Please do not translate this item without intend.</comment>
-  </data>
-  <data name="TableCloth_Switch_InstallRaiDrive" xml:space="preserve">
-    <value>--install-rai-drive</value>
-    <comment>(Important) Please do not translate this item without intend.</comment>
-  </data>
   <data name="TableCloth_Switch_Prefix" xml:space="preserve">
     <value>--</value>
     <comment>(Important) Please do not translate this item without intend.</comment>

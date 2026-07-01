@@ -20,18 +20,6 @@ namespace Spork.Components.Implementations
             _certPublicKeyOption = new Option<string>(ConstantStrings.TableCloth_Switch_CertPublicKey)
             { Required = false, Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_CertPublicKey_Help, };
 
-            _installEveryonesPrinterOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter)
-            { Required = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallEveryonesPrinter_Help, };
-
-            _installAdobeReaderOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallAdobeReader)
-            { Required = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallAdobeReader_Help, };
-
-            _installHancomOfficeViewerOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer)
-            { Required = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallHancomOfficeViewer_Help, };
-
-            _installRaiDriveOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallRaiDrive)
-            { Required = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallRaiDrive_Help, };
-
             _dryRunOption = new Option<bool>(ConstantStrings.TableCloth_Switch_DryRun)
             { Required = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_DryRun_Help, };
 
@@ -45,10 +33,6 @@ namespace Spork.Components.Implementations
             {
                 _certPrivateKeyOption,
                 _certPublicKeyOption,
-                _installEveryonesPrinterOption,
-                _installAdobeReaderOption,
-                _installHancomOfficeViewerOption,
-                _installRaiDriveOption,
                 _dryRunOption,
                 _simulateFailureOption,
                 _siteIdListArgument,
@@ -65,10 +49,6 @@ namespace Spork.Components.Implementations
 
         private readonly Option<string> _certPrivateKeyOption;
         private readonly Option<string> _certPublicKeyOption;
-        private readonly Option<bool?> _installEveryonesPrinterOption;
-        private readonly Option<bool?> _installAdobeReaderOption;
-        private readonly Option<bool?> _installHancomOfficeViewerOption;
-        private readonly Option<bool?> _installRaiDriveOption;
         private readonly Option<bool> _dryRunOption;
         private readonly Option<bool> _simulateFailureOption;
         private readonly Argument<string[]> _siteIdListArgument;
@@ -107,10 +87,6 @@ namespace Spork.Components.Implementations
                 enablePrinters: default,
                 certPrivateKeyPath: parseResult.GetValue(_certPrivateKeyOption),
                 certPublicKeyPath: parseResult.GetValue(_certPublicKeyOption),
-                installEveryonesPrinter: parseResult.GetValue(_installEveryonesPrinterOption),
-                installAdobeReader: parseResult.GetValue(_installAdobeReaderOption),
-                installHancomOfficeViewer: parseResult.GetValue(_installHancomOfficeViewerOption),
-                installRaiDrive: parseResult.GetValue(_installRaiDriveOption),
                 showCommandLineHelp: parseResult.GetResult(_helpOption) != null,
                 showVersionHelp: parseResult.GetResult(_versionOption) != null,
                 dryRun: parseResult.GetValue(_dryRunOption),

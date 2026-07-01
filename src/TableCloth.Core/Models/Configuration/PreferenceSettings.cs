@@ -30,26 +30,6 @@ namespace TableCloth.Models.Configuration
         public bool UsePrinterRedirection { get; set; } = false;
 
         /// <summary>
-        /// 모두의 프린터 설치를 샌드박스 시작 직후 실행할지 여부를 나타냅니다.
-        /// </summary>
-        public bool InstallEveryonesPrinter { get; set; } = true;
-
-        /// <summary>
-        /// Adobe Reader 설치를 샌드박스 시작 직후 실행할지 여부를 나타냅니다.
-        /// </summary>
-        public bool InstallAdobeReader { get; set; } = true;
-
-        /// <summary>
-        /// 한컴오피스 뷰어 설치를 샌드박스 시작 직후 실행할지 여부를 나타냅니다.
-        /// </summary>
-        public bool InstallHancomOfficeViewer { get; set; } = true;
-
-        /// <summary>
-        /// RaiDrive 설치를 샌드박스 시작 직후 실행할지 여부를 나타냅니다.
-        /// </summary>
-        public bool InstallRaiDrive { get; set; } = true;
-
-        /// <summary>
         /// 로그 수집 기능을 사용할지 여부를 나타냅니다.
         /// </summary>
         public bool UseLogCollection { get; set; } = true;

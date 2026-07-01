@@ -142,42 +142,6 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
-        ///   Run the Adobe Reader installation after starting the sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallAdobeReader_Help {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallAdobeReader_Help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Run the Everyone&apos;s Printer installation after starting the sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallEveryonesPrinter_Help {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallEveryonesPrinter_Help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Run the Hancom Office Viewer installation after starting the sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallHancomOfficeViewer_Help {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallHancomOfficeViewer_Help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Run the RaiDrive installation after starting the sandbox.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string TableCloth_Switch_InstallRaiDrive_Help {
-            get {
-                return ResourceManager.GetString("TableCloth_Switch_InstallRaiDrive_Help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   &lt;Option&gt;과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string TableCloth_Switch_Option_Arg {

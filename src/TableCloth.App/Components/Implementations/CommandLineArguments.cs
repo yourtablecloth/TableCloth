@@ -27,18 +27,6 @@ public sealed class CommandLineArguments : ICommandLineArguments
         _certPublicKeyOption = new Option<string>(ConstantStrings.TableCloth_Switch_CertPublicKey)
         { Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_CertPublicKey_Help, };
 
-        _installEveryonesPrinterOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallEveryonesPrinter)
-        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallEveryonesPrinter_Help, };
-
-        _installAdobeReaderOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallAdobeReader)
-        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallAdobeReader_Help, };
-
-        _installHancomOfficeViewerOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallHancomOfficeViewer)
-        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallHancomOfficeViewer_Help, };
-
-        _installRaiDriveOption = new Option<bool?>(ConstantStrings.TableCloth_Switch_InstallRaiDrive)
-        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_InstallRaiDrive_Help, };
-
         _dryRunOption = new Option<bool>(ConstantStrings.TableCloth_Switch_DryRun)
         { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_DryRun_Help, };
 
@@ -55,10 +43,6 @@ public sealed class CommandLineArguments : ICommandLineArguments
             _enablePrinterOption,
             _certPrivateKeyOption,
             _certPublicKeyOption,
-            _installEveryonesPrinterOption,
-            _installAdobeReaderOption,
-            _installHancomOfficeViewerOption,
-            _installRaiDriveOption,
             _dryRunOption,
             _simulateFailureOption,
             _siteIdListArgument,
@@ -80,10 +64,6 @@ public sealed class CommandLineArguments : ICommandLineArguments
     private readonly Option<bool?> _enablePrinterOption;
     private readonly Option<string> _certPrivateKeyOption;
     private readonly Option<string> _certPublicKeyOption;
-    private readonly Option<bool?> _installEveryonesPrinterOption;
-    private readonly Option<bool?> _installAdobeReaderOption;
-    private readonly Option<bool?> _installHancomOfficeViewerOption;
-    private readonly Option<bool?> _installRaiDriveOption;
     private readonly Option<bool> _dryRunOption;
     private readonly Option<bool> _simulateFailureOption;
     private readonly Argument<string[]> _siteIdListArgument;
@@ -130,10 +110,6 @@ public sealed class CommandLineArguments : ICommandLineArguments
             enablePrinters: parseResult.GetValue(_enablePrinterOption),
             certPrivateKeyPath: parseResult.GetValue(_certPrivateKeyOption),
             certPublicKeyPath: parseResult.GetValue(_certPublicKeyOption),
-            installEveryonesPrinter: parseResult.GetValue(_installEveryonesPrinterOption),
-            installAdobeReader: parseResult.GetValue(_installAdobeReaderOption),
-            installHancomOfficeViewer: parseResult.GetValue(_installHancomOfficeViewerOption),
-            installRaiDrive: parseResult.GetValue(_installRaiDriveOption),
             showCommandLineHelp: parseResult.GetResult(_helpOption) != null,
             showVersionHelp: parseResult.GetResult(_versionOption) != null,
             dryRun: parseResult.GetValue(_dryRunOption),

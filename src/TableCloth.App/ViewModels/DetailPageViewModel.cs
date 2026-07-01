@@ -86,10 +86,6 @@ public partial class DetailPageViewModel : ObservableObject
         EnableMicrophone = currentConfig.UseAudioRedirection;
         EnableWebCam = currentConfig.UseVideoRedirection;
         EnablePrinters = currentConfig.UsePrinterRedirection;
-        InstallEveryonesPrinter = currentConfig.InstallEveryonesPrinter;
-        InstallAdobeReader = currentConfig.InstallAdobeReader;
-        InstallHancomOfficeViewer = currentConfig.InstallHancomOfficeViewer;
-        InstallRaiDrive = currentConfig.InstallRaiDrive;
         EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration;
         LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
@@ -228,18 +224,6 @@ public partial class DetailPageViewModel : ObservableObject
     private bool _enablePrinters;
 
     [ObservableProperty]
-    private bool _installEveryonesPrinter;
-
-    [ObservableProperty]
-    private bool _installAdobeReader;
-
-    [ObservableProperty]
-    private bool _installHancomOfficeViewer;
-
-    [ObservableProperty]
-    private bool _installRaiDrive;
-
-    [ObservableProperty]
     private bool _enableSandboxGpuAcceleration;
 
     [ObservableProperty]
@@ -325,22 +309,6 @@ public partial class DetailPageViewModel : ObservableObject
 
             case nameof(DetailPageViewModel.EnablePrinters):
                 currentConfig.UsePrinterRedirection = viewModel.EnablePrinters;
-                break;
-
-            case nameof(DetailPageViewModel.InstallEveryonesPrinter):
-                currentConfig.InstallEveryonesPrinter = viewModel.InstallEveryonesPrinter;
-                break;
-
-            case nameof(DetailPageViewModel.InstallAdobeReader):
-                currentConfig.InstallAdobeReader = viewModel.InstallAdobeReader;
-                break;
-
-            case nameof(DetailPageViewModel.InstallHancomOfficeViewer):
-                currentConfig.InstallHancomOfficeViewer = viewModel.InstallHancomOfficeViewer;
-                break;
-
-            case nameof(DetailPageViewModel.InstallRaiDrive):
-                currentConfig.InstallRaiDrive = viewModel.InstallRaiDrive;
                 break;
 
             case nameof(DetailPageViewModel.EnableSandboxGpuAcceleration):

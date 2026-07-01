@@ -5,7 +5,7 @@ namespace TableCloth.Test
     [TestClass]
     public sealed class PreferenceSettingsTests
     {
-        #region ±âº»°ª Å×½ºÆ®
+        #region ï¿½âº»ï¿½ï¿½ ï¿½×½ï¿½Æ®
 
         [TestMethod]
         public void UseAudioRedirection_DefaultValue_ShouldBeFalse()
@@ -26,34 +26,6 @@ namespace TableCloth.Test
         {
             var settings = new PreferenceSettings();
             Assert.IsFalse(settings.UsePrinterRedirection);
-        }
-
-        [TestMethod]
-        public void InstallEveryonesPrinter_DefaultValue_ShouldBeTrue()
-        {
-            var settings = new PreferenceSettings();
-            Assert.IsTrue(settings.InstallEveryonesPrinter);
-        }
-
-        [TestMethod]
-        public void InstallAdobeReader_DefaultValue_ShouldBeTrue()
-        {
-            var settings = new PreferenceSettings();
-            Assert.IsTrue(settings.InstallAdobeReader);
-        }
-
-        [TestMethod]
-        public void InstallHancomOfficeViewer_DefaultValue_ShouldBeTrue()
-        {
-            var settings = new PreferenceSettings();
-            Assert.IsTrue(settings.InstallHancomOfficeViewer);
-        }
-
-        [TestMethod]
-        public void InstallRaiDrive_DefaultValue_ShouldBeTrue()
-        {
-            var settings = new PreferenceSettings();
-            Assert.IsTrue(settings.InstallRaiDrive);
         }
 
         [TestMethod]
@@ -108,7 +80,7 @@ namespace TableCloth.Test
 
         #endregion
 
-        #region ¼Ó¼º ¼³Á¤ Å×½ºÆ®
+        #region ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×½ï¿½Æ®
 
         [TestMethod]
         public void AllProperties_CanBeSet()
@@ -119,10 +91,6 @@ namespace TableCloth.Test
                 UseAudioRedirection = true,
                 UseVideoRedirection = true,
                 UsePrinterRedirection = true,
-                InstallEveryonesPrinter = false,
-                InstallAdobeReader = false,
-                InstallHancomOfficeViewer = false,
-                InstallRaiDrive = false,
                 UseLogCollection = false,
                 LastDisclaimerAgreedTime = now,
                 ShowFavoritesOnly = true,
@@ -134,10 +102,6 @@ namespace TableCloth.Test
             Assert.IsTrue(settings.UseAudioRedirection);
             Assert.IsTrue(settings.UseVideoRedirection);
             Assert.IsTrue(settings.UsePrinterRedirection);
-            Assert.IsFalse(settings.InstallEveryonesPrinter);
-            Assert.IsFalse(settings.InstallAdobeReader);
-            Assert.IsFalse(settings.InstallHancomOfficeViewer);
-            Assert.IsFalse(settings.InstallRaiDrive);
             Assert.IsFalse(settings.UseLogCollection);
             Assert.AreEqual(now, settings.LastDisclaimerAgreedTime);
             Assert.IsTrue(settings.ShowFavoritesOnly);
