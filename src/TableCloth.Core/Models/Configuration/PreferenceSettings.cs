@@ -94,7 +94,7 @@ namespace TableCloth.Models.Configuration
         /// 샌드박스 시작 시 항상 읽기-쓰기로 마운트됩니다.
         /// null 또는 빈 문자열이면 호스트의 기본 Data 경로를 사용합니다.
         /// </summary>
-        public string? DataDirectoryHostPath { get; set; } = null;
+        public string DataDirectoryHostPath { get; set; } = null;
 
         /// <summary>
         /// 호스트의 공동인증서 폴더(<c>%USERPROFILE%\AppData\LocalLow\NPKI</c>)를 샌드박스로 공유할지 여부입니다.
@@ -151,7 +151,7 @@ namespace TableCloth.Models.Configuration
         /// <summary>
         /// 샌드박스 내의 폴더 경로입니다. (선택사항)
         /// </summary>
-        public string? SandboxFolder { get; set; } = null;
+        public string SandboxFolder { get; set; } = null;
 
         /// <summary>
         /// 읽기 전용 여부입니다.

@@ -147,7 +147,7 @@ public sealed class SandboxBuilder(
     /// 호스트의 고대비 상태를 <c>SPI_GETHIGHCONTRAST</c>로 읽는다. 켜져 있으면 구성표 이름
     /// (예: "고대비 검정")을 반환하고, 꺼져 있거나 읽기에 실패하면 <see langword="null"/>을 반환한다.
     /// </summary>
-    private static string DetectHostHighContrastScheme()
+    private static string? DetectHostHighContrastScheme()
     {
         var buffer = Marshal.AllocHGlobal(256 * sizeof(char));
         try

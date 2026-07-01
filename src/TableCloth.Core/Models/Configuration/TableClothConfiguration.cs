@@ -71,7 +71,7 @@ namespace TableCloth.Models.Configuration
         /// hostfxr.dll이 동봉된 경우)에선 <see langword="null"/>로 남는다. 값이 있으면 StartupScript가
         /// 샌드박스 내부에 DOTNET_ROOT 환경 변수를 설정한다.
         /// </summary>
-        public string? HostDotnetRootPath { get; set; } = null;
+        public string HostDotnetRootPath { get; set; } = null;
 
         /// <summary>
         /// 샌드박스에 매핑할 사용자 지정 폴더 목록입니다.
