@@ -122,12 +122,12 @@ if (alreadyExists)
 
 // --- 5) 설치 관리자 자산 URL 선택 (x64 / arm64) ---
 var assets = release.assets ?? Array.Empty<GhAsset>();
-var x64Url = FindInstaller(assets, "x64");
-var arm64Url = FindInstaller(assets, "arm64");
+var x64Url = FindInstaller(assets, version, "x64");
+var arm64Url = FindInstaller(assets, version, "arm64");
 
 if (x64Url is null || arm64Url is null)
 {
-    LogError("릴리스 자산에서 x64/arm64 설치 관리자(.exe)를 모두 찾지 못했습니다 " +
+    LogError($"릴리스 자산에서 TableCloth_{version}.*_<arch>.exe 설치 관리자를 모두 찾지 못했습니다 " +
              $"(x64={x64Url is not null}, arm64={arm64Url is not null}). " +
              "기존 winget 매니페스트는 두 아키텍처 노드를 모두 요구합니다.");
     foreach (var a in assets)
@@ -204,17 +204,20 @@ static string NormalizeVersion(string tag)
     return parts.Length > 3 ? string.Join('.', parts[..3]) : v;
 }
 
-// 자산 목록에서 해당 아키텍처의 설치 관리자(.exe, Portable 제외) URL 을 찾는다.
-static string? FindInstaller(GhAsset[] assets, string arch)
+// 자산 목록에서 해당 버전·아키텍처의 TableCloth 설치 관리자(.exe, Portable 제외) URL 을 찾는다.
+static string? FindInstaller(GhAsset[] assets, string version, string arch)
 {
+    // 파일명은 4-part FileVersion 을 쓰므로(예: TableCloth_1.20.3.0_Release_x64.exe),
+    // "TableCloth_<version>." 접두사로 패키지 + 버전을 함께 한정한다. 이렇게 하면
+    //   (1) 같은 릴리스에 함께 올라오는 Spork_* 를 잘못 고르는 문제(#395443, #396257)와
+    //   (2) 릴리스에 어쩌다 남은 다른 버전의 TableCloth_* 를 고르는 문제
+    // 를 원천 차단한다.
+    var prefix = $"TableCloth_{version}.";
     foreach (var a in assets)
     {
         var n = a.name;
         if (string.IsNullOrEmpty(n) || string.IsNullOrEmpty(a.browser_download_url)) continue;
-        // 이 winget 패키지는 TableClothProject.TableCloth 이므로 TableCloth 설치 관리자만 대상.
-        // 같은 릴리스에 Spork_* 설치 관리자도 함께 올라오고(알파벳순으로 TableCloth_* 보다 앞섬)
-        // 접두사로 한정하지 않으면 Spork 를 잘못 선택해 winget 이 엉뚱한 프로그램을 설치하게 된다.
-        if (!n.StartsWith("TableCloth_", StringComparison.OrdinalIgnoreCase)) continue;
+        if (!n.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) continue;
         if (!n.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) continue;
         if (n.Contains("Portable", StringComparison.OrdinalIgnoreCase)) continue;
 
