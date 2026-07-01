@@ -105,6 +105,7 @@ public static class UseSporkExtensions
             .AddSingleton<IStepsComposer, StepsComposer>()
             .AddSingleton<IStepsPlayer, StepsPlayer>()
             .AddKeyedSingleton<IStep, AllowEdgeLocalNetworkAccessStep>(nameof(AllowEdgeLocalNetworkAccessStep))
+            .AddKeyedSingleton<IStep, EnsureMicrosoftEdgeStep>(nameof(EnsureMicrosoftEdgeStep))
             .AddKeyedSingleton<IStep, ConfigAhnLabSafeTransactionStep>(nameof(ConfigAhnLabSafeTransactionStep))
             .AddKeyedSingleton<IStep, EdgeExtensionInstallStep>(nameof(EdgeExtensionInstallStep))
             .AddKeyedSingleton<IStep, OpenWebSiteStep>(nameof(OpenWebSiteStep))

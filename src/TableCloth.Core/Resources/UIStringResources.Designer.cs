@@ -731,7 +731,19 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("Install_ReloadMicrosoftEdge", resourceCulture);
             }
         }
-        
+
+        public static string Install_EnsureMicrosoftEdge {
+            get {
+                return ResourceManager.GetString("Install_EnsureMicrosoftEdge", resourceCulture);
+            }
+        }
+
+        public static string Sandbox_EdgeMissing_Guidance {
+            get {
+                return ResourceManager.GetString("Sandbox_EdgeMissing_Guidance", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Setting Desktop Wallpaper과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>

@@ -16,18 +16,21 @@ namespace Spork.Steps.Implementations
         public StepsPlayer(
             IResourceCacheManager resourceCacheManager,
             ICommandLineArguments commandLineArguments,
-            IWebBrowserServiceFactory webBrowserServiceFactory)
+            IWebBrowserServiceFactory webBrowserServiceFactory,
+            IAppMessageBox appMessageBox)
         {
             _resourceCacheManager = resourceCacheManager;
             _commandLineArguments = commandLineArguments;
             _webBrowserServiceFactory = webBrowserServiceFactory;
             _defaultWebBrowserService = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
+            _appMessageBox = appMessageBox;
         }
 
         private readonly IResourceCacheManager _resourceCacheManager;
         private readonly ICommandLineArguments _commandLineArguments;
         private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
         private readonly IWebBrowserService _defaultWebBrowserService;
+        private readonly IAppMessageBox _appMessageBox;
 
         public bool IsRunning { get; private set; }
 
@@ -128,8 +131,25 @@ namespace Spork.Steps.Implementations
             // 설치 성공 여부와 관계없이 항상 웹 사이트를 열어줍니다.
             var targets = parsedArgs.SelectedServices;
 
+            // 드물게 샌드박스에 브라우저(Edge)가 없으면 CreateWebPageOpenRequest 가 URL 을
+            // ShellExecute 로 열려다 기본 브라우저가 없어 Process.Start 가 "응용 프로그램을 찾을 수 없습니다"로
+            // 예외를 던져 앱이 죽던 문제(이슈 #184)를 방어한다. 열기에 실패해도 안내만 하고 계속 진행한다.
+            var browserMissingNotified = false;
             foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
-                Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(eachUrl, ProcessWindowStyle.Maximized));
+            {
+                try
+                {
+                    Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(eachUrl, ProcessWindowStyle.Maximized));
+                }
+                catch (Exception)
+                {
+                    if (!browserMissingNotified)
+                    {
+                        _appMessageBox.DisplayError(UIStringResources.Sandbox_EdgeMissing_Guidance, false);
+                        browserMissingNotified = true;
+                    }
+                }
+            }
 
             return hasAnyFailure;
         }

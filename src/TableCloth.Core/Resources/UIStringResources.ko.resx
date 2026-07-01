@@ -326,6 +326,12 @@
   <data name="Install_ReloadMicrosoftEdge" xml:space="preserve">
     <value>Microsoft Edge 설정 새로 고침</value>
   </data>
+  <data name="Install_EnsureMicrosoftEdge" xml:space="preserve">
+    <value>Microsoft Edge 확인/복구</value>
+  </data>
+  <data name="Sandbox_EdgeMissing_Guidance" xml:space="preserve">
+    <value>Windows Sandbox 구성 문제로 Microsoft Edge를 사용할 수 없는 것 같습니다. Edge를 자동으로 설치해 복구를 시도했습니다. 그래도 브라우저가 열리지 않으면 샌드박스를 닫고 다시 시작해 주세요.</value>
+  </data>
   <data name="Install_SetDesktopWallpaper" xml:space="preserve">
     <value>바탕 화면 변경</value>
   </data>
