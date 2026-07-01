@@ -211,6 +211,10 @@ static string? FindInstaller(GhAsset[] assets, string arch)
     {
         var n = a.name;
         if (string.IsNullOrEmpty(n) || string.IsNullOrEmpty(a.browser_download_url)) continue;
+        // 이 winget 패키지는 TableClothProject.TableCloth 이므로 TableCloth 설치 관리자만 대상.
+        // 같은 릴리스에 Spork_* 설치 관리자도 함께 올라오고(알파벳순으로 TableCloth_* 보다 앞섬)
+        // 접두사로 한정하지 않으면 Spork 를 잘못 선택해 winget 이 엉뚱한 프로그램을 설치하게 된다.
+        if (!n.StartsWith("TableCloth_", StringComparison.OrdinalIgnoreCase)) continue;
         if (!n.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) continue;
         if (n.Contains("Portable", StringComparison.OrdinalIgnoreCase)) continue;
 
