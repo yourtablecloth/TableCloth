@@ -152,6 +152,17 @@ jobs:
         echo "FULL_VERSION=$fullVersion" >> $env:GITHUB_OUTPUT
       shell: pwsh
 
+    # 릴리스와 정확히 매칭되는 PDB를 별도 심볼 자산으로 제공한다. vpk pack 전에 publish 에서 .pdb 를
+    # 빼내(→ 설치본 nupkg 에는 심볼이 섞이지 않음) symbols\ 로 모아 두고, 이후 symbols.zip 으로 묶는다.
+    # 로컬 재빌드가 아니라 릴리스를 만든 바로 그 게시 출력에서 수집하므로 PDB 서명이 반드시 일치한다.
+    # 태그 릴리스의 Release 구성에서만 동작(일반 push/Debug 는 종전과 동일하게 유지).
+    - name: Collect TableCloth symbols
+      if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
+      run: |
+        New-Item -ItemType Directory -Force symbols\tablecloth | Out-Null
+        Get-ChildItem publish -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\tablecloth -Force
+      shell: pwsh
+
     # Create Velopack release package
     # --channel keeps x64 and arm64 outputs from colliding when both are
     # copied into the same release-assets/ directory by the create-release job.
@@ -198,6 +209,14 @@ jobs:
       run: dotnet publish $env:Spork_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration -o publish-spork
       env:
         Configuration: ${{ matrix.configuration }}
+
+    # Spork 게시본의 PDB도 vpk pack 전에 빼내 symbols\spork 로 모은다(설치본에는 심볼 미포함).
+    - name: Collect Spork symbols
+      if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
+      run: |
+        New-Item -ItemType Directory -Force symbols\spork | Out-Null
+        Get-ChildItem publish-spork -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\spork -Force
+      shell: pwsh
 
     # Spork Velopack 패키지. 채널을 spork-<arch> 로 두어 TableCloth(채널 <arch>)와
     # 메타데이터(releases.<channel>.json / RELEASES-<channel>) 이름이 겹치지 않게 한다.
@@ -251,6 +270,17 @@ jobs:
       uses: actions/attest-build-provenance@v1
       with:
         subject-path: 'releases/*.exe'
+
+    # 수집한 PDB(symbols\tablecloth, symbols\spork)를 아키텍처별 하나의 symbols.zip 으로 묶어
+    # releases\ 에 둔다. releases/* 는 아래 Velopack 아티팩트로 업로드되고 create-release 가 릴리스
+    # 자산으로 복사하므로 별도 업로드 스텝이 필요 없다. SBOM 스캔 뒤에 만들어 심볼이 SBOM에 섞이지 않게 한다.
+    - name: Package symbols (symbols.zip)
+      if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
+      run: |
+        $zip = "releases\TableCloth_${{ steps.get_version.outputs.FULL_VERSION }}_${{ env.Platform }}_symbols.zip"
+        Compress-Archive -Path symbols\* -DestinationPath $zip -Force
+        Write-Host "Created symbols archive: $zip"
+      shell: pwsh
 
     # Upload the Velopack package
     - name: Upload build artifacts (Velopack)
@@ -370,6 +400,8 @@ jobs:
         - x64 Portable: [Spork_${FULL_VERSION}_Release_x64_Portable.zip](${base}/Spork_${FULL_VERSION}_Release_x64_Portable.zip)
         - arm64 Portable: [Spork_${FULL_VERSION}_Release_arm64_Portable.zip](${base}/Spork_${FULL_VERSION}_Release_arm64_Portable.zip)
 
+        > \`*_symbols.zip\` are debug symbols (PDB) matching these binaries — for developers analyzing crash dumps, not needed by end users.
+        >
         > The remaining assets (\`*.nupkg\`, \`RELEASES-*\`, \`releases.*.json\`, \`assets.*.json\`, \`sbom-*\`) are auto-update metadata and SBOM artifacts — end users do not download them directly.
 
         EOF
