@@ -332,10 +332,21 @@ setx DOTNET_ROOT ""{SandboxMountPaths.SandboxDesktop}\{HostDotnetLeafName}"" >nu
 "
             : string.Empty;
 
+        // 이슈 #246: 다크 모드로 시작할 때 바탕 화면 이미지를 "최초 설정 시점"에 분기해 둔다.
+        // 셸(explorer)이 부팅 시 HKCU\Control Panel\Desktop 을 읽어 배경을 그리므로, 셸 초기화 전인
+        // 이 batch 단계에서 레지스트리에 미리 기록해 두면 셸이 처음부터 이 이미지를 그린다(깜빡임 없이).
+        // 이미지는 staging 으로 App\Assets 에 함께 들어간다(엔트리 프로젝트 Content).
+        var darkWallpaperScript = DetectHostUsesLightTheme() == false
+            ? $@"reg add ""HKCU\Control Panel\Desktop"" /v Wallpaper /t REG_SZ /d ""{SandboxMountPaths.AppDirectory}\Assets\sandbox-dark-wallpaper.jpg"" /f >nul 2>&1
+reg add ""HKCU\Control Panel\Desktop"" /v WallpaperStyle /t REG_SZ /d ""10"" /f >nul 2>&1
+reg add ""HKCU\Control Panel\Desktop"" /v TileWallpaper /t REG_SZ /d ""0"" /f >nul 2>&1
+"
+            : string.Empty;
+
         return $@"@echo off
 pushd ""%~dp0""
 {dotnetRootScript}reg add ""HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy"" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1
-{disableEdgeGpuScript}""%SystemRoot%\System32\citool.exe"" --refresh >nul 2>&1
+{disableEdgeGpuScript}{darkWallpaperScript}""%SystemRoot%\System32\citool.exe"" --refresh >nul 2>&1
 ""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
 popd
 @echo on
