@@ -732,9 +732,33 @@ namespace TableCloth.Resources {
             }
         }
 
-        public static string Install_EnsureMicrosoftEdge {
+        public static string Sandbox_EdgeInstall_Button {
             get {
-                return ResourceManager.GetString("Install_EnsureMicrosoftEdge", resourceCulture);
+                return ResourceManager.GetString("Sandbox_EdgeInstall_Button", resourceCulture);
+            }
+        }
+
+        public static string Sandbox_EdgeInstall_Confirm {
+            get {
+                return ResourceManager.GetString("Sandbox_EdgeInstall_Confirm", resourceCulture);
+            }
+        }
+
+        public static string Sandbox_EdgeInstall_ConfirmReinstall {
+            get {
+                return ResourceManager.GetString("Sandbox_EdgeInstall_ConfirmReinstall", resourceCulture);
+            }
+        }
+
+        public static string Sandbox_EdgeInstall_InProgress {
+            get {
+                return ResourceManager.GetString("Sandbox_EdgeInstall_InProgress", resourceCulture);
+            }
+        }
+
+        public static string Sandbox_EdgeInstall_Succeed {
+            get {
+                return ResourceManager.GetString("Sandbox_EdgeInstall_Succeed", resourceCulture);
             }
         }
 

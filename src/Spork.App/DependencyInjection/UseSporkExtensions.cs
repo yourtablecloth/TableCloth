@@ -100,12 +100,16 @@ public static class UseSporkExtensions
             .AddSingleton<IWebBrowserServiceFactory, WebBrowserServiceFactory>()
             .AddKeyedSingleton<IWebBrowserService, X86ChromiumEdgeWebBrowserService>(nameof(X86ChromiumEdgeWebBrowserService));
 
+        // 드물게 샌드박스에 Edge 가 없을 때 사용자가 수동으로 설치/복구할 수 있는 서비스(이슈 #184).
+        // 자동 스텝이 아니라 MainWindow 의 명령에서 명시적으로 호출된다.
+        builder.Services
+            .AddSingleton<IMicrosoftEdgeInstaller, MicrosoftEdgeInstaller>();
+
         builder.Services
             .AddSingleton<IStepsFactory, StepsFactory>()
             .AddSingleton<IStepsComposer, StepsComposer>()
             .AddSingleton<IStepsPlayer, StepsPlayer>()
             .AddKeyedSingleton<IStep, AllowEdgeLocalNetworkAccessStep>(nameof(AllowEdgeLocalNetworkAccessStep))
-            .AddKeyedSingleton<IStep, EnsureMicrosoftEdgeStep>(nameof(EnsureMicrosoftEdgeStep))
             .AddKeyedSingleton<IStep, ConfigAhnLabSafeTransactionStep>(nameof(ConfigAhnLabSafeTransactionStep))
             .AddKeyedSingleton<IStep, EdgeExtensionInstallStep>(nameof(EdgeExtensionInstallStep))
             .AddKeyedSingleton<IStep, OpenWebSiteStep>(nameof(OpenWebSiteStep))

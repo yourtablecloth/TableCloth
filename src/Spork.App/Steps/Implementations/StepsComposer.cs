@@ -55,16 +55,6 @@ namespace Spork.Steps.Implementations
                     TargetSiteName = UIStringResources.Option_Prerequisites,
                     PackageName = UIStringResources.Install_PrepareEnvironment,
                 },
-                // 드물게 샌드박스에 Microsoft Edge 가 없는 경우를 대비한 복구 단계(이슈 #184).
-                // Edge 가 있으면 Evaluate=false 로 즉시 skip 되어 정상 케이스엔 영향이 없다.
-                // 이후의 Edge 정책/확장/실행 단계보다 앞서 실행되어 Edge 존재를 보장한다.
-                new StepItemViewModel()
-                {
-                    Step = _stepsFactory.GetStepByName(nameof(EnsureMicrosoftEdgeStep)),
-                    Argument = new InstallItemViewModel(),
-                    TargetSiteName = UIStringResources.Option_Prerequisites,
-                    PackageName = UIStringResources.Install_EnsureMicrosoftEdge,
-                },
                 // Smart App Control 비활성화는 본 단계에서 처리하지 않는다. citool --refresh 가
                 // 실행 중인 Spork 프로세스를 untrusted로 재평가해 강제 종료시키는 사례가 잦아
                 // StartupScript.cmd 의 reg.exe + citool.exe 호출로 옮겼다. EV 서명된 System32

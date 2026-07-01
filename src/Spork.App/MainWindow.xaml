@@ -394,6 +394,13 @@
                         <Run Text="{x:Static res:UIStringResources.Button_ReportSiteButton}" />
                     </Hyperlink>
                 </TextBlock>
+                <!-- 드물게 샌드박스에 Edge 가 없어 사이트가 안 열릴 때 수동으로 설치/복구(이슈 #184). 카탈로그 모드에서만 노출. -->
+                <TextBlock Margin="12 0 0 0" VerticalAlignment="Center"
+                           Visibility="{Binding ShowCatalogView, Converter={StaticResource booleanToVisibilityConverter}}">
+                    <Hyperlink Command="{Binding InstallOrRepairEdgeCommand}">
+                        <Run Text="{x:Static res:UIStringResources.Sandbox_EdgeInstall_Button}" />
+                    </Hyperlink>
+                </TextBlock>
                 <TextBlock Margin="12 0 0 0" VerticalAlignment="Center"
                            Visibility="{Binding Source={x:Static tablecloth:Helpers.IsDevelopmentBuild}, Converter={StaticResource booleanToVisibilityConverter}}">
                     <Hyperlink Command="{Binding ShowDebugInfoCommand}">
@@ -402,6 +409,14 @@
                 </TextBlock>
             </WrapPanel>
             <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1">
+                <!-- Edge 수동 설치/복구 진행 표시: 다운로드 진행률(0~100). 설치 중일 때만 노출(이슈 #184). -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 10 0"
+                            Visibility="{Binding IsEdgeInstalling, Converter={StaticResource booleanToVisibilityConverter}}">
+                    <TextBlock VerticalAlignment="Center" Margin="0 0 6 0"
+                               Text="{x:Static res:UIStringResources.Sandbox_EdgeInstall_InProgress}" />
+                    <ProgressBar Width="120" Height="12" VerticalAlignment="Center"
+                                 Minimum="0" Maximum="100" Value="{Binding EdgeInstallProgress}" />
+                </StackPanel>
                 <!-- 카탈로그 모드는 사이트 클릭으로 바로 실행되므로 별도 "시작" 버튼 없음. -->
                 <!-- Steps mode: 설치 (명령줄 select 인자 진입 시에만 사용. 카탈로그 진입은 모달로 처리). -->
                 <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Button_InstallButton}"

@@ -326,11 +326,23 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Install_ReloadMicrosoftEdge" xml:space="preserve">
     <value>Reload Microsoft Edge Settings</value>
   </data>
-  <data name="Install_EnsureMicrosoftEdge" xml:space="preserve">
-    <value>Checking / Repairing Microsoft Edge</value>
+  <data name="Sandbox_EdgeInstall_Button" xml:space="preserve">
+    <value>Install / Repair Microsoft Edge</value>
+  </data>
+  <data name="Sandbox_EdgeInstall_Confirm" xml:space="preserve">
+    <value>This will download and install Microsoft Edge from the internet. It is a large download and may take a while. Continue?</value>
+  </data>
+  <data name="Sandbox_EdgeInstall_ConfirmReinstall" xml:space="preserve">
+    <value>Microsoft Edge is already installed. Download the installer again and attempt a repair?</value>
+  </data>
+  <data name="Sandbox_EdgeInstall_InProgress" xml:space="preserve">
+    <value>Installing Microsoft Edge...</value>
+  </data>
+  <data name="Sandbox_EdgeInstall_Succeed" xml:space="preserve">
+    <value>Microsoft Edge installation completed.</value>
   </data>
   <data name="Sandbox_EdgeMissing_Guidance" xml:space="preserve">
-    <value>Microsoft Edge appears to be unavailable due to a Windows Sandbox configuration issue. An automatic Edge installation was attempted. If a browser still doesn't open, please close and restart the sandbox.</value>
+    <value>Microsoft Edge appears to be unavailable due to a Windows Sandbox configuration issue. Click 'Install / Repair Microsoft Edge' below to attempt an installation, or if a browser still doesn't open, please close and restart the sandbox.</value>
   </data>
   <data name="Install_SetDesktopWallpaper" xml:space="preserve">
     <value>Setting Desktop Wallpaper</value>

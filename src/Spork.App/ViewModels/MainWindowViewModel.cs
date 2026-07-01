@@ -69,6 +69,7 @@ namespace Spork.ViewModels
             IInstallRecordStore installRecordStore,
             IShortcutCreator shortcutCreator,
             IWebBrowserServiceFactory webBrowserServiceFactory,
+            IMicrosoftEdgeInstaller edgeInstaller,
             IX509CertScanner certScanner,
             TaskFactory taskFactory)
         {
@@ -84,6 +85,7 @@ namespace Spork.ViewModels
             _installRecordStore = installRecordStore;
             _shortcutCreator = shortcutCreator;
             _webBrowserServiceFactory = webBrowserServiceFactory;
+            _edgeInstaller = edgeInstaller;
             _certScanner = certScanner;
             _taskFactory = taskFactory;
         }
@@ -102,6 +104,7 @@ namespace Spork.ViewModels
         private readonly IInstallRecordStore _installRecordStore;
         private readonly IShortcutCreator _shortcutCreator;
         private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
+        private readonly IMicrosoftEdgeInstaller _edgeInstaller;
         private readonly IX509CertScanner _certScanner;
         private readonly TaskFactory _taskFactory;
 
@@ -280,6 +283,50 @@ namespace Spork.ViewModels
             {
                 // 갱신 실패가 기존에 보이던 카탈로그를 깨서는 안 된다. 사용자에게만 알리고 현재 상태 유지.
                 _appMessageBox.DisplayError(ex, false);
+            }
+        }
+
+        /// <summary>
+        /// 드물게 Windows Sandbox 에 Microsoft Edge 가 없어 사이트가 열리지 않을 때, 사용자가 직접
+        /// Edge 를 내려받아 설치/복구하는 수동 명령(이슈 #184). 자동 스텝으로 두면 정상 샌드박스에서도
+        /// 대용량 MSI 를 늘 받게 되므로 명시적 실행으로 분리했다. AsyncRelayCommand 는 동시 실행을
+        /// 막으므로 진행 중 링크는 자동 비활성화된다.
+        /// </summary>
+        [RelayCommand]
+        private async Task InstallOrRepairEdge(CancellationToken cancellationToken)
+        {
+            // 이미 있으면 재설치/복구인지 확인, 없으면 설치 여부를 확인한다(대용량 다운로드 사전 고지).
+            var alreadyInstalled = _edgeInstaller.IsEdgeInstalled();
+            var confirmMessage = alreadyInstalled
+                ? UIStringResources.Sandbox_EdgeInstall_ConfirmReinstall
+                : UIStringResources.Sandbox_EdgeInstall_Confirm;
+            if (_appMessageBox.DisplayQuestion(confirmMessage) != MessageBoxResult.Yes)
+                return;
+
+            IsEdgeInstalling = true;
+            EdgeInstallProgress = 0d;
+            try
+            {
+                var progress = new Progress<double>(value => EdgeInstallProgress = value * 100d);
+                var succeeded = await _edgeInstaller.InstallOrRepairAsync(progress, cancellationToken).ConfigureAwait(true);
+
+                if (succeeded)
+                    _appMessageBox.DisplayInfo(UIStringResources.Sandbox_EdgeInstall_Succeed);
+                else
+                    _appMessageBox.DisplayError(UIStringResources.Sandbox_EdgeMissing_Guidance, false);
+            }
+            catch (OperationCanceledException)
+            {
+                // 취소는 조용히 종료.
+            }
+            catch (Exception ex)
+            {
+                _appMessageBox.DisplayError(ex, false);
+            }
+            finally
+            {
+                IsEdgeInstalling = false;
+                EdgeInstallProgress = 0d;
             }
         }
 
@@ -653,5 +700,12 @@ namespace Spork.ViewModels
 
         [ObservableProperty]
         private string _searchKeyword = string.Empty;
+
+        // Edge 수동 설치/복구 진행 상태. IsEdgeInstalling 이 true 인 동안 footer 에 진행률을 표시한다(이슈 #184).
+        [ObservableProperty]
+        private bool _isEdgeInstalling;
+
+        [ObservableProperty]
+        private double _edgeInstallProgress;
     }
 }
