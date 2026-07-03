@@ -82,7 +82,7 @@ return RunTableCloth(args);
 ### 빌드 / 게시
 
 | 시나리오 | 명령 | 산출물 |
-|---------|------|--------|
+| --------- | ------ | -------- |
 | 개발 빌드 | `dotnet build` 또는 VS F5 | AnyCPU framework-dependent, 호스트 .NET 10 SDK 사용 |
 | 샌드박스 테스트 (개발) | `dotnet build` 후 호스트에서 실행 | `SandboxBuilder`가 자동으로 호스트 `%ProgramFiles%\dotnet` 마운트 + `DOTNET_ROOT` 설정해 샌드박스에 런타임 공급 |
 | 배포 게시 | `dotnet publish src/TableCloth -c Release -r win-x64 -p:SelfContained=true -o publish/win-x64` | single-file self-contained `TableCloth.exe` (~93MB) — `TableCloth.csproj`의 조건부 PropertyGroup이 PublishSingleFile/PublishReadyToRun/IncludeNativeLibrariesForSelfExtract/EnableCompressionInSingleFile/PublishTrimmed=false를 자동 활성화 |
@@ -101,7 +101,10 @@ dotnet test src/Spork.Test/Spork.Test.csproj
 
 ### 아키텍처 결정 배경
 
-본 통합 구조와 단계별 마이그레이션의 상세 내역은 [docs/UNIFIED_BINARY_TODO.md](./docs/UNIFIED_BINARY_TODO.md)에 기록되어 있습니다.
+TableCloth + Spork 단일 바이너리(verb 기반 CLI) 통합과 단계별 마이그레이션은 완료되어 현행 구조에
+반영되어 있습니다(당시 추적 문서 `docs/UNIFIED_BINARY_TODO.md`는 완료 후 제거, git 이력에 보존).
+무설치/Express 방향의 후속 계약은 [docs/PARAMETERIZED_WSB_SPEC.md](./docs/PARAMETERIZED_WSB_SPEC.md)와
+[docs/PORTABLE_MODE2_TODO.md](./docs/PORTABLE_MODE2_TODO.md)를 참고하세요.
 
 ## Known Issues
 

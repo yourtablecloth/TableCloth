@@ -1,7 +1,12 @@
 # 모드 2 (단독 Spork · 무설치 코어) 진척 관리
 
 > 시작일: 2026-06-25
-> 관련 선행 작업: [UNIFIED_BINARY_TODO.md](UNIFIED_BINARY_TODO.md) (Spork.App 추출 / 단일 바이너리 / 단독 패키징)
+> 선행 작업: 단일 바이너리 마이그레이션(Spork.App 추출 / verb 기반 CLI / 단독 패키징)은 출시 완료됨(추적 문서는 이력에 보존).
+> 파생 계약: [PARAMETERIZED_WSB_SPEC.md](PARAMETERIZED_WSB_SPEC.md) — 빠른 실행/MCP/macOS 세 소비자가 공유하는 파라미터화된 `.wsb`+부트스트랩 정규 스펙(자산명 계약은 본 문서 승계).
+>
+> **상태 최신화 (2026-07-03):** 콜드부트 준비성 확보 완료(스캐너 일반화 커밋 `92daca3`). 파라미터화된
+> `.wsb`/부트스트랩의 **정규 계약은 위 SPEC로 분리·확정**됐다. 본 문서에 남은 활성 항목은 (선택)
+> 카탈로그 스냅샷 동봉과 `build.cs` "공개 계약" 주석뿐이고, 실제 출시 관문은 **웹앱 호스팅(스코프 밖)**이다.
 
 ## 배경과 목표
 
@@ -17,7 +22,7 @@
 ```
 
 | | 모드 1 — 식탁보 + WSB | 모드 2 — 단독 Spork + 사용자 VM |
-|---|---|---|
+| --- | --- | --- |
 | VM 성격 | 일회용(세션 종료 시 VHD 파괴) | 영속(사용자가 직접 구축·관리) |
 | 인증서 주입 | 호스트가 staging→마운트→[SandboxBootstrap](../src/Spork.Sandbox/SandboxBootstrap.cs)이 NPKI 배치 | 없음 — 사용자가 VM에 직접 넣음, Spork는 스캔만 |
 | 인증서 잔존 | 세션 후 어디에도 안 남음 | VM 디스크에 영속 — **사용자 책임** |
@@ -31,7 +36,7 @@ NPKI가 무설치 WSB에 들어올 길이 없다 → 그쪽의 자연스러운, 
 인증**이고, 그건 파일이 아예 없으니 원래 우려를 근본적으로 해소한다.
 
 | | 영속 사용자 VM (Hyper-V/VMware…) | 무설치 WSB (마운트 없음) |
-|---|---|---|
+| --- | --- | --- |
 | 인증서 파일 반입 | USB/공유폴더 자유 | 불가(마운트·USB passthrough 없음) |
 | 모바일 인증 | 가능 | **자연 기본값** |
 | 인증서 잔존 | VM 디스크 — 사용자 책임 | **없음**(파일 자체가 없음) |
@@ -56,7 +61,7 @@ NPKI가 무설치 WSB에 들어올 길이 없다 → 그쪽의 자연스러운, 
 - [x] **SporkAnswers.json** — [ApplySporkAnswersIfPresent](../src/Spork.App/DependencyInjection/UseSporkExtensions.cs#L160)는 완전 best-effort. 파일 없으면 `answer` null → VM 기본 컬처로 폴백, 크래시 없음. (UI locale 전용)
 - [x] **카탈로그** — [LoadCatalogDocumentAsync](../src/Spork.App/Components/Implementations/ResourceCacheManager.cs#L29)는 네트워크 우선 → `AppContext.BaseDirectory\catalog\catalog.xml` 스냅샷 폴백. 호스트 주입 스냅샷 부재는 네트워크가 살아있으면 무해. (작업 6으로 오프라인까지 보강)
 - [x] **단일 파일 경로 안전** — `AppContext.BaseDirectory` 사용(`Assembly.Location` 4건은 UNIFIED_BINARY 단계에서 이미 교체 완료).
-- [ ] **인증서 스캐너** — `WDAGUtilityAccount` LocalLow 경로 하드코딩 → 사용자 VM(임의 계정명)에선 아무것도 못 찾음. **작업 2에서 해소.**
+- [x] **인증서 스캐너** — 후보 루트 스캔(`ScanLocalNpkiCertificates`)으로 일반화 완료(커밋 `92daca3`). WSB 안에선 LocalLow가 canonical과 동일 경로로 풀려 모드 1 비회귀.
 
 ## 다운로드 자산명 계약 (공개 contract)
 
@@ -87,15 +92,16 @@ NPKI가 무설치 WSB에 들어올 길이 없다 → 그쪽의 자연스러운, 
 ## 작업 항목
 
 - [x] **1. 계획 문서** — 본 문서.
-- [ ] **2. 스캐너 일반화 (keystone)** — [X509CertScanner](../src/Spork.App/Components/Implementations/X509CertScanner.cs)를
+- [x] **2. 스캐너 일반화 (keystone)** — 완료(커밋 `92daca3`). [X509CertScanner](../src/Spork.App/Components/Implementations/X509CertScanner.cs)를
   후보 집합 스캔으로: 실제 LocalLow NPKI + WSB canonical + `Desktop\NPKI` 마운트 + 제거식
   드라이브(USB), CertHash dedup. WSB 안에선 LocalLow가 canonical과 동일 경로로 풀려 **모드 1
   비회귀**. 인터페이스 메서드명을 WSB 가정에서 일반화(`ScanSandboxNpkiCertificates` →
   `ScanLocalNpkiCertificates`).
-- [ ] **3. 콜드부트 준비성** — 위 감사대로 작업 2 외 추가 코드 불필요. 본 문서에 결과 기록(완료).
-- [ ] **4. 다운로드 자산명 계약 문서화** — 위 "다운로드 자산명 계약" 절 + [build.cs](../build.cs)
-  rename 지점에 "공개 계약" 주석.
-- [ ] **5. 무설치 `.wsb` 템플릿 + 부트스트랩** — 위 두 파일.
+- [x] **3. 콜드부트 준비성** — 위 감사대로 작업 2 외 추가 코드 불필요. 작업 2 완료로 콜드부트 준비성 확보.
+- [~] **4. 다운로드 자산명 계약 문서화** — 계약 자체는 본 문서 + [SPEC §7](PARAMETERIZED_WSB_SPEC.md)에
+  정규화 완료. 남은 것은 [build.cs](../build.cs) rename 지점의 "공개 계약" 주석뿐(착수 시).
+- [x] **5. 무설치 `.wsb` 템플릿 + 부트스트랩** — 참조 파일 두 개 존재. 단, 파라미터화 계약은
+  [SPEC](PARAMETERIZED_WSB_SPEC.md)로 확정(설계 B)됐으므로, 착수 시 부트스트랩을 인자 수신형으로 개정한다.
 - [ ] **6. (선택) 카탈로그 스냅샷 동봉** — [build.cs](../build.cs)에서 Spork publish 후
   `external/TableClothCatalog/docs/Catalog.xml`을 `<publish>/catalog/catalog.xml`로 복사해 포터블
   산출물에 포함 → 무설치/오프라인 폴백.

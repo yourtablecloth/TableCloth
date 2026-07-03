@@ -1,7 +1,14 @@
 # UI Overhaul 진척 관리 (Quick-Start + Catalog-in-Spork)
 
-> 작업 브랜치: `feature/ui-overhaul-quickstart`
+> 작업 브랜치: `feature/ui-overhaul-quickstart` (main 반영됨)
 > 시작일: 2026-05-11
+>
+> **상태 최신화 (2026-07-03):** 핵심은 출시됨 — 호스트 **QuickStart 진입점**(`Pages/QuickStartPage.xaml`),
+> **데이터 디렉터리 설정**(#282, `SharedLocations.GetEffectiveDataDirectoryPath`), Spork 측 카탈로그 진입.
+> **잔여(진행 중):** ① Phase 2 — 호스트에 `CatalogPage.xaml`/`DetailPage.xaml`가 아직 남아 있어(레거시
+> 진입 폴백) 제거/격리 미완, ② 일부 Phase 4/5 정리(리소스 문자열·테스트·스크린샷·부가 UI 배치),
+> ③ "결정 필요/오픈 이슈"의 일부(공동인증서 미사용 UX·내부 경로 컨벤션·스냅샷 포맷 — 스냅샷은
+> [PARAMETERIZED_WSB_SPEC](PARAMETERIZED_WSB_SPEC.md)/PORTABLE_MODE2와 겹침). → **문서 유지.**
 
 ## 배경과 목표
 
@@ -21,7 +28,7 @@
 ## 아키텍처 변경 요약 (초안 — 구현 진행 중 갱신)
 
 | 영역 | 현재 | 변경 후 |
-|------|------|---------|
+| ------ | ------ | --------- |
 | 시작 화면 | `CatalogPage` → `DetailPage` → 샌드박스 실행 | "퀵 스타트" 단일 화면(폴더 마운트 위주) → 즉시 샌드박스 실행 |
 | 사이트 선택 | TableCloth 호스트에서 1개만 선택 | Spork(샌드박스 내부)에서 다수 사이트를 자유롭게 선택/실행 |
 | 카탈로그 데이터 흐름 | 호스트가 카탈로그 로드 후 선택값을 sandbox config에 반영 | 호스트는 카탈로그를 직접 사용하지 않음. Spork가 샌드박스 내부에서 카탈로그 로드 및 처리 |
@@ -123,8 +130,10 @@
 ## 결정 필요 / 오픈 이슈
 
 - [ ] **공동인증서 미사용 사용자 경험**: 기본 체크 해제? 퀵 스타트에서 "건너뛰기" 일급 동작 제공?
-- [ ] **Data 디렉터리 호스트 기본 경로**: `%USERPROFILE%\Documents\식탁보\Data` vs `%APPDATA%\TableCloth\Data` 등. 사용자에게 노출되는 백업 자산이라는 점을 고려.
-- [ ] **App / Data 디렉터리의 샌드박스 내부 경로 컨벤션**: 예) `C:\TableCloth\App`, `C:\TableCloth\Data`. Spork와 wsb 생성 로직이 공유하는 상수로 두어야 함.
+- [x] **Data 디렉터리 호스트 기본 경로**: #282에서 확정 — `SharedLocations.DefaultDataDirectoryPath` +
+  사용자 지정 경로(`GetEffectiveDataDirectoryPath`), 옵션에 "데이터 디렉터리" 탭으로 노출.
+- [x] **App / Data 디렉터리의 샌드박스 내부 경로 컨벤션**: `SandboxMountPaths`(예: `SandboxMountPaths.DataDirectory`)
+  상수로 확정 — Spork(`UserDataStore`)와 wsb 생성 로직이 공유.
 - [ ] **카탈로그 스냅샷 포맷**: App 디렉터리 안에 zip으로 둘지 압축 해제 상태로 둘지, 버전 메타 파일 포함 여부.
 
 ## 향후 Phase (본 작업 이후)
