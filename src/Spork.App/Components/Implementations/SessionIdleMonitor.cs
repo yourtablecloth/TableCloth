@@ -94,9 +94,10 @@ namespace Spork.Components.Implementations
                 }
                 _warning.SetRemaining(remaining);
             }
-            else if (_warning != null)
+            else if (_warning != null && remaining > _warningLeadSeconds + 2)
             {
-                // 사용자가 다시 활동해 유휴 시간이 리셋됨 → 경고를 닫는다(Closed 핸들러가 참조를 비움).
+                // 사용자가 다시 활동해 유휴 시간이 충분히 리셋됨 → 경고를 닫는다(Closed 핸들러가 참조를 비움).
+                // 경계에서 유휴가 ±1초로 진동할 때 매 tick 생성/닫힘이 반복되지 않도록 2초 여유(히스테리시스)를 둔다.
                 _warning.Close();
             }
         }

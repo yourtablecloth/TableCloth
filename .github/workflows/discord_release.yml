@@ -43,6 +43,12 @@ jobs:
             echo "Release $TAG is still a draft; not announcing."
             exit 1
           fi
+          # 정식 릴리스만 공지한다. release:released 이벤트는 이미 프리릴리스를 제외하지만,
+          # workflow_dispatch 로 프리릴리스 태그가 들어오면 여기서 조용히 건너뛴다(오류 아님).
+          if [ "$(jq -r '.isPrerelease' release.json)" = "true" ]; then
+            echo "Release $TAG is a prerelease; not announcing."
+            exit 0
+          fi
           {
             echo "tag=$(jq -r '.tagName' release.json)"
             echo "name=$(jq -r '.name // .tagName' release.json)"

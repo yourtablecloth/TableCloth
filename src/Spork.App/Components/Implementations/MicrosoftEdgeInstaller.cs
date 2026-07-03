@@ -67,14 +67,35 @@ namespace Spork.Components.Implementations
             var tempFilePath = Path.Combine(downloadFolderPath, $"edge_{Guid.NewGuid():n}.msi");
 
             var httpClient = _httpClientFactory.CreateGoogleChromeMimickedHttpClient();
-            using (var response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false))
+
+            // ResponseHeadersRead 로 헤더만 받은 뒤 본문을 스트리밍한다. 기본(ResponseContentRead)은 수백 MB 전체를
+            // 메모리에 버퍼링하고 그 동안 진행률도 전혀 보고되지 않는다. Content-Length 기준으로 실제 진행률을 보고한다.
+            using (var response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
             {
                 response.EnsureSuccessStatusCode();
-                var remoteStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                using (var fileStream = File.OpenWrite(tempFilePath))
+                var totalBytes = response.Content.Headers.ContentLength;
+
+                try
                 {
-                    await remoteStream.CopyStreamWithProgressAsync(
-                        fileStream, progress, 81920, cancellationToken).ConfigureAwait(false);
+                    using var remoteStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+                    using var fileStream = File.Create(tempFilePath);
+
+                    var buffer = new byte[81920];
+                    var readTotal = 0L;
+                    int read;
+                    while ((read = await remoteStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false)) > 0)
+                    {
+                        await fileStream.WriteAsync(buffer, 0, read, cancellationToken).ConfigureAwait(false);
+                        readTotal += read;
+                        if (totalBytes.HasValue && totalBytes.Value > 0L)
+                            progress?.Report((double)readTotal / totalBytes.Value);
+                    }
+                }
+                catch
+                {
+                    // 실패/취소 시 반쯤 받은 임시 파일이 다운로드 폴더에 남지 않도록 정리하고 다시 던진다.
+                    try { File.Delete(tempFilePath); } catch { /* 무시 */ }
+                    throw;
                 }
             }
 
