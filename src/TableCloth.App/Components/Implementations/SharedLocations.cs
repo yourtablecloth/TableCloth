@@ -35,6 +35,17 @@ public sealed class SharedLocations : ISharedLocations
     public string GetIconFilePath(string serviceId)
         => Path.Combine(GetImageDirectoryPath(), $"{serviceId}.ico");
 
+    public string GetHelpFilePath()
+    {
+        // 실행 파일 옆 Help\ 폴더에 배포된다(TableCloth.csproj의 Content). 로캘 파일이 있으면 우선 사용.
+        var helpDirectory = Path.Combine(ExecutableDirectoryPath, "Help");
+        var culture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        var localized = Path.Combine(helpDirectory, $"manual.{culture}.html");
+        return File.Exists(localized)
+            ? localized
+            : Path.Combine(helpDirectory, "manual.ko.html");
+    }
+
     public string ExecutableFilePath
     {
         get

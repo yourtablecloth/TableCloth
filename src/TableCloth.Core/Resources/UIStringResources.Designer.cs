@@ -234,7 +234,13 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("Button_AboutButton", resourceCulture);
             }
         }
-        
+
+        public static string Button_UserManualButton {
+            get {
+                return ResourceManager.GetString("Button_UserManualButton", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Restart과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>

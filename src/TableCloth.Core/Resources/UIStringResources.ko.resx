@@ -162,6 +162,9 @@
   <data name="Button_AboutButton" xml:space="preserve">
     <value>프로그램 정보</value>
   </data>
+  <data name="Button_UserManualButton" xml:space="preserve">
+    <value>사용 설명서</value>
+  </data>
   <data name="Button_AppRestartButton" xml:space="preserve">
     <value>프로그램 다시 실행</value>
   </data>

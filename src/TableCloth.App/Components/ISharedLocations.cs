@@ -22,6 +22,12 @@ public interface ISharedLocations
     string GetTempPath();
 
     /// <summary>
+    /// 앱과 함께 배포되는 HTML 사용 설명서(이슈 #40) 파일 경로를 반환합니다. 현재 UI 로캘에 맞는
+    /// <c>Help\manual.&lt;culture&gt;.html</c>이 있으면 그 경로를, 없으면 기본(한국어) 파일 경로를 돌려줍니다.
+    /// </summary>
+    string GetHelpFilePath();
+
+    /// <summary>
     /// 샌드박스 시작 시 App 디렉터리로 마운트할 호스트 측 스테이징 경로를 반환합니다.
     /// 매 실행마다 Spork 실행 파일과 카탈로그 스냅샷이 이 위치에 새로 채워집니다.
     /// </summary>

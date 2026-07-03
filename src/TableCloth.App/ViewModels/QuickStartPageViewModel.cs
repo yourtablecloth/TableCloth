@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -188,6 +189,22 @@ public partial class QuickStartPageViewModel : ObservableObject
     {
         var aboutWindow = _appUserInterface.CreateAboutWindow();
         aboutWindow.ShowDialog();
+    }
+
+    /// <summary>
+    /// 앱과 함께 배포되는 HTML 사용 설명서를 기본 브라우저로 연다(이슈 #40). 오프라인에서도 열람 가능.
+    /// </summary>
+    [RelayCommand]
+    private void OpenUserManual()
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(_sharedLocations.GetHelpFilePath()) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            _appMessageBox.DisplayError(ex, false);
+        }
     }
 
     /// <summary>

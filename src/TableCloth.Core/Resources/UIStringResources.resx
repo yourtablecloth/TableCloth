@@ -162,6 +162,9 @@
   <data name="Button_AboutButton" xml:space="preserve">
     <value>About</value>
   </data>
+  <data name="Button_UserManualButton" xml:space="preserve">
+    <value>User Manual</value>
+  </data>
   <data name="Button_AppRestartButton" xml:space="preserve">
     <value>Restart</value>
   </data>

@@ -182,6 +182,8 @@
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />
                     </Button.CommandParameter>
                 </Button>
+                <!-- 앱과 함께 배포되는 HTML 사용 설명서(이슈 #40) -->
+                <Button x:Name="OpenUserManualButton" Padding="10 4" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.Button_UserManualButton}" Command="{Binding OpenUserManualCommand}" />
                 <Button x:Name="ShowSysInfo" Padding="10 4" Margin="0 0 5 0" Content="{x:Static res:UIStringResources.Button_ShowSysInfoButton}" Command="{Binding ShowSystemInfoCommand}">
                     <Button.CommandParameter>
                         <Binding Path="DataContext" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}" />

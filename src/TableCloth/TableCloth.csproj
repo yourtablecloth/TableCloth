@@ -65,6 +65,14 @@
 		<Content Include="Assets\sandbox-dark-wallpaper.jpg">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+		<!--
+			이슈 #40: 앱과 함께 배포되는 일반 사용자용 HTML 도움말(오프라인 열람 가능).
+			출력 폴더의 Help\ 로 복사되어 실행 파일 옆(ExecutableDirectoryPath\Help)에서 기본 브라우저로 연다.
+			로캘별 파일(manual.<culture>.html)을 추가하면 GetHelpFilePath가 자동 선택한다.
+		-->
+		<Content Include="Help\manual.ko.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<ItemGroup>

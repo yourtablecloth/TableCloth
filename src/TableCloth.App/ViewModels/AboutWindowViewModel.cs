@@ -26,13 +26,15 @@ public partial class AboutWindowViewModel : ObservableObject
         ILicenseDescriptor licenseDescriptor,
         IAppMessageBox appMessageBox,
         IAppUpdateManager appUpdateManager,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        ISharedLocations sharedLocations)
     {
         _resourceResolver = resourceResolver;
         _licenseDescriptor = licenseDescriptor;
         _appMessageBox = appMessageBox;
         _appUpdateManager = appUpdateManager;
         _httpClientFactory = httpClientFactory;
+        _sharedLocations = sharedLocations;
         _licenseDetails = UIStringResources.AboutWindow_LoadingLicensesMessage;
     }
 
@@ -41,6 +43,7 @@ public partial class AboutWindowViewModel : ObservableObject
     private readonly IAppMessageBox _appMessageBox = default!;
     private readonly IAppUpdateManager _appUpdateManager = default!;
     private readonly IHttpClientFactory _httpClientFactory = default!;
+    private readonly ISharedLocations _sharedLocations = default!;
 
     [RelayCommand]
     private async Task OnAboutWindowLoaded()
@@ -155,6 +158,20 @@ public partial class AboutWindowViewModel : ObservableObject
     private void OpenWebsite()
     {
         Process.Start(new ProcessStartInfo(CommonStrings.AppInfoUrl) { UseShellExecute = true });
+    }
+
+    /// <summary>앱과 함께 배포되는 HTML 사용 설명서를 기본 브라우저로 연다(이슈 #40).</summary>
+    [RelayCommand]
+    private void OpenUserManual()
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(_sharedLocations.GetHelpFilePath()) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            _appMessageBox.DisplayError(ex, false);
+        }
     }
 
     [RelayCommand]
