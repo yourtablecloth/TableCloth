@@ -3,11 +3,11 @@
 > 작업 브랜치: `feature/ui-overhaul-quickstart` (main 반영됨)
 > 시작일: 2026-05-11
 >
-> **상태 최신화 (2026-07-03):** 핵심은 출시됨 — 호스트 **QuickStart 진입점**(`Pages/QuickStartPage.xaml`),
+> **상태 최신화 (2026-07-03):** 핵심은 출시됨: 호스트 **QuickStart 진입점**(`Pages/QuickStartPage.xaml`),
 > **데이터 디렉터리 설정**(#282, `SharedLocations.GetEffectiveDataDirectoryPath`), Spork 측 카탈로그 진입.
-> **잔여(진행 중):** ① Phase 2 — 호스트에 `CatalogPage.xaml`/`DetailPage.xaml`가 아직 남아 있어(레거시
-> 진입 폴백) 제거/격리 미완, ② 일부 Phase 4/5 정리(리소스 문자열·테스트·스크린샷·부가 UI 배치),
-> ③ "결정 필요/오픈 이슈"의 일부(공동인증서 미사용 UX·내부 경로 컨벤션·스냅샷 포맷 — 스냅샷은
+> **잔여(진행 중):** ① Phase 2: 호스트에 `CatalogPage.xaml`/`DetailPage.xaml`가 아직 남아 있어(레거시
+> 진입 폴백) 제거/격리 미완, ② 일부 Phase 4/5 정리(리소스 문자열, 테스트, 스크린샷, 부가 UI 배치),
+> ③ "결정 필요/오픈 이슈"의 일부(공동인증서 미사용 UX, 내부 경로 컨벤션, 스냅샷 포맷: 스냅샷은
 > [PARAMETERIZED_WSB_SPEC](PARAMETERIZED_WSB_SPEC.md)/PORTABLE_MODE2와 겹침). → **문서 유지.**
 
 ## 배경과 목표
@@ -25,7 +25,7 @@
   - 위 설정만으로 즉시 샌드박스 시작
 - **Spork (샌드박스 내부 에이전트)**: 샌드박스 안에서 카탈로그 UI를 노출하여, 사용자가 그 안에서 자유롭게 사이트를 골라 보안 모듈 설치/접속할 수 있게 한다.
 
-## 아키텍처 변경 요약 (초안 — 구현 진행 중 갱신)
+## 아키텍처 변경 요약 (초안: 구현 진행 중 갱신)
 
 | 영역 | 현재 | 변경 후 |
 | ------ | ------ | --------- |
@@ -39,13 +39,13 @@
 
 ## 작업 항목
 
-### Phase 0 — 준비
+### Phase 0: 준비
 - [x] 작업 브랜치 `feature/ui-overhaul-quickstart` 생성
 - [x] 본 진척 관리 문서 작성
 - [ ] 새 UX 와이어프레임/스케치 (필요 시 `docs/images/`에 추가)
 - [ ] 기존 코드 진입점 정리 (`MainWindowViewModel.MainWindowLoaded` → 카탈로그 진입 경로 파악 완료)
 
-### Phase 1 — TableCloth 퀵 스타트 화면 도입
+### Phase 1: TableCloth 퀵 스타트 화면 도입
 
 - [x] `QuickStartPage` XAML/코드비하인드 신설
 - [x] `QuickStartPageViewModel` 신설 (사용자 폴더 + 옵션 진입)
@@ -56,7 +56,7 @@
 - [x] `MainWindowViewModel`: 일반 진입은 QuickStart, `--select <SiteId>`가 있을 때는 종전대로 DetailPage 유지
 - [x] `SandboxMountPaths` 상수(`C:\TableCloth\App` / `C:\TableCloth\Data`) 도입, `ISharedLocations`에 App 스테이징/Data 기본 경로 추가
 
-#### Phase 1.5 — 퀵 스타트 UI 단순화 (2026-05-11)
+#### Phase 1.5: 퀵 스타트 UI 단순화 (2026-05-11)
 
 - [x] 인증서 섹션 제거: `%userprofile%\AppData\LocalLow\NPKI`가 호스트에 존재하면 매 시작 시 자동 RO 마운트되도록 `LaunchSandbox`에서 처리
 - [x] Data 디렉터리 표시 제거: 사용자에게 노출하지 않고 내부에서 계산된 경로 사용. 디렉터리가 없으면 시작 시 Yes/No 생성 유도 흐름
@@ -64,41 +64,41 @@
 - [x] 빌드 통과 확인 (에러 0)
 - [ ] wsb 생성 시 App/Data 표준 마운트 적용은 Phase 3 작업으로 분리
 
-#### Phase 1.6 — Data 디렉터리 사용자 지정 재도입 (이슈 #282)
+#### Phase 1.6: Data 디렉터리 사용자 지정 재도입 (이슈 #282)
 
 - [x] 문서 폴더가 네트워크/클라우드 드라이브로 강제 리디렉션된 환경에서 Data 경로를 바꿀 수 없던 문제 해결
 - [x] `OptionsWindow`에 "데이터 디렉터리" 탭 신설(현재 경로 표시 + 폴더 선택/기본값으로/열기, `DataDirectoryHostPath` 저장). 기존 고아 리소스 문자열 재사용
-- [x] 비로컬(네트워크/클라우드/이동식·UNC) 경로 경고 문구 노출(휴리스틱, 비차단)
+- [x] 비로컬(네트워크/클라우드/이동식, UNC) 경로 경고 문구 노출(휴리스틱, 비차단)
 - [x] 시작 시 자동 경로에 폴더 생성을 거부하거나 생성에 실패하면 데이터 디렉터리 탭으로 안내(`OpenOptions(DataDirectory)`)
-- [x] 기본 경로(`Documents\TableCloth\Data`)는 유지 — 기존 사용자 데이터 마이그레이션 불필요
+- [x] 기본 경로(`Documents\TableCloth\Data`)는 유지: 기존 사용자 데이터 마이그레이션 불필요
 
-### Phase 2 — TableCloth에서 카탈로그/디테일 화면 제거 또는 격리
+### Phase 2: TableCloth에서 카탈로그/디테일 화면 제거 또는 격리
 - [ ] `CatalogPage` / `DetailPage` / 관련 ViewModel을 Spork 측으로 이관 또는 Deprecated 처리
 - [ ] `MainWindowViewModel`의 카탈로그 의존성 정리
 - [ ] 카탈로그 로더 (`IResourceCacheManager`) 의 호스트 측 사용 범위 축소
 - [ ] 호스트에서 더 이상 필요 없는 카탈로그 관련 리소스/이미지 정리
 
-### Phase 3 — Spork 내부 카탈로그 UI 도입
+### Phase 3: Spork 내부 카탈로그 UI 도입
 
 - [x] Spork `MainWindow`에 카탈로그 뷰 추가 (사이트 그리드 + 카테고리 그루핑 + 검색)
 - [x] 명령줄로 사이트 ID가 들어오지 않은 경우 카탈로그 뷰로 진입, 들어온 경우 기존 설치 흐름 유지
 - [x] `AppStartup`의 "no targets → 홈 URL 열고 종료" 조기 종료 제거 (카탈로그 뷰가 그 자리를 대체)
 - [x] `IStepsComposer.ComposeStepsForSites(IEnumerable<string>)` 오버로드 추가, 사용자가 카탈로그에서 선택한 사이트만으로 설치 단계 구성
 - [x] 카탈로그에서 사이트 선택 → 설치 모드(Steps 뷰)로 자동 전환 + 설치 자동 시작
-- [x] 즐겨찾기/사용 기록 (Data 디렉터리 영속) 도입 — `SporkUserData` 공유 모델 + `IUserDataStore`로 `user-data.json` 읽고 쓰기. 호스트는 기존 `PreferenceSettings.Favorites`를 첫 실행 시 Data 디렉터리로 1회성 마이그레이션
-- [x] 사이트 아이콘 표시 — 호스트가 `Images.zip`을 staging의 `assets/images/`로 풀고, Spork는 `ServiceLogoConverter`로 사이트 ID → PNG 이미지 해석. 카탈로그 카드에 아이콘 + 즐겨찾기 별 토글 표시. 카탈로그 상단에 "즐겨찾기만 보기" 체크박스
-- [x] 카탈로그 데이터 폴백 로직 (네트워크 실패 시 호스트가 주입한 스냅샷 사용 — 하이브리드 방식): 호스트가 wsb 생성 시점에 `CatalogCacheFilePath`를 staging의 `catalog/catalog.xml`로 복사, Spork의 `ResourceCacheManager`가 네트워크 실패 시 같은 디렉터리에서 읽어 들이도록 폴백
+- [x] 즐겨찾기/사용 기록 (Data 디렉터리 영속) 도입: `SporkUserData` 공유 모델 + `IUserDataStore`로 `user-data.json` 읽고 쓰기. 호스트는 기존 `PreferenceSettings.Favorites`를 첫 실행 시 Data 디렉터리로 1회성 마이그레이션
+- [x] 사이트 아이콘 표시: 호스트가 `Images.zip`을 staging의 `assets/images/`로 풀고, Spork는 `ServiceLogoConverter`로 사이트 ID → PNG 이미지 해석. 카탈로그 카드에 아이콘 + 즐겨찾기 별 토글 표시. 카탈로그 상단에 "즐겨찾기만 보기" 체크박스
+- [x] 카탈로그 데이터 폴백 로직 (네트워크 실패 시 호스트가 주입한 스냅샷 사용: 하이브리드 방식): 호스트가 wsb 생성 시점에 `CatalogCacheFilePath`를 staging의 `catalog/catalog.xml`로 복사, Spork의 `ResourceCacheManager`가 네트워크 실패 시 같은 디렉터리에서 읽어 들이도록 폴백
 - [x] 여러 사이트 순차 사용 UX: 카탈로그 진입 사용자는 설치 완료 후 자동 종료 대신 "카탈로그로 돌아가기" 버튼이 노출되어 다음 사이트를 이어서 선택 가능. 명령줄(--select) 진입은 종전대로 자동 종료(외부 호출 호환).
 - [x] 샌드박스 안에서 Spork 재실행용 데스크톱 바로가기 자동 생성 (`IShortcutCreator`로 Spork.exe를 가리키는 .lnk를 MainWindow 로드 시 1회 생성, 매번 덮어쓰는 안전 호출).
 
-### Phase 4 — 데이터 / 설정 / 호환성
+### Phase 4: 데이터 / 설정 / 호환성
 - [ ] `PreferenceSettings`에 새 항목 추가 (`BackupFolder`, 퀵 스타트 기본값 등)
 - [ ] 사용자 기존 설정 마이그레이션 정책 (즐겨찾기는 Spork로 이전?)
 - [ ] 명령줄 인자(`--select`) 동작 변경 가이드
-- [ ] 바로가기 생성 기능 (`IShortcutCreator`) 의미 재정의 — 퀵 스타트 단축키로?
+- [ ] 바로가기 생성 기능 (`IShortcutCreator`) 의미 재정의: 퀵 스타트 단축키로?
 - [ ] CommandLineComposer가 호스트에서 만들어주던 명령줄을 Spork 쪽으로 이전
 
-### Phase 5 — 마무리
+### Phase 5: 마무리
 - [ ] 리소스 문자열(`UIStringResources`) 정리/추가/번역
 - [ ] 테스트 (`TableCloth.Test`, `Spork.Test`) 업데이트
 - [ ] 스크린샷/README 업데이트
@@ -117,7 +117,7 @@
   - 근거: 샌드박스 내부 네트워크 실패 사례가 경험적으로 존재 → 폴백 필수. 동시에 카탈로그 UI/로직은 Spork에 일원화되어야 함.
   - 비용 (호스트-Spork 계약 분산)은 향후 Spork→TableCloth 병합 Phase에서 자연스럽게 해소됨.
   - 호스트는 빌드 시 이미 생성하는 `Images.zip` 파이프라인을 재활용한다.
-- [x] **`--select <SiteId>` 명령줄 인자 호환성** (2026-05-11 결정): **하위 호환 유지 — 퀵 스타트를 거친 뒤 SiteId를 Spork에 그대로 전달**. 기존 사용자/바로가기가 깨지지 않도록 호스트는 인자를 보존하여 샌드박스 안 Spork에 넘기고, Spork가 그 SiteId의 사이트를 자동 선택/실행한다.
+- [x] **`--select <SiteId>` 명령줄 인자 호환성** (2026-05-11 결정): **하위 호환 유지: 퀵 스타트를 거친 뒤 SiteId를 Spork에 그대로 전달**. 기존 사용자/바로가기가 깨지지 않도록 호스트는 인자를 보존하여 샌드박스 안 Spork에 넘기고, Spork가 그 SiteId의 사이트를 자동 선택/실행한다.
 - [x] **샌드박스 표준 마운트 컨벤션** (2026-05-11 결정): 모든 wsb는 **App 디렉터리(읽기 전용)**, **Data 디렉터리(읽기-쓰기)**를 항상 마운트한다.
   - **App**: Spork 실행 파일 + 카탈로그 스냅샷 + 보조 리소스. 호스트가 매 실행마다 최신 상태로 채워 넣는다.
   - **Data**: 영속 상태 저장소. 즐겨찾기, 사용 기록, 사용자 다운로드/백업 등 사용자의 자산이 모두 여기에 누적된다.
@@ -130,15 +130,15 @@
 ## 결정 필요 / 오픈 이슈
 
 - [ ] **공동인증서 미사용 사용자 경험**: 기본 체크 해제? 퀵 스타트에서 "건너뛰기" 일급 동작 제공?
-- [x] **Data 디렉터리 호스트 기본 경로**: #282에서 확정 — `SharedLocations.DefaultDataDirectoryPath` +
+- [x] **Data 디렉터리 호스트 기본 경로**: #282에서 확정. `SharedLocations.DefaultDataDirectoryPath` +
   사용자 지정 경로(`GetEffectiveDataDirectoryPath`), 옵션에 "데이터 디렉터리" 탭으로 노출.
 - [x] **App / Data 디렉터리의 샌드박스 내부 경로 컨벤션**: `SandboxMountPaths`(예: `SandboxMountPaths.DataDirectory`)
-  상수로 확정 — Spork(`UserDataStore`)와 wsb 생성 로직이 공유.
+  상수로 확정. Spork(`UserDataStore`)와 wsb 생성 로직이 공유.
 - [ ] **카탈로그 스냅샷 포맷**: App 디렉터리 안에 zip으로 둘지 압축 해제 상태로 둘지, 버전 메타 파일 포함 여부.
 
 ## 향후 Phase (본 작업 이후)
 
-- **Phase 6 — Spork → TableCloth 병합**: 별도 EXE/프로젝트로 분리되어 있는 Spork를 TableCloth 본체에 흡수. 본 작업에서 도입하는 "호스트-Spork 카탈로그 스냅샷 계약"은 이 시점에 내부 호출로 단순화된다. 따라서 본 작업의 계약 설계는 *임시 비용*임을 전제로 단순/얇게 유지한다.
+- **Phase 6(Spork → TableCloth 병합)**: 별도 EXE/프로젝트로 분리되어 있는 Spork를 TableCloth 본체에 흡수. 본 작업에서 도입하는 "호스트-Spork 카탈로그 스냅샷 계약"은 이 시점에 내부 호출로 단순화된다. 따라서 본 작업의 계약 설계는 *임시 비용*임을 전제로 단순/얇게 유지한다.
 
 ## 진행 방식
 
