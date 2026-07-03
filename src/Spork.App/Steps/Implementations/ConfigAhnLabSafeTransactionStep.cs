@@ -4,20 +4,18 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using TableCloth;
-using TableCloth.Resources;
 
 namespace Spork.Steps.Implementations
 {
     public sealed class ConfigAhnLabSafeTransactionStep : StepBase<InstallItemViewModel>
     {
         public ConfigAhnLabSafeTransactionStep(
-            IAppMessageBox appMessageBox)
+            IAppUserInterface appUserInterface)
         {
-            _appMessageBox = appMessageBox;
+            _appUserInterface = appUserInterface;
         }
 
-        private readonly IAppMessageBox _appMessageBox;
+        private readonly IAppUserInterface _appUserInterface;
 
         public override Task LoadContentForStepAsync(InstallItemViewModel viewModel, Action<double> progressCallback, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
@@ -38,21 +36,10 @@ namespace Spork.Steps.Implementations
                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                 "AhnLab", "Safe Transaction", "StSess.exe");
 
-            var comSpecPath = Helpers.GetDefaultCommandLineInterpreterPath();
-
-            if (!File.Exists(comSpecPath))
-                TableClothAppException.Throw(ErrorStrings.Error_CommandLineInterpreter_Missing);
-
-            // To Do: 상세한 설명을 담은 UI를 제작할 필요가 있음.
-            _appMessageBox.DisplayInfo(UIStringResources.Instruction_ConfigASTx);
-
-            using (var process = Helpers.CreateRunProcess(comSpecPath, stSessPath, "/config"))
-            {
-                if (!process.Start())
-                    TableClothAppException.Throw(ErrorStrings.Error_StSessConfig_CanNotStart);
-                else
-                    _appMessageBox.DisplayInfo(UIStringResources.Await_ConfigASTx);
-            }
+            // 이슈 #275: 기존의 단순 OK 메시지 2개 대신, 시각 가이드 + 설정 열기 + 확인 게이트를 담은
+            // 전용 안내 창을 띄운다. 사용자가 "원격 접속 차단" 해제를 확인해야 계속할 수 있게 유도한다.
+            // 실제 설정값은 ASTx가 암호화 저장하고 외부에서 검증할 수 없어, 확인은 사용자 확인 게이트로만 가능하다.
+            _appUserInterface.ShowAhnLabSafeTxGuideDialog(stSessPath);
 
             return Task.CompletedTask;
         }

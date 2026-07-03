@@ -55,5 +55,16 @@ namespace Spork.Components.Implementations
 
         public MainWindow CreateMainWindow()
             => _serviceProvider.GetRequiredService<MainWindow>();
+
+        public bool ShowAhnLabSafeTxGuideDialog(string stSessPath)
+        {
+            // 스텝은 백그라운드 스레드에서 실행되므로, 창 생성/ShowDialog는 UI 스레드로 디스패치한다(AppMessageBox와 동일 방식).
+            return (bool)_applicationService.DispatchInvoke(new Func<bool>(() =>
+            {
+                var window = SetOwnerIfAvailable(_serviceProvider.GetRequiredService<AhnLabSafeTxGuideWindow>());
+                window.ViewModel.StSessPath = stSessPath;
+                return window.ShowDialog() == true;
+            }), new object[] { });
+        }
     }
 }

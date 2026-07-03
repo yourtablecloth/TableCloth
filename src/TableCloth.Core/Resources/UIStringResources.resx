@@ -153,8 +153,38 @@
   <data name="AboutWindow_Title" xml:space="preserve">
     <value>About This Program</value>
   </data>
-  <data name="Await_ConfigASTx" xml:space="preserve">
-    <value>Once you've finalized your settings, hit the OK button.</value>
+  <data name="AstxGuide_Title" xml:space="preserve">
+    <value>AhnLab Safe Transaction Setup Guide</value>
+  </data>
+  <data name="AstxGuide_Description" xml:space="preserve">
+    <value>Windows Sandbox displays its screen over Remote Desktop (RDP). If AhnLab Safe Transaction's "Block Remote Access" is on, the sandbox is forcibly terminated. Before visiting the site, be sure to turn it off following the steps below.</value>
+  </data>
+  <data name="AstxGuide_VisualCaption" xml:space="preserve">
+    <value>In the settings window, find and uncheck this item:</value>
+  </data>
+  <data name="AstxGuide_SettingLabel" xml:space="preserve">
+    <value>Block Remote Access</value>
+  </data>
+  <data name="AstxGuide_UncheckHere" xml:space="preserve">
+    <value>← uncheck</value>
+  </data>
+  <data name="AstxGuide_Steps" xml:space="preserve">
+    <value>1. Click 'Open ASTx Settings' below.
+2. In the settings window, uncheck 'Block Remote Access'.
+3. Click the Close button in the settings window.
+4. Tick the checkbox below, then click 'Continue'.</value>
+  </data>
+  <data name="AstxGuide_OpenSettingsButton" xml:space="preserve">
+    <value>Open ASTx Settings</value>
+  </data>
+  <data name="AstxGuide_ConfirmCheckbox" xml:space="preserve">
+    <value>I have unchecked 'Block Remote Access' and closed the settings window.</value>
+  </data>
+  <data name="AstxGuide_ContinueButton" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="AstxGuide_SkipButton" xml:space="preserve">
+    <value>Skip</value>
   </data>
   <data name="Build_Debug" xml:space="preserve">
     <value>This build is for development purposes only.</value>
@@ -355,9 +385,6 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   </data>
   <data name="Install_VerifyEnvironment" xml:space="preserve">
     <value>Verifying Environment</value>
-  </data>
-  <data name="Instruction_ConfigASTx" xml:space="preserve">
-    <value>AhnLab Safe Transaction needs to turn off the remote access blocking feature to continue running Windows Sandbox. Please uncheck the Block Remote Access checkbox on the screen and click the Close button.</value>
   </data>
   <data name="MainWindow_Column_Category" xml:space="preserve">
     <value>Category</value>

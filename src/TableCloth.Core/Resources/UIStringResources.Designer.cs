@@ -183,12 +183,66 @@ namespace TableCloth.Resources {
         /// <summary>
         ///   Once you&apos;ve finalized your settings, hit the OK button.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        public static string Await_ConfigASTx {
+        public static string AstxGuide_Title {
             get {
-                return ResourceManager.GetString("Await_ConfigASTx", resourceCulture);
+                return ResourceManager.GetString("AstxGuide_Title", resourceCulture);
             }
         }
-        
+
+        public static string AstxGuide_Description {
+            get {
+                return ResourceManager.GetString("AstxGuide_Description", resourceCulture);
+            }
+        }
+
+        public static string AstxGuide_VisualCaption {
+            get {
+                return ResourceManager.GetString("AstxGuide_VisualCaption", resourceCulture);
+            }
+        }
+
+        public static string AstxGuide_SettingLabel {
+            get {
+                return ResourceManager.GetString("AstxGuide_SettingLabel", resourceCulture);
+            }
+        }
+
+        public static string AstxGuide_UncheckHere {
+            get {
+                return ResourceManager.GetString("AstxGuide_UncheckHere", resourceCulture);
+            }
+        }
+
+        public static string AstxGuide_Steps {
+            get {
+                return ResourceManager.GetString("AstxGuide_Steps", resourceCulture);
+            }
+        }
+
+        public static string AstxGuide_OpenSettingsButton {
+            get {
+                return ResourceManager.GetString("AstxGuide_OpenSettingsButton", resourceCulture);
+            }
+        }
+
+        public static string AstxGuide_ConfirmCheckbox {
+            get {
+                return ResourceManager.GetString("AstxGuide_ConfirmCheckbox", resourceCulture);
+            }
+        }
+
+        public static string AstxGuide_ContinueButton {
+            get {
+                return ResourceManager.GetString("AstxGuide_ContinueButton", resourceCulture);
+            }
+        }
+
+        public static string AstxGuide_SkipButton {
+            get {
+                return ResourceManager.GetString("AstxGuide_SkipButton", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   This build is for development purposes only.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
@@ -798,15 +852,6 @@ namespace TableCloth.Resources {
         public static string Install_VerifyEnvironment {
             get {
                 return ResourceManager.GetString("Install_VerifyEnvironment", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   AhnLab Safe Transaction needs to turn off the remote access blocking feature to continue running Windows Sandbox. Please uncheck the Block Remote Access checkbox on the screen and click the Close button.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        public static string Instruction_ConfigASTx {
-            get {
-                return ResourceManager.GetString("Instruction_ConfigASTx", resourceCulture);
             }
         }
         

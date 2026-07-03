@@ -153,8 +153,38 @@
   <data name="AboutWindow_Title" xml:space="preserve">
     <value>프로그램 정보</value>
   </data>
-  <data name="Await_ConfigASTx" xml:space="preserve">
-    <value>설정을 마무리하셨다면 확인 버튼을 눌러주세요.</value>
+  <data name="AstxGuide_Title" xml:space="preserve">
+    <value>AhnLab Safe Transaction 설정 안내</value>
+  </data>
+  <data name="AstxGuide_Description" xml:space="preserve">
+    <value>Windows Sandbox는 화면을 원격 데스크톱(RDP)으로 표시합니다. AhnLab Safe Transaction의 '원격 접속 차단'이 켜져 있으면 샌드박스가 강제로 종료됩니다. 사이트에 접속하기 전에 아래 순서대로 반드시 해제해 주세요.</value>
+  </data>
+  <data name="AstxGuide_VisualCaption" xml:space="preserve">
+    <value>설정 창에서 아래 항목을 찾아 체크를 해제하세요:</value>
+  </data>
+  <data name="AstxGuide_SettingLabel" xml:space="preserve">
+    <value>원격 접속 차단</value>
+  </data>
+  <data name="AstxGuide_UncheckHere" xml:space="preserve">
+    <value>← 체크 해제</value>
+  </data>
+  <data name="AstxGuide_Steps" xml:space="preserve">
+    <value>1. 아래 'ASTx 설정 열기'를 누릅니다.
+2. 설정 창에서 '원격 접속 차단' 체크를 해제합니다.
+3. 설정 창의 닫기 버튼을 누릅니다.
+4. 아래 확인란에 체크한 뒤 '계속'을 누릅니다.</value>
+  </data>
+  <data name="AstxGuide_OpenSettingsButton" xml:space="preserve">
+    <value>ASTx 설정 열기</value>
+  </data>
+  <data name="AstxGuide_ConfirmCheckbox" xml:space="preserve">
+    <value>'원격 접속 차단'을 해제하고 설정 창을 닫았습니다.</value>
+  </data>
+  <data name="AstxGuide_ContinueButton" xml:space="preserve">
+    <value>계속</value>
+  </data>
+  <data name="AstxGuide_SkipButton" xml:space="preserve">
+    <value>건너뛰기</value>
   </data>
   <data name="Build_Debug" xml:space="preserve">
     <value>개발 목적 전용 빌드입니다.</value>
@@ -355,9 +385,6 @@
   </data>
   <data name="Install_VerifyEnvironment" xml:space="preserve">
     <value>환경 확인</value>
-  </data>
-  <data name="Instruction_ConfigASTx" xml:space="preserve">
-    <value>AhnLab Safe Transaction에서 원격 접속 차단 기능을 해제해야 Windows Sandbox를 계속 실행할 수 있습니다. 화면에서 원격 접속 차단 체크 박스를 해제한 후, 닫기 버튼을 눌러주세요.</value>
   </data>
   <data name="MainWindow_Column_Category" xml:space="preserve">
     <value>분류</value>

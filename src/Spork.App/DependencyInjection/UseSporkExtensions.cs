@@ -125,6 +125,7 @@ public static class UseSporkExtensions
         builder.Services
             .AddWindow<AboutWindow, AboutWindowViewModel>()
             .AddWindow<PrecautionsWindow, PrecautionsWindowViewModel>()
+            .AddWindow<AhnLabSafeTxGuideWindow, AhnLabSafeTxGuideWindowViewModel>()
             .AddWindow<InstallStepsWindow, InstallStepsWindowViewModel>()
             .AddWindow<MainWindow, MainWindowViewModel>()
             .AddTransient<SiteReportWindow>()
