@@ -21,7 +21,8 @@ namespace TableCloth.Components.Implementations;
 public sealed class SandboxBuilder(
     IAppMessageBox appMessageBox,
     IArchiveExpander archiveExpander,
-    ISharedLocations sharedLocations) : ISandboxBuilder
+    ISharedLocations sharedLocations,
+    IPreferencesManager preferencesManager) : ISandboxBuilder
 {
     /// <summary>
     /// 호스트 측 per-session staging 폴더 안에서 TableCloth 바이너리 + 런타임 + 세션 자료가 모이는 leaf 이름.
@@ -79,6 +80,14 @@ public sealed class SandboxBuilder(
 
         // 인증서가 있으면 App\certs 하위로 떨궈둔다. App 폴더가 그대로 샌드박스 Desktop\App로
         // 노출되므로 추가 마운트 없이 Spork가 AppContext.BaseDirectory\certs에서 그대로 읽는다.
+        // [미리 보기] 유휴 자동 종료 정책은 전역 환경 설정이므로, 진입 경로(QuickStart/Detail/명령줄)와
+        // 무관하게 여기서 한 번 읽어 SporkAnswers에 실어 보낸다. 기본값은 꺼짐이라 정상 사용자엔 영향이 없다.
+        var preferences = await preferencesManager.LoadPreferencesAsync(cancellationToken).ConfigureAwait(false)
+            ?? preferencesManager.GetDefaultPreferences();
+
+        // StartupScript가 idle-guard 프로세스 기동 여부를 판단할 수 있도록 설정값을 구성에도 반영한다.
+        tableClothConfiguration.EnableIdleAutoLogout = preferences.EnableIdleAutoLogout;
+
         var sporkAnswers = new SporkAnswers
         {
             HostUILocale = CultureInfo.CurrentUICulture.Name,
@@ -86,6 +95,9 @@ public sealed class SandboxBuilder(
             // 시작 시점 테마를 맞춘다(이슈 #246).
             HostUsesLightTheme = DetectHostUsesLightTheme(),
             HostHighContrastScheme = DetectHostHighContrastScheme(),
+            // [미리 보기] 유휴 자동 종료(이슈 #197).
+            EnableIdleAutoLogout = preferences.EnableIdleAutoLogout,
+            IdleAutoLogoutMinutes = preferences.IdleAutoLogoutMinutes,
         };
         await StageCertPairAsync(appDirectory, tableClothConfiguration.CertPair, sporkAnswers, cancellationToken).ConfigureAwait(false);
 
@@ -336,11 +348,19 @@ reg add ""HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System"" /v Wa
 "
             : string.Empty;
 
+        // [미리 보기] 유휴 자동 종료(이슈 #197). 기능이 켜져 있으면 Spork 런처와 독립된 idle-guard 프로세스를
+        // start로 분리 기동한다. 이렇게 하면 사용자가 Spork 창을 닫아도(또는 아예 안 열어도) 유휴 보호가 유지된다.
+        // 유휴 시간 등 세부 정책은 같은 폴더의 SporkAnswers.json에서 가드가 직접 읽는다.
+        var idleGuardScript = tableClothConfiguration.EnableIdleAutoLogout
+            ? $@"start """" ""{tableClothExeInSandbox}"" idle-guard
+"
+            : string.Empty;
+
         return $@"@echo off
 pushd ""%~dp0""
 {dotnetRootScript}reg add ""HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy"" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1
 {disableEdgeGpuScript}{darkWallpaperScript}""%SystemRoot%\System32\citool.exe"" --refresh >nul 2>&1
-""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
+{idleGuardScript}""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
 popd
 @echo on
 ";

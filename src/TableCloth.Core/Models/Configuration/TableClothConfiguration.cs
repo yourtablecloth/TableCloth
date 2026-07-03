@@ -64,5 +64,11 @@ namespace TableCloth.Models.Configuration
         /// 호스트 GPU 공유를 막고 StartupScript가 Edge 하드웨어 가속 정책도 함께 끕니다.
         /// </summary>
         public bool EnableSandboxGpuAcceleration { get; set; }
+
+        /// <summary>
+        /// [미리 보기] 유휴 자동 종료 사용 여부(이슈 #197). true이면 StartupScript가 별도의 idle-guard
+        /// 프로세스를 함께 기동한다(자세한 유휴 시간은 SporkAnswers로 전달). 기본값은 꺼짐.
+        /// </summary>
+        public bool EnableIdleAutoLogout { get; set; }
     }
 }

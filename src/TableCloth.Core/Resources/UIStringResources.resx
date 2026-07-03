@@ -425,6 +425,30 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Option_UsePrinterCheckboxText" xml:space="preserve">
     <value>Using with printers</value>
   </data>
+  <data name="Options_Section_Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Options_Section_Preview_Description" xml:space="preserve">
+    <value>Preview features are experimental and may change or be removed without notice. Enable only if you'd like to try them.</value>
+  </data>
+  <data name="Option_EnableIdleAutoLogout" xml:space="preserve">
+    <value>Auto-close when idle (Preview)</value>
+  </data>
+  <data name="Option_EnableIdleAutoLogout_Description" xml:space="preserve">
+    <value>If there is no keyboard/mouse input for the set time, the sandbox session is shut down automatically, reducing the risk of leaving an authenticated banking session open while away. A brief warning appears before shutdown, and any input cancels it. (Preview limitation: the session is terminated, but the sandbox window may not close immediately.)</value>
+  </data>
+  <data name="Option_IdleAutoLogout_MinutesLabel" xml:space="preserve">
+    <value>Idle time allowed (minutes)</value>
+  </data>
+  <data name="Sandbox_IdleLogout_WarningTitle" xml:space="preserve">
+    <value>Auto-close pending</value>
+  </data>
+  <data name="Sandbox_IdleLogout_WarningMessage" xml:space="preserve">
+    <value>No input detected. The sandbox will close automatically in {0} seconds. To keep using it, press any key or move the mouse.</value>
+  </data>
+  <data name="Sandbox_IdleLogout_KeepUsingButton" xml:space="preserve">
+    <value>Keep using</value>
+  </data>
   <data name="Option_UsePrinterCheckbox_Description" xml:space="preserve">
     <value>This shares the printers connected to your host PC so the sandbox can use them. It is not the same as installing a virtual printer app (such as 'Everyone's Printer') inside the sandbox. Such printer software must be downloaded and installed inside the sandbox, and may require the latest Microsoft Visual C++ Redistributable first.</value>
   </data>

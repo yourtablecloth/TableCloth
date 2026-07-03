@@ -49,5 +49,18 @@ namespace TableCloth.Models.Answers
         /// <see langword="true"/>일 때만 의미가 있다.
         /// </summary>
         public string CertSubjectNameForNpkiApp { get; set; } = null;
+
+        /// <summary>
+        /// [미리 보기] 샌드박스에 일정 시간 입력이 없으면 자동으로 종료할지 여부. 호스트의
+        /// <c>PreferenceSettings.EnableIdleAutoLogout</c>에서 전달된다. 샌드박스 부팅 시 Spork의
+        /// 유휴 모니터가 이 값이 <see langword="true"/>일 때만 동작한다.
+        /// </summary>
+        public bool EnableIdleAutoLogout { get; set; }
+
+        /// <summary>
+        /// [미리 보기] 자동 종료까지의 유휴 허용 시간(분). <see cref="EnableIdleAutoLogout"/>가
+        /// <see langword="true"/>일 때만 의미가 있다.
+        /// </summary>
+        public int IdleAutoLogoutMinutes { get; set; }
     }
 }

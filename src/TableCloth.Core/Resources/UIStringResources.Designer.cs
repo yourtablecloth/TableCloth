@@ -1176,6 +1176,54 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string Options_Section_Preview {
+            get {
+                return ResourceManager.GetString("Options_Section_Preview", resourceCulture);
+            }
+        }
+
+        public static string Options_Section_Preview_Description {
+            get {
+                return ResourceManager.GetString("Options_Section_Preview_Description", resourceCulture);
+            }
+        }
+
+        public static string Option_EnableIdleAutoLogout {
+            get {
+                return ResourceManager.GetString("Option_EnableIdleAutoLogout", resourceCulture);
+            }
+        }
+
+        public static string Option_EnableIdleAutoLogout_Description {
+            get {
+                return ResourceManager.GetString("Option_EnableIdleAutoLogout_Description", resourceCulture);
+            }
+        }
+
+        public static string Option_IdleAutoLogout_MinutesLabel {
+            get {
+                return ResourceManager.GetString("Option_IdleAutoLogout_MinutesLabel", resourceCulture);
+            }
+        }
+
+        public static string Sandbox_IdleLogout_WarningTitle {
+            get {
+                return ResourceManager.GetString("Sandbox_IdleLogout_WarningTitle", resourceCulture);
+            }
+        }
+
+        public static string Sandbox_IdleLogout_WarningMessage {
+            get {
+                return ResourceManager.GetString("Sandbox_IdleLogout_WarningMessage", resourceCulture);
+            }
+        }
+
+        public static string Sandbox_IdleLogout_KeepUsingButton {
+            get {
+                return ResourceManager.GetString("Sandbox_IdleLogout_KeepUsingButton", resourceCulture);
+            }
+        }
+
         public static string Option_UsePrinterCheckbox_Description {
             get {
                 return ResourceManager.GetString("Option_UsePrinterCheckbox_Description", resourceCulture);

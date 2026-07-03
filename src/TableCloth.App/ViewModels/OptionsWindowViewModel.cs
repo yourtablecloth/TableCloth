@@ -32,6 +32,7 @@ public static class OptionsTabKeys
     public const string DeviceSharing = nameof(DeviceSharing);
     public const string Compatibility = nameof(Compatibility);
     public const string Diagnostics = nameof(Diagnostics);
+    public const string Preview = nameof(Preview);
 }
 
 [Obsolete("This class is reserved for design-time usage.", false)]
@@ -80,6 +81,7 @@ public partial class OptionsWindowViewModel : ObservableObject
             OptionsTabKeys.DeviceSharing => 3,
             OptionsTabKeys.Compatibility => 4,
             OptionsTabKeys.Diagnostics => 5,
+            OptionsTabKeys.Preview => 6,
             _ => 0,
         };
     }
@@ -99,6 +101,12 @@ public partial class OptionsWindowViewModel : ObservableObject
             EnableLogAutoCollecting = currentConfig.UseLogCollection;
             ShareNpkiFolder = currentConfig.ShareNpkiFolder;
             EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration;
+
+            // [미리 보기] 유휴 자동 종료(이슈 #197). 값이 옵션 목록에 없으면 가장 가까운 기본값으로 보정.
+            EnableIdleAutoLogout = currentConfig.EnableIdleAutoLogout;
+            IdleAutoLogoutMinutes = IdleTimeoutOptions.Contains(currentConfig.IdleAutoLogoutMinutes)
+                ? currentConfig.IdleAutoLogoutMinutes
+                : 10;
 
             RefreshDataDirectoryDisplay(currentConfig.DataDirectoryHostPath);
 
@@ -321,6 +329,16 @@ public partial class OptionsWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _enableSandboxGpuAcceleration;
 
+    // [미리 보기] 유휴 자동 종료(이슈 #197). 기본 꺼짐 + 유휴 허용 시간(분).
+    [ObservableProperty]
+    private bool _enableIdleAutoLogout;
+
+    [ObservableProperty]
+    private int _idleAutoLogoutMinutes = 10;
+
+    /// <summary>유휴 허용 시간(분) 선택지. ComboBox에 바인딩된다.</summary>
+    public IReadOnlyList<int> IdleTimeoutOptions { get; } = new[] { 5, 10, 15, 30 };
+
     /// <summary>
     /// 데이터 디렉터리 탭에 표시되는 현재 유효 Data 경로(설정값이 없으면 호스트 기본 경로).
     /// </summary>
@@ -408,6 +426,14 @@ public partial class OptionsWindowViewModel : ObservableObject
 
             case nameof(EnableSandboxGpuAcceleration):
                 currentConfig.EnableSandboxGpuAcceleration = viewModel.EnableSandboxGpuAcceleration;
+                break;
+
+            case nameof(EnableIdleAutoLogout):
+                currentConfig.EnableIdleAutoLogout = viewModel.EnableIdleAutoLogout;
+                break;
+
+            case nameof(IdleAutoLogoutMinutes):
+                currentConfig.IdleAutoLogoutMinutes = viewModel.IdleAutoLogoutMinutes;
                 break;
 
             default:

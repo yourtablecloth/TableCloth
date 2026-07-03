@@ -96,6 +96,18 @@ namespace TableCloth.Models.Configuration
         public bool EnableSandboxGpuAcceleration { get; set; } = false;
 
         /// <summary>
+        /// [미리 보기] 샌드박스에 일정 시간 키보드·마우스 입력이 없으면 자동으로 종료할지 여부입니다.
+        /// 인증된 뱅킹 세션을 자리 비운 사이 열어두는 위험을 줄이기 위한 실험적 보안 기능이며, 기본값은 꺼짐입니다.
+        /// </summary>
+        public bool EnableIdleAutoLogout { get; set; } = false;
+
+        /// <summary>
+        /// [미리 보기] 자동 종료를 실행하기까지의 유휴 허용 시간(분)입니다. <see cref="EnableIdleAutoLogout"/>가
+        /// 켜져 있을 때만 의미가 있으며, 기본값은 10분입니다.
+        /// </summary>
+        public int IdleAutoLogoutMinutes { get; set; } = 10;
+
+        /// <summary>
         /// Disclaimer 알림을 표시해야 하는지 여부를 반환합니다.
         /// </summary>
         /// <param name="currentTime">현재 시간 (UTC)</param>

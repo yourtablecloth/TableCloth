@@ -21,6 +21,10 @@ internal static class Program
 {
     private const string SporkVerb = "spork";
 
+    // [미리 보기] 유휴 자동 종료(이슈 #197) 전용 헤드리스 프로세스. StartupScript가 Spork 런처와 별개로
+    // 기동하여, 창을 닫아도 유휴 보호가 유지되게 한다.
+    private const string IdleGuardVerb = "idle-guard";
+
     [STAThread]
     private static int Main(string[] args)
     {
@@ -40,7 +44,27 @@ internal static class Program
         if (args.Length > 0 && string.Equals(args[0], SporkVerb, StringComparison.OrdinalIgnoreCase))
             return RunSpork(args.Skip(1).ToArray());
 
+        if (args.Length > 0 && string.Equals(args[0], IdleGuardVerb, StringComparison.OrdinalIgnoreCase))
+            return RunIdleGuard(args.Skip(1).ToArray());
+
         return RunTableCloth(args);
+    }
+
+    // [미리 보기] 유휴 자동 종료 가드(이슈 #197). 메인 창 없는 최소 WPF 앱을 띄워 유휴 모니터만 돌린다.
+    // 헤드리스 헬퍼이므로 실패해도 대화상자를 띄우지 않고 조용히 종료한다.
+    private static int RunIdleGuard(string[] args)
+    {
+        try
+        {
+            var app = new Spork.IdleGuardApplication();
+            app.Run();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[idle-guard] fatal: {ex}");
+        }
+
+        return Environment.ExitCode;
     }
 
     private static int RunTableCloth(string[] args)

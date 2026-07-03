@@ -1,0 +1,14 @@
+<Window x:Class="Spork.Dialogs.IdleLogoutWarningWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Core"
+        Title="{x:Static res:UIStringResources.Sandbox_IdleLogout_WarningTitle}"
+        Width="440" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen" Topmost="True" ShowInTaskbar="False">
+    <StackPanel Margin="24">
+        <TextBlock x:Name="MessageText" TextWrapping="Wrap" FontSize="14" LineHeight="22" />
+        <Button x:Name="KeepUsingButton" Margin="0 18 0 0" Padding="18 6" HorizontalAlignment="Right"
+                Content="{x:Static res:UIStringResources.Sandbox_IdleLogout_KeepUsingButton}"
+                Click="KeepUsingButton_Click" IsDefault="True" />
+    </StackPanel>
+</Window>

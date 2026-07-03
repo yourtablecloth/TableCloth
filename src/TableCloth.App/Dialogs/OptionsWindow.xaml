@@ -150,6 +150,27 @@
                     <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UseAutoLogCollecting}" IsChecked="{Binding EnableLogAutoCollecting}" />
                 </StackPanel>
             </TabItem>
+
+            <!-- 미리 보기(Preview): 실험적 기능. 현재는 유휴 자동 종료(이슈 #197) 한 가지. 기본 꺼짐. -->
+            <TabItem Header="{x:Static res:UIStringResources.Options_Section_Preview}">
+                <StackPanel Margin="12">
+                    <TextBlock Margin="0 0 0 8" TextWrapping="Wrap"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               Text="{x:Static res:UIStringResources.Options_Section_Preview_Description}" />
+                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_EnableIdleAutoLogout}" IsChecked="{Binding EnableIdleAutoLogout}" />
+                    <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               Text="{x:Static res:UIStringResources.Option_EnableIdleAutoLogout_Description}" />
+                    <StackPanel Orientation="Horizontal" Margin="22 8 0 0" VerticalAlignment="Center"
+                                IsEnabled="{Binding EnableIdleAutoLogout}">
+                        <TextBlock VerticalAlignment="Center" Margin="0 0 8 0"
+                                   Text="{x:Static res:UIStringResources.Option_IdleAutoLogout_MinutesLabel}" />
+                        <ComboBox Width="80" VerticalAlignment="Center"
+                                  ItemsSource="{Binding IdleTimeoutOptions}"
+                                  SelectedItem="{Binding IdleAutoLogoutMinutes}" />
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
         </TabControl>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 12 0 0">

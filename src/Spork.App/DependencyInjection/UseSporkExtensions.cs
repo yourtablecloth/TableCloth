@@ -105,6 +105,10 @@ public static class UseSporkExtensions
         builder.Services
             .AddSingleton<IMicrosoftEdgeInstaller, MicrosoftEdgeInstaller>();
 
+        // [미리 보기] 유휴 자동 종료(이슈 #197)는 Spork 런처 프로세스가 아니라 별도의 idle-guard 프로세스에서
+        // 동작한다(창을 닫아도 유지되도록). 관련 서비스(SessionIdleMonitor/SessionPolicyProvider)는 그
+        // 진입점(IdleGuardApplication)이 직접 생성하므로 여기서는 DI에 등록하지 않는다.
+
         builder.Services
             .AddSingleton<IStepsFactory, StepsFactory>()
             .AddSingleton<IStepsComposer, StepsComposer>()
