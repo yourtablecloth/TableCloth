@@ -1,0 +1,106 @@
+name: Announce release on Discord
+
+# 정식 릴리스(released: 비-draft, 비-prerelease)가 게시되면 Discord 웹훅으로 공지한다(이슈 #273).
+# winget_publish.yml 과 동일한 트리거 방식이며, 수동 재게시를 위해 workflow_dispatch(release_tag)도 지원한다.
+# 서드파티 액션 없이 curl+jq 로 임베드를 구성한다(릴리스 노트 본문은 jq --arg 로 안전하게 이스케이프).
+# 실제 웹훅 URL 은 리포지터리 secret DISCORD_WEBHOOK_URL 로만 참조한다(로그에 마스킹됨).
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to announce (e.g., v1.20.4)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  announce:
+    name: Post release announcement to Discord
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve release info
+        id: rel
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          EVENT_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          TAG="${EVENT_TAG:-$INPUT_TAG}"
+          if [ -z "$TAG" ]; then
+            echo "No release tag resolved (neither release event nor workflow input)."
+            exit 1
+          fi
+          # 이벤트/수동 실행 모두 동일하게 정규 릴리스 데이터를 조회한다.
+          gh release view "$TAG" --repo "$REPO" \
+            --json tagName,name,body,url,isPrerelease,isDraft,publishedAt > release.json
+          if [ "$(jq -r '.isDraft' release.json)" = "true" ]; then
+            echo "Release $TAG is still a draft; not announcing."
+            exit 1
+          fi
+          {
+            echo "tag=$(jq -r '.tagName' release.json)"
+            echo "name=$(jq -r '.name // .tagName' release.json)"
+            echo "url=$(jq -r '.url' release.json)"
+            echo "published=$(jq -r '.publishedAt // ""' release.json)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build and send Discord embed
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TAG: ${{ steps.rel.outputs.tag }}
+          NAME: ${{ steps.rel.outputs.name }}
+          URL: ${{ steps.rel.outputs.url }}
+          PUBLISHED: ${{ steps.rel.outputs.published }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then
+            echo "DISCORD_WEBHOOK_URL secret is not set; skipping."
+            exit 0
+          fi
+
+          # 릴리스 노트 본문. Discord 임베드 description 상한(4096자)보다 넉넉히 아래로 자른다.
+          BODY="$(jq -r '.body // ""' release.json)"
+          MAX=1600
+          if [ "${#BODY}" -gt "$MAX" ]; then
+            BODY="${BODY:0:$MAX}"$'\n\n…(전체 릴리스 노트는 아래 링크에서 확인하세요.)'
+          fi
+          DESC="**식탁보 ${TAG}** 새 버전이 게시되었습니다. 🎉"$'\n\n'"${BODY}"
+
+          # jq --arg 로 본문 특수문자(따옴표/개행/백틱 등)를 안전하게 이스케이프. 유효한 timestamp 만 포함.
+          PAYLOAD="$(jq -n \
+            --arg title "🍽️ ${NAME}" \
+            --arg url "$URL" \
+            --arg desc "$DESC" \
+            --arg ts "$PUBLISHED" \
+            '{
+              username: "식탁보 릴리스",
+              embeds: [
+                ( {
+                    title: $title,
+                    url: $url,
+                    description: $desc,
+                    color: 5793266,
+                    footer: { text: "TableCloth" }
+                  }
+                  + ( if ($ts | length) > 0 then { timestamp: $ts } else {} end)
+                )
+              ]
+            }')"
+
+          code="$(curl -sS -o response.txt -w '%{http_code}' \
+            -H 'Content-Type: application/json' \
+            -X POST -d "$PAYLOAD" "$DISCORD_WEBHOOK_URL")"
+          echo "Discord responded: HTTP $code"
+          cat response.txt || true
+          # 웹훅 성공은 204(No Content). ?wait=true 시 200.
+          if [ "$code" != "204" ] && [ "$code" != "200" ]; then
+            echo "Discord webhook request failed (HTTP $code)."
+            exit 1
+          fi
+          echo "Announcement posted for ${TAG}."
