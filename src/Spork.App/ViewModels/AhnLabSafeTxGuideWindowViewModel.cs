@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Spork.Components;
 using System;
-using System.Diagnostics;
+using TableCloth;
 using TableCloth.Events;
 
 namespace Spork.ViewModels
@@ -38,7 +38,7 @@ namespace Spork.ViewModels
         [NotifyCanExecuteChangedFor(nameof(ContinueCommand))]
         private bool _isConfirmed;
 
-        /// <summary>ASTx 설정 제어판을 연다(다시 열기 포함).</summary>
+        /// <summary>ASTx 설정 제어판(StSess.exe /config)을 연다(다시 열기 포함).</summary>
         [RelayCommand]
         private void OpenSettings()
         {
@@ -47,7 +47,11 @@ namespace Spork.ViewModels
                 if (string.IsNullOrWhiteSpace(StSessPath))
                     return;
 
-                Process.Start(new ProcessStartInfo(StSessPath, "/config") { UseShellExecute = true });
+                // StSess.exe 를 직접 Process.Start 하면 안랩 보안 프로세스가 접근을 거부한다(access denied).
+                // 기존에 동작하던 방식대로 cmd 의 start 로 우회 실행한다: cmd /c start "" "StSess.exe" "/config".
+                var comSpecPath = Helpers.GetDefaultCommandLineInterpreterPath();
+                using var process = Helpers.CreateRunProcess(comSpecPath, StSessPath, "/config");
+                process.Start();
             }
             catch (Exception ex)
             {
