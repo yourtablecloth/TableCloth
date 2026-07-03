@@ -40,6 +40,10 @@ namespace Spork.Components.Implementations
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, uriBuilder.Uri);
             httpRequest.Headers.CacheControl = new CacheControlHeaderValue() { NoCache = true, NoStore = true, };
             httpRequest.Headers.UserAgent.TryParseAdd(ConstantStrings.UserAgentText);
+            // 사용률/버전 채택률 측정용 앱 식별 헤더(서버 로그용). client=spork 는 샌드박스가 실제로 실행됐음을 뜻해
+            // host 신호(앱 실행)와 구분된다. 브라우저 위장 UA 는 그대로 두고 X- 헤더만 추가(PII 없음).
+            httpRequest.Headers.TryAddWithoutValidation("X-TableCloth-Version", Helpers.GetAppVersion());
+            httpRequest.Headers.TryAddWithoutValidation("X-TableCloth-Client", $"spork; {System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture}");
 
             var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             _catalogLastModified = httpResponse.Content.Headers.LastModified;

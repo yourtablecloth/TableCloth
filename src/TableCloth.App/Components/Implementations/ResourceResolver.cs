@@ -42,16 +42,20 @@ public sealed class ResourceResolver(
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, uriBuilder.Uri);
             httpRequest.Headers.CacheControl = new CacheControlHeaderValue() { NoCache = true, NoStore = true, };
             httpRequest.Headers.UserAgent.TryParseAdd(ConstantStrings.UserAgentText);
+            // ì‚¬ìš©ë¥ /ë²„ì „ ì±„íƒë¥  ì¸¡ì •ì„ ìœ„í•´ ìš°ë¦¬ ì—”ë“œí¬ì¸íŠ¸(ì¹´íƒˆë¡œê·¸) ìš”ì²­ì—ë§Œ ì•± ì‹ë³„ í—¤ë”ë¥¼ ì‹£ëŠ”ë‹¤(ì„œë²„ ë¡œê·¸ìš© ì‹ í˜¸).
+            // ë¸Œë¼ìš°ì € ìœ„ì¥ UA ëŠ” ì œ3ì ë‹¤ìš´ë¡œë“œ ì°¨ë‹¨ íšŒí”¼ìš©ì´ë¼ ê·¸ëŒ€ë¡œ ë‘ê³ , X- í—¤ë”ë§Œ ì¶”ê°€í•œë‹¤(PII ì—†ìŒ).
+            httpRequest.Headers.TryAddWithoutValidation("X-TableCloth-Version", Helpers.GetAppVersion());
+            httpRequest.Headers.TryAddWithoutValidation("X-TableCloth-Client", $"host; {System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture}");
 
             var httpResponse = await httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             httpResponse.EnsureSuccessStatusCode();
 
             _catalogLastModified = httpResponse.Content.Headers.LastModified;
 
-            // ÀÀ´ä ³»¿ëÀ» ¹ÙÀÌÆ® ¹è¿­·Î ÀĞ¾î¼­ Ä³½Ã ÆÄÀÏ·Î ÀúÀå
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½è¿­ï¿½ï¿½ ï¿½Ğ¾î¼­ Ä³ï¿½ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½
             var catalogContent = await httpResponse.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
             
-            // ·ÎÄÃ Ä³½Ã¿¡ ÀúÀå
+            // ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½Ã¿ï¿½ ï¿½ï¿½ï¿½ï¿½
             await SaveCatalogCacheAsync(catalogContent, cancellationToken).ConfigureAwait(false);
 
             using var catalogStream = new MemoryStream(catalogContent);
@@ -81,7 +85,7 @@ public sealed class ResourceResolver(
         }
         catch
         {
-            // Ä³½Ã ÀúÀå ½ÇÆĞ´Â ¹«½Ã
+            // Ä³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ğ´ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
     }
 

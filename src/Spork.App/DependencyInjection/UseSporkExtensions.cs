@@ -53,6 +53,10 @@ public static class UseSporkExtensions
             o.Dsn = ConstantStrings.SentryDsn;
             o.Debug = true;
             o.TracesSampleRate = 1.0;
+            // Release Health: 세션·버전 채택/리텐션·crash-free 측정. Environment 로 host 세션과 구분.
+            o.AutoSessionTracking = true;
+            o.Release = $"TableCloth@{Helpers.GetAppVersion()}";
+            o.Environment = "sandbox";
         }))
         {
             builder.Logging

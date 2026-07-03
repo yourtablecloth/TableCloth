@@ -92,6 +92,11 @@ public partial class SplashScreenViewModel : ObservableObject
                     o.Dsn = ConstantStrings.SentryDsn;
                     o.Debug = true;
                     o.TracesSampleRate = 1.0;
+                    // Release Health: 세션(DAU/MAU)·버전 채택/리텐션·crash-free 비율 측정.
+                    // 이 Init 은 진단 동의(UseLogCollection)에 게이트되어 있어 프라이버시 동의를 그대로 상속한다.
+                    o.AutoSessionTracking = true;
+                    o.Release = $"TableCloth@{Helpers.GetAppVersion()}";
+                    o.Environment = "host"; // 샌드박스 세션(Spork)과 구분
                 });
             }
 
