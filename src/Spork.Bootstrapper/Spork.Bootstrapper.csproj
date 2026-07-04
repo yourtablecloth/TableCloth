@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!--
+		무설치(Express) 레인용 소형 GUI 다운로더. 포터블 Spork zip 을 진행률과 함께 받아
+		SHA256 검증 → 압축 해제 → Spork.exe 실행까지 담당한다. 설계/계약은
+		docs/EXPRESS_BOOTSTRAPPER_DESIGN.md 참조.
+
+		UI 는 순수 Win32/GDI(공통 컨트롤) + NativeAOT. WPF/WinForms 는 내장 COM 의존으로
+		NativeAOT 불가라 제외했고(공식 제약 "Windows: No built-in COM"), P/Invoke 는 외부
+		생성기(CsWin32) 없이 손수 작성한 [LibraryImport] 로 둔다(외부 패키지 0, AOT 클린).
+	-->
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+		<RootNamespace>Spork.Bootstrapper</RootNamespace>
+		<AssemblyName>Spork.Bootstrapper</AssemblyName>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>preview</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Deterministic>true</Deterministic>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<!-- EXE 파일 아이콘: TableCloth 메인 앱과 동일한 아이콘. 창/작업표시줄 아이콘은
+		     런타임에 ExtractIconEx 로 자기 exe 에서 꺼내 WM_SETICON/클래스 아이콘으로 적용. -->
+		<ApplicationIcon>..\TableCloth\App.ico</ApplicationIcon>
+		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+		<Description>식탁보 준비 도구 (Win32/GDI + NativeAOT). 포터블 식탁보 패키지를 진행률과 함께 받아 검증·해제 후 실행한다.</Description>
+	</PropertyGroup>
+
+	<!--
+		NativeAOT 게시 정책. TableCloth/Spork 와 동일하게 RuntimeIdentifier 가 명시된
+		경우(= 실제 publish 호출)에만 활성화되어 솔루션 `dotnet build`(AnyCPU)에는 영향이 없다.
+		게시:  dotnet publish src/Spork.Bootstrapper -c Release -r win-x64 -p:PublishAot=true -o <out>
+	-->
+	<PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+		<PublishAot>true</PublishAot>
+		<OptimizationPreference>Size</OptimizationPreference>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<!-- 크기 절감용 feature switch (진단에 필요한 StackTrace 는 유지). -->
+		<EventSourceSupport>false</EventSourceSupport>
+		<HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+		<MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+		<DebuggerSupport>false</DebuggerSupport>
+		<UseSystemResourceKeys>true</UseSystemResourceKeys>
+		<AutoreleasePoolSupport>false</AutoreleasePoolSupport>
+	</PropertyGroup>
+
+</Project>

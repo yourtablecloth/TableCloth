@@ -4,6 +4,8 @@
 > 정규 계약. 핵심 설계(설계 B, `{arch}` 토큰, 사이트 위치 인자, 체크섬 맵)는 확정됐고, 소비자별
 > 세부(§9)와 추후 결정(§12: 웹앱 호스팅, MCP 전송)만 각 트랙 착수 시 확정한다.
 > 관련 배경: [PORTABLE_MODE2_TODO.md](PORTABLE_MODE2_TODO.md) (모드 2, 무설치 코어, 자산명 계약).
+> 부트스트랩 GUI화: [EXPRESS_BOOTSTRAPPER_DESIGN.md](EXPRESS_BOOTSTRAPPER_DESIGN.md) (§4의 다운로드 이후
+> 단계를 Win32/GDI + NativeAOT exe로 위임, `.ps1`은 shim으로 축소. 본 스펙의 `.wsb` 계약 §3.3은 불변).
 
 ## 0. 목적과 범위
 

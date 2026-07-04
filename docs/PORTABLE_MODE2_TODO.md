@@ -88,6 +88,8 @@ NPKI가 무설치 WSB에 들어올 길이 없다 → 그쪽의 자연스러운, 
   포터블 zip 다운로드 → 압축 해제 → 실행.
 - 신뢰 모델: `.wsb`는 마운트가 없어 호스트 파일 접근 권한을 갖지 않는다. 다운로드 신뢰는
   통제된 HTTPS 오리진 + 체크섬으로 관리(웹앱 책임).
+- 다운로드 UX 보강: 큰 포터블 zip을 조용히 받는 무반응 구간을 없애기 위해, 부트스트랩을 작은
+  GUI 다운로더(Win32/GDI + NativeAOT)로 앞세우는 설계는 [EXPRESS_BOOTSTRAPPER_DESIGN.md](EXPRESS_BOOTSTRAPPER_DESIGN.md) 참조.
 
 ## 작업 항목
 
