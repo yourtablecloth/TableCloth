@@ -405,13 +405,10 @@ internal static partial class Program
         try
         {
             string arch = ArchString();
-            string url = await ResolveZipUrlAsync(arch);
-
             string dest = s_options.Dest ?? Path.Combine(DesktopDir(), "Spork");
             string zipPath = Path.Combine(Path.GetTempPath(), "Spork_Portable.zip");
 
-            SetStatus(Loc.S.Downloading);
-            await DownloadWithProgressAsync(url, zipPath);
+            await DownloadSporkAsync(arch, zipPath);
 
             string? expected = s_options.Sha256For(arch);
             if (!string.IsNullOrEmpty(expected))
@@ -477,16 +474,46 @@ internal static partial class Program
         }
     }
 
-    /// <summary>인자 템플릿이 있으면 그것을(정상 경로), 없으면 GitHub 최신 릴리스에서 zip URL 을 해석한다.</summary>
-    private static async Task<string> ResolveZipUrlAsync(string arch)
+    /// <summary>
+    /// Spork 포터블 zip 을 받는다. 우선순위: (1) 인자 템플릿(Express 레인) → (2) 고정 URL
+    /// (GitHub latest/download 버전프리 별칭, 런처 기본값) → (3) GitHub API 폴백(버전드 자산 매칭).
+    /// </summary>
+    private static async Task DownloadSporkAsync(string arch, string zipPath)
     {
+        // (1) 명시적 인자 템플릿(웹앱/MCP/Express 레인).
         if (!string.IsNullOrEmpty(s_options.ZipUrlTemplate))
-            return s_options.ZipUrlTemplate.Replace("{arch}", arch);
+        {
+            SetStatus(Loc.S.Downloading);
+            await DownloadWithProgressAsync(s_options.ZipUrlTemplate.Replace("{arch}", arch), zipPath);
+            return;
+        }
 
+        // (2) 고정 URL: 항상 최신 릴리스의 버전프리 별칭을 가리킨다. HttpClient 가 리다이렉트를 따라간다.
+        string fixedUrl = $"https://github.com/{s_options.GithubRepo}/releases/latest/download/Spork_{arch}_Portable.zip";
+        try
+        {
+            SetStatus(Loc.S.Downloading);
+            await DownloadWithProgressAsync(fixedUrl, zipPath);
+            return;
+        }
+        catch (Exception ex)
+        {
+            // 별칭이 아직 없는(구) 릴리스 등: API 폴백으로 버전드 자산을 찾는다.
+            Log($"fixed URL failed ({ex.GetType().Name}: {ex.Message}); GitHub API 폴백");
+        }
+
+        // (3) GitHub API 폴백.
         SetStatus(Loc.S.CheckingLatest);
         SetIndeterminate();
+        string apiUrl = await ResolveViaGitHubApiAsync(arch);
+        SetStatus(Loc.S.Downloading);
+        await DownloadWithProgressAsync(apiUrl, zipPath);
+    }
+
+    private static async Task<string> ResolveViaGitHubApiAsync(string arch)
+    {
         string repo = s_options.GithubRepo;
-        Log($"resolving latest release from GitHub ({repo})");
+        Log($"resolving latest release from GitHub API ({repo})");
 
         using var req = new HttpRequestMessage(HttpMethod.Get, $"https://api.github.com/repos/{repo}/releases/latest");
         req.Headers.Accept.ParseAdd("application/vnd.github+json");

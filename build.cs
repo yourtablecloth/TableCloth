@@ -285,6 +285,17 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
                 Path.Combine(sporkReleasesDir, $"Spork-spork-{platform}-Portable.zip"),
                 Path.Combine(sporkReleasesDir, $"{sporkPrefix}_Portable.zip"));
 
+            // 버전프리 별칭(고정 URL): github.com/.../releases/latest/download/Spork_<arch>_Portable.zip
+            // 런처가 무인자로 항상 최신을 받는 baked default 가 이 이름에 의존한다. Release 만.
+            // (공개 계약: EXPRESS_BOOTSTRAPPER_DESIGN.md §10, PARAMETERIZED_WSB_SPEC §7)
+            if (config == "Release")
+            {
+                File.Copy(
+                    Path.Combine(sporkReleasesDir, $"{sporkPrefix}_Portable.zip"),
+                    Path.Combine(sporkReleasesDir, $"Spork_{platform}_Portable.zip"), overwrite: true);
+                Console.WriteLine($"Aliased -> Spork_{platform}_Portable.zip");
+            }
+
             // === 무설치 부트스트래퍼 (Win32/GDI + NativeAOT 단일 exe) ===
             // 원격 실행 코드이므로 서명 범위 대상(현재 TODO: 아래 참조). NativeAOT 게시는
             // 빌드 에이전트에 MSVC(C++) 빌드 도구가 필요하고, arm64 는 x64 에서 크로스컴파일한다.
@@ -303,11 +314,21 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             var bootstrapperExe = Path.Combine(bootstrapperPublishDir, "Spork.Bootstrapper.exe");
             if (File.Exists(bootstrapperExe))
             {
+                // 버전드(아카이브용).
                 var bootstrapperDest = Path.Combine(sporkReleasesDir, $"SporkBootstrap_{projectVersion}_{config}_{platform}.exe");
                 File.Copy(bootstrapperExe, bootstrapperDest, overwrite: true);
                 Console.WriteLine($"Copied -> {Path.GetFileName(bootstrapperDest)}");
-                // TODO(작업 §14-7): --sign 시 이 단독 exe 를 signtool 로 직접 서명한다
-                // (Velopack pack 을 거치지 않는 산출물이라 --signParams 경로가 적용되지 않음).
+
+                // 버전프리 별칭(고정 URL): .../releases/latest/download/SporkBootstrap_<arch>.exe
+                // .wsb/웹/사용자가 런처를 영구 링크로 받는 이름. Release 만.
+                if (config == "Release")
+                {
+                    File.Copy(bootstrapperExe, Path.Combine(sporkReleasesDir, $"SporkBootstrap_{platform}.exe"), overwrite: true);
+                    Console.WriteLine($"Aliased -> SporkBootstrap_{platform}.exe");
+                }
+                // 서명: 위 exe(및 별칭)는 모두 *.exe 릴리스 자산이므로 tools/sign-release.ps1 이
+                // draft 릴리스에서 일괄 서명한다(Velopack --signParams 경로와 별개). 로컬 build.cs 는
+                // 미서명 산출물만 만든다.
             }
             else if (!skip)
             {
