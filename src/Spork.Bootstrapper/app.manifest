@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+	<assemblyIdentity version="1.0.0.0" name="Spork.Bootstrapper" />
+	<!--
+		asInvoker: 부트스트래퍼는 관리자 권한이 필요 없다. DNS 선보정은 .ps1 shim(샌드박스
+		LogonCommand 권한)이 이미 처리하고, 부트스트래퍼는 Desktop 하위에 받아 실행만 한다.
+		(패턴 A 사용자 VM 에서 단독 실행 시 불필요한 UAC 승격을 피한다.)
+	-->
+	<trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+		<security>
+			<requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+				<requestedExecutionLevel level="asInvoker" uiAccess="false" />
+			</requestedPrivileges>
+		</security>
+	</trustInfo>
+	<compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+		<application>
+			<!-- Windows 10, 11 -->
+			<supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" />
+		</application>
+	</compatibility>
+	<application xmlns="urn:schemas-microsoft-com:asm.v3">
+		<windowsSettings>
+			<!--
+				PerMonitorV2 DPI 인식: 앱이 직접 DPI 를 처리한다. Program.cs 가 GetDpiForWindow 로
+				배율을 얻어 폰트/자식 컨트롤 좌표를 스케일하고, 모니터 이동 시 WM_DPICHANGED 로 재적용한다.
+				(dpiAware=true 는 PerMonitorV2 미지원 구형 OS 폴백.)
+			-->
+			<dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2,PerMonitor</dpiAwareness>
+			<dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware>
+			<longPathAware xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">true</longPathAware>
+		</windowsSettings>
+	</application>
+	<!-- comctl32 v6: 테마 적용된 공통 컨트롤(msctls_progress32, 버튼)을 쓰기 위해 필수. -->
+	<dependency>
+		<dependentAssembly>
+			<assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="*" publicKeyToken="6595b64144ccf1df" language="*" />
+		</dependentAssembly>
+	</dependency>
+</assembly>

@@ -11,6 +11,9 @@ var solutionFile = "TableCloth.slnx";
 var mainProject = Path.Combine("src", "TableCloth", "TableCloth.csproj");
 // Spork 단독 배포/재사용 아티팩트 진입점 (TableCloth 와 같은 릴리스에 별도 패키징).
 var sporkProject = Path.Combine("src", "Spork", "Spork.csproj");
+// 무설치(Express) 레인용 소형 GUI 다운로더 (Win32/GDI + NativeAOT 단일 exe).
+// docs/EXPRESS_BOOTSTRAPPER_DESIGN.md 참조.
+var bootstrapperProject = Path.Combine("src", "Spork.Bootstrapper", "Spork.Bootstrapper.csproj");
 // Resources 폴더는 Phase 1.2에서 TableCloth.App으로 이전됨.
 var iconPath = Path.Combine("src", "TableCloth.App", "Resources", "SandboxIcon.ico");
 var directoryBuildProps = "Directory.Build.Props";
@@ -281,6 +284,35 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             RenameRelease(
                 Path.Combine(sporkReleasesDir, $"Spork-spork-{platform}-Portable.zip"),
                 Path.Combine(sporkReleasesDir, $"{sporkPrefix}_Portable.zip"));
+
+            // === 무설치 부트스트래퍼 (Win32/GDI + NativeAOT 단일 exe) ===
+            // 원격 실행 코드이므로 서명 범위 대상(현재 TODO: 아래 참조). NativeAOT 게시는
+            // 빌드 에이전트에 MSVC(C++) 빌드 도구가 필요하고, arm64 는 x64 에서 크로스컴파일한다.
+            var bootstrapperPublishDir = Path.Combine("publish", "bootstrapper", config, $"win-{platform}");
+            if (!skip)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Publishing Spork.Bootstrapper (NativeAOT)...");
+                await RunCommandAsync("dotnet",
+                    $"publish {bootstrapperProject} -c {config} -r win-{platform} -p:PublishAot=true " +
+                    $"-o {bootstrapperPublishDir}");
+            }
+
+            // 공개 다운로드 계약(EXPRESS_BOOTSTRAPPER_DESIGN.md §10): GitHub 릴리스 자산명은
+            // SporkBootstrap_<4파트버전>_<config>_<arch>.exe. (웹앱 호스팅용 안정 별칭은 웹앱 책임)
+            var bootstrapperExe = Path.Combine(bootstrapperPublishDir, "Spork.Bootstrapper.exe");
+            if (File.Exists(bootstrapperExe))
+            {
+                var bootstrapperDest = Path.Combine(sporkReleasesDir, $"SporkBootstrap_{projectVersion}_{config}_{platform}.exe");
+                File.Copy(bootstrapperExe, bootstrapperDest, overwrite: true);
+                Console.WriteLine($"Copied -> {Path.GetFileName(bootstrapperDest)}");
+                // TODO(작업 §14-7): --sign 시 이 단독 exe 를 signtool 로 직접 서명한다
+                // (Velopack pack 을 거치지 않는 산출물이라 --signParams 경로가 적용되지 않음).
+            }
+            else if (!skip)
+            {
+                Console.WriteLine($"  (skip) bootstrapper exe not found: {bootstrapperExe}");
+            }
         }
     }
 
