@@ -73,9 +73,15 @@ NPKI가 무설치 WSB에 들어올 길이 없다 → 그쪽의 자연스러운, 
   - `<platform>` ∈ { `x64`, `arm64` }, `<config>` = `Release`(배포용)
 - 설치형 산출물(무설치 아님, 참고): `Spork_<4파트버전>_<config>_<platform>.exe`
 - Velopack 채널: `spork-<platform>` (메타데이터 `releases.spork-<platform>.json` 등)
+- **버전프리 별칭(고정 URL, 2026-07-05 추가):** 무설치 런처가 무인자로 항상 최신을 받도록,
+  릴리스마다 버전 무관 별칭도 게시한다. GitHub `latest/download`가 영구 URL이 된다.
+  - 포터블: `Spork_<platform>_Portable.zip` → `.../releases/latest/download/Spork_<platform>_Portable.zip`
+  - 런처: `SporkBootstrap_<platform>.exe` → `.../releases/latest/download/SporkBootstrap_<platform>.exe`
+  - 계약/구현: [EXPRESS_BOOTSTRAPPER_DESIGN.md §10](EXPRESS_BOOTSTRAPPER_DESIGN.md), build.cs/build.yml.
 - 산출물은 **self-contained 단일 파일**이라 바 WSB(런타임/마운트 없음)에서 압축 해제 후 즉시 실행 가능.
 - "최신 릴리스 태그 확인 → 위 자산 URL 해석"은 **웹앱 로직(본 repo 스코프 밖)**. 웹앱은 GitHub
-  Releases API로 최신 릴리스를 찾아 `Spork_*_<platform>_Portable.zip` 자산을 매칭한다.
+  Releases API로 최신 릴리스를 찾아 `Spork_*_<platform>_Portable.zip` 자산을 매칭한다. (버전프리 별칭
+  이후로는 웹앱도 고정 URL을 직접 쓸 수 있다.)
 
 ## 무설치 `.wsb` 템플릿 + 부트스트랩 규약
 

@@ -105,12 +105,17 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
 미치환 플레이스홀더(`__SPORK_PORTABLE_ZIP_URL_TEMPLATE__` 같은 값)가 그대로 들어오면 "값 없음"으로
 간주해 폴백으로 넘어간다(치환 누락을 조용한 실패가 아니라 폴백으로 흡수).
 
-## 6. 최신 버전 해석 (인자 수신 + GitHub 폴백)
+## 6. 최신 버전 해석 (인자 → 고정 URL → GitHub API 폴백)
 
-**우선순위:** `--zip-url-template`이 있고 미치환 플레이스홀더가 아니면 그걸 쓴다(정상 경로, 스펙 B). Express
-레인은 항상 이 경로라 게스트가 GitHub에 접근하지 않는다. **없을 때만** GitHub 폴백이 돈다.
+**우선순위:** (1) `--zip-url-template`(Express 레인, 웹앱/MCP 공급) → (2) **고정 URL**(GitHub
+`latest/download`의 버전프리 별칭 `Spork_{arch}_Portable.zip`, 런처 baked default. HttpClient가 리다이렉트를
+따라감) → (3) GitHub API 폴백(아래). 인자가 있으면 (2)(3)을 건너뛴다. 고정 URL이 404(별칭 없는 구 릴리스
+등)면 (3)으로 폴백한다.
 
-**폴백 절차:**
+> 실측(2026-07-05): 무인자 실행 시 고정 URL 시도 → (별칭 미존재) 404 → API 폴백 → 버전드 자산 해석
+> 순으로 동작 확인. 별칭이 포함된 릴리스부터는 (2)에서 바로 성공(무-API).
+
+**(3) GitHub API 폴백 절차:**
 
 1. `GET https://api.github.com/repos/{owner}/{repo}/releases/latest` (`User-Agent` 헤더 필수).
 2. `assets[]`에서 이름이 `Spork_`로 시작하고 `_{arch}_Portable.zip`으로 끝나는 자산의 `browser_download_url`
@@ -176,8 +181,9 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
   생성해 리플렉션 0. **내장 COM 미사용**이라 AOT 클린(COM이 필요해지면 내장 COM이 아니라 소스 생성
   `[GeneratedComInterface]` ComWrappers로 간다). WndProc는 `[UnmanagedCallersOnly]` + 함수 포인터.
   `PublishAot=true`, arch별 `-r win-x64` / `-r win-arm64`.
-- **툴체인:** NativeAOT는 빌드 에이전트에 MSVC(C++) 빌드 도구/`ilc` 링커 필요. arm64는 x64 CI에서
-  크로스컴파일하며 arm64 AOT 컴파일러 팩이 있어야 한다.
+- **툴체인:** NativeAOT는 빌드 에이전트에 MSVC(C++) 빌드 도구/`ilc` 링커 필요. CI(build.yml)는 각 arch를
+  **네이티브 러너에서 게시**(x64=windows-latest, arm64=windows-11-arm)해 크로스컴파일이 불필요하다.
+  로컬(build.cs)에선 x64에서 `-r win-arm64` 크로스컴파일도 가능(arm64 AOT 컴파일러 팩 필요).
 - **의존 최소화:** HttpClient, `System.IO.Compression`, `System.Text.Json`(소스 생성) 외 제3자 패키지
   0개. 트리밍 경고는 전부 해소한다. **Sentry/원격 진단은 넣지 않는다**(크기 우선. Spork 본체가 이미
   Sentry 보유). 진단은 `Desktop\spork-bootstrap.log` 파일로만.
@@ -185,8 +191,10 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
 ## 9. 신뢰 / 보안 모델
 
 - **원격 실행 코드다.** exe는 게스트가 네트워크에서 받아 실행한다. [SPEC §10](PARAMETERIZED_WSB_SPEC.md)의
-  서명 신뢰모델에 포함되어야 한다. Certum SimplySign 서명 범위에 부트스트래퍼 exe를 넣는다
-  (build.cs `--sign` 경로). 배포는 공식 오리진만 안내한다.
+  서명 신뢰모델에 포함되어야 한다. 릴리스 경로에선 부트스트래퍼가 `.exe` 자산(버전드 + 버전프리 별칭)이라
+  [tools/sign-release.ps1](../tools/sign-release.ps1)이 draft 릴리스의 모든 `*.exe`를 일괄 서명(Certum
+  SimplySign)하므로 별도 서명 스텝이 필요 없다. 로컬 `build.cs`는 미서명 산출물만 만든다. 배포는 공식
+  오리진만 안내한다.
 - **이중 체크섬 지점:** (a) `.ps1`이 받는 exe는 (선택) 자기 체크섬으로, (b) exe가 받는 zip은 `Sha256Map`으로
   검증한다. 어느 쪽도 강제는 아니지만(자체 호스팅/오프라인 유연성, SPEC §11-3), 있으면 검증하고 불일치 시 중단.
 - **마운트 0 불변:** 부트스트래퍼는 호스트 파일 접근이 없다. 게스트 내부 파일(zip, 해제물, 로그)만 다룬다.
@@ -197,12 +205,19 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
   손수 작성 `[LibraryImport]`(외부 패키지 0), `OutputType=WinExe`, `net10.0`, `PublishAot=true`).
   솔루션(`TableCloth.slnx`)/`build.cs`에 편입 완료.
 - **publish:** arch별로 `dotnet publish src/Spork.Bootstrapper -c Release -r win-<arch> -p:PublishAot=true`.
-- **자산명(공개 계약):**
-  - GitHub 릴리스 자산(아카이브용, 버전드): `SporkBootstrap_<4파트버전>_<config>_<arch>.exe`
-    ([build.cs](../build.cs)의 Spork rename 규칙과 나란히 추가).
-  - 웹앱 호스팅 별칭(안정 URL, `.ps1` 기본값이 가리킴): 예 `https://…/express/Spork.Bootstrapper.{arch}.exe`.
-    항상 최신 부트스트래퍼를 가리키는 안정 별칭이며, **실제 호스팅/치환은 웹앱 책임**(스코프 밖).
-- **서명:** 위 §9대로 exe를 Velopack 서명 흐름에 포함.
+  CI([build.yml](../.github/workflows/build.yml))는 매트릭스 레그에서 네이티브 게시 후 `releases\`에 스테이징,
+  로컬([build.cs](../build.cs))도 동일 자산명으로 산출.
+- **자산명(공개 계약):** 릴리스마다 아래 4종을 게시한다(버전드 = 아카이브/재현, 버전프리 = 고정 URL).
+  - 런처 버전드: `SporkBootstrap_<4파트버전>_<config>_<arch>.exe`
+  - 런처 버전프리(고정 URL): `SporkBootstrap_<arch>.exe`
+  - 포터블 버전드(기존): `Spork_<4파트버전>_<config>_<arch>_Portable.zip`
+  - 포터블 버전프리(고정 URL): `Spork_<arch>_Portable.zip`
+- **고정 URL(런처 특성):** GitHub `latest/download`는 버전-비의존 자산명일 때 영구 URL이 된다.
+  - 런처 배포: `https://github.com/<repo>/releases/latest/download/SporkBootstrap_<arch>.exe`
+    (`.wsb`/웹/사용자가 영구 링크로 참조).
+  - 런처가 받는 포터블: `https://github.com/<repo>/releases/latest/download/Spork_<arch>_Portable.zip`
+    (런처 **baked default**, §6-(2)). `latest`는 게시된 최신을 가리켜 draft→서명→게시 흐름과 안 부딪힌다.
+- **서명:** §9대로 `.exe`(버전드+버전프리)는 `tools/sign-release.ps1`이 draft에서 일괄 서명.
 
 ## 11. `.wsb` / `spork-bootstrap.ps1` 개정
 
@@ -272,3 +287,8 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
   (ITaskbarList3, 소스 생성 COM). AOT 게시 4.93MB(+0.2MB, ILC 경고 0). 실측: EXE 임베드 아이콘 1개 확인,
   창 스타일에 MINIMIZEBOX 없음/SYSMENU 있음 확인, happy 경로(작업표시줄 COM 활성)에서 크래시 없이 실행/
   자기종료 확인. 작업표시줄 진행 막대와 창 아이콘의 시각 표시는 대화형 확인.
+- (URL 고정 + CI/CD, 2026-07-05) 런처에 **고정 URL**(GitHub `latest/download` 버전프리 별칭)을 baked
+  default 로 추가, API 폴백 유지(§6). build.cs/build.yml 이 버전프리 별칭(`Spork_<arch>_Portable.zip`,
+  `SporkBootstrap_<arch>.exe`)을 릴리스 자산으로 게시. CI(build.yml)에 런처 NativeAOT 네이티브 게시 +
+  자산 스테이징 + 심볼 + 릴리스 노트 링크 추가. 서명은 기존 `sign-release.ps1`이 `*.exe`를 일괄 처리.
+  실측: 무인자 실행 시 고정 URL 404 → API 폴백 동작 확인(현 릴리스엔 별칭 부재).

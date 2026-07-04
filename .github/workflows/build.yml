@@ -254,6 +254,51 @@ jobs:
         Write-Host "Renamed: $portableDst"
       shell: pwsh
 
+    # --- 무설치 런처: Spork.Bootstrapper (Win32/GDI + NativeAOT 단일 exe) ---
+    # 각 매트릭스 레그에서 네이티브 arch 로 NativeAOT 게시(x64=windows-latest, arm64=windows-11-arm).
+    # 러너에 VS C++ 빌드 도구(MSVC 링커)가 있어야 한다(GitHub windows 이미지 기본 포함).
+    - name: Publish Spork.Bootstrapper (NativeAOT)
+      if: matrix.configuration == 'Release'
+      run: dotnet publish src\Spork.Bootstrapper\Spork.Bootstrapper.csproj -r win-${{ env.Platform }} -p:PublishAot=true -c:$env:Configuration -o publish-bootstrapper
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    # 릴리스 자산: 버전드(아카이브) + 버전프리 별칭(고정 URL). 두 이름 모두 *.exe 라
+    # tools/sign-release.ps1 이 draft 릴리스에서 일괄 서명한다.
+    #   고정 URL: https://github.com/<repo>/releases/latest/download/SporkBootstrap_<arch>.exe
+    - name: Stage Spork.Bootstrapper assets (versioned + fixed-URL alias)
+      if: matrix.configuration == 'Release'
+      run: |
+        $ver  = "${{ steps.get_version.outputs.FULL_VERSION }}"
+        $arch = "${{ env.Platform }}"
+        $src  = "publish-bootstrapper\Spork.Bootstrapper.exe"
+        if (-not (Test-Path $src)) { throw "Bootstrapper exe not found: $src" }
+        Copy-Item $src "releases\SporkBootstrap_${ver}_Release_${arch}.exe"
+        Copy-Item $src "releases\SporkBootstrap_${arch}.exe"
+        Write-Host "Staged SporkBootstrap_${ver}_Release_${arch}.exe + SporkBootstrap_${arch}.exe"
+      shell: pwsh
+
+    # 포터블 zip 버전프리 별칭(런처 baked default 가 의존하는 고정 URL):
+    #   https://github.com/<repo>/releases/latest/download/Spork_<arch>_Portable.zip
+    - name: Create version-free portable alias (fixed URL)
+      if: matrix.configuration == 'Release'
+      run: |
+        $ver  = "${{ steps.get_version.outputs.FULL_VERSION }}"
+        $arch = "${{ env.Platform }}"
+        $src  = "releases\Spork_${ver}_Release_${arch}_Portable.zip"
+        if (-not (Test-Path $src)) { throw "Spork portable not found: $src" }
+        Copy-Item $src "releases\Spork_${arch}_Portable.zip"
+        Write-Host "Aliased Spork_${arch}_Portable.zip"
+      shell: pwsh
+
+    # 런처 PDB 도 symbols 로 수집(설치본/자산에는 심볼 미포함). Package symbols 스텝이 symbols\* 를 묶는다.
+    - name: Collect Spork.Bootstrapper symbols
+      if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
+      run: |
+        New-Item -ItemType Directory -Force symbols\bootstrapper | Out-Null
+        Get-ChildItem publish-bootstrapper -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\bootstrapper -Force
+      shell: pwsh
+
     # Generate SBOM (Release builds only, for tagged releases)
     - name: Generate SBOM
       if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
@@ -399,6 +444,11 @@ jobs:
         - arm64 설치 관리자: [Spork_${FULL_VERSION}_Release_arm64.exe](${base}/Spork_${FULL_VERSION}_Release_arm64.exe)
         - x64 Portable: [Spork_${FULL_VERSION}_Release_x64_Portable.zip](${base}/Spork_${FULL_VERSION}_Release_x64_Portable.zip)
         - arm64 Portable: [Spork_${FULL_VERSION}_Release_arm64_Portable.zip](${base}/Spork_${FULL_VERSION}_Release_arm64_Portable.zip)
+
+        **무설치 런처** (작은 GUI 다운로더 — 항상 최신 식탁보를 받아 실행. 아래는 버전 무관 **고정 URL**)
+        - x64: [SporkBootstrap_x64.exe](https://github.com/${REPO}/releases/latest/download/SporkBootstrap_x64.exe)
+        - arm64: [SporkBootstrap_arm64.exe](https://github.com/${REPO}/releases/latest/download/SporkBootstrap_arm64.exe)
+        - 런처가 받는 포터블 고정 URL: \`https://github.com/${REPO}/releases/latest/download/Spork_<arch>_Portable.zip\` (별칭)
 
         > \`*_symbols.zip\` are debug symbols (PDB) matching these binaries — for developers analyzing crash dumps, not needed by end users.
         >
