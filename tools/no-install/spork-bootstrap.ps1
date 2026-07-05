@@ -1,11 +1,15 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    무설치 Spork 부트스트랩 (참조 구현).
+    무설치 Spork 부트스트랩 (레거시 / 완전 파라미터화형 참조 구현).
 
 .DESCRIPTION
-    no-install-spork.wsb 의 LogonCommand 가 다운로드해 실행하는 스크립트. 마운트 없는 바
-    Windows Sandbox 안에서 self-contained 포터블 Spork 를 받아 실행한다.
+    [참고] 정식 데뷔 기본형은 이 스크립트를 쓰지 않는다. 기본 no-install-spork.wsb 는 런처
+    (SporkBootstrap)를 GitHub 고정 URL 로 직접 받아 실행하는 인라인 LogonCommand 로 간소화됐다
+    (docs/PARAMETERIZED_WSB_SPEC.md §0.5). 본 스크립트는 버전 핀/오프라인/사설 미러 등
+    "완전 파라미터화형"(SPEC §3~§4)의 참조로만 보존한다.
+
+    마운트 없는 바 Windows Sandbox 안에서 self-contained 포터블 Spork 를 받아 실행한다.
 
     동작 순서:
       1) 다운로드 "전"에 공용 DNS(8.8.8.8 / 1.1.1.1) 강제 — DNS 미설정 환경 대비(정상 환경엔 무해).

@@ -334,6 +334,17 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             {
                 Console.WriteLine($"  (skip) bootstrapper exe not found: {bootstrapperExe}");
             }
+
+            // 무설치 실행 진입점 .wsb (정적 파일 — 런처 고정 URL을 가리키는 간소화 기본형). Release 만.
+            if (config == "Release")
+            {
+                var noInstallWsb = Path.Combine("tools", "no-install", "no-install-spork.wsb");
+                if (File.Exists(noInstallWsb))
+                {
+                    File.Copy(noInstallWsb, Path.Combine(sporkReleasesDir, "no-install-spork.wsb"), overwrite: true);
+                    Console.WriteLine("Copied -> no-install-spork.wsb");
+                }
+            }
         }
     }
 

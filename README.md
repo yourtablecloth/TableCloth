@@ -50,15 +50,23 @@
 winget install TableClothProject.TableCloth
 ```
 
-## 무설치(Express) 실행 (개발 중)
+## 무설치(Express) 실행
 
-식탁보를 호스트에 설치하지 않고, 작은 런처만 받아 최신 식탁보를 내려받아 실행하는 무설치 방식을 개발하고 있습니다.
+식탁보를 호스트에 설치하지 않고, 작은 런처(SporkBootstrap)만으로 최신 식탁보를 내려받아 Windows Sandbox 안에서 실행할 수 있습니다. 설치와 업데이트 관리가 필요 없는 일회성 실행 방식입니다.
 
-* **런처(SporkBootstrap)**: Win32/GDI + NativeAOT로 만든 약 5MB의 단일 실행 파일입니다. 최신 포터블 식탁보를 진행률(창 + 작업 표시줄)과 함께 내려받아 무결성 검증, 압축 해제 후 실행합니다. 릴리스마다 버전과 무관한 고정 URL로 배포됩니다.
-* **무설치 코어(마운트 없는 Windows Sandbox)**: 호스트 파일 접근을 원천 차단한 채 샌드박스 격리를 유지하는 실행 레인입니다. 이 방식은 파일 기반 인증서를 쓸 수 없어 모바일 인증을 기본으로 권장합니다.
+### 사용 방법
+
+1. Windows Sandbox가 활성화된 Windows 11 Pro/Edu/Enterprise 환경을 준비합니다.
+2. 최신 릴리스에서 `no-install-spork.wsb`를 내려받아 더블클릭합니다. ([파일 소스](tools/no-install/no-install-spork.wsb))
+3. 샌드박스가 뜨면 런처가 자동으로 최신 식탁보를 내려받아(진행률은 창과 작업 표시줄에 표시) 실행합니다.
+
+### 특징
+
+* **런처(SporkBootstrap)**: Win32/GDI + NativeAOT로 만든 약 5MB의 단일 실행 파일입니다. 최신 포터블 식탁보를 무결성 검증, 압축 해제 후 실행하며, 릴리스마다 버전과 무관한 고정 URL로 배포됩니다.
+* **마운트 없는 샌드박스**: 호스트 파일 접근을 원천 차단해 유출 벡터가 없습니다. 파일 기반 인증서를 쓸 수 없으므로 모바일 인증을 기본으로 권장합니다.
 * 설계와 계약 문서: [무설치 런처 설계](docs/EXPRESS_BOOTSTRAPPER_DESIGN.md), [파라미터화된 .wsb 스펙](docs/PARAMETERIZED_WSB_SPEC.md), [무설치 코어(모드 2)](docs/PORTABLE_MODE2_TODO.md).
 
-> 현재 권장 사용 방식은 위의 UniGetUI 또는 winget 설치 + Windows Sandbox 실행입니다. 무설치 방식은 준비 중인 추가 옵션입니다.
+> 무설치 실행은 런처를 포함한 릴리스부터 사용할 수 있습니다. 자동 업데이트가 필요하면 위의 UniGetUI 또는 winget 설치 방식을 사용하세요. 사내/관리형 네트워크에서는 `.wsb`의 공용 DNS 설정이 정책에 막힐 수 있습니다([#285](https://github.com/yourtablecloth/TableCloth/issues/285)).
 
 ## 웹 사이트 정보 수정 안내
 

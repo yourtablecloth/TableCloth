@@ -219,15 +219,16 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
     (런처 **baked default**, §6-(2)). `latest`는 게시된 최신을 가리켜 draft→서명→게시 흐름과 안 부딪힌다.
 - **서명:** §9대로 `.exe`(버전드+버전프리)는 `tools/sign-release.ps1`이 draft에서 일괄 서명.
 
-## 11. `.wsb` / `spork-bootstrap.ps1` 개정
+## 11. `.wsb` / `spork-bootstrap.ps1` (데뷔: 간소화 인라인)
 
-- **`.wsb`:** 변경 없음. LogonCommand는 이미 `.ps1`을 받아 3개 인자와 함께 실행한다(SPEC §3.2).
-- **`spork-bootstrap.ps1`:** "zip 직접 다운로드"에서 "DNS → arch → 부트스트래퍼 exe 다운로드 → 인자
-  포워딩 실행"으로 개정. 파라미터에 `-BootstrapperExeUrlTemplate`(정적 기본값, `{arch}` 포함)을 추가하되
-  `.wsb`가 안 넘겨도 기본값으로 동작(스펙 B 유지). 기존 `-PortableZipUrlTemplate`, `-SiteIds`, `-Sha256Map`은
-  그대로 exe로 포워딩.
-- **SPEC 반영 필요(착수 시):** [SPEC §4](PARAMETERIZED_WSB_SPEC.md)의 단계 3~4가 exe로 위임됨을 명시하고,
-  참조 부트스트랩이 shim이 됐음을 각주한다. 확정 스펙이므로 본 문서에서 임의 개정하지 않고 작업 항목으로 남긴다.
+- **`.wsb` (데뷔 형태):** [tools/no-install/no-install-spork.wsb](../tools/no-install/no-install-spork.wsb)를
+  **간소화 인라인 기본형**으로 확정([SPEC §0.5](PARAMETERIZED_WSB_SPEC.md)). LogonCommand가 인라인으로
+  DNS 선보정 → arch 판별 → **고정 URL로 런처 exe 직접 다운로드** → 실행한다. 호스팅 ps1도, zip/체크섬
+  플레이스홀더도 없다(일반 런처는 플레이스홀더 0).
+- **`spork-bootstrap.ps1` (레거시/완전형):** 데뷔 기본형은 ps1을 쓰지 않는다. §14-6의 "ps1 shim 개정"은
+  간소화가 **대체**했다(shim 대신 인라인). ps1은 버전 핀/오프라인/사설 미러 등 완전 파라미터화형(SPEC §3~§4)의
+  참조로만 보존하며, 헤더에 그 취지를 명시했다.
+- **SPEC 반영 완료:** SPEC §0.5(간소화 기본형)에 반영. §3~§4는 완전형 계약으로 보존.
 
 ## 12. 스코프 밖 / 비목표
 
@@ -238,10 +239,10 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
 
 ## 13. 열린 결정
 
-- 호스팅 exe 별칭 URL을 안정형으로 둘지 버전드로 둘지(웹앱 소유. 안정형 권장).
-- 폴백 시 `SHA256SUMS` 자산 규약을 릴리스에 추가할지(추가 시 폴백에서도 검증 가능).
-- `.ps1`이 exe(약 25MB)를 조용히 받는 잔여 무반응 구간을 콘솔 한 줄로 알릴지(경미).
-- exe 단독 실행(사용자 VM, 패턴 A) 시 UI에 "사이트 선택" 카탈로그를 노출할지, 순수 다운로더로 둘지.
+- [x] ~~호스팅 exe 별칭 URL 안정형/버전드~~ → **버전프리 고정 URL**(GitHub `latest/download`)로 확정.
+- [ ] 폴백 시 `SHA256SUMS` 자산 규약을 릴리스에 추가할지(추가 시 폴백에서도 검증 가능).
+- [x] ~~`.ps1`의 잔여 무반응 구간 콘솔 알림~~ → 간소화로 ps1 자체가 기본형에서 사라져 무의미.
+- [ ] exe 단독 실행(사용자 VM, 패턴 A) 시 UI에 "사이트 선택" 카탈로그를 노출할지, 순수 다운로더로 둘지.
 
 ## 14. 작업 항목 (구현 착수 시)
 
@@ -253,13 +254,17 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
 - [x] **4. GitHub 폴백**: Releases API + STJ 소스 생성 파싱 + 자산명 접두/접미 매칭(`Spork_*_{arch}_Portable.zip`)
       + 오류 처리. (`BootstrapOptions.cs`)
 - [x] **5. 진행/오류 UI**: 상태 흐름, 재시도, 창 유지, `Desktop\spork-bootstrap.log`.
-- [ ] **6. `.ps1` shim 개정 + SPEC §4/§11 각주**: 다운로드 이후 단계 exe 위임 명문화. (미착수)
-- [~] **7. 서명/자산명 계약**: build.cs rename(`SporkBootstrap_<ver>_<config>_<arch>.exe`)은 완료.
-      Certum signtool 직접 서명은 TODO(build.cs 주석에 표시).
+- [x] **6. (대체됨) `.ps1` shim → 간소화 인라인 `.wsb`**: SPEC §0.5 간소화가 ps1 shim을 대체. 데뷔 형태는
+      [no-install-spork.wsb](../tools/no-install/no-install-spork.wsb) 인라인(ps1 없음). ps1은 완전형 참조로 보존.
+- [x] **7. 서명/자산명 계약**: build.cs/build.yml rename + 버전프리 별칭 완료. 서명은 `tools/sign-release.ps1`이
+      draft의 모든 `*.exe`(별칭 포함)를 일괄 처리(별도 스텝 불필요).
 - [x] **8. 런타임 실측(컨트롤드)**: 실제 GitHub 폴백 → 84MB 다운로드 → 해제까지 실행 검증. 런처 실행
       단계에서 Spork 의 `requireAdministrator` 로 인한 **error 740** 을 발견해 `UseShellExecute=true` 로 수정.
       로컬 HTTP + 더미 Spork.exe 로 실행/인자전달/작업디렉터리까지 재검증(마커 확인). 오류 시 창 유지(§4.2)도
       실측 확인. 남은 것은 실제 창 시각 확인 + 샌드박스 내 동작(수동/샌드박스 세션).
+- [x] **9. 정식 데뷔**: 간소화 인라인 `.wsb` 확정([no-install-spork.wsb](../tools/no-install/no-install-spork.wsb)),
+      README "무설치(Express) 실행" 정식 승격, `.wsb`를 릴리스 자산으로 게시(build.yml/build.cs) + 릴리스 노트
+      진입점 추가. 남은 것은 릴리스 컷(버전 범프 + 태그 → 서명 → 게시)뿐.
 
 ## 변경 이력
 
@@ -292,3 +297,7 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
   `SporkBootstrap_<arch>.exe`)을 릴리스 자산으로 게시. CI(build.yml)에 런처 NativeAOT 네이티브 게시 +
   자산 스테이징 + 심볼 + 릴리스 노트 링크 추가. 서명은 기존 `sign-release.ps1`이 `*.exe`를 일괄 처리.
   실측: 무인자 실행 시 고정 URL 404 → API 폴백 동작 확인(현 릴리스엔 별칭 부재).
+- (정식 데뷔, 2026-07-05) `tools/no-install/no-install-spork.wsb`를 **간소화 인라인 기본형**(고정 URL로 런처
+  직접 다운로드, ps1 없음)으로 확정. `spork-bootstrap.ps1`은 완전형 참조로 격하(헤더 명시). README를
+  "무설치(Express) 실행" 정식 기능으로 승격, `.wsb`를 릴리스 자산으로 게시(진입점 고정 URL). §11/§13/§14
+  갱신(§14-6은 간소화가 대체). 남은 것은 릴리스 컷.
