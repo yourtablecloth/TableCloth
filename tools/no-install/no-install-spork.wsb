@@ -19,9 +19,12 @@
     3) Chocolatey-style bootstrap: ensure TLS 1.2, then download the preparation script TEXT
        from the fixed release URL and run it in-session, with no temp file:
          iex ((New-Object Net.WebClient).DownloadString('...tablecloth-prepare.ps1'))
-       The script downloads the latest launcher (SporkBootstrap_<arch>.exe) with a progress
-       bar and starts it. Because it runs in-session, its 'exit' closes this window, so the
-       window disappears by itself once preparation finishes.
+       The script downloads the latest launcher (SporkBootstrap_<arch>.exe) and starts it.
+       Byte-level download progress is intentionally OFF here: PowerShell 5.1 progress
+       rendering slows the transfer, the launcher is small, and the real progress UX (the
+       big TableCloth download) is owned by the launcher GUI. Because the script runs
+       in-session, its 'exit' closes this window, so the window disappears by itself once
+       preparation finishes.
        (Script source of truth: tools/no-install/tablecloth-prepare.ps1 in the repository.
         Logic changes ship with the next release without redistributing this .wsb.)
     Failures stay visible: both the inline catch below and the script's own catch print the

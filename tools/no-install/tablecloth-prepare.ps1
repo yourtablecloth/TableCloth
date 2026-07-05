@@ -57,7 +57,13 @@ $launcherPath = Join-Path $env:TEMP 'SporkBootstrap.exe'
 
 try {
     Write-Host '  [1/2] Downloading the setup tool...' -ForegroundColor Gray
-    $ProgressPreference = 'Continue'
+    # Progress display intentionally OFF (note: the session default is 'Continue',
+    # so this must be set explicitly). Windows PowerShell 5.1 renders the IWR
+    # progress bar so aggressively that it slows the download itself, and this
+    # file is small (~5 MB) - the step messages are feedback enough here. The
+    # real, user-facing progress UX (the ~90 MB TableCloth download) is owned by
+    # the launcher GUI this script starts.
+    $ProgressPreference = 'SilentlyContinue'
     Invoke-WebRequest "https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_$arch.exe" -OutFile $launcherPath
 
     Write-Host '  [2/2] Done. Starting TableCloth...' -ForegroundColor Green
