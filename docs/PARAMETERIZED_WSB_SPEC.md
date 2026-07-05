@@ -47,7 +47,7 @@ MCP 전송 방식(별도 결정), macSandbox 내부 구현.
   <Networking>Enable</Networking>
   <vGPU>Disable</vGPU>
   <LogonCommand>
-    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -WindowStyle Normal -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-NoExit','-Command','$Host.UI.RawUI.WindowTitle = ''식탁보 준비''; Write-Host '' 식탁보를 준비하고 있습니다...'' -ForegroundColor Cyan; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq ''Up'' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; $p = Join-Path $env:TEMP ''tablecloth-prepare.ps1''; Invoke-WebRequest ''https://github.com/yourtablecloth/TableCloth/releases/latest/download/tablecloth-prepare.ps1'' -OutFile $p; if (Test-Path $p) { . $p ''__SPORK_SITE_IDS__'' } else { Write-Host '' 준비 스크립트를 내려받지 못했습니다. 네트워크 연결을 확인해 주세요.'' -ForegroundColor Red }'"</Command>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -WindowStyle Normal -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-NoExit','-Command','$Host.UI.RawUI.WindowTitle = ''TableCloth Setup''; Write-Host '' Getting TableCloth ready...'' -ForegroundColor Cyan; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq ''Up'' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; $p = Join-Path $env:TEMP ''tablecloth-prepare.ps1''; Invoke-WebRequest ''https://github.com/yourtablecloth/TableCloth/releases/latest/download/tablecloth-prepare.ps1'' -OutFile $p; if (Test-Path $p) { . $p ''__SPORK_SITE_IDS__'' } else { Write-Host '' Could not download the preparation script. Check the network connection.'' -ForegroundColor Red }'"</Command>
   </LogonCommand>
 </Configuration>
 ```
@@ -58,6 +58,10 @@ MCP 전송 방식(별도 결정), macSandbox 내부 구현.
   - **사내 DNS 정책(probe-then-fallback, 이슈 #285 구현):** 위 인라인 DNS는 **먼저 이름 해석을 시도해 실패할 때만** 공용 DNS로 폴백한다(`Resolve-DnsName` 프로브). 정상 DNS(사내 내부 리졸버 등)는 덮어쓰지 않으므로 split-horizon/공용DNS차단 환경에서도 기존 해석을 깨지 않는다. 다만 공용 DNS가 완전 차단되고 게스트 DNS도 안 잡히는 환경이면 폴백해도 해석이 안 되니 내부 리졸버 사용을 권장한다. 모드 1(TableCloth 빌드 샌드박스)은 같은 probe-then-fallback + **옵션 토글**(`PreferenceSettings.EnableSandboxPublicDnsFallback`, 기본 켜짐)로 제어한다([#285](https://github.com/yourtablecloth/TableCloth/issues/285)).
 - **arch 판별은 런처 exe 선택용**: 런처 바이너리가 arch별이라 다운로드 전에 판별한다. 받은 뒤 Spork zip의 arch는 런처가 자체 판별한다.
 - **신뢰**: 통제된 HTTPS 오리진 + 서명된 런처/Spork.exe. 체크섬 맵은 고정 URL 경로에선 생략한다(별도 파라미터 없음).
+- **인코딩 규칙(ASCII 전용, 2026-07-05):** `.wsb`와 준비 스크립트 등 **무설치 정적 자산은 ASCII 전용**으로
+  작성한다(표시 문자열 포함 전체 영문). Windows PowerShell 5.1은 BOM 없는 스크립트를 레거시 ANSI
+  코드페이지로 읽고, 게스트 코드페이지는 호스트 언어팩에 따라 달라 비-ASCII 문자열이 깨져 **파싱 자체가
+  실패**할 수 있다(한국어로 실측). 사용자 대상 현지화 문자열은 런타임에 언어를 처리하는 런처 GUI가 담당한다.
 - **콜드부팅 피드백(2026-07-05):** WSB는 **LogonCommand의 콘솔 창 자체를 숨긴 채** 실행하므로 같은 창
   출력은 보이지 않는다(실측). 그래서 숨은 셸은 `Start-Process -WindowStyle Normal -NoExit`로 **새 보이는
   PowerShell 창** 하나만 띄우고, 이후 전 과정(제목/안내 → DNS 프로브 → 준비 스크립트 다운로드 →
@@ -283,6 +287,9 @@ param(
   `Start-Process -WindowStyle Normal`로 새 보이는 PowerShell 창을 띄우는 방식으로 개정. 안내 메시지 +
   다운로드 진행 막대 + 실패 시 창 유지. Base64 인코딩은 AV 휴리스틱/투명성 사유로 의도적으로 배제.
   §0.5 예시와 `no-install-spork.wsb` 동기화.
+- (ASCII 전용, 2026-07-05) 샌드박스 실물 테스트에서 준비 스크립트의 한글이 모지바케로 **파싱 실패**
+  (PowerShell 5.1의 BOM 없는 파일 = ANSI 코드페이지 해석). `.wsb`/준비 스크립트 전체(주석/표시 문자열 포함)를
+  영문 ASCII 전용으로 전환하고 §0.5에 인코딩 규칙 명문화. 현지화는 런처 GUI 담당.
 - (LogonCommand 리팩토링, 2026-07-05) 준비 스크립트 전문을 `.wsb` 인라인(문자열 배열, 약 2,400자)으로
   내장하던 방식을 **릴리스 자산 `tablecloth-prepare.ps1`(고정 URL) 분리**로 개정 — LogonCommand 약 1,000자
   로 축소, 스크립트는 `tools/no-install/tablecloth-prepare.ps1` 리포 파일로 관리(버전/리뷰 가능). 보이는

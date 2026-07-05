@@ -1,27 +1,34 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    무설치 식탁보 준비 스크립트 (간소화 레인 워커).
+    No-install TableCloth preparation script (simplified-lane worker).
 
 .DESCRIPTION
-    no-install-spork.wsb 가 띄운 "보이는" PowerShell 창(-WindowStyle Normal, -NoExit)이
-    릴리스 고정 URL 에서 이 스크립트를 내려받아 dot-source 로 실행한다. 역할: 최신 런처
-    (SporkBootstrap_<arch>.exe)를 진행률과 함께 내려받아 실행하고 창을 닫는다.
+    Downloaded and dot-sourced by the visible PowerShell window (-WindowStyle Normal,
+    -NoExit) that no-install-spork.wsb spawns. Role: download the latest launcher
+    (SporkBootstrap_<arch>.exe) with a progress bar, run it, then close the window.
 
-    - DNS 선보정(probe-then-fallback)은 이 스크립트 다운로드보다 먼저 필요하므로(닭-달걀)
-      .wsb 인라인에 남는다. 여기서는 하지 않는다.
-    - dot-source 실행을 전제로 하므로 exit 가 곧 창 닫기다. 실패 시에는 오류를 표시하고
-      Enter 입력을 기다린 뒤 닫는다(원인 확인 가능).
-    - 게시: 릴리스 자산 tablecloth-prepare.ps1 (고정 URL:
+    - DNS pre-correction (probe-then-fallback) must happen BEFORE this script can be
+      downloaded (chicken-and-egg), so it stays inline in the .wsb, not here.
+    - Designed to be dot-sourced: 'exit' closes the hosting window. On failure it
+      shows the error and waits for Enter so the cause stays visible.
+    - Published as the release asset 'tablecloth-prepare.ps1' (fixed URL:
       https://github.com/yourtablecloth/TableCloth/releases/latest/download/tablecloth-prepare.ps1).
-      로직 수정은 .wsb 재배포 없이 다음 릴리스부터 반영된다.
+      Logic changes ship with the next release without redistributing the .wsb.
+    - IMPORTANT: keep this file ASCII-only. Windows PowerShell 5.1 reads BOM-less
+      scripts using the legacy ANSI codepage and guest codepages vary by host
+      language pack, so non-ASCII text (e.g. Korean) gets mangled and can break
+      parsing. Localized user-facing text lives in the launcher GUI, which handles
+      languages at runtime.
 
 .PARAMETER SiteIds
-    (선택) 공백 구분 사이트 Id. 지정하면 런처에 --site-ids 로 전달되어 해당 사이트를
-    사전선택한다(은행별 딥링크 .wsb 용, SPEC §0.5 의 __SPORK_SITE_IDS__ 플레이스홀더).
+    (Optional) Space-separated catalog site ids. When given, passed to the launcher
+    as --site-ids to preselect sites (bank-specific deep-link .wsb variants; see
+    the __SPORK_SITE_IDS__ placeholder in PARAMETERIZED_WSB_SPEC.md section 0.5).
 
 .NOTES
-    자산명/고정 URL 계약: docs/PARAMETERIZED_WSB_SPEC.md §0.5, docs/EXPRESS_BOOTSTRAPPER_DESIGN.md §10.
+    Asset-name / fixed-URL contract: docs/PARAMETERIZED_WSB_SPEC.md section 0.5,
+    docs/EXPRESS_BOOTSTRAPPER_DESIGN.md section 10.
 #>
 param(
     [string] $SiteIds = ''
@@ -29,22 +36,22 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-try { $Host.UI.RawUI.WindowTitle = '식탁보 준비' } catch { }
+try { $Host.UI.RawUI.WindowTitle = 'TableCloth Setup' } catch { }
 
 Write-Host ''
-Write-Host '  식탁보를 준비하고 있습니다. 잠시만 기다려 주세요...' -ForegroundColor Cyan
+Write-Host '  Getting TableCloth ready. Please wait...' -ForegroundColor Cyan
 Write-Host ''
 
-# 런처 바이너리는 arch 별이므로 다운로드 전에 판별한다.
+# The launcher binary is per-arch, so detect before downloading.
 $arch = if ($env:PROCESSOR_ARCHITEW6432 -eq 'ARM64' -or $env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }
 $launcherPath = Join-Path $env:TEMP 'SporkBootstrap.exe'
 
 try {
-    Write-Host '  [1/2] 준비 도구를 내려받는 중...' -ForegroundColor Gray
+    Write-Host '  [1/2] Downloading the setup tool...' -ForegroundColor Gray
     $ProgressPreference = 'Continue'
     Invoke-WebRequest "https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_$arch.exe" -OutFile $launcherPath
 
-    Write-Host '  [2/2] 준비 완료. 식탁보를 실행합니다...' -ForegroundColor Green
+    Write-Host '  [2/2] Done. Starting TableCloth...' -ForegroundColor Green
     if ([string]::IsNullOrWhiteSpace($SiteIds)) {
         Start-Process $launcherPath
     }
@@ -56,8 +63,8 @@ try {
 }
 catch {
     Write-Host ''
-    Write-Host ('  다운로드에 실패했습니다: ' + $_.Exception.Message) -ForegroundColor Red
-    Write-Host '  네트워크 연결을 확인한 뒤 샌드박스를 다시 시작해 주세요.' -ForegroundColor Yellow
-    $null = Read-Host '  이 창을 닫으려면 Enter 키를 누르세요'
+    Write-Host ('  Download failed: ' + $_.Exception.Message) -ForegroundColor Red
+    Write-Host '  Check the network connection, then restart the sandbox.' -ForegroundColor Yellow
+    $null = Read-Host '  Press Enter to close this window'
     exit 1
 }

@@ -1,42 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  무설치(no-install) 식탁보 — Windows Sandbox 설정 (간소화 기본형, 일반 런처)
+  No-install TableCloth / Windows Sandbox configuration (simplified default, generic launcher)
 
-  목적: 식탁보 호스트 앱 설치 없이, 이 .wsb 하나를 더블클릭하면 Windows Sandbox 안에서 작은
-        런처(SporkBootstrap)를 받아 실행하고, 런처가 최신 포터블 식탁보를 진행률과 함께 내려받아
-        검증·해제 후 실행한다. (.wsb 는 XML 이라 브라우저로 받아 더블클릭하면 WSB 가 띄운다.)
+  Purpose: run TableCloth without installing the host app. Double-click this .wsb and, inside
+           Windows Sandbox, a small launcher (SporkBootstrap) is downloaded which then fetches
+           the latest portable TableCloth with progress, verifies, extracts and runs it.
+           (.wsb is XML: download it in a browser and double-click to start Windows Sandbox.)
 
-  동작:
-    Windows Sandbox 는 LogonCommand 의 콘솔 창을 숨긴 채 실행하므로, 숨은 셸은 "보이는"
-    PowerShell 창(-WindowStyle Normal, -NoExit) 하나만 띄운다. 이후는 모두 그 창 안에서:
-    1) 창 제목/안내 표시(즉시 피드백).
-    2) DNS 선보정(probe-then-fallback): 이름 해석이 실패할 때만 공용 DNS(8.8.8.8 / 1.1.1.1)로
-       폴백한다. 정상 DNS(사내 내부 리졸버 등)는 건드리지 않는다.
-       (닭-달걀: 아래 다운로드가 DNS 를 필요로 하므로 이 단계만 인라인에 남는다.
-        배경/옵션: https://github.com/yourtablecloth/TableCloth/issues/285)
-    3) 준비 스크립트(tablecloth-prepare.ps1)를 릴리스 고정 URL 에서 내려받아 dot-source 실행.
-       스크립트가 최신 런처(SporkBootstrap_<arch>.exe)를 진행 막대와 함께 받아 실행하고 창을 닫는다.
-       (스크립트 본문은 tools/no-install/tablecloth-prepare.ps1 로 리포에서 관리 — 로직 수정이
-        .wsb 재배포 없이 다음 릴리스부터 반영된다.)
-    실패 시: -NoExit 라 창이 남아 오류를 확인할 수 있다(준비 스크립트도 실패 시 Enter 대기).
+  How it works:
+    Windows Sandbox runs the LogonCommand with its console window hidden, so the hidden shell
+    only spawns one VISIBLE PowerShell window (-WindowStyle Normal, -NoExit). Everything else
+    happens inside that window:
+    1) Window title / status message (immediate feedback).
+    2) DNS pre-correction (probe-then-fallback): only when name resolution fails, fall back to
+       public DNS (8.8.8.8 / 1.1.1.1). Working DNS (corporate internal resolvers etc.) is left
+       untouched. Chicken-and-egg: the downloads below need DNS, so this single step stays
+       inline. Background / opt-out: https://github.com/yourtablecloth/TableCloth/issues/285
+    3) Download the preparation script (tablecloth-prepare.ps1) from the fixed release URL and
+       dot-source it. The script downloads the latest launcher (SporkBootstrap_<arch>.exe) with
+       a progress bar, runs it and closes the window.
+       (Script source of truth: tools/no-install/tablecloth-prepare.ps1 in the repository.
+        Logic changes ship with the next release without redistributing this .wsb.)
+    On failure: -NoExit keeps the window open so the error stays visible (the preparation
+    script also waits for Enter on failure).
 
-  보안:
-    - MappedFolders 없음: 호스트 파일 접근 0(악성 .wsb 의 호스트 유출 벡터 원천 차단). 파일 기반
-      NPKI 인증서는 이 환경에 들어올 수 없으므로, 이 레인의 권장 인증 경로는 "모바일 인증"이다.
-    - 신뢰: 통제된 HTTPS(공식 GitHub 릴리스) + 서명된 런처/식탁보 실행 파일. 준비 스크립트도
-      같은 오리진에서 받으므로 신뢰면이 늘지 않는다.
-    - 명령/스크립트를 Base64(-EncodedCommand)로 감추지 않는다: 인코딩된 PowerShell 은 AV/EDR
-      휴리스틱이 의심 행위로 플래그하는 대표 패턴이고, 평문 투명성이 본 파일 신뢰 모델의 일부다.
+  Encoding note: keep this file and the preparation script ASCII-only. Windows PowerShell 5.1
+  reads BOM-less scripts via the legacy ANSI codepage and guest codepages vary by host language
+  pack, so non-ASCII display strings get mangled (observed with Korean text). Localized
+  user-facing text lives in the launcher GUI, which handles languages at runtime.
 
-  참고: 은행별 딥링크(사이트 사전선택), 버전 핀, 오프라인/사설 미러 등 파라미터화가 필요하면
-        docs/PARAMETERIZED_WSB_SPEC.md 를 참조한다. 본 파일은 "일반 런처" 간소화 기본형이다.
-        고정 URL 자산(tablecloth-prepare.ps1 / SporkBootstrap_<arch>.exe / Spork_<arch>_Portable.zip)은
-        해당 자산을 포함한 릴리스가 게시된 이후 활성화된다.
+  Security:
+    - No MappedFolders: zero host file access (structurally blocks exfiltration by a malicious
+      .wsb). File-based NPKI certificates cannot enter this environment, so the recommended
+      authentication path in this lane is mobile authentication.
+    - Trust: controlled HTTPS (official GitHub releases) plus signed launcher / TableCloth
+      executables. The preparation script comes from the same origin, adding no new trust surface.
+    - Commands / scripts are NOT hidden behind Base64 (-EncodedCommand): encoded PowerShell is a
+      classic AV/EDR heuristic flag, and plain-text transparency is part of this file's trust model.
+
+  Note: for parameterization (site preselection deep links, version pinning, offline / private
+        mirrors) see docs/PARAMETERIZED_WSB_SPEC.md. This file is the generic-launcher simplified
+        default. Fixed-URL assets (tablecloth-prepare.ps1 / SporkBootstrap_<arch>.exe /
+        Spork_<arch>_Portable.zip) activate once a release containing them is published.
 -->
 <Configuration>
   <Networking>Enable</Networking>
   <vGPU>Disable</vGPU>
   <LogonCommand>
-    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -WindowStyle Normal -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-NoExit','-Command','$Host.UI.RawUI.WindowTitle = ''식탁보 준비''; Write-Host '' 식탁보를 준비하고 있습니다...'' -ForegroundColor Cyan; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq ''Up'' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; $p = Join-Path $env:TEMP ''tablecloth-prepare.ps1''; Invoke-WebRequest ''https://github.com/yourtablecloth/TableCloth/releases/latest/download/tablecloth-prepare.ps1'' -OutFile $p; if (Test-Path $p) { . $p } else { Write-Host '' 준비 스크립트를 내려받지 못했습니다. 네트워크 연결을 확인해 주세요.'' -ForegroundColor Red }'"</Command>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -WindowStyle Normal -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-NoExit','-Command','$Host.UI.RawUI.WindowTitle = ''TableCloth Setup''; Write-Host '' Getting TableCloth ready...'' -ForegroundColor Cyan; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq ''Up'' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; $p = Join-Path $env:TEMP ''tablecloth-prepare.ps1''; Invoke-WebRequest ''https://github.com/yourtablecloth/TableCloth/releases/latest/download/tablecloth-prepare.ps1'' -OutFile $p; if (Test-Path $p) { . $p } else { Write-Host '' Could not download the preparation script. Check the network connection.'' -ForegroundColor Red }'"</Command>
   </LogonCommand>
 </Configuration>
