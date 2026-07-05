@@ -48,18 +48,24 @@ internal static class Taskbar
     public static void Init(nint hwnd)
     {
         _hwnd = hwnd;
+        nint ptr = 0;
         try
         {
-            if (Interop.CoCreateInstance(in CLSID_TaskbarList, 0, Interop.CLSCTX_INPROC_SERVER, in IID_ITaskbarList3, out nint ptr) < 0 || ptr == 0)
+            if (Interop.CoCreateInstance(in CLSID_TaskbarList, 0, Interop.CLSCTX_INPROC_SERVER, in IID_ITaskbarList3, out ptr) < 0 || ptr == 0)
                 return;
             var cw = new StrategyBasedComWrappers();
+            // GetOrCreateObjectForComInstance 가 자체 참조를 AddRef 하므로 원본 ptr 참조는 finally 에서 해제.
             _tb = (ITaskbarList3)cw.GetOrCreateObjectForComInstance(ptr, CreateObjectFlags.None);
-            Marshal.Release(ptr);
             _tb.HrInit();
         }
         catch
         {
             _tb = null; // 작업 표시줄 진행률은 선택 기능. 실패해도 진행.
+        }
+        finally
+        {
+            // 성공/실패와 무관하게 원본 인터페이스 포인터 참조를 해제(COM 누수 방지).
+            if (ptr != 0) Marshal.Release(ptr);
         }
     }
 
