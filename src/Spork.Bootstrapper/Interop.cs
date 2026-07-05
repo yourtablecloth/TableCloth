@@ -58,6 +58,12 @@ internal static unsafe partial class Interop
     internal const uint SWP_NOZORDER = 0x0004;
     internal const uint SWP_NOACTIVATE = 0x0010;
 
+    // --- MessageBox (취소 확인 대화상자) ---
+    internal const uint MB_YESNO = 0x00000004;
+    internal const uint MB_ICONWARNING = 0x00000030;
+    internal const uint MB_DEFBUTTON2 = 0x00000100; // 기본 포커스를 '아니오'에 둔다(실수 취소 방지)
+    internal const int IDYES = 6;
+
     // --- 폰트(CreateFontW) ---
     internal const int FW_NORMAL = 400;
     internal const uint DEFAULT_CHARSET = 1;
@@ -147,6 +153,9 @@ internal static unsafe partial class Interop
 
     [LibraryImport("user32.dll")]
     internal static partial nint DefWindowProcW(nint hWnd, uint msg, nint wParam, nint lParam);
+
+    [LibraryImport("user32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    internal static partial int MessageBoxW(nint hWnd, string lpText, string lpCaption, uint uType);
 
     [LibraryImport("user32.dll")]
     internal static partial int ShowWindow(nint hWnd, int nCmdShow);

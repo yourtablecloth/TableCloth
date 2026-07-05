@@ -276,7 +276,7 @@ internal static partial class Program
             case WM_COMMAND:
                 int id = (int)(wParam & 0xFFFF);
                 if (id == IDC_CLOSE)
-                    DestroyWindow(hWnd);
+                    TryClose(hWnd);
                 else if (id == IDC_RETRY)
                     OnRetry();
                 return 0;
@@ -327,7 +327,8 @@ internal static partial class Program
                 return 0;
 
             case WM_CLOSE:
-                DestroyWindow(hWnd);
+                // 표준 닫기(제목표시줄 X / Alt+F4 / 시스템 메뉴)도 취소 확인을 거치게 한다.
+                TryClose(hWnd);
                 return 0;
 
             case WM_DESTROY:
@@ -364,6 +365,21 @@ internal static partial class Program
         s_launchOnlyRetry = true;
         Taskbar.Paused();
         ShowWindow(s_retryButton, SW_SHOW);
+    }
+
+    // 닫기 요청(닫기 버튼 + 표준 닫기: X / Alt+F4 / 시스템 메뉴) 공통 처리. 다운로드 등 작업이
+    // 진행 중이면 취소 확인 대화상자를 띄우고, '예'일 때만 닫는다. 그 외(오류/취소안내/유휴) 상태에선
+    // 바로 닫는다. 성공 시 자동 종료(WM_APP_DONE)는 이 경로를 거치지 않는다.
+    private static void TryClose(nint hWnd)
+    {
+        if (Volatile.Read(ref s_workerRunning) != 0)
+        {
+            int result = MessageBoxW(hWnd, Loc.S.ConfirmCancelMessage, Loc.S.ConfirmCancelTitle,
+                MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2);
+            if (result != IDYES)
+                return; // 취소하지 않음 — 계속 진행.
+        }
+        DestroyWindow(hWnd);
     }
 
     private static void OnRetry()
