@@ -225,10 +225,12 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
 
 ## 11. `.wsb` / `spork-bootstrap.ps1` (데뷔: 간소화 인라인)
 
-- **`.wsb` (데뷔 형태):** [tools/no-install/no-install-spork.wsb](../tools/no-install/no-install-spork.wsb)를
-  **간소화 인라인 기본형**으로 확정([SPEC §0.5](PARAMETERIZED_WSB_SPEC.md)). LogonCommand가 인라인으로
-  DNS 선보정 → arch 판별 → **고정 URL로 런처 exe 직접 다운로드** → 실행한다. 호스팅 ps1도, zip/체크섬
-  플레이스홀더도 없다(일반 런처는 플레이스홀더 0).
+- **`.wsb` (데뷔 형태):** [tools/no-install/no-install-spork.wsb](../tools/no-install/no-install-spork.wsb)는
+  **소형 포인터**다([SPEC §0.5](PARAMETERIZED_WSB_SPEC.md)): 보이는 PowerShell 창(-WindowStyle Normal,
+  -NoExit)을 띄우고, 그 안에서 DNS 선보정(인라인 잔류, 닭-달걀) → 준비 스크립트
+  [tablecloth-prepare.ps1](../tools/no-install/tablecloth-prepare.ps1)(릴리스 자산, 고정 URL) 다운로드 →
+  dot-source 실행. 준비 스크립트가 arch 판별 + **고정 URL로 런처 exe 다운로드(진행 막대)** + 실행을
+  담당한다. zip/체크섬 플레이스홀더 없음(일반 런처는 플레이스홀더 0), 웹앱 호스팅 없음(릴리스 자산만).
 - **`spork-bootstrap.ps1` (레거시/완전형):** 데뷔 기본형은 ps1을 쓰지 않는다. §14-6의 "ps1 shim 개정"은
   간소화가 **대체**했다(shim 대신 인라인). ps1은 버전 핀/오프라인/사설 미러 등 완전 파라미터화형(SPEC §3~§4)의
   참조로만 보존하며, 헤더에 그 취지를 명시했다.
@@ -308,3 +310,7 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
   직접 다운로드, ps1 없음)으로 확정. `spork-bootstrap.ps1`은 완전형 참조로 격하(헤더 명시). README를
   "무설치(Express) 실행" 정식 기능으로 승격, `.wsb`를 릴리스 자산으로 게시(진입점 고정 URL). §11/§13/§14
   갱신(§14-6은 간소화가 대체). 남은 것은 릴리스 컷.
+- (LogonCommand 리팩토링, 2026-07-05) 콜드부팅 피드백 작업 중 `.wsb` 인라인이 비대해져(약 2,400자), 준비
+  로직을 `tools/no-install/tablecloth-prepare.ps1`(릴리스 자산, 고정 URL)로 분리. `.wsb`는 보이는 창 기동 +
+  DNS 프로브 + ps1 다운로드/dot-source만 남는 소형 포인터(약 1,000자). §11 갱신. 상세는
+  [SPEC §0.5](PARAMETERIZED_WSB_SPEC.md) 및 변경 이력 참조.

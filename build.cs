@@ -335,14 +335,18 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
                 Console.WriteLine($"  (skip) bootstrapper exe not found: {bootstrapperExe}");
             }
 
-            // 무설치 실행 진입점 .wsb (정적 파일 — 런처 고정 URL을 가리키는 간소화 기본형). Release 만.
+            // 무설치 실행 진입점 .wsb + 준비 스크립트 (정적 파일 — 고정 URL 자산). Release 만.
+            // .wsb 는 tablecloth-prepare.ps1 을 latest/download 고정 URL 로 받아 실행하므로 함께 게시.
             if (config == "Release")
             {
-                var noInstallWsb = Path.Combine("tools", "no-install", "no-install-spork.wsb");
-                if (File.Exists(noInstallWsb))
+                foreach (var noInstallAsset in new[] { "no-install-spork.wsb", "tablecloth-prepare.ps1" })
                 {
-                    File.Copy(noInstallWsb, Path.Combine(sporkReleasesDir, "no-install-spork.wsb"), overwrite: true);
-                    Console.WriteLine("Copied -> no-install-spork.wsb");
+                    var sourcePath = Path.Combine("tools", "no-install", noInstallAsset);
+                    if (File.Exists(sourcePath))
+                    {
+                        File.Copy(sourcePath, Path.Combine(sporkReleasesDir, noInstallAsset), overwrite: true);
+                        Console.WriteLine($"Copied -> {noInstallAsset}");
+                    }
                 }
             }
         }
