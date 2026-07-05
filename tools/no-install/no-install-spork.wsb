@@ -6,14 +6,17 @@
         런처(SporkBootstrap)를 받아 실행하고, 런처가 최신 포터블 식탁보를 진행률과 함께 내려받아
         검증·해제 후 실행한다. (.wsb 는 XML 이라 브라우저로 받아 더블클릭하면 WSB 가 띄운다.)
 
-  동작(LogonCommand 인라인 — 별도 호스팅 스크립트/아티팩트 없음):
+  동작(LogonCommand 인라인 — 별도 호스팅 스크립트/아티팩트 없음. 콘솔 창에 진행 상황을 표시해
+       콜드부팅 직후 런처 GUI 가 뜨기 전까지 "준비 중"임을 알린다):
+    0) 콘솔 제목/안내 메시지 표시(즉시 피드백).
     1) DNS 선보정(probe-then-fallback): 먼저 이름 해석을 시도해, 실패할 때만 공용 DNS(8.8.8.8 / 1.1.1.1)로
        폴백한다. 정상 DNS(사내 내부 리졸버 등)는 건드리지 않는다.
        (닭-달걀: 런처 다운로드 자체가 DNS 를 필요로 하므로 어떤 다운로드보다 먼저 한다.)
        ※ 공용 DNS 가 정책상 막힌 환경이면 폴백도 무의미하니 내부 리졸버 사용을 권장.
          (배경/옵션: https://github.com/yourtablecloth/TableCloth/issues/285)
-    2) arch 판별(x64 / arm64) → GitHub 고정 URL 로 런처 exe 다운로드.
-    3) 런처 실행 → 런처가 최신 식탁보를 받아 실행(다운로드 진행률은 창 + 작업 표시줄에 표시).
+    2) arch 판별(x64 / arm64) → GitHub 고정 URL 로 런처 exe 다운로드($ProgressPreference='Continue' 로
+       콘솔에 다운로드 진행 막대 표시).
+    3) 런처 실행 → 콘솔은 곧 닫히고 런처 GUI 로 인계(런처가 최신 식탁보를 받아 실행. 진행률은 창 + 작업 표시줄).
 
   보안:
     - MappedFolders 없음: 호스트 파일 접근 0(악성 .wsb 의 호스트 유출 벡터 원천 차단). 파일 기반
@@ -29,6 +32,6 @@
   <Networking>Enable</Networking>
   <vGPU>Disable</vGPU>
   <LogonCommand>
-    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq 'Up' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; $a = if ($env:PROCESSOR_ARCHITEW6432 -eq 'ARM64' -or $env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }; $e = Join-Path $env:TEMP 'SporkBootstrap.exe'; Invoke-WebRequest ('https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_' + $a + '.exe') -OutFile $e; Start-Process $e"</Command>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "try { $Host.UI.RawUI.WindowTitle = '식탁보 준비' } catch {}; Write-Host ''; Write-Host '  식탁보를 준비하고 있습니다. 잠시만 기다려 주세요...' -ForegroundColor Cyan; Write-Host ''; Write-Host '  [1/3] 네트워크 확인 중...' -ForegroundColor Gray; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq 'Up' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; $a = if ($env:PROCESSOR_ARCHITEW6432 -eq 'ARM64' -or $env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }; $e = Join-Path $env:TEMP 'SporkBootstrap.exe'; Write-Host '  [2/3] 준비 도구를 내려받는 중...' -ForegroundColor Gray; $ProgressPreference = 'Continue'; Invoke-WebRequest ('https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_' + $a + '.exe') -OutFile $e; Write-Host '  [3/3] 준비 완료. 식탁보를 실행합니다...' -ForegroundColor Green; Start-Process $e; Start-Sleep -Seconds 1"</Command>
   </LogonCommand>
 </Configuration>
