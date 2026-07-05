@@ -67,8 +67,9 @@ MCP 전송 방식(별도 결정), macSandbox 내부 구현.
 - **콜드부팅 피드백(2026-07-05):** WSB는 **LogonCommand의 콘솔 창 자체를 숨긴 채** 실행하므로 같은 창
   출력은 보이지 않는다(실측). 그래서 숨은 셸은 `Start-Process -WindowStyle Normal`로 **새 보이는
   PowerShell 창** 하나만 띄우고, 이후 전 과정(제목/안내 → DNS 프로브 → TLS 1.2 보정 → 준비 스크립트를
-  **Chocolatey식 `iex`+`DownloadString`으로 무파일 실행** → 런처 다운로드 진행 막대)이 그 창 안에서
-  진행된다. `iex`는 세션 스코프 실행이라 준비 스크립트의 `exit`가 곧 창 닫기이고, 명령이 끝나면 창도
+  **Chocolatey식 `iex`+`DownloadString`으로 무파일 실행** → 런처 다운로드[단계 메시지])이 그 창 안에서
+  진행된다. 런처 다운로드의 **바이트 진행률은 의도적으로 끈다**(PS 5.1의 IWR 진행률 렌더링이 전송 자체를
+  늦추고, 런처는 소용량이며, 진짜 진행률 UX[대용량 식탁보 다운로드]는 런처 GUI 소관). `iex`는 세션 스코프 실행이라 준비 스크립트의 `exit`가 곧 창 닫기이고, 명령이 끝나면 창도
   저절로 닫힌다(작업 완료 시 잔여 콘솔 없음). 실패 가시성은 인라인 catch와 스크립트 자체 catch의
   `Read-Host`(Enter 대기)가 보장한다. 명령/스크립트는
   **Base64(-EncodedCommand)로 감추지 않고 평문**으로 쓴다: 인코딩된 PowerShell은 AV/EDR 휴리스틱의 대표
@@ -291,6 +292,9 @@ param(
   `Start-Process -WindowStyle Normal`로 새 보이는 PowerShell 창을 띄우는 방식으로 개정. 안내 메시지 +
   다운로드 진행 막대 + 실패 시 창 유지. Base64 인코딩은 AV 휴리스틱/투명성 사유로 의도적으로 배제.
   §0.5 예시와 `no-install-spork.wsb` 동기화.
+- (IWR 진행률 끔, 2026-07-05) 준비 스크립트의 런처 다운로드에서 IWR 바이트 진행률을 명시적으로 끔
+  (`$ProgressPreference='SilentlyContinue'` — 세션 기본이 Continue라 명시 필요). PS 5.1 IWR 진행률
+  렌더링이 전송을 늦추는 문제 회피. 단계 메시지는 유지, 진짜 진행률 UX는 런처 GUI 소관.
 - (Chocolatey식 iex, 2026-07-05) 준비 스크립트 실행을 임시 파일 + dot-source에서 **`iex`+
   `WebClient.DownloadString` 무파일 실행**으로 전환(Chocolatey install 관용구). TLS 1.2 보정
   (`SecurityProtocol -bor 3072`) 추가, `-NoExit` 제거로 **작업 완료 시 창 자동 종료**(실패 가시성은 양쪽
