@@ -898,6 +898,12 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="Option_EnableSandboxGpuAccelerationCheckbox_Description" xml:space="preserve">
     <value>식탁보는 호환성과 안정성을 위해 샌드박스의 GPU 가속을 기본적으로 끕니다 (WSB의 vGPU 비활성화 + Edge 하드웨어 가속 정책 차단). 일부 GPU 환경(특정 NVIDIA 드라이버 등)에서 보고된 Edge 흰 화면 문제와 vGPU 관련 비결정적 동작을 회피하기 위함입니다. 켜면 호스트 GPU를 샌드박스와 공유하고 Edge가 GPU 가속을 사용합니다. 시각화 작업이나 미디어 재생 등 가속이 꼭 필요할 때만 켜세요. 다음 샌드박스 실행부터 적용됩니다.</value>
   </data>
+  <data name="Option_EnableSandboxPublicDnsFallbackCheckbox" xml:space="preserve">
+    <value>이름 해석 실패 시 공용 DNS로 폴백</value>
+  </data>
+  <data name="Option_EnableSandboxPublicDnsFallbackCheckbox_Description" xml:space="preserve">
+    <value>샌드박스의 DNS가 호스트 이름을 해석하지 못할 때만 네트워크 어댑터를 공용 DNS(8.8.8.8 / 1.1.1.1)로 임시 전환합니다. 정상 동작하는 DNS(사내 내부 리졸버 포함)는 건드리지 않으며, 이름 해석이 실제로 실패할 때만 폴백이 동작합니다. 공용 DNS가 정책상 금지된 환경이라면 끄세요. 다음 샌드박스 실행부터 적용됩니다.</value>
+  </data>
   <data name="SporkCatalog_Instruction" xml:space="preserve">
     <value>접속하려는 사이트를 선택하세요. 선택한 사이트에 필요한 보안 프로그램이 자동으로 설치됩니다. 나중에 이 목록으로 돌아올 수 있습니다.</value>
   </data>

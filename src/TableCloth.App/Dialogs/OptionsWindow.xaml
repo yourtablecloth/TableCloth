@@ -138,6 +138,10 @@
                     <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11"
                                Foreground="{DynamicResource ControlSecondaryForeground}"
                                Text="{x:Static res:UIStringResources.Option_EnableSandboxGpuAccelerationCheckbox_Description}" />
+                    <CheckBox Margin="0 12 0 4" Content="{x:Static res:UIStringResources.Option_EnableSandboxPublicDnsFallbackCheckbox}" IsChecked="{Binding EnableSandboxPublicDnsFallback}" />
+                    <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               Text="{x:Static res:UIStringResources.Option_EnableSandboxPublicDnsFallbackCheckbox_Description}" />
                 </StackPanel>
             </TabItem>
 

@@ -7,10 +7,11 @@
         검증·해제 후 실행한다. (.wsb 는 XML 이라 브라우저로 받아 더블클릭하면 WSB 가 띄운다.)
 
   동작(LogonCommand 인라인 — 별도 호스팅 스크립트/아티팩트 없음):
-    1) DNS 선보정: 게스트에 DNS 가 안 잡히는 환경 대비 공용 DNS(8.8.8.8 / 1.1.1.1) 설정.
+    1) DNS 선보정(probe-then-fallback): 먼저 이름 해석을 시도해, 실패할 때만 공용 DNS(8.8.8.8 / 1.1.1.1)로
+       폴백한다. 정상 DNS(사내 내부 리졸버 등)는 건드리지 않는다.
        (닭-달걀: 런처 다운로드 자체가 DNS 를 필요로 하므로 어떤 다운로드보다 먼저 한다.)
-       ※ 사내/관리형 네트워크에서 공용 DNS 가 막히면 이 줄을 빼거나 내부 리졸버로 바꾼다.
-         (배경/옵션화 검토: https://github.com/yourtablecloth/TableCloth/issues/285)
+       ※ 공용 DNS 가 정책상 막힌 환경이면 폴백도 무의미하니 내부 리졸버 사용을 권장.
+         (배경/옵션: https://github.com/yourtablecloth/TableCloth/issues/285)
     2) arch 판별(x64 / arm64) → GitHub 고정 URL 로 런처 exe 다운로드.
     3) 런처 실행 → 런처가 최신 식탁보를 받아 실행(다운로드 진행률은 창 + 작업 표시줄에 표시).
 
@@ -28,6 +29,6 @@
   <Networking>Enable</Networking>
   <vGPU>Disable</vGPU>
   <LogonCommand>
-    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; Get-NetAdapter | Where-Object Status -eq 'Up' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1; $a = if ($env:PROCESSOR_ARCHITEW6432 -eq 'ARM64' -or $env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }; $e = Join-Path $env:TEMP 'SporkBootstrap.exe'; Invoke-WebRequest ('https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_' + $a + '.exe') -OutFile $e; Start-Process $e"</Command>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq 'Up' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; $a = if ($env:PROCESSOR_ARCHITEW6432 -eq 'ARM64' -or $env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }; $e = Join-Path $env:TEMP 'SporkBootstrap.exe'; Invoke-WebRequest ('https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_' + $a + '.exe') -OutFile $e; Start-Process $e"</Command>
   </LogonCommand>
 </Configuration>

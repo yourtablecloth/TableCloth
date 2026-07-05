@@ -101,6 +101,7 @@ public partial class OptionsWindowViewModel : ObservableObject
             EnableLogAutoCollecting = currentConfig.UseLogCollection;
             ShareNpkiFolder = currentConfig.ShareNpkiFolder;
             EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration;
+            EnableSandboxPublicDnsFallback = currentConfig.EnableSandboxPublicDnsFallback;
 
             // [미리 보기] 유휴 자동 종료(이슈 #197). 값이 옵션 목록에 없으면 가장 가까운 기본값으로 보정.
             EnableIdleAutoLogout = currentConfig.EnableIdleAutoLogout;
@@ -329,6 +330,10 @@ public partial class OptionsWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _enableSandboxGpuAcceleration;
 
+    // 공용 DNS 폴백(이슈 #285). 기본 켜짐 — 게스트 DNS 해석 실패 시에만 공용 DNS로 폴백(probe-then-fallback).
+    [ObservableProperty]
+    private bool _enableSandboxPublicDnsFallback = true;
+
     // [미리 보기] 유휴 자동 종료(이슈 #197). 기본 꺼짐 + 유휴 허용 시간(분).
     [ObservableProperty]
     private bool _enableIdleAutoLogout;
@@ -426,6 +431,10 @@ public partial class OptionsWindowViewModel : ObservableObject
 
             case nameof(EnableSandboxGpuAcceleration):
                 currentConfig.EnableSandboxGpuAcceleration = viewModel.EnableSandboxGpuAcceleration;
+                break;
+
+            case nameof(EnableSandboxPublicDnsFallback):
+                currentConfig.EnableSandboxPublicDnsFallback = viewModel.EnableSandboxPublicDnsFallback;
                 break;
 
             case nameof(EnableIdleAutoLogout):
