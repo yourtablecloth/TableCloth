@@ -96,6 +96,15 @@ namespace TableCloth.Models.Configuration
         public bool EnableSandboxGpuAcceleration { get; set; } = false;
 
         /// <summary>
+        /// 샌드박스 부팅 시 게스트의 DNS 이름 해석이 실패하면 공용 DNS(8.8.8.8/1.1.1.1)로 폴백할지 여부입니다.
+        /// 기본값은 true. true여도 <b>기존 DNS로 해석이 되면 건드리지 않고</b>, 해석이 실패할 때만 폴백합니다
+        /// (probe-then-fallback). 이렇게 하면 게스트에 DNS가 안 잡히는 환경은 자동 구제되면서도, 사내/관리형
+        /// 네트워크의 정상 DNS(내부 리졸버)는 덮어쓰지 않습니다. 공용 DNS가 정책상 막혔거나 어떤 DNS 수정도
+        /// 원치 않는 엄격한 환경이라면 false로 끕니다(이슈 #285).
+        /// </summary>
+        public bool EnableSandboxPublicDnsFallback { get; set; } = true;
+
+        /// <summary>
         /// [미리 보기] 샌드박스에 일정 시간 키보드·마우스 입력이 없으면 자동으로 종료할지 여부입니다.
         /// 인증된 뱅킹 세션을 자리 비운 사이 열어두는 위험을 줄이기 위한 실험적 보안 기능이며, 기본값은 꺼짐입니다.
         /// </summary>

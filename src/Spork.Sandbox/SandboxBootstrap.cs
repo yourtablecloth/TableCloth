@@ -4,6 +4,7 @@ using Spork.Components;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -38,6 +39,10 @@ namespace Spork.Sandbox
         private const string SandboxUserName = "WDAGUtilityAccount";
 
         private static readonly string[] PublicDnsServers = new[] { "8.8.8.8", "1.1.1.1" };
+
+        // probe-then-fallback(이슈 #285): 게스트 현재 DNS로 아래 호스트가 하나라도 해석되면 DNS가 동작한다고
+        // 보고 공용 DNS로 덮어쓰지 않는다. 모두 실패해야 폴백한다(보수적 판정).
+        private static readonly string[] DnsProbeHosts = new[] { "github.com", "www.microsoft.com" };
 
         public Task RunAsync(CancellationToken cancellationToken = default)
         {
@@ -77,6 +82,23 @@ namespace Spork.Sandbox
         {
             try
             {
+                // 옵션(이슈 #285): 기본 true(폴백 허용). false면 어떤 DNS 수정도 하지 않는다(사내 정책 등).
+                var allowFallback = LoadSporkAnswers()?.EnableSandboxPublicDnsFallback ?? true;
+                if (!allowFallback)
+                {
+                    _logger.LogDebug("Public DNS fallback disabled by preference — leaving guest DNS untouched.");
+                    return;
+                }
+
+                // probe-then-fallback: 기존 DNS로 이름 해석이 되면(사내 내부 리졸버 등) 덮어쓰지 않는다.
+                // 실패할 때만 공용 DNS로 폴백해, DNS가 안 잡히는 바 샌드박스만 구제한다.
+                if (await IsDnsResolutionWorkingAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    _logger.LogDebug("Guest DNS already resolves — skipping public DNS fallback.");
+                    return;
+                }
+
+                _logger.LogDebug("Guest DNS resolution failing — applying public DNS fallback (8.8.8.8/1.1.1.1).");
                 foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
                 {
                     if (nic.OperationalStatus != OperationalStatus.Up)
@@ -92,6 +114,30 @@ namespace Spork.Sandbox
             {
                 _logger.LogWarning(ex, "Failed to configure public DNS servers in sandbox.");
             }
+        }
+
+        /// <summary>
+        /// 게스트의 현재 DNS로 대표 호스트를 해석해 본다. 하나라도 3초 내 해석되면 DNS가 동작하는 것으로 본다.
+        /// 모두 실패해야 "해석 불가"로 판정 — 정상 DNS(사내 내부 리졸버 포함)를 덮어쓰지 않도록 보수적으로 판단한다.
+        /// </summary>
+        private async Task<bool> IsDnsResolutionWorkingAsync(CancellationToken cancellationToken)
+        {
+            foreach (var host in DnsProbeHosts)
+            {
+                try
+                {
+                    using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                    timeout.CancelAfter(TimeSpan.FromSeconds(3));
+                    var addresses = await Dns.GetHostAddressesAsync(host, timeout.Token).ConfigureAwait(false);
+                    if (addresses.Length > 0)
+                        return true;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogDebug(ex, "DNS probe for {host} failed.", host);
+                }
+            }
+            return false;
         }
 
         private async Task SetDnsForInterfaceAsync(string interfaceName, CancellationToken cancellationToken)

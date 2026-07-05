@@ -98,6 +98,8 @@ public sealed class SandboxBuilder(
             // [미리 보기] 유휴 자동 종료(이슈 #197).
             EnableIdleAutoLogout = preferences.EnableIdleAutoLogout,
             IdleAutoLogoutMinutes = preferences.IdleAutoLogoutMinutes,
+            // 공용 DNS 폴백 옵션(이슈 #285). 게스트는 probe-then-fallback으로만 적용.
+            EnableSandboxPublicDnsFallback = preferences.EnableSandboxPublicDnsFallback,
         };
         await StageCertPairAsync(appDirectory, tableClothConfiguration.CertPair, sporkAnswers, cancellationToken).ConfigureAwait(false);
 

@@ -55,7 +55,7 @@ MCP 전송 방식(별도 결정), macSandbox 내부 구현.
 - **호스팅 아티팩트 0**: 런처 exe는 GitHub 고정 URL에서 직접 받는다. 하드코딩된 그 URL 외에 웹앱이 호스팅할 것이 없다(ps1 소멸 → §12의 "ps1 호스팅" 결정 자체가 사라짐).
 - **플레이스홀더 1개(선택)**: `__SPORK_SITE_IDS__`. 은행별 딥링크가 아니면 이마저 비우거나 `-ArgumentList` 항목을 빼면 일반 런처로 뜬다. 즉 웹앱은 사실상 **거의 정적인 `.wsb`** 하나만 서빙하면 된다. 런처는 미치환 플레이스홀더(`__SPORK_...`)를 "없음"으로 처리하므로 치환 누락도 안전하다.
 - **DNS 선보정은 LogonCommand에 인라인**: 런처 exe 다운로드 자체가 DNS를 필요로 하므로(닭-달걀), 어떤 다운로드보다 먼저 `Set-DnsClientServerAddress`로 처리한다. ps1 shim 없이 성립. (netsh 대신 이 cmdlet을 써 인용부호 중첩을 피한다 → XML/PowerShell 이스케이프 불필요.)
-  - **사내 DNS 정책 주의:** 공용 DNS(8.8.8.8/1.1.1.1)로의 아웃바운드가 차단(외부 53 포트 제한)되거나 split-horizon(내부 도메인은 내부 DNS만 응답)인 관리형 네트워크에선, 이 강제 설정이 오히려 이름 해석을 깨뜨릴 수 있다(DHCP가 준 내부 DNS를 덮어씀). 그런 환경에선 위 인라인 DNS 구문을 빼거나 내부 리졸버로 바꿔서 서빙한다. 무설치 `.wsb`는 마운트가 없어, 정책상 공용 DNS가 막히면 런처/Spork 다운로드 자체가 실패할 수 있으므로 사용자 안내가 필요하다. 코드 측 DNS 강제(`SandboxBootstrap` 등)의 옵션화는 별도 검토: [#285](https://github.com/yourtablecloth/TableCloth/issues/285).
+  - **사내 DNS 정책(probe-then-fallback, 이슈 #285 구현):** 위 인라인 DNS는 **먼저 이름 해석을 시도해 실패할 때만** 공용 DNS로 폴백한다(`Resolve-DnsName` 프로브). 정상 DNS(사내 내부 리졸버 등)는 덮어쓰지 않으므로 split-horizon/공용DNS차단 환경에서도 기존 해석을 깨지 않는다. 다만 공용 DNS가 완전 차단되고 게스트 DNS도 안 잡히는 환경이면 폴백해도 해석이 안 되니 내부 리졸버 사용을 권장한다. 모드 1(TableCloth 빌드 샌드박스)은 같은 probe-then-fallback + **옵션 토글**(`PreferenceSettings.EnableSandboxPublicDnsFallback`, 기본 켜짐)로 제어한다([#285](https://github.com/yourtablecloth/TableCloth/issues/285)).
 - **arch 판별은 런처 exe 선택용**: 런처 바이너리가 arch별이라 다운로드 전에 판별한다. 받은 뒤 Spork zip의 arch는 런처가 자체 판별한다.
 - **신뢰**: 통제된 HTTPS 오리진 + 서명된 런처/Spork.exe. 체크섬 맵은 고정 URL 경로에선 생략한다(별도 파라미터 없음).
 
@@ -267,3 +267,6 @@ param(
 - (DNS 주의, 2026-07-05) §0.5/§4.1에 **사내 DNS 정책 주의** 추가: 공용 리졸버(8.8.8.8/1.1.1.1) 차단/
   split-horizon 환경에선 강제 설정이 오히려 이름 해석을 깨뜨릴 수 있음. 코드 측 DNS 강제의 옵션화는
   이슈 #285로 분리(지금 구현 아님).
+- (DNS #285 구현, 2026-07-05) **probe-then-fallback** 채택: 이름 해석이 되면 두고 실패할 때만 공용 DNS로
+  폴백. §0.5 `.wsb`는 `Resolve-DnsName` 프로브 후 폴백하도록 인라인 개정. 모드 1은 `SandboxBootstrap`이
+  동일 로직 + 옵션 토글(`PreferenceSettings.EnableSandboxPublicDnsFallback`, 기본 켜짐)로 제어.

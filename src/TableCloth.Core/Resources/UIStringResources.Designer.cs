@@ -2050,6 +2050,18 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string Option_EnableSandboxPublicDnsFallbackCheckbox {
+            get {
+                return ResourceManager.GetString("Option_EnableSandboxPublicDnsFallbackCheckbox", resourceCulture);
+            }
+        }
+
+        public static string Option_EnableSandboxPublicDnsFallbackCheckbox_Description {
+            get {
+                return ResourceManager.GetString("Option_EnableSandboxPublicDnsFallbackCheckbox_Description", resourceCulture);
+            }
+        }
+
         public static string SporkCatalog_Instruction {
             get {
                 return ResourceManager.GetString("SporkCatalog_Instruction", resourceCulture);

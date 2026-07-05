@@ -62,5 +62,12 @@ namespace TableCloth.Models.Answers
         /// <see langword="true"/>일 때만 의미가 있다.
         /// </summary>
         public int IdleAutoLogoutMinutes { get; set; }
+
+        /// <summary>
+        /// 게스트 DNS 해석 실패 시 공용 DNS(8.8.8.8/1.1.1.1)로 폴백할지 여부. 호스트의
+        /// <c>PreferenceSettings.EnableSandboxPublicDnsFallback</c>에서 전달된다. <see langword="true"/>여도
+        /// 기존 DNS로 해석이 되면 건드리지 않고 실패할 때만 폴백한다(probe-then-fallback). 기본 <see langword="true"/>(이슈 #285).
+        /// </summary>
+        public bool EnableSandboxPublicDnsFallback { get; set; } = true;
     }
 }
