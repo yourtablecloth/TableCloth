@@ -5,7 +5,11 @@
 > 세부(§9)와 추후 결정(§12: 웹앱 호스팅, MCP 전송)만 각 트랙 착수 시 확정한다.
 > 관련 배경: [PORTABLE_MODE2_TODO.md](PORTABLE_MODE2_TODO.md) (모드 2, 무설치 코어, 자산명 계약).
 > 부트스트랩 GUI화: [EXPRESS_BOOTSTRAPPER_DESIGN.md](EXPRESS_BOOTSTRAPPER_DESIGN.md) (§4의 다운로드 이후
-> 단계를 Win32/GDI + NativeAOT exe로 위임, `.ps1`은 shim으로 축소. 본 스펙의 `.wsb` 계약 §3.3은 불변).
+> 단계를 Win32/GDI + NativeAOT exe로 위임, `.ps1`은 shim으로 축소).
+>
+> **간소화 (2026-07-05):** 런처가 자기 자신을 가리키는 **고정 URL**과 받을 Spork zip의 **고정 URL + API
+> 폴백**을 내장하면서 `.wsb`가 크게 줄었다(플레이스홀더 4 → 1, 호스팅 ps1 불필요). 아래
+> **"간소화된 기본형"**이 권장 기본이며, §3~§4의 완전 파라미터화형은 버전 핀/오프라인/사설 호스팅용으로 보존한다.
 
 ## 0. 목적과 범위
 
@@ -22,6 +26,42 @@
 파라미터 처리, 크로스플랫폼 러너 계약, 신뢰 모델.
 **이 문서가 소유하지 않는 것:** 최신 릴리스 태그 → zip URL resolve, 실제 HTTPS 호스팅/치환(=웹앱),
 MCP 전송 방식(별도 결정), macSandbox 내부 구현.
+
+## 0.5 간소화된 기본형 (2026-07-05, 무설치 런처 이후) — 권장
+
+[무설치 런처](EXPRESS_BOOTSTRAPPER_DESIGN.md)가 (a) 자기 자신을 가리키는 **고정 URL**(GitHub
+`latest/download` 버전프리 별칭)과 (b) 받을 Spork zip의 **고정 URL + GitHub API 폴백**을 내장하면서, 이
+스펙의 파라미터 대부분이 **불필요**해졌다. `.wsb`는 아래처럼 크게 줄어든다.
+
+| 항목 | 완전 파라미터화형(§3.2, 아래 보존) | 간소화된 기본형(권장) |
+| --- | --- | --- |
+| 호스팅 아티팩트 | ps1 + (웹앱이 resolve한) zip URL | **없음**: 런처 exe는 고정 URL, ps1 불필요 |
+| `.wsb` 플레이스홀더 | 4개 | **1개**(`__SPORK_SITE_IDS__`, 선택) |
+| 다운로드 URL/체크섬 | `.wsb`가 운반 | **런처가 자체 해석**(고정 URL → API 폴백) |
+| 신뢰 | HTTPS + 체크섬맵 + 서명 | HTTPS 오리진 + **서명된 런처/Spork.exe** |
+
+**간소화된 `.wsb`** (마운트 0. 인라인 LogonCommand: DNS 선보정 → arch 판별 → 고정 URL로 런처 다운로드 → 실행):
+
+```xml
+<Configuration>
+  <Networking>Enable</Networking>
+  <vGPU>Disable</vGPU>
+  <LogonCommand>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; Get-NetAdapter | Where-Object Status -eq 'Up' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1; $a = if ($env:PROCESSOR_ARCHITEW6432 -eq 'ARM64' -or $env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }; $e = Join-Path $env:TEMP 'SporkBootstrap.exe'; Invoke-WebRequest ('https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_' + $a + '.exe') -OutFile $e; Start-Process $e -ArgumentList '--site-ids','__SPORK_SITE_IDS__'"</Command>
+  </LogonCommand>
+</Configuration>
+```
+
+- **호스팅 아티팩트 0**: 런처 exe는 GitHub 고정 URL에서 직접 받는다. 하드코딩된 그 URL 외에 웹앱이 호스팅할 것이 없다(ps1 소멸 → §12의 "ps1 호스팅" 결정 자체가 사라짐).
+- **플레이스홀더 1개(선택)**: `__SPORK_SITE_IDS__`. 은행별 딥링크가 아니면 이마저 비우거나 `-ArgumentList` 항목을 빼면 일반 런처로 뜬다. 즉 웹앱은 사실상 **거의 정적인 `.wsb`** 하나만 서빙하면 된다. 런처는 미치환 플레이스홀더(`__SPORK_...`)를 "없음"으로 처리하므로 치환 누락도 안전하다.
+- **DNS 선보정은 LogonCommand에 인라인**: 런처 exe 다운로드 자체가 DNS를 필요로 하므로(닭-달걀), 어떤 다운로드보다 먼저 `Set-DnsClientServerAddress`로 처리한다. ps1 shim 없이 성립. (netsh 대신 이 cmdlet을 써 인용부호 중첩을 피한다 → XML/PowerShell 이스케이프 불필요.)
+- **arch 판별은 런처 exe 선택용**: 런처 바이너리가 arch별이라 다운로드 전에 판별한다. 받은 뒤 Spork zip의 arch는 런처가 자체 판별한다.
+- **신뢰**: 통제된 HTTPS 오리진 + 서명된 런처/Spork.exe. 체크섬 맵은 고정 URL 경로에선 생략한다(별도 파라미터 없음).
+
+> **완전 파라미터화형(§3~§4)은 언제 쓰나?** 특정 버전 핀 고정, 오프라인/사설 미러, 체크섬 강제, MCP 자체
+> 호스팅처럼 **명시적 통제가 필요할 때**. 그 경우 `.wsb`가 런처에 `--zip-url-template`(+`--sha256-map`)을
+> 넘기면 되고(런처는 인자를 고정 URL보다 우선 사용), ps1 shim이나 4-플레이스홀더 형태가 필요하면 아래
+> 계약을 그대로 쓴다. 즉 §3~§4는 **삭제가 아니라 "완전형" 옵션으로 남긴다.**
 
 ## 1. 구성요소
 
@@ -49,12 +89,16 @@ MCP 전송 방식(별도 결정), macSandbox 내부 구현.
 
 ## 3. `.wsb` 템플릿 스펙
 
+> **참고:** 아래 §3~§4는 **완전 파라미터화형**(버전 핀, 오프라인/사설 미러, 체크섬 강제, MCP 자체 호스팅용)
+> 계약이다. 대부분의 경우 위 **§0.5 간소화된 기본형**(플레이스홀더 1개, ps1 없음)을 쓴다. §3.1 고정 요소
+> (`Networking`/`vGPU`/마운트 0)는 두 형태 공통이다.
+
 ### 3.1 고정 요소 (변경 금지)
 
 - `<Networking>Enable</Networking>`: 부트스트랩 다운로드에 필요.
 - `<vGPU>Disable</vGPU>`: WSB에서 무해, macSandbox에서 무시(부분지원). 예측가능성을 위해 명시.
 - **MappedFolders 절대 없음**: 호스트 파일 접근 0 = 유출 벡터 제거. (파일 기반 NPKI 불가 → 모바일 인증 전제)
-  - 이는 [메모리: 샌드박스 마운트 by-design](../) 결정과 별개이며, Express 레인은 애초에 마운트를 두지 않는다.
+  - 이는 샌드박스 마운트 by-design(호스트 Desktop 노출) 결정과 별개이며, Express 레인은 애초에 마운트를 두지 않는다.
 
 ### 3.2 LogonCommand 규약 (설계 B 권장)
 
@@ -214,3 +258,7 @@ param(
 
 - (초안) 세 시나리오(빠른 실행/MCP/macOS) 공유 계약으로 최초 작성. 설계 B, `{arch}` 토큰, 사이트 위치
   인자, 체크섬 맵, 크로스플랫폼 러너 표를 권장안으로 제시. "열린 결정" 확정 후 정식 계약으로 승격.
+- (간소화, 2026-07-05) 무설치 런처의 고정 URL + 자체 해석을 반영해 **§0.5 "간소화된 기본형"** 추가:
+  플레이스홀더 4 → 1(`__SPORK_SITE_IDS__`만, 선택), 호스팅 ps1 제거, 다운로드 URL/체크섬은 런처가 자체
+  해석, DNS 선보정은 `Set-DnsClientServerAddress`로 LogonCommand에 인라인. §3~§4는 완전 파라미터화형(핀/오프라인/
+  MCP)으로 보존. 부수 첨삭: §3.1의 깨진 링크(`../`) 정리, §3에 완전형/간소형 구분 참고 추가.
