@@ -4,37 +4,46 @@
     No-install TableCloth preparation script (simplified-lane worker).
 
 .DESCRIPTION
-    Downloaded and dot-sourced by the visible PowerShell window (-WindowStyle Normal,
-    -NoExit) that no-install-spork.wsb spawns. Role: download the latest launcher
-    (SporkBootstrap_<arch>.exe) with a progress bar, run it, then close the window.
+    Invoked Chocolatey-style by the visible PowerShell window that
+    no-install-spork.wsb spawns:
 
-    - DNS pre-correction (probe-then-fallback) must happen BEFORE this script can be
-      downloaded (chicken-and-egg), so it stays inline in the .wsb, not here.
-    - Designed to be dot-sourced: 'exit' closes the hosting window. On failure it
-      shows the error and waits for Enter so the cause stays visible.
+        iex ((New-Object Net.WebClient).DownloadString('<fixed release URL>'))
+
+    Because iex evaluates the text in the session scope, 'exit' here closes the
+    hosting window. The window therefore auto-closes when this script finishes;
+    on failure it shows the error and waits for Enter first, so the cause stays
+    visible. (Running the file directly or dot-sourcing it also works.)
+
+    - DNS pre-correction (probe-then-fallback) must happen BEFORE this script can
+      be downloaded (chicken-and-egg), so it stays inline in the .wsb, not here.
     - Published as the release asset 'tablecloth-prepare.ps1' (fixed URL:
       https://github.com/yourtablecloth/TableCloth/releases/latest/download/tablecloth-prepare.ps1).
       Logic changes ship with the next release without redistributing the .wsb.
     - IMPORTANT: keep this file ASCII-only. Windows PowerShell 5.1 reads BOM-less
-      scripts using the legacy ANSI codepage and guest codepages vary by host
-      language pack, so non-ASCII text (e.g. Korean) gets mangled and can break
-      parsing. Localized user-facing text lives in the launcher GUI, which handles
-      languages at runtime.
+      files via the legacy ANSI codepage, and WebClient.DownloadString decodes
+      charset-less responses (GitHub release assets) the same way, so non-ASCII
+      text gets mangled and can break parsing. Localized user-facing text lives
+      in the launcher GUI, which handles languages at runtime.
 
 .PARAMETER SiteIds
-    (Optional) Space-separated catalog site ids. When given, passed to the launcher
-    as --site-ids to preselect sites (bank-specific deep-link .wsb variants; see
-    the __SPORK_SITE_IDS__ placeholder in PARAMETERIZED_WSB_SPEC.md section 0.5).
+    (Optional) Space-separated catalog site ids, passed to the launcher as
+    --site-ids to preselect sites. iex cannot forward arguments, so deep-link
+    .wsb variants supply this via the TABLECLOTH_SITE_IDS environment variable
+    instead (Chocolatey-style channel); the parameter default picks it up. See
+    the __SPORK_SITE_IDS__ placeholder in PARAMETERIZED_WSB_SPEC.md section 0.5.
 
 .NOTES
     Asset-name / fixed-URL contract: docs/PARAMETERIZED_WSB_SPEC.md section 0.5,
     docs/EXPRESS_BOOTSTRAPPER_DESIGN.md section 10.
 #>
 param(
-    [string] $SiteIds = ''
+    [string] $SiteIds = $env:TABLECLOTH_SITE_IDS
 )
 
 $ErrorActionPreference = 'Stop'
+
+# Ensure TLS 1.2 is available regardless of guest defaults (Chocolatey-proven idiom).
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor 3072
 
 try { $Host.UI.RawUI.WindowTitle = 'TableCloth Setup' } catch { }
 

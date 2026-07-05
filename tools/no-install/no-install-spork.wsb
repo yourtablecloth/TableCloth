@@ -9,25 +9,31 @@
 
   How it works:
     Windows Sandbox runs the LogonCommand with its console window hidden, so the hidden shell
-    only spawns one VISIBLE PowerShell window (-WindowStyle Normal, -NoExit). Everything else
-    happens inside that window:
+    only spawns one VISIBLE PowerShell window (-WindowStyle Normal). Everything else happens
+    inside that window:
     1) Window title / status message (immediate feedback).
     2) DNS pre-correction (probe-then-fallback): only when name resolution fails, fall back to
        public DNS (8.8.8.8 / 1.1.1.1). Working DNS (corporate internal resolvers etc.) is left
        untouched. Chicken-and-egg: the downloads below need DNS, so this single step stays
        inline. Background / opt-out: https://github.com/yourtablecloth/TableCloth/issues/285
-    3) Download the preparation script (tablecloth-prepare.ps1) from the fixed release URL and
-       dot-source it. The script downloads the latest launcher (SporkBootstrap_<arch>.exe) with
-       a progress bar, runs it and closes the window.
+    3) Chocolatey-style bootstrap: ensure TLS 1.2, then download the preparation script TEXT
+       from the fixed release URL and run it in-session, with no temp file:
+         iex ((New-Object Net.WebClient).DownloadString('...tablecloth-prepare.ps1'))
+       The script downloads the latest launcher (SporkBootstrap_<arch>.exe) with a progress
+       bar and starts it. Because it runs in-session, its 'exit' closes this window, so the
+       window disappears by itself once preparation finishes.
        (Script source of truth: tools/no-install/tablecloth-prepare.ps1 in the repository.
         Logic changes ship with the next release without redistributing this .wsb.)
-    On failure: -NoExit keeps the window open so the error stays visible (the preparation
-    script also waits for Enter on failure).
+    Failures stay visible: both the inline catch below and the script's own catch print the
+    error in red and wait for Enter before the window closes (no lingering console otherwise).
+    Note: Set-ExecutionPolicy is unnecessary here - the window is started with
+    -ExecutionPolicy Bypass, and iex does not consult the execution policy at all.
 
   Encoding note: keep this file and the preparation script ASCII-only. Windows PowerShell 5.1
-  reads BOM-less scripts via the legacy ANSI codepage and guest codepages vary by host language
-  pack, so non-ASCII display strings get mangled (observed with Korean text). Localized
-  user-facing text lives in the launcher GUI, which handles languages at runtime.
+  reads BOM-less scripts via the legacy ANSI codepage, WebClient.DownloadString decodes
+  charset-less responses (GitHub release assets) the same way, and guest codepages vary by
+  host language pack, so non-ASCII display strings get mangled (observed with Korean text).
+  Localized user-facing text lives in the launcher GUI, which handles languages at runtime.
 
   Security:
     - No MappedFolders: zero host file access (structurally blocks exfiltration by a malicious
@@ -47,6 +53,6 @@
   <Networking>Enable</Networking>
   <vGPU>Disable</vGPU>
   <LogonCommand>
-    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -WindowStyle Normal -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-NoExit','-Command','$Host.UI.RawUI.WindowTitle = ''TableCloth Setup''; Write-Host '' Getting TableCloth ready...'' -ForegroundColor Cyan; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq ''Up'' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; $p = Join-Path $env:TEMP ''tablecloth-prepare.ps1''; Invoke-WebRequest ''https://github.com/yourtablecloth/TableCloth/releases/latest/download/tablecloth-prepare.ps1'' -OutFile $p; if (Test-Path $p) { . $p } else { Write-Host '' Could not download the preparation script. Check the network connection.'' -ForegroundColor Red }'"</Command>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -WindowStyle Normal -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-Command','$Host.UI.RawUI.WindowTitle = ''TableCloth Setup''; Write-Host '' Getting TableCloth ready...'' -ForegroundColor Cyan; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq ''Up'' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor 3072; try { iex ((New-Object Net.WebClient).DownloadString(''https://github.com/yourtablecloth/TableCloth/releases/latest/download/tablecloth-prepare.ps1'')) } catch { Write-Host ('' Failed: '' + $_.Exception.Message) -ForegroundColor Red; $null = Read-Host '' Press Enter to close'' }'"</Command>
   </LogonCommand>
 </Configuration>
