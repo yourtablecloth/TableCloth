@@ -30,6 +30,8 @@ internal sealed class UiStrings
     public required string ErrUnsupportedArchFormat { get; init; }    // {0}=arch
     public required string ErrSha256 { get; init; }
     public required string ErrUnsafeDest { get; init; }               // {0}=dest 경로
+    public required string ConfirmCancelTitle { get; init; }
+    public required string ConfirmCancelMessage { get; init; }
 }
 
 internal static class Loc
@@ -92,6 +94,8 @@ internal static class Loc
         ErrUnsupportedArchFormat = "지원하지 않는 아키텍처입니다: {0} (x64/arm64만 지원).",
         ErrSha256 = "무결성 검증에 실패했습니다(SHA256 불일치).",
         ErrUnsafeDest = "대상 폴더가 비어있지 않고 식탁보 폴더가 아니라 삭제를 거부했습니다: {0}",
+        ConfirmCancelTitle = "다운로드 취소",
+        ConfirmCancelMessage = "식탁보를 다운로드하는 중입니다. 취소하고 창을 닫을까요?",
     };
 
     private static readonly UiStrings English = new()
@@ -118,5 +122,7 @@ internal static class Loc
         ErrUnsupportedArchFormat = "Unsupported architecture: {0} (only x64/arm64).",
         ErrSha256 = "Integrity check failed (SHA256 mismatch).",
         ErrUnsafeDest = "Refused to delete a non-empty, non-TableCloth destination folder: {0}",
+        ConfirmCancelTitle = "Cancel download",
+        ConfirmCancelMessage = "TableCloth is still downloading. Cancel and close?",
     };
 }
