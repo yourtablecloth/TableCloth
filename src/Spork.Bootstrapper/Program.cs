@@ -198,7 +198,14 @@ internal static partial class Program
     private static nint CreateChild(string cls, string? text, uint style, int x, int y, int w, int h, nint parent, int id, bool visible = true)
     {
         uint fullStyle = WS_CHILD | style | (visible ? WS_VISIBLE : 0u);
-        return CreateWindowExW(0, cls, text, fullStyle, x, y, w, h, parent, id, s_hInst, 0);
+        nint ctrl = CreateWindowExW(0, cls, text, fullStyle, x, y, w, h, parent, id, s_hInst, 0);
+        if (ctrl == 0)
+        {
+            // WM_CREATE(네이티브 WndProc) 안에서 throw 하면 AOT 경계를 넘어 위험하므로, 실패는
+            // 로그로 남기고 진행한다. Win32 는 이후 SendMessage/MoveWindow 의 NULL hwnd 를 무해하게 무시.
+            Log($"CreateWindowExW('{cls}') 실패 (err={Marshal.GetLastPInvokeError()}) — 해당 컨트롤 없이 진행.");
+        }
+        return ctrl;
     }
 
     // ------------------------------------------------------------------
@@ -324,6 +331,10 @@ internal static partial class Program
                 return 0;
 
             case WM_DESTROY:
+                // 종료 정리(누수 방지): 마지막 폰트/클래스명 핸들 해제. DPI 변경 중 이전 폰트는
+                // ApplyDpi 에서 이미 DeleteObject 되므로 여기선 마지막 것만 정리한다.
+                if (s_font != 0) { DeleteObject(s_font); s_font = 0; }
+                if (s_classNamePtr != 0) { Marshal.FreeHGlobal(s_classNamePtr); s_classNamePtr = 0; }
                 PostQuitMessage(0);
                 return 0;
         }
@@ -562,7 +573,8 @@ internal static partial class Program
 
             if (total is > 0)
             {
-                int pct = (int)(read * 100 / total.Value);
+                // Content-Length 불일치로 추가 데이터가 오면 100 을 넘을 수 있어 상한 클램프.
+                int pct = (int)Math.Min(100, read * 100 / total.Value);
                 if (pct != lastPct)
                 {
                     lastPct = pct;
@@ -594,7 +606,15 @@ internal static partial class Program
     private static void ExtractZip(string zipPath, string dest)
     {
         if (Directory.Exists(dest))
+        {
+            // 파괴적 삭제 방지: dest 가 비어있거나 이전 Spork 추출본(Spork.exe 존재)일 때만 재귀 삭제한다.
+            // --dest 오입력/주입으로 사용자의 임의 폴더(Desktop, Documents 등)가 통째로 삭제되는 것을 막는다.
+            bool isEmpty = !Directory.EnumerateFileSystemEntries(dest).Any();
+            bool looksLikeSpork = Directory.EnumerateFiles(dest, "Spork.exe", SearchOption.AllDirectories).Any();
+            if (!isEmpty && !looksLikeSpork)
+                throw new InvalidOperationException(string.Format(Loc.S.ErrUnsafeDest, dest));
             Directory.Delete(dest, recursive: true);
+        }
         Directory.CreateDirectory(dest);
         ZipFile.ExtractToDirectory(zipPath, dest, overwriteFiles: true);
         Log($"extracted -> {dest}");

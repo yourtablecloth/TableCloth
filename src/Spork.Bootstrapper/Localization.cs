@@ -29,6 +29,7 @@ internal sealed class UiStrings
     public required string ErrSporkNotFound { get; init; }
     public required string ErrUnsupportedArchFormat { get; init; }    // {0}=arch
     public required string ErrSha256 { get; init; }
+    public required string ErrUnsafeDest { get; init; }               // {0}=dest 경로
 }
 
 internal static class Loc
@@ -90,6 +91,7 @@ internal static class Loc
         ErrSporkNotFound = "식탁보 실행 파일을 찾지 못했습니다.",
         ErrUnsupportedArchFormat = "지원하지 않는 아키텍처입니다: {0} (x64/arm64만 지원).",
         ErrSha256 = "무결성 검증에 실패했습니다(SHA256 불일치).",
+        ErrUnsafeDest = "대상 폴더가 비어있지 않고 식탁보 폴더가 아니라 삭제를 거부했습니다: {0}",
     };
 
     private static readonly UiStrings English = new()
@@ -115,5 +117,6 @@ internal static class Loc
         ErrSporkNotFound = "Could not find the TableCloth executable.",
         ErrUnsupportedArchFormat = "Unsupported architecture: {0} (only x64/arm64).",
         ErrSha256 = "Integrity check failed (SHA256 mismatch).",
+        ErrUnsafeDest = "Refused to delete a non-empty, non-TableCloth destination folder: {0}",
     };
 }
