@@ -226,11 +226,12 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
 ## 11. `.wsb` / `spork-bootstrap.ps1` (데뷔: 간소화 인라인)
 
 - **`.wsb` (데뷔 형태):** [tools/no-install/no-install-spork.wsb](../tools/no-install/no-install-spork.wsb)는
-  **소형 포인터**다([SPEC §0.5](PARAMETERIZED_WSB_SPEC.md)): 보이는 PowerShell 창(-WindowStyle Normal,
-  -NoExit)을 띄우고, 그 안에서 DNS 선보정(인라인 잔류, 닭-달걀) → 준비 스크립트
-  [tablecloth-prepare.ps1](../tools/no-install/tablecloth-prepare.ps1)(릴리스 자산, 고정 URL) 다운로드 →
-  dot-source 실행. 준비 스크립트가 arch 판별 + **고정 URL로 런처 exe 다운로드(진행 막대)** + 실행을
-  담당한다. zip/체크섬 플레이스홀더 없음(일반 런처는 플레이스홀더 0), 웹앱 호스팅 없음(릴리스 자산만).
+  **소형 포인터**다([SPEC §0.5](PARAMETERIZED_WSB_SPEC.md)): 보이는 PowerShell 창(-WindowStyle Normal)을
+  띄우고, 그 안에서 DNS 선보정(인라인 잔류, 닭-달걀) → TLS 1.2 보정 → 준비 스크립트
+  [tablecloth-prepare.ps1](../tools/no-install/tablecloth-prepare.ps1)(릴리스 자산, 고정 URL)을
+  **Chocolatey식 `iex`+`DownloadString`으로 무파일 실행**. 준비 스크립트가 arch 판별 + **고정 URL로 런처
+  exe 다운로드(진행 막대)** + 실행을 담당하고, 세션 스코프 실행이라 `exit`가 곧 창 닫기(완료 시 자동 종료).
+  zip/체크섬 플레이스홀더 없음(일반 런처는 플레이스홀더 0), 웹앱 호스팅 없음(릴리스 자산만).
 - **`spork-bootstrap.ps1` (레거시/완전형):** 데뷔 기본형은 ps1을 쓰지 않는다. §14-6의 "ps1 shim 개정"은
   간소화가 **대체**했다(shim 대신 인라인). ps1은 버전 핀/오프라인/사설 미러 등 완전 파라미터화형(SPEC §3~§4)의
   참조로만 보존하며, 헤더에 그 취지를 명시했다.

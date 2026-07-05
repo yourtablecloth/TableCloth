@@ -47,13 +47,13 @@ MCP 전송 방식(별도 결정), macSandbox 내부 구현.
   <Networking>Enable</Networking>
   <vGPU>Disable</vGPU>
   <LogonCommand>
-    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -WindowStyle Normal -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-NoExit','-Command','$Host.UI.RawUI.WindowTitle = ''TableCloth Setup''; Write-Host '' Getting TableCloth ready...'' -ForegroundColor Cyan; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq ''Up'' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; $p = Join-Path $env:TEMP ''tablecloth-prepare.ps1''; Invoke-WebRequest ''https://github.com/yourtablecloth/TableCloth/releases/latest/download/tablecloth-prepare.ps1'' -OutFile $p; if (Test-Path $p) { . $p ''__SPORK_SITE_IDS__'' } else { Write-Host '' Could not download the preparation script. Check the network connection.'' -ForegroundColor Red }'"</Command>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -WindowStyle Normal -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-Command','$Host.UI.RawUI.WindowTitle = ''TableCloth Setup''; Write-Host '' Getting TableCloth ready...'' -ForegroundColor Cyan; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq ''Up'' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor 3072; $env:TABLECLOTH_SITE_IDS = ''__SPORK_SITE_IDS__''; try { iex ((New-Object Net.WebClient).DownloadString(''https://github.com/yourtablecloth/TableCloth/releases/latest/download/tablecloth-prepare.ps1'')) } catch { Write-Host ('' Failed: '' + $_.Exception.Message) -ForegroundColor Red; $null = Read-Host '' Press Enter to close'' }'"</Command>
   </LogonCommand>
 </Configuration>
 ```
 
 - **웹앱 호스팅 0**: 모든 아티팩트는 GitHub 릴리스 자산 고정 URL 2종(런처 `SporkBootstrap_<arch>.exe` + 준비 스크립트 `tablecloth-prepare.ps1`)에서 받는다. 웹앱이 별도 호스팅할 것이 없다(§12의 "ps1 호스팅" 결정은 릴리스 자산으로 흡수). 준비 스크립트를 릴리스 자산으로 둔 이유: `.wsb` 안에 스크립트 전문을 내장하면 LogonCommand가 수천 자로 비대해져 유지보수가 어렵고, 자산으로 두면 로직 수정이 `.wsb` 재배포 없이 다음 릴리스부터 반영된다(`.wsb`는 안정된 소형 포인터).
-- **플레이스홀더 1개(선택)**: `__SPORK_SITE_IDS__`. 은행별 딥링크가 아니면 이마저 비우거나 `-ArgumentList` 항목을 빼면 일반 런처로 뜬다. 즉 웹앱은 사실상 **거의 정적인 `.wsb`** 하나만 서빙하면 된다. 런처는 미치환 플레이스홀더(`__SPORK_...`)를 "없음"으로 처리하므로 치환 누락도 안전하다.
+- **플레이스홀더 1개(선택)**: `__SPORK_SITE_IDS__`. 전달 채널은 **환경 변수 `TABLECLOTH_SITE_IDS`**(`iex`는 인자를 못 넘기므로 Chocolatey식 env 채널; 준비 스크립트의 `param` 기본값이 읽는다). 은행별 딥링크가 아니면 `$env:TABLECLOTH_SITE_IDS = '...'` 문장을 통째로 빼면 일반 런처로 뜬다. 즉 웹앱은 사실상 **거의 정적인 `.wsb`** 하나만 서빙하면 된다. 런처는 미치환 플레이스홀더(`__SPORK_...`)를 "없음"으로 처리하므로 치환 누락도 안전하다.
 - **DNS 선보정은 LogonCommand에 인라인**: 런처 exe 다운로드 자체가 DNS를 필요로 하므로(닭-달걀), 어떤 다운로드보다 먼저 `Set-DnsClientServerAddress`로 처리한다. ps1 shim 없이 성립. (netsh 대신 이 cmdlet을 써 인용부호 중첩을 피한다 → XML/PowerShell 이스케이프 불필요.)
   - **사내 DNS 정책(probe-then-fallback, 이슈 #285 구현):** 위 인라인 DNS는 **먼저 이름 해석을 시도해 실패할 때만** 공용 DNS로 폴백한다(`Resolve-DnsName` 프로브). 정상 DNS(사내 내부 리졸버 등)는 덮어쓰지 않으므로 split-horizon/공용DNS차단 환경에서도 기존 해석을 깨지 않는다. 다만 공용 DNS가 완전 차단되고 게스트 DNS도 안 잡히는 환경이면 폴백해도 해석이 안 되니 내부 리졸버 사용을 권장한다. 모드 1(TableCloth 빌드 샌드박스)은 같은 probe-then-fallback + **옵션 토글**(`PreferenceSettings.EnableSandboxPublicDnsFallback`, 기본 켜짐)로 제어한다([#285](https://github.com/yourtablecloth/TableCloth/issues/285)).
 - **arch 판별은 런처 exe 선택용**: 런처 바이너리가 arch별이라 다운로드 전에 판별한다. 받은 뒤 Spork zip의 arch는 런처가 자체 판별한다.
@@ -61,12 +61,16 @@ MCP 전송 방식(별도 결정), macSandbox 내부 구현.
 - **인코딩 규칙(ASCII 전용, 2026-07-05):** `.wsb`와 준비 스크립트 등 **무설치 정적 자산은 ASCII 전용**으로
   작성한다(표시 문자열 포함 전체 영문). Windows PowerShell 5.1은 BOM 없는 스크립트를 레거시 ANSI
   코드페이지로 읽고, 게스트 코드페이지는 호스트 언어팩에 따라 달라 비-ASCII 문자열이 깨져 **파싱 자체가
-  실패**할 수 있다(한국어로 실측). 사용자 대상 현지화 문자열은 런타임에 언어를 처리하는 런처 GUI가 담당한다.
+  실패**할 수 있다(한국어로 실측). `WebClient.DownloadString`도 charset 헤더 없는 응답(GitHub 릴리스 자산)을
+  같은 방식으로 디코드하므로 ASCII 전용이어야 안전하다. 사용자 대상 현지화 문자열은 런타임에 언어를
+  처리하는 런처 GUI가 담당한다.
 - **콜드부팅 피드백(2026-07-05):** WSB는 **LogonCommand의 콘솔 창 자체를 숨긴 채** 실행하므로 같은 창
-  출력은 보이지 않는다(실측). 그래서 숨은 셸은 `Start-Process -WindowStyle Normal -NoExit`로 **새 보이는
-  PowerShell 창** 하나만 띄우고, 이후 전 과정(제목/안내 → DNS 프로브 → 준비 스크립트 다운로드 →
-  dot-source 실행 → 런처 다운로드 진행 막대)이 그 창 안에서 진행된다. 성공 시 준비 스크립트의 `exit`가
-  창을 닫고, 어느 단계든 실패하면 `-NoExit` 덕에 오류가 창에 남는다. 명령/스크립트는
+  출력은 보이지 않는다(실측). 그래서 숨은 셸은 `Start-Process -WindowStyle Normal`로 **새 보이는
+  PowerShell 창** 하나만 띄우고, 이후 전 과정(제목/안내 → DNS 프로브 → TLS 1.2 보정 → 준비 스크립트를
+  **Chocolatey식 `iex`+`DownloadString`으로 무파일 실행** → 런처 다운로드 진행 막대)이 그 창 안에서
+  진행된다. `iex`는 세션 스코프 실행이라 준비 스크립트의 `exit`가 곧 창 닫기이고, 명령이 끝나면 창도
+  저절로 닫힌다(작업 완료 시 잔여 콘솔 없음). 실패 가시성은 인라인 catch와 스크립트 자체 catch의
+  `Read-Host`(Enter 대기)가 보장한다. 명령/스크립트는
   **Base64(-EncodedCommand)로 감추지 않고 평문**으로 쓴다: 인코딩된 PowerShell은 AV/EDR 휴리스틱의 대표
   플래그 대상이고 `.wsb` 투명성(§10 신뢰 모델)을 해치기 때문. (WSB 콜드부팅 자체 구간은 WSB UI가 담당 →
   손댈 수 없음. "또 다운로드 UI를 만들면 같은 빈 구간 반복"이라, 게스트에 이미 있는 PowerShell만 사용한다.)
@@ -287,6 +291,11 @@ param(
   `Start-Process -WindowStyle Normal`로 새 보이는 PowerShell 창을 띄우는 방식으로 개정. 안내 메시지 +
   다운로드 진행 막대 + 실패 시 창 유지. Base64 인코딩은 AV 휴리스틱/투명성 사유로 의도적으로 배제.
   §0.5 예시와 `no-install-spork.wsb` 동기화.
+- (Chocolatey식 iex, 2026-07-05) 준비 스크립트 실행을 임시 파일 + dot-source에서 **`iex`+
+  `WebClient.DownloadString` 무파일 실행**으로 전환(Chocolatey install 관용구). TLS 1.2 보정
+  (`SecurityProtocol -bor 3072`) 추가, `-NoExit` 제거로 **작업 완료 시 창 자동 종료**(실패 가시성은 양쪽
+  catch의 `Read-Host`로 유지). 딥링크 채널은 dot-source 인자 → **환경 변수 `TABLECLOTH_SITE_IDS`**로 변경.
+  `Set-ExecutionPolicy`는 불필요해 배제(-ExecutionPolicy Bypass 플래그로 충분, iex는 정책 미적용).
 - (ASCII 전용, 2026-07-05) 샌드박스 실물 테스트에서 준비 스크립트의 한글이 모지바케로 **파싱 실패**
   (PowerShell 5.1의 BOM 없는 파일 = ANSI 코드페이지 해석). `.wsb`/준비 스크립트 전체(주석/표시 문자열 포함)를
   영문 ASCII 전용으로 전환하고 §0.5에 인코딩 규칙 명문화. 현지화는 런처 GUI 담당.
