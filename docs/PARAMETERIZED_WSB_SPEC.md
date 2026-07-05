@@ -47,7 +47,7 @@ MCP 전송 방식(별도 결정), macSandbox 내부 구현.
   <Networking>Enable</Networking>
   <vGPU>Disable</vGPU>
   <LogonCommand>
-    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "try { $Host.UI.RawUI.WindowTitle = '식탁보 준비' } catch {}; Write-Host '  식탁보를 준비하고 있습니다...' -ForegroundColor Cyan; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq 'Up' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; $a = if ($env:PROCESSOR_ARCHITEW6432 -eq 'ARM64' -or $env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }; $e = Join-Path $env:TEMP 'SporkBootstrap.exe'; $ProgressPreference = 'Continue'; Invoke-WebRequest ('https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_' + $a + '.exe') -OutFile $e; Start-Process $e -ArgumentList '--site-ids','__SPORK_SITE_IDS__'"</Command>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$f = Join-Path $env:TEMP 'tablecloth-prepare.ps1'; Set-Content -LiteralPath $f -Encoding UTF8 -Value @('try { $Host.UI.RawUI.WindowTitle = ''식탁보 준비'' } catch { }', 'Write-Host ''  식탁보를 준비하고 있습니다...'' -ForegroundColor Cyan', 'if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq ''Up'' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }', '$a = if ($env:PROCESSOR_ARCHITEW6432 -eq ''ARM64'' -or $env:PROCESSOR_ARCHITECTURE -eq ''ARM64'') { ''arm64'' } else { ''x64'' }', '$e = Join-Path $env:TEMP ''SporkBootstrap.exe''', '$ProgressPreference = ''Continue''', 'Invoke-WebRequest (''https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_'' + $a + ''.exe'') -OutFile $e', 'Start-Process $e -ArgumentList ''--site-ids'',''__SPORK_SITE_IDS__'''); Start-Process powershell.exe -WindowStyle Normal -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File',$f"</Command>
   </LogonCommand>
 </Configuration>
 ```
@@ -58,10 +58,14 @@ MCP 전송 방식(별도 결정), macSandbox 내부 구현.
   - **사내 DNS 정책(probe-then-fallback, 이슈 #285 구현):** 위 인라인 DNS는 **먼저 이름 해석을 시도해 실패할 때만** 공용 DNS로 폴백한다(`Resolve-DnsName` 프로브). 정상 DNS(사내 내부 리졸버 등)는 덮어쓰지 않으므로 split-horizon/공용DNS차단 환경에서도 기존 해석을 깨지 않는다. 다만 공용 DNS가 완전 차단되고 게스트 DNS도 안 잡히는 환경이면 폴백해도 해석이 안 되니 내부 리졸버 사용을 권장한다. 모드 1(TableCloth 빌드 샌드박스)은 같은 probe-then-fallback + **옵션 토글**(`PreferenceSettings.EnableSandboxPublicDnsFallback`, 기본 켜짐)로 제어한다([#285](https://github.com/yourtablecloth/TableCloth/issues/285)).
 - **arch 판별은 런처 exe 선택용**: 런처 바이너리가 arch별이라 다운로드 전에 판별한다. 받은 뒤 Spork zip의 arch는 런처가 자체 판별한다.
 - **신뢰**: 통제된 HTTPS 오리진 + 서명된 런처/Spork.exe. 체크섬 맵은 고정 URL 경로에선 생략한다(별도 파라미터 없음).
-- **콜드부팅 피드백(2026-07-05):** LogonCommand의 PowerShell 콘솔을 보이게 두고 창 제목/안내 메시지 +
-  `$ProgressPreference='Continue'` 다운로드 진행 막대를 표시해, 런처 GUI가 뜨기 전 "준비 중"임을 즉시
-  알린다. 런처 실행 후 콘솔은 자동으로 닫힌다. (WSB 콜드부팅 자체 구간은 WSB UI가 담당 → 손댈 수 없음.
-  "또 다운로드 UI를 만들면 같은 빈 구간 반복"이라, 이미 게스트에 있는 콘솔을 재사용한다.)
+- **콜드부팅 피드백(2026-07-05):** WSB는 **LogonCommand의 콘솔 창 자체를 숨긴 채** 실행하므로 같은 창
+  출력은 보이지 않는다(실측). 그래서 숨은 셸이 준비 스크립트를 임시 `.ps1`로 쓴 뒤
+  `Start-Process -WindowStyle Normal`로 **새 보이는 PowerShell 창**을 띄워 그 안에서 안내 메시지 +
+  다운로드 진행 막대(`$ProgressPreference='Continue'`)를 표시한다. 런처 실행 후 콘솔은 자동으로 닫히고,
+  다운로드 실패 시엔 오류를 표시하고 창을 유지한다. 스크립트는 **Base64(-EncodedCommand)로 감추지 않고
+  평문**으로 쓴다: 인코딩된 PowerShell은 AV/EDR 휴리스틱의 대표 플래그 대상이고 `.wsb` 투명성(§10 신뢰
+  모델)을 해치기 때문. (WSB 콜드부팅 자체 구간은 WSB UI가 담당 → 손댈 수 없음. "또 다운로드 UI를 만들면
+  같은 빈 구간 반복"이라, 게스트에 이미 있는 PowerShell만 사용한다.)
 
 > **완전 파라미터화형(§3~§4)은 언제 쓰나?** 특정 버전 핀 고정, 오프라인/사설 미러, 체크섬 강제, MCP 자체
 > 호스팅처럼 **명시적 통제가 필요할 때**. 그 경우 `.wsb`가 런처에 `--zip-url-template`(+`--sha256-map`)을
@@ -274,6 +278,8 @@ param(
 - (DNS #285 구현, 2026-07-05) **probe-then-fallback** 채택: 이름 해석이 되면 두고 실패할 때만 공용 DNS로
   폴백. §0.5 `.wsb`는 `Resolve-DnsName` 프로브 후 폴백하도록 인라인 개정. 모드 1은 `SandboxBootstrap`이
   동일 로직 + 옵션 토글(`PreferenceSettings.EnableSandboxPublicDnsFallback`, 기본 켜짐)로 제어.
-- (콜드부팅 피드백, 2026-07-05) LogonCommand 콘솔을 보이게 + 창 제목/안내 메시지 + 다운로드 진행 막대
-  (`$ProgressPreference='Continue'`)로 런처 GUI 전 "준비 중" 표시. 새 UI를 만들지 않고 이미 실행 중인 콘솔을
-  재사용(다운로드 UI 재작성은 같은 빈 구간을 반복하므로 지양). §0.5 예시와 `no-install-spork.wsb` 동기화.
+- (콜드부팅 피드백, 2026-07-05) 런처 GUI 전 "준비 중" 표시 추가. 1차 시도(같은 콘솔에 출력)는 **WSB가
+  LogonCommand 콘솔 창을 숨긴 채 실행해 무효**(실측)였고, 숨은 셸이 평문 준비 스크립트를 쓰고
+  `Start-Process -WindowStyle Normal`로 새 보이는 PowerShell 창을 띄우는 방식으로 개정. 안내 메시지 +
+  다운로드 진행 막대 + 실패 시 창 유지. Base64 인코딩은 AV 휴리스틱/투명성 사유로 의도적으로 배제.
+  §0.5 예시와 `no-install-spork.wsb` 동기화.
