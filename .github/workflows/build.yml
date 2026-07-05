@@ -385,10 +385,12 @@ jobs:
           echo "Copied arm64 SBOM"
         fi
 
-        # 무설치 실행 진입점 .wsb (정적 파일 — 런처 고정 URL을 가리키는 간소화 기본형).
-        # checkout 된 리포 트리에서 그대로 릴리스 자산으로 게시한다.
+        # 무설치 실행 진입점 .wsb + 준비 스크립트 (정적 파일 — 고정 URL 자산).
+        # .wsb 는 tablecloth-prepare.ps1 을 latest/download 고정 URL 로 받아 실행하므로,
+        # 두 파일을 함께 게시해야 한다. checkout 된 리포 트리에서 그대로 복사.
         cp tools/no-install/no-install-spork.wsb release-assets/
-        echo "Copied no-install-spork.wsb"
+        cp tools/no-install/tablecloth-prepare.ps1 release-assets/
+        echo "Copied no-install-spork.wsb + tablecloth-prepare.ps1"
 
         ls -la release-assets/
       shell: bash
