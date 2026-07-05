@@ -384,7 +384,12 @@ jobs:
           cp artifacts/SBOM-arm64/* release-assets/
           echo "Copied arm64 SBOM"
         fi
-        
+
+        # 무설치 실행 진입점 .wsb (정적 파일 — 런처 고정 URL을 가리키는 간소화 기본형).
+        # checkout 된 리포 트리에서 그대로 릴리스 자산으로 게시한다.
+        cp tools/no-install/no-install-spork.wsb release-assets/
+        echo "Copied no-install-spork.wsb"
+
         ls -la release-assets/
       shell: bash
 
@@ -445,9 +450,9 @@ jobs:
         - x64 Portable: [Spork_${FULL_VERSION}_Release_x64_Portable.zip](${base}/Spork_${FULL_VERSION}_Release_x64_Portable.zip)
         - arm64 Portable: [Spork_${FULL_VERSION}_Release_arm64_Portable.zip](${base}/Spork_${FULL_VERSION}_Release_arm64_Portable.zip)
 
-        **무설치 런처** (작은 GUI 다운로더 — 항상 최신 식탁보를 받아 실행. 아래는 버전 무관 **고정 URL**)
-        - x64: [SporkBootstrap_x64.exe](https://github.com/${REPO}/releases/latest/download/SporkBootstrap_x64.exe)
-        - arm64: [SporkBootstrap_arm64.exe](https://github.com/${REPO}/releases/latest/download/SporkBootstrap_arm64.exe)
+        **무설치(Express) 실행** — 설치 없이 Windows Sandbox에서 최신 식탁보를 실행. 아래는 버전 무관 **고정 URL**.
+        - 실행용 `.wsb`(내려받아 더블클릭): [no-install-spork.wsb](https://github.com/${REPO}/releases/latest/download/no-install-spork.wsb)
+        - 런처(`.wsb`가 내부에서 받아 실행): [SporkBootstrap_x64.exe](https://github.com/${REPO}/releases/latest/download/SporkBootstrap_x64.exe) / [SporkBootstrap_arm64.exe](https://github.com/${REPO}/releases/latest/download/SporkBootstrap_arm64.exe)
         - 런처가 받는 포터블 고정 URL: \`https://github.com/${REPO}/releases/latest/download/Spork_<arch>_Portable.zip\` (별칭)
 
         > \`*_symbols.zip\` are debug symbols (PDB) matching these binaries — for developers analyzing crash dumps, not needed by end users.
