@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -100,8 +101,12 @@ public sealed class SandboxBuilder(
             IdleAutoLogoutMinutes = preferences.IdleAutoLogoutMinutes,
             // 공용 DNS 폴백 옵션(이슈 #285). 게스트는 probe-then-fallback으로만 적용.
             EnableSandboxPublicDnsFallback = preferences.EnableSandboxPublicDnsFallback,
+            // ZScaler 루트 인증서 전파 옵션(이슈 #292). 켜져 있고 호스트에 ZScaler 루트 인증서가 있을 때만
+            // App\zscaler\zscaler.pem이 스테이징되며, 게스트가 이를 사용자 신뢰 루트에 등록한다.
+            EnableZScalerRootCertPropagation = preferences.EnableZScalerRootCertPropagation,
         };
         await StageCertPairAsync(appDirectory, tableClothConfiguration.CertPair, sporkAnswers, cancellationToken).ConfigureAwait(false);
+        StageZScalerRootCerts(appDirectory, preferences.EnableZScalerRootCertPropagation);
 
         var batchFileContent = GenerateSandboxStartupScript(tableClothConfiguration);
         var batchFilePath = Path.Combine(appDirectory, "StartupScript.cmd");
@@ -283,6 +288,61 @@ public sealed class SandboxBuilder(
         sporkAnswers.CertOrganization = certPair.Organization;
         sporkAnswers.CertIsPersonalCert = certPair.IsPersonalCert;
         sporkAnswers.CertSubjectNameForNpkiApp = certPair.SubjectNameForNpkiApp;
+    }
+
+    /// <summary>
+    /// ZScaler 같은 SSL 검사 환경에서, 호스트의 <c>LocalMachine\Root</c> 저장소에 설치된 ZScaler 루트
+    /// 인증서(Subject에 "Zscaler" 포함)를 찾아 PEM으로 staging의 <c>App\zscaler\zscaler.pem</c>에 떨어뜨린다.
+    /// App 폴더가 그대로 샌드박스 <c>Desktop\App</c>으로 노출되므로 추가 마운트 없이 Spork가
+    /// <c>AppContext.BaseDirectory\zscaler</c>에서 읽어 게스트 사용자 신뢰 루트에 등록한다(이슈 #292).
+    /// 옵션이 꺼져 있거나 호스트에 해당 인증서가 없으면 아무 것도 하지 않는다(베스트에포트).
+    /// </summary>
+    private static void StageZScalerRootCerts(string appDirectory, bool enabled)
+    {
+        if (!enabled)
+            return;
+
+        try
+        {
+            var matchingCerts = new List<X509Certificate2>();
+            using (var store = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
+            {
+                store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+                foreach (var cert in store.Certificates)
+                {
+                    if (cert.Subject.IndexOf("Zscaler", StringComparison.OrdinalIgnoreCase) >= 0)
+                        matchingCerts.Add(cert);
+                }
+            }
+
+            var zscalerStagingDirectoryPath = Path.Combine(appDirectory, "zscaler");
+            if (matchingCerts.Count < 1)
+            {
+                // 호스트에 ZScaler 루트 인증서가 없으면 이전 세션의 잔여 PEM이 남지 않도록 staging을 정리한다.
+                if (Directory.Exists(zscalerStagingDirectoryPath))
+                    Directory.Delete(zscalerStagingDirectoryPath, true);
+                return;
+            }
+
+            if (Directory.Exists(zscalerStagingDirectoryPath))
+                Directory.Delete(zscalerStagingDirectoryPath, true);
+            Directory.CreateDirectory(zscalerStagingDirectoryPath);
+
+            var builder = new StringBuilder();
+            foreach (var cert in matchingCerts)
+                builder.AppendLine(cert.ExportCertificatePem());
+
+            // PEM은 ASCII(base64)만 담기므로 ASCII로 기록한다.
+            File.WriteAllText(
+                Path.Combine(zscalerStagingDirectoryPath, "zscaler.pem"),
+                builder.ToString(),
+                Encoding.ASCII);
+        }
+        catch
+        {
+            // 인증서 추출 실패는 치명적이지 않다. 옵션이 켜져 있어도 인터넷 연결 복원만 실패할 뿐,
+            // 나머지 샌드박스 부팅은 정상 진행되어야 하므로 조용히 넘어간다.
+        }
     }
 
     private string GenerateSandboxStartupScript(TableClothConfiguration tableClothConfiguration)

@@ -904,6 +904,12 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="Option_EnableSandboxPublicDnsFallbackCheckbox_Description" xml:space="preserve">
     <value>샌드박스의 DNS가 호스트 이름을 해석하지 못할 때만 네트워크 어댑터를 공용 DNS(8.8.8.8 / 1.1.1.1)로 임시 전환합니다. 정상 동작하는 DNS(사내 내부 리졸버 포함)는 건드리지 않으며, 이름 해석이 실제로 실패할 때만 폴백이 동작합니다. 공용 DNS가 정책상 금지된 환경이라면 끄세요. 다음 샌드박스 실행부터 적용됩니다.</value>
   </data>
+  <data name="Option_EnableZScalerRootCertPropagationCheckbox" xml:space="preserve">
+    <value>호스트의 ZScaler 루트 인증서를 샌드박스로 전파</value>
+  </data>
+  <data name="Option_EnableZScalerRootCertPropagationCheckbox_Description" xml:space="preserve">
+    <value>ZScaler처럼 SSL 검사를 하는 엔드포인트 통제 환경에서는 호스트가 신뢰하는 ZScaler 루트 인증서가 샌드박스 내부로 자동 전파되지 않아 샌드박스의 HTTPS 연결이 모두 차단됩니다. 이 옵션을 켜면 호스트의 ZScaler 루트 인증서를 샌드박스로 복사해 사용자 신뢰 루트 저장소에 등록하여 인터넷 연결을 복원합니다. 호스트에 해당 인증서가 없으면 아무 동작도 하지 않습니다. 이 옵션은 무설치(포터블) 식탁보에서는 지원되지 않습니다. 다음 샌드박스 실행부터 적용됩니다.</value>
+  </data>
   <data name="SporkCatalog_Instruction" xml:space="preserve">
     <value>접속하려는 사이트를 선택하세요. 선택한 사이트에 필요한 보안 프로그램이 자동으로 설치됩니다. 나중에 이 목록으로 돌아올 수 있습니다.</value>
   </data>

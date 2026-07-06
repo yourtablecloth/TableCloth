@@ -7,6 +7,7 @@ using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -67,6 +68,7 @@ namespace Spork.Sandbox
 
             TryPlaceCertPair();
             TryCopyNpkiMountToCanonicalPath();
+            TryPropagateZScalerRootCert();
             return Task.CompletedTask;
         }
 
@@ -267,6 +269,83 @@ namespace Spork.Sandbox
             {
                 var target = Path.Combine(destination, Path.GetFileName(dir));
                 CopyDirectoryRecursive(dir, target);
+            }
+        }
+
+        /// <summary>
+        /// 호스트가 <c>App\zscaler\zscaler.pem</c>으로 스테이징한 ZScaler 루트 인증서를 게스트로 전파한다(이슈 #292).
+        /// ZScaler 같은 SSL 검사(엔드포인트 통제) 환경에서는 호스트가 신뢰하는 ZScaler 루트 인증서가
+        /// 샌드박스로 자동 전파되지 않아 게스트 HTTPS 연결이 모두 차단된다. 옵션이 켜져 있고 PEM이 존재하면:
+        /// <list type="number">
+        /// <item>사용자 신뢰 루트(<c>CurrentUser\Root</c>)에 인증서를 등록해 브라우저·SChannel HTTPS를 복원하고,</item>
+        /// <item>Node.js를 위해 <c>NODE_EXTRA_CA_CERTS</c>(User 스코프)를 PEM 경로로 설정하고,</item>
+        /// <item>git이 SChannel(윈도우 인증서 저장소)을 쓰도록 <c>http.sslBackend=schannel</c>을 구성한다.</item>
+        /// </list>
+        /// 옵션이 꺼져 있거나 PEM이 없으면 아무 것도 하지 않는다(베스트에포트).
+        /// </summary>
+        private void TryPropagateZScalerRootCert()
+        {
+            try
+            {
+                if (!(LoadSporkAnswers()?.EnableZScalerRootCertPropagation ?? false))
+                    return;
+
+                var pemPath = Path.Combine(AppContext.BaseDirectory, "zscaler", "zscaler.pem");
+                if (!File.Exists(pemPath))
+                {
+                    _logger.LogDebug("ZScaler propagation enabled but no staged PEM found — skipping.");
+                    return;
+                }
+
+                var certificates = new X509Certificate2Collection();
+                certificates.ImportFromPemFile(pemPath);
+                if (certificates.Count < 1)
+                {
+                    _logger.LogDebug("Staged ZScaler PEM contained no certificates — skipping.");
+                    return;
+                }
+
+                // 1) 현재 사용자 신뢰 루트에 등록(상승 불필요, SChannel/브라우저 대응).
+                using (var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser))
+                {
+                    store.Open(OpenFlags.ReadWrite);
+                    store.AddRange(certificates);
+                }
+
+                // 2) Node.js: 저장소 무관하게 PEM을 직접 지정(User 스코프 + 현재 세션 즉시 반영).
+                Environment.SetEnvironmentVariable("NODE_EXTRA_CA_CERTS", pemPath, EnvironmentVariableTarget.User);
+                Environment.SetEnvironmentVariable("NODE_EXTRA_CA_CERTS", pemPath, EnvironmentVariableTarget.Process);
+
+                // 3) git이 SChannel(윈도우 인증서 저장소)을 사용하도록 구성(선택).
+                TryConfigureGitSChannel();
+
+                _logger.LogDebug("Propagated {count} ZScaler root certificate(s) into the sandbox.", certificates.Count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to propagate ZScaler root certificate into sandbox.");
+            }
+        }
+
+        private void TryConfigureGitSChannel()
+        {
+            try
+            {
+                var startInfo = new ProcessStartInfo("git.exe", "config --global http.sslBackend schannel")
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                };
+
+                using var process = Process.Start(startInfo);
+                process?.WaitForExit(TimeSpan.FromSeconds(10));
+            }
+            catch (Exception ex)
+            {
+                // git이 없을 수 있다(샌드박스 기본 이미지). 인증서 등록만으로도 대부분의 HTTPS가 복원되므로 무해.
+                _logger.LogDebug(ex, "Skipped configuring git SChannel backend (git may be unavailable).");
             }
         }
 

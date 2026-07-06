@@ -309,3 +309,10 @@ param(
   창이 `-NoExit`로 뜬 뒤 DNS 프로브 → ps1 다운로드 → dot-source 하므로 실패는 항상 창에 남는다. 사이트
   사전선택은 dot-source 인자(`. $p '__SPORK_SITE_IDS__'`)로 전달. 자산은 build.yml/build.cs가 게시하며
   해당 자산 포함 릴리스 게시 후 활성화.
+- (ZScaler #292 구현, 2026-07-06) SSL 검사(ZScaler 등) 환경에서 샌드박스 HTTPS가 차단되는 문제 대응.
+  옵션 토글(`PreferenceSettings.EnableZScalerRootCertPropagation`, 기본 꺼짐)이 켜지면 호스트가
+  `LocalMachine\Root`에서 Subject에 "Zscaler"가 포함된 루트 인증서를 추출해 staging `App\zscaler\zscaler.pem`
+  으로 전달하고, `SandboxBootstrap`이 게스트 진입 시 `CurrentUser\Root` 등록 + `NODE_EXTRA_CA_CERTS`(User) +
+  git `http.sslBackend=schannel`을 구성한다. 호스트에 해당 인증서가 없으면 켜져 있어도 자동으로 건너뛴다.
+  **이 옵션은 모드 1(TableCloth 빌드 샌드박스) 전용이며, 무설치(모드 2/§0.5) 식탁보에서는 지원되지 않는다**
+  (무설치 정적 자산은 ASCII 전용·호스트 인증서 접근 경로가 없으므로).

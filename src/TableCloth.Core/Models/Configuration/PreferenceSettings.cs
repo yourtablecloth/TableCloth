@@ -105,6 +105,17 @@ namespace TableCloth.Models.Configuration
         public bool EnableSandboxPublicDnsFallback { get; set; } = true;
 
         /// <summary>
+        /// 호스트에 설치된 ZScaler 루트 인증서를 샌드박스 안으로 전파할지 여부입니다.
+        /// ZScaler 같은 엔드포인트 통제(SSL 검사) 환경에서는 호스트가 신뢰하는 ZScaler 루트 인증서가
+        /// 샌드박스로 자동 전파되지 않아 샌드박스 내부의 HTTPS 연결이 모두 차단됩니다. 이 옵션을 켜면
+        /// 호스트의 <c>LocalMachine\Root</c> 저장소에서 Subject에 "Zscaler"가 포함된 루트 인증서를 찾아
+        /// 샌드박스로 전달하고, 샌드박스 부팅 시 사용자 신뢰 루트 저장소에 등록하여 인터넷 연결을 복원합니다
+        /// (이슈 #292). 기본값은 꺼짐이며, 호스트에 해당 인증서가 없으면 켜져 있어도 자동으로 건너뜁니다.
+        /// <b>이 옵션은 무설치(포터블) 식탁보에서는 지원되지 않습니다.</b>
+        /// </summary>
+        public bool EnableZScalerRootCertPropagation { get; set; } = false;
+
+        /// <summary>
         /// [미리 보기] 샌드박스에 일정 시간 키보드·마우스 입력이 없으면 자동으로 종료할지 여부입니다.
         /// 인증된 뱅킹 세션을 자리 비운 사이 열어두는 위험을 줄이기 위한 실험적 보안 기능이며, 기본값은 꺼짐입니다.
         /// </summary>
