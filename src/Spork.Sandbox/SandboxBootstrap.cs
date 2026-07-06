@@ -340,7 +340,7 @@ namespace Spork.Sandbox
                 };
 
                 using var process = Process.Start(startInfo);
-                process?.WaitForExit(TimeSpan.FromSeconds(10));
+                process?.WaitForExit(TimeSpan.FromSeconds(5));
             }
             catch (Exception ex)
             {
