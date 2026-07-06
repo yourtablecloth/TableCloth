@@ -2062,6 +2062,18 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string Option_EnableZScalerRootCertPropagationCheckbox {
+            get {
+                return ResourceManager.GetString("Option_EnableZScalerRootCertPropagationCheckbox", resourceCulture);
+            }
+        }
+
+        public static string Option_EnableZScalerRootCertPropagationCheckbox_Description {
+            get {
+                return ResourceManager.GetString("Option_EnableZScalerRootCertPropagationCheckbox_Description", resourceCulture);
+            }
+        }
+
         public static string SporkCatalog_Instruction {
             get {
                 return ResourceManager.GetString("SporkCatalog_Instruction", resourceCulture);

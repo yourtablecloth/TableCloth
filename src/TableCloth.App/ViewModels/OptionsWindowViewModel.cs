@@ -102,6 +102,7 @@ public partial class OptionsWindowViewModel : ObservableObject
             ShareNpkiFolder = currentConfig.ShareNpkiFolder;
             EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration;
             EnableSandboxPublicDnsFallback = currentConfig.EnableSandboxPublicDnsFallback;
+            EnableZScalerRootCertPropagation = currentConfig.EnableZScalerRootCertPropagation;
 
             // [미리 보기] 유휴 자동 종료(이슈 #197). 값이 옵션 목록에 없으면 가장 가까운 기본값으로 보정.
             EnableIdleAutoLogout = currentConfig.EnableIdleAutoLogout;
@@ -334,6 +335,10 @@ public partial class OptionsWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _enableSandboxPublicDnsFallback = true;
 
+    // ZScaler 루트 인증서 전파(이슈 #292). 기본 꺼짐 — SSL 검사(ZScaler) 환경에서만 켠다. 무설치 미지원.
+    [ObservableProperty]
+    private bool _enableZScalerRootCertPropagation;
+
     // [미리 보기] 유휴 자동 종료(이슈 #197). 기본 꺼짐 + 유휴 허용 시간(분).
     [ObservableProperty]
     private bool _enableIdleAutoLogout;
@@ -435,6 +440,10 @@ public partial class OptionsWindowViewModel : ObservableObject
 
             case nameof(EnableSandboxPublicDnsFallback):
                 currentConfig.EnableSandboxPublicDnsFallback = viewModel.EnableSandboxPublicDnsFallback;
+                break;
+
+            case nameof(EnableZScalerRootCertPropagation):
+                currentConfig.EnableZScalerRootCertPropagation = viewModel.EnableZScalerRootCertPropagation;
                 break;
 
             case nameof(EnableIdleAutoLogout):

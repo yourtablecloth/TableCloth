@@ -69,5 +69,14 @@ namespace TableCloth.Models.Answers
         /// 기존 DNS로 해석이 되면 건드리지 않고 실패할 때만 폴백한다(probe-then-fallback). 기본 <see langword="true"/>(이슈 #285).
         /// </summary>
         public bool EnableSandboxPublicDnsFallback { get; set; } = true;
+
+        /// <summary>
+        /// 호스트의 ZScaler 루트 인증서를 샌드박스로 전파할지 여부. 호스트의
+        /// <c>PreferenceSettings.EnableZScalerRootCertPropagation</c>에서 전달된다. <see langword="true"/>이고
+        /// staging의 <c>App\zscaler\zscaler.pem</c>이 함께 떨어져 있으면, 샌드박스 부팅 시 SandboxBootstrap이
+        /// 이 PEM을 사용자 신뢰 루트(<c>CurrentUser\Root</c>)에 등록하고 <c>NODE_EXTRA_CA_CERTS</c> 및
+        /// git SChannel 백엔드를 구성해 SSL 검사(ZScaler) 환경에서 HTTPS 연결을 복원한다. 기본 <see langword="false"/>(이슈 #292).
+        /// </summary>
+        public bool EnableZScalerRootCertPropagation { get; set; } = false;
     }
 }

@@ -78,6 +78,27 @@ namespace TableCloth.Test
             Assert.IsNull(settings.LicenseAgreedVersion);
         }
 
+        [TestMethod]
+        public void EnableSandboxPublicDnsFallback_DefaultValue_ShouldBeTrue()
+        {
+            var settings = new PreferenceSettings();
+            Assert.IsTrue(settings.EnableSandboxPublicDnsFallback);
+        }
+
+        [TestMethod]
+        public void EnableZScalerRootCertPropagation_DefaultValue_ShouldBeFalse()
+        {
+            var settings = new PreferenceSettings();
+            Assert.IsFalse(settings.EnableZScalerRootCertPropagation);
+        }
+
+        [TestMethod]
+        public void EnableZScalerRootCertPropagation_CanBeSet()
+        {
+            var settings = new PreferenceSettings { EnableZScalerRootCertPropagation = true };
+            Assert.IsTrue(settings.EnableZScalerRootCertPropagation);
+        }
+
         #endregion
 
         #region �Ӽ� ���� �׽�Ʈ
