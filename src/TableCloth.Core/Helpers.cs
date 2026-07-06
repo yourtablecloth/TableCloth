@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 
 #nullable enable
@@ -11,6 +12,77 @@ namespace TableCloth
 {
     public static class Helpers
     {
+        /// <summary>
+        /// Windows 기본 제공 "고성능(High performance)" 전원 관리 옵션의 GUID.
+        /// </summary>
+        private static readonly Guid HighPerformancePowerSchemeGuid =
+            new Guid("8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c");
+
+        /// <summary>
+        /// Windows 기본 제공 "최고의 성능(Ultimate Performance)" 전원 관리 옵션의 GUID.
+        /// </summary>
+        private static readonly Guid UltimatePerformancePowerSchemeGuid =
+            new Guid("e9a42b02-d5df-448d-aa00-03f14749eb61");
+
+        [DllImport("powrprof.dll", SetLastError = true)]
+        private static extern uint PowerGetActiveScheme(IntPtr userRootPowerKey, out IntPtr activePolicyGuid);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern IntPtr LocalFree(IntPtr hMem);
+
+        private const uint ERROR_SUCCESS = 0u;
+
+        /// <summary>
+        /// 지정한 전원 관리 옵션 GUID가 "고성능" 또는 "최고의 성능" 구성표인지 여부를 반환한다.
+        /// Windows Sandbox의 시작 성능에 유리한 구성표를 판별하는 데 사용한다.
+        /// </summary>
+        public static bool IsHighPerformancePowerScheme(Guid schemeGuid)
+            => schemeGuid == HighPerformancePowerSchemeGuid
+            || schemeGuid == UltimatePerformancePowerSchemeGuid;
+
+        /// <summary>
+        /// 호스트에서 현재 활성화된 전원 관리 옵션의 GUID를 <c>PowerGetActiveScheme</c>로 읽는다.
+        /// 읽기에 실패하면 <see langword="null"/>을 반환한다.
+        /// </summary>
+        public static Guid? GetActivePowerSchemeGuid()
+        {
+            var activePolicyGuidPtr = IntPtr.Zero;
+
+            try
+            {
+                if (PowerGetActiveScheme(IntPtr.Zero, out activePolicyGuidPtr) != ERROR_SUCCESS)
+                    return null;
+
+                if (activePolicyGuidPtr == IntPtr.Zero)
+                    return null;
+
+                return (Guid)Marshal.PtrToStructure(activePolicyGuidPtr, typeof(Guid));
+            }
+            catch
+            {
+                return null;
+            }
+            finally
+            {
+                if (activePolicyGuidPtr != IntPtr.Zero)
+                    LocalFree(activePolicyGuidPtr);
+            }
+        }
+
+        /// <summary>
+        /// 호스트의 활성 전원 관리 옵션이 고성능 계열인지 여부를 반환한다.
+        /// 판별에 실패하면(예: 지원되지 않는 환경) <see langword="null"/>을 반환한다.
+        /// </summary>
+        public static bool? IsHighPerformancePowerSchemeActive()
+        {
+            var activeSchemeGuid = GetActivePowerSchemeGuid();
+
+            if (!activeSchemeGuid.HasValue)
+                return null;
+
+            return IsHighPerformancePowerScheme(activeSchemeGuid.Value);
+        }
+
         public static bool IsDevelopmentBuild =>
 #if DEBUG
             true
