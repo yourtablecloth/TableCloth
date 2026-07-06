@@ -104,5 +104,14 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("Info_WillCreateSingleSiteShortcut", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   The current power plan on this PC is not set to &apos;High performance&apos;. Windows Sandbox may start slowly. For a faster experience, consider switching to the &apos;High performance&apos; power plan in Control Panel.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Info_PowerScheme_NotHighPerformance {
+            get {
+                return ResourceManager.GetString("Info_PowerScheme_NotHighPerformance", resourceCulture);
+            }
+        }
     }
 }

@@ -49,6 +49,9 @@ public sealed class SandboxLauncher(
             return;
         }
 
+        if (Helpers.IsHighPerformancePowerSchemeActive() == false)
+            appMessageBox.DisplayInfo(InfoStrings.Info_PowerScheme_NotHighPerformance);
+
         if (config.CertPair != null)
         {
             var now = DateTime.Now;
