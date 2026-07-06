@@ -56,7 +56,7 @@ namespace TableCloth
                 if (activePolicyGuidPtr == IntPtr.Zero)
                     return null;
 
-                return (Guid)Marshal.PtrToStructure(activePolicyGuidPtr, typeof(Guid));
+                return Marshal.PtrToStructure<Guid>(activePolicyGuidPtr);
             }
             catch
             {
