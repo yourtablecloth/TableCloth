@@ -130,23 +130,61 @@
 
 <!-- 호환성 (워크어라운드) -->
             <TabItem Header="{x:Static res:UIStringResources.Options_Section_Compatibility}">
-                <StackPanel Margin="12">
-                    <TextBlock Margin="0 0 0 8" TextWrapping="Wrap"
+                <Grid Margin="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Margin="0 0 0 8" TextWrapping="Wrap"
                                Foreground="{DynamicResource ControlSecondaryForeground}"
                                Text="{x:Static res:UIStringResources.Options_Section_Compatibility_Description}" />
-                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_EnableSandboxGpuAccelerationCheckbox}" IsChecked="{Binding EnableSandboxGpuAcceleration}" />
-                    <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11"
-                               Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.Option_EnableSandboxGpuAccelerationCheckbox_Description}" />
-                    <CheckBox Margin="0 12 0 4" Content="{x:Static res:UIStringResources.Option_EnableSandboxPublicDnsFallbackCheckbox}" IsChecked="{Binding EnableSandboxPublicDnsFallback}" />
-                    <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11"
-                               Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.Option_EnableSandboxPublicDnsFallbackCheckbox_Description}" />
-                    <CheckBox Margin="0 12 0 4" Content="{x:Static res:UIStringResources.Option_EnableZScalerRootCertPropagationCheckbox}" IsChecked="{Binding EnableZScalerRootCertPropagation}" />
-                    <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11"
-                               Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.Option_EnableZScalerRootCertPropagationCheckbox_Description}" />
-                </StackPanel>
+
+                    <!-- 설정 항목의 이름·설명(한/영)을 검색해 필터링한다. 항목이 늘어나도 원하는 설정을 빠르게 찾게 한다.
+                         워터마크는 카탈로그 검색(CatalogPage)과 동일한 CueBannerBrush 관용구를 사용한다(빈 값일 때만 표시). -->
+                    <TextBox Grid.Row="1" Margin="0 0 0 8" VerticalContentAlignment="Center"
+                             Text="{Binding CompatibilityOptionSearchText, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                <Style.Resources>
+                                    <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                        <VisualBrush.Visual>
+                                            <Label Content="{x:Static res:UIStringResources.Option_Compatibility_SearchPlaceholder}" Foreground="{DynamicResource ControlSecondaryForeground}" />
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Style.Resources>
+                                <Style.Triggers>
+                                    <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                        <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+
+                    <!-- 체크박스 목록은 수직 전용 스크롤로 감싼다(가로 스크롤 비활성 + 설명 줄바꿈). 항목이 늘어나도 창 높이를 넘지 않는다. -->
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <Grid>
+                            <ItemsControl ItemsSource="{Binding CompatibilityOptions}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:CompatibilityOptionItem}">
+                                        <StackPanel Margin="0 0 0 12">
+                                            <CheckBox Content="{Binding Title}" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                            <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11"
+                                                       Foreground="{DynamicResource ControlSecondaryForeground}"
+                                                       Text="{Binding Description}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock Margin="2 4 0 0" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource ControlSecondaryForeground}"
+                                       Text="{x:Static res:UIStringResources.Option_Compatibility_NoSearchResults}"
+                                       Visibility="{Binding HasNoCompatibilityMatches, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
             </TabItem>
 
 <!-- 진단 -->

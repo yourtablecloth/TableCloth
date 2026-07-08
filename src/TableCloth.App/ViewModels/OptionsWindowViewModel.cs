@@ -8,8 +8,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -40,7 +42,10 @@ public partial class OptionsWindowViewModelForDesigner : OptionsWindowViewModel 
 
 public partial class OptionsWindowViewModel : ObservableObject
 {
-    protected OptionsWindowViewModel() { }
+    protected OptionsWindowViewModel()
+    {
+        BuildCompatibilityOptions();
+    }
 
     [ActivatorUtilitiesConstructor]
     public OptionsWindowViewModel(
@@ -55,6 +60,8 @@ public partial class OptionsWindowViewModel : ObservableObject
         _appMessageBox = appMessageBox;
         _sharedLocations = sharedLocations;
         _taskFactory = taskFactory;
+
+        BuildCompatibilityOptions();
     }
 
     public event EventHandler? CloseRequested;
@@ -339,6 +346,99 @@ public partial class OptionsWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _enableZScalerRootCertPropagation;
 
+    // --- 호환성 탭: 검색 가능한 설정 목록 ---
+    // 호스트 보안 프로그램 대응 등으로 호환성 설정이 계속 늘어날 수 있어, 하드코딩된 체크박스 대신
+    // 항목 컬렉션 + 검색 필터 + 수직 스크롤로 구성한다. 각 항목은 위의 대응 bool 속성을 그대로 읽고 쓰는
+    // 얇은 어댑터이므로 저장 파이프라인(OnViewModelPropertyChangedAsync)은 변경 없이 재사용된다.
+
+    /// <summary>호환성 탭 설정 항목 원본(필터 전 전체). 검색 결과는 <see cref="CompatibilityOptions"/>에 반영된다.</summary>
+    private readonly List<CompatibilityOptionItem> _allCompatibilityOptions = new();
+
+    /// <summary>검색어로 필터링되어 실제로 화면에 표시되는 호환성 설정 항목.</summary>
+    public ObservableCollection<CompatibilityOptionItem> CompatibilityOptions { get; } = new();
+
+    /// <summary>호환성 탭 검색어. 이름·설명의 한국어·영어 텍스트에 부분 일치하는 항목만 표시된다.</summary>
+    [ObservableProperty]
+    private string _compatibilityOptionSearchText = string.Empty;
+
+    /// <summary>현재 검색어와 일치하는 호환성 설정이 하나도 없는지 여부. “결과 없음” 안내 표시에 사용한다.</summary>
+    [ObservableProperty]
+    private bool _hasNoCompatibilityMatches;
+
+    // 검색창 워터마크(placeholder)는 뷰(CueBannerBrush, 빈 값 트리거)가 직접 처리하므로 별도 상태를 두지 않는다.
+    partial void OnCompatibilityOptionSearchTextChanged(string value)
+        => ApplyCompatibilityFilter();
+
+    /// <summary>
+    /// 호환성 탭에 노출할 설정 항목을 구성한다. 새 호환성 설정을 추가할 때는 대응 bool
+    /// <c>[ObservableProperty]</c>를 만들고 여기에 항목 하나만 등록하면 검색·스크롤 UI에 자동 편입된다.
+    /// </summary>
+    private void BuildCompatibilityOptions()
+    {
+        _allCompatibilityOptions.Add(new CompatibilityOptionItem(
+            this,
+            nameof(EnableSandboxGpuAcceleration),
+            UIStringResources.Option_EnableSandboxGpuAccelerationCheckbox,
+            UIStringResources.Option_EnableSandboxGpuAccelerationCheckbox_Description,
+            BuildSearchText(
+                nameof(UIStringResources.Option_EnableSandboxGpuAccelerationCheckbox),
+                nameof(UIStringResources.Option_EnableSandboxGpuAccelerationCheckbox_Description)),
+            () => EnableSandboxGpuAcceleration,
+            value => EnableSandboxGpuAcceleration = value));
+
+        _allCompatibilityOptions.Add(new CompatibilityOptionItem(
+            this,
+            nameof(EnableSandboxPublicDnsFallback),
+            UIStringResources.Option_EnableSandboxPublicDnsFallbackCheckbox,
+            UIStringResources.Option_EnableSandboxPublicDnsFallbackCheckbox_Description,
+            BuildSearchText(
+                nameof(UIStringResources.Option_EnableSandboxPublicDnsFallbackCheckbox),
+                nameof(UIStringResources.Option_EnableSandboxPublicDnsFallbackCheckbox_Description)),
+            () => EnableSandboxPublicDnsFallback,
+            value => EnableSandboxPublicDnsFallback = value));
+
+        _allCompatibilityOptions.Add(new CompatibilityOptionItem(
+            this,
+            nameof(EnableZScalerRootCertPropagation),
+            UIStringResources.Option_EnableZScalerRootCertPropagationCheckbox,
+            UIStringResources.Option_EnableZScalerRootCertPropagationCheckbox_Description,
+            BuildSearchText(
+                nameof(UIStringResources.Option_EnableZScalerRootCertPropagationCheckbox),
+                nameof(UIStringResources.Option_EnableZScalerRootCertPropagationCheckbox_Description)),
+            () => EnableZScalerRootCertPropagation,
+            value => EnableZScalerRootCertPropagation = value));
+
+        ApplyCompatibilityFilter();
+    }
+
+    /// <summary>
+    /// 지정한 리소스 키들의 한국어·영어 텍스트를 모두 합쳐 검색용 문자열을 만든다. 현재 UI 언어와
+    /// 무관하게 한/영 어느 쪽으로 입력해도 검색되도록, 한국어 리소스와 중립(영어) 리소스를 함께 담는다.
+    /// </summary>
+    private static string BuildSearchText(params string[] resourceKeys)
+    {
+        var resourceManager = UIStringResources.ResourceManager;
+        var builder = new StringBuilder();
+        foreach (var key in resourceKeys)
+        {
+            builder.Append(resourceManager.GetString(key, KoreanCulture) ?? string.Empty).Append('\n');
+            builder.Append(resourceManager.GetString(key, CultureInfo.InvariantCulture) ?? string.Empty).Append('\n');
+        }
+        return builder.ToString();
+    }
+
+    /// <summary>검색어에 맞춰 <see cref="CompatibilityOptions"/>를 다시 채우고 결과 없음 여부를 갱신한다.</summary>
+    private void ApplyCompatibilityFilter()
+    {
+        CompatibilityOptions.Clear();
+        foreach (var item in _allCompatibilityOptions)
+        {
+            if (item.MatchesFilter(CompatibilityOptionSearchText))
+                CompatibilityOptions.Add(item);
+        }
+        HasNoCompatibilityMatches = CompatibilityOptions.Count == 0;
+    }
+
     // [미리 보기] 유휴 자동 종료(이슈 #197). 기본 꺼짐 + 유휴 허용 시간(분).
     [ObservableProperty]
     private bool _enableIdleAutoLogout;
@@ -388,6 +488,9 @@ public partial class OptionsWindowViewModel : ObservableObject
     [ObservableProperty]
     private MappedFolderSetting? _selectedMappedFolder;
 
+    // 검색 인덱스를 만들 때 한국어 리소스를 명시적으로 읽기 위한 문화권(현재 UI 언어와 무관하게 한/영 모두 색인).
+    private static readonly CultureInfo KoreanCulture = CultureInfo.GetCultureInfo("ko");
+
     private bool _suppressSave;
     private readonly IPreferencesManager _preferencesManager = default!;
     private readonly IAppRestartManager _appRestartManager = default!;
@@ -402,6 +505,14 @@ public partial class OptionsWindowViewModel : ObservableObject
     {
         if (_suppressSave)
             return;
+
+        // 저장 대상이 아닌 UI 전용 상태(호환성 탭 검색어/결과 없음 플래그)는
+        // 아래의 preferences 로드를 유발하지 않도록 즉시 무시한다(검색은 매 키 입력마다 발생).
+        if (e.PropertyName is nameof(CompatibilityOptionSearchText)
+            or nameof(HasNoCompatibilityMatches))
+        {
+            return;
+        }
 
         var viewModel = sender as OptionsWindowViewModel;
         ArgumentNullException.ThrowIfNull(viewModel);
