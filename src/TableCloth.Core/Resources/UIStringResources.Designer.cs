@@ -2074,6 +2074,18 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string Option_Compatibility_SearchPlaceholder {
+            get {
+                return ResourceManager.GetString("Option_Compatibility_SearchPlaceholder", resourceCulture);
+            }
+        }
+
+        public static string Option_Compatibility_NoSearchResults {
+            get {
+                return ResourceManager.GetString("Option_Compatibility_NoSearchResults", resourceCulture);
+            }
+        }
+
         public static string SporkCatalog_Instruction {
             get {
                 return ResourceManager.GetString("SporkCatalog_Instruction", resourceCulture);
