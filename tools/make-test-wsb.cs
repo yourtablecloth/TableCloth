@@ -101,6 +101,8 @@ var runCmdLines = new[]
     "set PATH=%DOTNET_ROOT%;%PATH%",
     "reg add \"HKLM\\SYSTEM\\CurrentControlSet\\Control\\CI\\Policy\" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1",
     "reg add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Edge\" /v HardwareAccelerationModeEnabled /t REG_DWORD /d 0 /f >nul 2>&1",
+    "reg add \"HKLM\\SOFTWARE\\Policies\\Microsoft\\Edge\\LocalNetworkAccessAllowedForUrls\" /v 1 /t REG_SZ /d \"*\" /f >nul 2>&1",
+    "reg add \"HKLM\\SOFTWARE\\Policies\\Google\\Chrome\\LocalNetworkAccessAllowedForUrls\" /v 1 /t REG_SZ /d \"*\" /f >nul 2>&1",
     "\"%SystemRoot%\\System32\\citool.exe\" --refresh >nul 2>&1",
     "start \"Spork\" \"%~dp0Spork.exe\"",
     "popd",
