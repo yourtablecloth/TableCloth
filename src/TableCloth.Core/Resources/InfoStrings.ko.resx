@@ -132,7 +132,4 @@
   <data name="Info_WillCreateSingleSiteShortcut" xml:space="preserve">
     <value>바로 가기에 지정할 수 있는 최대 명령어 길이 제한으로 처음 선택한 사이트만 바로 가기로 만듭니다.</value>
   </data>
-  <data name="Info_PowerScheme_NotHighPerformance" xml:space="preserve">
-    <value>현재 이 PC의 전원 관리 옵션이 '고성능'으로 설정되어 있지 않습니다. Windows Sandbox 시작이 느려질 수 있습니다. 더 빠른 실행 경험을 위해 제어판에서 '고성능' 전원 관리 옵션으로 변경하는 것을 권장합니다.</value>
-  </data>
 </root>

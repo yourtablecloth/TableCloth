@@ -1984,6 +1984,54 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string PowerSchemeGuide_Title {
+            get {
+                return ResourceManager.GetString("PowerSchemeGuide_Title", resourceCulture);
+            }
+        }
+
+        public static string PowerSchemeGuide_Heading {
+            get {
+                return ResourceManager.GetString("PowerSchemeGuide_Heading", resourceCulture);
+            }
+        }
+
+        public static string PowerSchemeGuide_Body {
+            get {
+                return ResourceManager.GetString("PowerSchemeGuide_Body", resourceCulture);
+            }
+        }
+
+        public static string PowerSchemeGuide_OpenClassicButton {
+            get {
+                return ResourceManager.GetString("PowerSchemeGuide_OpenClassicButton", resourceCulture);
+            }
+        }
+
+        public static string PowerSchemeGuide_OpenClassicDescription {
+            get {
+                return ResourceManager.GetString("PowerSchemeGuide_OpenClassicDescription", resourceCulture);
+            }
+        }
+
+        public static string PowerSchemeGuide_OpenModernButton {
+            get {
+                return ResourceManager.GetString("PowerSchemeGuide_OpenModernButton", resourceCulture);
+            }
+        }
+
+        public static string PowerSchemeGuide_OpenModernDescription {
+            get {
+                return ResourceManager.GetString("PowerSchemeGuide_OpenModernDescription", resourceCulture);
+            }
+        }
+
+        public static string PowerSchemeGuide_CloseButton {
+            get {
+                return ResourceManager.GetString("PowerSchemeGuide_CloseButton", resourceCulture);
+            }
+        }
+
         public static string Options_Title {
             get {
                 return ResourceManager.GetString("Options_Title", resourceCulture);

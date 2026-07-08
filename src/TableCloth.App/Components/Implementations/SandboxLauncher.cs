@@ -14,6 +14,8 @@ namespace TableCloth.Components.Implementations;
 
 public sealed class SandboxLauncher(
     IAppMessageBox appMessageBox,
+    IAppUserInterface appUserInterface,
+    IApplicationService applicationService,
     ISharedLocations sharedLocations,
     ISandboxBuilder sandboxBuilder,
     ISandboxCleanupManager sandboxCleanupManager,
@@ -49,8 +51,11 @@ public sealed class SandboxLauncher(
             return;
         }
 
-        if (Helpers.IsHighPerformancePowerSchemeActive() == false)
-            appMessageBox.DisplayInfo(InfoStrings.Info_PowerScheme_NotHighPerformance);
+        // CPU 최대 성능이 제한(스로틀)되어 있으면, 시스템 메시지 박스 대신 전용 안내 창을 띄워
+        // 클래식(powercfg.cpl)/모던(전원 및 절전) 전원 설정 중 하나를 골라 열 수 있게 안내한다.
+        // 백그라운드에서 호출될 수 있으므로 UI 스레드로 마샬링해 모달로 표시한다(런치는 계속 진행).
+        if (Helpers.IsSandboxCpuLikelyThrottled() == true)
+            applicationService.DispatchInvoke(() => appUserInterface.CreatePowerSchemeGuideWindow().ShowDialog(), []);
 
         if (config.CertPair != null)
         {

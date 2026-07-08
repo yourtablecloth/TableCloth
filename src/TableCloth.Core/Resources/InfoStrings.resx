@@ -132,7 +132,4 @@
   <data name="Info_WillCreateSingleSiteShortcut" xml:space="preserve">
     <value>Because of the maximum command length limit that can be specified for a shortcut, only the first selected site is made a shortcut.</value>
   </data>
-  <data name="Info_PowerScheme_NotHighPerformance" xml:space="preserve">
-    <value>The current power plan on this PC is not set to 'High performance'. Windows Sandbox may start slowly. For a faster experience, consider switching to the 'High performance' power plan in Control Panel.</value>
-  </data>
 </root>

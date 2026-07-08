@@ -866,6 +866,30 @@ Create it now and continue?</value>
 
 Create it and open it now?</value>
   </data>
+  <data name="PowerSchemeGuide_Title" xml:space="preserve">
+    <value>Windows Sandbox performance notice</value>
+  </data>
+  <data name="PowerSchemeGuide_Heading" xml:space="preserve">
+    <value>Your CPU's maximum performance is currently limited</value>
+  </data>
+  <data name="PowerSchemeGuide_Body" xml:space="preserve">
+    <value>The maximum processor state is set below 100% (for example, a power-saver plan or running on battery), so Windows Sandbox may start and run slowly. For a smoother experience, connect to AC power or raise the maximum processor state. You can open the power settings below.</value>
+  </data>
+  <data name="PowerSchemeGuide_OpenClassicButton" xml:space="preserve">
+    <value>Open Control Panel power options (powercfg.cpl)</value>
+  </data>
+  <data name="PowerSchemeGuide_OpenClassicDescription" xml:space="preserve">
+    <value>Opens the classic Power Options window, where you can switch or customize your power plan.</value>
+  </data>
+  <data name="PowerSchemeGuide_OpenModernButton" xml:space="preserve">
+    <value>Open Settings (Power &amp; sleep)</value>
+  </data>
+  <data name="PowerSchemeGuide_OpenModernDescription" xml:space="preserve">
+    <value>Opens the modern Windows Settings power page.</value>
+  </data>
+  <data name="PowerSchemeGuide_CloseButton" xml:space="preserve">
+    <value>Later</value>
+  </data>
   <data name="Options_Title" xml:space="preserve">
     <value>Options</value>
   </data>

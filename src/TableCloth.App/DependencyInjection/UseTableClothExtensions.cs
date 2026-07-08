@@ -73,6 +73,7 @@ public static class UseTableClothExtensions
             .AddWindow<InputPasswordWindow, InputPasswordWindowViewModel>()
             .AddWindow<AboutWindow, AboutWindowViewModel>()
             .AddWindow<OptionsWindow, OptionsWindowViewModel>()
+            .AddWindow<PowerSchemeGuideWindow, PowerSchemeGuideWindowViewModel>()
             .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
             .AddWindow<MainWindow, MainWindowViewModel>()
             .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
