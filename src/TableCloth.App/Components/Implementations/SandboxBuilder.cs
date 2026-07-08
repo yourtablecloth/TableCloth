@@ -422,6 +422,17 @@ reg add ""HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System"" /v Wa
 "
             : string.Empty;
 
+        // 이슈 #294: Chrome/Edge 141부터 "로컬 네트워크 액세스(Local Network Access)" 권한이 도입되면서
+        // 일부 인터넷뱅킹 사이트가 로컬 기기(보안 프로그램 등)에 접근할 때 사용자에게 [허용] 팝업이 뜬다.
+        // 매 세션이 초기화되는 이 샌드박스에서는 매번 팝업을 눌러야 하므로, 시작 시점에 정책으로 모든
+        // 출처(*)에 대해 로컬 네트워크 액세스를 미리 허용해 팝업 없이 뱅킹이 동작하도록 한다.
+        // Chromium 목록형 정책이라 정책 이름을 하위 키로 만들고 "1","2",... 문자열 값으로 항목을 채운다.
+        // Edge/Chrome 모두 지원(chrome.*:139-)하며, msedge/chrome 가 처음 뜨기 전에 정책이 들어가야
+        // 새 프로세스가 이를 읽으므로 GPU 정책과 동일하게 batch 단계에서 적용한다.
+        var localNetworkAccessScript = @"reg add ""HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls"" /v 1 /t REG_SZ /d ""*"" /f >nul 2>&1
+reg add ""HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls"" /v 1 /t REG_SZ /d ""*"" /f >nul 2>&1
+";
+
         // [미리 보기] 유휴 자동 종료(이슈 #197). 기능이 켜져 있으면 Spork 런처와 독립된 idle-guard 프로세스를
         // start로 분리 기동한다. 이렇게 하면 사용자가 Spork 창을 닫아도(또는 아예 안 열어도) 유휴 보호가 유지된다.
         // 유휴 시간 등 세부 정책은 같은 폴더의 SporkAnswers.json에서 가드가 직접 읽는다.
@@ -433,7 +444,7 @@ reg add ""HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System"" /v Wa
         return $@"@echo off
 pushd ""%~dp0""
 {dotnetRootScript}reg add ""HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy"" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1
-{disableEdgeGpuScript}{darkWallpaperScript}""%SystemRoot%\System32\citool.exe"" --refresh >nul 2>&1
+{disableEdgeGpuScript}{darkWallpaperScript}{localNetworkAccessScript}""%SystemRoot%\System32\citool.exe"" --refresh >nul 2>&1
 {idleGuardScript}""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
 popd
 @echo on
