@@ -305,21 +305,31 @@ namespace Spork.Sandbox
                     return;
                 }
 
-                // 1) 현재 사용자 신뢰 루트에 등록(상승 불필요, SChannel/브라우저 대응).
-                using (var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser))
+                try
                 {
-                    store.Open(OpenFlags.ReadWrite);
-                    store.AddRange(certificates);
+                    // 1) 현재 사용자 신뢰 루트에 등록(상승 불필요, SChannel/브라우저 대응).
+                    //    Store.Add는 인증서를 저장소로 복제하므로, 아래 finally에서 원본을 해제해도 안전하다.
+                    using (var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser))
+                    {
+                        store.Open(OpenFlags.ReadWrite);
+                        store.AddRange(certificates);
+                    }
+
+                    // 2) Node.js: 저장소 무관하게 PEM을 직접 지정(User 스코프 + 현재 세션 즉시 반영).
+                    Environment.SetEnvironmentVariable("NODE_EXTRA_CA_CERTS", pemPath, EnvironmentVariableTarget.User);
+                    Environment.SetEnvironmentVariable("NODE_EXTRA_CA_CERTS", pemPath, EnvironmentVariableTarget.Process);
+
+                    // 3) git이 SChannel(윈도우 인증서 저장소)을 사용하도록 구성(선택).
+                    TryConfigureGitSChannel();
+
+                    _logger.LogDebug("Propagated {count} ZScaler root certificate(s) into the sandbox.", certificates.Count);
                 }
-
-                // 2) Node.js: 저장소 무관하게 PEM을 직접 지정(User 스코프 + 현재 세션 즉시 반영).
-                Environment.SetEnvironmentVariable("NODE_EXTRA_CA_CERTS", pemPath, EnvironmentVariableTarget.User);
-                Environment.SetEnvironmentVariable("NODE_EXTRA_CA_CERTS", pemPath, EnvironmentVariableTarget.Process);
-
-                // 3) git이 SChannel(윈도우 인증서 저장소)을 사용하도록 구성(선택).
-                TryConfigureGitSChannel();
-
-                _logger.LogDebug("Propagated {count} ZScaler root certificate(s) into the sandbox.", certificates.Count);
+                finally
+                {
+                    // X509Certificate2는 IDisposable(키 핸들 보유)이므로 등록 후 원본을 해제한다.
+                    foreach (var cert in certificates)
+                        cert.Dispose();
+                }
             }
             catch (Exception ex)
             {
@@ -340,7 +350,12 @@ namespace Spork.Sandbox
                 };
 
                 using var process = Process.Start(startInfo);
-                process?.WaitForExit(TimeSpan.FromSeconds(5));
+                if (process is not null && !process.WaitForExit(TimeSpan.FromSeconds(5)))
+                {
+                    // 5초 내 종료하지 않으면(예: git 자격 증명 프롬프트로 멈춤) 좀비로 남지 않도록 강제 종료한다.
+                    try { process.Kill(entireProcessTree: true); }
+                    catch { /* 이미 종료됐거나 접근 불가 — 무시 */ }
+                }
             }
             catch (Exception ex)
             {
