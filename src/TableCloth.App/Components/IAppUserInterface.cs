@@ -11,6 +11,7 @@ public interface IAppUserInterface
 {
     AboutWindow CreateAboutWindow();
     OptionsWindow CreateOptionsWindow(string? initialTabKey = null);
+    PowerSchemeGuideWindow CreatePowerSchemeGuideWindow();
     CatalogPage CreateCatalogPage(string searchKeyword);
     CatalogPageViewModel CreateCatalogPageViewModel(string searchKeyword);
     QuickStartPage CreateQuickStartPage();
