@@ -355,7 +355,8 @@ reg add ""HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System"" /v Wa
         // 매 세션이 초기화되는 이 샌드박스에서는 매번 팝업을 눌러야 하므로, 시작 시점에 정책으로 모든
         // 출처(*)에 대해 로컬 네트워크 액세스를 미리 허용해 팝업 없이 뱅킹이 동작하도록 한다.
         // Chromium 목록형 정책이라 정책 이름을 하위 키로 만들고 "1","2",... 문자열 값으로 항목을 채운다.
-        // Edge/Chrome 모두 지원(chrome.*:139-)하며, msedge/chrome 가 처음 뜨기 전에 정책이 들어가야
+        // Edge/Chrome 모두 지원한다(정책 자체는 chrome.*:139- 부터 제공, 팝업은 141 전후로 노출).
+        // msedge/chrome 가 처음 뜨기 전에 정책이 들어가야
         // 새 프로세스가 이를 읽으므로 GPU 정책과 동일하게 batch 단계에서 적용한다.
         var localNetworkAccessScript = @"reg add ""HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls"" /v 1 /t REG_SZ /d ""*"" /f >nul 2>&1
 reg add ""HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls"" /v 1 /t REG_SZ /d ""*"" /f >nul 2>&1
