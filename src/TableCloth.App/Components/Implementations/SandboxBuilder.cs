@@ -304,39 +304,51 @@ public sealed class SandboxBuilder(
 
         try
         {
+            // X509Certificate2는 IDisposable(키 핸들 보유)이므로, 매칭되지 않은 인증서는 즉시,
+            // 매칭된 인증서는 PEM 추출 후 finally에서 정리한다.
             var matchingCerts = new List<X509Certificate2>();
-            using (var store = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
+            try
             {
-                store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-                foreach (var cert in store.Certificates)
+                using (var store = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
                 {
-                    if (cert.Subject.IndexOf("Zscaler", StringComparison.OrdinalIgnoreCase) >= 0)
-                        matchingCerts.Add(cert);
+                    store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+                    foreach (var cert in store.Certificates)
+                    {
+                        if (cert.Subject.IndexOf("Zscaler", StringComparison.OrdinalIgnoreCase) >= 0)
+                            matchingCerts.Add(cert);
+                        else
+                            cert.Dispose();
+                    }
                 }
-            }
 
-            var zscalerStagingDirectoryPath = Path.Combine(appDirectory, "zscaler");
-            if (matchingCerts.Count < 1)
-            {
-                // 호스트에 ZScaler 루트 인증서가 없으면 이전 세션의 잔여 PEM이 남지 않도록 staging을 정리한다.
+                var zscalerStagingDirectoryPath = Path.Combine(appDirectory, "zscaler");
+                if (matchingCerts.Count < 1)
+                {
+                    // 호스트에 ZScaler 루트 인증서가 없으면 이전 세션의 잔여 PEM이 남지 않도록 staging을 정리한다.
+                    if (Directory.Exists(zscalerStagingDirectoryPath))
+                        Directory.Delete(zscalerStagingDirectoryPath, true);
+                    return;
+                }
+
                 if (Directory.Exists(zscalerStagingDirectoryPath))
                     Directory.Delete(zscalerStagingDirectoryPath, true);
-                return;
+                Directory.CreateDirectory(zscalerStagingDirectoryPath);
+
+                var builder = new StringBuilder();
+                foreach (var cert in matchingCerts)
+                    builder.AppendLine(cert.ExportCertificatePem());
+
+                // PEM은 ASCII(base64)만 담기므로 ASCII로 기록한다.
+                File.WriteAllText(
+                    Path.Combine(zscalerStagingDirectoryPath, "zscaler.pem"),
+                    builder.ToString(),
+                    Encoding.ASCII);
             }
-
-            if (Directory.Exists(zscalerStagingDirectoryPath))
-                Directory.Delete(zscalerStagingDirectoryPath, true);
-            Directory.CreateDirectory(zscalerStagingDirectoryPath);
-
-            var builder = new StringBuilder();
-            foreach (var cert in matchingCerts)
-                builder.AppendLine(cert.ExportCertificatePem());
-
-            // PEM은 ASCII(base64)만 담기므로 ASCII로 기록한다.
-            File.WriteAllText(
-                Path.Combine(zscalerStagingDirectoryPath, "zscaler.pem"),
-                builder.ToString(),
-                Encoding.ASCII);
+            finally
+            {
+                foreach (var cert in matchingCerts)
+                    cert.Dispose();
+            }
         }
         catch
         {
