@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Resources;
@@ -244,13 +245,13 @@ namespace Spork.Steps.Implementations
         {
             if (exception is HttpRequestException httpRequestException)
             {
+                // 응답 자체를 받지 못한 경우(연결 실패 등)는 StatusCode가 없다 → 일시적으로 취급.
                 if (!httpRequestException.StatusCode.HasValue)
                     return true;
 
-                var statusCode = httpRequestException.StatusCode.Value;
-                return statusCode == HttpStatusCode.RequestTimeout ||
-                    statusCode == HttpStatusCode.TooManyRequests ||
-                    (int)statusCode >= (int)HttpStatusCode.InternalServerError;
+                // 상태 코드가 있으면 "재시도할 가치가 있는" 코드만 일시적. 그 외(4xx 대부분, 501/505 등
+                // 영구성 5xx)는 재시도하지 않고 즉시 실패로 건너뛴다.
+                return IsRetryableStatusCode(httpRequestException.StatusCode.Value);
             }
 
             if (exception is TaskCanceledException || exception is TimeoutException)
@@ -259,8 +260,27 @@ namespace Spork.Steps.Implementations
             if (exception is IOException)
                 return true;
 
+            // 소켓 수준 오류(연결 거부·리셋·타임아웃, DNS 해석 실패 등). HttpClient는 대개 이를
+            // HttpRequestException(StatusCode 없음)이나 IOException으로 래핑하지만, 래핑되지 않은 순수
+            // SocketException이 올라오는 경로(다른 다운로드 계층/핸들러)도 일시적으로 취급한다.
+            if (exception is SocketException)
+                return true;
+
             return exception.InnerException != null && IsTransientDownloadException(exception.InnerException);
         }
+
+        /// <summary>
+        /// 재시도할 가치가 있는(일시적) HTTP 상태 코드인지 여부. 일시적인 서버측 오류/과부하만 true로 하고,
+        /// 요청 자체의 문제(4xx 대부분)나 영구성 서버 오류(501 Not Implemented, 505 등)는 false로 하여
+        /// 재시도하지 않고 건너뛴다.
+        /// </summary>
+        private static bool IsRetryableStatusCode(HttpStatusCode statusCode)
+            => statusCode == HttpStatusCode.RequestTimeout          // 408
+            || statusCode == HttpStatusCode.TooManyRequests         // 429
+            || statusCode == HttpStatusCode.InternalServerError     // 500
+            || statusCode == HttpStatusCode.BadGateway              // 502
+            || statusCode == HttpStatusCode.ServiceUnavailable      // 503
+            || statusCode == HttpStatusCode.GatewayTimeout;         // 504
 
         /// <summary>
         /// 특정 Step의 다운로드 완료를 대기합니다.
