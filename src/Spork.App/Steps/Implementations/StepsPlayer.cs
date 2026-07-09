@@ -4,7 +4,10 @@ using Spork.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Resources;
@@ -37,6 +40,7 @@ namespace Spork.Steps.Implementations
         private const double PreparationProgress = 33.0;
         private const double LoadingProgress = 66.0;
         private const double PerformingProgress = 100.0;
+        private static readonly TimeSpan[] DownloadRetryDelays = [TimeSpan.FromSeconds(1d), TimeSpan.FromSeconds(3d)];
 
         // 현재 단계의 진행률을 업데이트합니다. value는 0에서 1 사이여야 합니다.
         private double CalculateProgressRate(int stage, double value)
@@ -189,10 +193,7 @@ namespace Spork.Steps.Implementations
                 }
                 else
                 {
-                    await item.Step.LoadContentForStepAsync(
-                        item.Argument,
-                        (value) => item.ProgressRate = CalculateProgressRate(2, value),
-                        cancellationToken).ConfigureAwait(false);
+                    await LoadStepContentWithRetryAsync(item, cancellationToken).ConfigureAwait(false);
                 }
 
                 item.IsContentLoaded = true;
@@ -202,6 +203,53 @@ namespace Spork.Steps.Implementations
                 item.ContentLoadException = ex;
                 item.IsContentLoaded = true; // 완료로 표시하여 대기 중인 코드가 진행되도록 함
             }
+        }
+
+        private async Task LoadStepContentWithRetryAsync(
+            StepItemViewModel item,
+            CancellationToken cancellationToken)
+        {
+            for (var attempt = 0; ; attempt++)
+            {
+                try
+                {
+                    await item.Step.LoadContentForStepAsync(
+                        item.Argument,
+                        (value) => item.ProgressRate = CalculateProgressRate(2, value),
+                        cancellationToken).ConfigureAwait(false);
+                    return;
+                }
+                catch (Exception ex) when (!(ex is OperationCanceledException) || !cancellationToken.IsCancellationRequested)
+                {
+                    var hasMoreRetry = attempt < DownloadRetryDelays.Length;
+                    if (!hasMoreRetry || !IsTransientDownloadException(ex))
+                        throw;
+
+                    await Task.Delay(DownloadRetryDelays[attempt], cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
+        private static bool IsTransientDownloadException(Exception exception)
+        {
+            if (exception is HttpRequestException httpRequestException)
+            {
+                if (!httpRequestException.StatusCode.HasValue)
+                    return true;
+
+                var statusCode = (int)httpRequestException.StatusCode.Value;
+                return statusCode == (int)HttpStatusCode.RequestTimeout ||
+                    statusCode == (int)HttpStatusCode.TooManyRequests ||
+                    statusCode >= 500;
+            }
+
+            if (exception is TaskCanceledException || exception is TimeoutException)
+                return true;
+
+            if (exception is IOException)
+                return true;
+
+            return exception.InnerException != null && IsTransientDownloadException(exception.InnerException);
         }
 
         /// <summary>
