@@ -219,13 +219,23 @@ namespace Spork.Steps.Implementations
                         cancellationToken).ConfigureAwait(false);
                     return;
                 }
-                catch (Exception ex) when (!(ex is OperationCanceledException) || !cancellationToken.IsCancellationRequested)
+                catch (Exception ex)
                 {
+                    if (ex is OperationCanceledException && cancellationToken.IsCancellationRequested)
+                        throw;
+
                     var hasMoreRetry = attempt < DownloadRetryDelays.Length;
                     if (!hasMoreRetry || !IsTransientDownloadException(ex))
                         throw;
 
-                    await Task.Delay(DownloadRetryDelays[attempt], cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        await Task.Delay(DownloadRetryDelays[attempt], cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                    {
+                        throw;
+                    }
                 }
             }
         }
@@ -237,10 +247,10 @@ namespace Spork.Steps.Implementations
                 if (!httpRequestException.StatusCode.HasValue)
                     return true;
 
-                var statusCode = (int)httpRequestException.StatusCode.Value;
-                return statusCode == (int)HttpStatusCode.RequestTimeout ||
-                    statusCode == (int)HttpStatusCode.TooManyRequests ||
-                    statusCode >= 500;
+                var statusCode = httpRequestException.StatusCode.Value;
+                return statusCode == HttpStatusCode.RequestTimeout ||
+                    statusCode == HttpStatusCode.TooManyRequests ||
+                    (int)statusCode >= (int)HttpStatusCode.InternalServerError;
             }
 
             if (exception is TaskCanceledException || exception is TimeoutException)
