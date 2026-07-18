@@ -2200,6 +2200,12 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string SporkCatalog_Companions_SearchWatermark {
+            get {
+                return ResourceManager.GetString("SporkCatalog_Companions_SearchWatermark", resourceCulture);
+            }
+        }
+
         public static string SporkCatalog_Tab_Certificates {
             get {
                 return ResourceManager.GetString("SporkCatalog_Tab_Certificates", resourceCulture);

@@ -248,6 +248,12 @@ namespace Spork.ViewModels
                 .OrderBy(c => c.DisplayName, StringComparer.CurrentCultureIgnoreCase)
                 .ToList();
 
+            // 항목 수가 늘어 사이트 탭과 동일하게 키워드 필터를 건다. CatalogCompanions 를 새 리스트로
+            // 재할당할 때마다 기본 뷰가 새로 생기므로 필터도 매번 다시 설정한다(사이트 탭과 동일 패턴).
+            var companionView = CollectionViewSource.GetDefaultView(CatalogCompanions);
+            if (companionView != null)
+                companionView.Filter = item => CatalogCompanion.IsMatchedItem(item, CompanionSearchKeyword);
+
             // 현재 환경의 NPKI 위치들(WSB canonical / 실제 LocalLow / Desktop\NPKI 마운트 / USB)을
             // 스캔하여 사용 가능한 인증서를 카탈로그 탭에서 보여준다. 모드 1(식탁보+WSB)은 물론
             // 사용자가 직접 만든 VM(모드 2)에서도 동작한다. 만료된 인증서도 포함되며 UI는 취소선으로 구분한다.
@@ -337,6 +343,12 @@ namespace Spork.ViewModels
             {
                 var view = CollectionViewSource.GetDefaultView(CatalogServices);
                 view?.Refresh();
+            }
+
+            if (string.Equals(nameof(CompanionSearchKeyword), e.PropertyName, StringComparison.Ordinal))
+            {
+                var companionView = CollectionViewSource.GetDefaultView(CatalogCompanions);
+                companionView?.Refresh();
             }
 
             if (string.Equals(nameof(ShowFavoritesOnly), e.PropertyName, StringComparison.Ordinal) && !_suppressUserDataSave)
@@ -700,6 +712,10 @@ namespace Spork.ViewModels
 
         [ObservableProperty]
         private string _searchKeyword = string.Empty;
+
+        // 보조 프로그램 탭 전용 검색어. 사이트 탭(_searchKeyword)과 검색 대상 필드가 달라 별도로 둔다.
+        [ObservableProperty]
+        private string _companionSearchKeyword = string.Empty;
 
         // Edge 수동 설치/복구 진행 상태. IsEdgeInstalling 이 true 인 동안 footer 에 진행률을 표시한다(이슈 #184).
         [ObservableProperty]

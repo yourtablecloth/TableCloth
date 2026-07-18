@@ -319,14 +319,36 @@
                     <Grid Margin="6">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="Wrap"
                                    Foreground="{DynamicResource ControlSecondaryForeground}"
                                    Text="{x:Static res:UIStringResources.SporkCatalog_Companions_Description}" />
+                        <!-- 항목 수가 늘어 사이트 탭과 동일한 키워드 검색 상자를 제공한다. 비어 있을 때는
+                             워터마크(CueBanner)로 안내 문구를 보여준다. -->
+                        <TextBox Grid.Row="1" Margin="0 0 0 6" Padding="6 4"
+                                 Text="{Binding CompanionSearchKeyword, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                    <Style.Resources>
+                                        <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                            <VisualBrush.Visual>
+                                                <Label Content="{x:Static res:UIStringResources.SporkCatalog_Companions_SearchWatermark}" Foreground="{DynamicResource ControlSecondaryForeground}" />
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Style.Resources>
+                                    <Style.Triggers>
+                                        <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                            <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
                         <!-- 보조 프로그램은 저작권/EULA 동의 흐름 때문에 자동 설치하지 않고
                              공식 다운로드 페이지로 안내한다. 각 항목은 하이퍼링크 형태로 노출. -->
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                             <ItemsControl ItemsSource="{Binding CatalogCompanions}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
