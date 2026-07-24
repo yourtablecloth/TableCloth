@@ -83,6 +83,41 @@ catch (Exception ex)
     Console.WriteLine($"[CPUID] runtime exception: {ex.GetType().Name}: {ex.Message}");
 }
 
+// (6) NativeShellLink — AOT-safe .lnk creation via [GeneratedComInterface] (replaces Shell.Application + dynamic).
+try
+{
+    var lnk = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "aot-probe-shortcut.lnk");
+    if (System.IO.File.Exists(lnk)) System.IO.File.Delete(lnk);
+    TableCloth.Interop.NativeShellLink.Create(
+        linkFilePath: lnk,
+        targetPath: @"C:\Windows\System32\notepad.exe",
+        arguments: "--from-probe",
+        workingDirectory: @"C:\Windows\System32",
+        description: "AOT probe shortcut");
+    var info = new System.IO.FileInfo(lnk);
+    Console.WriteLine($"[ShellLink] created '{lnk}' exists={info.Exists} size={(info.Exists ? info.Length : 0)} bytes");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[ShellLink] runtime exception: {ex.GetType().Name}: {ex.Message}");
+}
+
+// (7) System.CommandLine 2.0.1 — mirrors CommandLineArguments.cs (RootCommand + Option<T> + Parse + InvokeAsync).
+try
+{
+    var certOption = new System.CommandLine.Option<string>("--cert");
+    var dryRunOption = new System.CommandLine.Option<bool>("--dry-run");
+    var root = new System.CommandLine.RootCommand { certOption, dryRunOption };
+    var parseResult = root.Parse(new[] { "--cert", "abc", "--dry-run" });
+    var cert = parseResult.GetValue(certOption);
+    var dry = parseResult.GetValue(dryRunOption);
+    Console.WriteLine($"[CommandLine] parsed cert='{cert}' dryRun={dry}");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[CommandLine] runtime exception: {ex.GetType().Name}: {ex.Message}");
+}
+
 Console.WriteLine("=== AOT PROBE END ===");
 
 public sealed class ProbeSettings

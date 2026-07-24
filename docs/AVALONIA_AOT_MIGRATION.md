@@ -264,7 +264,8 @@ WMI를 참조하는 파일은 3개(`AppStartup.cs`, `Win32DiskDrive.cs`, `Win32D
 **(C) COM interop 점검** — `ShortcutCreator`(IShellLink), 인증서 선택(CryptUI 등)이 레거시 COM이면
 `[GeneratedComInterface]`로 전환. `[ComImport]`/`Marshal.GetActiveObject` 계열은 AOT에서 제한.
 
-**(D) System.CommandLine 2.0.1** — AOT 호환성 확인 필요(2.0 GA는 대체로 AOT 친화적이나 PoC로 검증).
+**(D) System.CommandLine 2.0.1** — ✅ **AOT-clean 검증 완료**(2026-07-24). 실제 사용 패턴(`RootCommand` + `Option<T>` +
+`Parse` + `GetValue`)을 AOT 프로브로 게시·실행한 결과 IL 경고 0, 파싱 정상. 코드 변경 불필요.
 
 ### 6.3 진입점 csproj 변경
 
@@ -319,6 +320,19 @@ verb 디스패치(`Program.cs` 수동 인자 파싱)는 AOT 무관 — 유지. A
 - **M4:** JSON 소스젠 이관(§6.2 B) + WMI 대체(§6.2 A: 디스크 클래스 삭제 + CPUID) + COM 점검(§6.2 C).
 - **M5:** 진입점 `PublishAot=true`, IL 경고 0화, `build.cs`/CI 전환. **Stage 2 내부 테스트 빌드**(Native AOT).
 - **M6:** 전 과정 안정화 확인 후 **최초 사용자 릴리스**. (릴리스 정책: 완료 전까지 내부 테스트만 — §2)
+
+### 진행 현황 (2026-07-24, 브랜치 `feature/avalonia-aot`)
+
+비-UI AOT 사전 작업(S 시리즈)을 M1 이전에 선행 완료. 각 단계는 개별 커밋이며 WPF 상태에서 빌드 0경고 +
+TableCloth.Test 66 / Spork.Test 42 통과로 검증됨.
+
+- ✅ **S1 (WMI 제거):** 죽은 코드(Win32DiskDrive/Partition) 삭제 + 하이퍼바이저 감지 CPUID 대체 + `System.Management` 제거.
+- ✅ **S2a (PreferenceSettings JSON):** 소스 생성 컨텍스트로 이관.
+- ✅ **S2b (Spork 계약 타입 JSON):** SporkAnswers/SporkUserData/InstallRecord 소스젠 이관. → 전체 JsonSerializer 호출이 리플렉션 비의존.
+- ✅ **S3 (COM interop):** ShortcutCreator 2곳을 `Shell.Application`+`dynamic` → `IShellLinkW`/`IPersistFile`(GeneratedComInterface)로 대체.
+- ✅ **S4 (System.CommandLine):** AOT-clean 검증(변경 불필요).
+
+→ 남은 하드 AOT blocker(비-UI) 없음. Velopack/Sentry/카탈로그 XML 포함 모두 AOT 안전 확인. 다음은 **M1(UI 이음새 디커플링)**.
 
 ## 9. 롤백 전략
 

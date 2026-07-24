@@ -24,5 +24,6 @@
     <PackageReference Include="System.Management" Version="10.0.1" />
     <PackageReference Include="Velopack" Version="0.0.1298" />
     <PackageReference Include="Sentry" Version="6.0.0" />
+    <PackageReference Include="System.CommandLine" Version="2.0.1" />
   </ItemGroup>
 </Project>
