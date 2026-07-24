@@ -25,6 +25,7 @@
             <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0 12 0 24" TextWrapping="Wrap"
                        Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.QuickStart_Instruction}" />
             <Button HorizontalAlignment="Center" MinWidth="220" Padding="28 12" FontSize="16" FontWeight="Bold"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                     Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Command="{Binding LaunchSandboxCommand}" />
             <Button Classes="link" HorizontalAlignment="Center" Margin="0 16 0 0"
                     Content="{Binding NpkiStatusText}" Command="{Binding OpenOptionsCommand}" CommandParameter="Certificate" />

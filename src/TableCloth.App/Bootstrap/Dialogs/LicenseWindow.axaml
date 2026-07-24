@@ -20,8 +20,8 @@
         </Border>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
-            <Button x:Name="AgreeButton" Width="150" Height="32" Click="AgreeButton_Click" IsDefault="True" />
-            <Button x:Name="DeclineButton" Width="150" Height="32" Click="DeclineButton_Click" IsCancel="True" />
+            <Button x:Name="AgreeButton" Width="150" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="AgreeButton_Click" IsDefault="True" />
+            <Button x:Name="DeclineButton" Width="150" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="DeclineButton_Click" IsCancel="True" />
         </StackPanel>
     </Grid>
 </Window>

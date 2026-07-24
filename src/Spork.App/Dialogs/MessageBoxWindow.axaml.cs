@@ -70,6 +70,8 @@ namespace Spork.Dialogs
                 Content = text,
                 MinWidth = 84,
                 Padding = new Thickness(14, 6),
+                HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
                 IsDefault = result == defaultResult,
                 IsCancel = isCancel,
             };

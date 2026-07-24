@@ -99,7 +99,8 @@
         <StackPanel Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"
                     IsVisible="{Binding HasCatalogLoadFailed}">
             <TextBlock HorizontalAlignment="Center" Text="{x:Static res:UIStringResources.MainWindow_SelectSiteLabelText_Alt2}" />
-            <Button Width="250" Margin="0 10 0 0" Content="{x:Static res:UIStringResources.Button_AppRestartButton}"
+            <Button Width="250" Margin="0 10 0 0" HorizontalContentAlignment="Center"
+                    Content="{x:Static res:UIStringResources.Button_AppRestartButton}"
                     Command="{Binding AppRestartCommand}" CommandParameter="{Binding}" />
         </StackPanel>
     </Grid>
