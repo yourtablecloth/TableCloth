@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:TableCloth.ViewModels"
         xmlns:sponsors="using:TableCloth.Models.Sponsors"
+        xmlns:controls="using:TableCloth.Controls"
         xmlns:res="using:TableCloth.Resources"
         x:Class="TableCloth.Dialogs.AboutWindow"
         x:DataType="vm:AboutWindowViewModel"
@@ -54,7 +55,9 @@
                             <Border Margin="0 0 8 4" Padding="6 4" CornerRadius="4" BorderThickness="1"
                                     Background="{DynamicResource InfoBannerBackground}" BorderBrush="{DynamicResource InfoBannerBorder}">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <Ellipse Width="24" Height="24" Fill="#80808080" />
+                                    <Border Width="24" Height="24" CornerRadius="12" ClipToBounds="True" Background="#80808080">
+                                        <Image controls:RemoteImageLoader.SourceUrl="{Binding AvatarUrl}" Stretch="UniformToFill" />
+                                    </Border>
                                     <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
                                 </StackPanel>
                             </Border>
@@ -80,7 +83,9 @@
                             <Border Margin="0 0 8 4" Padding="6 4" CornerRadius="4" BorderThickness="1"
                                     Background="{DynamicResource InfoBannerBackground}" BorderBrush="{DynamicResource InfoBannerBorder}">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <Ellipse Width="24" Height="24" Fill="#80808080" />
+                                    <Border Width="24" Height="24" CornerRadius="12" ClipToBounds="True" Background="#80808080">
+                                        <Image controls:RemoteImageLoader.SourceUrl="{Binding AvatarUrl}" Stretch="UniformToFill" />
+                                    </Border>
                                     <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
                                 </StackPanel>
                             </Border>
@@ -103,19 +108,25 @@
             </Border>
         </Grid>
 
-        <!-- Buttons -->
+        <!-- Buttons: 홈페이지 + 더 보기(⋯) 드롭다운 | 확인. 7개 버튼이 640px 에 겹쳐서, 부차 액션은 메뉴로 묶어 최적화. -->
         <Grid Grid.Row="6" ColumnDefinitions="*,Auto">
             <StackPanel Grid.Column="0" HorizontalAlignment="Left" Orientation="Horizontal" Spacing="5">
                 <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}" Command="{Binding OpenWebsiteCommand}" CommandParameter="{Binding}" />
-                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_UserManualButton}" Command="{Binding OpenUserManualCommand}" />
-                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_ShowSysInfoButton}" Command="{Binding ShowSystemInfoCommand}" CommandParameter="{Binding}" />
-                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_CheckUpdateButton}" Command="{Binding CheckUpdatedVersionCommand}" CommandParameter="{Binding}" />
-                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_DiscordButton}" Command="{Binding OpenDiscordCommand}" />
+                <Button Padding="12 4" Content="⋯" FontWeight="Bold" VerticalContentAlignment="Center">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="{x:Static res:UIStringResources.Button_UserManualButton}" Click="MenuUserManual_Click" />
+                            <MenuItem Header="{x:Static res:UIStringResources.Button_ShowSysInfoButton}" Click="MenuSystemInfo_Click" />
+                            <MenuItem Header="{x:Static res:UIStringResources.Button_CheckUpdateButton}" Click="MenuCheckUpdate_Click" />
+                            <MenuItem Header="{x:Static res:UIStringResources.Button_DiscordButton}" Click="MenuDiscord_Click" />
+                            <Separator />
+                            <MenuItem Header="{x:Static res:UIStringResources.Button_PrivacyLink}" Click="MenuPrivacy_Click" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
             </StackPanel>
-            <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5">
-                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_PrivacyLink}" Command="{Binding OpenPrivacyPolicyCommand}" CommandParameter="{Binding}" />
-                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_OkayButton}" IsDefault="True" Click="OkayButton_Click" />
-            </StackPanel>
+            <Button Grid.Column="1" HorizontalAlignment="Right" Padding="14 4" MinWidth="84" HorizontalContentAlignment="Center"
+                    Content="{x:Static res:UIStringResources.Button_OkayButton}" IsDefault="True" Click="OkayButton_Click" />
         </Grid>
     </Grid>
 </Window>

@@ -67,6 +67,8 @@
 	-->
 	<ItemGroup>
 		<Compile Include="..\Shared\Interop\NativeShellLink.cs" Link="Interop\NativeShellLink.cs" />
+		<!-- 이슈 #296: 원격 이미지(About 창 GitHub 아바타) 비동기 로더. 양 앱 공유 링크. -->
+		<Compile Include="..\Shared\Controls\RemoteImageLoader.cs" Link="Controls\RemoteImageLoader.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
