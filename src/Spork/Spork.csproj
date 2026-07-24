@@ -32,13 +32,13 @@
 		SelfContained 는 본 PropertyGroup 안에서 명시적으로 켜 둔다. .NET 8+ 부터는 -r 만으로
 		self-contained가 켜지지 않아 EnableCompressionInSingleFile 와 조합 시 빌드 오류가 난다.
 	-->
+	<!--
+		이슈 #296 Stage 2 (M5): Native AOT 게시. TableCloth.csproj 와 동일 방침 — PublishAot 은
+		SelfContained + 트리밍을 내포하고 PublishSingleFile/ReadyToRun/Compression/IncludeNative 와 상호배타라 제거.
+		단독 Spork.exe 는 미출시 경로이나(샌드박스는 TableCloth.exe 의 spork verb 사용) AOT 그래프 정합성을 위해 함께 전환.
+	-->
 	<PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
-		<SelfContained>true</SelfContained>
-		<PublishSingleFile>true</PublishSingleFile>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-		<PublishReadyToRun>true</PublishReadyToRun>
-		<PublishTrimmed>false</PublishTrimmed>
+		<PublishAot>true</PublishAot>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
