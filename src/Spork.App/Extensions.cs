@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spork.Browsers;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
@@ -32,7 +33,11 @@ namespace Spork
                 .EnsureArgumentNotNull("HTTP Client Factory cannot be null reference.", nameof(httpClientFactory))
                 .CreateClient(nameof(ConstantStrings.FamiliarUserAgentText));
 
-        public static IServiceCollection AddWindow<TWindow, TViewModel>(this IServiceCollection services,
+        // 이슈 #296(트림/AOT): AddTransient<T> 는 DI 활성화를 위해 public 생성자 보존을 요구한다. 제네릭 파라미터에
+        // DynamicallyAccessedMembers 를 전파해 트리머가 창/VM 생성자를 제거하지 않도록 보장한다(IL2091 해소).
+        public static IServiceCollection AddWindow<
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TWindow,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TViewModel>(this IServiceCollection services,
             Func<IServiceProvider, TWindow> windowImplementationFactory = default,
             Func<IServiceProvider, TViewModel> viewModelImplementationFactory = default)
             where TWindow : Window

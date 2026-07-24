@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -13,6 +14,11 @@ public sealed class LicenseDescriptor(
     IResourceResolver resourceResolver,
     ILogger<LicenseDescriptor> logger) : ILicenseDescriptor
 {
+    // 이슈 #296(트림/AOT): About 창의 OSS 라이선스 목록 생성용. 트리밍 시 GetReferencedAssemblies() 는 실제로
+    // 포함(배포)된 어셈블리만 반환하므로, 목록은 '실제 배포되는 것'과 일치한다(누락 = 트림으로 제거되어 배포되지 않음).
+    // 크래시가 아니라 정보성 표시의 완전성 문제이므로 의도적으로 수용한다(IL2026 억제).
+    [UnconditionalSuppressMessage("Trimming", "IL2026",
+        Justification = "OSS 라이선스 목록은 정보성 표시. 트림 후 남은(배포되는) 어셈블리만 열거되는 것이 오히려 정확하며 크래시 없음.")]
     private static AssemblyName[] GetReferencedThirdPartyAssemblies()
     {
         var asm = Assembly.GetEntryAssembly();

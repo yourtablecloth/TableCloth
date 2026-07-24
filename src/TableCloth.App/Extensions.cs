@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using TableCloth.Resources;
 
@@ -24,7 +25,11 @@ internal static class Extensions
             services.AddSingleton(eachCommandType);
     }
 
-    public static IServiceCollection AddWindow<TWindow, TViewModel>(this IServiceCollection services,
+    // 이슈 #296(트림/AOT): AddTransient<T> 는 DI 활성화를 위해 public 생성자 보존을 요구 → 제네릭 파라미터에
+    // DynamicallyAccessedMembers 전파(IL2091 해소).
+    public static IServiceCollection AddWindow<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TWindow,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TViewModel>(this IServiceCollection services,
         Func<IServiceProvider, TWindow>? windowImplementationFactory = default,
         Func<IServiceProvider, TViewModel>? viewModelImplementationFactory = default)
         where TWindow : Window
@@ -43,7 +48,8 @@ internal static class Extensions
         return services;
     }
 
-    public static IServiceCollection AddWindow<TWindow>(this IServiceCollection services,
+    public static IServiceCollection AddWindow<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TWindow>(this IServiceCollection services,
         Func<IServiceProvider, TWindow>? windowImplementationFactory = default)
         where TWindow : Window
     {
@@ -56,7 +62,9 @@ internal static class Extensions
     }
 
     // 이슈 #296: WPF Page → Avalonia UserControl(Control). 나머지 등록 로직은 동일.
-    public static IServiceCollection AddPage<TPage, TViewModel>(this IServiceCollection services,
+    public static IServiceCollection AddPage<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TPage,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TViewModel>(this IServiceCollection services,
         bool addPageAsSingleton = false,
         Func<IServiceProvider, TPage>? pageImplementationFactory = default,
         Func<IServiceProvider, TViewModel>? viewModelImplementationFactory = default)

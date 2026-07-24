@@ -440,6 +440,22 @@ TableCloth.Test 66 / Spork.Test 42 통과를 확인하며 개별 커밋.
 - 다음(M4/M5): JSON 소스젠·WMI·COM 점검은 S 시리즈에서 선행 완료됨 → **M5 Native AOT(Stage 2)** 로 추가 축소 예정
   (슬라이스 실측 ~34MB AOT). 진입점 `PublishAot=true` + IL 경고 0화 + Lemon.Hosting 신 API 이관.
 
+#### IL 트림 경고 분석·정리 (2026-07-24, Stage 1 게시 기준)
+
+`dotnet publish -c Release -r win-x64`(PublishTrimmed) 최초 경고 20건을 리서치·분류하고 우리 코드 결함을 모두 해소:
+
+| 분류 | 코드 | 건수(초기) | 원인 | 조치 | 상태 |
+| --- | --- | --- | --- | --- | --- |
+| **A. 우리 DI 헬퍼** | IL2091 | 14 | `AddWindow<>`/`AddPage<>`(Spork/TableCloth `Extensions.cs`)가 `AddTransient<T>`/`AddSingleton<T>`(생성자 보존 요구)에 제네릭 파라미터 주석 미전파 → 트림 시 창/VM/페이지 **생성자 제거 시 DI 활성화 런타임 파손 가능** | 제네릭 파라미터에 `[DynamicallyAccessedMembers(PublicConstructors)]` 부착(생성자 보존 보장) | ✅ 0 |
+| **B. 우리 리플렉션** | IL2026 | 4 | `LicenseDescriptor.GetReferencedThirdPartyAssemblies()`의 `Assembly.GetReferencedAssemblies()`(`RequiresUnreferencedCode`) — About 창 OSS 라이선스 목록 생성 | `[UnconditionalSuppressMessage("Trimming","IL2026")]` + 근거: 트림 후 **남은=배포되는** 어셈블리만 열거되는 것이 오히려 정확, 크래시 아님(정보성) | ✅ 0 |
+| **C. 리플렉션 바인딩(경고 외)** | — | 1 | OptionsWindow 매핑 폴더 `x:CompileBindings="False"`(런타임 리플렉션, 정적 경고 없음이나 트림 리스크) | `x:DataType="config:MappedFolderSetting"` 컴파일 바인딩으로 전환 | ✅ 해소 |
+| **D. 업스트림 어셈블리** | IL2104 | 6 | `Microsoft.Windows.SDK.NET`·`WinRT.Runtime`(net10-windows TFM projection)·`Serilog` 내부 트림 경고의 집계 알림. **우리 코드 아님** | **수용/보류**: 우리 사용 표면은 정적 참조라 저위험. `Microsoft.Windows.SDK.NET` 루트는 크기(~10MB+) 부담 커서 지양. UI/런타임 테스트에서 실제 파손 확인 시 해당 어셈블리만 `TrimmerRootAssembly` 또는 `[DynamicDependency]`로 대응. **M5 AOT 에서 재평가**(AOT 는 IL3xxx 로 더 엄격) | ⏳ 잔존 6 |
+
+- **결과:** 우리 코드 유래 경고(A·B) + 리플렉션 바인딩 리스크(C) **전부 해소**. 남은 6건은 업스트림 집계 알림(D)뿐.
+  Stage 1 exe ~38MB(생성자 보존 반영으로 초기 36MB 대비 소폭 증가하나 DI 정확성 확보).
+- 참고: 카탈로그 정렬의 `EnumDisplayOrderAttribute` 리플렉션은 enum 필드/특성이 트리머에 보존되어 경고 미발생(안전).
+- **다음:** 이 정리 후 **UI 런타임 테스트**로 트림 빌드 실제 동작 확인 → 문제 시 D 항목/추가 보존 지점을 실측 기반으로 처리.
+
 ## 9. 롤백 전략
 
 - 전 작업을 `feature/avalonia-aot`(가칭) 브랜치에서 진행. main은 WPF v1.20.x 유지.

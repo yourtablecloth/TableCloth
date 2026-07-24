@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:TableCloth.ViewModels"
+        xmlns:config="using:TableCloth.Models.Configuration"
         xmlns:res="using:TableCloth.Resources"
         x:Class="TableCloth.Dialogs.OptionsWindow"
         x:DataType="vm:OptionsWindowViewModel"
@@ -16,7 +17,7 @@
                                Text="{x:Static res:UIStringResources.MappedFolder_Description}" />
                     <ListBox Grid.Row="1" ItemsSource="{Binding MappedFolders}" SelectedItem="{Binding SelectedMappedFolder}">
                         <ListBox.ItemTemplate>
-                            <DataTemplate x:CompileBindings="False">
+                            <DataTemplate x:DataType="config:MappedFolderSetting">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0" Text="{Binding HostFolder}" VerticalAlignment="Center"
                                                TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding HostFolder}" />

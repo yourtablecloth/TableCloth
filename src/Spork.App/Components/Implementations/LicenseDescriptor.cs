@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -8,6 +9,10 @@ namespace Spork.Components.Implementations
 {
     public sealed class LicenseDescriptor : ILicenseDescriptor
     {
+        // 이슈 #296(트림/AOT): About 창의 OSS 라이선스 목록 생성용. 트리밍 시 GetReferencedAssemblies() 는 실제로
+        // 배포되는 어셈블리만 반환하므로 목록이 배포물과 일치한다(크래시 아님, 정보성 표시). IL2026 의도적 수용.
+        [UnconditionalSuppressMessage("Trimming", "IL2026",
+            Justification = "OSS 라이선스 목록은 정보성 표시. 트림 후 남은(배포되는) 어셈블리만 열거되는 것이 오히려 정확하며 크래시 없음.")]
         private IEnumerable<AssemblyName> GetReferencedThirdPartyAssemblies()
         {
             var asm = Assembly.GetEntryAssembly();
