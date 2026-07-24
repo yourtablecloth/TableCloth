@@ -1,14 +1,15 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
-using System.Windows;
+using TableCloth.Models;
 
 namespace TableCloth.Components;
 
 public interface IAppMessageBox
 {
-    MessageBoxResult DisplayError(Exception? failureReason, bool isCritical,
+    AppMessageBoxResult DisplayError(Exception? failureReason, bool isCritical,
         [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0);
-    MessageBoxResult DisplayError(string? message, bool isCritical,
+    AppMessageBoxResult DisplayError(string? message, bool isCritical,
         [CallerFilePath] string file = "", [CallerMemberName] string member = "", [CallerLineNumber] int line = 0);
-    MessageBoxResult DisplayInfo(string message, MessageBoxButton messageBoxButton = MessageBoxButton.OK);
+    AppMessageBoxResult DisplayInfo(string message, AppMessageBoxButton messageBoxButton = AppMessageBoxButton.OK);
+    AppMessageBoxResult DisplayQuestion(string message, AppMessageBoxButton messageBoxButton = AppMessageBoxButton.YesNo, AppMessageBoxResult defaultAnswer = AppMessageBoxResult.Yes);
 }

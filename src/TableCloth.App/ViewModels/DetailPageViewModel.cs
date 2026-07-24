@@ -382,14 +382,14 @@ public partial class DetailPageViewModel : ObservableObject
                 false);
         }
 
-        _appMessageBox.DisplayInfo("Command line copied to clipboard.", MessageBoxButton.OK);
+        _appMessageBox.DisplayInfo("Command line copied to clipboard.", AppMessageBoxButton.OK);
     }
 
     [RelayCommand]
     private void ShowDebugInfo()
     {
         var debugInfo = $"Selected Service: {DisplayName} ({Id})\nURL: {Url}\nCompatibility Notes: {CompatibilityNotes}\nIs Favorite: {IsFavorite}";
-        _appMessageBox.DisplayInfo(debugInfo, MessageBoxButton.OK);
+        _appMessageBox.DisplayInfo(debugInfo, AppMessageBoxButton.OK);
     }
 
     [RelayCommand]

@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using TableCloth;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.UserData;
@@ -306,7 +307,7 @@ namespace Spork.ViewModels
             var confirmMessage = alreadyInstalled
                 ? UIStringResources.Sandbox_EdgeInstall_ConfirmReinstall
                 : UIStringResources.Sandbox_EdgeInstall_Confirm;
-            if (_appMessageBox.DisplayQuestion(confirmMessage) != MessageBoxResult.Yes)
+            if (_appMessageBox.DisplayQuestion(confirmMessage) != AppMessageBoxResult.Yes)
                 return;
 
             IsEdgeInstalling = true;
@@ -498,10 +499,10 @@ namespace Spork.ViewModels
 
             var confirm = _appMessageBox.DisplayQuestion(
                 StringResources.Spork_ForceReinstall_Confirm(service.DisplayName),
-                MessageBoxButton.YesNo,
-                MessageBoxResult.No);
+                AppMessageBoxButton.YesNo,
+                AppMessageBoxResult.No);
 
-            if (confirm != MessageBoxResult.Yes)
+            if (confirm != AppMessageBoxResult.Yes)
                 return;
 
             await EnterCatalogInstallFlowAsync(service, forceReinstall: true);

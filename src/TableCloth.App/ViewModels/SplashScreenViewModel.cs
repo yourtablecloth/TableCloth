@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using TableCloth.Components;
 using TableCloth.Events;
 using TableCloth.Models;
@@ -68,14 +67,14 @@ public partial class SplashScreenViewModel : ObservableObject
                 if (parsedArgs.ShowCommandLineHelp)
                 {
                     AppStartupSucceed = false;
-                    _appMessageBox.DisplayInfo(await _commandLineArguments.GetHelpStringAsync(), MessageBoxButton.OK);
+                    _appMessageBox.DisplayInfo(await _commandLineArguments.GetHelpStringAsync(), AppMessageBoxButton.OK);
                     return;
                 }
 
                 if (parsedArgs.ShowVersionHelp)
                 {
                     AppStartupSucceed = false;
-                    _appMessageBox.DisplayInfo(await _commandLineArguments.GetVersionStringAsync(), MessageBoxButton.OK);
+                    _appMessageBox.DisplayInfo(await _commandLineArguments.GetVersionStringAsync(), AppMessageBoxButton.OK);
                     return;
                 }
             }

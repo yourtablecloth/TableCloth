@@ -14,8 +14,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using TableCloth.Components;
+using TableCloth.Models;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 
@@ -227,7 +227,7 @@ public partial class OptionsWindowViewModel : ObservableObject
         if (!Directory.Exists(path))
         {
             var prompt = string.Format(UIStringResources.QuickStart_DataDirectory_OpenMissingPrompt, path);
-            if (_appMessageBox.DisplayInfo(prompt, MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+            if (_appMessageBox.DisplayInfo(prompt, AppMessageBoxButton.YesNo) != AppMessageBoxResult.Yes)
                 return;
 
             try

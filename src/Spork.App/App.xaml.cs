@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using TableCloth.Models;
 using TableCloth;
 
 // ctor에서 캐시한 서비스 필드(`?` 어노테이션)와 Host 속성 인식용. Spork.App 본체는 nullable
@@ -79,13 +80,13 @@ namespace Spork
 
             if (parsedArgs.ShowCommandLineHelp)
             {
-                _appMessageBox.DisplayInfo(await _commandLineArguments.GetHelpStringAsync(), MessageBoxButton.OK);
+                _appMessageBox.DisplayInfo(await _commandLineArguments.GetHelpStringAsync(), AppMessageBoxButton.OK);
                 return;
             }
 
             if (parsedArgs.ShowVersionHelp)
             {
-                _appMessageBox.DisplayInfo(await _commandLineArguments.GetVersionStringAsync(), MessageBoxButton.OK);
+                _appMessageBox.DisplayInfo(await _commandLineArguments.GetVersionStringAsync(), AppMessageBoxButton.OK);
                 return;
             }
 
