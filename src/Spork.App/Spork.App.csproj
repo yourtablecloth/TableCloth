@@ -6,6 +6,8 @@
 		<UseWindowsForms>false</UseWindowsForms>
 		<LangVersion>preview</LangVersion>
 		<Deterministic>true</Deterministic>
+		<!-- GeneratedComInterface/LibraryImport(소스젠 상호운용)에는 unsafe 블록이 필요(SYSLIB1062). -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<!--
 			RootNamespace는 의도적으로 'Spork'로 설정. 본 라이브러리의 어셈블리 이름은
 			'Spork.App'이지만 내부 파일들은 기존 'Spork.Components', 'Spork.ViewModels',
@@ -42,6 +44,14 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+	</ItemGroup>
+
+	<!--
+		AOT 안전 COM 헬퍼(GeneratedComInterface). netstandard2.0인 TableCloth.Core에는 둘 수 없어
+		src/Shared 에 두고 net10 모듈들이 공유 링크한다. TableCloth.App 도 동일하게 링크한다.
+	-->
+	<ItemGroup>
+		<Compile Include="..\Shared\Interop\NativeShellLink.cs" Link="Interop\NativeShellLink.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

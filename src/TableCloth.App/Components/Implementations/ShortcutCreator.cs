@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using TableCloth.Interop;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
 
@@ -13,7 +14,7 @@ public sealed class ShortcutCreator(
     ISharedLocations sharedLocations,
     IAppMessageBox appMessageBox) : IShortcutCreator
 {
-    public async Task<string?> CreateShortcutAsync(DetailPageViewModel viewModel, CancellationToken cancellationToken = default)
+    public Task<string?> CreateShortcutAsync(DetailPageViewModel viewModel, CancellationToken cancellationToken = default)
     {
         var targetPath = sharedLocations.ExecutableFilePath;
         var linkName = CommonStrings.AppName;
@@ -31,43 +32,28 @@ public sealed class ShortcutCreator(
         }
 
         var shortcutDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        var shortcutFileName = linkName + ".lnk";
-
-        var shortcutFilePath = Path.Combine(shortcutDirectoryPath, shortcutFileName);
-        await File.WriteAllBytesAsync(shortcutFilePath, [], cancellationToken).ConfigureAwait(false);
+        var shortcutFilePath = Path.Combine(shortcutDirectoryPath, linkName + ".lnk");
 
         try
         {
-            // https://stackoverflow.com/questions/13542005/create-shortcut-with-unicode-character
-            // WshRuntimeLibrary의 경우 유니코드 문자열로 바로 가기 아이콘을 만들지 못하는 버그가 있음.
-            Type? shellType = Type.GetTypeFromProgID("Shell.Application");
-            ArgumentNullException.ThrowIfNull(shellType);
-
-            object? oInstance = Activator.CreateInstance(shellType);
-            ArgumentNullException.ThrowIfNull(oInstance);
-
-            dynamic shell = oInstance;
-            dynamic folder = shell.NameSpace(shortcutDirectoryPath);
-            dynamic folderItem = folder.Items().Item(shortcutFileName);
-            dynamic shortcut = folderItem.GetLink;
-
-            shortcut.Path = targetPath;
-
-            if (iconFilePath != null && File.Exists(iconFilePath))
-                shortcut.SetIconLocation(iconFilePath, 0);
-
-            shortcut.Arguments = commandLineComposer.ComposeCommandLineArguments(viewModel, false);
-            shortcut.Description = $"{linkName}";
-            shortcut.WorkingDirectory = Path.GetDirectoryName(targetPath);
-            shortcut.Save();
+            // 기존 Shell.Application late-bound COM + dynamic (Native AOT 비호환)을 AOT 안전한
+            // IShellLinkW/IPersistFile(GeneratedComInterface)로 대체. 유니코드 경로/아이콘도 정상 지원.
+            NativeShellLink.Create(
+                linkFilePath: shortcutFilePath,
+                targetPath: targetPath,
+                arguments: commandLineComposer.ComposeCommandLineArguments(viewModel, false),
+                workingDirectory: Path.GetDirectoryName(targetPath),
+                description: linkName,
+                iconPath: iconFilePath,
+                iconIndex: 0);
 
             appMessageBox.DisplayInfo(InfoStrings.Info_ShortcutSuccess);
-            return shortcutFilePath;
+            return Task.FromResult<string?>(shortcutFilePath);
         }
         catch (Exception ex)
         {
             appMessageBox.DisplayError(ex, false);
-            return default;
+            return Task.FromResult<string?>(default);
         }
     }
 
