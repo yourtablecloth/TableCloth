@@ -456,6 +456,46 @@ TableCloth.Test 66 / Spork.Test 42 통과를 확인하며 개별 커밋.
 - 참고: 카탈로그 정렬의 `EnumDisplayOrderAttribute` 리플렉션은 enum 필드/특성이 트리머에 보존되어 경고 미발생(안전).
 - **다음:** 이 정리 후 **UI 런타임 테스트**로 트림 빌드 실제 동작 확인 → 문제 시 D 항목/추가 보존 지점을 실측 기반으로 처리.
 
+#### Full AOT 진입 전 최종 IL/AOT 점검 (2026-07-24)
+
+M5(Native AOT) 착수 직전, 이번 세션의 UI/부트스트랩 변경(Lemon.Hosting 제거 → 표준 Avalonia
+`StartWithClassicDesktopLifetime` + 정적 ServiceProvider 홀더, `RemoteImageLoader`(HttpClient), `WindowChrome`(P/Invoke),
+신규 컨버터)이 트림/AOT 표면에 미친 영향을 실측 재점검.
+
+**1) 트림 실황(집계 해제 `-p:TrimmerSingleWarn=false`) — 두 진입점 동일:**
+
+| 진입점 | 총 경고 | 내역 | 우리 코드 |
+| --- | --- | --- | --- |
+| `TableCloth.exe`(트림 켜짐) | 36 | WinRT 프로젝션 마셜러 `ABI.*` IL2081 ×35 + Serilog IL2067 ×1 | **0** |
+| `Spork.exe`(트림 임시 켜서 측정) | 36 | 동일 | **0** |
+
+- 이번 세션 신규 코드(RemoteImageLoader/WindowChrome/컨버터/부트스트랩) 유래 경고 **0**. A(IL2091)/B(IL2026)/C 재발 없음.
+- 위 §8 표의 "D. IL2104 6건"은 **집계 알림**이며, 집계를 풀면 위 36건(WinRT+Serilog)으로 전개된다(같은 업스트림 뿌리).
+- Spork 진입점은 `PublishTrimmed=false`(단독 `Spork.exe` 는 미출시 경로 — 샌드박스는 `TableCloth.exe`의 `spork` verb 사용).
+  TableCloth 그래프가 이미 Spork.App+Core+공유 파일을 트림하므로 우리 코드 커버리지는 동일. M5 에서 두 진입점 모두
+  `PublishAot`(트림 내포)로 전환 예정.
+
+**2) AOT 정적 분석 사전 점검(`EnableAotAnalyzer`+Trim+SingleFile, 네이티브 툴체인 불필요)** — 트림엔 안 잡히는 AOT 전용
+경고를 미리 확인. 우리 코드 3건 발견 → 전부 해소(재실행 0건, 커밋 `84ed7da`):
+
+| 코드 | 위치 | 조치 |
+| --- | --- | --- |
+| IL3050 | `AppStartup.cs` | `Marshal.SizeOf(Type)`(RequiresDynamicCode) → 제네릭 `SizeOf<T>()`(동일 값, AOT 안전) |
+| IL3000 | `SandboxBuilder.RequiresHostDotnetMount` | 빈 `Assembly.Location` 을 단일파일/AOT 신호로 **의도적 사용**(비면 마운트 불필요) → 근거부 `UnconditionalSuppressMessage` |
+| IL2072 | `Extensions.cs` | 비제네릭 `AddSingleton(Type)` 을 도는 `AddCommands` = **호출부 0(죽은 코드)** → 삭제 |
+
+**3) 남은 항목(업스트림만) 및 M5 방침:**
+- WinRT 프로젝션(`net10.0-windows10.0.x` TFM 이 유입하는 `Microsoft.Windows.SDK.NET`/`WinRT.Runtime`) IL2081 ×35 —
+  CCW/RCW 마셜러 vtable 초기화 폴백. 우리는 해당 WinRT 제네릭 컬렉션 마셜링 경로를 실사용하지 않음(P/Invoke·레지스트리 중심).
+  M5 실제 `PublishAot` 에서 IL3xxx 승격 여부 확인 후, 미사용이면 `TrimmerSingleWarn`(집계) 수용 또는 필요한 어셈블리만 루트.
+- Serilog IL2067(구조 캡처 리플렉션)도 우리 사용 표면 밖.
+- **문서 정정:** M5 항목의 "Lemon.Hosting 신 API 이관"은 **무효** — 이번 세션에 Lemon.Hosting 을 완전히 제거했다
+  (Avalonia 11.3.x `Dispatcher.MainLoop` 비호환). 표준 `StartWithClassicDesktopLifetime` + 정적 홀더로 대체됨.
+  또한 M3 이월이던 "원격 아바타 async 로딩"은 `RemoteImageLoader`(공유)로 **구현 완료**. → M5 는 진입점 `PublishAot=true`
+  + `build.cs`/CI 전환 + 위 업스트림 재평가만 남음.
+
+→ **결론: 우리 코드는 트림/AOT 정적 점검 모두 clean. Full AOT 진입 준비 완료(잔여는 업스트림 WinRT/Serilog뿐).**
+
 ## 9. 롤백 전략
 
 - 전 작업을 `feature/avalonia-aot`(가칭) 브랜치에서 진행. main은 WPF v1.20.x 유지.
