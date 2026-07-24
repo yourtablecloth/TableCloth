@@ -73,6 +73,11 @@
 	<ItemGroup>
 		<!-- 이슈 #296: 스플래시가 avares://TableCloth.App/Resources/SandboxIcon.png 로 로드(WPF Resource → AvaloniaResource). -->
 		<AvaloniaResource Include="Resources\SandboxIcon.png" />
+		<!-- 이슈 #296(AOT): 바로가기 아이콘 폴백용 원본 .ico 를 원시 바이트로 임베드(LogicalName 고정).
+		     resx System.Drawing.Icon(SandboxIconWin32) 역직렬화(AOT 실패)를 우회해 GetManifestResourceStream 으로 직접 읽는다. -->
+		<EmbeddedResource Include="Resources\SandboxIcon.ico">
+			<LogicalName>SandboxIcon.ico</LogicalName>
+		</EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
