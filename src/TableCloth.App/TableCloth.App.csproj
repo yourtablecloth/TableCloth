@@ -27,7 +27,6 @@
 		<PackageReference Include="Serilog.Extensions.Logging" />
 		<PackageReference Include="Serilog.Sinks.File" />
 		<PackageReference Include="System.CommandLine" />
-		<PackageReference Include="System.Management" />
 		<PackageReference Include="Velopack" />
 		<PackageReference Include="XamlRadialProgressBar" />
 	</ItemGroup>

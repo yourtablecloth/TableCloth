@@ -5,9 +5,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Models;
@@ -100,6 +100,17 @@ public sealed class AppStartup : IAppStartup
         }
     }
 
+    // CPUID leaf 1, ECX 비트 31 = hypervisor-present. Win32_ComputerSystem.HyperVisorPresent의 AOT-safe 대체.
+    // x86/x64에서만 판별 가능하며, 그 외(ARM64 등)에서는 판별 불가로 null을 반환한다.
+    private static bool? IsHypervisorPresent()
+    {
+        if (!X86Base.IsSupported)
+            return null;
+
+        var (_, _, ecx, _) = X86Base.CpuId(1, 0);
+        return (ecx & (1 << 31)) != 0;
+    }
+
     public async Task<ApplicationStartupResultModel> HasRequirementsMetAsync(IList<string> warnings,
         CancellationToken cancellationToken = default)
     {
@@ -128,21 +139,18 @@ public sealed class AppStartup : IAppStartup
             return result;
         }
 
-        using (var queryResult = new ManagementObjectSearcher("select HyperVisorPresent from Win32_ComputerSystem"))
-        using (var objCollection = queryResult.Get())
+        // 하이퍼바이저(가상화) 존재 여부 — Windows Sandbox 실행 요건. 기존 WMI(Win32_ComputerSystem.HyperVisorPresent)
+        // 대신 CPUID leaf 1, ECX 비트 31(hypervisor-present)로 판정한다. Native AOT 호환(순수 인트린식, COM/리플렉션 없음).
+        // 판별 불가(비 x86/x64, 예: ARM64)면 null → 여기서 차단하지 않고 이후 WindowsSandbox.exe 존재/실행 게이트에 위임.
+        if (IsHypervisorPresent() == false)
         {
-            var hyperVisorPresent = objCollection.Cast<ManagementBaseObject?>().FirstOrDefault()?.GetPropertyValue("HyperVisorPresent") as bool?;
-
-            if (!hyperVisorPresent.HasValue || !hyperVisorPresent.Value)
+            if (Helpers.IsDevelopmentBuild)
+                warnings.Add(ErrorStrings.Error_HyperVisor_Missing);
+            else
             {
-                if (Helpers.IsDevelopmentBuild)
-                    warnings.Add(ErrorStrings.Error_HyperVisor_Missing);
-                else
-                {
-                    result = ApplicationStartupResultModel.FromErrorMessage(
-                        ErrorStrings.Error_HyperVisor_Missing, isCritical: true, providedWarnings: warnings);
-                    return result;
-                }
+                result = ApplicationStartupResultModel.FromErrorMessage(
+                    ErrorStrings.Error_HyperVisor_Missing, isCritical: true, providedWarnings: warnings);
+                return result;
             }
         }
 

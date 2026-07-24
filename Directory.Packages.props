@@ -49,7 +49,6 @@
 		<PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
 		<PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageVersion Include="System.CommandLine" Version="2.0.1" />
-		<PackageVersion Include="System.Management" Version="10.0.1" />
 		<PackageVersion Include="System.Security.AccessControl" Version="6.0.1" />
 		<PackageVersion Include="System.Text.Json" Version="10.0.1" />
 		<PackageVersion Include="Velopack" Version="0.0.1298" />
