@@ -75,8 +75,10 @@
                                                               IsChecked="{Binding IsFavorite}"
                                                               Command="{Binding $parent[UserControl].((vm:CatalogPageViewModel)DataContext).CatalogPageItemFavoriteCommand}"
                                                               CommandParameter="{Binding}" />
+                                                <!-- 이슈 #296: 이름 최대 2줄 + 초과 시 줄임표. 2줄 높이(36) 고정·상단 정렬로 1줄 이름은 아래가 공백으로 유지되어 카드 정렬 균일. -->
                                                 <TextBlock Grid.Row="2" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap"
-                                                           MaxHeight="46" TextTrimming="CharacterEllipsis" />
+                                                           MaxLines="2" TextTrimming="CharacterEllipsis"
+                                                           LineHeight="18" Height="36" VerticalAlignment="Top" />
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
