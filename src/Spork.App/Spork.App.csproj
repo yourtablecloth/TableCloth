@@ -4,6 +4,9 @@
 		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
 		<!-- 이슈 #296: WPF → Avalonia. UseWPF 제거. -->
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<!-- 이슈 #296 Stage 2(M5): dev 빌드에서 트림/AOT/단일파일 분석기를 상시 켜 회귀를 조기 차단.
+		     (netstandard2.0 인 TableCloth.Core 는 NETSDK1210 이라 제외 — 전체 프로그램 검증은 진입점 PublishAot 이 담당.) -->
+		<IsAotCompatible>true</IsAotCompatible>
 		<LangVersion>preview</LangVersion>
 		<!-- 이슈 #296: 신규/이관 파일이 nullable 주석(?)을 쓰므로 annotations 컨텍스트 활성화(경고는 미발생 —
 		     nullable 미대응 레거시 파일 보호). App.xaml.cs 의 파일별 #nullable enable annotations 를 대체. -->
