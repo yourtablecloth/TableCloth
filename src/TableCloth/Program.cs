@@ -13,6 +13,7 @@ using TableCloth.App.DependencyInjection;
 using TableCloth.Bootstrap.Dialogs;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
+using TableCloth.Serialization;
 using Velopack;
 
 namespace TableCloth;
@@ -148,7 +149,7 @@ internal static class Program
             }
 
             var json = File.ReadAllText(preferencesPath);
-            var preferences = JsonSerializer.Deserialize<PreferenceSettings>(json);
+            var preferences = JsonSerializer.Deserialize(json, TableClothJsonContext.Default.PreferenceSettings);
 
             if (preferences?.LicenseAgreedTime == null)
             {
@@ -205,7 +206,7 @@ internal static class Program
             if (File.Exists(preferencesPath))
             {
                 var json = File.ReadAllText(preferencesPath);
-                preferences = JsonSerializer.Deserialize<PreferenceSettings>(json) ?? new PreferenceSettings();
+                preferences = JsonSerializer.Deserialize(json, TableClothJsonContext.Default.PreferenceSettings) ?? new PreferenceSettings();
             }
             else
             {
@@ -215,8 +216,7 @@ internal static class Program
             preferences.LicenseAgreedTime = DateTime.UtcNow;
             preferences.LicenseAgreedVersion = typeof(Program).Assembly.GetName().Version?.ToString();
 
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            var updatedJson = JsonSerializer.Serialize(preferences, options);
+            var updatedJson = JsonSerializer.Serialize(preferences, TableClothJsonContext.Default.PreferenceSettings);
             File.WriteAllText(preferencesPath, updatedJson);
         }
         catch (Exception ex)
