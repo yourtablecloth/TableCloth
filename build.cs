@@ -72,10 +72,55 @@ if (doSign)
 await RunBuildAsync(configurations, platforms, skipBuild);
 return 0;
 
+// 이슈 #296 Stage 2(M5): Native AOT 링크(ILC → MSVC link.exe)는 vswhere.exe 로 MSVC 툴체인(INCLUDE/LIB)을
+// 탐색한다. vswhere 는 VS Installer 표준 위치에 고정 설치되므로, PATH 에 없으면 추가해 로컬/CI 양쪽에서 AOT
+// 링크가 안정적으로 성공하게 한다(문서 §6.6 — "vswhere.exe 가 PATH 에 있어야 링크 성공").
+static void EnsureVsWhereOnPath()
+{
+    var pathValue = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+    var onPath = pathValue.Split(Path.PathSeparator).Any(d =>
+    {
+        try { return !string.IsNullOrWhiteSpace(d) && File.Exists(Path.Combine(d, "vswhere.exe")); }
+        catch { return false; }
+    });
+    if (onPath)
+        return;
+
+    var installerDir = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+        "Microsoft Visual Studio", "Installer");
+    if (File.Exists(Path.Combine(installerDir, "vswhere.exe")))
+    {
+        Environment.SetEnvironmentVariable("PATH", installerDir + Path.PathSeparator + pathValue);
+        Console.WriteLine($"Added vswhere to PATH for Native AOT link: {installerDir}");
+    }
+    else
+    {
+        Console.WriteLine("Warning: vswhere.exe not found — Native AOT link may fail if the MSVC environment is not configured.");
+    }
+}
+
+// 이슈 #296 Stage 2(M5): Native AOT 는 대용량 네이티브 심볼(*.pdb, 예: TableCloth.pdb ~130MB)을 생성한다.
+// Velopack 패키지(vpk pack -p <dir>)는 폴더 전체를 담으므로 pack 직전에 심볼을 제거해 사용자 배포물 비대화를
+// 막는다. (향후 Sentry 네이티브 심볼 업로드가 필요하면 이 제거 이전에 sentry-cli 업로드 단계를 삽입할 것.)
+static void PruneSymbols(string dir)
+{
+    if (!Directory.Exists(dir))
+        return;
+    foreach (var pdb in Directory.EnumerateFiles(dir, "*.pdb", SearchOption.AllDirectories))
+    {
+        try { File.Delete(pdb); }
+        catch { /* best-effort — 삭제 실패해도 패키징은 진행 */ }
+    }
+}
+
 async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
 {
     var scriptDir = GetScriptDirectory();
     Directory.SetCurrentDirectory(scriptDir);
+
+    // Native AOT 링크에 필요한 vswhere 를 PATH 에 보장(M5).
+    EnsureVsWhereOnPath();
 
     Console.WriteLine("=======================");
     Console.WriteLine("TableCloth Build Script");
@@ -128,10 +173,11 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
                     $"build {solutionFile} -c {config}");
 
                 // Publish TableCloth — TableCloth.csproj의 조건부 PropertyGroup이 RID 명시 시
-                // PublishSingleFile=true / PublishReadyToRun=true / EnableCompressionInSingleFile=true 등을
-                // 자동 활성화한다. 여기서는 RID와 SelfContained만 명시.
+                // PublishAot=true(Stage 2/M5)를 자동 활성화한다(SelfContained + 트리밍 내포). 산출물은
+                // 네이티브 exe + Skia/HarfBuzz/ANGLE 네이티브 DLL(별도 파일). -p:SelfContained=true 는 이제
+                // 중복이나 무해하게 유지. Stage 1(트림 전용) 비교 빌드가 필요하면 -p:PublishAot=false 로 오버라이드.
                 Console.WriteLine();
-                Console.WriteLine("Publishing TableCloth...");
+                Console.WriteLine("Publishing TableCloth (NativeAOT)...");
                 await RunCommandAsync("dotnet",
                     $"publish {mainProject} -c {config} -r win-{platform} -p:SelfContained=true " +
                     $"-o {publishDir}");
@@ -140,6 +186,7 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             // Create Velopack package
             Console.WriteLine();
             Console.WriteLine("Creating Velopack package...");
+            PruneSymbols(publishDir); // M5: 대용량 네이티브 pdb 를 패키지에서 제외
             var packArgs = new List<string>
             {
                 "--yes", "pack",
@@ -250,6 +297,7 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
 
             Console.WriteLine();
             Console.WriteLine("Creating Velopack package (Spork)...");
+            PruneSymbols(sporkPublishDir); // M5: 대용량 네이티브 pdb 를 패키지에서 제외
             var sporkPackArgs = new List<string>
             {
                 "--yes", "pack",
