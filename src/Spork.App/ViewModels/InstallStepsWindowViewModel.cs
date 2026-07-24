@@ -56,8 +56,11 @@ namespace Spork.ViewModels
 
         /// <summary>
         /// 모달을 띄우기 직전에 호출 측이 채워 넣는 설치 단계 목록입니다.
+        /// 이슈 #296: Avalonia 는 DataContext 설정 시점에 바인딩을 평가하므로, 생성자 이후(모달 표시 전)에 대입되는
+        /// 이 목록이 UI 에 반영되려면 반드시 변경 알림이 필요하다(WPF 는 로드 시점 활성화로 가려졌던 문제). → ObservableProperty.
         /// </summary>
-        public IList<StepItemViewModel> InstallSteps { get; set; } = new List<StepItemViewModel>();
+        [ObservableProperty]
+        private IList<StepItemViewModel> _installSteps = new List<StepItemViewModel>();
 
         /// <summary>
         /// 호출 측이 채워 넣는 dry-run 플래그입니다.
