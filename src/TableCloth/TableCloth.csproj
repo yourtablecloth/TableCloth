@@ -42,19 +42,16 @@
 		- PublishReadyToRun=true            : R2R 코드 생성으로 cold start 개선 (사이즈 약간 증가)
 		- PublishTrimmed=false              : WPF/XAML은 리플렉션이 강해 트리밍은 위험
 	-->
+	<!--
+		이슈 #296 Stage 2 (M5): Native AOT 게시. RuntimeIdentifier 명시(=publish) 시에만 활성화되어
+		dev `dotnet build` 에는 영향이 없다. PublishAot 은 SelfContained + 트리밍을 내포하며,
+		PublishSingleFile / PublishReadyToRun / EnableCompressionInSingleFile / IncludeNativeLibrariesForSelfExtract
+		와는 상호배타이므로 모두 제거한다. 산출물은 네이티브 exe + Skia/HarfBuzz/ANGLE 네이티브 DLL(별도 파일)이며,
+		Velopack 이 다중 파일을 정상 패키징한다(§6.3/§6.6). Stage 1(트림 전용) 비교 빌드가 필요하면
+		`-p:PublishAot=false -p:PublishTrimmed=true` 로 개별 오버라이드.
+	-->
 	<PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
-		<SelfContained>true</SelfContained>
-		<PublishSingleFile>true</PublishSingleFile>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-		<PublishReadyToRun>true</PublishReadyToRun>
-		<!--
-			이슈 #296 Stage 1: WPF 제거 후 Avalonia 는 트리밍이 가능하다. 진입점에서만 PublishTrimmed 를 켠다
-			(netstandard2.0 인 TableCloth.Core 프로젝트에 직접 켜면 NETSDK1124; 참조 어셈블리는 앱 트림 그래프로 함께 정리됨).
-			주의: 리플렉션(카탈로그 정렬의 EnumDisplayOrderAttribute, 일부 리플렉션 바인딩) 트림 안전성은 내부 테스트로
-			검증 후 확정한다(사용자 릴리스 없음 — §2). 문제 시 TrimMode 조정 또는 [DynamicDependency]/트리머 루트로 보존.
-		-->
-		<PublishTrimmed>true</PublishTrimmed>
+		<PublishAot>true</PublishAot>
 	</PropertyGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="commit.txt">
