@@ -36,13 +36,5 @@
 		<PackageProjectUrl>https://yourtablecloth.github.io</PackageProjectUrl>
 	</PropertyGroup>
 
-	<!-- Workaround for https://github.com/dotnet/wpf/issues/11246 -->
-	<Target Name="FixWpfReferences" AfterTargets="ResolveTargetingPackAssets" Condition="'$(UseWPF)' == 'true'">
-		<ItemGroup>
-			<SystemPrivateWindowsCoreRef Include="@(Reference)" Condition="'%(Filename)' == 'System.Private.Windows.Core'" />
-			<ReferencePath Include="@(SystemPrivateWindowsCoreRef->'%(RootDir)%(Directory)System.Private.Windows.GdiPlus.dll')">
-				<AssemblyName>System.Private.Windows.GdiPlus</AssemblyName>
-			</ReferencePath>
-		</ItemGroup>
-	</Target>
+	<!-- 이슈 #296: WPF(UseWPF) 전면 제거로 dotnet/wpf#11246 워크어라운드(FixWpfReferences) 폐기. -->
 </Project>

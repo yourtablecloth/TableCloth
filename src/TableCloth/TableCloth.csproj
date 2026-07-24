@@ -5,7 +5,7 @@
 		<StartupObject>TableCloth.Program</StartupObject>
 		<ApplicationIcon>App.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<UseWPF>True</UseWPF>
+		<!-- 이슈 #296: WPF 제거. 치명 오류 대화상자는 Win32 MessageBox(user32)로 대체. Avalonia 스택은 TableCloth.App/Spork.App 를 통해 transitive 유입. -->
 		<Description>Keep Your Computer Sound &amp; Safe!</Description>
 		<ProductName>TableCloth</ProductName>
 		<PackageTags>TableCloth</PackageTags>

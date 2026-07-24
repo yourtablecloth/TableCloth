@@ -1,21 +1,14 @@
 using Avalonia;
 using Lemon.Hosting.AvaloniauiDesktop;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
 using Spork.App.DependencyInjection;
 using Spork.Sandbox;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
-using System.Windows;
+using System.Runtime.InteropServices;
 using TableCloth.App.DependencyInjection;
-using TableCloth.Bootstrap.Dialogs;
-using TableCloth.Models.Configuration;
-using TableCloth.Resources;
-using TableCloth.Serialization;
 using Velopack;
 
 namespace TableCloth;
@@ -28,15 +21,22 @@ internal static class Program
     // 기동하여, 창을 닫아도 유휴 보호가 유지되게 한다.
     private const string IdleGuardVerb = "idle-guard";
 
+    // 이슈 #296: WPF System.Windows.MessageBox 제거. Avalonia 기동 전/치명 오류에도 쓸 수 있도록
+    // 의존성 없는 Win32 MessageBox(user32)로 대체한다. (0x10 = MB_OK | MB_ICONERROR)
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int MessageBoxW(IntPtr hWnd, string text, string caption, uint type);
+
+    private static void ShowFatalError(string message)
+    {
+        try { MessageBoxW(IntPtr.Zero, message, "Unexpected Error", 0x10u); }
+        catch { /* 메시지 박스 표시 자체가 실패해도 프로세스 종료를 막지 않는다. */ }
+    }
+
     [STAThread]
     private static int Main(string[] args)
     {
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
-        {
-            MessageBox.Show(
-                e.ExceptionObject?.ToString() ?? "Unknown Error",
-                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        };
+            ShowFatalError(e.ExceptionObject?.ToString() ?? "Unknown Error");
 
         args ??= Helpers.GetCommandLineArguments();
 
@@ -95,9 +95,7 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            MessageBox.Show(
-                ex?.ToString() ?? "Unknown Error",
-                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowFatalError(ex?.ToString() ?? "Unknown Error");
         }
 
         return Environment.ExitCode;
@@ -127,9 +125,7 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            MessageBox.Show(
-                ex?.ToString() ?? "Unknown Error",
-                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowFatalError(ex?.ToString() ?? "Unknown Error");
         }
 
         return Environment.ExitCode;

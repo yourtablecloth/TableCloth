@@ -48,7 +48,7 @@
 		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.1" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.1" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.1" />
-		<PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+		<!-- 이슈 #296: Microsoft.Xaml.Behaviors.Wpf / XamlRadialProgressBar 는 WPF 제거로 폐기(Avalonia 코드비하인드/ProgressBar 로 대체). -->
 		<PackageVersion Include="PnPeople.Security" Version="1.1.0" />
 		<PackageVersion Include="Sentry" Version="6.0.0" />
 		<PackageVersion Include="Sentry.Serilog" Version="6.0.0" />
@@ -63,6 +63,5 @@
 		<PackageVersion Include="System.Security.AccessControl" Version="6.0.1" />
 		<PackageVersion Include="System.Text.Json" Version="10.0.1" />
 		<PackageVersion Include="Velopack" Version="0.0.1298" />
-		<PackageVersion Include="XamlRadialProgressBar" Version="1.0.3" />
 	</ItemGroup>
 </Project>
