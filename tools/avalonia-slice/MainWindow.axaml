@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaSlice"
+        x:Class="AvaloniaSlice.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Width="520" Height="420"
+        Title="TableCloth · Avalonia + Native AOT 검증">
+  <ScrollViewer>
+    <StackPanel Margin="20" Spacing="12">
+      <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" />
+      <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Opacity="0.8" />
+
+      <TextBlock Text="한글 IME 입력 테스트:" Margin="0,8,0,0" />
+      <TextBox Watermark="여기에 한글을 입력해 보세요 (예: 식탁보)" Text="{Binding InputText}" />
+      <TextBlock Text="{Binding InputEcho}" FontStyle="Italic" />
+
+      <Button Content="{Binding ThemeToggleLabel}" Command="{Binding ToggleThemeCommand}" HorizontalAlignment="Left" />
+
+      <TextBlock Text="컴파일 바인딩 리스트(ItemsControl):" Margin="0,8,0,0" />
+      <ItemsControl ItemsSource="{Binding Items}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="x:String">
+            <TextBlock Text="{Binding}" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </ScrollViewer>
+</Window>
