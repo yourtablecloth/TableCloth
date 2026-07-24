@@ -341,15 +341,19 @@ TableCloth.Test 66 / Spork.Test 42 통과로 검증됨.
 - ✅ **M1c (네비게이션):** `INavigationService`의 WPF `Frame` 메서드를 구현 private로 강등 → 공개 계약 완전 중립.
 - **M3로 이관(본질적 뷰 계층 타입):** `CollectionViewSource`/`ICollectionView`(CatalogPageVM·Spork MainVM의 검색/필터), DetailPageVM의 `Clipboard`·`ImageSource`. Avalonia 대체(컬렉션 뷰·`Bitmap`)가 프레임워크 종속적이라 view 포팅과 함께 재구성.
 
-**M2 (Avalonia 스캐폴딩 + 수직 슬라이스) — 진행 중.** "프로브 먼저" 방식으로 실 앱 전환(M3) 전 스택을 실증:
+**M2 (Avalonia 스캐폴딩 + 수직 슬라이스) — 완료.** "프로브 먼저" 방식으로 실 앱 전환(M3) 전 스택을 `tools/avalonia-slice`에서 실증:
 
-- ✅ **M2a (Avalonia+AOT 실증):** `tools/avalonia-slice` — Avalonia 11.3.18 + FluentTheme + 컴파일 바인딩 +
-  CommunityToolkit.Mvvm 소스젠 + 한글 IME + 런타임 테마 스왑. **AOT publish IL 경고 0, 앱 부팅 성공, footprint ~34MB**
-  (exe 17.9MB + Skia/ANGLE/HarfBuzz) — WPF ~90MB 대비 60%+ 감소 실증.
-- ⏳ **M2b:** AboutWindow 레이아웃을 Avalonia axaml로 포팅(실 VM shape + Core 모델 바인딩).
-- ⏳ **M2c:** Lemon.Hosting.AvaloniauiDesktop(1.1.1) + Microsoft.Extensions.Hosting + Avalonia의 AOT 통합 검증.
+- ✅ **M2a (Avalonia+AOT 실증):** Avalonia 11.3.18 + FluentTheme + 컴파일 바인딩 + CommunityToolkit.Mvvm 소스젠 +
+  한글 IME + 런타임 테마 스왑. **AOT publish IL 경고 0, 부팅 성공, footprint ~34MB**(exe 17.9MB + Skia/ANGLE/HarfBuzz) — WPF ~90MB 대비 60%+↓.
+- ✅ **M2b (AboutWindow 포팅):** `Visibility+Converter`→`IsVisible`, `RichTextBox/FlowDocument`→`SelectableTextBlock`,
+  `ItemsControl`+`WrapPanel`+`DataTemplate`(x:DataType) 실증. AOT IL 경고 0, 부팅 성공.
+- ✅ **M2c (Host+DI 통합):** `Host.CreateApplicationBuilder` + Lemon.Hosting(1.1.1) + DI로 App/VM 생성(`[ActivatorUtilitiesConstructor]`) +
+  서비스 주입. **AOT IL 경고 0, 부팅 성공** — DI 활성화가 AOT에서 동작(vNext 미검증 조합 확정).
 
-→ M2 완료 후 **M3(App 프로젝트 제자리 전환 + WPF 제거)**.
+**M3 확정 이관 항목**(슬라이스가 도출): 원격 아바타 이미지 async 로딩, `Hyperlink` 인라인, `CollectionViewSource`·
+`ImageSource`·`Clipboard`(M1 이월), Lemon.Hosting 신 API(`AddAppBuilder`/`RunAvaloniaAppAsync`).
+
+→ 다음은 **M3(App 프로젝트 제자리 전환: UseWPF 제거 + Avalonia 도입 + View 이관 + WPF 제거)**.
 
 ## 9. 롤백 전략
 
