@@ -61,7 +61,22 @@ WPF → Avalonia 매핑 실증:
 **남은 M3 이관 항목(이 슬라이스가 확정):** 원격 아바타 이미지 async 로딩, `Hyperlink` 인라인(현재 Button 대체),
 그리고 (본 슬라이스 밖) `CollectionViewSource`·`ImageSource`·`Clipboard`.
 
-## M2c (예정)
+## M2c — Host + Lemon.Hosting + DI 의 AOT 통합 검증
 
-`Lemon.Hosting.AvaloniauiDesktop`(1.1.1) + `Microsoft.Extensions.Hosting` + Avalonia의 **AOT 통합** 검증
-(vNext는 이 조합을 AOT로 실증한 적 없음). 이후 **M3**: App 프로젝트 제자리 전환 + WPF 제거.
+`Microsoft.Extensions.Hosting`(`Host.CreateApplicationBuilder`) + `Lemon.Hosting.AvaloniauiDesktop`(1.1.1) +
+`Microsoft.Extensions.DependencyInjection`으로 Avalonia 를 띄우고, **App 과 MainViewModel 을 DI 로 생성**
+(`[ActivatorUtilitiesConstructor]`)하며 `IGreetingService`를 VM 에 주입한다. 실 앱의 verb 디스패치 +
+`UseTableCloth()`/`UseSpork()` DI 합성 후 Avalonia 기동과 동일한 형태.
+
+**M2c 실측:** **AOT publish IL 경고 0, 오류 0. exe 20.1MB, 앱 부팅 성공** — DI 로 App→MainViewModel→IGreetingService
+활성화가 AOT 에서 정상(실패 시 startup 크래시). vNext 가 AOT 로 실증한 적 없는 조합을 확정.
+
+> API 주의(M3): Lemon.Hosting 1.1.1 은 `AddAvaloniauiDesktopApplication`/`RunAvaloniauiApplication` 을 obsolete
+> 처리(→ `AddAppBuilder`/`RunAvaloniaAppAsync`). 본 슬라이스는 vNext 검증 API 를 유지(CS0618 억제)했고, 실 앱은 신 API 로 이관.
+
+## 종합 결론 (M2 완료)
+
+Avalonia 11.3.18 UI 스택(FluentTheme·컴파일 바인딩·CT.Mvvm 소스젠·한글 IME·테마 스왑·SelectableTextBlock·
+ItemsControl 템플릿) + Host/Lemon.Hosting/DI 가 **Native AOT 에서 IL 경고 0 으로 컴파일·부팅**됨을 실증.
+→ M3(App 프로젝트 제자리 전환 + WPF 제거)의 리스크가 크게 낮아짐. M3 확정 이관 항목: 원격 이미지 async 로딩,
+Hyperlink 인라인, `CollectionViewSource`·`ImageSource`·`Clipboard`, Lemon.Hosting 신 API.

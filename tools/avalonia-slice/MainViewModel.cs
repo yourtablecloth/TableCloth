@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AvaloniaSlice;
 
@@ -12,6 +13,16 @@ namespace AvaloniaSlice;
 /// </summary>
 public partial class MainViewModel : ObservableObject
 {
+    public MainViewModel() { }
+
+    // Lemon.Hosting/DI 가 이 생성자로 서비스를 주입한다(실 앱 VM 과 동일한 패턴). AOT 에서 DI 활성화가
+    // 동작하는지 검증하는 핵심 지점.
+    [ActivatorUtilitiesConstructor]
+    public MainViewModel(IGreetingService greetingService)
+    {
+        Message = greetingService.Greet();
+    }
+
     public string Title => "TableCloth Avalonia + Native AOT 수직 슬라이스 검증";
 
     [ObservableProperty]

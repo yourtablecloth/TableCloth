@@ -22,5 +22,8 @@
     <!-- 디버그 시각화(개발 빌드에서만). AOT publish 에는 포함되지 않도록 조건부. -->
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.18" Condition="'$(Configuration)' == 'Debug'" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <!-- M2c: Host + Avalonia 통합(vNext 선례). AOT 통합 검증 대상. -->
+    <PackageReference Include="Lemon.Hosting.AvaloniauiDesktop" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
   </ItemGroup>
 </Project>
