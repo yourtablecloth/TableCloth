@@ -56,7 +56,7 @@ public partial class QuickStartPageViewModel : ObservableObject
         if (ShouldNotifyDisclaimer)
         {
             var disclaimerWindow = _appUserInterface.CreateDisclaimerWindow();
-            var result = disclaimerWindow.ShowDialog();
+            var result = _appUserInterface.ShowDialog(disclaimerWindow);
 
             if (result.HasValue && result.Value)
             {
@@ -97,7 +97,7 @@ public partial class QuickStartPageViewModel : ObservableObject
         // 닫힌 직후엔 QuickStart도 환경 설정을 다시 읽어 NPKI 공유 상태 등 표시값을 동기화한다.
         // targetTabKey가 지정되면 옵션 창이 해당 탭을 미리 선택한 상태로 열린다.
         var optionsWindow = _appUserInterface.CreateOptionsWindow(targetTabKey);
-        optionsWindow.ShowDialog();
+        _appUserInterface.ShowDialog(optionsWindow);
         await RefreshFromPreferencesAsync();
     }
 
@@ -185,7 +185,7 @@ public partial class QuickStartPageViewModel : ObservableObject
     private void AboutThisApp()
     {
         var aboutWindow = _appUserInterface.CreateAboutWindow();
-        aboutWindow.ShowDialog();
+        _appUserInterface.ShowDialog(aboutWindow);
     }
 
     /// <summary>

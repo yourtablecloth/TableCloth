@@ -1,0 +1,106 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:res="using:TableCloth.Resources"
+             xmlns:vm="using:TableCloth.ViewModels"
+             xmlns:catalogmodel="using:TableCloth.Models.Catalog"
+             xmlns:tablecloth="using:TableCloth"
+             x:Class="TableCloth.Pages.CatalogPage"
+             x:DataType="vm:CatalogPageViewModel">
+    <Grid RowDefinitions="Auto,45,*,Auto" ColumnDefinitions="150,80*,30*">
+        <!-- Info Banner -->
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                Background="{DynamicResource InfoBannerBackground}"
+                BorderBrush="{DynamicResource InfoBannerBorder}" BorderThickness="0 0 0 1" Padding="8 6">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <TextBlock Text="ⓘ" FontWeight="Bold" VerticalAlignment="Center" Foreground="{DynamicResource InfoBannerLinkForeground}" />
+                <TextBlock Text="{x:Static res:UIStringResources.Sponsor_BannerMessage}" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{DynamicResource InfoBannerForeground}" />
+                <Button Classes="link" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}" Click="SponsorBanner_Click" />
+            </StackPanel>
+        </Border>
+
+        <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="8 0" FontWeight="Bold" TextWrapping="Wrap"
+                   IsVisible="{Binding HasServices}" Text="{x:Static res:UIStringResources.CatalogPage_Instruction}" />
+
+        <!-- Category radios -->
+        <StackPanel Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Margin="2" IsEnabled="{Binding HasServices}">
+            <RadioButton Margin="8" Click="CategoryRadioButton_Click" Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Banking}" Content="{x:Static res:CommonStrings.DisplayName_Banking}" IsChecked="{Binding SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Banking}" />
+            <RadioButton Margin="8" Click="CategoryRadioButton_Click" Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Financing}" Content="{x:Static res:CommonStrings.DisplayName_Financing}" IsChecked="{Binding SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Financing}" />
+            <RadioButton Margin="8" Click="CategoryRadioButton_Click" Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Security}" Content="{x:Static res:CommonStrings.DisplayName_Security}" IsChecked="{Binding SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Security}" />
+            <RadioButton Margin="8" Click="CategoryRadioButton_Click" Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Insurance}" Content="{x:Static res:CommonStrings.DisplayName_Insurance}" IsChecked="{Binding SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Insurance}" />
+            <RadioButton Margin="8" Click="CategoryRadioButton_Click" Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.CreditCard}" Content="{x:Static res:CommonStrings.DisplayName_CreditCard}" IsChecked="{Binding SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=CreditCard}" />
+            <RadioButton Margin="8" Click="CategoryRadioButton_Click" Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Government}" Content="{x:Static res:CommonStrings.DisplayName_Government}" IsChecked="{Binding SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Government}" />
+            <RadioButton Margin="8" Click="CategoryRadioButton_Click" Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Education}" Content="{x:Static res:CommonStrings.DisplayName_Education}" IsChecked="{Binding SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Education}" />
+            <RadioButton Margin="8" Click="CategoryRadioButton_Click" Tag="{x:Static catalogmodel:CatalogInternetServiceCategory.Other}" Content="{x:Static res:CommonStrings.DisplayName_Other}" IsChecked="{Binding SelectedServiceCategory, Converter={StaticResource EnumBooleanConverter}, Mode=OneWay, ConverterParameter=Other}" />
+            <CheckBox Margin="8" IsChecked="{Binding ShowFavoritesOnly}" Content="{x:Static res:UIStringResources.MainWindow_Favorites}" />
+        </StackPanel>
+
+        <!-- About / Debug links -->
+        <StackPanel Grid.Row="3" Grid.Column="0" Margin="8" VerticalAlignment="Bottom" Spacing="4">
+            <Button Classes="link" HorizontalAlignment="Left" Content="{x:Static res:UIStringResources.Button_AboutButton}" Command="{Binding AboutThisAppCommand}" CommandParameter="{Binding}" />
+            <Button Classes="link" HorizontalAlignment="Left" Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" CommandParameter="{Binding}"
+                    IsVisible="{x:Static tablecloth:Helpers.IsDevelopmentBuild}" />
+        </StackPanel>
+
+        <!-- Search box -->
+        <TextBox Grid.Row="1" Grid.Column="2" Margin="0 8 8 8" VerticalContentAlignment="Center"
+                 Watermark="{x:Static res:UIStringResources.SearchFilter_Watermark}"
+                 Text="{Binding SearchKeyword}" IsVisible="{Binding HasServices}" />
+
+        <!-- Grouped catalog -->
+        <ScrollViewer Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalScrollBarVisibility="Disabled"
+                      IsVisible="{Binding HasServices}">
+            <ItemsControl ItemsSource="{Binding ServiceGroups}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:CatalogServiceGroup">
+                        <Expander IsExpanded="True" Margin="0 2 0 6" HorizontalAlignment="Stretch">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding ItemCount, StringFormat='({0})'}" FontWeight="Bold" />
+                                </StackPanel>
+                            </Expander.Header>
+                            <ItemsControl ItemsSource="{Binding Items}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="catalogmodel:CatalogInternetService">
+                                        <Border Width="80" MinHeight="96" Margin="5" Background="Transparent" Cursor="Hand"
+                                                DoubleTapped="CatalogItem_DoubleTapped" Tapped="CatalogItem_Tapped">
+                                            <Grid RowDefinitions="48,2,Auto">
+                                                <Image Grid.Row="0" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
+                                                <ToggleButton Grid.Row="0" Classes="fav" FontSize="12" Content="★" Width="15" Height="15"
+                                                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3"
+                                                              IsChecked="{Binding IsFavorite}"
+                                                              Command="{Binding $parent[UserControl].((vm:CatalogPageViewModel)DataContext).CatalogPageItemFavoriteCommand}"
+                                                              CommandParameter="{Binding}" />
+                                                <TextBlock Grid.Row="2" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap"
+                                                           MaxHeight="46" TextTrimming="CharacterEllipsis" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Expander>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Loading -->
+        <StackPanel Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    IsVisible="{Binding IsLoading}">
+            <ProgressBar Width="200" IsIndeterminate="True" />
+            <TextBlock HorizontalAlignment="Center" Margin="0 8 0 0" Text="{x:Static res:UIStringResources.MainWindow_LoadingCatalog}" />
+        </StackPanel>
+
+        <!-- Load failure -->
+        <StackPanel Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    IsVisible="{Binding HasCatalogLoadFailed}">
+            <TextBlock HorizontalAlignment="Center" Text="{x:Static res:UIStringResources.MainWindow_SelectSiteLabelText_Alt2}" />
+            <Button Width="250" Margin="0 10 0 0" Content="{x:Static res:UIStringResources.Button_AppRestartButton}"
+                    Command="{Binding AppRestartCommand}" CommandParameter="{Binding}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

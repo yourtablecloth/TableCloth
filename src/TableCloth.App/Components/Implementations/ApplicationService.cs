@@ -1,49 +1,41 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Threading;
 using System;
 using System.Linq;
-using System.Windows;
 
 namespace TableCloth.Components.Implementations;
 
+// 이슈 #296: WPF Application 정적 참조 → Avalonia Application/데스크톱 라이프타임. UI 스레드 마셜은 Dispatcher.UIThread.
 public sealed class ApplicationService(IVisualThemeManager visualThemeManager) : IApplicationService
 {
-    // Application은 DI로 받지 않고 WPF 표준 정적 참조를 사용한다. DI에서 Application을 받으면
-    // TableClothApplication 팩토리가 다시 호출되면서 순환 의존이 발생하여
-    // "Cannot create more than one System.Windows.Application instance"가 던져질 수 있다.
-    // (TableCloth 경로는 Application_Startup이 SYNC라 현재 즉시 폭발하진 않지만, 일관성을 위해
-    //  Spork.App과 같은 방식으로 정렬.)
-    private static Application Application
-        => System.Windows.Application.Current
-           ?? throw new InvalidOperationException("Application.Current is not yet available.");
+    private static IClassicDesktopStyleApplicationLifetime? Desktop
+        => Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
 
     public object? DispatchInvoke(Delegate @delegate, object?[] arguments)
-    {
-        var dispatcher = Application.Dispatcher!;
-        return dispatcher.Invoke(@delegate, arguments);
-    }
+        => Dispatcher.UIThread.Invoke(() => @delegate.DynamicInvoke(arguments));
 
-    // https://stackoverflow.com/questions/2038879/refer-to-active-window-in-wpf
     public Window? GetActiveWindow()
-        => DispatchInvoke(
-            (Application _application) => _application.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive),
-            [Application]) as Window;
+        => Dispatcher.UIThread.Invoke(() => Desktop?.Windows.FirstOrDefault(x => x.IsActive));
 
     public Window? GetMainWindow()
-        => DispatchInvoke(
-            (Application _application) => _application!.MainWindow!,
-            [Application]) as Window;
+        => Dispatcher.UIThread.Invoke(() => Desktop?.MainWindow);
 
     public void ApplyCosmeticChange(Window? targetWindow)
-        => DispatchInvoke(
-            (Window _targetWindow, IVisualThemeManager _visualThemeManager) => _visualThemeManager.ApplyAutoThemeChange(_targetWindow),
-            [targetWindow, visualThemeManager]);
+    {
+        if (targetWindow != null)
+            Dispatcher.UIThread.Invoke(() => visualThemeManager.ApplyAutoThemeChange(targetWindow));
+    }
 
     public void ApplyCosmeticChangeToMainWindow()
-        => DispatchInvoke(
-            (Application _application, IVisualThemeManager _visualThemeManager) => _visualThemeManager.ApplyAutoThemeChange(_application.MainWindow),
-            [Application, visualThemeManager]);
+        => Dispatcher.UIThread.Invoke(() =>
+        {
+            var main = Desktop?.MainWindow;
+            if (main != null)
+                visualThemeManager.ApplyAutoThemeChange(main);
+        });
 
     public void Shutdown(int exitCode = default)
-        => DispatchInvoke(
-            (Application _application, int _exitCode) => _application.Shutdown(_exitCode),
-            [Application, exitCode]);
+        => Dispatcher.UIThread.Invoke(() => Desktop?.Shutdown(exitCode));
 }

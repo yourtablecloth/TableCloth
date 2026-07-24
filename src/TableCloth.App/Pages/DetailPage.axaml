@@ -1,0 +1,84 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:res="using:TableCloth.Resources"
+             xmlns:vm="using:TableCloth.ViewModels"
+             xmlns:config="using:TableCloth.Models.Configuration"
+             xmlns:tablecloth="using:TableCloth"
+             x:Class="TableCloth.Pages.DetailPage"
+             x:DataType="vm:DetailPageViewModel">
+    <Grid RowDefinitions="50,*">
+        <Grid Grid.Row="0" ColumnDefinitions="60,70*,30*">
+            <Button Grid.Column="0" Margin="8" Content="←" FontSize="18" Command="{Binding DetailPageGoBackCommand}" CommandParameter="{Binding}" />
+            <Button Grid.Column="1" Width="100" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 10 0"
+                    Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}" CommandParameter="{Binding}"
+                    IsVisible="{x:Static tablecloth:Helpers.IsDevelopmentBuild}" />
+            <TextBox Grid.Column="2" Text="{Binding SearchKeyword}" Margin="8" VerticalContentAlignment="Center"
+                     Watermark="{x:Static res:UIStringResources.SearchFilter_Watermark}" LostFocus="SearchBox_LostFocus" />
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel HorizontalAlignment="Stretch">
+                <Grid Margin="8" ColumnDefinitions="120,*,120" RowDefinitions="40,40,40,40,Auto,Auto">
+                    <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" Margin="8" Source="{Binding ServiceLogo}" />
+                    <ToggleButton Grid.Row="0" Classes="fav" FontSize="14" Content="★" Width="18" Height="18"
+                                  HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3"
+                                  IsChecked="{Binding IsFavorite}" Command="{Binding DetailPageItemFavoriteCommand}" CommandParameter="{Binding}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="8" Text="{Binding DisplayName}" FontSize="36" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
+                    <Button Grid.Row="1" Grid.Column="2" Margin="8" Content="{x:Static res:UIStringResources.Button_LaunchButton}" Command="{Binding LaunchSandboxCommand}" CommandParameter="{Binding}" />
+                    <Button Grid.Row="2" Grid.Column="2" Margin="8" Content="{x:Static res:UIStringResources.Button_CreateShortcutButton}" Command="{Binding CreateShortcutCommand}" CommandParameter="{Binding}" />
+                    <Button Grid.Row="3" Grid.Column="2" Margin="8" Content="{x:Static res:UIStringResources.Button_CopyCommandLineButton}" Command="{Binding CopyCommandLineCommand}" CommandParameter="{Binding}" />
+                    <Button Grid.Row="2" Grid.Column="1" Classes="link" Margin="8" HorizontalAlignment="Left"
+                            Content="{Binding Url, StringFormat={x:Static res:UIStringResources.DetailPage_UrlLabel}}"
+                            Command="{Binding DetailPageOpenHomepageLinkCommand}" CommandParameter="{Binding}" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Margin="8" Text="{Binding PackageCountForDisplay, StringFormat={x:Static res:UIStringResources.DetailPage_PackageCountDisplayLabel}}" />
+                    <SelectableTextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="8" TextWrapping="Wrap"
+                                         Text="{Binding MatchedKeywords}" IsVisible="{Binding ShowMatchedKeywordsRow}" />
+                    <SelectableTextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="8" TextWrapping="Wrap"
+                                         Foreground="Red" FontWeight="Bold"
+                                         Text="{Binding CompatibilityNotes}" IsVisible="{Binding ShowCompatibilityNotesRow}" />
+                </Grid>
+
+                <Grid Margin="8" ColumnDefinitions="120,*" RowDefinitions="30,80,30,30,30">
+                    <WrapPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                        <CheckBox VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Button_MapNpkiCertButton}" IsChecked="{Binding MapNpkiCert}" />
+                        <Button VerticalAlignment="Center" Margin="10 0 0 0" Content="{x:Static res:UIStringResources.Button_BrowseButton}"
+                                Command="{Binding CertSelectCommand}" CommandParameter="{Binding}" IsEnabled="{Binding MapNpkiCert}" />
+                    </WrapPanel>
+                    <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" Margin="0 5 0 0" Text="{Binding SelectedCertFile}" IsEnabled="{Binding MapNpkiCert}" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{x:Static res:UIStringResources.Option_UseMicrophoneCheckboxText}" IsChecked="{Binding EnableMicrophone}" />
+                    <CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" FontWeight="Bold" Content="{x:Static res:UIStringResources.Option_UseWebCameraCheckboxText}" IsChecked="{Binding EnableWebCam}" />
+                    <CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_UsePrinterCheckboxText}" IsChecked="{Binding EnablePrinters}" />
+                </Grid>
+
+                <!-- Mapped Folders Section -->
+                <Grid Margin="8" ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,120,Auto">
+                    <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Bold" Text="{x:Static res:UIStringResources.MappedFolder_SectionTitle}" Margin="5 0 0 5" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Margin="5 0 0 5" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.MappedFolder_Description}" />
+                    <ListBox Grid.Row="2" Grid.Column="1" Margin="5" ItemsSource="{Binding MappedFolders}" SelectedItem="{Binding SelectedMappedFolder}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="config:MappedFolderSetting">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="{Binding HostFolder}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding HostFolder}" />
+                                    <Border Grid.Column="1" BorderThickness="1" CornerRadius="3" Padding="5 2" Margin="5 0 0 0"
+                                            BorderBrush="{Binding ReadOnly, Converter={StaticResource BooleanToBackgroundConverter}}">
+                                        <TextBlock Text="{Binding ReadOnly, Converter={StaticResource BooleanToReadOnlyTextConverter}}" FontSize="11" />
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="5 5 5 0" Spacing="5">
+                        <Button Content="{x:Static res:UIStringResources.MappedFolder_AddButton}" Command="{Binding AddMappedFolderCommand}" Padding="10 5" />
+                        <Button Content="{x:Static res:UIStringResources.MappedFolder_RemoveButton}" Command="{Binding RemoveMappedFolderCommand}" IsEnabled="{Binding SelectedMappedFolder, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" />
+                        <Button Content="{x:Static res:UIStringResources.MappedFolder_ToggleReadOnlyButton}" Command="{Binding ToggleMappedFolderReadOnlyCommand}" IsEnabled="{Binding SelectedMappedFolder, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid Margin="8" ColumnDefinitions="120,*" RowDefinitions="50,30">
+                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="5" Text="{x:Static res:UIStringResources.Option_TelemetryDescriptionText}" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Option_UseAutoLogCollecting}" IsChecked="{Binding EnableLogAutoCollecting}" />
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

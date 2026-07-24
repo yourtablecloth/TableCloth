@@ -1,8 +1,10 @@
 using AsyncAwaitBestPractices;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -144,7 +146,7 @@ public partial class OptionsWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task AddMappedFolder()
     {
-        var selectedPath = ShowFolderBrowserDialog(UIStringResources.MappedFolder_SelectFolder);
+        var selectedPath = await PickFolderAsync(UIStringResources.MappedFolder_SelectFolder);
 
         if (string.IsNullOrWhiteSpace(selectedPath))
             return;
@@ -199,7 +201,7 @@ public partial class OptionsWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task SelectDataDirectory()
     {
-        var selectedPath = ShowFolderBrowserDialog(UIStringResources.QuickStart_DataDirectory_SelectFolderTitle);
+        var selectedPath = await PickFolderAsync(UIStringResources.QuickStart_DataDirectory_SelectFolderTitle);
 
         if (string.IsNullOrWhiteSpace(selectedPath))
             return;
@@ -285,18 +287,23 @@ public partial class OptionsWindowViewModel : ObservableObject
         }
     }
 
-    private static string? ShowFolderBrowserDialog(string title)
+    // 이슈 #296: WPF Microsoft.Win32.OpenFolderDialog → Avalonia StorageProvider(TopLevel 필요, 비동기).
+    private static async Task<string?> PickFolderAsync(string title)
     {
-        var dialog = new OpenFolderDialog
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            return null;
+
+        var window = desktop.Windows.FirstOrDefault(x => x.IsActive) ?? desktop.MainWindow;
+        if (window?.StorageProvider is not { } storageProvider)
+            return null;
+
+        var folders = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
             Title = title,
-            Multiselect = false,
-        };
+            AllowMultiple = false,
+        });
 
-        if (dialog.ShowDialog() == true)
-            return dialog.FolderName;
-
-        return null;
+        return folders.Count > 0 ? folders[0].TryGetLocalPath() : null;
     }
 
     private static bool FolderIsAccessible(string path)

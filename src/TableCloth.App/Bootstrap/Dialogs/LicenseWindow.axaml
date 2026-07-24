@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="TableCloth.Bootstrap.Dialogs.LicenseWindow"
+        WindowStartupLocation="CenterScreen"
+        Title="{x:Static res:UIStringResources.License_WindowTitle}"
+        Height="550" Width="650" MinHeight="450" MinWidth="550">
+    <Grid Margin="16" RowDefinitions="Auto,*,Auto">
+        <TextBlock Grid.Row="0" x:Name="InstructionLabel" FontSize="14" FontWeight="SemiBold"
+                   Margin="0,0,0,10" TextWrapping="Wrap"
+                   Foreground="{DynamicResource ControlDefaultForeground}" />
+
+        <Border Grid.Row="1" BorderThickness="1" Margin="0,0,0,16"
+                BorderBrush="{DynamicResource ControlDefaultBorderBrush}"
+                Background="{DynamicResource ContainerBackground}">
+            <ScrollViewer Padding="8">
+                <SelectableTextBlock x:Name="LicenseContentTextBox" TextWrapping="Wrap" FontSize="13"
+                                     Foreground="{DynamicResource ControlDefaultForeground}" />
+            </ScrollViewer>
+        </Border>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button x:Name="AgreeButton" Width="150" Height="32" Click="AgreeButton_Click" IsDefault="True" />
+            <Button x:Name="DeclineButton" Width="150" Height="32" Click="DeclineButton_Click" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+</Window>

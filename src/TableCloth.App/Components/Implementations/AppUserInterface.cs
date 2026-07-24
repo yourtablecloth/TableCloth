@@ -1,7 +1,7 @@
+using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
-using System.Windows;
 using TableCloth.Dialogs;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
@@ -11,35 +11,26 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Components.Implementations;
 
+// 이슈 #296: Avalonia 는 Window.Owner 세터가 없어(소유는 ShowDialog(owner) 시점 성립), WPF 시절 SetOwnerIfAvailable
+// 사전 설정을 제거하고 ShowDialog 시 소유자를 해석한다.
 public sealed class AppUserInterface(
     IServiceProvider serviceProvider,
     IResourceCacheManager resourceCacheManager,
     IApplicationService applicationService) : IAppUserInterface
 {
-    private TWindow SetOwnerIfAvailable<TWindow>(TWindow window)
-        where TWindow : Window
-    {
-        var owner = applicationService.GetActiveWindow() ?? applicationService.GetMainWindow();
-
-        if (owner != null && !ReferenceEquals(owner, window))
-            window.Owner = owner;
-
-        return window;
-    }
-
     public AboutWindow CreateAboutWindow()
-        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<AboutWindow>());
+        => serviceProvider.GetRequiredService<AboutWindow>();
 
     public OptionsWindow CreateOptionsWindow(string? initialTabKey = null)
     {
-        var window = SetOwnerIfAvailable(serviceProvider.GetRequiredService<OptionsWindow>());
+        var window = serviceProvider.GetRequiredService<OptionsWindow>();
         window.ViewModel.SetInitialTab(initialTabKey);
         return window;
     }
 
     public CertSelectWindow CreateCertSelectWindow(X509CertPair? previousCertPair)
     {
-        var window = SetOwnerIfAvailable(serviceProvider.GetRequiredService<CertSelectWindow>());
+        var window = serviceProvider.GetRequiredService<CertSelectWindow>();
 
         if (previousCertPair != null)
             window.ViewModel.PreviousCertPairHash = previousCertPair?.CertHash;
@@ -48,16 +39,16 @@ public sealed class AppUserInterface(
     }
 
     public InputPasswordWindow CreateInputPasswordWindow()
-        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<InputPasswordWindow>());
+        => serviceProvider.GetRequiredService<InputPasswordWindow>();
 
     public DisclaimerWindow CreateDisclaimerWindow()
-        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<DisclaimerWindow>());
+        => serviceProvider.GetRequiredService<DisclaimerWindow>();
 
     public PowerSchemeGuideWindow CreatePowerSchemeGuideWindow()
-        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<PowerSchemeGuideWindow>());
+        => serviceProvider.GetRequiredService<PowerSchemeGuideWindow>();
 
     public SplashScreen CreateSplashScreen()
-        => SetOwnerIfAvailable(serviceProvider.GetRequiredService<SplashScreen>());
+        => serviceProvider.GetRequiredService<SplashScreen>();
 
     public CatalogPage CreateCatalogPage(string searchKeyword)
     {
@@ -107,5 +98,17 @@ public sealed class AppUserInterface(
         }
 
         return viewModel;
+    }
+
+    // 이슈 #296: WPF window.ShowDialog()(동기) 대체. 소유자를 내부에서 해석하고 동기 모달로 표시 후 결과 반환.
+    public bool? ShowDialog(Window window)
+    {
+        var result = applicationService.DispatchInvoke(new Func<bool?>(() =>
+        {
+            var owner = applicationService.GetActiveWindow() ?? applicationService.GetMainWindow();
+            return DialogHost.ShowModal(window, owner);
+        }), []);
+
+        return result as bool?;
     }
 }

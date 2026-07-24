@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TableCloth.ViewModels"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="TableCloth.Dialogs.PowerSchemeGuideWindow"
+        x:DataType="vm:PowerSchemeGuideWindowViewModel"
+        WindowStartupLocation="CenterOwner" CanResize="False" ShowInTaskbar="False"
+        Title="{x:Static res:UIStringResources.PowerSchemeGuide_Title}" Width="520" SizeToContent="Height">
+    <Window.Styles>
+        <!-- 이슈 #296: WPF OptionCardButtonStyle(ControlTemplate.Triggers) → Avalonia Style + 의사클래스. -->
+        <Style Selector="Button.optionCard">
+            <Setter Property="Background" Value="{DynamicResource ControlDefaultBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlDefaultBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource ControlDefaultForeground}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="Button.optionCard:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ControlPrimaryMouseOverBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlPrimaryMouseOverBorderBrush}" />
+        </Style>
+        <Style Selector="Button.optionCard:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ControlPrimarySelectedBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlPrimarySelectedBorderBrush}" />
+        </Style>
+    </Window.Styles>
+    <Grid Margin="18" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+        <TextBlock Grid.Row="0" Margin="0 0 0 8" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"
+                   Text="{x:Static res:UIStringResources.PowerSchemeGuide_Heading}" />
+        <TextBlock Grid.Row="1" Margin="0 0 0 14" TextWrapping="Wrap"
+                   Foreground="{DynamicResource ControlSecondaryForeground}"
+                   Text="{x:Static res:UIStringResources.PowerSchemeGuide_Body}" />
+
+        <Button Grid.Row="2" Classes="optionCard" Margin="0 0 0 8" Padding="14 10"
+                Command="{Binding OpenClassicPowerOptionsCommand}">
+            <StackPanel>
+                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Left"
+                           Text="{x:Static res:UIStringResources.PowerSchemeGuide_OpenClassicButton}" />
+                <TextBlock Margin="0 3 0 0" FontSize="11" TextWrapping="Wrap" TextAlignment="Left"
+                           Foreground="{DynamicResource ControlSecondaryForeground}"
+                           Text="{x:Static res:UIStringResources.PowerSchemeGuide_OpenClassicDescription}" />
+            </StackPanel>
+        </Button>
+
+        <Button Grid.Row="3" Classes="optionCard" Margin="0 0 0 16" Padding="14 10"
+                Command="{Binding OpenModernPowerSettingsCommand}">
+            <StackPanel>
+                <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Left"
+                           Text="{x:Static res:UIStringResources.PowerSchemeGuide_OpenModernButton}" />
+                <TextBlock Margin="0 3 0 0" FontSize="11" TextWrapping="Wrap" TextAlignment="Left"
+                           Foreground="{DynamicResource ControlSecondaryForeground}"
+                           Text="{x:Static res:UIStringResources.PowerSchemeGuide_OpenModernDescription}" />
+            </StackPanel>
+        </Button>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Padding="16 6" Content="{x:Static res:UIStringResources.PowerSchemeGuide_CloseButton}"
+                    Command="{Binding DismissCommand}" IsCancel="True" IsDefault="True" />
+        </StackPanel>
+    </Grid>
+</Window>

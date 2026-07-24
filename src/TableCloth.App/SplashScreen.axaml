@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TableCloth.ViewModels"
+        xmlns:tablecloth="using:TableCloth"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="TableCloth.SplashScreen"
+        x:DataType="vm:SplashScreenViewModel"
+        Title="{x:Static res:UIStringResources.MainWindow_Title}" Height="400" Width="600"
+        WindowStartupLocation="CenterScreen"
+        SystemDecorations="None" CanResize="False"
+        PointerPressed="Window_PointerPressed">
+    <Border CornerRadius="5" BorderThickness="1"
+            BorderBrush="{DynamicResource ControlDefaultBorderBrush}"
+            Background="{DynamicResource ContainerBackground}">
+        <Grid RowDefinitions="2.0*,1.3*">
+            <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Image Height="100" Margin="0,0,0,20" Source="avares://TableCloth.App/Resources/SandboxIcon.png" />
+                <TextBlock Text="{x:Static res:CommonStrings.AppName}" FontSize="24" FontWeight="Bold" TextAlignment="Center" />
+                <TextBlock Text="{Binding AppVersion}" TextAlignment="Center" />
+                <TextBlock Text="{x:Static res:UIStringResources.Build_Debug}" TextAlignment="Center"
+                           IsVisible="{x:Static tablecloth:Helpers.IsDevelopmentBuild}" />
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <!-- 무한 진행(업데이트 아님): WPF XamlRadialProgressBar → Avalonia 무한 ProgressBar 로 단순화. -->
+                <ProgressBar Width="220" IsIndeterminate="True"
+                             IsVisible="{Binding !ShowUpdateProgress}" />
+
+                <!-- 업데이트 다운로드 진행 -->
+                <StackPanel Width="300" IsVisible="{Binding ShowUpdateProgress}">
+                    <ProgressBar Height="20" Minimum="0" Maximum="100" Value="{Binding UpdateProgress}" />
+                    <TextBlock Text="{Binding UpdateProgress, StringFormat='{}{0}%'}" HorizontalAlignment="Center" Margin="0,5,0,0" FontSize="14" />
+                </StackPanel>
+
+                <TextBlock Text="{Binding Status}" HorizontalAlignment="Center" Margin="0,10,0,0" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

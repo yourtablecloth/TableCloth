@@ -2,17 +2,19 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
-		<UseWPF>true</UseWPF>
+		<!-- 이슈 #296: WPF → Avalonia. UseWPF 제거. -->
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
 		<Deterministic>true</Deterministic>
 		<!-- GeneratedComInterface/LibraryImport(소스젠 상호운용)에는 unsafe 블록이 필요(SYSLIB1062). -->
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<!-- 이슈 #296: WPF 제거 후 비문자열 resx(SandboxIcon 등) 를 빌드하려면 이 설정 + System.Resources.Extensions 필요. -->
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 		<!--
 			RootNamespace는 의도적으로 'TableCloth'로 설정. 본 라이브러리의 어셈블리 이름은
 			'TableCloth.App'이지만 내부 파일들은 기존 'TableCloth.Components', 'TableCloth.ViewModels',
-			'TableCloth.Pages' 등의 네임스페이스를 그대로 유지하기 위함. 진입점 프로젝트와 공통 네임스페이스
-			공간을 공유하므로 using 문 수정 없이 파일 이동이 가능하다.
+			'TableCloth.Pages' 등의 네임스페이스를 그대로 유지하기 위함.
 		-->
 		<RootNamespace>TableCloth</RootNamespace>
 		<Description>TableCloth host launcher module — registered into the unified binary via builder.UseTableCloth().</Description>
@@ -20,17 +22,25 @@
 
 	<ItemGroup>
 		<PackageReference Include="AsyncAwaitBestPractices.MVVM" />
+		<!-- 이슈 #296: Avalonia UI 스택 -->
+		<PackageReference Include="Avalonia" />
+		<PackageReference Include="Avalonia.Desktop" />
+		<PackageReference Include="Avalonia.Themes.Fluent" />
+		<PackageReference Include="Avalonia.Fonts.Inter" />
+		<PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)' == 'Debug'" />
+		<PackageReference Include="CommunityToolkit.Mvvm" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" />
 		<PackageReference Include="Microsoft.Extensions.Http" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
 		<PackageReference Include="PnPeople.Security" />
 		<PackageReference Include="Sentry.Serilog" />
 		<PackageReference Include="Serilog.Extensions.Logging" />
 		<PackageReference Include="Serilog.Sinks.File" />
 		<PackageReference Include="System.CommandLine" />
+		<!-- 이슈 #296: WPF 제거로 암시 제공되던 System.Drawing(사이트 이미지 처리) / 비문자열 resx 지원을 명시 참조. -->
+		<PackageReference Include="System.Drawing.Common" />
+		<PackageReference Include="System.Resources.Extensions" />
 		<PackageReference Include="Velopack" />
-		<PackageReference Include="XamlRadialProgressBar" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -53,16 +63,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="Resources\SandboxIcon.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ApplicationDefinition Remove="App.xaml" />
-		<Page Include="App.xaml" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Resource Include="Resources\SandboxIcon.png" />
+		<!-- 이슈 #296: 스플래시가 avares://TableCloth.App/Resources/SandboxIcon.png 로 로드(WPF Resource → AvaloniaResource). -->
+		<AvaloniaResource Include="Resources\SandboxIcon.png" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,0 +1,50 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="using:TableCloth.Converters"
+             x:Class="TableCloth.TableClothApplication"
+             RequestedThemeVariant="Default">
+    <!--
+        이슈 #296: WPF Application → Avalonia Application. RequestedThemeVariant="Default" 로 OS 라이트/다크 자동 추종.
+        컨버터 키는 기존 App.xaml 과 동일하게 유지(뷰 바인딩 무변경). Visibility 컨버터 2종은 IsVisible/!(부정) 로 대체하여 폐기.
+    -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <converters:BooleanToGridRowHeightConverter x:Key="BooleanToGridRowHeightConverter" />
+            <converters:ServiceLogoConverter x:Key="ServiceLogoConverter" />
+            <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
+            <converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
+            <converters:BooleanToBackgroundConverter x:Key="BooleanToBackgroundConverter" />
+            <converters:BooleanToReadOnlyTextConverter x:Key="BooleanToReadOnlyTextConverter" />
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://TableCloth.App/Themes/Colors.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+
+        <!-- 이슈 #296: WPF Hyperlink(인라인 Command) → 링크형 Button. 즐겨찾기 별은 :checked 의사클래스로 색 전환. -->
+        <Style Selector="Button.link">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource InfoBannerLinkForeground}" />
+        </Style>
+        <Style Selector="Button.link:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ToggleButton.fav">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource ControlSecondaryForeground}" />
+        </Style>
+        <Style Selector="ToggleButton.fav:checked">
+            <Setter Property="Foreground" Value="#FFD401" />
+        </Style>
+    </Application.Styles>
+</Application>

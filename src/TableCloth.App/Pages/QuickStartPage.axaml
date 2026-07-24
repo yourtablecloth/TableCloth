@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:res="using:TableCloth.Resources"
+             xmlns:vm="using:TableCloth.ViewModels"
+             xmlns:tablecloth="using:TableCloth"
+             x:Class="TableCloth.Pages.QuickStartPage"
+             x:DataType="vm:QuickStartPageViewModel">
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Info Banner -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource InfoBannerBackground}"
+                BorderBrush="{DynamicResource InfoBannerBorder}"
+                BorderThickness="0 0 0 1" Padding="8 6">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <TextBlock Text="ⓘ" FontWeight="Bold" VerticalAlignment="Center" Foreground="{DynamicResource InfoBannerLinkForeground}" />
+                <TextBlock Text="{x:Static res:UIStringResources.Sponsor_BannerMessage}" TextWrapping="Wrap" VerticalAlignment="Center"
+                           Foreground="{DynamicResource InfoBannerForeground}" />
+                <Button Classes="link" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}" Click="SponsorBanner_Click" />
+            </StackPanel>
+        </Border>
+
+        <!-- Centered hero -->
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="520" Margin="24">
+            <TextBlock HorizontalAlignment="Center" TextAlignment="Center" FontSize="28" FontWeight="Bold" Text="{x:Static res:UIStringResources.QuickStart_Title}" />
+            <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0 12 0 24" TextWrapping="Wrap"
+                       Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.QuickStart_Instruction}" />
+            <Button HorizontalAlignment="Center" MinWidth="220" Padding="28 12" FontSize="16" FontWeight="Bold"
+                    Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Command="{Binding LaunchSandboxCommand}" />
+            <Button Classes="link" HorizontalAlignment="Center" Margin="0 16 0 0"
+                    Content="{Binding NpkiStatusText}" Command="{Binding OpenOptionsCommand}" CommandParameter="Certificate" />
+        </StackPanel>
+
+        <!-- Footer -->
+        <Grid Grid.Row="2" Margin="16 8 16 12" ColumnDefinitions="Auto,*,Auto">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                <Button Classes="link" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Button_AboutButton}" Command="{Binding AboutThisAppCommand}" />
+                <Button Classes="link" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Button_UserManualButton}" Command="{Binding OpenUserManualCommand}" />
+                <Button Classes="link" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Button_DebugButton}" Command="{Binding ShowDebugInfoCommand}"
+                        IsVisible="{x:Static tablecloth:Helpers.IsDevelopmentBuild}" />
+            </StackPanel>
+            <Button Grid.Column="2" Classes="link" VerticalAlignment="Center" Content="{x:Static res:UIStringResources.QuickStart_OptionsButton}" Command="{Binding OpenOptionsCommand}" />
+        </Grid>
+    </Grid>
+</UserControl>

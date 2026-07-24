@@ -1,8 +1,11 @@
 using AsyncAwaitBestPractices;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,11 +13,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
 using TableCloth.Components;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
@@ -120,7 +120,7 @@ public partial class DetailPageViewModel : ObservableObject
         if (ShouldNotifyDisclaimer)
         {
             var disclaimerWindow = _appUserInterface.CreateDisclaimerWindow();
-            var result = disclaimerWindow.ShowDialog();
+            var result = _appUserInterface.ShowDialog(disclaimerWindow);
 
             if (result.HasValue && result.Value)
                 LastDisclaimerAgreedTime = DateTime.UtcNow;
@@ -156,7 +156,7 @@ public partial class DetailPageViewModel : ObservableObject
     private void CertSelect()
     {
         var certSelectWindow = _appUserInterface.CreateCertSelectWindow(SelectedCertFile);
-        var response = certSelectWindow.ShowDialog();
+        var response = _appUserInterface.ShowDialog(certSelectWindow);
 
         if (!response.HasValue || !response.Value)
             return;
@@ -205,7 +205,7 @@ public partial class DetailPageViewModel : ObservableObject
     private bool _isFavorite;
 
     [ObservableProperty]
-    private ImageSource? _serviceLogo;
+    private IImage? _serviceLogo;
 
     [ObservableProperty]
     private bool _mapNpkiCert;
@@ -373,7 +373,12 @@ public partial class DetailPageViewModel : ObservableObject
     {
         var expression = _commandLineComposer.ComposeCommandLineExpression(this, true);
 
-        try { Clipboard.SetText(expression); }
+        // 이슈 #296: WPF Clipboard.SetText(동기) → Avalonia TopLevel.Clipboard.SetTextAsync(비동기, fire-and-forget).
+        try
+        {
+            var clipboard = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow?.Clipboard;
+            clipboard?.SetTextAsync(expression).SafeFireAndForget();
+        }
         catch (Exception thrownException)
         {
             _appMessageBox.DisplayError(
@@ -412,7 +417,7 @@ public partial class DetailPageViewModel : ObservableObject
     [RelayCommand]
     private async Task AddMappedFolder()
     {
-        var selectedPath = ShowFolderBrowserDialog();
+        var selectedPath = await PickFolderAsync();
 
         if (string.IsNullOrWhiteSpace(selectedPath))
             return;
@@ -434,20 +439,20 @@ public partial class DetailPageViewModel : ObservableObject
         await SaveMappedFoldersAsync();
     }
 
-    private static string? ShowFolderBrowserDialog()
+    // 이슈 #296: WPF Microsoft.Win32.OpenFolderDialog → Avalonia StorageProvider(TopLevel 필요, 비동기).
+    private static async Task<string?> PickFolderAsync()
     {
-        var dialog = new OpenFolderDialog
+        var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+        if (mainWindow?.StorageProvider is not { } storageProvider)
+            return null;
+
+        var folders = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
             Title = UIStringResources.MappedFolder_SelectFolder,
-            Multiselect = false,
-        };
+            AllowMultiple = false,
+        });
 
-        if (dialog.ShowDialog() == true)
-        {
-            return dialog.FolderName;
-        }
-
-        return null;
+        return folders.Count > 0 ? folders[0].TryGetLocalPath() : null;
     }
 
     [RelayCommand]

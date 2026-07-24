@@ -1,10 +1,7 @@
+using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
 using TableCloth.Resources;
 
 namespace TableCloth;
@@ -58,11 +55,12 @@ internal static class Extensions
         return services;
     }
 
+    // 이슈 #296: WPF Page → Avalonia UserControl(Control). 나머지 등록 로직은 동일.
     public static IServiceCollection AddPage<TPage, TViewModel>(this IServiceCollection services,
         bool addPageAsSingleton = false,
         Func<IServiceProvider, TPage>? pageImplementationFactory = default,
         Func<IServiceProvider, TViewModel>? viewModelImplementationFactory = default)
-        where TPage : Page
+        where TPage : Control
         where TViewModel : class
     {
         if (addPageAsSingleton)
@@ -88,70 +86,6 @@ internal static class Extensions
         return services;
     }
 
-    // https://stackoverflow.com/a/2914599
-    public static bool TryLeaveFocus(this FrameworkElement? targetElement)
-    {
-        if (targetElement == null)
-            return false;
-
-        var parent = (FrameworkElement)targetElement.Parent;
-        while (parent != null && parent is IInputElement element && !element.Focusable)
-            parent = (FrameworkElement)parent.Parent;
-
-        var scope = FocusManager.GetFocusScope(targetElement);
-        FocusManager.SetFocusedElement(scope, parent as IInputElement);
-        return true;
-    }
-
-    public static IServiceProvider GetServiceProvider(this Application application)
-    {
-        var serviceProvider = application.Properties[nameof(IServiceProvider)] as IServiceProvider;
-        ArgumentNullException.ThrowIfNull(serviceProvider);
-        return serviceProvider;
-    }
-
-    public static void InitServiceProvider(this Application application, IServiceProvider serviceProvider)
-    {
-        const string key = nameof(IServiceProvider);
-
-        if (application.Properties.Contains(key) &&
-            application.Properties[key] != null)
-            TableClothAppException.Throw("Already service provider has been initialized.");
-
-        application.Properties[key] = serviceProvider;
-    }
-
-    public static T? FindChildControl<T>(this DependencyObject depObj)
-        where T : DependencyObject
-    {
-        if (depObj != null)
-        {
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
-            {
-                var child = VisualTreeHelper.GetChild(depObj, i);
-
-                if (child is T targetChild)
-                    return targetChild;
-
-                var childItem = FindChildControl<T>(child);
-                if (childItem != null)
-                    return childItem;
-            }
-        }
-
-        return null;
-    }
-
-    public static bool IsControlVisibleToUser(this FrameworkElement element, FrameworkElement container)
-    {
-        if (!element.IsVisible)
-            return false;
-
-        // 컨트롤의 상대적인 위치를 화면에서의 위치로 변환
-        Rect bounds = element.TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, element.ActualWidth, element.ActualHeight));
-        Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
-
-        // 컨트롤의 영역이 컨테이너의 보이는 영역과 겹치는지 확인
-        return rect.IntersectsWith(bounds);
-    }
+    // 이슈 #296: WPF 전용 헬퍼(TryLeaveFocus/FindChildControl/IsControlVisibleToUser)와 Application.Properties
+    // 기반 Init/GetServiceProvider 는 폐기. 서비스 프로바이더는 TableClothApplication.ServiceProvider 정적 홀더로 노출.
 }

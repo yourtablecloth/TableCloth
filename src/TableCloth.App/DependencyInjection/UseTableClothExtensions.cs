@@ -3,7 +3,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System.Threading.Tasks;
-using System.Windows;
 using TableCloth.Components;
 using TableCloth.Components.Implementations;
 using TableCloth.Dialogs;
@@ -79,8 +78,10 @@ public static class UseTableClothExtensions
             .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
             .AddPage<DetailPage, DetailPageViewModel>()
             .AddPage<QuickStartPage, QuickStartPageViewModel>()
-            .AddWindow<SplashScreen, SplashScreenViewModel>()
-            .AddSingleton<Application>(sp => new TableClothApplication(sp.GetRequiredService<IHost>()));
+            .AddWindow<SplashScreen, SplashScreenViewModel>();
+
+        // 이슈 #296: WPF Application 등록 폐기. Avalonia App(TableClothApplication)은 진입점에서 Lemon.Hosting
+        // AddAvaloniauiDesktopApplication<TableClothApplication> 로 DI 생성한다.
 
         return builder;
     }

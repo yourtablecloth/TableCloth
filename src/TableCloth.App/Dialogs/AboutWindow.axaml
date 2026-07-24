@@ -1,0 +1,121 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TableCloth.ViewModels"
+        xmlns:sponsors="using:TableCloth.Models.Sponsors"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="TableCloth.Dialogs.AboutWindow"
+        x:DataType="vm:AboutWindowViewModel"
+        Title="{x:Static res:UIStringResources.AboutWindow_Title}" Width="640" Height="520"
+        MinWidth="320" MinHeight="280" CanResize="False" WindowStartupLocation="CenterOwner">
+    <Grid Margin="10" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
+
+        <!-- Info Banner (WPF Hyperlink → 링크형 Button) -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource InfoBannerBackground}"
+                BorderBrush="{DynamicResource InfoBannerBorder}"
+                BorderThickness="1" Padding="10" Margin="0 0 0 10" CornerRadius="4">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="ⓘ" FontWeight="Bold" VerticalAlignment="Center"
+                           Foreground="{DynamicResource InfoBannerLinkForeground}" />
+                <TextBlock Text="{x:Static res:UIStringResources.Sponsor_BannerMessage}" TextWrapping="Wrap"
+                           VerticalAlignment="Center" Foreground="{DynamicResource InfoBannerForeground}" />
+                <Button Content="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}"
+                        Click="SponsorBanner_Click" Padding="6 2" VerticalAlignment="Center"
+                        Background="Transparent" BorderThickness="0" Cursor="Hand"
+                        Foreground="{DynamicResource InfoBannerLinkForeground}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Legal Notice -->
+        <StackPanel Grid.Row="1" Margin="0 0 0 10">
+            <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_CopyrightText}" />
+            <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_TrademarkText}"
+                       Foreground="{DynamicResource ControlSecondaryForeground}" FontSize="11" />
+        </StackPanel>
+
+        <!-- Version Info -->
+        <Grid Grid.Row="2" Margin="0 0 0 10" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:UIStringResources.AboutWindow_AppVersionText}" Margin="0 0 10 2" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AppVersion}" FontWeight="SemiBold" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:UIStringResources.AboutWindow_CatalogDateText}" Margin="0 2 10 0" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CatalogDate}" FontWeight="SemiBold" />
+        </Grid>
+
+        <!-- Sponsors (원격 아바타는 M3 이월 → 플레이스홀더) -->
+        <StackPanel Grid.Row="3" Margin="0 0 0 10" IsVisible="{Binding HasSponsors}">
+            <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_SponsorsTitle}" FontWeight="SemiBold" Margin="0 0 0 6" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <ItemsControl ItemsSource="{Binding Sponsors}" MaxHeight="36" ClipToBounds="True">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="sponsors:SponsorInfo">
+                            <Border Margin="0 0 8 4" Padding="6 4" CornerRadius="4" BorderThickness="1"
+                                    Background="{DynamicResource InfoBannerBackground}" BorderBrush="{DynamicResource InfoBannerBorder}">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Ellipse Width="24" Height="24" Fill="#80808080" />
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Text="{Binding AnonymousSponsorsText}" VerticalAlignment="Center"
+                           Foreground="{DynamicResource ControlSecondaryForeground}"
+                           IsVisible="{Binding HasAnonymousSponsors}" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Contributors -->
+        <StackPanel Grid.Row="4" Margin="0 0 0 10" IsVisible="{Binding HasContributors}">
+            <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_ContributorsTitle}" FontWeight="SemiBold" Margin="0 0 0 6" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <ItemsControl ItemsSource="{Binding Contributors}" MaxHeight="36" ClipToBounds="True">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="sponsors:ContributorInfo">
+                            <Border Margin="0 0 8 4" Padding="6 4" CornerRadius="4" BorderThickness="1"
+                                    Background="{DynamicResource InfoBannerBackground}" BorderBrush="{DynamicResource InfoBannerBorder}">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Ellipse Width="24" Height="24" Fill="#80808080" />
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Text="{Binding AnonymousContributorsText}" VerticalAlignment="Center"
+                           Foreground="{DynamicResource ControlSecondaryForeground}"
+                           IsVisible="{Binding HasAnonymousContributors}" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- License (RichTextBox → SelectableTextBlock; 내용은 평문 string) -->
+        <Grid Grid.Row="5" Margin="0 0 0 10" RowDefinitions="Auto,*">
+            <TextBlock Grid.Row="0" Text="{x:Static res:UIStringResources.AboutWindow_OssLicenseText}" FontWeight="SemiBold" Margin="0 0 0 6" />
+            <Border Grid.Row="1" BorderThickness="1" CornerRadius="4" BorderBrush="{DynamicResource ControlDefaultBorderBrush}">
+                <ScrollViewer Padding="6">
+                    <SelectableTextBlock Text="{Binding LicenseDetails}" TextWrapping="Wrap" />
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- Buttons -->
+        <Grid Grid.Row="6" ColumnDefinitions="*,Auto">
+            <StackPanel Grid.Column="0" HorizontalAlignment="Left" Orientation="Horizontal" Spacing="5">
+                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}" Command="{Binding OpenWebsiteCommand}" CommandParameter="{Binding}" />
+                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_UserManualButton}" Command="{Binding OpenUserManualCommand}" />
+                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_ShowSysInfoButton}" Command="{Binding ShowSystemInfoCommand}" CommandParameter="{Binding}" />
+                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_CheckUpdateButton}" Command="{Binding CheckUpdatedVersionCommand}" CommandParameter="{Binding}" />
+                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_DiscordButton}" Command="{Binding OpenDiscordCommand}" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5">
+                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_PrivacyLink}" Command="{Binding OpenPrivacyPolicyCommand}" CommandParameter="{Binding}" />
+                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_OkayButton}" IsDefault="True" Click="OkayButton_Click" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

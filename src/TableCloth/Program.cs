@@ -75,14 +75,8 @@ internal static class Program
         // Velopack 초기화 - 설치/업데이트/제거 시 처리
         VelopackApp.Build().Run();
 
-        // 라이선스 동의 여부 확인
-        if (!CheckLicenseAgreement())
-        {
-            Environment.Exit(1); // 라이선스 미동의 시 종료
-            return Environment.ExitCode;
-        }
-
-        // 설치 후 첫 실행 시 파일 연결 등록
+        // 이슈 #296: 라이선스 동의 게이트는 Avalonia 창을 써야 하므로 App 라이프사이클(LicenseGate)로 이관.
+        // 설치 후 첫 실행 시 파일 연결 등록(UI 아님)은 여기서 유지.
         RegisterFileAssociationsIfNeeded();
 
         try
@@ -92,12 +86,12 @@ internal static class Program
             var builder = Host.CreateApplicationBuilder(args);
             builder.UseTableCloth();
 
+            // 이슈 #296: WPF Application.Run → Avalonia(Lemon.Hosting). App(TableClothApplication)은 DI 로 생성.
+#pragma warning disable CS0618 // Lemon.Hosting 1.1.1 obsolete API — M2c 검증 경로(신 API 이관은 후속).
+            builder.Services.AddAvaloniauiDesktopApplication<TableClothApplication>(TableClothAvaloniaApp.Configure);
             using var appHost = builder.Build();
-            appHost.Start();
-            // TableCloth 런처는 아직 WPF(TableCloth.App). Avalonia 도입(using Avalonia)으로 Application 이 모호해져 정규화.
-            var app = appHost.Services.GetRequiredService<System.Windows.Application>();
-            app.Run();
-            appHost.StopAsync().GetAwaiter().GetResult();
+            appHost.RunAvaloniauiApplication(args);
+#pragma warning restore CS0618
         }
         catch (Exception ex)
         {
@@ -139,102 +133,6 @@ internal static class Program
         }
 
         return Environment.ExitCode;
-    }
-
-    private static bool CheckLicenseAgreement()
-    {
-        try
-        {
-            var preferencesPath = GetPreferencesFilePath();
-            if (!File.Exists(preferencesPath))
-            {
-                // 설정 파일이 없으면 라이선스 동의 필요
-                return ShowLicenseAgreement();
-            }
-
-            var json = File.ReadAllText(preferencesPath);
-            var preferences = JsonSerializer.Deserialize(json, TableClothJsonContext.Default.PreferenceSettings);
-
-            if (preferences?.LicenseAgreedTime == null)
-            {
-                // 라이선스 동의 기록이 없으면 동의 필요
-                return ShowLicenseAgreement();
-            }
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            // 설정 파일 손상/권한 등으로 읽기에 실패하면 동의 창을 다시 띄운다.
-            // 부트스트랩 단계라 DI 로거가 아직 없으므로 Debug 출력에만 남긴다.
-            Debug.WriteLine($"[TableCloth] CheckLicenseAgreement failed: {ex}");
-            return ShowLicenseAgreement();
-        }
-    }
-
-    private static bool ShowLicenseAgreement()
-    {
-        var licenseWindow = new LicenseWindow();
-        var result = licenseWindow.ShowDialog();
-
-        if (result == true && licenseWindow.LicenseAccepted)
-        {
-            // 라이선스 동의 정보 저장
-            SaveLicenseAgreement();
-            return true;
-        }
-        else
-        {
-            // 라이선스 거부 시 메시지 표시
-            MessageBox.Show(
-                UIStringResources.License_RejectionMessage,
-                UIStringResources.License_RejectionTitle,
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
-            return false;
-        }
-    }
-
-    private static void SaveLicenseAgreement()
-    {
-        try
-        {
-            var preferencesPath = GetPreferencesFilePath();
-            var preferencesDir = Path.GetDirectoryName(preferencesPath);
-
-            if (!string.IsNullOrEmpty(preferencesDir) && !Directory.Exists(preferencesDir))
-                Directory.CreateDirectory(preferencesDir);
-
-            PreferenceSettings preferences;
-
-            if (File.Exists(preferencesPath))
-            {
-                var json = File.ReadAllText(preferencesPath);
-                preferences = JsonSerializer.Deserialize(json, TableClothJsonContext.Default.PreferenceSettings) ?? new PreferenceSettings();
-            }
-            else
-            {
-                preferences = new PreferenceSettings();
-            }
-
-            preferences.LicenseAgreedTime = DateTime.UtcNow;
-            preferences.LicenseAgreedVersion = typeof(Program).Assembly.GetName().Version?.ToString();
-
-            var updatedJson = JsonSerializer.Serialize(preferences, TableClothJsonContext.Default.PreferenceSettings);
-            File.WriteAllText(preferencesPath, updatedJson);
-        }
-        catch (Exception ex)
-        {
-            // 저장 실패는 무시 - 다음 실행 시 다시 동의 요청한다.
-            // 부트스트랩 단계라 DI 로거가 아직 없으므로 Debug 출력에만 남긴다.
-            Debug.WriteLine($"[TableCloth] SaveLicenseAgreement failed: {ex}");
-        }
-    }
-
-    private static string GetPreferencesFilePath()
-    {
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        return Path.Combine(appDataPath, "TableCloth.Data", "Preferences.json");
     }
 
     private static void RegisterFileAssociationsIfNeeded()

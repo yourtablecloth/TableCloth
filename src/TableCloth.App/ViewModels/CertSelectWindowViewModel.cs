@@ -1,7 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -114,7 +116,7 @@ public partial class CertSelectWindowViewModel : ObservableObject
         var inputWindowViewModel = inputWindow.ViewModel;
         inputWindowViewModel.PfxFilePath = pfxFilePath;
 
-        var inputPwdResult = inputWindow.ShowDialog();
+        var inputPwdResult = _appUserInterface.ShowDialog(inputWindow);
 
         if (!inputPwdResult.HasValue || !inputPwdResult.Value || inputWindowViewModel.ValidatedCertPair == null)
             return;
@@ -126,51 +128,40 @@ public partial class CertSelectWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task CertSelectWindowManualCertLoad()
     {
-        var ofd = new OpenFileDialog()
+        // 이슈 #296: WPF Microsoft.Win32.OpenFileDialog → Avalonia StorageProvider. WPF CustomPlaces(NPKI/USB
+        // 즐겨찾기)와 FilterIndex 기반 분기는 폐기하고, 선택 파일 확장자(.pfx/.p12 여부)로 로드 경로를 판정한다.
+        var window = ActiveOrMainWindow();
+        if (window?.StorageProvider is not { } storageProvider)
+            return;
+
+        var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            AddExtension = true,
-            CheckFileExists = true,
-            CheckPathExists = true,
-            DereferenceLinks = true,
-            Filter = UIStringResources.CertSelectWindow_FileOpenDialog_FilterText,
-            FilterIndex = 0,
-            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            Multiselect = true,
-            ReadOnlyChecked = true,
-            ShowReadOnly = false,
             Title = UIStringResources.CertSelectWindow_FileOpenDialog_Text,
-            ValidateNames = true,
-        };
+            AllowMultiple = true,
+            FileTypeFilter =
+            [
+                new FilePickerFileType("NPKI Certificate (*.der; *.key)") { Patterns = ["*.der", "*.key"] },
+                new FilePickerFileType("PFX/P12 (*.pfx; *.p12)") { Patterns = ["*.pfx", "*.p12"] },
+                FilePickerFileTypes.All,
+            ],
+        });
 
-        var localLowPath = NativeMethods.GetKnownFolderPath(NativeMethods.LocalLowFolderGuid);
+        var firstPath = files.Count > 0 ? files[0].TryGetLocalPath() : null;
+        if (string.IsNullOrWhiteSpace(firstPath))
+            return;
 
-        if (localLowPath == null)
-            throw new Exception("Cannot obtain the LocalLow folder path.");
+        if (firstPath.EndsWith(".pfx", StringComparison.OrdinalIgnoreCase) ||
+            firstPath.EndsWith(".p12", StringComparison.OrdinalIgnoreCase))
+            await LoadPfxCertAsync(firstPath);
+        else
+            await LoadCertPairAsync(firstPath);
+    }
 
-        var npkiPath = Path.Combine(localLowPath, "NPKI");
-        var userDirectories = new List<string>();
-
-        if (Directory.Exists(npkiPath))
-            userDirectories.AddRange(Directory.GetDirectories(npkiPath, "USER", SearchOption.AllDirectories));
-
-        var removableDrives = DriveInfo.GetDrives().Where(x => x.DriveType == DriveType.Removable).Select(x => x.RootDirectory.FullName);
-
-        ofd.CustomPlaces = new string[] { npkiPath, }
-            .Concat(userDirectories)
-            .Concat(removableDrives)
-            .Where(x => Directory.Exists(x))
-            .Select(x => new FileDialogCustomPlace(x))
-            .ToList();
-
-        var response = ofd.ShowDialog();
-
-        if (response.HasValue && response.Value)
-        {
-            if (ofd.FilterIndex == 1)
-                await LoadCertPairAsync(ofd.FileNames.FirstOrDefault());
-            else if (ofd.FilterIndex == 2)
-                await LoadPfxCertAsync(ofd.FileNames.FirstOrDefault());
-        }
+    private static Avalonia.Controls.Window? ActiveOrMainWindow()
+    {
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            return null;
+        return desktop.Windows.FirstOrDefault(x => x.IsActive) ?? desktop.MainWindow;
     }
 
     [RelayCommand]
