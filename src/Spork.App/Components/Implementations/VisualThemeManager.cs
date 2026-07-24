@@ -11,6 +11,14 @@ namespace Spork.Components.Implementations
 {
     public sealed class VisualThemeManager : IVisualThemeManager
     {
+        // ViewModel이 WPF Window/Application.Current를 참조하지 않도록, 내부에서 메인 창을 해석해 적용한다.
+        public void ApplyAutoThemeChange()
+        {
+            var mainWindow = Application.Current?.MainWindow;
+            if (mainWindow != null)
+                ApplyAutoThemeChange(mainWindow);
+        }
+
         public void ApplyAutoThemeChange(Window targetWindow)
         {
             var source = HwndSource.FromHwnd(new WindowInteropHelper(targetWindow).Handle);

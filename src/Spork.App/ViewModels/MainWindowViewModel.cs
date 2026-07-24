@@ -14,7 +14,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
 using TableCloth;
 using TableCloth.Models;
@@ -91,9 +90,6 @@ namespace Spork.ViewModels
             _taskFactory = taskFactory;
         }
 
-        private static Application _application
-            => Application.Current
-               ?? throw new InvalidOperationException("Application.Current is not yet available.");
         private readonly IResourceCacheManager _resourceCacheManager;
         private readonly IAppUserInterface _appUserInterface;
         private readonly IVisualThemeManager _visualThemeManager;
@@ -132,7 +128,7 @@ namespace Spork.ViewModels
         [RelayCommand]
         private async Task MainWindowLoaded()
         {
-            _visualThemeManager.ApplyAutoThemeChange(_application.MainWindow);
+            _visualThemeManager.ApplyAutoThemeChange();
 
             var parsedArgs = _commandLineArguments.GetCurrent();
             ShowDryRunNotification = parsedArgs.DryRun;
