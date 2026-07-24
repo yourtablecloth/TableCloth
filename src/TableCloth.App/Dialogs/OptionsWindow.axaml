@@ -5,10 +5,18 @@
         xmlns:res="using:TableCloth.Resources"
         x:Class="TableCloth.Dialogs.OptionsWindow"
         x:DataType="vm:OptionsWindowViewModel"
-        Title="{x:Static res:UIStringResources.Options_Title}" Width="560" Height="520" MinWidth="460" MinHeight="440"
+        Title="{x:Static res:UIStringResources.Options_Title}" Width="680" Height="560" MinWidth="600" MinHeight="480"
         CanResize="False" ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+    <!-- 이슈 #296: 좌측 세로 탭(사이드바) — 상단 탭 헤더 공간 문제 해소. 이 창 한정으로 항목을 좌측 정렬·균일 폭으로. -->
+    <Window.Styles>
+        <Style Selector="TabItem">
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="MinWidth" Value="130" />
+        </Style>
+    </Window.Styles>
     <Grid Margin="16" RowDefinitions="*,Auto">
-        <TabControl Grid.Row="0" SelectedIndex="{Binding InitialTabIndex}">
+        <TabControl Grid.Row="0" TabStripPlacement="Left" SelectedIndex="{Binding InitialTabIndex}">
             <!-- 사용자 폴더 -->
             <TabItem Header="{x:Static res:UIStringResources.QuickStart_Section_UserFolders}">
                 <Grid Margin="12" RowDefinitions="Auto,*,Auto">
