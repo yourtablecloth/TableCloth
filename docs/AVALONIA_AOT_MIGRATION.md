@@ -332,7 +332,16 @@ TableCloth.Test 66 / Spork.Test 42 통과로 검증됨.
 - ✅ **S3 (COM interop):** ShortcutCreator 2곳을 `Shell.Application`+`dynamic` → `IShellLinkW`/`IPersistFile`(GeneratedComInterface)로 대체.
 - ✅ **S4 (System.CommandLine):** AOT-clean 검증(변경 불필요).
 
-→ 남은 하드 AOT blocker(비-UI) 없음. Velopack/Sentry/카탈로그 XML 포함 모두 AOT 안전 확인. 다음은 **M1(UI 이음새 디커플링)**.
+→ 남은 하드 AOT blocker(비-UI) 없음. Velopack/Sentry/카탈로그 XML 포함 모두 AOT 안전 확인.
+
+**M1 (UI 이음새 디커플링) — 완료.** ViewModel을 "깔끔히 추상화 가능한" WPF 결합에서 분리(WPF 유지 상태, 빌드 0경고 + 테스트 66+42):
+
+- ✅ **M1a (메시지 박스):** Core에 `AppMessageBoxButton/Result/Image` 중립 열거형 추가, `IAppMessageBox`(양 앱) 중립화(WPF 매핑은 구현층). QuickStartVM의 직접 `IMessageBoxService`/`IApplicationService` 의존 제거.
+- ✅ **M1b (테마 매니저):** `IVisualThemeManager.ApplyAutoThemeChange()` 매개변수 없는 오버로드 추가 → Spork MainVM에서 `Application.Current`/WPF Window 결합 제거.
+- ✅ **M1c (네비게이션):** `INavigationService`의 WPF `Frame` 메서드를 구현 private로 강등 → 공개 계약 완전 중립.
+- **M3로 이관(본질적 뷰 계층 타입):** `CollectionViewSource`/`ICollectionView`(CatalogPageVM·Spork MainVM의 검색/필터), DetailPageVM의 `Clipboard`·`ImageSource`. Avalonia 대체(컬렉션 뷰·`Bitmap`)가 프레임워크 종속적이라 view 포팅과 함께 재구성.
+
+→ 다음은 **M2(Avalonia 스캐폴딩 + 수직 슬라이스 1창)**.
 
 ## 9. 롤백 전략
 
