@@ -3,7 +3,6 @@ using Spork.Browsers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -180,7 +179,19 @@ namespace Spork.Components.Implementations
                     Directory.CreateDirectory(picturesDirectoryPath);
 
                 var wallpaperPath = Path.Combine(picturesDirectoryPath, "Signature.jpg");
-                Properties.Resources.Signature.Save(wallpaperPath, ImageFormat.Jpeg);
+
+                // 이슈 #296(AOT): 기존 Properties.Resources.Signature(resx System.Drawing.Bitmap)의 런타임 역직렬화는
+                // Native AOT 에서 실패한다(preserialized Bitmap → ImageConverter/직렬화 경로가 리플렉션/동적코드 의존).
+                // 실제로 AOT 빌드에서 이 예외가 catch 되어 배경화면이 조용히 미적용됐다(E2E 확인). 원시 JPEG 바이트를
+                // 임베디드 리소스로 직접 읽어 파일로 쓰면 System.Drawing 없이 동일 결과를 AOT 안전하게 얻는다.
+                using (var resourceStream = typeof(AppStartup).Assembly.GetManifestResourceStream("Signature.jpg"))
+                {
+                    if (resourceStream == null)
+                        throw new FileNotFoundException("Embedded resource 'Signature.jpg' was not found.");
+
+                    using var fileStream = File.Create(wallpaperPath);
+                    resourceStream.CopyTo(fileStream);
+                }
 
                 var result = NativeMethods.SystemParametersInfoW(
                     NativeMethods.SetDesktopWallpaper, 0, wallpaperPath,

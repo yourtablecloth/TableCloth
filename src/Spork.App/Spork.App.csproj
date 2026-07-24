@@ -82,7 +82,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="Resources\Signature.jpg" />
+		<!-- 이슈 #296(AOT): 샌드박스 배경화면용 원본 JPEG 을 원시 바이트로 임베드(LogicalName 고정).
+		     resx System.Drawing.Bitmap 역직렬화(AOT 실패)를 우회해 AppStartup 이 GetManifestResourceStream 으로 직접 읽는다. -->
+		<EmbeddedResource Include="Resources\Signature.jpg">
+			<LogicalName>Signature.jpg</LogicalName>
+		</EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
