@@ -104,6 +104,17 @@
                                                                 Background="Transparent" Cursor="Hand"
                                                                 PointerReleased="CatalogItem_PointerReleased">
                                                             <Grid RowDefinitions="48,*">
+                                                                <!-- 이슈 #296: 로고 미지정 사이트는 중립적인 지구본 placeholder 로 대체.
+                                                                     벡터라 고DPI 에서 선명하고 라이트/다크 테마에 따라 색이 적응한다. 로고가 있으면 숨김. -->
+                                                                <Viewbox Grid.Row="0" Width="34" Height="34"
+                                                                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                         IsVisible="{Binding Converter={StaticResource ServiceLogoExistsConverter}, ConverterParameter=Not}">
+                                                                    <Canvas Width="24" Height="24">
+                                                                        <Ellipse Width="24" Height="24" Stroke="{DynamicResource ControlSecondaryForeground}" StrokeThickness="1.5" />
+                                                                        <Ellipse Width="12" Height="24" Canvas.Left="6" Stroke="{DynamicResource ControlSecondaryForeground}" StrokeThickness="1.5" />
+                                                                        <Line StartPoint="1,12" EndPoint="23,12" Stroke="{DynamicResource ControlSecondaryForeground}" StrokeThickness="1.5" />
+                                                                    </Canvas>
+                                                                </Viewbox>
                                                                 <Image Grid.Row="0" Width="40" Height="40"
                                                                        HorizontalAlignment="Center" VerticalAlignment="Center"
                                                                        Stretch="Uniform"
@@ -123,16 +134,14 @@
                                                                               Content="★" IsChecked="{Binding IsFavorite}"
                                                                               Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ToggleFavoriteCommand}"
                                                                               CommandParameter="{Binding}" />
+                                                                <!-- 이슈 #296: 이름은 최대 2줄까지 표시하고 초과분은 줄임표(...) 처리. 2줄 높이(LineHeight 18 x 2 = 36)를
+                                                                     고정하고 상단 정렬하여, 1줄짜리 이름은 아래쪽이 공백으로 유지되어 카드 정렬이 균일해진다.
+                                                                     카드마다 카테고리 라벨은 그룹 헤더와 중복이라 제거(요청). -->
                                                                 <StackPanel Grid.Row="1" Margin="0 4 0 0">
-                                                                    <!-- 이슈 #296: 이름은 최대 2줄까지 표시하고 초과분은 줄임표(...) 처리. 2줄 높이(LineHeight 18 x 2 = 36)를
-                                                                         고정하고 상단 정렬하여, 1줄짜리 이름은 아래쪽이 공백으로 유지되어 카드 정렬이 균일해진다. -->
                                                                     <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
                                                                                TextWrapping="Wrap" TextAlignment="Center"
                                                                                MaxLines="2" TextTrimming="CharacterEllipsis"
                                                                                LineHeight="18" Height="36" VerticalAlignment="Top" />
-                                                                    <TextBlock Text="{Binding CategoryDisplayName}" FontSize="10"
-                                                                               Foreground="{DynamicResource ControlSecondaryForeground}"
-                                                                               Margin="0 2 0 0" TextAlignment="Center" />
                                                                 </StackPanel>
                                                             </Grid>
                                                         </Border>

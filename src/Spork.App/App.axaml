@@ -13,6 +13,7 @@
             <converters:StateToBrushConverter x:Key="stateToBrushConverter" />
             <converters:WidthConverter x:Key="widthConverter" />
             <converters:ServiceLogoConverter x:Key="ServiceLogoConverter" />
+            <converters:ServiceLogoExistsConverter x:Key="ServiceLogoExistsConverter" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://Spork.App/Themes/Colors.axaml" />
