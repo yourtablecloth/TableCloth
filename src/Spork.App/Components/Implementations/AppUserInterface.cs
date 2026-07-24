@@ -1,12 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Avalonia.Controls;
+using Microsoft.Extensions.DependencyInjection;
 using Spork.Dialogs;
 using Spork.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Windows;
 
 namespace Spork.Components.Implementations
 {
+    // 이슈 #296: Avalonia 는 Window.Owner 세터가 없어(소유는 ShowDialog(owner) 시점에 성립), WPF 시절의
+    // SetOwnerIfAvailable 사전 설정을 제거하고 ShowDialog 시 소유자를 해석한다.
     public sealed class AppUserInterface : IAppUserInterface
     {
         public AppUserInterface(
@@ -20,32 +22,22 @@ namespace Spork.Components.Implementations
         private readonly IServiceProvider _serviceProvider;
         private readonly IApplicationService _applicationService;
 
-        private TWindow SetOwnerIfAvailable<TWindow>(TWindow window) where TWindow : Window
-        {
-            var owner = _applicationService.GetActiveWindow() ?? _applicationService.GetMainWindow();
-
-            if (owner != null && !ReferenceEquals(owner, window))
-                window.Owner = owner;
-
-            return window;
-        }
-
         public AboutWindow CreateAboutWindow()
-            => SetOwnerIfAvailable(_serviceProvider.GetRequiredService<AboutWindow>());
+            => _serviceProvider.GetRequiredService<AboutWindow>();
 
         public PrecautionsWindow CreatePrecautionsWindow(IEnumerable<string> targetServiceIds = null)
         {
-            var window = SetOwnerIfAvailable(_serviceProvider.GetRequiredService<PrecautionsWindow>());
+            var window = _serviceProvider.GetRequiredService<PrecautionsWindow>();
             window.ViewModel.TargetServiceIds = targetServiceIds;
             return window;
         }
 
         public SiteReportWindow CreateSiteReportWindow()
-            => SetOwnerIfAvailable(_serviceProvider.GetRequiredService<SiteReportWindow>());
+            => _serviceProvider.GetRequiredService<SiteReportWindow>();
 
         public InstallStepsWindow CreateInstallStepsWindow(IList<StepItemViewModel> steps, bool dryRun, string targetTitle = null, string targetIconKey = null)
         {
-            var window = SetOwnerIfAvailable(_serviceProvider.GetRequiredService<InstallStepsWindow>());
+            var window = _serviceProvider.GetRequiredService<InstallStepsWindow>();
             window.ViewModel.InstallSteps = steps ?? new List<StepItemViewModel>();
             window.ViewModel.DryRun = dryRun;
             window.ViewModel.TargetTitle = targetTitle;
@@ -56,15 +48,29 @@ namespace Spork.Components.Implementations
         public MainWindow CreateMainWindow()
             => _serviceProvider.GetRequiredService<MainWindow>();
 
+        public bool? ShowDialog(Window window)
+        {
+            var result = _applicationService.DispatchInvoke(new Func<bool?>(() =>
+            {
+                var owner = _applicationService.GetActiveWindow() ?? _applicationService.GetMainWindow();
+                return DialogHost.ShowModal(window, owner);
+            }), Array.Empty<object>());
+
+            return result as bool?;
+        }
+
         public bool ShowAhnLabSafeTxGuideDialog(string stSessPath)
         {
-            // 스텝은 백그라운드 스레드에서 실행되므로, 창 생성/ShowDialog는 UI 스레드로 디스패치한다(AppMessageBox와 동일 방식).
-            return (bool)_applicationService.DispatchInvoke(new Func<bool>(() =>
+            // 스텝은 백그라운드 스레드에서 실행되므로, 창 생성/표시는 UI 스레드로 디스패치한다(AppMessageBox와 동일 방식).
+            var result = _applicationService.DispatchInvoke(new Func<bool?>(() =>
             {
-                var window = SetOwnerIfAvailable(_serviceProvider.GetRequiredService<AhnLabSafeTxGuideWindow>());
+                var window = _serviceProvider.GetRequiredService<AhnLabSafeTxGuideWindow>();
                 window.ViewModel.StSessPath = stSessPath;
-                return window.ShowDialog() == true;
-            }), new object[] { });
+                var owner = _applicationService.GetActiveWindow() ?? _applicationService.GetMainWindow();
+                return DialogHost.ShowModal(window, owner);
+            }), Array.Empty<object>());
+
+            return result as bool? == true;
         }
     }
 }

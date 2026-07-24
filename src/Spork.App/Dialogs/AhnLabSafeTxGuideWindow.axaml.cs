@@ -1,5 +1,5 @@
+using Avalonia.Controls;
 using Spork.ViewModels;
-using System.Windows;
 using TableCloth.Events;
 
 namespace Spork.Dialogs
@@ -9,6 +9,8 @@ namespace Spork.Dialogs
     /// </summary>
     public partial class AhnLabSafeTxGuideWindow : Window
     {
+        public AhnLabSafeTxGuideWindow() => InitializeComponent();
+
         public AhnLabSafeTxGuideWindow(
             AhnLabSafeTxGuideWindowViewModel viewModel)
         {
@@ -18,12 +20,9 @@ namespace Spork.Dialogs
         }
 
         public AhnLabSafeTxGuideWindowViewModel ViewModel
-            => (AhnLabSafeTxGuideWindowViewModel)DataContext;
+            => (AhnLabSafeTxGuideWindowViewModel)DataContext!;
 
-        private void ViewModel_CloseRequested(object sender, DialogRequestEventArgs e)
-        {
-            DialogResult = e.DialogResult;
-            Close();
-        }
+        private void ViewModel_CloseRequested(object? sender, DialogRequestEventArgs e)
+            => Close(e.DialogResult);
     }
 }

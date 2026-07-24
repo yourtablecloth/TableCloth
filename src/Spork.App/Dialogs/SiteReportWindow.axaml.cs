@@ -1,6 +1,7 @@
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using System.Diagnostics;
-using System.Windows;
-using System.Windows.Input;
 
 namespace Spork.Dialogs
 {
@@ -14,20 +15,14 @@ namespace Spork.Dialogs
             InitializeComponent();
         }
 
-        private void GoogleFormsButton_Click(object sender, MouseButtonEventArgs e)
-        {
-            OpenUrl(GoogleFormsUrl);
-        }
+        private void GoogleFormsButton_Click(object? sender, TappedEventArgs e)
+            => OpenUrl(GoogleFormsUrl);
 
-        private void GitHubIssueButton_Click(object sender, MouseButtonEventArgs e)
-        {
-            OpenUrl(GitHubIssueUrl);
-        }
+        private void GitHubIssueButton_Click(object? sender, TappedEventArgs e)
+            => OpenUrl(GitHubIssueUrl);
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        private void CloseButton_Click(object? sender, RoutedEventArgs e)
+            => Close();
 
         private static void OpenUrl(string url)
         {

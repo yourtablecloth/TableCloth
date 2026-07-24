@@ -1,15 +1,15 @@
-﻿using System;
-using System.Windows;
+using Avalonia.Controls;
+using System;
 
 namespace Spork.Components
 {
     public interface IApplicationService
     {
-        Window GetMainWindow();
+        Window? GetMainWindow();
 
-        Window GetActiveWindow();
+        Window? GetActiveWindow();
 
-        object DispatchInvoke(Delegate @delegate, object[] arguments);
+        object? DispatchInvoke(Delegate @delegate, object[] arguments);
 
         void ApplyCosmeticChange(Window targetWindow);
 

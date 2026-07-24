@@ -1,3 +1,5 @@
+using Avalonia;
+using Lemon.Hosting.AvaloniauiDesktop;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
@@ -51,14 +53,14 @@ internal static class Program
         return RunTableCloth(args);
     }
 
-    // [미리 보기] 유휴 자동 종료 가드(이슈 #197). 메인 창 없는 최소 WPF 앱을 띄워 유휴 모니터만 돌린다.
+    // [미리 보기] 유휴 자동 종료 가드(이슈 #197, #296). 메인 창 없는 최소 Avalonia 앱을 띄워 유휴 모니터만 돌린다.
     // 헤드리스 헬퍼이므로 실패해도 대화상자를 띄우지 않고 조용히 종료한다.
     private static int RunIdleGuard(string[] args)
     {
         try
         {
-            var app = new Spork.IdleGuardApplication();
-            app.Run();
+            Spork.SporkAvaloniaApp.Configure(AppBuilder.Configure<Spork.IdleGuardApplication>())
+                .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
@@ -92,7 +94,8 @@ internal static class Program
 
             using var appHost = builder.Build();
             appHost.Start();
-            var app = appHost.Services.GetRequiredService<Application>();
+            // TableCloth 런처는 아직 WPF(TableCloth.App). Avalonia 도입(using Avalonia)으로 Application 이 모호해져 정규화.
+            var app = appHost.Services.GetRequiredService<System.Windows.Application>();
             app.Run();
             appHost.StopAsync().GetAwaiter().GetResult();
         }
@@ -121,11 +124,12 @@ internal static class Program
             // 참조하지 않으므로 noop 그대로 사용된다.
             builder.UseSandboxBootstrap();
 
+            // 이슈 #296: WPF Application.Run → Avalonia(Lemon.Hosting). App(SporkApplication)은 DI 로 생성.
+#pragma warning disable CS0618 // Lemon.Hosting 1.1.1 obsolete API — M2c 검증 경로(신 API 이관은 후속).
+            builder.Services.AddAvaloniauiDesktopApplication<Spork.SporkApplication>(Spork.SporkAvaloniaApp.Configure);
             using var appHost = builder.Build();
-            appHost.Start();
-            var app = appHost.Services.GetRequiredService<Application>();
-            app.Run();
-            appHost.StopAsync().GetAwaiter().GetResult();
+            appHost.RunAvaloniauiApplication(args);
+#pragma warning restore CS0618
         }
         catch (Exception ex)
         {

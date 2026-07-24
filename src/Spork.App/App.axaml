@@ -1,0 +1,26 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="using:Spork.Converters"
+             x:Class="Spork.SporkApplication"
+             RequestedThemeVariant="Default">
+    <!--
+        이슈 #296: WPF Application → Avalonia Application. RequestedThemeVariant="Default" 로 OS 라이트/다크를 자동 추종.
+        컨버터는 리소스로 등록(기존 App.xaml 키와 동일하게 유지해 뷰 바인딩 무변경), 브러시는 Themes/Colors.axaml 병합.
+    -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <converters:BooleanToGridRowHeightConverter x:Key="BooleanToGridRowHeightConverter" />
+            <converters:StateToBrushConverter x:Key="stateToBrushConverter" />
+            <converters:WidthConverter x:Key="widthConverter" />
+            <converters:ServiceLogoConverter x:Key="ServiceLogoConverter" />
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://Spork.App/Themes/Colors.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+</Application>

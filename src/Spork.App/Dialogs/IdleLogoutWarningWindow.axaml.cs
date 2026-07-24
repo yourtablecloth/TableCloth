@@ -1,4 +1,5 @@
-using System.Windows;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using TableCloth.Resources;
 
 namespace Spork.Dialogs
@@ -19,7 +20,7 @@ namespace Spork.Dialogs
         public void SetRemaining(int seconds)
             => MessageText.Text = string.Format(UIStringResources.Sandbox_IdleLogout_WarningMessage, seconds);
 
-        private void KeepUsingButton_Click(object sender, RoutedEventArgs e)
+        private void KeepUsingButton_Click(object? sender, RoutedEventArgs e)
             => Close();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Spork.Dialogs;
+using Avalonia.Controls;
+using Spork.Dialogs;
 using Spork.ViewModels;
 using System.Collections.Generic;
 
@@ -11,6 +12,12 @@ namespace Spork.Components
         PrecautionsWindow CreatePrecautionsWindow(IEnumerable<string> targetServiceIds = null);
         SiteReportWindow CreateSiteReportWindow();
         InstallStepsWindow CreateInstallStepsWindow(IList<StepItemViewModel> steps, bool dryRun, string targetTitle = null, string targetIconKey = null);
+
+        /// <summary>
+        /// 이슈 #296: WPF <c>window.ShowDialog()</c>(동기) 대체. 소유자를 내부에서 해석(활성/메인 창)하고
+        /// 모달로 <b>동기</b> 표시한 뒤 다이얼로그 결과(<see cref="System.Windows"/> 시절 DialogResult 상당)를 반환한다.
+        /// </summary>
+        bool? ShowDialog(Window window);
 
         /// <summary>
         /// AhnLab Safe Transaction "원격 접속 차단" 해제 안내 창을 UI 스레드에서 모달로 띄운다(이슈 #275).

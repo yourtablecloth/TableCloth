@@ -14,7 +14,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Data;
 using TableCloth;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
@@ -116,9 +115,8 @@ namespace Spork.ViewModels
         private SporkUserData _userData => _userDataStore.Current;
         private bool _suppressUserDataSave;
 
-        private static readonly PropertyGroupDescription CatalogGroupDescription =
-            new PropertyGroupDescription(nameof(CatalogInternetService.CategoryDisplayName));
-
+        // 이슈 #296: WPF CollectionViewSource/PropertyGroupDescription(검색·필터·카테고리 그룹) →
+        // VM측 계산 그룹 컬렉션으로 대체. RebuildCatalogView()가 필터/그룹을 재구성한다.
         [RelayCommand]
         private void ShowErrorMessage(string errorMessage)
         {
@@ -228,16 +226,6 @@ namespace Spork.ViewModels
 
             CatalogServices = ordered;
 
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(CatalogServices);
-
-            if (view != null)
-            {
-                view.Filter = item => CatalogInternetService.IsMatchedItem(item, SearchKeyword, ShowFavoritesOnly);
-
-                if (!view.GroupDescriptions.Contains(CatalogGroupDescription))
-                    view.GroupDescriptions.Add(CatalogGroupDescription);
-            }
-
             // 보조 프로그램 목록도 동일 카탈로그 문서에서 가져온다 (XML의 <Companions> 요소).
             // 아이콘이 없어 단순 텍스트 리스트로 노출되며 카테고리 그룹화는 없다.
             CatalogCompanions = (catalog.Companions ?? new List<CatalogCompanion>())
@@ -245,11 +233,8 @@ namespace Spork.ViewModels
                 .OrderBy(c => c.DisplayName, StringComparer.CurrentCultureIgnoreCase)
                 .ToList();
 
-            // 항목 수가 늘어 사이트 탭과 동일하게 키워드 필터를 건다. CatalogCompanions 를 새 리스트로
-            // 재할당할 때마다 기본 뷰가 새로 생기므로 필터도 매번 다시 설정한다(사이트 탭과 동일 패턴).
-            var companionView = CollectionViewSource.GetDefaultView(CatalogCompanions);
-            if (companionView != null)
-                companionView.Filter = item => CatalogCompanion.IsMatchedItem(item, CompanionSearchKeyword);
+            // 이슈 #296: 필터/그룹은 VM측에서 재구성(CollectionViewSource 대체).
+            RebuildCatalogView();
 
             // 현재 환경의 NPKI 위치들(WSB canonical / 실제 LocalLow / Desktop\NPKI 마운트 / USB)을
             // 스캔하여 사용 가능한 인증서를 카탈로그 탭에서 보여준다. 모드 1(식탁보+WSB)은 물론
@@ -336,16 +321,10 @@ namespace Spork.ViewModels
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (string.Equals(nameof(SearchKeyword), e.PropertyName, StringComparison.Ordinal) ||
-                string.Equals(nameof(ShowFavoritesOnly), e.PropertyName, StringComparison.Ordinal))
+                string.Equals(nameof(ShowFavoritesOnly), e.PropertyName, StringComparison.Ordinal) ||
+                string.Equals(nameof(CompanionSearchKeyword), e.PropertyName, StringComparison.Ordinal))
             {
-                var view = CollectionViewSource.GetDefaultView(CatalogServices);
-                view?.Refresh();
-            }
-
-            if (string.Equals(nameof(CompanionSearchKeyword), e.PropertyName, StringComparison.Ordinal))
-            {
-                var companionView = CollectionViewSource.GetDefaultView(CatalogCompanions);
-                companionView?.Refresh();
+                RebuildCatalogView();
             }
 
             if (string.Equals(nameof(ShowFavoritesOnly), e.PropertyName, StringComparison.Ordinal) && !_suppressUserDataSave)
@@ -377,10 +356,7 @@ namespace Spork.ViewModels
             // 별 아이콘은 IsFavorite 바인딩으로 즉시 갱신되고 카탈로그 가시성은 변하지 않는다.
             // (refresh는 266개 항목 필터 재평가 + 그룹 재구성을 UI 스레드에서 수행하므로 회피 가치가 크다.)
             if (ShowFavoritesOnly)
-            {
-                var view = CollectionViewSource.GetDefaultView(CatalogServices);
-                view?.Refresh();
-            }
+                RebuildCatalogView();
 
             // 디스크 쓰기는 디바운스 + fire-and-forget. 빠른 클릭 시 마지막 상태 1회만 저장.
             _userDataStore.ScheduleSave();
@@ -481,6 +457,37 @@ namespace Spork.ViewModels
             await EnterCatalogInstallFlowAsync(SelectedCatalogService, forceReinstall: false);
         }
 
+        // 이슈 #296: 카탈로그 카드 클릭. WPF ListView 는 코드비하인드에서 클릭을 직접 처리했으나,
+        // Avalonia 에서는 카드가 Command 로 서비스를 넘겨 선택+설치 흐름을 진입한다.
+        [RelayCommand]
+        private async Task ActivateService(CatalogInternetService service)
+        {
+            if (service == null)
+                return;
+
+            SelectedCatalogService = service;
+            await EnterCatalogInstallFlowAsync(service, forceReinstall: false);
+        }
+
+        /// <summary>
+        /// 이슈 #296: WPF CollectionViewSource(필터+카테고리 그룹) 대체. 현재 검색어/즐겨찾기 필터를 적용해
+        /// 사이트를 카테고리별로 그룹화하고, 보조 프로그램 목록도 필터링해 각각 바인딩 대상 컬렉션에 반영한다.
+        /// CatalogServices 가 이미 카테고리 표시 순서로 정렬돼 있어 GroupBy 가 순서를 보존한다.
+        /// </summary>
+        private void RebuildCatalogView()
+        {
+            var groups = (CatalogServices ?? new List<CatalogInternetService>())
+                .Where(x => CatalogInternetService.IsMatchedItem(x, SearchKeyword, ShowFavoritesOnly))
+                .GroupBy(x => x.CategoryDisplayName)
+                .Select(g => new CatalogServiceGroup(g.Key, g.ToList()))
+                .ToList();
+            CatalogServiceGroups = new ObservableCollection<CatalogServiceGroup>(groups);
+
+            FilteredCatalogCompanions = (CatalogCompanions ?? new List<CatalogCompanion>())
+                .Where(c => CatalogCompanion.IsMatchedItem(c, CompanionSearchKeyword))
+                .ToList();
+        }
+
         /// <summary>
         /// 카탈로그 카드의 녹색 체크 배지 위로 마우스를 올리면 새로 고침 아이콘으로 morph 되고,
         /// 클릭 시 본 명령이 발화한다. 확인 다이얼로그로 사용자 의사를 한 번 받은 뒤 강제 재설치 흐름을
@@ -523,7 +530,7 @@ namespace Spork.ViewModels
             if (SharedExtensions.HasAnyCompatNotes(catalog, targets))
             {
                 var precautions = _appUserInterface.CreatePrecautionsWindow(targets);
-                precautions.ShowDialog();
+                _appUserInterface.ShowDialog(precautions);
             }
 
             // 설치 진행을 화면 전환 없이 모달로 처리. 모달은 자체적으로 단계를 실행하고
@@ -533,7 +540,7 @@ namespace Spork.ViewModels
                 ShowDryRunNotification,
                 targetTitle: service.DisplayName,
                 targetIconKey: siteId);
-            installWindow.ShowDialog();
+            _appUserInterface.ShowDialog(installWindow);
 
             // 모달 동안 install Step 들이 fingerprint 를 기록했을 수 있으므로 배지 상태를 즉시 재계산.
             // 방금 설치 완료한 사이트는 이 호출 직후 카드에 체크 배지가 표시된다.
@@ -579,7 +586,7 @@ namespace Spork.ViewModels
             if (showPrecautions && SharedExtensions.HasAnyCompatNotes(catalog, targets))
             {
                 var window = _appUserInterface.CreatePrecautionsWindow(targets);
-                window.ShowDialog();
+                _appUserInterface.ShowDialog(window);
             }
 
             await MainWindowInstallPackagesAsync();
@@ -651,14 +658,14 @@ namespace Spork.ViewModels
         private void AboutThisApp()
         {
             var aboutWindow = _appUserInterface.CreateAboutWindow();
-            aboutWindow.ShowDialog();
+            _appUserInterface.ShowDialog(aboutWindow);
         }
 
         [RelayCommand]
         private void ReportSite()
         {
             var siteReportWindow = _appUserInterface.CreateSiteReportWindow();
-            siteReportWindow.ShowDialog();
+            _appUserInterface.ShowDialog(siteReportWindow);
         }
 
         [RelayCommand]
@@ -704,6 +711,13 @@ namespace Spork.ViewModels
         [ObservableProperty]
         private IList<CatalogCompanion> _catalogCompanions = new List<CatalogCompanion>();
 
+        // 이슈 #296: 뷰가 바인딩하는 파생 컬렉션. RebuildCatalogView()가 필터/그룹을 적용해 채운다.
+        [ObservableProperty]
+        private ObservableCollection<CatalogServiceGroup> _catalogServiceGroups = new();
+
+        [ObservableProperty]
+        private IList<CatalogCompanion> _filteredCatalogCompanions = new List<CatalogCompanion>();
+
         [ObservableProperty]
         private IList<X509CertPair> _catalogCertificates = new List<X509CertPair>();
 
@@ -720,5 +734,23 @@ namespace Spork.ViewModels
 
         [ObservableProperty]
         private double _edgeInstallProgress;
+    }
+
+    /// <summary>
+    /// 이슈 #296: WPF CollectionView 그룹(카테고리) 대체. 카탈로그 사이트를 카테고리별로 묶은 뷰 그룹.
+    /// </summary>
+    public sealed class CatalogServiceGroup
+    {
+        public CatalogServiceGroup(string name, IReadOnlyList<CatalogInternetService> items)
+        {
+            Name = name;
+            Items = items ?? System.Array.Empty<CatalogInternetService>();
+        }
+
+        public string Name { get; }
+
+        public IReadOnlyList<CatalogInternetService> Items { get; }
+
+        public int ItemCount => Items.Count;
     }
 }

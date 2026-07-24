@@ -1,0 +1,259 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Spork.ViewModels"
+        xmlns:catalog="using:TableCloth.Models.Catalog"
+        xmlns:models="using:TableCloth.Models.Configuration"
+        xmlns:res="using:TableCloth.Resources"
+        xmlns:brand="using:Spork.Components"
+        xmlns:tc="using:TableCloth"
+        x:Class="Spork.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{x:Static brand:BrandStrings.AppTitle}"
+        Width="720" Height="560" MinWidth="520" MinHeight="420"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Styles>
+        <!-- 이슈 #296: WPF Hyperlink(인라인, Command) → Avalonia 링크형 Button 으로 대체. -->
+        <Style Selector="Button.link">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource InfoBannerLinkForeground}" />
+        </Style>
+        <Style Selector="Button.link:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <!-- 즐겨찾기 별: 체크 상태에 따라 색 전환(WPF ControlTemplate.Triggers → 의사클래스). -->
+        <Style Selector="ToggleButton.fav">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource ControlSecondaryForeground}" />
+        </Style>
+        <Style Selector="ToggleButton.fav:checked">
+            <Setter Property="Foreground" Value="#FFD401" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,*,55">
+
+        <!-- Info Banner -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource InfoBannerBackground}"
+                BorderBrush="{DynamicResource InfoBannerBorder}"
+                BorderThickness="0 0 0 1" Padding="8 6">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <TextBlock Text="ⓘ" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"
+                           Foreground="{DynamicResource InfoBannerLinkForeground}" />
+                <TextBlock Text="{x:Static res:UIStringResources.Sponsor_BannerShortMessage}" FontSize="11"
+                           VerticalAlignment="Center" TextWrapping="Wrap"
+                           Foreground="{DynamicResource InfoBannerForeground}" />
+                <Button Classes="link" FontSize="11" VerticalAlignment="Center"
+                        Content="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}"
+                        Click="SponsorBanner_Click" />
+            </StackPanel>
+        </Border>
+
+        <!-- Dry-run notification (WPF: 행 높이 컨버터 → IsVisible + Auto 행) -->
+        <Border Grid.Row="1" Background="#FFF4CE" IsVisible="{Binding ShowDryRunNotification}">
+            <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="8 6" Foreground="#5C4400"
+                       Text="{x:Static brand:BrandStrings.DryRunInstructionMessage}" TextWrapping="Wrap" />
+        </Border>
+
+        <!-- Catalog Mode -->
+        <Grid Grid.Row="2" Margin="10" RowDefinitions="Auto,*" IsVisible="{Binding ShowCatalogView}">
+            <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="Wrap" Text="{x:Static res:UIStringResources.SporkCatalog_Instruction}" />
+
+            <TabControl Grid.Row="1">
+                <!-- 웹 사이트 카탈로그 -->
+                <TabItem Header="{x:Static res:UIStringResources.SporkCatalog_Tab_Sites}">
+                    <Grid Margin="6" RowDefinitions="Auto,*">
+                        <Grid Grid.Row="0" Margin="0 0 0 6" ColumnDefinitions="*,Auto,Auto">
+                            <TextBox Grid.Column="0" Padding="6 4"
+                                     Watermark="{x:Static res:UIStringResources.SearchFilter_Watermark}"
+                                     Text="{Binding SearchKeyword}" />
+                            <CheckBox Grid.Column="1" Margin="8 0 0 0" VerticalAlignment="Center"
+                                      Content="{x:Static res:UIStringResources.MainWindow_Favorites}"
+                                      IsChecked="{Binding ShowFavoritesOnly}" />
+                            <Button Grid.Column="2" Margin="8 0 0 0" Padding="10 4" VerticalAlignment="Center"
+                                    Content="{x:Static res:UIStringResources.SporkCatalog_RefreshButton}"
+                                    Command="{Binding RefreshCatalogCommand}" />
+                        </Grid>
+
+                        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding CatalogServiceGroups}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:CatalogServiceGroup">
+                                        <StackPanel Margin="0 2 0 6">
+                                            <StackPanel Orientation="Horizontal" Margin="2 6 0 2" Spacing="6">
+                                                <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                                <TextBlock Text="{Binding ItemCount, StringFormat='({0})'}" FontWeight="Bold" />
+                                            </StackPanel>
+                                            <ItemsControl ItemsSource="{Binding Items}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel Orientation="Horizontal" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="catalog:CatalogInternetService">
+                                                        <Border Width="96" MinHeight="110" Margin="4" Padding="4"
+                                                                Background="Transparent" Cursor="Hand"
+                                                                PointerReleased="CatalogItem_PointerReleased">
+                                                            <Grid RowDefinitions="48,*">
+                                                                <Image Grid.Row="0" Width="40" Height="40"
+                                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                       Stretch="Uniform"
+                                                                       Source="{Binding Converter={StaticResource ServiceLogoConverter}}" />
+                                                                <!-- 설치 완료 배지(hover-morph 는 1차 단순화) -->
+                                                                <Button Grid.Row="0" Width="16" Height="16"
+                                                                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2"
+                                                                        Padding="0" Background="#2EA043" Foreground="White"
+                                                                        Content="✓" FontSize="10" Cursor="Hand"
+                                                                        IsVisible="{Binding IsAllInstalled}"
+                                                                        ToolTip.Tip="{x:Static res:UIStringResources.CatalogCard_InstalledTooltip}"
+                                                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ForceReinstallSiteCommand}"
+                                                                        CommandParameter="{Binding}" />
+                                                                <!-- 즐겨찾기 별 -->
+                                                                <ToggleButton Grid.Row="0" Classes="fav" FontSize="14"
+                                                                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2"
+                                                                              Content="★" IsChecked="{Binding IsFavorite}"
+                                                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ToggleFavoriteCommand}"
+                                                                              CommandParameter="{Binding}" />
+                                                                <StackPanel Grid.Row="1" Margin="0 4 0 0">
+                                                                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
+                                                                               TextWrapping="Wrap" TextAlignment="Center" MaxHeight="34" />
+                                                                    <TextBlock Text="{Binding CategoryDisplayName}" FontSize="10"
+                                                                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                                                                               Margin="0 2 0 0" TextAlignment="Center" />
+                                                                </StackPanel>
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+
+                <!-- 공동인증서 카탈로그 -->
+                <TabItem Header="{x:Static res:UIStringResources.SporkCatalog_Tab_Certificates}">
+                    <Grid Margin="6" RowDefinitions="Auto,*">
+                        <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.SporkCatalog_Certificates_Description}" />
+                        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding CatalogCertificates}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:X509CertPair">
+                                        <Button Classes="link" Margin="6 4" HorizontalAlignment="Left"
+                                                ToolTip.Tip="{Binding Availability}"
+                                                Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ShowCertificateDetailsCommand}"
+                                                CommandParameter="{Binding}">
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <TextBlock Text="{Binding CommonName}" FontWeight="SemiBold" />
+                                                    <TextBlock Text="·" />
+                                                    <TextBlock Text="{Binding Organization}" />
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <TextBlock FontSize="10" Text="{Binding NotBefore, StringFormat='yyyy-MM-dd'}" />
+                                                    <TextBlock FontSize="10" Text="~" />
+                                                    <TextBlock FontSize="10" Text="{Binding NotAfter, StringFormat='yyyy-MM-dd'}" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+
+                <!-- 보조 프로그램 카탈로그 -->
+                <TabItem Header="{x:Static res:UIStringResources.SporkCatalog_Tab_Companions}">
+                    <Grid Margin="6" RowDefinitions="Auto,Auto,*">
+                        <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.SporkCatalog_Companions_Description}" />
+                        <TextBox Grid.Row="1" Margin="0 0 0 6" Padding="6 4"
+                                 Watermark="{x:Static res:UIStringResources.SporkCatalog_Companions_SearchWatermark}"
+                                 Text="{Binding CompanionSearchKeyword}" />
+                        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding FilteredCatalogCompanions}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="catalog:CatalogCompanion">
+                                        <Button Classes="link" Margin="6 4" HorizontalAlignment="Left"
+                                                Content="{Binding DisplayName}"
+                                                ToolTip.Tip="{Binding Url}"
+                                                Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenCompanionUrlCommand}"
+                                                CommandParameter="{Binding}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <!-- Steps Mode -->
+        <Grid Grid.Row="2" Margin="10" RowDefinitions="Auto,*" IsVisible="{Binding ShowStepsView}">
+            <TextBlock Grid.Row="0" Margin="0 0 0 6" TextWrapping="Wrap" Text="{x:Static res:UIStringResources.Spork_AppInstructionMessage}" />
+            <ListBox Grid.Row="1" ItemsSource="{Binding InstallSteps}"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:StepItemViewModel">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding InstallFlags}" Foreground="{Binding Installed, Converter={StaticResource stateToBrushConverter}}" Margin="0 0 5 0" FontWeight="Bold" />
+                                <TextBlock Text="{Binding TargetSiteName}" Margin="0 0 5 0" FontWeight="Bold" />
+                                <TextBlock Text="{Binding PackageName}" Margin="0 0 5 0" />
+                                <TextBlock Text="{Binding StatusMessage}" Margin="0 0 5 0" Foreground="{Binding Installed, Converter={StaticResource stateToBrushConverter}}" />
+                                <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ShowErrorMessageCommand}"
+                                        CommandParameter="{Binding ErrorMessage}"
+                                        Content="{x:Static res:UIStringResources.Spork_ShowDetailError}"
+                                        IsVisible="{Binding ShowErrorMessageLink}"
+                                        Margin="0 0 5 0" BorderThickness="0" Background="Transparent" Cursor="Hand" />
+                            </StackPanel>
+                            <ProgressBar Height="10" Margin="5" Value="{Binding ProgressRate}" IsVisible="{Binding ShowProgress}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+        <!-- Footer -->
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto">
+            <WrapPanel Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Button Classes="link" Margin="10 0 0 0" Content="{x:Static res:UIStringResources.Button_AboutButton}"
+                        Command="{Binding AboutThisAppCommand}" />
+                <Button Classes="link" Margin="12 0 0 0" Content="{x:Static res:UIStringResources.Button_ReportSiteButton}"
+                        Command="{Binding ReportSiteCommand}" IsVisible="{Binding ShowCatalogView}" />
+                <Button Classes="link" Margin="12 0 0 0" Content="{x:Static res:UIStringResources.Sandbox_EdgeInstall_Button}"
+                        Command="{Binding InstallOrRepairEdgeCommand}" IsVisible="{Binding ShowCatalogView}" />
+                <Button Classes="link" Margin="12 0 0 0" Content="{x:Static res:UIStringResources.Button_DebugButton}"
+                        Command="{Binding ShowDebugInfoCommand}" IsVisible="{x:Static tc:Helpers.IsDevelopmentBuild}" />
+            </WrapPanel>
+            <WrapPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 10 0"
+                            IsVisible="{Binding IsEdgeInstalling}">
+                    <TextBlock VerticalAlignment="Center" Margin="0 0 6 0"
+                               Text="{x:Static res:UIStringResources.Sandbox_EdgeInstall_InProgress}" />
+                    <ProgressBar Width="120" Height="12" VerticalAlignment="Center"
+                                 Minimum="0" Maximum="100" Value="{Binding EdgeInstallProgress}" />
+                </StackPanel>
+                <Button Margin="0 0 10 0" Padding="5" Content="{x:Static res:UIStringResources.Button_InstallButton}"
+                        Command="{Binding MainWindowInstallPackagesCommand}"
+                        IsVisible="{Binding ShowStepsView}" />
+            </WrapPanel>
+        </Grid>
+    </Grid>
+</Window>

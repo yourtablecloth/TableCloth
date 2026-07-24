@@ -2,10 +2,15 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
-		<UseWPF>true</UseWPF>
-		<UseWindowsForms>false</UseWindowsForms>
+		<!-- 이슈 #296: WPF → Avalonia. UseWPF 제거. -->
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<LangVersion>preview</LangVersion>
+		<!-- 이슈 #296: 신규/이관 파일이 nullable 주석(?)을 쓰므로 annotations 컨텍스트 활성화(경고는 미발생 —
+		     nullable 미대응 레거시 파일 보호). App.xaml.cs 의 파일별 #nullable enable annotations 를 대체. -->
+		<Nullable>annotations</Nullable>
 		<Deterministic>true</Deterministic>
+		<!-- 이슈 #296: WPF 제거 후 비문자열 resx(Signature 등) 를 빌드하려면 이 설정 + System.Resources.Extensions 가 필요. -->
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 		<!-- GeneratedComInterface/LibraryImport(소스젠 상호운용)에는 unsafe 블록이 필요(SYSLIB1062). -->
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<!--
@@ -20,7 +25,14 @@
 
 	<ItemGroup>
 		<PackageReference Include="AsyncAwaitBestPractices.MVVM" />
+		<!-- 이슈 #296: Avalonia UI 스택 -->
+		<PackageReference Include="Avalonia" />
+		<PackageReference Include="Avalonia.Desktop" />
+		<PackageReference Include="Avalonia.Themes.Fluent" />
+		<PackageReference Include="Avalonia.Fonts.Inter" />
+		<PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)' == 'Debug'" />
 		<PackageReference Include="CommunityToolkit.Mvvm" />
+		<PackageReference Include="Lemon.Hosting.AvaloniauiDesktop" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" />
@@ -34,12 +46,16 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" />
 		<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
 		<PackageReference Include="Sentry" />
 		<PackageReference Include="Sentry.Serilog" />
 		<PackageReference Include="Serilog" />
 		<PackageReference Include="Serilog.Extensions.Logging" />
 		<PackageReference Include="System.CommandLine" />
+		<!-- 이슈 #296: WPF 제거로 암시 제공되던 System.Drawing(샌드박스 배경 이미지) / 비문자열 resx /
+		     X509Certificate2UI(인증서 상세 창) 지원을 명시 참조. -->
+		<PackageReference Include="System.Drawing.Common" />
+		<PackageReference Include="System.Resources.Extensions" />
+		<PackageReference Include="System.Windows.Extensions" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -58,11 +74,6 @@
 		<!-- 진입점(Spork) 프로젝트와 테스트가 본 라이브러리의 internal API에 접근 가능하게 한다. -->
 		<InternalsVisibleTo Include="Spork" />
 		<InternalsVisibleTo Include="Spork.Test" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ApplicationDefinition Remove="App.xaml" />
-		<Page Include="App.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -27,6 +27,13 @@
 
 	<ItemGroup>
 		<PackageVersion Include="AsyncAwaitBestPractices.MVVM" Version="10.0.0" />
+		<!-- 이슈 #296: WPF → Avalonia. 11.3.18(최신 11.3.x, 성숙한 Native AOT 지원). -->
+		<PackageVersion Include="Avalonia" Version="11.3.18" />
+		<PackageVersion Include="Avalonia.Desktop" Version="11.3.18" />
+		<PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.18" />
+		<PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.18" />
+		<PackageVersion Include="Avalonia.Diagnostics" Version="11.3.18" />
+		<PackageVersion Include="Lemon.Hosting.AvaloniauiDesktop" Version="1.1.1" />
 		<PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
 		<PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.1" />
@@ -49,6 +56,10 @@
 		<PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
 		<PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageVersion Include="System.CommandLine" Version="2.0.1" />
+		<!-- 이슈 #296: WPF(WindowsDesktop SDK) 제거로 암시 제공되던 System.Drawing / 비문자열 resx 지원을 명시 참조. -->
+		<PackageVersion Include="System.Drawing.Common" Version="10.0.1" />
+		<PackageVersion Include="System.Resources.Extensions" Version="10.0.1" />
+		<PackageVersion Include="System.Windows.Extensions" Version="10.0.1" />
 		<PackageVersion Include="System.Security.AccessControl" Version="6.0.1" />
 		<PackageVersion Include="System.Text.Json" Version="10.0.1" />
 		<PackageVersion Include="Velopack" Version="0.0.1298" />

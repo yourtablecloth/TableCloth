@@ -20,7 +20,6 @@ using System.Net.Security;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using TableCloth;
 using TableCloth.Models.Answers;
 using TableCloth.Resources;
@@ -133,8 +132,10 @@ public static class UseSporkExtensions
             .AddWindow<AhnLabSafeTxGuideWindow, AhnLabSafeTxGuideWindowViewModel>()
             .AddWindow<InstallStepsWindow, InstallStepsWindowViewModel>()
             .AddWindow<MainWindow, MainWindowViewModel>()
-            .AddTransient<SiteReportWindow>()
-            .AddSingleton<Application>(sp => new SporkApplication(sp.GetRequiredService<IHost>()));
+            .AddTransient<SiteReportWindow>();
+
+        // 이슈 #296: WPF Application 등록 폐기. Avalonia App(SporkApplication)은 진입점에서 Lemon.Hosting
+        // AddAvaloniauiDesktopApplication<SporkApplication> 로 DI 생성한다([ActivatorUtilitiesConstructor]).
 
         return builder;
     }

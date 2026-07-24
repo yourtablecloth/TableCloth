@@ -1,0 +1,45 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Spork.ViewModels"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="Spork.Dialogs.AhnLabSafeTxGuideWindow"
+        x:DataType="vm:AhnLabSafeTxGuideWindowViewModel"
+        Title="{x:Static res:UIStringResources.AstxGuide_Title}"
+        Width="500" MinWidth="460" SizeToContent="Height"
+        CanResize="False" ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="22">
+        <TextBlock Text="{x:Static res:UIStringResources.AstxGuide_Title}" FontSize="16" FontWeight="Bold" Margin="0 0 0 8" />
+        <TextBlock Text="{x:Static res:UIStringResources.AstxGuide_Description}" TextWrapping="Wrap"
+                   Foreground="{DynamicResource ControlSecondaryForeground}" Margin="0 0 0 14" />
+
+        <!-- 시각 가이드 — ASTx 설정 창에서 '체크 해제'해야 할 항목을 그림으로 보여준다. -->
+        <TextBlock Text="{x:Static res:UIStringResources.AstxGuide_VisualCaption}" Margin="0 0 0 6" />
+        <Border BorderBrush="#B0B0B0" BorderThickness="1" CornerRadius="6" Padding="14 12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Border Grid.Column="0" Width="20" Height="20" BorderBrush="#888888" BorderThickness="2"
+                        CornerRadius="3" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{x:Static res:UIStringResources.AstxGuide_SettingLabel}"
+                           Margin="12 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="14" />
+                <TextBlock Grid.Column="2" Text="{x:Static res:UIStringResources.AstxGuide_UncheckHere}"
+                           Foreground="#D13438" FontWeight="Bold" VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+
+        <TextBlock Text="{x:Static res:UIStringResources.AstxGuide_Steps}" TextWrapping="Wrap" Margin="0 16 0 14" />
+
+        <Button Content="{x:Static res:UIStringResources.AstxGuide_OpenSettingsButton}"
+                Command="{Binding OpenSettingsCommand}" HorizontalAlignment="Left" Padding="16 6" Margin="0 0 0 16" />
+
+        <!-- 확인 게이트 — 해제 완료를 체크해야 '계속'이 활성화된다. -->
+        <CheckBox IsChecked="{Binding IsConfirmed}" Margin="0 0 0 18">
+            <TextBlock Text="{x:Static res:UIStringResources.AstxGuide_ConfirmCheckbox}" TextWrapping="Wrap" />
+        </CheckBox>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button Content="{x:Static res:UIStringResources.AstxGuide_SkipButton}"
+                    Command="{Binding SkipCommand}" Padding="12 6" />
+            <Button Content="{x:Static res:UIStringResources.AstxGuide_ContinueButton}"
+                    Command="{Binding ContinueCommand}" IsDefault="True" Padding="18 6" />
+        </StackPanel>
+    </StackPanel>
+</Window>

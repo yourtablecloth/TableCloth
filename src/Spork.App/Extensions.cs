@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Avalonia.Controls;
+using Microsoft.Extensions.DependencyInjection;
 using Spork.Browsers;
 using System;
 using System.Diagnostics;
@@ -6,7 +7,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using TableCloth;
 using TableCloth.Resources;
 
@@ -51,21 +51,8 @@ namespace Spork
             return services;
         }
 
-        public static IServiceProvider GetServiceProvider(this Application application)
-            => application
-                .Properties[nameof(IServiceProvider)]
-                .EnsureNotNullWithCast<object, IServiceProvider>("Service provider has not been initialized.");
-
-        public static void InitServiceProvider(this Application application, IServiceProvider serviceProvider)
-        {
-            const string key = nameof(IServiceProvider);
-
-            if (application.Properties.Contains(key) &&
-                application.Properties[key] != null)
-                TableClothAppException.Throw("Already service provider has been initialized.");
-
-            application.Properties[key] = serviceProvider;
-        }
+        // 이슈 #296: WPF Application.Properties[IServiceProvider] 기반 Init/GetServiceProvider 는 폐기.
+        // Avalonia Application 에는 Properties 딕셔너리가 없어 SporkApplication.ServiceProvider 정적 홀더로 대체.
 
         public static async Task CopyStreamWithProgressAsync(
             this Stream source,

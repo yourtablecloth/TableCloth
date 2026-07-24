@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Spork.ViewModels"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="Spork.Dialogs.PrecautionsWindow"
+        x:DataType="vm:PrecautionsWindowViewModel"
+        Title="{x:Static res:UIStringResources.Spork_PrecautionWindowText}"
+        Width="640" Height="480" CanResize="False"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+    <Grid RowDefinitions="60,*,55">
+        <TextBlock Grid.Row="0" Padding="10" TextWrapping="Wrap" FontWeight="Bold" FontSize="20"
+                   VerticalAlignment="Stretch" Background="#2084E8" Foreground="White"
+                   Text="{x:Static res:UIStringResources.Spork_PrecautionWindowText}" />
+        <Border Grid.Row="1" Margin="10" BorderThickness="1" CornerRadius="4"
+                BorderBrush="{DynamicResource ControlDefaultBorderBrush}">
+            <ScrollViewer Padding="8">
+                <SelectableTextBlock Text="{Binding CautionContent}" TextWrapping="Wrap" />
+            </ScrollViewer>
+        </Border>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <Button Margin="0 0 10 0" Padding="12 5" Content="{x:Static res:UIStringResources.Button_CloseButton}"
+                    Command="{Binding PrecautionsWindowCloseCommand}" />
+        </StackPanel>
+    </Grid>
+</Window>
