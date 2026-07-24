@@ -39,6 +39,14 @@
 	-->
 	<PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
 		<PublishAot>true</PublishAot>
+		<!-- M5 크기 최적화(TableCloth.csproj 와 동일 세트, 실측 ~17%↓). 진단(StackTrace/예외 메시지) 보존,
+		     InvariantGlobalization 은 한국어 리스크·이득 미미로 제외. 상세 근거는 TableCloth.csproj 주석 참조. -->
+		<OptimizationPreference>Size</OptimizationPreference>
+		<EventSourceSupport>false</EventSourceSupport>
+		<MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+		<DebuggerSupport>false</DebuggerSupport>
+		<NullabilityInfoContextSupport>false</NullabilityInfoContextSupport>
+		<HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">

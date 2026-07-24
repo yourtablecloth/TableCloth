@@ -52,6 +52,21 @@
 	-->
 	<PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
 		<PublishAot>true</PublishAot>
+		<!--
+			이슈 #296 Stage 2(M5) 크기 최적화. 실측(win-x64): 36.0MB → 29.8MB (~17%↓).
+			ILC 크기 우선 + 미사용 프레임워크 기능 스위치. 진단은 보존: StackTraceSupport 와
+			예외 메시지(UseSystemResourceKeys 미적용)는 유지해 Sentry 트리아지 품질을 지킨다.
+			InvariantGlobalization 은 제외 — Windows AOT 는 OS globalization(NLS)을 사용해 ICU 를
+			동봉하지 않으므로 크기 이득이 ~0.2MB 에 불과하고 한국어 문화권 동작 리스크가 있음.
+			HttpActivityPropagationSupport=false 는 전파(traceparent 주입)만 끄며 Activity 생성/로컬
+			스팬은 유지되므로 데스크톱 앱에 안전.
+		-->
+		<OptimizationPreference>Size</OptimizationPreference>
+		<EventSourceSupport>false</EventSourceSupport>
+		<MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+		<DebuggerSupport>false</DebuggerSupport>
+		<NullabilityInfoContextSupport>false</NullabilityInfoContextSupport>
+		<HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
 	</PropertyGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="commit.txt">
