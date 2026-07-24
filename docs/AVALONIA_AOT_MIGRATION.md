@@ -375,6 +375,43 @@ AboutWindow 포팅·Host+DI 패턴 그대로 사용). 실 VM은 이미 UI 중립
 리스크: 프로젝트가 WPF/Avalonia 공존 불가 → App 프로젝트별 전환은 되돌리기 어려운 빅뱅. 반드시 브랜치에서, 창 단위 커밋 +
 기능 패리티 체크(§5.10)로 진행.
 
+#### M3 실행 사양 — 분석 완료 · 확정 설계 (2026-07-24)
+
+Spork.App 전체 표면(뷰 8 + VM + 컴포넌트/인터페이스 + 진입점)을 정독하고, AOT/Avalonia 미확인 요소를 실측으로 해소한 뒤
+확정한 설계. **핵심 기술 unknown 2건이 해소되어 최대 리스크가 제거됨:**
+
+1. **동기 모달 메시지박스 가능(핵심).** `Avalonia.Threading.Dispatcher.PushFrame(DispatcherFrame)`가 11.3.18에 public으로
+   존재(HandMirror 실측). WPF `MessageBox.Show`의 **동기 블로킹 시맨틱을 중첩 디스패처 펌프로 재현** → `IAppMessageBox`/
+   `IMessageBoxService`를 async로 바꾸는 대규모 리플 불필요(VM 호출부 다수 무변경). 의존성 추가 없이 커스텀
+   `MessageBoxWindow`(AXAML) 자작(S3의 자작 COM interop와 동일 노선).
+2. **RichText가 평문 문자열.** `PrecautionsWindowVM.CautionContent`·`AboutWindowVM.LicenseDescription`은 FlowDocument XAML이
+   아니라 평문 `string`. → `RichTextBox`+`RichTextBoxHelper.DocumentXaml` → `SelectableTextBlock Text=`로 **무손실 대체**
+   (자동 하이퍼링크 감지만 상실 — 후속 선택 개선). `RichTextBoxHelper`/`Controls/`는 삭제.
+
+**확정 결정(양 앱 공통 적용):**
+- **테마:** WPF 4테마(각 ~4.5k줄, aero2 컨트롤 템플릿 덤프) 폐기 → `FluentTheme` + `ThemeVariant.Default`(OS 자동 추종).
+  뷰가 참조하는 브러시 키만 `ResourceDictionary.ThemeDictionaries`(Light/Dark)로 얇게 재현. Colourful 값은 accent(`ControlPrimary*`)에만.
+  `HwndSource`/레지스트리/WndProc 수동 테마 감지(`VisualThemeManager`) → Avalonia 자동 추종으로 대체(코드 대폭 축소).
+  `MainWindowStyle`/Expander/FocusVisual 등 WPF 스타일 참조는 FluentTheme가 대체 → 뷰에서 제거.
+- **다이얼로그 결과:** WPF `Window.DialogResult` 세터 없음 → VM의 `CloseRequested(DialogRequestEventArgs)` → `Close(e.DialogResult)`,
+  호출측은 `await ShowDialog<bool?>(owner)`. 동기 `ShowDialog()==true`(AhnLab, 백그라운드 스텝 스레드)는
+  `Dispatcher.UIThread.Invoke`로 마셜 후 PushFrame 동기 대기.
+- **CueBanner 워터마크(VisualBrush 해킹):** Avalonia `TextBox.Watermark` 네이티브 속성으로 대체 → `CueBannerBrush` 키 삭제.
+- **컬렉션 뷰/그룹화(M1 이월):** `System.Windows.Data.CollectionViewSource`/`PropertyGroupDescription`(Spork MainVM 사이트 카탈로그
+  검색·필터·카테고리 그룹) → **VM측 계산 그룹 컬렉션**(`ObservableCollection<그룹>` 재구성)으로 대체. 의존성 추가 없음.
+  뷰는 그룹 `ItemsControl`(헤더+내부 `WrapPanel`), 카드 클릭은 코드비하인드 훅 제거하고 `Command`+`CommandParameter={Binding}`로.
+- **템플릿+트리거 컨트롤:** 즐겨찾기 별(ToggleButton)/설치 배지(Button hover-morph)의 `ControlTemplate.Triggers` →
+  Avalonia `Style` + 의사클래스(`:checked`/`:pointerover`/`:pressed`). 배지 hover-morph는 1차 단순화(정적 체크 배지+툴팁), 후속 개선.
+- **런타임/호스트:** M2c 실증 패턴(`Host.CreateApplicationBuilder`+`Lemon.Hosting`+DI, `[ActivatorUtilitiesConstructor]`)을 실 앱에 적용.
+  1차는 저위험 위해 M2c 검증 API 유지(CS0618 억제) → 신 API(`AddAppBuilder`/`RunAvaloniaAppAsync`) 이관은 green 확보 후 시도.
+  `Application.Properties[IServiceProvider]`(Init/GetServiceProvider) → Avalonia에 없음 → App 인스턴스 정적 홀더로 대체.
+- **ServiceLogoConverter:** WPF `BitmapImage`(원격 URI 자동 async) → Avalonia `Bitmap`/`IImage`. 로컬 파일은 즉시,
+  원격 아바타/로고 async 로딩은 이월(1차 로컬 우선, 원격 실패시 null).
+
+**진행 방식:** 프로젝트 단위 빅뱅(중간 빌드 체크 불가)이므로 **앱 단위로 green 검증 후 커밋**. Spork.App(자기완결적) 먼저 →
+TableCloth.App(네비게이션 Frame/Page·CollectionViewSource·ImageSource·Clipboard·XamlRadialProgressBar 추가 난점) → WPF 완전 제거 →
+Stage 1 내부 테스트 빌드. green 미달 시 미커밋 상태로 정확히 보고(브랜치라 되돌리기 자명).
+
 ## 9. 롤백 전략
 
 - 전 작업을 `feature/avalonia-aot`(가칭) 브랜치에서 진행. main은 WPF v1.20.x 유지.
