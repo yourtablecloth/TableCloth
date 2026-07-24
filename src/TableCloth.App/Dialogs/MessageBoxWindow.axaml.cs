@@ -87,6 +87,7 @@ public partial class MessageBoxWindow : Window
         AppMessageBoxButton button, AppMessageBoxImage icon, AppMessageBoxResult defaultResult)
     {
         var window = new MessageBoxWindow(message, caption, button, icon, defaultResult);
+        TableCloth.Controls.WindowChrome.RemoveMinimizeBox(window); // 이슈 #296: 모달 메시지 상자에 최소화 버튼 제거
         var frame = new DispatcherFrame();
         window.Closed += (_, _) => frame.Continue = false;
 

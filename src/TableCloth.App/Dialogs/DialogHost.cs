@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
 using System.Threading.Tasks;
+using TableCloth.Controls;
 
 namespace TableCloth.Dialogs;
 
@@ -13,6 +14,9 @@ internal static class DialogHost
 {
     public static bool? ShowModal(Window window, Window? owner)
     {
+        // 이슈 #296: 모든 모달 다이얼로그는 최소화 버튼을 제거(모달에 최소화는 어색). 공통 진입점에서 일괄 적용.
+        WindowChrome.RemoveMinimizeBox(window);
+
         bool? result = null;
         var frame = new DispatcherFrame();
 
