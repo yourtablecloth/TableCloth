@@ -318,7 +318,7 @@ verb 디스패치(`Program.cs` 수동 인자 파싱)는 AOT 무관 — 유지. A
   1창(예: `AboutWindow`) 완전 이관 + IME/테마 스왑 검증.
 - **M3:** 다이얼로그·페이지 순차 이관(§5.6), WPF 제거. **Stage 1 내부 테스트 빌드**(trimmed self-contained, 크기 실측). 사용자 릴리스 없음.
 - **M4:** JSON 소스젠 이관(§6.2 B) + WMI 대체(§6.2 A: 디스크 클래스 삭제 + CPUID) + COM 점검(§6.2 C).
-- **M5:** 진입점 `PublishAot=true`, IL 경고 0화, `build.cs`/CI 전환. **Stage 2 내부 테스트 빌드**(Native AOT).
+- ✅ **M5 (완료):** 진입점 `PublishAot=true`, IL 경고 0화, `build.cs`/CI 전환. **Stage 2 내부 테스트 빌드**(Native AOT). 상세는 §8 "M5 완료".
 - **M6:** 전 과정 안정화 확인 후 **최초 사용자 릴리스**. (릴리스 정책: 완료 전까지 내부 테스트만 — §2)
 
 ### 진행 현황 (2026-07-24, 브랜치 `feature/avalonia-aot`)
@@ -495,6 +495,39 @@ M5(Native AOT) 착수 직전, 이번 세션의 UI/부트스트랩 변경(Lemon.H
   + `build.cs`/CI 전환 + 위 업스트림 재평가만 남음.
 
 → **결론: 우리 코드는 트림/AOT 정적 점검 모두 clean. Full AOT 진입 준비 완료(잔여는 업스트림 WinRT/Serilog뿐).**
+
+#### M5 완료 (2026-07-24) — Native AOT (Stage 2) 실측
+
+두 진입점(TableCloth/Spork)을 Native AOT 로 전환. VS18 Professional MSVC 링커로 win-x64 실측.
+
+**결과(win-x64):**
+
+| 항목 | WPF 기준선 | Stage 1(트림) | **Stage 2(AOT)** |
+| --- | --- | --- | --- |
+| TableCloth.exe(네이티브) | ~90MB(단일파일) | ~36MB | **29.8MB** |
+| Velopack `Setup.exe` | ~106MB | — | **42.8MB (~60%↓)** |
+| `Portable.zip` | ~90MB | — | **38.5MB (~57%↓)** |
+
+- 배포 폴더(비압축, pdb 제외) 61.7MB = exe 29.8 + Images.zip 15.9(카탈로그 데이터) + Skia/ANGLE/HarfBuzz 15.9.
+- IL/전체 경고 0. 관리형 진입 DLL 없음(네이티브 확정), PE Machine 0x8664. "Generating native code".
+- CsWinRT AOT 모드가 마셜러를 정적 생성 → Stage-1 트림의 WinRT ABI 35건이 AOT 에선 미발생(오히려 더 깨끗).
+
+**크기 최적화(적용, 커밋 `f7aee1b`):** `OptimizationPreference=Size` + `EventSource`/`MetadataUpdater`/`Debugger`/
+`NullabilityInfoContext`/`HttpActivityPropagation` `Support=false` → 36.0→29.8MB(~17%↓). 진단 보존을 위해
+`StackTraceSupport`·예외 메시지(`UseSystemResourceKeys` 미적용, 크기 기여 0 확인)는 유지. `InvariantGlobalization`
+은 제외 — Windows AOT 는 OS globalization(NLS)을 써 ICU 를 동봉하지 않아 이득 ~0.2MB 뿐이고 한국어 문화권 리스크.
+
+**빌드/패키징(build.cs, 커밋 `a8734b5`):** 진입점 csproj 가 RID 시 PublishAot 자동 활성화(dev `dotnet build` 무영향).
+`EnsureVsWhereOnPath`(AOT 링커가 vswhere 로 MSVC 탐색) + `PruneSymbols`(대용량 네이티브 pdb 제외 — 203→62MB) 추가.
+Velopack 다중파일(exe + Skia/HarfBuzz/ANGLE) 패키징 정상.
+
+**arm64:** win-arm64 AOT 는 VS "C++ ARM64 build tools" 구성요소 필요(로컬 미설치로 "Platform linker not found" 재현).
+CI 는 `Spork.Bootstrapper` 를 이미 arm64 AOT 로 게시 중이므로 도구 존재 가능성 높음 — 다음 CI 릴리스에서 확인.
+로컬 arm64 빌드 시 해당 VS 구성요소 설치 필요.
+
+**⚠️ 미검증(런타임):** AOT 정적 분석이 0 경고여도, 리플렉션 경로의 런타임 실패는 **실행 시에만** 드러난다(ILC 가
+증명 못 한 동적 경로). → M6 전에 Windows Sandbox 에서 **AOT 빌드 런타임 스모크**(실행/샌드박스 생성/카탈로그/인증서/
+설치 스텝/테마 스왑/유휴 로그아웃) 필수. 정적 게이트는 통과했으나 런타임 게이트는 미완.
 
 ## 9. 롤백 전략
 
