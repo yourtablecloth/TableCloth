@@ -355,6 +355,26 @@ TableCloth.Test 66 / Spork.Test 42 통과로 검증됨.
 
 → 다음은 **M3(App 프로젝트 제자리 전환: UseWPF 제거 + Avalonia 도입 + View 이관 + WPF 제거)**.
 
+#### M3 착수 순서 (콜드 스타트용 — 이 순서로 재개)
+
+전제: 브랜치 `feature/avalonia-aot`(main 대비 15커밋). 검증된 참조 구현은 `tools/avalonia-slice`(Program/App/테마/
+AboutWindow 포팅·Host+DI 패턴 그대로 사용). 실 VM은 이미 UI 중립(M1).
+
+1. **테마 시스템 먼저(§5.4):** 공유 Avalonia 테마 리소스(FluentTheme + Light/Dark `ThemeDictionaries`에 기존 브러시 키
+   ~109개 재현). 이게 있어야 이후 뷰들이 바인딩됨.
+2. **App 프로젝트 전환(§5.1, 프로젝트 단위 빅뱅):** 먼저 **Spork.App**부터 — `UseWPF` 제거 → Avalonia 패키지 +
+   `App.axaml` + `Program`/Host 배선(slice의 M2c 패턴, 단 Lemon.Hosting **신 API** `AddAppBuilder`/`RunAvaloniaAppAsync`).
+   Spork가 더 자기완결적이라 선행에 적합.
+3. **뷰 이관(§5.6 순서):** 가장 단순한 다이얼로그(예: Spork `IdleLogoutWarningWindow`)부터 → 다이얼로그 → 페이지 →
+   MainWindow. 각 창마다 slice에서 검증한 이디엄(`IsVisible`, `SelectableTextBlock`, `ItemsControl`/`WrapPanel`) 적용.
+4. **M1/M2 이월 처리:** 원격 이미지 async 로더(아바타), `Hyperlink` 인라인, `CollectionViewSource`→Avalonia 컬렉션 뷰/수동 필터,
+   `ImageSource`→`Bitmap`, `Clipboard`→`TopLevel.Clipboard`.
+5. **TableCloth.App 전환** (Spork 검증 후 동일 패턴) → **WPF 완전 제거** + `Directory.Build.Props`의 `FixWpfReferences` 삭제.
+6. **Stage 1 내부 테스트 빌드**: trimmed self-contained 게시 + 크기 실측(§1 표 갱신). 사용자 릴리스 없음(§2).
+
+리스크: 프로젝트가 WPF/Avalonia 공존 불가 → App 프로젝트별 전환은 되돌리기 어려운 빅뱅. 반드시 브랜치에서, 창 단위 커밋 +
+기능 패리티 체크(§5.10)로 진행.
+
 ## 9. 롤백 전략
 
 - 전 작업을 `feature/avalonia-aot`(가칭) 브랜치에서 진행. main은 WPF v1.20.x 유지.
