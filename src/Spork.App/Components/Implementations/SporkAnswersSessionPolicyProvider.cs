@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using TableCloth.Models.Answers;
+using TableCloth.Serialization;
 
 namespace Spork.Components.Implementations
 {
@@ -28,7 +29,7 @@ namespace Spork.Components.Implementations
                     return IdleAutoLogoutPolicy.Disabled;
 
                 using var stream = File.OpenRead(answerFilePath);
-                var answers = JsonSerializer.Deserialize<SporkAnswers>(stream);
+                var answers = JsonSerializer.Deserialize(stream, SporkJsonContext.Default.SporkAnswers);
 
                 if (answers == null || !answers.EnableIdleAutoLogout || answers.IdleAutoLogoutMinutes <= 0)
                     return IdleAutoLogoutPolicy.Disabled;

@@ -24,6 +24,7 @@ using System.Windows;
 using TableCloth;
 using TableCloth.Models.Answers;
 using TableCloth.Resources;
+using TableCloth.Serialization;
 
 #nullable enable
 
@@ -184,7 +185,7 @@ public static class UseSporkExtensions
             if (File.Exists(answerFilePath))
             {
                 using var answerFileContent = File.OpenRead(answerFilePath);
-                answer = JsonSerializer.Deserialize<SporkAnswers>(answerFileContent);
+                answer = JsonSerializer.Deserialize(answerFileContent, SporkJsonContext.Default.SporkAnswers);
             }
         }
         catch (Exception ex)

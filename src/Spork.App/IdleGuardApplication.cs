@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Windows;
 using TableCloth.Models.Answers;
+using TableCloth.Serialization;
 
 namespace Spork
 {
@@ -63,7 +64,7 @@ namespace Spork
                     return;
 
                 using var stream = File.OpenRead(answerFilePath);
-                var answers = JsonSerializer.Deserialize<SporkAnswers>(stream);
+                var answers = JsonSerializer.Deserialize(stream, SporkJsonContext.Default.SporkAnswers);
                 if (string.IsNullOrWhiteSpace(answers?.HostUILocale))
                     return;
 

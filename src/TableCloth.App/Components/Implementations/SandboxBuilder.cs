@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using TableCloth.Models.Answers;
 using TableCloth.Models.Catalog;
+using TableCloth.Serialization;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
 using TableCloth.Resources;
@@ -613,7 +614,7 @@ popd
     public static async Task<string> SerializeSporkAnswersJsonAsync(SporkAnswers answers, CancellationToken cancellationToken = default)
     {
         using var memStream = new MemoryStream();
-        await JsonSerializer.SerializeAsync(memStream, answers, new JsonSerializerOptions() { WriteIndented = true, }, cancellationToken).ConfigureAwait(false);
+        await JsonSerializer.SerializeAsync(memStream, answers, SporkJsonContext.Default.SporkAnswers, cancellationToken).ConfigureAwait(false);
         return new UTF8Encoding(false).GetString(memStream.ToArray());
     }
 

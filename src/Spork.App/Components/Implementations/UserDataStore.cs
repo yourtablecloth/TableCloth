@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Models.UserData;
 using TableCloth.Models.WindowsSandbox;
+using TableCloth.Serialization;
 
 namespace Spork.Components.Implementations
 {
@@ -29,12 +30,6 @@ namespace Spork.Components.Implementations
         private const int SaveDebounceMs = 250;
         private const string SandboxUserName = "WDAGUtilityAccount";
         private const string StandaloneAppDataLeaf = "Spork";
-
-        private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions
-        {
-            AllowTrailingCommas = true,
-            WriteIndented = true,
-        };
 
         public string UserDataFilePath
         {
@@ -121,7 +116,7 @@ namespace Spork.Components.Implementations
 
                 using (var stream = File.OpenRead(path))
                 {
-                    var data = await JsonSerializer.DeserializeAsync<SporkUserData>(stream, SerializerOptions, cancellationToken).ConfigureAwait(false);
+                    var data = await JsonSerializer.DeserializeAsync(stream, SporkJsonContext.Default.SporkUserData, cancellationToken).ConfigureAwait(false);
                     return data ?? new SporkUserData();
                 }
             }
@@ -146,7 +141,7 @@ namespace Spork.Components.Implementations
 
                 using (var stream = File.Create(path))
                 {
-                    await JsonSerializer.SerializeAsync(stream, snapshot, SerializerOptions, cancellationToken).ConfigureAwait(false);
+                    await JsonSerializer.SerializeAsync(stream, snapshot, SporkJsonContext.Default.SporkUserData, cancellationToken).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)

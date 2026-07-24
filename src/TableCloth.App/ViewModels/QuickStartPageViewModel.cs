@@ -15,6 +15,7 @@ using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.UserData;
 using TableCloth.Resources;
+using TableCloth.Serialization;
 
 namespace TableCloth.ViewModels;
 
@@ -233,7 +234,7 @@ public partial class QuickStartPageViewModel : ObservableObject
 
             using (var stream = File.Create(userDataPath))
             {
-                await JsonSerializer.SerializeAsync(stream, userData, new JsonSerializerOptions { WriteIndented = true });
+                await JsonSerializer.SerializeAsync(stream, userData, SporkJsonContext.Default.SporkUserData);
             }
         }
         catch (Exception ex)
