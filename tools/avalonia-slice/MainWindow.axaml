@@ -14,7 +14,10 @@
       <TextBox Watermark="여기에 한글을 입력해 보세요 (예: 식탁보)" Text="{Binding InputText}" />
       <TextBlock Text="{Binding InputEcho}" FontStyle="Italic" />
 
-      <Button Content="{Binding ThemeToggleLabel}" Command="{Binding ToggleThemeCommand}" HorizontalAlignment="Left" />
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Button Content="{Binding ThemeToggleLabel}" Command="{Binding ToggleThemeCommand}" />
+        <Button Content="About 창 열기 (포팅 검증)" Click="OpenAbout_Click" />
+      </StackPanel>
 
       <TextBlock Text="컴파일 바인딩 리스트(ItemsControl):" Margin="0,8,0,0" />
       <ItemsControl ItemsSource="{Binding Items}">

@@ -1,0 +1,116 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaSlice"
+        x:Class="AvaloniaSlice.AboutWindow"
+        x:DataType="vm:AboutViewModel"
+        Width="640" Height="560" CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Title="식탁보 정보 (Avalonia 포팅 검증)">
+  <Grid Margin="12" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto,Auto">
+
+    <!-- Info Banner (WPF Hyperlink → 링크형 Button) -->
+    <Border Grid.Row="0" Background="#332196F3"
+            BorderBrush="#80808080" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,10">
+      <StackPanel Orientation="Horizontal" Spacing="6">
+        <TextBlock Text="ⓘ" FontWeight="Bold" VerticalAlignment="Center" />
+        <TextBlock Text="식탁보는 후원으로 유지됩니다." VerticalAlignment="Center" TextWrapping="Wrap" />
+        <Button Content="후원 안내 보기" Command="{Binding OpenSponsorPageCommand}"
+                Padding="6,2" VerticalAlignment="Center" />
+      </StackPanel>
+    </Border>
+
+    <!-- Legal Notice -->
+    <StackPanel Grid.Row="1" Margin="0,0,0,10">
+      <TextBlock Text="© 2021-2026 rkttu.com. All rights reserved." />
+      <TextBlock Text="식탁보™는 rkttu.com의 상표입니다." FontSize="11" Opacity="0.7" />
+    </StackPanel>
+
+    <!-- Version Info -->
+    <Grid Grid.Row="2" Margin="0,0,0,10" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+      <TextBlock Grid.Row="0" Grid.Column="0" Text="앱 버전:" Margin="0,0,10,2" />
+      <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AppVersion}" FontWeight="SemiBold" />
+      <TextBlock Grid.Row="1" Grid.Column="0" Text="카탈로그 날짜:" Margin="0,2,10,0" />
+      <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CatalogDate}" FontWeight="SemiBold" />
+    </Grid>
+
+    <!-- Sponsors (Visibility+Converter → IsVisible) -->
+    <StackPanel Grid.Row="3" Margin="0,0,0,10" IsVisible="{Binding HasSponsors}">
+      <TextBlock Text="후원자" FontWeight="SemiBold" Margin="0,0,0,6" />
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <ItemsControl ItemsSource="{Binding Sponsors}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:SponsorVm">
+              <Border Margin="0,0,8,4" Padding="6,4" CornerRadius="4" BorderThickness="1"
+                      BorderBrush="#80808080">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <!-- 아바타: 원격 URL 이미지 로딩은 M3(async 이미지 로더)에서. 슬라이스는 플레이스홀더. -->
+                  <Ellipse Width="24" Height="24" Fill="#80808080" />
+                  <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBlock Text="{Binding AnonymousSponsorsText}" VerticalAlignment="Center" Opacity="0.7"
+                   IsVisible="{Binding HasAnonymousSponsors}" />
+      </StackPanel>
+    </StackPanel>
+
+    <!-- Contributors -->
+    <StackPanel Grid.Row="4" Margin="0,0,0,10" IsVisible="{Binding HasContributors}">
+      <TextBlock Text="기여자" FontWeight="SemiBold" Margin="0,0,0,6" />
+      <ItemsControl ItemsSource="{Binding Contributors}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel Orientation="Horizontal" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:ContributorVm">
+            <Border Margin="0,0,8,4" Padding="6,4" CornerRadius="4" BorderThickness="1"
+                    BorderBrush="#80808080">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Width="24" Height="24" Fill="#80808080" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+
+    <!-- License (WPF RichTextBox/FlowDocument → Avalonia SelectableTextBlock) -->
+    <Grid Grid.Row="5" Margin="0,0,0,10" RowDefinitions="Auto,*">
+      <TextBlock Grid.Row="0" Text="오픈소스 라이선스" FontWeight="SemiBold" Margin="0,0,0,6" />
+      <Border Grid.Row="1" BorderThickness="1" CornerRadius="4"
+              BorderBrush="#80808080">
+        <ScrollViewer Padding="6">
+          <SelectableTextBlock Text="{Binding LicenseDetails}" TextWrapping="Wrap" />
+        </ScrollViewer>
+      </Border>
+    </Grid>
+
+    <!-- Status (커맨드 실행 확인) -->
+    <TextBlock Grid.Row="6" Text="{Binding StatusMessage}" Opacity="0.7" Margin="0,0,0,8" />
+
+    <!-- Buttons -->
+    <Grid Grid.Row="7" ColumnDefinitions="*,Auto">
+      <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="5">
+        <Button Content="홈페이지" Command="{Binding OpenWebsiteCommand}" />
+        <Button Content="사용 설명서" Command="{Binding OpenUserManualCommand}" />
+        <Button Content="시스템 정보" Command="{Binding ShowSystemInfoCommand}" />
+        <Button Content="업데이트 확인" Command="{Binding CheckUpdatedVersionCommand}" />
+        <Button Content="Discord" Command="{Binding OpenDiscordCommand}" />
+      </StackPanel>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5">
+        <Button Content="개인정보" Command="{Binding OpenPrivacyPolicyCommand}" />
+        <Button Content="확인" IsDefault="True" Click="OkayButton_Click" />
+      </StackPanel>
+    </Grid>
+  </Grid>
+</Window>
