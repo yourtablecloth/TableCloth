@@ -48,7 +48,13 @@
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
 		<PublishReadyToRun>true</PublishReadyToRun>
-		<PublishTrimmed>false</PublishTrimmed>
+		<!--
+			이슈 #296 Stage 1: WPF 제거 후 Avalonia 는 트리밍이 가능하다. 진입점에서만 PublishTrimmed 를 켠다
+			(netstandard2.0 인 TableCloth.Core 프로젝트에 직접 켜면 NETSDK1124; 참조 어셈블리는 앱 트림 그래프로 함께 정리됨).
+			주의: 리플렉션(카탈로그 정렬의 EnumDisplayOrderAttribute, 일부 리플렉션 바인딩) 트림 안전성은 내부 테스트로
+			검증 후 확정한다(사용자 릴리스 없음 — §2). 문제 시 TrimMode 조정 또는 [DynamicDependency]/트리머 루트로 보존.
+		-->
+		<PublishTrimmed>true</PublishTrimmed>
 	</PropertyGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="commit.txt">

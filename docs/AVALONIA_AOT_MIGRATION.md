@@ -412,6 +412,34 @@ Spork.App 전체 표면(뷰 8 + VM + 컴포넌트/인터페이스 + 진입점)�
 TableCloth.App(네비게이션 Frame/Page·CollectionViewSource·ImageSource·Clipboard·XamlRadialProgressBar 추가 난점) → WPF 완전 제거 →
 Stage 1 내부 테스트 빌드. green 미달 시 미커밋 상태로 정확히 보고(브랜치라 되돌리기 자명).
 
+#### M3 완료 (2026-07-24) — WPF 전면 제거 + Stage 1 실측
+
+**M3 전 단계 완료.** 두 앱을 Avalonia 로 이관하고 WPF 를 솔루션에서 완전히 제거. 각 앱 단위로 빌드 0경고/0오류 +
+TableCloth.Test 66 / Spork.Test 42 통과를 확인하며 개별 커밋.
+
+- ✅ **Spork.App 전환**(커밋 `e771597`): App.axaml/Host(Lemon.Hosting), FluentTheme+Colors.axaml, 뷰 8종, 자작 동기
+  MessageBoxWindow(Dispatcher.PushFrame), CollectionViewSource→VM 그룹, IdleGuard/SessionIdleMonitor 이관.
+- ✅ **TableCloth.App 전환**(커밋 `4e50fc9`): 스플래시→메인창 라이프사이클, Frame/Page→ContentControl+UserControl 네비게이션,
+  라이선스 게이트를 App 로 이관, 6 다이얼로그+3 페이지+MainWindow+Splash+License, 캐리오버 전부 처리
+  (ImageSource→IImage, Clipboard→TopLevel.Clipboard, OpenFile/FolderDialog→StorageProvider, XamlRadialProgressBar→ProgressBar,
+  RichTextBox→SelectableTextBlock, PasswordBox→TextBox).
+- ✅ **WPF 완전 제거**(커밋 `c50c9ce`): 진입점 MessageBox→Win32(user32) P/Invoke, `UseWPF` 전부 off, `FixWpfReferences` 폐기,
+  CPM 에서 Behaviors.Wpf/XamlRadialProgressBar 제거. 솔루션 `using System.Windows` 0건.
+- **M3 확정 이관 항목 처리 현황:** 원격 아바타 이미지 async 로딩 = **이월(플레이스홀더)**; Hyperlink 인라인 = 링크형 Button 로 대체;
+  CollectionViewSource/ImageSource/Clipboard = 완료; Lemon.Hosting = 1차 obsolete API 유지(신 API 이관은 후속).
+
+**Stage 1 내부 테스트 빌드 실측(2026-07-24, `dotnet publish -c Release -r win-x64`, trimmed self-contained single-file):**
+
+| 항목 | 크기 |
+| ---- | ---- |
+| WPF 기준선(단일 파일) | ~90 MB |
+| **Avalonia Stage 1 `TableCloth.exe`(트리밍+R2R+압축)** | **~36 MB (37,939,482 bytes) — 약 60% 감소** |
+
+- 트림 경고 IL 10건(카탈로그 정렬 `EnumDisplayOrderAttribute` 리플렉션, 일부 리플렉션 바인딩 등) — 런타임 트림 안전성은
+  내부 테스트에서 검증 후 확정(`[DynamicDependency]`/트리머 루트 or `x:CompileBindings` 정리). **사용자 릴리스 없음(§2).**
+- 다음(M4/M5): JSON 소스젠·WMI·COM 점검은 S 시리즈에서 선행 완료됨 → **M5 Native AOT(Stage 2)** 로 추가 축소 예정
+  (슬라이스 실측 ~34MB AOT). 진입점 `PublishAot=true` + IL 경고 0화 + Lemon.Hosting 신 API 이관.
+
 ## 9. 롤백 전략
 
 - 전 작업을 `feature/avalonia-aot`(가칭) 브랜치에서 진행. main은 WPF v1.20.x 유지.
