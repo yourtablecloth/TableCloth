@@ -134,8 +134,9 @@ public static class UseSporkExtensions
             .AddWindow<MainWindow, MainWindowViewModel>()
             .AddTransient<SiteReportWindow>();
 
-        // 이슈 #296: WPF Application 등록 폐기. Avalonia App(SporkApplication)은 진입점에서 Lemon.Hosting
-        // AddAvaloniauiDesktopApplication<SporkApplication> 로 DI 생성한다([ActivatorUtilitiesConstructor]).
+        // 이슈 #296: WPF Application 등록 폐기. Avalonia App(SporkApplication)은 진입점에서 표준
+        // AppBuilder.Configure<SporkApplication>().StartWithClassicDesktopLifetime 로 생성되며, 서비스는
+        // SporkApplication.ServiceProvider 정적 홀더로 주입된다.
 
         return builder;
     }

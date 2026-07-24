@@ -80,8 +80,9 @@ public static class UseTableClothExtensions
             .AddPage<QuickStartPage, QuickStartPageViewModel>()
             .AddWindow<SplashScreen, SplashScreenViewModel>();
 
-        // 이슈 #296: WPF Application 등록 폐기. Avalonia App(TableClothApplication)은 진입점에서 Lemon.Hosting
-        // AddAvaloniauiDesktopApplication<TableClothApplication> 로 DI 생성한다.
+        // 이슈 #296: WPF Application 등록 폐기. Avalonia App(TableClothApplication)은 진입점에서 표준
+        // AppBuilder.Configure<TableClothApplication>().StartWithClassicDesktopLifetime 로 생성되며, 서비스는
+        // TableClothApplication.ServiceProvider 정적 홀더로 주입된다.
 
         return builder;
     }

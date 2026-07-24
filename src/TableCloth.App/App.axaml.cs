@@ -12,74 +12,67 @@ using TableCloth.Events;
 namespace TableCloth;
 
 /// <summary>
-/// 이슈 #296: WPF <c>Application</c> → Avalonia <see cref="Application"/>. Lemon.Hosting 이 DI 로 이 App 을 생성하며
-/// (<see cref="ActivatorUtilitiesConstructorAttribute"/>) 서비스를 주입한다. WPF <c>Application_Startup</c> 의
-/// 스플래시→메인창 흐름은 <see cref="OnFrameworkInitializationCompleted"/> 로 이관한다.
+/// 이슈 #296: WPF <c>Application</c> → Avalonia <see cref="Application"/>. 표준 Avalonia 기동
+/// (<c>AppBuilder.Configure&lt;TableClothApplication&gt;().StartWithClassicDesktopLifetime</c>)을 사용하므로 이 App 은
+/// 매개변수 없는 생성자로 만들어진다. 진입점(Program)이 Host 를 빌드해 <see cref="ServiceProvider"/> 정적 홀더에
+/// 주입한 뒤 기동한다. WPF <c>Application_Startup</c> 의 스플래시→메인창 흐름과 라이선스 게이트를
+/// <see cref="OnFrameworkInitializationCompleted"/> 로 이관.
+/// (Lemon.Hosting 의 자체 run 루프는 Avalonia 11.3.x 의 Dispatcher.MainLoop 와 비호환 — PlatformNotSupported 폐기.)
 /// </summary>
 public partial class TableClothApplication : Application
 {
     public TableClothApplication() { }
 
-    [ActivatorUtilitiesConstructor]
-    public TableClothApplication(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-        ServiceProvider = serviceProvider;
+    /// <summary>진입점이 StartWithClassicDesktopLifetime 호출 전에 주입한다(컨버터 등 뷰 계층 정적 접근용).</summary>
+    public static IServiceProvider? ServiceProvider { get; set; }
 
-        SafeFireAndForgetExtensions.Initialize();
-        SafeFireAndForgetExtensions.SetDefaultExceptionHandling(thrownException =>
-        {
-            try
-            {
-                serviceProvider.GetRequiredService<ILogger<TableClothApplication>>()
-                    .LogError(thrownException, "Unexpected error occurred.");
-
-                if (Helpers.IsDevelopmentBuild)
-                    serviceProvider.GetRequiredService<IAppMessageBox>().DisplayError(thrownException, false);
-            }
-            catch { /* 로거/메시지박스 자체가 비정상이면 무시 */ }
-        });
-    }
-
-    private readonly IServiceProvider? _serviceProvider;
     private SplashScreen? _splashScreen;
-
-    /// <summary>WPF Application.Properties 를 대체하는 정적 서비스 프로바이더 홀더(컨버터 등 뷰 계층 접근용).</summary>
-    public static IServiceProvider? ServiceProvider { get; private set; }
 
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && _serviceProvider != null)
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && ServiceProvider is { } sp)
         {
-            // 스플래시 → (초기화 완료 시) 메인창. 초기화 중에는 메인창이 없으므로 명시 종료 모드로 둔다.
+            SafeFireAndForgetExtensions.Initialize();
+            SafeFireAndForgetExtensions.SetDefaultExceptionHandling(thrownException =>
+            {
+                try
+                {
+                    sp.GetService<ILogger<TableClothApplication>>()?.LogError(thrownException, "Unexpected error occurred.");
+                    if (Helpers.IsDevelopmentBuild)
+                        sp.GetService<IAppMessageBox>()?.DisplayError(thrownException, false);
+                }
+                catch { /* 로거/메시지박스 자체가 비정상이면 무시 */ }
+            });
+
+            // 초기화 중에는 메인창이 없으므로 명시 종료 모드로 둔다.
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            // 이슈 #296: WPF 시절 Program.cs 의 호스트-전(前) 라이선스 게이트를 App 라이프사이클로 이관.
-            // Avalonia 창은 라이프타임 시작 후에만 띄울 수 있으므로 스플래시보다 먼저 여기서 처리한다.
+            // 이슈 #296: WPF 시절 Program.cs 의 호스트-전 라이선스 게이트를 App 라이프사이클로 이관.
             if (!Bootstrap.LicenseGate.EnsureAgreed())
             {
                 desktop.Shutdown(1);
+                base.OnFrameworkInitializationCompleted();
                 return;
             }
 
-            var appUserInterface = _serviceProvider.GetRequiredService<IAppUserInterface>();
+            var appUserInterface = sp.GetRequiredService<IAppUserInterface>();
             _splashScreen = appUserInterface.CreateSplashScreen();
-            _splashScreen.ViewModel.InitializeDone += (_, e) => OnInitializeDone(desktop, e);
+            _splashScreen.ViewModel.InitializeDone += (_, e) => OnInitializeDone(desktop, sp, e);
             _splashScreen.Show();
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private void OnInitializeDone(IClassicDesktopStyleApplicationLifetime desktop, DialogRequestEventArgs e)
+    private void OnInitializeDone(IClassicDesktopStyleApplicationLifetime desktop, IServiceProvider sp, DialogRequestEventArgs e)
     {
         _splashScreen?.Hide();
 
-        if (e.DialogResult.HasValue && e.DialogResult.Value && _serviceProvider != null)
+        if (e.DialogResult.HasValue && e.DialogResult.Value)
         {
-            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            var mainWindow = sp.GetRequiredService<MainWindow>();
             desktop.MainWindow = mainWindow;
             desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
             mainWindow.Show();

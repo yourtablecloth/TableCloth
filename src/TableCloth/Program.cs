@@ -1,5 +1,4 @@
 using Avalonia;
-using Lemon.Hosting.AvaloniauiDesktop;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
 using Spork.App.DependencyInjection;
@@ -85,13 +84,12 @@ internal static class Program
 
             var builder = Host.CreateApplicationBuilder(args);
             builder.UseTableCloth();
-
-            // 이슈 #296: WPF Application.Run → Avalonia(Lemon.Hosting). App(TableClothApplication)은 DI 로 생성.
-#pragma warning disable CS0618 // Lemon.Hosting 1.1.1 obsolete API — M2c 검증 경로(신 API 이관은 후속).
-            builder.Services.AddAvaloniauiDesktopApplication<TableClothApplication>(TableClothAvaloniaApp.Configure);
             using var appHost = builder.Build();
-            appHost.RunAvaloniauiApplication(args);
-#pragma warning restore CS0618
+
+            // 이슈 #296: WPF Application.Run → 표준 Avalonia 기동. App 은 정적 홀더로 서비스 프로바이더를 받는다.
+            TableClothApplication.ServiceProvider = appHost.Services;
+            TableClothAvaloniaApp.Configure(AppBuilder.Configure<TableClothApplication>())
+                .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
@@ -115,13 +113,12 @@ internal static class Program
             // 본 호출은 TableCloth.exe(통합 진입점)에서만 일어나며, 단독 Spork.exe는 Spork.Sandbox를
             // 참조하지 않으므로 noop 그대로 사용된다.
             builder.UseSandboxBootstrap();
-
-            // 이슈 #296: WPF Application.Run → Avalonia(Lemon.Hosting). App(SporkApplication)은 DI 로 생성.
-#pragma warning disable CS0618 // Lemon.Hosting 1.1.1 obsolete API — M2c 검증 경로(신 API 이관은 후속).
-            builder.Services.AddAvaloniauiDesktopApplication<Spork.SporkApplication>(Spork.SporkAvaloniaApp.Configure);
             using var appHost = builder.Build();
-            appHost.RunAvaloniauiApplication(args);
-#pragma warning restore CS0618
+
+            // 이슈 #296: WPF Application.Run → 표준 Avalonia 기동. App 은 정적 홀더로 서비스 프로바이더를 받는다.
+            Spork.SporkApplication.ServiceProvider = appHost.Services;
+            Spork.SporkAvaloniaApp.Configure(AppBuilder.Configure<Spork.SporkApplication>())
+                .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {

@@ -1,5 +1,4 @@
-using Lemon.Hosting.AvaloniauiDesktop;
-using Microsoft.Extensions.DependencyInjection;
+using Avalonia;
 using Microsoft.Extensions.Hosting;
 using Spork.App.DependencyInjection;
 using System;
@@ -17,19 +16,16 @@ namespace Spork
             {
                 args ??= Helpers.GetCommandLineArguments();
 
-                var builder = Host.CreateApplicationBuilder(args);
-
                 // Spork 모듈 합성: SporkAnswers/컬처 + Sentry/로깅/HTTP/Components/Browsers/Steps/UI.
+                var builder = Host.CreateApplicationBuilder(args);
                 builder.UseSpork();
-
-                // 이슈 #296: WPF Application.Run → Avalonia(Lemon.Hosting). App(SporkApplication)은 DI 로 생성된다.
-                // Lemon.Hosting 1.1.1 은 이 두 API 를 obsolete 처리(→ AddAppBuilder/RunAvaloniaAppAsync). M2c 가 AOT 로
-                // 검증한 기존 API 를 1차로 유지하고, 신 API 이관은 green 확보 후 후속으로 진행한다.
-#pragma warning disable CS0618 // Type or member is obsolete
-                builder.Services.AddAvaloniauiDesktopApplication<SporkApplication>(SporkAvaloniaApp.Configure);
                 using var appHost = builder.Build();
-                appHost.RunAvaloniauiApplication(args);
-#pragma warning restore CS0618
+
+                // 이슈 #296: WPF Application.Run → 표준 Avalonia 기동. App 은 정적 홀더로 서비스 프로바이더를 받는다.
+                // (Lemon.Hosting 의 자체 run 루프는 Avalonia 11.3.x 와 비호환 — Dispatcher.MainLoop PlatformNotSupported.)
+                SporkApplication.ServiceProvider = appHost.Services;
+                SporkAvaloniaApp.Configure(AppBuilder.Configure<SporkApplication>())
+                    .StartWithClassicDesktopLifetime(args);
             }
             catch (Exception ex)
             {
