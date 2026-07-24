@@ -46,5 +46,14 @@
         <Style Selector="ToggleButton.fav:checked">
             <Setter Property="Foreground" Value="#FFD401" />
         </Style>
+
+        <!-- 이슈 #296: FluentTheme 기본 TabItem 헤더가 너무 큼(폰트 ~24 + 큰 패딩)이라 탭이 여러 줄로 넘쳐 공간을
+             과하게 차지한다. WPF 수준으로 컴팩트하게 재스타일(옵션 창 7개 탭 + Spork 메인 3개 탭 공통). -->
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="12 6" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
     </Application.Styles>
 </Application>
