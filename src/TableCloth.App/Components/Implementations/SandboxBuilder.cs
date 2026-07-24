@@ -1,6 +1,7 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -517,6 +518,11 @@ popd
     ///   <item>framework-dependent (dev 빌드 기본) — <c>hostfxr.dll</c>이 없음. 호스트 dotnet 마운트 필요.</item>
     /// </list>
     /// </remarks>
+    // 이슈 #296(AOT): 빈 Assembly.Location 을 단일파일/AOT 게시의 "신호"로 의도적으로 사용한다(비면 런타임이
+    // exe 에 묶여 있으므로 호스트 dotnet 마운트 불필요). 단일파일/AOT(비어 있음)·self-contained 멀티파일
+    // (hostfxr 존재)·framework-dependent(hostfxr 없음) 세 경우 모두 올바르게 분기하므로 IL3000 은 안전.
+    [UnconditionalSuppressMessage("SingleFile", "IL3000",
+        Justification = "Empty Assembly.Location is used intentionally as the single-file/AOT signal; all deployment shapes branch correctly.")]
     private static bool RequiresHostDotnetMount(string appDirectory)
     {
         if (!Directory.Exists(appDirectory))

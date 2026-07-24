@@ -19,12 +19,6 @@ internal static class Extensions
             .EnsureNotNull("HTTP client factory cannot be null reference.")
             .CreateClient(nameof(StringResources.TableCloth_GitHubRestUAString));
 
-    public static void AddCommands(this IServiceCollection services, params Type[] commandTypes)
-    {
-        foreach (var eachCommandType in commandTypes)
-            services.AddSingleton(eachCommandType);
-    }
-
     // 이슈 #296(트림/AOT): AddTransient<T> 는 DI 활성화를 위해 public 생성자 보존을 요구 → 제네릭 파라미터에
     // DynamicallyAccessedMembers 전파(IL2091 해소).
     public static IServiceCollection AddWindow<

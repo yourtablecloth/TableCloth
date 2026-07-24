@@ -228,7 +228,9 @@ public sealed class AppStartup : IAppStartup
 
         var osvi = new NativeMethods.OSVERSIONINFOEXW()
         {
-            dwOSVersionInfoSize = Marshal.SizeOf(typeof(NativeMethods.OSVERSIONINFOEXW)),
+            // 이슈 #296(AOT): Marshal.SizeOf(Type) 는 RequiresDynamicCode(IL3050) → 컴파일 타임 타입이 확정된
+            // 제네릭 오버로드 SizeOf<T>() 로 교체(동일 값, AOT 안전).
+            dwOSVersionInfoSize = Marshal.SizeOf<NativeMethods.OSVERSIONINFOEXW>(),
         };
 
         var supportedOSEditions = new NativeMethods.OSEdition[]
