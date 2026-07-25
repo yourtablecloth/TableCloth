@@ -12,6 +12,8 @@ on:
         - develop
         tags:
         - 'v*'
+        # 이슈 #296: 프리뷰 태그(v*-preview.*)는 별도 preview.yml 이 처리하므로 리테일 파이프라인에서 제외.
+        - '!v*-preview*'
         paths:
         - '.github/workflows/build.yml'
         - 'docs/**'
