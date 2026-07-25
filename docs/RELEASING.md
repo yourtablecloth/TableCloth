@@ -6,6 +6,12 @@
 
 관련 구성요소: [`.github/workflows/build.yml`](../.github/workflows/build.yml) (빌드+draft), [`build.cs`](../build.cs)/[`build.cmd`](../build.cmd) (로컬 빌드+서명), [`.github/workflows/winget_publish.yml`](../.github/workflows/winget_publish.yml) + [`tools/winget/submit-winget.cs`](../tools/winget/submit-winget.cs) (winget 자동 제출), [`Directory.Build.Props`](../Directory.Build.Props) (버전 단일 출처).
 
+> **릴리스 채널(Retail/Preview):** 이 런북은 **Retail(안정)** 정식 릴리스 절차다. Avalonia+Native AOT 전환처럼 변화 폭이 큰
+> 릴리스는 **Preview** 링으로 먼저 프리릴리스(prerelease)로 낸다 — GitHub 프리릴리스라 `/releases/latest`·winget·무설치
+> 웹앱은 자동으로 Retail 만 가리키고, 사용자는 앱 옵션(미리 보기 탭 → 업데이트 채널)에서 미리 보기로 전환해 받는다.
+> v1.20.7 부터 이 in-app 채널 토글이 탑재된다. 채널 설계·자산명·버전(`X.Y.Z-preview.N`)·CI 규칙은
+> [RELEASE_CHANNELS.md](RELEASE_CHANNELS.md) 참조. (Preview 게시 런북은 해당 배선 완료 후 이 문서에 추가.)
+
 ---
 
 ## 0. 사전 조건 (매 릴리스)
