@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using TableCloth.Models.Configuration;
 using Velopack;
 using Velopack.Sources;
 
@@ -16,21 +17,42 @@ public sealed class AppUpdateManager : IAppUpdateManager
 {
     private readonly ILogger<AppUpdateManager> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IPreferencesManager _preferencesManager;
+    // 설치 정보(IsInstalled/CurrentVersion)는 채널과 무관하므로 기본 매니저를 유지한다.
     private readonly UpdateManager _updateManager;
+    // 채널 인식 매니저 — CheckForUpdates 에서 설정되고 Download/Apply 가 같은 인스턴스를 재사용한다.
+    private UpdateManager? _checkUpdateManager;
+    private ReleaseChannel _channel = ReleaseChannel.Retail;
     private UpdateInfo? _updateInfo;
     private GitHubReleaseInfo? _latestReleaseInfo;
 
     private const string Owner = "yourtablecloth";
     private const string Repo = "TableCloth";
+    private static string RepoUrl => $"https://github.com/{Owner}/{Repo}";
 
     public AppUpdateManager(
         ILogger<AppUpdateManager> logger,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        IPreferencesManager preferencesManager)
     {
         _logger = logger;
         _httpClientFactory = httpClientFactory;
-        _updateManager = new UpdateManager(
-            new GithubSource($"https://github.com/{Owner}/{Repo}", null, false));
+        _preferencesManager = preferencesManager;
+        _updateManager = new UpdateManager(new GithubSource(RepoUrl, null, false));
+    }
+
+    // 이슈 #296: 선택된 릴리스 링에 맞는 Velopack 매니저를 만든다. Retail 은 현행 그대로(기본 채널,
+    // 정식 릴리스), Preview 는 preview-<arch> 채널 + GitHub 프리릴리스 포함으로 조회한다.
+    private UpdateManager BuildUpdateManager(ReleaseChannel channel)
+    {
+        if (channel == ReleaseChannel.Preview)
+        {
+            var arch = GetCurrentArchitecture();
+            var previewSource = new GithubSource(RepoUrl, null, prerelease: true);
+            return new UpdateManager(previewSource, new UpdateOptions { ExplicitChannel = $"preview-{arch}" });
+        }
+
+        return new UpdateManager(new GithubSource(RepoUrl, null, prerelease: false));
     }
 
     public bool IsInstalledViaVelopack => _updateManager.IsInstalled;
@@ -44,10 +66,24 @@ public sealed class AppUpdateManager : IAppUpdateManager
 
     public async Task<bool> CheckForUpdatesAsync(CancellationToken cancellationToken = default)
     {
+        // 이슈 #296: 사용자가 선택한 릴리스 링을 읽어 채널 인식 매니저를 구성한다(기본 Retail).
+        try
+        {
+            var prefs = await _preferencesManager.LoadPreferencesAsync(cancellationToken).ConfigureAwait(false);
+            _channel = prefs?.UpdateChannel ?? ReleaseChannel.Retail;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Cannot read update channel preference; defaulting to Retail.");
+            _channel = ReleaseChannel.Retail;
+        }
+
+        _checkUpdateManager = BuildUpdateManager(_channel);
+
         // 먼저 Velopack 표준 방식으로 시도
         try
         {
-            _updateInfo = await _updateManager.CheckForUpdatesAsync().ConfigureAwait(false);
+            _updateInfo = await _checkUpdateManager.CheckForUpdatesAsync().ConfigureAwait(false);
 
             if (_updateInfo != null)
             {
@@ -96,7 +132,8 @@ public sealed class AppUpdateManager : IAppUpdateManager
 
     public async Task DownloadAndApplyUpdatesAsync(IProgress<int>? progress = null, CancellationToken cancellationToken = default)
     {
-        // Velopack 업데이트가 있으면 Velopack 사용
+        // Velopack 업데이트가 있으면 Velopack 사용(체크에 쓴 채널 인식 매니저를 그대로 사용)
+        var velopackManager = _checkUpdateManager ?? _updateManager;
         if (_updateInfo != null)
         {
             try
@@ -104,10 +141,10 @@ public sealed class AppUpdateManager : IAppUpdateManager
                 _logger.LogInformation("Downloading update via Velopack {Version}...", AvailableVersion);
 
                 Action<int>? progressAction = progress != null ? p => progress.Report(p) : null;
-                await _updateManager.DownloadUpdatesAsync(_updateInfo, progressAction).ConfigureAwait(false);
+                await velopackManager.DownloadUpdatesAsync(_updateInfo, progressAction).ConfigureAwait(false);
 
                 _logger.LogInformation("Download complete. Applying update and restarting...");
-                _updateManager.ApplyUpdatesAndRestart(_updateInfo);
+                velopackManager.ApplyUpdatesAndRestart(_updateInfo);
                 return;
             }
             catch (Exception ex)
@@ -152,12 +189,15 @@ public sealed class AppUpdateManager : IAppUpdateManager
             // 현재 아키텍처 확인
             var arch = GetCurrentArchitecture();
 
-            // 파일 이름 규칙: TableCloth_{version}_Release_{arch}.exe
-            // 예: TableCloth_1.15.0.0_Release_x64.exe, TableCloth_1.15.0.0_Release_arm64.exe
+            // 파일 이름 규칙(이슈 #296): Retail = TableCloth_{ver}_Release_{arch}.exe,
+            // Preview = TableCloth-Preview_{ver}_Release_{arch}.exe. 채널에 맞는 자산만 고른다
+            // ("-Preview" 포함 여부로 링 구분 — Retail 이 프리뷰 자산을 잡지 않도록).
+            var wantPreview = _channel == ReleaseChannel.Preview;
             var matchingAsset = releaseInfo.Assets.FirstOrDefault(a =>
                 a.Name != null &&
                 a.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) &&
-                a.Name.Contains($"_Release_{arch}", StringComparison.OrdinalIgnoreCase));
+                a.Name.Contains($"_Release_{arch}", StringComparison.OrdinalIgnoreCase) &&
+                a.Name.Contains("-Preview", StringComparison.OrdinalIgnoreCase) == wantPreview);
 
             if (matchingAsset?.BrowserDownloadUrl != null &&
                 Uri.TryCreate(matchingAsset.BrowserDownloadUrl, UriKind.Absolute, out var downloadUri))
@@ -187,7 +227,14 @@ public sealed class AppUpdateManager : IAppUpdateManager
         }
     }
 
+    // 이슈 #296: 채널에 따라 GitHub 릴리스 폴백 소스를 분기. Retail 은 /releases/latest(프리릴리스 제외),
+    // Preview 는 /releases 목록에서 최신 프리릴리스를 고른다.
     private async Task<GitHubReleaseInfo?> GetLatestReleaseInfoAsync(CancellationToken cancellationToken)
+        => _channel == ReleaseChannel.Preview
+            ? await GetLatestPreviewReleaseInfoAsync(cancellationToken).ConfigureAwait(false)
+            : await GetLatestRetailReleaseInfoAsync(cancellationToken).ConfigureAwait(false);
+
+    private async Task<GitHubReleaseInfo?> GetLatestRetailReleaseInfoAsync(CancellationToken cancellationToken)
     {
         var targetUri = new Uri($"https://api.github.com/repos/{Owner}/{Repo}/releases/latest", UriKind.Absolute);
         var httpClient = _httpClientFactory.CreateGitHubRestApiClient();
@@ -199,6 +246,31 @@ public sealed class AppUpdateManager : IAppUpdateManager
         var jsonDocument = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return ParseReleaseInfo(jsonDocument.RootElement);
+    }
+
+    private async Task<GitHubReleaseInfo?> GetLatestPreviewReleaseInfoAsync(CancellationToken cancellationToken)
+    {
+        // /releases 는 최신순 배열. 첫 프리릴리스를 미리 보기 최신으로 본다.
+        var targetUri = new Uri($"https://api.github.com/repos/{Owner}/{Repo}/releases?per_page=30", UriKind.Absolute);
+        var httpClient = _httpClientFactory.CreateGitHubRestApiClient();
+
+        using var response = await httpClient.GetAsync(targetUri, cancellationToken).ConfigureAwait(false);
+        response.EnsureSuccessStatusCode();
+
+        using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        var jsonDocument = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        if (jsonDocument.RootElement.ValueKind != JsonValueKind.Array)
+            return null;
+
+        foreach (var releaseElement in jsonDocument.RootElement.EnumerateArray())
+        {
+            var info = ParseReleaseInfo(releaseElement);
+            if (info.Prerelease)
+                return info;
+        }
+
+        return null;
     }
 
     private static GitHubReleaseInfo ParseReleaseInfo(JsonElement element)
@@ -219,6 +291,7 @@ public sealed class AppUpdateManager : IAppUpdateManager
             TagName = element.TryGetProperty("tag_name", out var tagName) ? tagName.GetString() : null,
             Name = element.TryGetProperty("name", out var name) ? name.GetString() : null,
             HtmlUrl = element.TryGetProperty("html_url", out var htmlUrl) ? htmlUrl.GetString() : null,
+            Prerelease = element.TryGetProperty("prerelease", out var prerelease) && prerelease.ValueKind == JsonValueKind.True,
             Assets = assets
         };
     }
@@ -252,6 +325,7 @@ public sealed class AppUpdateManager : IAppUpdateManager
         public string? TagName { get; set; }
         public string? Name { get; set; }
         public string? HtmlUrl { get; set; }
+        public bool Prerelease { get; set; }
         public GitHubAssetInfo[]? Assets { get; set; }
     }
 

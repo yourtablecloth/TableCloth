@@ -128,6 +128,14 @@ namespace TableCloth.Models.Configuration
         public int IdleAutoLogoutMinutes { get; set; } = 10;
 
         /// <summary>
+        /// 업데이트를 받아올 릴리스 링(채널). 기본값은 <see cref="ReleaseChannel.Retail"/>(안정).
+        /// <see cref="ReleaseChannel.Preview"/>로 바꾸면 선행 검증용 프리릴리스(미리 보기)를 받습니다(이슈 #296).
+        /// JSON 에는 문자열("Retail"/"Preview")로 저장되어 사람이 읽기 쉽고 값 추가에도 안정적입니다.
+        /// </summary>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ReleaseChannel UpdateChannel { get; set; } = ReleaseChannel.Retail;
+
+        /// <summary>
         /// Disclaimer 알림을 표시해야 하는지 여부를 반환합니다.
         /// </summary>
         /// <param name="currentTime">현재 시간 (UTC)</param>
