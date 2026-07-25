@@ -29,6 +29,11 @@ var showHelp = args.Contains("--help") || args.Contains("-h") || args.Contains("
 var doSign = args.Contains("--sign") || args.Contains("-S");
 var signSubject = GetArgValue("--sign-subject") ?? Environment.GetEnvironmentVariable("TABLECLOTH_SIGN_SUBJECT");
 var timestampUrl = GetArgValue("--timestamp-url") ?? "http://time.certum.pl";
+// 이슈 #296: 미리 보기(Preview) 채널 게시. Velopack 채널 preview-<arch> / spork-preview-<arch>,
+// 자산명 "-Preview" 삽입, 버전은 SemVer 프리릴리스(X.Y.Z-preview.N). 무설치/부트스트래퍼 고정 URL 별칭은
+// latest/download(=Retail) 계약이라 preview 에서는 생성하지 않는다. 설계: docs/RELEASE_CHANNELS.md.
+var isPreview = args.Contains("--preview");
+var previewNumber = GetArgValue("--preview-number") ?? "1";
 
 if (showHelp)
 {
@@ -45,6 +50,10 @@ if (showHelp)
                                    Requires an active SimplySign Desktop session.
               --sign-subject <CN>  Certificate subject substring (or set TABLECLOTH_SIGN_SUBJECT).
               --timestamp-url <u>  RFC 3161 timestamp URL (default: http://time.certum.pl).
+              --preview            Build for the Preview ring (preview-<arch> channel,
+                                   "-Preview" asset names, X.Y.Z-preview.N version). Skips
+                                   no-install/bootstrapper fixed-URL aliases (Retail-only).
+              --preview-number <N> Preview iteration number for the version suffix (default: 1).
           -h, --help               Show this help message
         """);
     return 0;
@@ -141,7 +150,9 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
     // Convert to SemVer (Major.Minor.Patch)
     var versionParts = projectVersion.Split('.');
     var version = $"{versionParts[0]}.{versionParts[1]}.{versionParts[2]}";
-    Console.WriteLine($"Build Version: {version}");
+    // 이슈 #296: Preview 는 Velopack 에 SemVer2 프리릴리스로 게시(정상 순서 비교 → 프리뷰 간 자동 업데이트).
+    var packVersion = isPreview ? $"{version}-preview.{previewNumber}" : version;
+    Console.WriteLine($"Build Version: {version}" + (isPreview ? $"  (Preview pack version: {packVersion})" : ""));
     Console.WriteLine();
 
     if (!skip)
@@ -187,20 +198,21 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             Console.WriteLine();
             Console.WriteLine("Creating Velopack package...");
             PruneSymbols(publishDir); // M5: 대용량 네이티브 pdb 를 패키지에서 제외
+            // 이슈 #296: Preview 는 채널을 preview-<arch> 로 분리(정식 <arch> 와 메타데이터 충돌 없음).
+            var tcChannel = isPreview ? $"preview-{platform}" : platform;
             var packArgs = new List<string>
             {
                 "--yes", "pack",
                 "-u", appId,
-                "-v", version,
+                "-v", packVersion,
                 "-p", publishDir,
                 "-e", $"{appId}.exe",
                 "-o", releasesDir,
                 "--packTitle", appId,
                 "--packAuthors", "TableCloth Project",
                 "--icon", iconPath,
-                // 채널로 아키텍처를 분리해 x64/arm64 의 Setup/Portable/메타데이터
-                // 이름이 충돌하지 않게 한다 (build.yml 과 동일).
-                "--channel", platform,
+                // 채널로 아키텍처(+링)를 분리해 Setup/Portable/메타데이터 이름 충돌을 막는다.
+                "--channel", tcChannel,
             };
             // 코드 서명(--sign): Release 패키지에 한해 Velopack 이 pack 시점에
             // 앱 바이너리 + Update.exe + Setup.exe 를 한 번에 서명한다. signtool 은
@@ -218,12 +230,14 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             // 규칙(TableCloth_<4파트버전>_<config>_<arch>{.exe,_Portable.zip})으로 변경한다.
             // build.yml 의 rename 단계와 동일하므로, (서명된) 산출물을 그대로 GitHub
             // 릴리스에 업로드할 수 있고 winget 자산 매칭과도 호환된다.
-            var assetPrefix = $"TableCloth_{projectVersion}_{config}_{platform}";
+            var assetPrefix = isPreview
+                ? $"TableCloth-Preview_{projectVersion}_{config}_{platform}"
+                : $"TableCloth_{projectVersion}_{config}_{platform}";
             RenameRelease(
-                Path.Combine(releasesDir, $"TableCloth-{platform}-Setup.exe"),
+                Path.Combine(releasesDir, $"TableCloth-{tcChannel}-Setup.exe"),
                 Path.Combine(releasesDir, $"{assetPrefix}.exe"));
             RenameRelease(
-                Path.Combine(releasesDir, $"TableCloth-{platform}-Portable.zip"),
+                Path.Combine(releasesDir, $"TableCloth-{tcChannel}-Portable.zip"),
                 Path.Combine(releasesDir, $"{assetPrefix}_Portable.zip"));
 
             // === Spork 단독 배포/재사용 아티팩트 (TableCloth 와 동일한 Velopack 형태) ===
@@ -298,21 +312,21 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             Console.WriteLine();
             Console.WriteLine("Creating Velopack package (Spork)...");
             PruneSymbols(sporkPublishDir); // M5: 대용량 네이티브 pdb 를 패키지에서 제외
+            // 이슈 #296: Preview 는 spork-preview-<arch> 채널로 분리.
+            var sporkChannel = isPreview ? $"spork-preview-{platform}" : $"spork-{platform}";
             var sporkPackArgs = new List<string>
             {
                 "--yes", "pack",
                 "-u", "Spork",
-                "-v", version,
+                "-v", packVersion,
                 "-p", sporkPublishDir,
                 "-e", "Spork.exe",
                 "-o", sporkReleasesDir,
                 "--packTitle", "TableCloth Spork",
                 "--packAuthors", "TableCloth Project",
                 "--icon", sporkIcon,
-                // 채널을 'spork-<arch>' 로 두어 TableCloth(채널 '<arch>')와 메타데이터
-                // (releases.<channel>.json / RELEASES-<channel> / assets.<channel>.json)
-                // 이름이 겹치지 않게 한다 — 둘을 같은 GitHub 릴리스에 올릴 수 있어야 하므로.
-                "--channel", $"spork-{platform}",
+                // 채널을 'spork(-preview)-<arch>' 로 두어 TableCloth 및 정식/프리뷰 메타데이터 이름 충돌을 막는다.
+                "--channel", sporkChannel,
             };
             if (doSign && config == "Release")
             {
@@ -325,24 +339,32 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             // ⚠️ 공개 다운로드 계약(public contract): 아래 포터블 zip 자산명은 무설치 웹앱
             // (yourtablecloth.app)의 다운로더가 의존한다. 변경 시 웹앱이 조용히 깨지므로 신중히.
             // 규칙/예시는 docs/PORTABLE_MODE2_TODO.md 의 "다운로드 자산명 계약" 절 참조.
-            var sporkPrefix = $"Spork_{projectVersion}_{config}_{platform}";
+            var sporkPrefix = isPreview
+                ? $"Spork-Preview_{projectVersion}_{config}_{platform}"
+                : $"Spork_{projectVersion}_{config}_{platform}";
             RenameRelease(
-                Path.Combine(sporkReleasesDir, $"Spork-spork-{platform}-Setup.exe"),
+                Path.Combine(sporkReleasesDir, $"Spork-{sporkChannel}-Setup.exe"),
                 Path.Combine(sporkReleasesDir, $"{sporkPrefix}.exe"));
             RenameRelease(
-                Path.Combine(sporkReleasesDir, $"Spork-spork-{platform}-Portable.zip"),
+                Path.Combine(sporkReleasesDir, $"Spork-{sporkChannel}-Portable.zip"),
                 Path.Combine(sporkReleasesDir, $"{sporkPrefix}_Portable.zip"));
 
             // 버전프리 별칭(고정 URL): github.com/.../releases/latest/download/Spork_<arch>_Portable.zip
             // 런처가 무인자로 항상 최신을 받는 baked default 가 이 이름에 의존한다. Release 만.
+            // 이슈 #296: latest/download 는 정식 릴리스만 가리키므로 Preview 에서는 별칭을 만들지 않는다.
             // (공개 계약: EXPRESS_BOOTSTRAPPER_DESIGN.md §10, PARAMETERIZED_WSB_SPEC §7)
-            if (config == "Release")
+            if (config == "Release" && !isPreview)
             {
                 File.Copy(
                     Path.Combine(sporkReleasesDir, $"{sporkPrefix}_Portable.zip"),
                     Path.Combine(sporkReleasesDir, $"Spork_{platform}_Portable.zip"), overwrite: true);
                 Console.WriteLine($"Aliased -> Spork_{platform}_Portable.zip");
             }
+
+            // 이슈 #296: 무설치 부트스트래퍼/.wsb 는 latest/download(=Retail) 고정 URL 계약이라 Preview 에서는
+            // 만들지 않는다. 이 블록은 config 루프의 마지막이므로 여기서 건너뛴다.
+            if (isPreview)
+                continue;
 
             // === 무설치 부트스트래퍼 (Win32/GDI + NativeAOT 단일 exe) ===
             // 원격 실행 코드이므로 서명 범위 대상(현재 TODO: 아래 참조). NativeAOT 게시는
