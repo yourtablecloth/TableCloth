@@ -23,9 +23,14 @@ jobs:
   winget:
     name: Publish winget package
     runs-on: windows-latest
-    # released 트리거는 이미 draft/prerelease 를 제외하지만, 향후 published 로
-    # 바꾸더라도 안전하도록 방어적으로 한 번 더 가드한다. 수동 dispatch 는 항상 실행.
-    if: ${{ github.event_name == 'workflow_dispatch' || (!github.event.release.prerelease && !github.event.release.draft) }}
+    # released 트리거는 이미 draft/prerelease 를 제외하지만, 향후 published 로 바꾸더라도 안전하도록
+    # 방어적으로 한 번 더 가드한다. 이슈 #296: 프리뷰 릴리스(v*-preview.*)는 winget 으로 배포하지 않는다 —
+    # 자동(release) 경로는 prerelease 제외로 이미 안전하고, 수동(workflow_dispatch) 재실행도 프리뷰 태그면 건너뛴다.
+    if: >-
+      ${{
+        (github.event_name == 'workflow_dispatch' && !contains(github.event.inputs.release_tag, '-preview'))
+        || (github.event_name == 'release' && !github.event.release.prerelease && !github.event.release.draft)
+      }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
