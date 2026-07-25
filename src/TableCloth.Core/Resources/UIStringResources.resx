@@ -774,6 +774,9 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="AboutWindow_MoreContributorsTooltip" xml:space="preserve">
     <value>And more contributors... Thank you!</value>
   </data>
+  <data name="AboutWindow_MoreMenuTooltip" xml:space="preserve">
+    <value>More</value>
+  </data>
   <data name="AboutWindow_AnonymousContributorsFormat" xml:space="preserve">
     <value>and {0} anonymous</value>
   </data>

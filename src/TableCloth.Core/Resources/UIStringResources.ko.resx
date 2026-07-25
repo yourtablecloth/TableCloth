@@ -773,6 +773,9 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="AboutWindow_MoreContributorsTooltip" xml:space="preserve">
     <value>외 많은 분들... 고맙습니다!</value>
   </data>
+  <data name="AboutWindow_MoreMenuTooltip" xml:space="preserve">
+    <value>더 보기</value>
+  </data>
   <data name="AboutWindow_AnonymousContributorsFormat" xml:space="preserve">
     <value>외 익명 {0}명</value>
   </data>

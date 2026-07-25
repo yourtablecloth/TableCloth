@@ -132,6 +132,12 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string AboutWindow_MoreMenuTooltip {
+            get {
+                return ResourceManager.GetString("AboutWindow_MoreMenuTooltip", resourceCulture);
+            }
+        }
+
         public static string AboutWindow_AnonymousContributorsFormat {
             get {
                 return ResourceManager.GetString("AboutWindow_AnonymousContributorsFormat", resourceCulture);
