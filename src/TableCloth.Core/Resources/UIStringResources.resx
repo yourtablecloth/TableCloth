@@ -461,6 +461,21 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Options_Section_Preview_Description" xml:space="preserve">
     <value>Preview features are experimental and may change or be removed without notice. Enable only if you'd like to try them.</value>
   </data>
+  <data name="Option_UpdateChannel_Label" xml:space="preserve">
+    <value>Update channel</value>
+  </data>
+  <data name="Option_UpdateChannel_Description" xml:space="preserve">
+    <value>Choose which release ring this app updates from. Stable is recommended for most users; Preview delivers early builds for testing.</value>
+  </data>
+  <data name="Option_UpdateChannel_Retail" xml:space="preserve">
+    <value>Stable (recommended)</value>
+  </data>
+  <data name="Option_UpdateChannel_Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Option_UpdateChannel_PreviewWarning" xml:space="preserve">
+    <value>Preview builds are the in-progress Avalonia + Native AOT rewrite. They are experimental and may be unstable. You can switch back to Stable anytime; the change takes effect on the next update check.</value>
+  </data>
   <data name="Option_EnableIdleAutoLogout" xml:space="preserve">
     <value>Auto-close when idle (Preview)</value>
   </data>

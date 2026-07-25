@@ -135,6 +135,23 @@
                 <StackPanel Margin="12">
                     <TextBlock Margin="0 0 0 8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
                                Text="{x:Static res:UIStringResources.Options_Section_Preview_Description}" />
+
+                    <!-- 이슈 #296: 업데이트 릴리스 링(안정/미리 보기). 안정=현행, 미리 보기=선행(AOT 전환본) 프리릴리스. -->
+                    <TextBlock Margin="0 4 0 2" FontWeight="SemiBold"
+                               Text="{x:Static res:UIStringResources.Option_UpdateChannel_Label}" />
+                    <TextBlock Margin="0 0 0 4" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
+                               Text="{x:Static res:UIStringResources.Option_UpdateChannel_Description}" />
+                    <RadioButton Margin="0 2" GroupName="UpdateChannel"
+                                 Content="{x:Static res:UIStringResources.Option_UpdateChannel_Retail}"
+                                 IsChecked="{Binding SelectedUpdateChannel, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Retail, Mode=TwoWay}" />
+                    <RadioButton Margin="0 2" GroupName="UpdateChannel"
+                                 Content="{x:Static res:UIStringResources.Option_UpdateChannel_Preview}"
+                                 IsChecked="{Binding SelectedUpdateChannel, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Preview, Mode=TwoWay}" />
+                    <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
+                               Text="{x:Static res:UIStringResources.Option_UpdateChannel_PreviewWarning}" />
+
+                    <Border Height="1" Margin="0 12" Background="{DynamicResource ControlSecondaryForeground}" Opacity="0.25" />
+
                     <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_EnableIdleAutoLogout}" IsChecked="{Binding EnableIdleAutoLogout}" />
                     <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
                                Text="{x:Static res:UIStringResources.Option_EnableIdleAutoLogout_Description}" />

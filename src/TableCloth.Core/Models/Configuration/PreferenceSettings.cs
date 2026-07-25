@@ -128,6 +128,14 @@ namespace TableCloth.Models.Configuration
         public int IdleAutoLogoutMinutes { get; set; } = 10;
 
         /// <summary>
+        /// 업데이트를 받아올 릴리스 링(채널). 기본값은 <see cref="ReleaseChannel.Retail"/>(안정).
+        /// <see cref="ReleaseChannel.Preview"/>로 바꾸면 선행 검증용 프리릴리스(미리 보기)를 받습니다(이슈 #296).
+        /// JSON 에는 문자열("Retail"/"Preview")로 저장된다(TableClothJsonContext 의 UseStringEnumConverter).
+        /// Retail(1.20.x)이 쓴 설정과 형식이 동일해 미리 보기로 전환한 사용자의 설정이 그대로 이어진다.
+        /// </summary>
+        public ReleaseChannel UpdateChannel { get; set; } = ReleaseChannel.Retail;
+
+        /// <summary>
         /// Disclaimer 알림을 표시해야 하는지 여부를 반환합니다.
         /// </summary>
         /// <param name="currentTime">현재 시간 (UTC)</param>

@@ -10,7 +10,9 @@ namespace TableCloth.Serialization;
 ///
 /// App 라이브러리에 두되, 진입점(TableCloth) 프로젝트는 <c>InternalsVisibleTo</c>로 internal 컨텍스트에 접근한다.
 /// </summary>
-[JsonSourceGenerationOptions(WriteIndented = true, AllowTrailingCommas = true)]
+// 이슈 #296: UseStringEnumConverter=true 로 ReleaseChannel(UpdateChannel) 등 enum 을 문자열로 (역)직렬화한다.
+// 소스젠 기반이라 Native AOT 안전하며, 문자열 저장은 Retail(1.20.x, 리플렉션 JSON)이 쓴 설정과도 호환된다.
+[JsonSourceGenerationOptions(WriteIndented = true, AllowTrailingCommas = true, UseStringEnumConverter = true)]
 [JsonSerializable(typeof(PreferenceSettings))]
 internal sealed partial class TableClothJsonContext : JsonSerializerContext
 {

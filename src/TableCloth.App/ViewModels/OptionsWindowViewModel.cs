@@ -119,6 +119,9 @@ public partial class OptionsWindowViewModel : ObservableObject
                 ? currentConfig.IdleAutoLogoutMinutes
                 : 10;
 
+            // 이슈 #296: 업데이트 릴리스 링(안정/미리 보기).
+            SelectedUpdateChannel = currentConfig.UpdateChannel;
+
             RefreshDataDirectoryDisplay(currentConfig.DataDirectoryHostPath);
 
             // 사용자 폴더 목록을 환경 설정에서 로드하고 가용성을 검증해 화면에 표시한다.
@@ -456,6 +459,11 @@ public partial class OptionsWindowViewModel : ObservableObject
     /// <summary>유휴 허용 시간(분) 선택지. ComboBox에 바인딩된다.</summary>
     public IReadOnlyList<int> IdleTimeoutOptions { get; } = new[] { 5, 10, 15, 30 };
 
+    // 이슈 #296: 업데이트 릴리스 링(안정/미리 보기). 미리 보기 탭의 라디오 버튼과 EnumBooleanConverter 로 바인딩.
+    // 변경 시 저장만 하며(재시작 불필요), 다음 업데이트 확인부터 선택한 채널이 적용된다.
+    [ObservableProperty]
+    private ReleaseChannel _selectedUpdateChannel = ReleaseChannel.Retail;
+
     /// <summary>
     /// 데이터 디렉터리 탭에 표시되는 현재 유효 Data 경로(설정값이 없으면 호스트 기본 경로).
     /// </summary>
@@ -570,6 +578,10 @@ public partial class OptionsWindowViewModel : ObservableObject
 
             case nameof(IdleAutoLogoutMinutes):
                 currentConfig.IdleAutoLogoutMinutes = viewModel.IdleAutoLogoutMinutes;
+                break;
+
+            case nameof(SelectedUpdateChannel):
+                currentConfig.UpdateChannel = viewModel.SelectedUpdateChannel;
                 break;
 
             default:

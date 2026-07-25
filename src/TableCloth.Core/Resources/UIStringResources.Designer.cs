@@ -1239,6 +1239,36 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string Option_UpdateChannel_Label {
+            get {
+                return ResourceManager.GetString("Option_UpdateChannel_Label", resourceCulture);
+            }
+        }
+
+        public static string Option_UpdateChannel_Description {
+            get {
+                return ResourceManager.GetString("Option_UpdateChannel_Description", resourceCulture);
+            }
+        }
+
+        public static string Option_UpdateChannel_Retail {
+            get {
+                return ResourceManager.GetString("Option_UpdateChannel_Retail", resourceCulture);
+            }
+        }
+
+        public static string Option_UpdateChannel_Preview {
+            get {
+                return ResourceManager.GetString("Option_UpdateChannel_Preview", resourceCulture);
+            }
+        }
+
+        public static string Option_UpdateChannel_PreviewWarning {
+            get {
+                return ResourceManager.GetString("Option_UpdateChannel_PreviewWarning", resourceCulture);
+            }
+        }
+
         public static string Option_EnableIdleAutoLogout {
             get {
                 return ResourceManager.GetString("Option_EnableIdleAutoLogout", resourceCulture);
