@@ -1,0 +1,22 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Styles.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<MergeResourceInclude Source="/Styling/Controls/ProgressRingStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/ScrollBarStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/ScrollViewerStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/ContentControlStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/TransitioningContentControlStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/ItemsControlStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/LabelStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/ButtonStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/ListBoxStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/TextBoxStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/CheckBoxStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/TabControlStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/WindowStyles.axaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Styles.Resources>
+</Styles> 

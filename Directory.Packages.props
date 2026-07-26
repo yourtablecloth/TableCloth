@@ -33,6 +33,8 @@
 		<PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.18" />
 		<PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.18" />
 		<PackageVersion Include="Avalonia.Diagnostics" Version="11.3.18" />
+		<!-- 이슈 #296: 공용 테마(TableCloth.Theme)의 ProgressRingAnimatedVisual(SkiaSharp/Composition 커스텀 비주얼)용. -->
+		<PackageVersion Include="Avalonia.Skia" Version="11.3.18" />
 		<!-- 이슈 #296: Lemon.Hosting.AvaloniauiDesktop 는 Avalonia 11.3.x 의 Dispatcher.MainLoop 와 비호환(PlatformNotSupported)
 		     이어서 폐기. 표준 AppBuilder.StartWithClassicDesktopLifetime + ServiceProvider 정적 홀더로 대체. -->
 		<PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />

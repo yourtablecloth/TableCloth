@@ -1,6 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="using:TableCloth.Converters"
+             xmlns:sty="using:TableCloth.Theme.Styling"
              x:Class="TableCloth.TableClothApplication"
              RequestedThemeVariant="Default">
     <!--
@@ -16,6 +17,13 @@
             <converters:BooleanToBackgroundConverter x:Key="BooleanToBackgroundConverter" />
             <converters:BooleanToReadOnlyTextConverter x:Key="BooleanToReadOnlyTextConverter" />
 
+            <!-- 이슈 #296: VNext(Fluentv2) 테마 액센트/폰트. FluentAvaloniaTheme.CustomAccentColor 및
+                 본문(SUITE)·고정폭(Roboto Mono) 폰트 키. 폰트는 avares://TableCloth.Theme/Assets/Fonts 에서 로드. -->
+            <Color x:Key="AccentColor">#D64549</Color>
+            <Color x:Key="AccentBrightColor">#EB4B4E</Color>
+            <FontFamily x:Key="ContentControlThemeFontFamily">avares://TableCloth.Theme/Assets/Fonts#SUITE</FontFamily>
+            <FontFamily x:Key="FixedFontFamily">avares://TableCloth.Theme/Assets/Fonts#Roboto Mono</FontFamily>
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://TableCloth.App/Themes/Colors.axaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -23,7 +31,9 @@
     </Application.Resources>
 
     <Application.Styles>
-        <FluentTheme />
+        <!-- 이슈 #296: Avalonia 내장 FluentTheme → VNext 벤더링 Fluentv2(FluentAvalonia) 테마로 교체.
+             UseSystemFontOnWindows=False 로 번들 폰트(SUITE) 사용, 액센트는 위 AccentColor(#D64549). -->
+        <sty:FluentAvaloniaTheme UseSystemFontOnWindows="False" CustomAccentColor="{StaticResource AccentColor}" />
 
         <!-- 이슈 #296: WPF Hyperlink(인라인 Command) → 링크형 Button. 즐겨찾기 별은 :checked 의사클래스로 색 전환. -->
         <Style Selector="Button.link">

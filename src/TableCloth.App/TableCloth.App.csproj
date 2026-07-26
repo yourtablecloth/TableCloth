@@ -48,6 +48,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+		<!-- 이슈 #296: VNext 벤더링 공용 테마(Fluentv2). App.axaml 이 FluentTheme 대신 이 테마를 적용. -->
+		<ProjectReference Include="..\TableCloth.Theme\TableCloth.Theme.csproj" />
 	</ItemGroup>
 
 	<!--

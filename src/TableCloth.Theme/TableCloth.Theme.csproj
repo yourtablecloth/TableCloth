@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!--
+		이슈 #296: TableClothVNext(github.com/yourtablecloth/TableClothVNext)에서 벤더링한 FluentAvalonia 기반
+		공용 테마(Fluentv2). TableCloth.App / Spork.App 두 Avalonia 모듈이 공유 참조한다.
+		테마 자체는 크로스 플랫폼(Avalonia + Skia)이라 향후 macOS 대비해 TFM 은 플랫폼 중립(net10.0)으로 둔다.
+	-->
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<!-- VNext(TableCloth3) 소스는 ImplicitUsings 전제로 작성됨(System/Collections.Generic 등 암시 using). -->
+		<ImplicitUsings>enable</ImplicitUsings>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<IsAotCompatible>true</IsAotCompatible>
+		<LangVersion>preview</LangVersion>
+		<Nullable>enable</Nullable>
+		<Deterministic>true</Deterministic>
+		<RootNamespace>TableCloth.Theme</RootNamespace>
+		<AssemblyName>TableCloth.Theme</AssemblyName>
+		<Description>Shared Avalonia theme (vendored FluentAvalonia / Fluentv2) for TableCloth and Spork — issue #296.</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Avalonia 코어(+Controls). Avalonia.Skia 는 ProgressRingAnimatedVisual 의 SkiaSharp/Composition 커스텀 비주얼용. -->
+		<PackageReference Include="Avalonia" />
+		<PackageReference Include="Avalonia.Skia" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- 번들 폰트: SUITE(한글 본문), Roboto Mono(고정폭). avares://TableCloth.Theme/Assets/Fonts#<이름> 으로 참조. -->
+		<AvaloniaResource Include="Assets\Fonts\*.ttf" />
+	</ItemGroup>
+
+</Project>
