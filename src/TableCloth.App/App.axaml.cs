@@ -66,8 +66,14 @@ public partial class TableClothApplication : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    private void OnInitializeDone(IClassicDesktopStyleApplicationLifetime desktop, IServiceProvider sp, DialogRequestEventArgs e)
+    private async void OnInitializeDone(IClassicDesktopStyleApplicationLifetime desktop, IServiceProvider sp, DialogRequestEventArgs e)
     {
+        // 이슈 #296: 부팅이 인트로 애니메이션보다 빨리 끝나더라도, 애니메이션이 완전히 끝난 뒤에
+        // 스플래시를 숨기고 닫는다(애니메이션 도중 창이 사라지지 않게). InitializeDone 은 UI 스레드
+        // TaskFactory 로 발생하므로 await 이후 연속 실행도 UI 스레드다.
+        if (_splashScreen is not null)
+            await _splashScreen.IntroAnimationTask;
+
         _splashScreen?.Hide();
 
         if (e.DialogResult.HasValue && e.DialogResult.Value)

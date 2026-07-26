@@ -29,11 +29,17 @@ public partial class SplashScreen : Window
     public SplashScreenViewModel ViewModel
         => (SplashScreenViewModel)DataContext!;
 
+    // 이슈 #296: 인트로 애니메이션 완료 Task. 부팅이 애니메이션보다 빨리 끝나도 애니메이션이
+    // 완전히 끝난 뒤에 스플래시를 닫도록, App(OnInitializeDone) 이 이 Task 를 await 한다.
+    private Task _introAnimation = Task.CompletedTask;
+
+    public Task IntroAnimationTask => _introAnimation;
+
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         // 이슈 #296: VNext 스플래시 인트로 애니메이션(식탁보 슬라이드인 + 타이틀 페이드인)을 재생한다.
         // 부트 게이트라 자동 페이드아웃/제거는 하지 않는다(창은 부팅 완료 시 InitializeDone 로 닫힘).
-        _ = PlayIntroAnimationAsync();
+        _introAnimation = PlayIntroAnimationAsync();
 
         // 이슈 #296: WPF Interaction.Triggers(Loaded) → 코드비하인드 Loaded 훅.
         if (ViewModel.SplashScreenLoadedCommand.CanExecute(null))
