@@ -132,6 +132,7 @@ public static class UseSporkExtensions
             .AddWindow<AhnLabSafeTxGuideWindow, AhnLabSafeTxGuideWindowViewModel>()
             .AddWindow<InstallStepsWindow, InstallStepsWindowViewModel>()
             .AddWindow<MainWindow, MainWindowViewModel>()
+            .AddWindow<SplashScreen, SplashScreenViewModel>()
             .AddTransient<SiteReportWindow>();
 
         // 이슈 #296: WPF Application 등록 폐기. Avalonia App(SporkApplication)은 진입점에서 표준

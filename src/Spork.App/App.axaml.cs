@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TableCloth;
 using TableCloth.Models;
+using TableCloth.Resources;
 
 namespace Spork
 {
@@ -74,7 +75,12 @@ namespace Spork
                 return;
             }
 
+            // 이슈 #296: TableCloth 와 동일한 스플래시(빨간 식탁보)를 부팅 동안 표시한다.
+            var splashScreen = appUserInterface.CreateSplashScreen();
+            splashScreen.Show();
+
             var warnings = new List<string>();
+            splashScreen.ViewModel.Status = UIStringResources.Status_EvaluatingRequirementsMet;
             var result = await appStartup.HasRequirementsMetAsync(warnings);
 
             if (!result.Succeed)
@@ -93,6 +99,7 @@ namespace Spork
             if (warnings.Any())
                 appMessageBox.DisplayError(string.Join(Environment.NewLine + Environment.NewLine, warnings), false);
 
+            splashScreen.ViewModel.Status = UIStringResources.Status_InitializingApplication;
             result = await appStartup.InitializeAsync(warnings);
 
             if (!result.Succeed)
@@ -108,10 +115,15 @@ namespace Spork
                 }
             }
 
+            // 이슈 #296: 인트로 애니메이션이 완전히 끝난 뒤에 스플래시를 닫고 메인 창으로 전환한다.
+            await splashScreen.IntroAnimationTask;
+            splashScreen.Hide();
+
             var mainWindow = appUserInterface.CreateMainWindow();
             desktop.MainWindow = mainWindow;
             desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
             mainWindow.Show();
+            splashScreen.Close();
         }
     }
 }

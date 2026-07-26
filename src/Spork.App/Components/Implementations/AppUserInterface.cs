@@ -48,6 +48,9 @@ namespace Spork.Components.Implementations
         public MainWindow CreateMainWindow()
             => _serviceProvider.GetRequiredService<MainWindow>();
 
+        public SplashScreen CreateSplashScreen()
+            => _serviceProvider.GetRequiredService<SplashScreen>();
+
         public bool? ShowDialog(Window window)
         {
             var result = _applicationService.DispatchInvoke(new Func<bool?>(() =>

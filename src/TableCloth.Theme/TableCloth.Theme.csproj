@@ -28,6 +28,8 @@
 	<ItemGroup>
 		<!-- 번들 폰트: SUITE(한글 본문), Roboto Mono(고정폭). avares://TableCloth.Theme/Assets/Fonts#<이름> 으로 참조. -->
 		<AvaloniaResource Include="Assets\Fonts\*.ttf" />
+		<!-- 공유 이미지: VNext 스플래시(빨간 식탁보) 자산. TableCloth/Spork 두 앱이 공유 참조. -->
+		<AvaloniaResource Include="Assets\Images\*.png" />
 	</ItemGroup>
 
 </Project>
