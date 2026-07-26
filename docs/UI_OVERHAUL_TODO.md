@@ -3,12 +3,16 @@
 > 작업 브랜치: `feature/ui-overhaul-quickstart` (main 반영됨)
 > 시작일: 2026-05-11
 >
-> **상태 최신화 (2026-07-03):** 핵심은 출시됨: 호스트 **QuickStart 진입점**(`Pages/QuickStartPage.xaml`),
-> **데이터 디렉터리 설정**(#282, `SharedLocations.GetEffectiveDataDirectoryPath`), Spork 측 카탈로그 진입.
-> **잔여(진행 중):** ① Phase 2: 호스트에 `CatalogPage.xaml`/`DetailPage.xaml`가 아직 남아 있어(레거시
-> 진입 폴백) 제거/격리 미완, ② 일부 Phase 4/5 정리(리소스 문자열, 테스트, 스크린샷, 부가 UI 배치),
-> ③ "결정 필요/오픈 이슈"의 일부(공동인증서 미사용 UX, 내부 경로 컨벤션, 스냅샷 포맷: 스냅샷은
-> [PARAMETERIZED_WSB_SPEC](PARAMETERIZED_WSB_SPEC.md)/PORTABLE_MODE2와 겹침). → **문서 유지.**
+> **상태 최신화 (2026-07-26):** 핵심은 출시됨(1.20.x 리테일): 호스트 **QuickStart 진입점**
+> (`Pages/QuickStartPage`), **데이터 디렉터리 설정**(#282, `SharedLocations.GetEffectiveDataDirectoryPath`),
+> **Spork 측 카탈로그**(Phase 3 완료 — 사이트 그리드/검색/즐겨찾기/설치 흐름). 이후 Spork 단독 실행 시
+> 비-샌드박스 안내 다이얼로그(1.20.8)도 추가됨.
+> **잔여:** ① Phase 2: 호스트에 `CatalogPage`/`DetailPage`가 레거시 진입 폴백으로 아직 남아 있어 제거/격리 미완,
+> ② 일부 Phase 4/5 정리(리소스 문자열, 테스트, 스크린샷, 부가 UI 배치),
+> ③ 오픈 이슈 일부(공동인증서 미사용 UX, 카탈로그 스냅샷 포맷 — 스냅샷/자산명 계약은
+> [PARAMETERIZED_WSB_SPEC](PARAMETERIZED_WSB_SPEC.md) §7 참조).
+> **참고:** 호스트 UI 전면 재작성은 이슈 **#296(Avalonia + Native AOT 전환)**이 이어받는다 — 레거시 카탈로그
+> 화면 정리(Phase 2)는 그 전환 과정에서 함께 다뤄질 수 있다. → **문서 유지.**
 
 ## 배경과 목표
 

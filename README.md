@@ -64,7 +64,7 @@ winget install TableClothProject.TableCloth
 
 - **런처(SporkBootstrap)**: Win32/GDI + NativeAOT로 만든 약 5MB의 단일 실행 파일입니다. 최신 포터블 식탁보를 무결성 검증, 압축 해제 후 실행하며, 릴리스마다 버전과 무관한 고정 URL로 배포됩니다.
 - **마운트 없는 샌드박스**: 호스트 파일 접근을 원천 차단해 유출 벡터가 없습니다. 파일 기반 인증서를 쓸 수 없으므로 모바일 인증을 기본으로 권장합니다.
-- 설계와 계약 문서: [무설치 런처 설계](docs/EXPRESS_BOOTSTRAPPER_DESIGN.md), [파라미터화된 .wsb 스펙](docs/PARAMETERIZED_WSB_SPEC.md), [무설치 코어(모드 2)](docs/PORTABLE_MODE2_TODO.md).
+- 설계와 계약 문서: [무설치 런처 설계](docs/EXPRESS_BOOTSTRAPPER_DESIGN.md), [파라미터화된 .wsb 스펙](docs/PARAMETERIZED_WSB_SPEC.md).
 
 > 무설치 실행은 런처를 포함한 릴리스부터 사용할 수 있습니다. 자동 업데이트가 필요하면 위의 UniGetUI 또는 winget 설치 방식을 사용하세요. `.wsb`는 이름 해석이 실패할 때만 공용 DNS로 폴백하고 정상 DNS(사내 내부 리졸버 등)는 유지합니다. 공용 DNS가 정책상 막힌 환경이라면 내부 리졸버 사용을 권장합니다([#285](https://github.com/yourtablecloth/TableCloth/issues/285)).
 

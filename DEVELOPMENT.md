@@ -104,7 +104,7 @@ dotnet test src/Spork.Test/Spork.Test.csproj
 TableCloth + Spork 단일 바이너리(verb 기반 CLI) 통합과 단계별 마이그레이션은 완료되어 현행 구조에
 반영되어 있습니다(당시 추적 문서 `docs/UNIFIED_BINARY_TODO.md`는 완료 후 제거, git 이력에 보존).
 무설치/Express 방향의 후속 계약은 [docs/PARAMETERIZED_WSB_SPEC.md](./docs/PARAMETERIZED_WSB_SPEC.md)와
-[docs/PORTABLE_MODE2_TODO.md](./docs/PORTABLE_MODE2_TODO.md)를 참고하세요.
+[docs/EXPRESS_BOOTSTRAPPER_DESIGN.md](./docs/EXPRESS_BOOTSTRAPPER_DESIGN.md)를 참고하세요.
 
 ## Known Issues
 

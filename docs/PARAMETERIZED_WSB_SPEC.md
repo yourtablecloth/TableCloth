@@ -3,7 +3,7 @@
 > 상태: **확정 (2026-07-03)**. 빠른 실행 웹앱, MCP 서버, macOS(macSandbox) 세 소비자가 공유하는
 > 정규 계약. 핵심 설계(설계 B, `{arch}` 토큰, 사이트 위치 인자, 체크섬 맵)는 확정됐고, 소비자별
 > 세부(§9)와 추후 결정(§12: 웹앱 호스팅, MCP 전송)만 각 트랙 착수 시 확정한다.
-> 관련 배경: [PORTABLE_MODE2_TODO.md](PORTABLE_MODE2_TODO.md) (모드 2, 무설치 코어, 자산명 계약).
+> 모드 2(무설치 코어) 배경과 자산명 계약은 본 문서로 통합됐다(§7).
 > 부트스트랩 GUI화: [EXPRESS_BOOTSTRAPPER_DESIGN.md](EXPRESS_BOOTSTRAPPER_DESIGN.md) (§4의 다운로드 이후
 > 단계를 Win32/GDI + NativeAOT exe로 위임, `.ps1`은 shim으로 축소).
 >
@@ -205,7 +205,7 @@ param(
   (무시하고 런처 표시 / 경고). → "열린 결정".
 - MCP, 웹앱은 카탈로그의 실제 `Id`만 넘긴다(화이트리스트). 임의 URL을 여는 경로는 제공하지 않는다.
 
-## 7. 자산명 계약 (PORTABLE_MODE2_TODO에서 승계)
+## 7. 자산명 계약
 
 - 포터블: `Spork_<4파트버전>_<config>_<platform>_Portable.zip`
   - `<platform>` ∈ { `x64`, `arm64` }, `<config>` = `Release`. 예: `Spork_1.20.4.0_Release_arm64_Portable.zip`
@@ -263,7 +263,7 @@ param(
 
 - **정적 부트스트랩의 소유/호스팅**: `tools/no-install/`의 파일을 웹앱이 그대로 호스팅할지, MCP가 동봉할지.
 - **MCP 전송(STDIO/HTTP)**: 트랙 2 착수 시 결정, §9에 반영.
-- (PORTABLE_MODE2_TODO 승계) **세션 종료 wipe 옵션** 유무: 기본 권장은 두지 않음.
+- **세션 종료 wipe 옵션**(모드 2) 유무: 기본 권장은 두지 않음.
 
 ## 13. 비목표 (v1 제외)
 

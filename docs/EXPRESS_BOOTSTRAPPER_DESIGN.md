@@ -2,8 +2,7 @@
 
 > 상태: **확정 (2026-07-05)**. 무설치(Express) 레인에서 포터블 Spork zip을 받는 동안 진행 상황을
 > 보여주는 작은 GUI 다운로더의 설계. 부모 계약: [PARAMETERIZED_WSB_SPEC.md](PARAMETERIZED_WSB_SPEC.md)
-> (파라미터화된 `.wsb` + 부트스트랩 정규 계약), [PORTABLE_MODE2_TODO.md](PORTABLE_MODE2_TODO.md)
-> (모드 2, 무설치 코어, 자산명 계약).
+> (파라미터화된 `.wsb` + 부트스트랩 정규 계약, 모드 2 무설치 코어·자산명 계약 포함).
 >
 > **확정 결정(2026-07-05):** (1) 최신 버전은 **인자 수신 + GitHub 폴백**, (2) UI는 **Win32/GDI(순수 P/Invoke) + NativeAOT**,
 > (3) `spork-bootstrap.ps1`은 **얇은 shim**으로 축소하고 `.wsb` 플레이스홀더 계약(SPEC §3.3)은 **불변**.
@@ -277,8 +276,8 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
 ## 변경 이력
 
 - (초안, 2026-07-05) 확정 결정(인자 수신 + GitHub 폴백 / Win32/CsWin32(GDI) + NativeAOT / `.ps1` shim /
-  `.wsb` 불변)을 반영해 최초 작성. 부모 계약([PARAMETERIZED_WSB_SPEC](PARAMETERIZED_WSB_SPEC.md),
-  [PORTABLE_MODE2_TODO](PORTABLE_MODE2_TODO.md))에서 자산명/부트스트랩 계약 승계.
+  `.wsb` 불변)을 반영해 최초 작성. 부모 계약([PARAMETERIZED_WSB_SPEC](PARAMETERIZED_WSB_SPEC.md))에서
+  자산명/부트스트랩 계약 승계.
 - (정정, 2026-07-05) UI 스택을 Avalonia에서 Win32/GDI로 변경. WinForms/WPF는 내장 COM으로
   NativeAOT 불가(공식 제약 "No built-in COM", dotnet/sdk#34129)임을 확인해 후보에서 제외했고,
   vGPU-off 확실성 + 제3자 런타임 리스크 0을 위해 순수 GDI를 채택.

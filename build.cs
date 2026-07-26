@@ -276,7 +276,7 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
 
             // ⚠️ 공개 다운로드 계약(public contract): 아래 포터블 zip 자산명은 무설치 웹앱
             // (yourtablecloth.app)의 다운로더가 의존한다. 변경 시 웹앱이 조용히 깨지므로 신중히.
-            // 규칙/예시는 docs/PORTABLE_MODE2_TODO.md 의 "다운로드 자산명 계약" 절 참조.
+            // 규칙/예시는 docs/PARAMETERIZED_WSB_SPEC.md 의 "자산명 계약"(§7) 절 참조.
             var sporkPrefix = $"Spork_{projectVersion}_{config}_{platform}";
             RenameRelease(
                 Path.Combine(sporkReleasesDir, $"Spork-spork-{platform}-Setup.exe"),
