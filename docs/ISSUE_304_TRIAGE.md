@@ -18,7 +18,7 @@
 
 ## 2. 부팅 체인과 "무음" 구조
 
-```
+```text
 wsb LogonCommand
   └─ Desktop\App\StartupScript.cmd                        SandboxBuilder.cs:258, 445-452
        ├─ reg add ...CI\Policy VerifiedAndReputablePolicyState=0     (SAC 끄기 시도)
@@ -112,7 +112,9 @@ reg query "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v VerifiedAndReputa
 
 ## 5. 진단 도구
 
-[tools/diagnose_sandbox_boot.cmd](../tools/diagnose_sandbox_boot.cmd) — 위 항목을 한 번에 수집해
+### 5-1. 제보자용 — 실제 세션에서 증거 수집
+
+[tools/diagnose_sandbox_boot.cmd](../tools/diagnose_sandbox_boot.cmd) — §4의 항목을 한 번에 수집해
 `tablecloth-diag.txt`로 남긴다.
 
 1. 호스트의 **Data 폴더**(기본값 `문서\TableCloth\Data`)에 스크립트를 넣는다.
@@ -121,6 +123,20 @@ reg query "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v VerifiedAndReputa
 4. Data는 읽기·쓰기 마운트라 결과 파일이 **호스트에서도 그대로 보인다** → 이슈에 첨부.
 
 출력은 의도적으로 ASCII만 사용한다(게스트 콘솔 코드페이지가 보장되지 않아 한글은 깨질 수 있다).
+제보자에게 실제로 게시한 안내 전문은 [tools/issue304/reporter-comment-2026-07-26.md](../tools/issue304/reporter-comment-2026-07-26.md)에 보존해 두었다.
+
+### 5-2. 메인테이너용 — 맨 샌드박스로 우회책 유효성 측정
+
+[tools/issue304/](../tools/issue304/) — 식탁보와 무관한 빈 샌드박스를 띄워 **게스트의 SAC 기본 상태**와
+**`reg + citool` 우회가 이 빌드에서 아직 듣는지**를 직접 측정한다. 5-1이 "제보자 환경에서 무슨 일이
+벌어졌나"라면 이쪽은 "이 빌드에서 우회책이 유효한가"를 본다.
+
+```powershell
+cd tools/issue304
+./run-local-repro.ps1
+```
+
+읽는 법과 각 프로브의 의미는 [tools/issue304/README.md](../tools/issue304/README.md) 참조.
 
 ## 6. 확인된 환경 사실 (2026-07-26, 메인테이너 PC)
 
