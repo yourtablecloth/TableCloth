@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Spork.ViewModels"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="Spork.Dialogs.SandboxGuidanceWindow"
+        x:DataType="vm:SandboxGuidanceWindowViewModel"
+        Title="{x:Static res:UIStringResources.SandboxGuidance_Title}"
+        Width="560" Height="400" CanResize="False"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+    <Grid RowDefinitions="64,*,Auto,56">
+        <TextBlock Grid.Row="0" Padding="16 0" TextWrapping="Wrap" FontWeight="Bold" FontSize="18"
+                   VerticalAlignment="Center" Background="#2084E8" Foreground="White"
+                   Text="{x:Static res:UIStringResources.SandboxGuidance_Title}" />
+        <Border Grid.Row="1" Margin="16 12" BorderThickness="1" CornerRadius="4"
+                BorderBrush="{DynamicResource ControlDefaultBorderBrush}">
+            <ScrollViewer Padding="10">
+                <SelectableTextBlock Text="{x:Static res:UIStringResources.SandboxGuidance_Message}" TextWrapping="Wrap" />
+            </ScrollViewer>
+        </Border>
+        <CheckBox Grid.Row="2" Margin="16 0 16 6" IsChecked="{Binding DoNotShowAgain}"
+                  Content="{x:Static res:UIStringResources.SandboxGuidance_DoNotShowAgain}" />
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 16 0">
+            <Button Margin="0 0 10 0" Padding="12 5" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}"
+                    Command="{Binding OpenHomepageCommand}" />
+            <Button Padding="12 5" MinWidth="80" HorizontalContentAlignment="Center" IsDefault="True"
+                    Content="{x:Static res:UIStringResources.Button_OkayButton}"
+                    Command="{Binding ContinueCommand}" />
+        </StackPanel>
+    </Grid>
+</Window>

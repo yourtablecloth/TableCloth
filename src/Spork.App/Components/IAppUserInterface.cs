@@ -10,6 +10,7 @@ namespace Spork.Components
         AboutWindow CreateAboutWindow();
         MainWindow CreateMainWindow();
         SplashScreen CreateSplashScreen();
+        SandboxGuidanceWindow CreateSandboxGuidanceWindow();
         PrecautionsWindow CreatePrecautionsWindow(IEnumerable<string> targetServiceIds = null);
         SiteReportWindow CreateSiteReportWindow();
         InstallStepsWindow CreateInstallStepsWindow(IList<StepItemViewModel> steps, bool dryRun, string targetTitle = null, string targetIconKey = null);

@@ -517,6 +517,9 @@ namespace Spork.ViewModels
         /// </summary>
         private async Task EnterCatalogInstallFlowAsync(CatalogInternetService service, bool forceReinstall)
         {
+            // Spork 단독 실행(비-샌드박스)이면 사이트 실행 전에 안내를 띄운다('다시 보지 않기' 지원).
+            MaybeShowNonSandboxGuidance();
+
             // 모달 동안 다음 사이트 선택을 위해 선택값을 마지막에 초기화한다.
             var siteId = service.Id;
             var siteUrl = service.Url;
@@ -553,6 +556,28 @@ namespace Spork.ViewModels
             var installAttempted = installWindow.ViewModel.Succeeded.HasValue;
             if (installAttempted && !string.IsNullOrWhiteSpace(siteUrl))
                 TryOpenSiteUrls(new[] { siteUrl });
+        }
+
+        /// <summary>
+        /// Spork 가 Windows Sandbox 밖(사용자 계정이 WDAGUtilityAccount 가 아님)에서 단독 실행 중이면,
+        /// 사이트 실행 전에 "샌드박스 환경이 아닐 수 있음" 안내 다이얼로그를 띄운다. 사용자가 '다시 보지 않기'를
+        /// 선택하면 억제 플래그를 사용자 데이터에 저장해 이후 표시하지 않는다(의도적 단독 사용자 배려).
+        /// </summary>
+        private void MaybeShowNonSandboxGuidance()
+        {
+            if (Helpers.IsRunningInWindowsSandbox())
+                return;
+            if (_userData.SuppressNonSandboxWarning)
+                return;
+
+            var window = _appUserInterface.CreateSandboxGuidanceWindow();
+            _appUserInterface.ShowDialog(window);
+
+            if (window.ViewModel.DoNotShowAgain)
+            {
+                _userData.SuppressNonSandboxWarning = true;
+                _userDataStore.ScheduleSave();
+            }
         }
 
         private Task RecordUsageAsync(IEnumerable<string> siteIds)

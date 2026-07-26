@@ -51,6 +51,9 @@ namespace Spork.Components.Implementations
         public SplashScreen CreateSplashScreen()
             => _serviceProvider.GetRequiredService<SplashScreen>();
 
+        public SandboxGuidanceWindow CreateSandboxGuidanceWindow()
+            => _serviceProvider.GetRequiredService<SandboxGuidanceWindow>();
+
         public bool? ShowDialog(Window window)
         {
             var result = _applicationService.DispatchInvoke(new Func<bool?>(() =>

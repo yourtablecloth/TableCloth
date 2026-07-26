@@ -35,5 +35,12 @@ namespace TableCloth.Models.UserData
         /// 사이트별 최근 사용 시각(UTC). 카탈로그 정렬/하이라이트에 사용.
         /// </summary>
         public Dictionary<string, DateTime> LastUsedAt { get; set; } = new Dictionary<string, DateTime>();
+
+        /// <summary>
+        /// Spork 를 Windows Sandbox 밖(비-WDAGUtilityAccount)에서 단독 실행할 때 사이트 실행 전 표시하는
+        /// "샌드박스 환경이 아닐 수 있음" 안내 다이얼로그를 다시 보지 않도록 억제할지 여부.
+        /// 사용자가 안내 창의 '다시 보지 않기'를 선택하면 true 로 저장된다.
+        /// </summary>
+        public bool SuppressNonSandboxWarning { get; set; } = false;
     }
 }

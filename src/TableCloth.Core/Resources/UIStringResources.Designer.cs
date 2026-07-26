@@ -97,6 +97,33 @@ namespace TableCloth.Resources {
         }
 
         /// <summary>
+        ///   Windows Sandbox 환경이 아닐 수 있습니다과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SandboxGuidance_Title {
+            get {
+                return ResourceManager.GetString("SandboxGuidance_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Windows Sandbox 비-샌드박스 실행 안내 메시지 본문에 대한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SandboxGuidance_Message {
+            get {
+                return ResourceManager.GetString("SandboxGuidance_Message", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   다시 보지 않기과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string SandboxGuidance_DoNotShowAgain {
+            get {
+                return ResourceManager.GetString("SandboxGuidance_DoNotShowAgain", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Retrieving license information.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string AboutWindow_LoadingLicensesMessage {
