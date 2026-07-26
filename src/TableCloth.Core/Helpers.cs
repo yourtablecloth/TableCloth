@@ -247,5 +247,12 @@ namespace TableCloth
         {
             "WDAGUtilityAccount",
         };
+
+        /// <summary>
+        /// 현재 프로세스가 Windows Sandbox 안(계정: WDAGUtilityAccount)에서 실행 중인지 추정한다.
+        /// wsb LogonCommand 로 부팅된 샌드박스는 사용자 계정이 WDAGUtilityAccount 로 고정된다.
+        /// </summary>
+        public static bool IsRunningInWindowsSandbox()
+            => Array.Exists(SandboxAccountNames, name => string.Equals(name, Environment.UserName, StringComparison.OrdinalIgnoreCase));
     }
 }

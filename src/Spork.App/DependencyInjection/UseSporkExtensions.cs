@@ -132,6 +132,7 @@ public static class UseSporkExtensions
             .AddWindow<AhnLabSafeTxGuideWindow, AhnLabSafeTxGuideWindowViewModel>()
             .AddWindow<InstallStepsWindow, InstallStepsWindowViewModel>()
             .AddWindow<MainWindow, MainWindowViewModel>()
+            .AddWindow<SandboxGuidanceWindow, SandboxGuidanceWindowViewModel>()
             .AddTransient<SiteReportWindow>()
             .AddSingleton<Application>(sp => new SporkApplication(sp.GetRequiredService<IHost>()));
 

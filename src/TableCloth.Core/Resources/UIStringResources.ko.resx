@@ -144,6 +144,19 @@
   <data name="AboutWindow_CopyrightText" xml:space="preserve">
     <value>© 2021-2025 rkttu.com. All rights reserved.</value>
   </data>
+  <data name="SandboxGuidance_Title" xml:space="preserve">
+    <value>Windows Sandbox 환경이 아닐 수 있습니다</value>
+  </data>
+  <data name="SandboxGuidance_Message" xml:space="preserve">
+    <value>현재 사용자 계정이 Windows Sandbox 전용 계정(WDAGUtilityAccount)이 아니어서, 이 프로그램(Spork)이 Windows Sandbox 안에서 실행되고 있지 않을 수 있습니다.
+
+Spork는 원래 식탁보가 만든 일회용 Windows Sandbox 안에서 자동으로 실행되도록 만들어졌습니다. 가상 머신처럼 안전하고 격리된 실행 환경을 찾고 계신다면, 식탁보 본 프로그램을 내려받아 실행해 주세요.
+
+의도적으로 Spork를 단독으로 사용하는 경우에는 이 안내를 무시하고 계속 진행하셔도 됩니다.</value>
+  </data>
+  <data name="SandboxGuidance_DoNotShowAgain" xml:space="preserve">
+    <value>다시 보지 않기</value>
+  </data>
   <data name="AboutWindow_TrademarkText" xml:space="preserve">
     <value>식탁보™는 rkttu.com의 등록 상표입니다.</value>
   </data>

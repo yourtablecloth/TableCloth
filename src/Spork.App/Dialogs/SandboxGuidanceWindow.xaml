@@ -1,0 +1,44 @@
+<Window x:Class="Spork.Dialogs.SandboxGuidanceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Spork.ViewModels"
+        xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Core"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:SandboxGuidanceWindowViewModelForDesigner, IsDesignTimeCreatable=True}"
+        Style="{DynamicResource MainWindowStyle}"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Title="{x:Static res:UIStringResources.SandboxGuidance_Title}" Width="560" Height="400"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="64"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="56"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Padding="14" TextWrapping="WrapWithOverflow" FontWeight="Bold" FontSize="18"
+                   VerticalAlignment="Center"
+                   Background="{Binding Source={x:Static SystemParameters.WindowGlassBrush}}"
+                   Foreground="{Binding Source={x:Static SystemColors.WindowBrush}}"
+                   Text="{x:Static res:UIStringResources.SandboxGuidance_Title}" />
+        <Border Grid.Row="1" Margin="14 12" BorderThickness="1" BorderBrush="#28808080" CornerRadius="4">
+            <ScrollViewer Padding="10" VerticalScrollBarVisibility="Auto">
+                <TextBlock TextWrapping="Wrap" Text="{x:Static res:UIStringResources.SandboxGuidance_Message}" />
+            </ScrollViewer>
+        </Border>
+        <CheckBox Grid.Row="2" Margin="14 0 14 6" VerticalContentAlignment="Center"
+                  IsChecked="{Binding DoNotShowAgain}"
+                  Content="{x:Static res:UIStringResources.SandboxGuidance_DoNotShowAgain}" />
+        <WrapPanel Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 14 0">
+            <Button Margin="0 0 10 0" Padding="10 4" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}"
+                    Command="{Binding OpenHomepageCommand}" />
+            <Button Padding="10 4" MinWidth="80" IsDefault="True"
+                    Content="{x:Static res:UIStringResources.Button_OkayButton}"
+                    Command="{Binding ContinueCommand}" />
+        </WrapPanel>
+    </Grid>
+</Window>

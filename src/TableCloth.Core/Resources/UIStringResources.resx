@@ -144,6 +144,19 @@
   <data name="AboutWindow_CopyrightText" xml:space="preserve">
     <value>© 2021-2025 rkttu.com. All rights reserved.</value>
   </data>
+  <data name="SandboxGuidance_Title" xml:space="preserve">
+    <value>You may not be in a Windows Sandbox environment</value>
+  </data>
+  <data name="SandboxGuidance_Message" xml:space="preserve">
+    <value>This program (Spork) may not be running inside Windows Sandbox, because the current user account is not the Windows Sandbox account (WDAGUtilityAccount).
+
+Spork is designed to run automatically inside a disposable Windows Sandbox created by TableCloth. If you are looking for a safe, isolated environment such as a virtual machine, please download and run the main TableCloth program instead.
+
+If you are using Spork standalone on purpose, you can ignore this notice and continue.</value>
+  </data>
+  <data name="SandboxGuidance_DoNotShowAgain" xml:space="preserve">
+    <value>Don't show this again</value>
+  </data>
   <data name="AboutWindow_TrademarkText" xml:space="preserve">
     <value>식탁보™ is a registered trademark of rkttu.com.</value>
   </data>
