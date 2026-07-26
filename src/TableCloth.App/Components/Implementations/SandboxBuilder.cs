@@ -449,12 +449,51 @@ reg add ""HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls"
 "
             : string.Empty;
 
+        // 이슈 #304: 부팅 브레드크럼.
+        //
+        // 이 batch 가 어디까지 갔는지 남기지 않으면, Spork 가 뜨지 않았을 때 사용자에게도 우리에게도
+        // 단서가 0 이다(콘솔은 즉시 닫히고, Spork 가 뜨기 전이라 Serilog/Sentry 도 아무것도 못 남긴다).
+        // 그래서 각 단계 직후 한 줄씩 기록한다.
+        //
+        // 기록 위치: Data 마운트(항상 RW)가 최우선. staging 의 App 폴더는 메인 창을 닫을 때
+        // SandboxCleanupManager 가 통째로 지우므로 세션이 끝나면 회수할 수 없다. Data 는 호스트의
+        // 실제 폴더(기본 문서\TableCloth\Data)라 샌드박스 종료 후에도 그대로 남는다.
+        // 마운트가 없는 예외 상황에서만 App 폴더로 폴백한다.
+        //
+        // 리다이렉션을 **명령 앞**에 두는 것은 의도적이다. `echo rc=%errorlevel%>>파일` 처럼 숫자로
+        // 끝나면 cmd 가 `0>>` 를 fd 0 리다이렉션으로 파싱해 로그가 조용히 깨진다.
+        const string BootLogVar = "%TCBOOTLOG%";
+        var bootLogHeader = $@"set TCBOOTLOG=%~dp0tablecloth-boot.log
+if exist ""{SandboxMountPaths.DataDirectory}\"" set TCBOOTLOG={SandboxMountPaths.DataDirectory}\tablecloth-boot.log
+>""{BootLogVar}"" echo [00] startup script begin %DATE% %TIME%
+";
+
+        // 본 batch 는 UTF-8(Encoding.Default)로 기록되는데 cmd 는 이를 OEM 코드페이지로 읽는다.
+        // 따라서 **반드시 ASCII 만** 사용한다. 한글을 넣으면 바이트 정렬이 깨져 스크립트가 통째로
+        // 무동작이 될 수 있다(이슈 #304 진단 중 실측).
+        var launchFailureNotice = $@"if not ""%TCSPORKRC%""==""0"" (
+  echo.
+  echo [TableCloth] Spork could not start ^(exit code %TCSPORKRC%^).
+  echo [TableCloth] Diagnostic log: {BootLogVar}
+  echo [TableCloth] Please attach that file to https://github.com/yourtablecloth/TableCloth/issues
+  echo.
+  pause
+)
+";
+
         return $@"@echo off
 pushd ""%~dp0""
-{dotnetRootScript}reg add ""HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy"" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1
-{disableEdgeGpuScript}{darkWallpaperScript}{localNetworkAccessScript}""%SystemRoot%\System32\citool.exe"" --refresh <nul >nul 2>&1
-{idleGuardScript}""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
-popd
+{bootLogHeader}{dotnetRootScript}reg add ""HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy"" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1
+>>""{BootLogVar}"" echo [01] sac policy rc=%errorlevel%
+{disableEdgeGpuScript}{darkWallpaperScript}{localNetworkAccessScript}>>""{BootLogVar}"" echo [02] browser policies applied rc=%errorlevel%
+>>""{BootLogVar}"" echo [03] citool refresh begin %TIME%
+""%SystemRoot%\System32\citool.exe"" --refresh <nul >nul 2>&1
+>>""{BootLogVar}"" echo [04] citool refresh end rc=%errorlevel% %TIME%
+{idleGuardScript}>>""{BootLogVar}"" echo [05] launching spork %TIME%
+""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
+set TCSPORKRC=%errorlevel%
+>>""{BootLogVar}"" echo [06] spork exited rc=%TCSPORKRC% %TIME%
+{launchFailureNotice}popd
 @echo on
 ";
     }

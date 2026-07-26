@@ -39,6 +39,7 @@ param(
     [ValidateSet('direct', 'wrapper', 'probe')]
     [string] $LogonStyle = 'direct',
     [string] $SourceDirectory = (Join-Path $env:LOCALAPPDATA 'TableCloth\current'),
+    [string] $ScriptFile,
     [switch] $NoLaunch
 )
 
@@ -63,10 +64,18 @@ Copy-Item (Join-Path $SourceDirectory '*') $appDir -Recurse -Force
 # Images.zip 은 SandboxBuilder 도 제외한다(게스트에는 풀린 images\ 를 따로 넣어줌).
 Remove-Item (Join-Path $appDir 'Images.zip') -Force -ErrorAction SilentlyContinue
 
-Write-Host "[2/4] StartupScript.cmd 생성 (mode=$Mode)"
-$citoolStdin = if ($Mode -eq 'fixed') { '<nul' } else { '' }
-$template = Get-Content (Join-Path $here 'startup-script.cmd.template') -Raw
-$script = $template.Replace('__CITOOL_STDIN__', $citoolStdin)
+if ($ScriptFile) {
+    # 제품이 실제로 생성한 StartupScript.cmd 를 그대로 검증할 때 쓴다(템플릿 재현이 아니라 실물).
+    if (-not (Test-Path $ScriptFile)) { throw "스크립트 파일을 찾을 수 없습니다: $ScriptFile" }
+    Write-Host "[2/4] StartupScript.cmd = $ScriptFile (실물 사용, mode 무시)"
+    $script = Get-Content $ScriptFile -Raw
+}
+else {
+    Write-Host "[2/4] StartupScript.cmd 생성 (mode=$Mode)"
+    $citoolStdin = if ($Mode -eq 'fixed') { '<nul' } else { '' }
+    $template = Get-Content (Join-Path $here 'startup-script.cmd.template') -Raw
+    $script = $template.Replace('__CITOOL_STDIN__', $citoolStdin)
+}
 # 실제 StartupScript.cmd 와 동일하게 ANSI(기본 코드페이지)로 떨군다.
 [System.IO.File]::WriteAllText(
     (Join-Path $appDir 'StartupScript.cmd'), $script, [System.Text.Encoding]::Default)
