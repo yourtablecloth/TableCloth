@@ -83,11 +83,40 @@ Enter를 치자 그 자리에서 Spork가 실행됐다. 즉:
 > 잘못된 결론을 한 번 냈다. 실제 생성 스크립트는 순수 ASCII 이므로 이 문제가 없다.
 > **게스트에서 실행할 진단 스크립트는 반드시 ASCII 로 작성할 것.**
 
-### 0-4. 다음 단계
+### 0-4. 반영한 변경 (PR [#305](https://github.com/yourtablecloth/TableCloth/pull/305))
 
-로컬 재현이 안 되므로 제보자 환경의 실제 진행 지점을 알아야 한다. §7-1의 **부팅 브레드크럼**을
-제품에 넣어(영속 마운트 `Data`에 기록) 제보자가 한 번 실행하면 위와 같은 로그가 남게 하는 것이
-가장 빠른 경로다.
+로컬 재현이 안 되므로, **다음 재현에서 증거가 남게 하는 것**까지를 이번 범위로 잡았다.
+
+1. **citool 대기 경로 차단** — `--refresh <nul`. 확인된 hang 경로 하나를 제거한다.
+2. **부팅 브레드크럼** — 단계마다 한 줄씩 기록. 위치는 **Data 마운트 우선**
+   (`Desktop\Data\tablecloth-boot.log` → 호스트 `문서\TableCloth\Data\`). staging의 App 폴더는
+   메인 창을 닫을 때 지워지므로(§2-1) 세션 종료 후 회수가 불가능하다.
+3. **실행 실패 가시화** — Spork가 비정상 종료 코드로 끝나면 콘솔에 안내를 남기고 `pause`로 유지.
+4. **회귀 방지 테스트 5종** — `src/TableCloth.Test/SandboxStartupScriptTests.cs`.
+   특히 **"생성 스크립트는 순수 ASCII"** 를 고정한다(§0-3의 하니스 함정을 제품에서 원천 차단).
+
+생성 스크립트 실물을 라이브 샌드박스에서 실행해 `[00]`~`[05]` 기록과 Spork 기동까지 확인했다.
+
+```text
+[00] startup script begin 2026-07-26 23:27:02.54
+[01] sac policy rc=0
+[02] browser policies applied rc=0
+[03] citool refresh begin 23:27:03.31
+[04] citool refresh end rc=0 23:27:03.74
+[05] launching spork 23:27:03.77
+```
+
+### 0-5. 다음 단계
+
+제보자에게 PR #305 CI 산출물(테스트 빌드)을 전달하고, 재현 시 남는
+`문서\TableCloth\Data\tablecloth-boot.log`를 받는다. 그 로그의 마지막 줄이 곧 실패 지점이다.
+
+| 마지막 줄 | 해석 |
+| --- | --- |
+| 파일 자체가 없음 | LogonCommand가 실행되지 않았다 (§3 H2) |
+| `[03] citool refresh begin` | citool 대기 — `<nul` 수정이 듣지 않는 형태 |
+| `[05] launching spork` 에서 정지 | 프로세스 생성 실패(차단·런타임 등) |
+| `[06] spork exited rc=...` | Spork는 떴다가 죽었다 — 앱 내부 문제로 범위 이동 |
 
 ### 0-4. 부수 확인
 
@@ -241,11 +270,12 @@ cd tools/issue304
 
 ### 7-1. 원인과 무관하게 필요 (관측 가능성 확보)
 
-1. **부팅 브레드크럼** — `StartupScript.cmd`가 단계별 결과를 `Desktop\Data\tablecloth-boot.log`에 append.
-   staging이 아니라 영속 마운트라 세션 종료 후 호스트에서 회수 가능(§2-1).
-2. **실행 실패 가시화** — `TableCloth.exe` 호출 뒤 `errorlevel`을 검사해 실패 시 System32의 서명 바이너리(`msg *`)로 안내하고
-   콘솔을 유지. 현재는 실패가 100% 무음이다.
-3. **Serilog sink 구성** — 최소한 파일 sink 하나. 지금은 로거를 등록해 놓고 아무 데도 쓰지 않는다.
+1. ✅ **부팅 브레드크럼** — `StartupScript.cmd`가 단계별 결과를 `Desktop\Data\tablecloth-boot.log`에 기록.
+   staging이 아니라 영속 마운트라 세션 종료 후 호스트에서 회수 가능(§2-1). PR #305 에서 반영.
+2. ✅ **실행 실패 가시화** — `TableCloth.exe` 호출 뒤 종료 코드를 검사해 비정상이면 콘솔에 안내 후 `pause`.
+   PR #305 에서 반영. (`msg *`는 에디션에 따라 없을 수 있어 콘솔 유지 방식을 택했다.)
+3. ⬜ **Serilog sink 구성** — 최소한 파일 sink 하나. 지금은 로거를 등록해 놓고 아무 데도 쓰지 않는다.
+   브레드크럼은 batch 단계까지만 덮으므로, Spork 진입 이후 구간은 여전히 로그가 없다.
 
 ### 7-2. H1이 맞을 때
 

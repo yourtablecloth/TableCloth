@@ -68,8 +68,22 @@ LogonCommand로 돌면서 이 폴더에 `result.txt`를 남기고, 콘솔을 열
 
 ## 이력
 
-- 2026-07-26 — 조사 착수. 부팅 체인 분석, 가설 H1(SAC 커널 차단)/H2(LogonCommand 미실행·마운트 레이스) 수립.
-  제보자에게 진단 요청 댓글 게시([전문](reporter-comment-2026-07-26.md)). 로컬 재현은 **미실행**.
+- **2026-07-26 1차** — 조사 착수. 부팅 체인 분석, 가설 H1(SAC 커널 차단)/H2(LogonCommand 미실행) 수립.
+  제보자에게 진단 요청 댓글 게시([전문](reporter-comment-2026-07-26.md)).
+- **2026-07-26 2차** — 제보자 진단 결과 수신. **H1 기각**(게스트 SAC는 평가 모드이고 미서명 exe가 정상 생존).
+  citool 대기 발견.
+- **2026-07-26 3차** — `repro-boot-chain.ps1` 로 로컬 재현 시도. **제보자 증상은 재현되지 않음.**
+  LogonCommand는 정상 동작하고 citool도 대기하지 않는다. 대신 확인된 실패 경로를 막고
+  다음 재현에서 증거가 남도록 PR [#305](https://github.com/yourtablecloth/TableCloth/pull/305) 반영
+  (citool `<nul`, 부팅 브레드크럼, 실행 실패 안내, 회귀 테스트 5종).
 
-메인테이너 PC가 제보자와 동일 빌드(25H2 26200.8875)이고 Windows Sandbox는 MSIX 앱
-`MicrosoftWindows.WindowsSandbox 0.8.107.0`입니다. 자세한 환경 사실과 대응 후보는 분석 본문 §6, §7 참조.
+### 하니스를 쓸 때 반드시 지킬 것
+
+**게스트에서 실행할 스크립트는 순수 ASCII로 작성한다.** 초기 템플릿에 한글 주석을 넣었더니
+UTF-8로 기록된 바이트를 cmd가 OEM 코드페이지로 읽으면서 스크립트가 통째로 무동작이 되었고,
+"LogonCommand가 실행되지 않는다"는 **잘못된 결론을 한 번 냈습니다.** 제품 쪽은
+`SandboxStartupScriptTests`가 이 조건을 테스트로 고정해 두었습니다.
+
+메인테이너 PC는 제보자와 동일 호스트 빌드(25H2 26200.8875)이고 Windows Sandbox는 MSIX 앱
+`MicrosoftWindows.WindowsSandbox 0.8.107.0`입니다. **게스트 OS는 호스트와 달리 26100.8875** —
+샌드박스 앱이 자체 베이스 이미지를 들고 다닙니다. 자세한 환경 사실은 분석 본문 §0, §6 참조.
