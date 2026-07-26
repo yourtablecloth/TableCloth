@@ -144,6 +144,9 @@
   <data name="AboutWindow_CopyrightText" xml:space="preserve">
     <value>© 2021-2025 rkttu.com. All rights reserved.</value>
   </data>
+  <data name="Splash_Slogan" xml:space="preserve">
+    <value>언제나 • 안전하고 • 깨끗하게</value>
+  </data>
   <data name="AboutWindow_TrademarkText" xml:space="preserve">
     <value>식탁보™는 rkttu.com의 등록 상표입니다.</value>
   </data>

@@ -86,7 +86,16 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("AboutWindow_CopyrightText", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   언제나 • 안전하고 • 깨끗하게과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Splash_Slogan {
+            get {
+                return ResourceManager.GetString("Splash_Slogan", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Retrieving license information.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
