@@ -30,6 +30,9 @@ namespace Spork.ViewModels
         [ObservableProperty]
         private bool _doNotShowAgain = false;
 
+        /// <summary>사용자가 [계속]을 눌러 사이트 실행을 진행하기로 했는지. [취소]/창 닫기는 false 로 남는다.</summary>
+        public bool Proceed { get; private set; }
+
         [RelayCommand]
         private void OpenHomepage()
         {
@@ -45,9 +48,21 @@ namespace Spork.ViewModels
 
         [RelayCommand]
         private Task Continue()
-            => _taskFactory.StartNew(
+        {
+            Proceed = true;
+            return _taskFactory.StartNew(
                 () => CloseRequested?.Invoke(this, new DialogRequestEventArgs(true)),
                 default(CancellationToken));
+        }
+
+        [RelayCommand]
+        private Task Cancel()
+        {
+            Proceed = false;
+            return _taskFactory.StartNew(
+                () => CloseRequested?.Invoke(this, new DialogRequestEventArgs(false)),
+                default(CancellationToken));
+        }
 
         public event EventHandler<DialogRequestEventArgs> CloseRequested;
     }

@@ -22,6 +22,9 @@
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 16 0">
             <Button Margin="0 0 10 0" Padding="12 5" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}"
                     Command="{Binding OpenHomepageCommand}" />
+            <Button Margin="0 0 10 0" Padding="12 5" MinWidth="80" HorizontalContentAlignment="Center"
+                    Content="{x:Static res:UIStringResources.Button_CancelButton}"
+                    Command="{Binding CancelCommand}" />
             <Button Padding="12 5" MinWidth="80" HorizontalContentAlignment="Center" IsDefault="True"
                     Content="{x:Static res:UIStringResources.Button_OkayButton}"
                     Command="{Binding ContinueCommand}" />
