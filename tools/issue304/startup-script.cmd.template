@@ -1,0 +1,61 @@
+@echo off
+rem ==========================================================================
+rem  Faithful replica of the StartupScript.cmd that SandboxBuilder generates.
+rem  Only two differences:
+rem    1) breadcrumbs are appended to boot.log at each step (echo never blocks,
+rem       so the execution characteristics of the original are preserved)
+rem    2) the citool stdin redirection is a __CITOOL_STDIN__ token so the same
+rem       harness can compare before-fix (empty) and after-fix (<nul)
+rem
+rem  ASCII ONLY. The real generated script is pure ASCII; Korean comments here
+rem  would be written as UTF-8 and re-read by cmd under the OEM codepage, which
+rem  introduces a variable that does not exist in the product.
+rem
+rem  Note: always put a space before >> when the echoed text ends in a digit.
+rem  `...=0>> file` makes cmd parse `0>>` as an fd-0 redirection.
+rem ==========================================================================
+set BOOT=%~dp0boot.log
+echo [00] logon batch started %DATE% %TIME% > "%BOOT%"
+pushd "%~dp0"
+echo [01] pushd ok cwd=%CD% >> "%BOOT%"
+
+rem  Guest SAC state BEFORE we touch anything. The reporter's guest reported 0x2
+rem  (evaluation); if this guest starts at 0x0 the citool prompt may simply not
+rem  be reachable here, which would explain a non-reproduction.
+echo [01b] --- SAC state as shipped by the guest image --- >> "%BOOT%"
+reg query "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v VerifiedAndReputablePolicyState >> "%BOOT%" 2>&1
+
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1
+echo [02] reg add CI policy errorlevel=%errorlevel% >> "%BOOT%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v HardwareAccelerationModeEnabled /t REG_DWORD /d 0 /f >nul 2>&1
+echo [03] reg add edge gpu errorlevel=%errorlevel% >> "%BOOT%"
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls" /v 1 /t REG_SZ /d "*" /f >nul 2>&1
+echo [04] reg add edge LNA errorlevel=%errorlevel% >> "%BOOT%"
+reg add "HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls" /v 1 /t REG_SZ /d "*" /f >nul 2>&1
+echo [05] reg add chrome LNA errorlevel=%errorlevel% >> "%BOOT%"
+
+echo [06] --- registry state BEFORE citool --- >> "%BOOT%"
+reg query "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v VerifiedAndReputablePolicyState >> "%BOOT%" 2>&1
+reg query "HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls" /v "1" >> "%BOOT%" 2>&1
+
+echo [07] calling citool at %DATE% %TIME% >> "%BOOT%"
+"%SystemRoot%\System32\citool.exe" --refresh __CITOOL_STDIN__ >nul 2>&1
+echo [08] citool returned errorlevel=%errorlevel% at %DATE% %TIME% >> "%BOOT%"
+
+rem  Does citool block on a prompt in THIS guest? Run it backgrounded without any
+rem  stdin redirection and see whether the process is still alive 10s later.
+rem  Backgrounded so a hang cannot wedge the rest of the chain.
+echo [08b] --- citool hang probe (no stdin redirect) --- >> "%BOOT%"
+start "" /b "%SystemRoot%\System32\citool.exe" --refresh >nul 2>&1
+ping -n 11 127.0.0.1 >nul
+tasklist /fi "imagename eq CiTool.exe" >> "%BOOT%" 2>&1
+taskkill /f /im CiTool.exe >nul 2>&1
+
+echo [09] --- registry state AFTER citool --- >> "%BOOT%"
+reg query "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v VerifiedAndReputablePolicyState >> "%BOOT%" 2>&1
+reg query "HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls" /v "1" >> "%BOOT%" 2>&1
+
+echo [10] launching TableCloth.exe spork at %DATE% %TIME% >> "%BOOT%"
+"%~dp0TableCloth.exe" spork
+echo [11] exe returned errorlevel=%errorlevel% at %DATE% %TIME% >> "%BOOT%"
+popd

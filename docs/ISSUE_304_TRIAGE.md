@@ -1,10 +1,100 @@
 # 샌드박스 진입 무음 실패 트리아지 — Spork가 뜨지 않음 (이슈 #304)
 
-> 상태: **원인 미확정 · 제보자 진단 결과 대기** · 2026-07-26
+> 상태: **SAC 가설 기각 · citool 대기 경로는 방어 수정 반영 · 근본 원인 미확정(로컬 재현 실패)** · 2026-07-26
+> 최신 결론은 §0 을 먼저 읽을 것. §3 의 가설 서술은 진단 결과가 오기 전의 기록이다.
 > 대상: 식탁보 1.20.7(Retail/WPF), Windows 11 25H2 빌드 26200.8875
 > 선행 이슈: [#256](https://github.com/yourtablecloth/TableCloth/issues/256)(SAC 차단) ·
 > [#277](https://github.com/yourtablecloth/TableCloth/issues/277)(#256 중복) ·
 > [#237](https://github.com/yourtablecloth/TableCloth/issues/237)(DNS/hang)
+
+## 0. 결론 (2026-07-26 2차 — 제보자 진단 결과 반영)
+
+### 0-1. SAC 가설(§3 H1)은 **기각**
+
+제보자 환경의 게스트에서:
+
+| 항목 | 실측값 | 해석 |
+| --- | --- | --- |
+| `VerifiedAndReputablePolicyState` | `0x2` | **평가(evaluation) 모드 = 차단하지 않음** |
+| 활성 CI 정책 | `VerifiedAndReputableDesktopEvaluation(+FlightSupplemental)` | 강제 정책 없음 |
+| 미서명 `TableCloth.exe` 수동 실행 | **PID 4320, 20초 후에도 262MB 점유 생존** | 차단 없음 |
+| CodeIntegrity 이벤트 | 차단(3077 등) 0건, 전부 정보성 refresh | 차단 없음 |
+
+이슈 #256과는 **다른 문제**다. 코드 서명 유무는 이번 건과 무관하다.
+
+### 0-2. 원인 — `citool --refresh`가 표준 입력을 기다린다
+
+게스트 이미지 `10.0.26100.8875`에서 `citool.exe --refresh`는 작업을 마친 뒤
+**"계속하려면 Enter 키를 누르세요."로 stdin을 기다린다.** 제보자가 직접 확인:
+
+```text
+C:\...\App>"C:\Windows\System32\citool.exe" --refresh
+작업 성공
+계속하려면 Enter 키를 누르세요.      <- CiTool.exe 가 살아서 대기
+```
+
+Enter를 치자 그 자리에서 Spork가 실행됐다. 즉:
+
+- `StartupScript.cmd`에서 **블로킹될 수 있는 유일한 줄이 `citool`** 이다(`reg add`는 즉시 반환).
+- 그 바로 다음 줄이 `TableCloth.exe spork`이므로 **Spork 실행에 영원히 도달하지 못한다**.
+- 원본 스크립트는 이 줄이 `>nul 2>&1`로 묶여 있어 **프롬프트조차 보이지 않는다** = "아무 메시지 없음".
+
+**수정**(반영됨): stdin을 nul로 리다이렉트해 프롬프트가 즉시 EOF를 받게 한다.
+
+```bat
+"%SystemRoot%\System32\citool.exe" --refresh <nul >nul 2>&1
+```
+
+### 0-3. 로컬 재현 결과 (2026-07-26 23:15, 메인테이너 PC)
+
+[tools/issue304/repro-boot-chain.ps1](../tools/issue304/repro-boot-chain.ps1)로 부팅 체인을
+그대로 재현했다. **결론: 제보자 증상은 로컬에서 재현되지 않으며, 아래 추정 몇 개가 뒤집혔다.**
+
+```text
+[00] logon batch started 23:15:20.15
+[01] pushd ok cwd=C:\Users\WDAGUtilityAccount\Desktop\App
+[01b] VerifiedAndReputablePolicyState  0x2      <- 게스트 기본값은 평가 모드
+[02]~[05] reg add 4건 모두 errorlevel=0
+[06] BEFORE citool : CI=0x0, Edge LNA=* (기록 성공)
+[07] calling citool 23:15:21.15
+[08] citool returned errorlevel=0 at 23:15:21.69   <- 0.54초, 대기 없음
+[08b] citool 무(無)리다이렉트 프로브: 10초 뒤 "No tasks are running"  <- 프롬프트 안 뜸
+[09] AFTER citool  : CI=0x0, Edge LNA=* (그대로 유지)
+[10] launching TableCloth.exe spork 23:15:32.22    <- 체인 정상 완주
+```
+
+여기서 확정된 사실:
+
+| 항목 | 결과 |
+| --- | --- |
+| LogonCommand가 마운트의 `.cmd`를 직접 실행 | **정상 동작** (로그온 후 6~9초). §3 H2 는 최소한 이 환경에선 성립하지 않는다 |
+| 게스트 기본 SAC 상태 | **`0x2`(평가)** — 호스트가 `0x0`이어도 그렇다. 호스트 상태를 상속하지 않는다 |
+| `citool --refresh` 대기 | **재현 안 됨.** stdin 리다이렉트 없이 백그라운드로 띄워도 10초 내 종료 |
+| citool이 레지스트리를 되돌리는가 | **아니다.** `[06]`/`[09]` 값이 동일하게 유지된다 |
+
+→ 따라서 §0-2에서 "citool 대기가 원인"이라고 본 것은 **제보자 환경에 국한된 조건부 현상**이다.
+`<nul` 수정은 그 실패 경로 자체를 없애므로 유지하되, **제보자 증상의 근본 원인으로 단정할 수 없다.**
+특히 `[09]`가 값 유지를 보여주므로, "citool이 `VerifiedAndReputablePolicyState`를 `0x2`로 되돌렸다"는
+§0-2의 보조 설명도 성립하지 않는다. 제보자 환경에서 레지스트리 4건이 모두 없었다는 것은
+**그 세션에서 배치가 실제로 실행되지 않았다**는 뜻에 가깝다.
+
+> 하니스 자체의 함정: 초기 템플릿에 한글 주석을 넣었더니 UTF-8 로 기록된 바이트를 cmd 가 OEM
+> 코드페이지로 읽으며 스크립트가 통째로 무동작이 되어, "LogonCommand 가 실행되지 않는다"는
+> 잘못된 결론을 한 번 냈다. 실제 생성 스크립트는 순수 ASCII 이므로 이 문제가 없다.
+> **게스트에서 실행할 진단 스크립트는 반드시 ASCII 로 작성할 것.**
+
+### 0-4. 다음 단계
+
+로컬 재현이 안 되므로 제보자 환경의 실제 진행 지점을 알아야 한다. §7-1의 **부팅 브레드크럼**을
+제품에 넣어(영속 마운트 `Data`에 기록) 제보자가 한 번 실행하면 위와 같은 로그가 남게 하는 것이
+가장 빠른 경로다.
+
+### 0-4. 부수 확인
+
+- 게스트 DNS 정상(`yourtablecloth.app` 해석 OK), PowerShell 5.1 정상 → §3 H3의 배제 판단 유효.
+- 게스트에서 `Get-MpComputerStatus`의 `SmartAppControlState`는 빈 값 → SAC 상태는 레지스트리로만 판정할 것.
+- 1차 진단 스크립트에 버그가 있었다: `reg query ... /v 1>> "%LOG%"`에서 cmd가 `1>>`을 stdout
+  리다이렉션으로 파싱해 가장 중요한 항목이 무효화됐다. `/v "1"`로 수정 완료.
 
 ## 1. 증상
 

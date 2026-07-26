@@ -12,10 +12,29 @@
 | 파일 | 실행 주체 | 목적 |
 | --- | --- | --- |
 | [`../diagnose_sandbox_boot.cmd`](../diagnose_sandbox_boot.cmd) | **제보자** | 식탁보가 띄운 **실제 세션** 안에서 실행. 증거를 `tablecloth-diag.txt`로 모아 호스트에서 회수 |
-| `local-repro.cmd` + `run-local-repro.ps1` | **메인테이너** | 식탁보와 무관한 **맨 샌드박스**를 띄워, 게스트의 SAC 기본 상태와 우회 성공 여부를 직접 측정 |
+| `repro-boot-chain.ps1` + `startup-script.cmd.template` | **메인테이너** | 부팅 체인(LogonCommand → StartupScript → Spork)을 식탁보 UI 없이 재현. 단계별 브레드크럼으로 **어디까지 갔는지**를 본다 |
+| `local-repro.cmd` + `run-local-repro.ps1` | 메인테이너 | (1차 조사용) 게스트의 SAC 기본 상태 측정. **SAC 가설이 기각되어 역할은 끝났다** |
 
-두 스크립트는 목적이 다릅니다. 전자는 "제보자 환경에서 무슨 일이 벌어졌나", 후자는
-"이 빌드에서 우회책이 아직 유효한가"를 봅니다. 헷갈리지 않게 분리해 두었습니다.
+세 스크립트의 질문이 다릅니다. 첫째는 "제보자 환경에서 무슨 일이 벌어졌나",
+둘째는 "우리 부팅 체인이 어느 줄에서 멈추나", 셋째는 "SAC가 범인인가"(→ 아니었음)입니다.
+
+## 부팅 체인 재현 (현재 주력)
+
+```powershell
+cd tools/issue304
+./repro-boot-chain.ps1 -Mode repro   # 수정 전: citool 에 stdin 리다이렉트 없음
+./repro-boot-chain.ps1 -Mode fixed   # 수정 후: citool --refresh <nul
+```
+
+`%TEMP%\tablecloth-issue304\App\` 을 staging 으로 만들고(설치 폴더 복사 + StartupScript 생성),
+그 폴더를 읽기·쓰기로 마운트한 wsb 를 실행합니다. 게스트가 진행하는 동안 브레드크럼이
+같은 폴더의 `boot.log` 에 쌓이므로 **호스트에서 실시간으로 읽을 수 있습니다.**
+
+| boot.log 마지막 줄 | 의미 |
+| --- | --- |
+| 파일 자체가 없음 | **LogonCommand 가 실행되지 않았다** (§3 H2) |
+| `[07] calling citool` 에서 끊김 | **citool 이 stdin 을 기다리며 멈췄다** — 확정된 원인 |
+| `[10] launching TableCloth.exe` 까지 도달 | 부팅 체인 정상 — 수정이 유효 |
 
 ## 로컬 재현 실행
 

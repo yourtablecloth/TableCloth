@@ -32,8 +32,14 @@ rem       answer splits the whole investigation in two.
 rem --------------------------------------------------------------------------
 echo.>> "%LOG%"
 echo [01] did the LogonCommand batch run? (Edge policies are written only by it)>> "%LOG%"
-reg query "HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls" /v 1>> "%LOG%" 2>&1
+rem  /v "1" must stay quoted: bare `/v 1>>` makes cmd parse `1>>` as a stdout
+rem  redirection, reg then sees /v without a value and fails with a syntax error.
+reg query "HKLM\SOFTWARE\Policies\Microsoft\Edge\LocalNetworkAccessAllowedForUrls" /v "1">> "%LOG%" 2>&1
 reg query "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v HardwareAccelerationModeEnabled>> "%LOG%" 2>&1
+rem  Is the logon batch still alive and stuck? cmd.exe holding StartupScript.cmd or a
+rem  surviving CiTool.exe both mean the boot chain is blocked rather than never started.
+echo   --- cmd.exe / CiTool.exe still running? --->> "%LOG%"
+powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.Name -in 'cmd.exe','CiTool.exe' } | Select-Object Name, ProcessId, CommandLine | Format-List | Out-String">> "%LOG%" 2>&1
 
 rem --------------------------------------------------------------------------
 rem  [02] Smart App Control state. 0 = off, 1 = enforced, 2 = evaluation.

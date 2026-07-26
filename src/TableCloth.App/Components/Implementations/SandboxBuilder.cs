@@ -395,6 +395,13 @@ setx DOTNET_ROOT ""{SandboxMountPaths.SandboxDesktop}\{HostDotnetLeafName}"" >nu
         // reg.exe + citool.exe는 System32의 EV 서명 바이너리라 SAC가 신뢰하므로 batch 단계에서
         // 호출하는 것이 안전.
         //
+        // 이슈 #304: 단, citool.exe는 작업을 마친 뒤 "계속하려면 Enter 키를 누르세요."로 표준 입력을
+        // 기다리는 빌드가 있다(제보 환경의 게스트 이미지 10.0.26100.8875에서 확인). LogonCommand 로
+        // 실행되는 이 batch 는 stdout/stderr 가 nul 로 묶여 있어 그 프롬프트가 화면에 보이지도 않은 채
+        // 영원히 멈추고, 바로 다음 줄의 Spork 실행에 도달하지 못한다 = "아무 메시지 없이 아무 일도
+        // 안 일어남". 그래서 stdin 을 nul 로 리다이렉트해 프롬프트가 즉시 EOF 를 받도록 한다.
+        // (batch 에서 블로킹될 수 있는 유일한 줄이므로 이 한 줄이 곧 hang 방어다.)
+        //
         // GPU 가속 OFF(기본)일 때 vGPU Disable 만으로는 부족할 수 있어 Edge 정책도 함께 적용해
         // 다층 차단한다. Edge는 vGPU가 없어도 WARP/소프트웨어 GPU 경로를 시도하며, 이 경로가
         // 일부 환경에서 흰 화면이나 렌더링 지연을 유발할 수 있기 때문에 정책 키로 명시적으로
@@ -445,7 +452,7 @@ reg add ""HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls"
         return $@"@echo off
 pushd ""%~dp0""
 {dotnetRootScript}reg add ""HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy"" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1
-{disableEdgeGpuScript}{darkWallpaperScript}{localNetworkAccessScript}""%SystemRoot%\System32\citool.exe"" --refresh >nul 2>&1
+{disableEdgeGpuScript}{darkWallpaperScript}{localNetworkAccessScript}""%SystemRoot%\System32\citool.exe"" --refresh <nul >nul 2>&1
 {idleGuardScript}""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
 popd
 @echo on
