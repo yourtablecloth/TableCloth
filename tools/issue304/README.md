@@ -76,6 +76,20 @@ LogonCommand로 돌면서 이 폴더에 `result.txt`를 남기고, 콘솔을 열
   LogonCommand는 정상 동작하고 citool도 대기하지 않는다. 대신 확인된 실패 경로를 막고
   다음 재현에서 증거가 남도록 PR [#305](https://github.com/yourtablecloth/TableCloth/pull/305) 반영
   (citool `<nul`, 부팅 브레드크럼, 실행 실패 안내, 회귀 테스트 5종).
+- **2026-07-26 4차** — 제보자에게 테스트 빌드 전달([댓글 전문](reporter-comment-2026-07-26-b.md)).
+  CI 아티팩트 `TableCloth-Portable-x64`(약 101MB). **`tablecloth-boot.log` 회신 대기 중.**
+
+### 테스트 빌드를 다시 전달해야 할 때
+
+CI 아티팩트는 **5일 후 만료**되므로 위 댓글의 링크는 곧 죽습니다. 브랜치를 다시 푸시해 CI 를
+돌린 뒤 `TableCloth-Portable-<arch>` 아티팩트 링크를 새로 잡아 주세요. 이 경량 아티팩트는
+`build.yml` 에 별도 스텝으로 추가돼 있습니다(Velopack-* 는 651MB 라 제보자에게 부담).
+
+```bash
+gh api "repos/yourtablecloth/TableCloth/actions/runs/<RUN_ID>/artifacts" \
+  --jq '.artifacts[] | select(.name|startswith("TableCloth-Portable")) | "\(.name) id=\(.id)"'
+# 링크 형식: https://github.com/yourtablecloth/TableCloth/actions/runs/<RUN_ID>/artifacts/<ARTIFACT_ID>
+```
 
 ### 하니스를 쓸 때 반드시 지킬 것
 
