@@ -36,6 +36,9 @@
         <WrapPanel Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 14 0">
             <Button Margin="0 0 10 0" Padding="10 4" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}"
                     Command="{Binding OpenHomepageCommand}" />
+            <Button Margin="0 0 10 0" Padding="10 4" MinWidth="80"
+                    Content="{x:Static res:UIStringResources.Button_CancelButton}"
+                    Command="{Binding CancelCommand}" />
             <Button Padding="10 4" MinWidth="80" IsDefault="True"
                     Content="{x:Static res:UIStringResources.Button_OkayButton}"
                     Command="{Binding ContinueCommand}" />

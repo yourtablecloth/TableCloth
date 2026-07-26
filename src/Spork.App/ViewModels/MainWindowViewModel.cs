@@ -516,12 +516,12 @@ namespace Spork.ViewModels
         /// 사이트 실행 전에 "샌드박스 환경이 아닐 수 있음" 안내 다이얼로그를 띄운다. 사용자가 '다시 보지 않기'를
         /// 선택하면 억제 플래그를 사용자 데이터에 저장해 이후 표시하지 않는다(의도적 단독 사용자 배려).
         /// </summary>
-        private void MaybeShowNonSandboxGuidance()
+        private bool MaybeShowNonSandboxGuidance()
         {
             if (Helpers.IsRunningInWindowsSandbox())
-                return;
+                return true;
             if (_userData.SuppressNonSandboxWarning)
-                return;
+                return true;
 
             var window = _appUserInterface.CreateSandboxGuidanceWindow();
             window.ShowDialog();
@@ -531,12 +531,17 @@ namespace Spork.ViewModels
                 _userData.SuppressNonSandboxWarning = true;
                 _userDataStore.ScheduleSave();
             }
+
+            // [계속]이면 실행 진행, [취소]/창 닫기이면 사이트 실행을 중단한다.
+            return window.ViewModel.Proceed;
         }
 
         private async Task EnterCatalogInstallFlowAsync(CatalogInternetService service, bool forceReinstall)
         {
-            // Spork 단독 실행(비-샌드박스)이면 사이트 실행 전에 안내를 띄운다('다시 보지 않기' 지원).
-            MaybeShowNonSandboxGuidance();
+            // Spork 단독 실행(비-샌드박스)이면 사이트 실행 전에 안내를 띄운다('다시 보지 않기'/취소 지원).
+            // 사용자가 취소하면 사이트 실행을 진행하지 않는다.
+            if (!MaybeShowNonSandboxGuidance())
+                return;
 
             // 모달 동안 다음 사이트 선택을 위해 선택값을 마지막에 초기화한다.
             var siteId = service.Id;
