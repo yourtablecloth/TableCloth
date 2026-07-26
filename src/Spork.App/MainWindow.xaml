@@ -79,7 +79,7 @@
                                         <Style.Resources>
                                             <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                                                 <VisualBrush.Visual>
-                                                    <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="{DynamicResource ControlSecondaryForeground}" />
+                                                    <Label Content="{x:Static res:UIStringResources.SearchFilter_Watermark}" Foreground="#FF8C8C8C" />
                                                 </VisualBrush.Visual>
                                             </VisualBrush>
                                         </Style.Resources>
@@ -334,7 +334,7 @@
                                     <Style.Resources>
                                         <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                                             <VisualBrush.Visual>
-                                                <Label Content="{x:Static res:UIStringResources.SporkCatalog_Companions_SearchWatermark}" Foreground="{DynamicResource ControlSecondaryForeground}" />
+                                                <Label Content="{x:Static res:UIStringResources.SporkCatalog_Companions_SearchWatermark}" Foreground="#FF8C8C8C" />
                                             </VisualBrush.Visual>
                                         </VisualBrush>
                                     </Style.Resources>
