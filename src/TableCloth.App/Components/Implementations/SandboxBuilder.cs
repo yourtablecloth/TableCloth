@@ -255,9 +255,26 @@ public sealed class SandboxBuilder(
             }
         }
 
-        sandboxConfig.LogonCommand.Add(Path.Combine(SandboxMountPaths.AppDirectory, "StartupScript.cmd"));
+        // 이슈 #304: LogonCommand 로 .cmd 경로를 **직접** 지정하지 않고 cmd.exe 를 거친다.
+        //
+        // .cmd 는 PE 이미지가 아니라서 CreateProcess 로는 띄울 수 없고, 셸(ShellExecute)이나
+        // 명령 인터프리터를 경유해야 한다. 즉 .cmd 를 그대로 넘기면 실행 성공 여부가 게스트의
+        // .cmd 파일 연결과 샌드박스 클라이언트의 실행 방식에 의존하게 되는데, 이 경로가 깨지면
+        // **아무 오류도 없이 그냥 실행되지 않는다**(제보 환경에서 관측된 증상).
+        //
+        // 인터프리터를 명시하면 샌드박스가 띄워야 할 대상이 System32 의 PE 바이너리로 고정되어
+        // 연결·셸 의존이 사라진다. 경로도 %SystemRoot% 같은 확장에 기대지 않고 절대 경로로 박는다
+        // (LogonCommand 문자열이 어느 시점에 환경 변수 확장을 거치는지 보장되지 않기 때문).
+        var startupScriptInSandbox = Path.Combine(SandboxMountPaths.AppDirectory, "StartupScript.cmd");
+        sandboxConfig.LogonCommand.Add($@"{GuestCommandInterpreterPath} /c ""{startupScriptInSandbox}""");
         return sandboxConfig;
     }
+
+    /// <summary>
+    /// 샌드박스 게스트의 명령 인터프리터 절대 경로. 게스트는 항상 표준 Windows 설치이므로
+    /// <c>C:\Windows\System32\cmd.exe</c> 로 고정된다(호스트 경로가 아니다).
+    /// </summary>
+    private const string GuestCommandInterpreterPath = @"C:\Windows\System32\cmd.exe";
 
     /// <summary>
     /// 호스트가 가진 인증서 쌍을 staging의 <c>App\certs</c>로 떨어뜨리고, NPKI 경로 조립에 필요한

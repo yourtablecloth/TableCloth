@@ -1,6 +1,7 @@
 using System.Reflection;
 using TableCloth.Components.Implementations;
 using TableCloth.Models.Configuration;
+using TableCloth.Models.WindowsSandbox;
 
 namespace TableCloth.Test
 {
@@ -92,6 +93,37 @@ namespace TableCloth.Test
             {
                 StringAssert.Contains(script, stage, $"브레드크럼 단계 {stage} 가 없습니다.");
             }
+        }
+
+        /// <summary>
+        /// LogonCommand 는 <c>.cmd</c> 경로를 직접 지정하지 않는다. <c>.cmd</c> 는 PE 이미지가 아니라
+        /// 실행에 셸/파일 연결이 개입하는데, 그 경로가 깨지면 아무 오류 없이 그냥 실행되지 않는다
+        /// (이슈 #304). System32 의 cmd.exe 를 절대 경로로 명시해 의존을 없앤다.
+        /// </summary>
+        [TestMethod]
+        public void LogonCommand_ShouldInvokeScriptThroughAbsoluteCmdExePath()
+        {
+            // AssetsDirectoryPath 가 실재해야 BootstrapSandboxConfiguration 이 LogonCommand 를 채운다.
+            var configuration = new TableClothConfiguration
+            {
+                AssetsDirectoryPath = Path.GetTempPath(),
+            };
+
+            var method = typeof(SandboxBuilder).GetMethod(
+                "BootstrapSandboxConfiguration",
+                BindingFlags.Static | BindingFlags.NonPublic);
+
+            Assert.IsNotNull(method, "BootstrapSandboxConfiguration 을 찾지 못했습니다.");
+
+            var sandboxConfiguration = (SandboxConfiguration)method.Invoke(null, new object[] { configuration })!;
+
+            Assert.HasCount(1, sandboxConfiguration.LogonCommand);
+
+            var command = sandboxConfiguration.LogonCommand[0];
+            StringAssert.StartsWith(command, @"C:\Windows\System32\cmd.exe /c ",
+                "LogonCommand 는 게스트 System32 의 cmd.exe 를 절대 경로로 먼저 지정해야 합니다.");
+            StringAssert.Contains(command, @"""C:\Users\WDAGUtilityAccount\Desktop\App\StartupScript.cmd""",
+                "스크립트 경로는 따옴표로 감싸 전달해야 합니다.");
         }
 
         /// <summary>
