@@ -1,6 +1,7 @@
 # 이슈 #304 트리아지 작업 폴더
 
-> 상태: **제보자 진단 결과 대기** · 2026-07-26
+> 상태: **종료 — 제보 환경 고유 문제로 확인, 이슈 CLOSED(2026-07-27)** · 최종 갱신 2026-07-27
+> 도구는 남겨 둡니다. 같은 증상의 제보가 다시 오면 그대로 재사용할 수 있습니다.
 > 분석 본문: [docs/ISSUE_304_TRIAGE.md](../../docs/ISSUE_304_TRIAGE.md)
 > 이슈: [#304](https://github.com/yourtablecloth/TableCloth/issues/304) — Windows 11 25H2에서 샌드박스는 뜨지만 Spork가 실행되지 않고 아무 메시지도 없음
 
@@ -77,7 +78,13 @@ LogonCommand로 돌면서 이 폴더에 `result.txt`를 남기고, 콘솔을 열
   다음 재현에서 증거가 남도록 PR [#305](https://github.com/yourtablecloth/TableCloth/pull/305) 반영
   (citool `<nul`, 부팅 브레드크럼, 실행 실패 안내, 회귀 테스트 5종).
 - **2026-07-26 4차** — 제보자에게 테스트 빌드 전달([댓글 전문](reporter-comment-2026-07-26-b.md)).
-  CI 아티팩트 `TableCloth-Portable-x64`(약 101MB). **`tablecloth-boot.log` 회신 대기 중.**
+  CI 아티팩트 `TableCloth-Portable-x64`(약 101MB).
+- **2026-07-27 5차** — 검증 결과 수신. **citool 수정은 유효**(50ms 통과)했으나 자동 실행은 여전히 실패.
+  `StartupScript.cmd` 가 로그온 시점에 실행되지 않고, 수동 실행하면 끝까지 정상 → **H2 확정**.
+  이어서 배치·wsb 인코딩과 wsb 모양(한 줄 XML/마운트 3개/한글 경로)까지 전부 로컬에서 배제.
+  LogonCommand 를 `cmd.exe /c` 경유로 바꾼 빌드를 추가 전달.
+- **2026-07-27 종료** — 제보자가 자신의 PC 문제로 판단하고 이슈를 닫음. 다른 경로로 해결책을 찾으면
+  알려달라는 요청을 남겨 둔 상태. 결론과 재발 시 대응 절차는 분석 본문 §0-6 참조.
 
 ### 테스트 빌드를 다시 전달해야 할 때
 

@@ -1,7 +1,7 @@
 # 샌드박스 진입 무음 실패 트리아지 — Spork가 뜨지 않음 (이슈 #304)
 
-> 상태: **SAC 가설 기각 · citool 대기 경로는 방어 수정 반영 · 근본 원인 미확정(로컬 재현 실패)** · 2026-07-26
-> 최신 결론은 §0 을 먼저 읽을 것. §3 의 가설 서술은 진단 결과가 오기 전의 기록이다.
+> 상태: **종료 — 제보 환경 고유 문제로 확인, 이슈 CLOSED(2026-07-27)** · 최종 갱신 2026-07-27
+> 결론은 §0 을, 재발 시 대응은 §0-6 을 볼 것. §3 의 가설 서술은 진단 결과가 오기 전의 기록이다.
 > 대상: 식탁보 1.20.7(Retail/WPF), Windows 11 25H2 빌드 26200.8875
 > 선행 이슈: [#256](https://github.com/yourtablecloth/TableCloth/issues/256)(SAC 차단) ·
 > [#277](https://github.com/yourtablecloth/TableCloth/issues/277)(#256 중복) ·
@@ -106,19 +106,67 @@ Enter를 치자 그 자리에서 Spork가 실행됐다. 즉:
 [05] launching spork 23:27:03.77
 ```
 
-### 0-5. 다음 단계
+### 0-5. 테스트 빌드 검증 결과 (2026-07-27)
 
-제보자에게 PR #305 CI 산출물(테스트 빌드)을 전달하고, 재현 시 남는
-`문서\TableCloth\Data\tablecloth-boot.log`를 받는다. 그 로그의 마지막 줄이 곧 실패 지점이다.
+제보자에게 PR #305 CI 산출물을 전달해 확인받았다.
+
+- **citool 수정은 유효**했다. 제보자 로그에서 `[03] 7:26:59.27 → [04] 7:26:59.32`, 50ms 만에 통과.
+  이전에 무한 대기하던 그 지점이다.
+- **그러나 자동 실행은 여전히 안 됐다.** `StartupScript.cmd` 자체가 로그온 시점에 실행되지 않으며,
+  게스트 안에서 같은 스크립트를 수동 실행하면 끝까지 정상 동작한다. → **§3 H2 확정.**
+
+이후 LogonCommand를 `C:\Windows\System32\cmd.exe /c "<script>"` 경유로 바꿔 한 번 더 전달했으나,
+제보자가 자신의 PC 문제로 판단하고 이슈를 닫았다.
+
+### 0-6. 최종 결론 — 제보 환경 고유 문제 (재발 대비 기록)
+
+**식탁보가 만들어내는 산출물에는 문제가 없다.** 아래가 전부 실측으로 배제됐다.
+
+| 배제된 후보 | 근거 |
+| --- | --- |
+| Smart App Control 차단 | 게스트 SAC는 평가 모드(`0x2`), 미서명 exe 정상 생존, CodeIntegrity 차단 이벤트 0건 |
+| 배치 파일 인코딩 / BOM / 줄바꿈 | 생성물 실측: 비 ASCII 0, BOM 없음, CRLF 33 / LF 0. 카탈로그 서비스 ID도 전수 ASCII |
+| wsb 한 줄 XML · XML 선언 없음 · 마운트 3개 | 실물 직렬화 코드로 만든 wsb 로 로컬 정상 동작 |
+| wsb 안의 비 ASCII 경로(UTF-8 no BOM) | 한글 경로 마운트로 로컬 정상 동작 |
+| 그룹 정책으로 LogonCommand 차단 | 그런 정책이 존재하지 않음(Windows Sandbox 정책 8종 전수 확인) |
+| citool 무한 대기 | `<nul` 수정으로 해소 확인(제보자 로그) |
+
+메인테이너 PC는 제보자와 **동일한 호스트 빌드(25H2 26200.8875) + 동일한 샌드박스 앱(0.8.107.0)**
+이고 동일한 wsb 로 정상 동작한다. 즉 남은 차이는 제보 환경 고유의 것이다.
+
+커뮤니티에도 같은 보고가 없다. [microsoft/Windows-Sandbox](https://github.com/microsoft/Windows-Sandbox)
+이슈를 `LogonCommand` / `logon` / `startup script` / `batch` 로 전수 검색했으나, 24H2/25H2 관련
+보고는 "시작 실패", "두 번째 실행 시 연결 끊김"(#103), "MSI 설치 지연"(#68/#102),
+"서버 프로세스 크래시"(#124) 등으로 증상이 다르다. **"마운트는 되는데 LogonCommand만 무시된다"는
+사례는 없다.**
+
+#### 같은 제보가 다시 오면
+
+1. **식탁보를 방정식에서 뺀다.** 아래 최소 wsb 로 메모장이 뜨는지 확인. 안 뜨면 식탁보와 무관한
+   Windows Sandbox 문제로 확정된다.
+
+   ```xml
+   <Configuration>
+     <LogonCommand>
+       <Command>C:\Windows\System32\notepad.exe</Command>
+     </LogonCommand>
+   </Configuration>
+   ```
+
+2. 메모장이 뜨면 마운트 폴더의 `.cmd` 실행으로 한 단계 좁힌다(`tools/issue304/` 하니스 참고).
+3. 사용자 안내: **Windows 기능에서 Windows Sandbox 끄기 → 재부팅 → 다시 켜기**(게스트 이미지 초기화),
+   서드파티 백신 일시 중지. 앱 내 도움말 FAQ 에 같은 내용을 실어 두었다
+   (`src/TableCloth/Help/manual.ko.html`).
+4. `문서\TableCloth\Data\tablecloth-boot.log` 를 받는다. 마지막 줄이 곧 실패 지점이다.
 
 | 마지막 줄 | 해석 |
 | --- | --- |
-| 파일 자체가 없음 | LogonCommand가 실행되지 않았다 (§3 H2) |
+| 파일 자체가 없음 | LogonCommand가 실행되지 않았다 (본 이슈와 동일) |
 | `[03] citool refresh begin` | citool 대기 — `<nul` 수정이 듣지 않는 형태 |
 | `[05] launching spork` 에서 정지 | 프로세스 생성 실패(차단·런타임 등) |
 | `[06] spork exited rc=...` | Spork는 떴다가 죽었다 — 앱 내부 문제로 범위 이동 |
 
-### 0-4. 부수 확인
+### 0-7. 부수 확인
 
 - 게스트 DNS 정상(`yourtablecloth.app` 해석 OK), PowerShell 5.1 정상 → §3 H3의 배제 판단 유효.
 - 게스트에서 `Get-MpComputerStatus`의 `SmartAppControlState`는 빈 값 → SAC 상태는 레지스트리로만 판정할 것.
