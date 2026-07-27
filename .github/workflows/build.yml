@@ -327,6 +327,20 @@ jobs:
         Write-Host "Created symbols archive: $zip"
       shell: pwsh
 
+    # 이슈 대응용 경량 테스트 빌드 아티팩트.
+    # 아래 Velopack-* 아티팩트는 설치본 + Portable + Spork + nupkg + 업데이트 메타데이터를
+    # 모두 담아 수백 MB에 달한다. 특정 제보자에게 "이 빌드로 한 번만 확인해 주세요"를 부탁할 때
+    # 그 크기를 통째로 받게 하는 것은 부담이 크고, 아티팩트는 부분 다운로드도 되지 않는다.
+    # 식탁보 Portable zip 하나만 따로 올려 두면 필요한 것만 받을 수 있다.
+    - name: Upload TableCloth portable only (lightweight test build)
+      if: matrix.configuration == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: TableCloth-Portable-${{ matrix.platform }}
+        path: "releases/TableCloth_*_Release_${{ matrix.platform }}_Portable.zip"
+        if-no-files-found: error
+        retention-days: 5
+
     # Upload the Velopack package
     - name: Upload build artifacts (Velopack)
       uses: actions/upload-artifact@v4

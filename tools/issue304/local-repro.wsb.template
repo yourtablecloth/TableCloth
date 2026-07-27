@@ -1,0 +1,25 @@
+<Configuration>
+  <Networking>Enable</Networking>
+  <vGPU>Disable</vGPU>
+  <MappedFolders>
+    <!--
+      이 폴더(tools/issue304)를 읽기·쓰기로 붙인다. leaf 이름이 그대로 게스트
+      바탕 화면 경로가 되므로 아래 LogonCommand 의 ...\Desktop\issue304 와 일치해야 한다.
+    -->
+    <MappedFolder>
+      <HostFolder>__DIAG_DIR__</HostFolder>
+      <ReadOnly>false</ReadOnly>
+    </MappedFolder>
+    <!--
+      설치된 식탁보(미서명 단일 파일 exe)를 읽기 전용으로 붙여 [04] 프로브의 대상으로 쓴다.
+      leaf 이름이 "current" 라 게스트에서는 Desktop\current 로 보인다.
+    -->
+    <MappedFolder>
+      <HostFolder>__TABLECLOTH_DIR__</HostFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+  <LogonCommand>
+    <Command>C:\Users\WDAGUtilityAccount\Desktop\issue304\local-repro.cmd</Command>
+  </LogonCommand>
+</Configuration>

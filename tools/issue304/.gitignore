@@ -1,0 +1,4 @@
+# run-local-repro.ps1 이 생성 / 게스트가 기록하는 산출물
+local-repro.wsb
+result.txt
+tablecloth-diag.txt

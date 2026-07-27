@@ -255,9 +255,26 @@ public sealed class SandboxBuilder(
             }
         }
 
-        sandboxConfig.LogonCommand.Add(Path.Combine(SandboxMountPaths.AppDirectory, "StartupScript.cmd"));
+        // 이슈 #304: LogonCommand 로 .cmd 경로를 **직접** 지정하지 않고 cmd.exe 를 거친다.
+        //
+        // .cmd 는 PE 이미지가 아니라서 CreateProcess 로는 띄울 수 없고, 셸(ShellExecute)이나
+        // 명령 인터프리터를 경유해야 한다. 즉 .cmd 를 그대로 넘기면 실행 성공 여부가 게스트의
+        // .cmd 파일 연결과 샌드박스 클라이언트의 실행 방식에 의존하게 되는데, 이 경로가 깨지면
+        // **아무 오류도 없이 그냥 실행되지 않는다**(제보 환경에서 관측된 증상).
+        //
+        // 인터프리터를 명시하면 샌드박스가 띄워야 할 대상이 System32 의 PE 바이너리로 고정되어
+        // 연결·셸 의존이 사라진다. 경로도 %SystemRoot% 같은 확장에 기대지 않고 절대 경로로 박는다
+        // (LogonCommand 문자열이 어느 시점에 환경 변수 확장을 거치는지 보장되지 않기 때문).
+        var startupScriptInSandbox = Path.Combine(SandboxMountPaths.AppDirectory, "StartupScript.cmd");
+        sandboxConfig.LogonCommand.Add($@"{GuestCommandInterpreterPath} /c ""{startupScriptInSandbox}""");
         return sandboxConfig;
     }
+
+    /// <summary>
+    /// 샌드박스 게스트의 명령 인터프리터 절대 경로. 게스트는 항상 표준 Windows 설치이므로
+    /// <c>C:\Windows\System32\cmd.exe</c> 로 고정된다(호스트 경로가 아니다).
+    /// </summary>
+    private const string GuestCommandInterpreterPath = @"C:\Windows\System32\cmd.exe";
 
     /// <summary>
     /// 호스트가 가진 인증서 쌍을 staging의 <c>App\certs</c>로 떨어뜨리고, NPKI 경로 조립에 필요한
@@ -395,6 +412,13 @@ setx DOTNET_ROOT ""{SandboxMountPaths.SandboxDesktop}\{HostDotnetLeafName}"" >nu
         // reg.exe + citool.exe는 System32의 EV 서명 바이너리라 SAC가 신뢰하므로 batch 단계에서
         // 호출하는 것이 안전.
         //
+        // 이슈 #304: 단, citool.exe는 작업을 마친 뒤 "계속하려면 Enter 키를 누르세요."로 표준 입력을
+        // 기다리는 빌드가 있다(제보 환경의 게스트 이미지 10.0.26100.8875에서 확인). LogonCommand 로
+        // 실행되는 이 batch 는 stdout/stderr 가 nul 로 묶여 있어 그 프롬프트가 화면에 보이지도 않은 채
+        // 영원히 멈추고, 바로 다음 줄의 Spork 실행에 도달하지 못한다 = "아무 메시지 없이 아무 일도
+        // 안 일어남". 그래서 stdin 을 nul 로 리다이렉트해 프롬프트가 즉시 EOF 를 받도록 한다.
+        // (batch 에서 블로킹될 수 있는 유일한 줄이므로 이 한 줄이 곧 hang 방어다.)
+        //
         // GPU 가속 OFF(기본)일 때 vGPU Disable 만으로는 부족할 수 있어 Edge 정책도 함께 적용해
         // 다층 차단한다. Edge는 vGPU가 없어도 WARP/소프트웨어 GPU 경로를 시도하며, 이 경로가
         // 일부 환경에서 흰 화면이나 렌더링 지연을 유발할 수 있기 때문에 정책 키로 명시적으로
@@ -442,12 +466,51 @@ reg add ""HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls"
 "
             : string.Empty;
 
+        // 이슈 #304: 부팅 브레드크럼.
+        //
+        // 이 batch 가 어디까지 갔는지 남기지 않으면, Spork 가 뜨지 않았을 때 사용자에게도 우리에게도
+        // 단서가 0 이다(콘솔은 즉시 닫히고, Spork 가 뜨기 전이라 Serilog/Sentry 도 아무것도 못 남긴다).
+        // 그래서 각 단계 직후 한 줄씩 기록한다.
+        //
+        // 기록 위치: Data 마운트(항상 RW)가 최우선. staging 의 App 폴더는 메인 창을 닫을 때
+        // SandboxCleanupManager 가 통째로 지우므로 세션이 끝나면 회수할 수 없다. Data 는 호스트의
+        // 실제 폴더(기본 문서\TableCloth\Data)라 샌드박스 종료 후에도 그대로 남는다.
+        // 마운트가 없는 예외 상황에서만 App 폴더로 폴백한다.
+        //
+        // 리다이렉션을 **명령 앞**에 두는 것은 의도적이다. `echo rc=%errorlevel%>>파일` 처럼 숫자로
+        // 끝나면 cmd 가 `0>>` 를 fd 0 리다이렉션으로 파싱해 로그가 조용히 깨진다.
+        const string BootLogVar = "%TCBOOTLOG%";
+        var bootLogHeader = $@"set TCBOOTLOG=%~dp0tablecloth-boot.log
+if exist ""{SandboxMountPaths.DataDirectory}\"" set TCBOOTLOG={SandboxMountPaths.DataDirectory}\tablecloth-boot.log
+>""{BootLogVar}"" echo [00] startup script begin %DATE% %TIME%
+";
+
+        // 본 batch 는 UTF-8(Encoding.Default)로 기록되는데 cmd 는 이를 OEM 코드페이지로 읽는다.
+        // 따라서 **반드시 ASCII 만** 사용한다. 한글을 넣으면 바이트 정렬이 깨져 스크립트가 통째로
+        // 무동작이 될 수 있다(이슈 #304 진단 중 실측).
+        var launchFailureNotice = $@"if not ""%TCSPORKRC%""==""0"" (
+  echo.
+  echo [TableCloth] Spork could not start ^(exit code %TCSPORKRC%^).
+  echo [TableCloth] Diagnostic log: {BootLogVar}
+  echo [TableCloth] Please attach that file to https://github.com/yourtablecloth/TableCloth/issues
+  echo.
+  pause
+)
+";
+
         return $@"@echo off
 pushd ""%~dp0""
-{dotnetRootScript}reg add ""HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy"" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1
-{disableEdgeGpuScript}{darkWallpaperScript}{localNetworkAccessScript}""%SystemRoot%\System32\citool.exe"" --refresh >nul 2>&1
-{idleGuardScript}""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
-popd
+{bootLogHeader}{dotnetRootScript}reg add ""HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy"" /v VerifiedAndReputablePolicyState /t REG_DWORD /d 0 /f >nul 2>&1
+>>""{BootLogVar}"" echo [01] sac policy rc=%errorlevel%
+{disableEdgeGpuScript}{darkWallpaperScript}{localNetworkAccessScript}>>""{BootLogVar}"" echo [02] browser policies applied rc=%errorlevel%
+>>""{BootLogVar}"" echo [03] citool refresh begin %TIME%
+""%SystemRoot%\System32\citool.exe"" --refresh <nul >nul 2>&1
+>>""{BootLogVar}"" echo [04] citool refresh end rc=%errorlevel% %TIME%
+{idleGuardScript}>>""{BootLogVar}"" echo [05] launching spork %TIME%
+""{tableClothExeInSandbox}"" spork {idList} {string.Join(" ", switches)}
+set TCSPORKRC=%errorlevel%
+>>""{BootLogVar}"" echo [06] spork exited rc=%TCSPORKRC% %TIME%
+{launchFailureNotice}popd
 @echo on
 ";
     }
