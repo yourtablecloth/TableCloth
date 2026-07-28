@@ -17,6 +17,20 @@
 ## 0. 사전 조건 (매 릴리스)
 
 - **SimplySign Desktop 로그인**(서명 세션 활성) — 코드 서명 인증서가 `CurrentUser\My`에 개인 키와 함께 있어야 함.
+  - 확인: `Get-ChildItem Cert:\CurrentUser\My | ? { $_.Subject -like '*Jung Hyun Nam*' -and $_.HasPrivateKey }`
+- ⚠️ **`signtool`이 PATH에 없을 수 있다.** 이 경우 `tools/sign-release.ps1`은 시작하자마자 실패한다.
+  Velopack CLI에 동봉된 것을 쓰면 된다 — `~\.dotnet\tools\.store\vpk\<ver>\vpk\<ver>\vendor\signing\signtool.exe`.
+
+  ```powershell
+  $signtool = (Get-ChildItem "$env:USERPROFILE\.dotnet\tools\.store\vpk" -Recurse -Filter signtool.exe |
+               Select-Object -First 1).FullName
+  ```
+
+- ⚠️ **NativeAOT 부트스트래퍼는 C++ 빌드 도구가 있어야 만들어진다**(Visual Studio의 *Desktop
+  Development for C++*, arm64까지 내려면 *C++ ARM64 build tools*). 없으면 `build.cs`가
+  `Platform linker not found` 경고와 함께 **조용히 건너뛰고**, `SporkBootstrap_*.exe` 4종이 로컬
+  산출물에서 빠진다. 이 경우 릴리스에는 CI가 만든 **미서명본**이 그대로 남으므로 4단계에서 별도로
+  서명해야 한다(§4-2).
 - 저장소 시크릿 **`TABLECLOTH_GITHUB_PAT` = classic PAT + `public_repo` 스코프** (winget 제출용).
   - 선택: `delete_repo` — 제출 실패 시 wingetcreate가 자기 포크를 정리.
   - fine-grained PAT은 wingetcreate가 지원하지 않음.
@@ -54,19 +68,86 @@ $env:TABLECLOTH_SIGN_SUBJECT = 'Jung Hyun Nam'   # 필수 (또는 --sign-subject
   - 서명된 `TableCloth_<4파트버전>_Release_<arch>.exe` / `Spork_<버전>_Release_<arch>.exe` (+ 각 `_Portable.zip`)
   - **+ Velopack 메타데이터**(`.nupkg`, `RELEASES-*`, `releases.*.json`, `assets.*.json`) — Spork 는 채널 `spork-<arch>` 라 TableCloth(채널 `<arch>`)와 이름이 겹치지 않는다.
   - 서명 범위: 앱 바이너리 + `Update.exe` + `Setup.exe` (Release 구성만).
+- ⚠️ 빌드 로그 끝에서 **`(skip) bootstrapper exe not found`** 가 있는지 확인한다. 있으면 §0의 C++
+  빌드 도구가 없다는 뜻이고, `SporkBootstrap_*.exe` 는 §4-2에서 따로 서명해야 한다. 이 경고는
+  빌드를 실패시키지 않으므로(종료 코드 0) 놓치기 쉽다.
 
 ## 4. 서명 자산 업로드 (CI 미서명본 교체)
 
+올릴 대상은 **두 앱(TableCloth + Spork)의 설치 관리자 + Portable + Velopack 메타데이터 전체**다.
+파일명이 CI와 동일한 4-part 버전이라 `--clobber`가 정확히 **교체**한다(중복 추가가 아님).
+nupkg/메타데이터도 로컬 서명본으로 교체되어 설치 관리자와 일관된다. SBOM은 CI 산출물이 그대로
+유지된다(하이브리드).
+
+### 4-1. 파일별 업로드 + 대조 검증
+
+> ⚠️ **한 줄 glob 업로드(`gh release upload ... x64\* arm64\* --clobber`)를 쓰지 말 것.**
+> v1.20.9 에서 대량 업로드가 중간에 `HTTP 404` 로 끊겼는데, `--clobber` 는 **먼저 기존 자산을 지우고**
+> 올리기 때문에 **x64 설치 관리자와 nupkg 가 아예 사라진 채 남았고**, arm64 7개는 CI 미서명본이
+> 그대로 유지됐다. 명령은 부분 성공으로 끝나 조용히 넘어간다.
+
 ```powershell
-gh release upload vX.Y.Z Releases\Release\x64\* Releases\Release\arm64\* --clobber
+$tag = 'vX.Y.Z'
+foreach ($f in (Get-ChildItem "Releases\Release\x64\*","Releases\Release\arm64\*" -File)) {
+  $ok = $false
+  for ($i = 1; $i -le 3 -and -not $ok; $i++) {
+    gh release upload $tag $f.FullName --clobber 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) { $ok = $true } else { Start-Sleep -Seconds 5 }
+  }
+  '{0,-50} {1}' -f $f.Name, $(if ($ok) { 'OK' } else { 'FAILED' })
+}
 ```
 
-- 이 glob은 **두 앱(TableCloth + Spork)의 설치 관리자 + Portable + Velopack 메타데이터 전체**를 올린다. 파일명이 CI와 동일한 4-part 버전이라 `--clobber`가 정확히 **교체**한다(중복 추가가 아님). nupkg/메타데이터도 로컬 서명본으로 교체되어 설치 관리자와 일관된다.
-- SBOM은 CI 빌드 산출물이 그대로 유지된다(하이브리드).
+업로드 후 **반드시 크기 대조**로 교체 여부를 확인한다. 로컬 서명본은 CI 미서명본보다 크므로,
+크기가 같으면 교체가 안 된 것이다.
+
+```powershell
+$assets = (gh release view $tag --json assets | ConvertFrom-Json).assets
+$local  = @(Get-ChildItem "Releases\Release\x64\*","Releases\Release\arm64\*" -File) |
+          Select-Object -ExpandProperty Name -Unique
+$bad = foreach ($n in $local) {
+  $a = $assets | Where-Object name -eq $n
+  $f = Get-ChildItem "Releases\Release\*\$n" -File | Select-Object -First 1
+  if (-not $a)                   { "MISSING: $n" }
+  elseif ($a.size -ne $f.Length) { "SIZE MISMATCH: $n (release=$($a.size) local=$($f.Length))" }
+}
+if ($bad) { $bad } else { "OK - 로컬 산출물 $($local.Count)개 전부 일치" }
+```
+
+### 4-2. CI 산출 부트스트래퍼 서명 (로컬 빌드가 건너뛴 경우)
+
+§0/§3에서 `(skip) bootstrapper exe not found` 를 만났다면, `SporkBootstrap_*.exe` 4종은 CI 미서명본이다.
+내려받아 서명하고 되올린다.
+
+```powershell
+$work = "$env:TEMP\tc-sign-bootstrap"
+New-Item -ItemType Directory -Path $work -Force | Out-Null
+Set-Location $work
+gh release download $tag --repo yourtablecloth/TableCloth --pattern "SporkBootstrap*.exe"
+& $signtool sign /n "Jung Hyun Nam" /tr "http://time.certum.pl" /td sha256 /fd sha256 (Get-ChildItem *.exe).FullName
+Get-ChildItem *.exe | ForEach-Object { gh release upload $tag $_.FullName --repo yourtablecloth/TableCloth --clobber }
+```
+
+### 4-3. 게시 전 서명 전수 확인
+
+```powershell
+$verify = "$env:TEMP\tc-verify-$tag"
+New-Item -ItemType Directory -Path $verify -Force | Out-Null
+Set-Location $verify
+gh release download $tag --repo yourtablecloth/TableCloth --pattern "*.exe"
+Get-ChildItem *.exe | ForEach-Object {
+  '{0,-48} {1}' -f $_.Name, (Get-AuthenticodeSignature $_.FullName).Status
+}
+```
+
+**모든 항목이 `Valid` 여야 한다.** 하나라도 `NotSigned` 면 게시하지 않는다.
+(v1.20.9 기준 대상은 8개 — TableCloth/Spork 설치 관리자 각 2 + SporkBootstrap 4.)
 
 ## 5. 게시
 
-- 릴리스 노트에서 **`UNSIGNED` 마커 블록 제거**.
+- **§4-3의 서명 전수 확인을 통과했는지 먼저 볼 것.**
+- 릴리스 노트에서 **`UNSIGNED` 마커 블록 제거**. 자동 생성 노트는 커밋 목록이라, UI 변화가 없는
+  유지 보수 릴리스일수록 **맨 앞에 사용자용 요약 문단을 덧붙이는 편**이 좋다(v1.20.9 참고).
 - draft 해제(Publish) — prerelease가 아니므로 → **`released` 이벤트 발생**.
 
 ## 6. winget 자동 제출 (자동)
