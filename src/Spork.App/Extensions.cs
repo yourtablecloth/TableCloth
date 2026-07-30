@@ -19,7 +19,15 @@ namespace Spork
             if (!webBrowserService.TryGetBrowserExecutablePath(out var executableFilePath))
                 return new ProcessStartInfo(url) { UseShellExecute = true, WindowStyle = processWindowStyle };
 
-            return new ProcessStartInfo(executableFilePath, url) { UseShellExecute = false, WindowStyle = processWindowStyle };
+            // URL 은 Arguments 문자열이 아니라 ArgumentList 로 넘긴다. 카탈로그에서 온 URL 만 열던
+            // 시절에는 차이가 없었지만, 무설치 딥링크(--target-url)로 외부에서 온 URL 도 이 경로를
+            // 지나가므로 Arguments 문자열 연결은 브라우저 인자 주입 통로가 된다
+            // (예: URL 에 공백을 넣어 msedge 스위치를 덧붙이는 형태). ArgumentList 는 Windows 인용
+            // 규칙에 맞게 이스케이프하므로 URL 이 항상 인자 하나로 전달된다.
+            // CatalogTargetUrlMatcher 도 공백/제어문자/큰따옴표를 미리 거르지만 이중으로 방어한다.
+            var startInfo = new ProcessStartInfo(executableFilePath) { UseShellExecute = false, WindowStyle = processWindowStyle };
+            startInfo.ArgumentList.Add(url);
+            return startInfo;
         }
 
         public static HttpClient CreateTableClothHttpClient(this IHttpClientFactory httpClientFactory)

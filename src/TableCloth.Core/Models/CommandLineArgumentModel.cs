@@ -19,7 +19,8 @@ namespace TableCloth.Models
             bool showVersionHelp = default,
             bool dryRun = default,
             bool simulateFailure = false,
-            IEnumerable<MappedFolderSetting> mappedFolders = default)
+            IEnumerable<MappedFolderSetting> mappedFolders = default,
+            string targetUrl = default)
         {
             RawArguments = rawArguments;
             SelectedServices = selectedServices ?? Enumerable.Empty<string>();
@@ -33,6 +34,7 @@ namespace TableCloth.Models
             DryRun = dryRun;
             SimulateFailure = simulateFailure;
             MappedFolders = mappedFolders ?? Enumerable.Empty<MappedFolderSetting>();
+            TargetUrl = targetUrl;
         }
 
         public string[] RawArguments { get; private set; }
@@ -52,6 +54,15 @@ namespace TableCloth.Models
         public bool ShowVersionHelp { get; private set; }
 
         public IEnumerable<string> SelectedServices { get; private set; } = new List<string>();
+
+        /// <summary>
+        /// 외부(무설치 `.wsb` 딥링크, 브라우저 익스텐션)에서 전달된 대상 URL.
+        /// </summary>
+        /// <remarks>
+        /// 신뢰할 수 없는 입력이다. 실제로 열기 전에 반드시
+        /// <see cref="Catalog.CatalogTargetUrlMatcher"/> 로 카탈로그 도메인 게이트를 통과시켜야 한다.
+        /// </remarks>
+        public string TargetUrl { get; private set; } = null;
 
         public bool DryRun { get; private set; }
 
@@ -86,6 +97,12 @@ namespace TableCloth.Models
                 {
                     options.Add(ConstantStrings.TableCloth_Switch_CertPrivateKey);
                     options.Add(CertPrivateKeyPath);
+                }
+
+                if (!string.IsNullOrWhiteSpace(TargetUrl))
+                {
+                    options.Add(ConstantStrings.TableCloth_Switch_TargetUrl);
+                    options.Add(TargetUrl);
                 }
 
                 if (DryRun)

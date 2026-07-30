@@ -404,7 +404,10 @@ jobs:
         # 두 파일을 함께 게시해야 한다. checkout 된 리포 트리에서 그대로 복사.
         cp tools/no-install/no-install-spork.wsb release-assets/
         cp tools/no-install/tablecloth-prepare.ps1 release-assets/
-        echo "Copied no-install-spork.wsb + tablecloth-prepare.ps1"
+        # 딥링크 템플릿은 생산자(브라우저 익스텐션/웹앱/MCP)용 자산. 고정 URL 로 받아 플레이스홀더만
+        # 치환하면 LogonCommand 수정이 생산자 재배포 없이 반영된다. 치환 없이 실행해도 안전(일반 런처).
+        cp tools/no-install/no-install-spork-deeplink.wsb release-assets/
+        echo "Copied no-install-spork.wsb (+ deeplink template) + tablecloth-prepare.ps1"
 
         ls -la release-assets/
       shell: bash

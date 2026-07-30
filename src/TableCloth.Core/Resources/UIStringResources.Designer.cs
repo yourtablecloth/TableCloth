@@ -1859,6 +1859,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Specifies the web page address to open. It is only accepted when the address belongs to a domain the catalog knows.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_TargetUrl_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_TargetUrl_Help", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Displays version information for the program.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string TableCloth_Switch_Version_Help {
