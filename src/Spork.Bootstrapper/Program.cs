@@ -63,6 +63,7 @@ internal static partial class Program
     // 실행(launch) 단계 상태. 취소 후 [다시 실행]은 재다운로드 없이 실행만 재시도한다.
     private static string? s_extractedDest;
     private static string? s_launchSiteIds;
+    private static string? s_launchTargetUrl;
     private static bool s_launchOnlyRetry;
 
     private static int s_workerRunning; // Interlocked 가드(재시도 중복 방지)
@@ -75,7 +76,8 @@ internal static partial class Program
         Loc.Initialize(s_options.Lang);
         s_logPath = Path.Combine(DesktopDir(), "spork-bootstrap.log");
         Log($"bootstrapper start (arch={RuntimeInformation.ProcessArchitecture}, lang={(s_options.Lang ?? "auto")}, " +
-            $"template={(s_options.ZipUrlTemplate ?? "<none>")}, siteIds='{s_options.SiteIds}')");
+            $"template={(s_options.ZipUrlTemplate ?? "<none>")}, siteIds='{s_options.SiteIds}', " +
+            $"targetUrl={(s_options.TargetUrl != null ? "<supplied>" : "<none>")})");
 
         CoInitializeEx(0, COINIT_APARTMENTTHREADED); // 작업 표시줄 COM 용 STA (STAThread 보조, best-effort)
 
@@ -451,6 +453,7 @@ internal static partial class Program
 
             s_extractedDest = dest;
             s_launchSiteIds = s_options.SiteIds;
+            s_launchTargetUrl = s_options.TargetUrl;
 
             SetStatus(Loc.S.Launching);
             TryLaunch();
@@ -484,7 +487,7 @@ internal static partial class Program
     {
         try
         {
-            LaunchSpork(s_extractedDest!, s_launchSiteIds);
+            LaunchSpork(s_extractedDest!, s_launchSiteIds, s_launchTargetUrl);
             Log("done — launched");
             Post(WM_APP_DONE);
         }
@@ -636,7 +639,7 @@ internal static partial class Program
         Log($"extracted -> {dest}");
     }
 
-    private static void LaunchSpork(string dest, string? siteIds)
+    private static void LaunchSpork(string dest, string? siteIds, string? targetUrl)
     {
         string exe = Path.Combine(dest, "Spork.exe");
         if (!File.Exists(exe))
@@ -657,13 +660,20 @@ internal static partial class Program
             UseShellExecute = true,
             WorkingDirectory = Path.GetDirectoryName(exe),
         };
+        // 대상 URL 은 위치 인자(사이트 Id)와 섞이지 않도록 옵션으로 먼저 넘긴다. 검증은 하지 않는다
+        // (런처엔 카탈로그가 없다) — Spork 의 CatalogTargetUrlMatcher 가 카탈로그 도메인 게이트를 적용한다.
+        if (!string.IsNullOrWhiteSpace(targetUrl))
+        {
+            psi.ArgumentList.Add("--target-url");
+            psi.ArgumentList.Add(targetUrl);
+        }
         if (!string.IsNullOrWhiteSpace(siteIds))
         {
             foreach (var siteId in siteIds.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                 psi.ArgumentList.Add(siteId);
         }
         Process.Start(psi);
-        Log($"launched: {exe} (siteIds='{siteIds}')");
+        Log($"launched: {exe} (siteIds='{siteIds}', targetUrl={(targetUrl != null ? "<supplied>" : "<none>")})");
     }
 
     // ------------------------------------------------------------------

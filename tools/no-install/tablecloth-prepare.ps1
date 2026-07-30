@@ -32,12 +32,21 @@
     instead (Chocolatey-style channel); the parameter default picks it up. See
     the __SPORK_SITE_IDS__ placeholder in PARAMETERIZED_WSB_SPEC.md section 0.5.
 
+.PARAMETER TargetUrl
+    (Optional) The exact page address to open, passed to the launcher as
+    --target-url. Same environment-variable channel (TABLECLOTH_TARGET_URL) and
+    the same __SPORK_TARGET_URL__ placeholder contract. This script does NOT
+    validate the address: it is forwarded opaquely because the catalog is not
+    available at this stage. TableCloth itself decides whether the address
+    belongs to a catalog domain and drops it otherwise.
+
 .NOTES
     Asset-name / fixed-URL contract: docs/PARAMETERIZED_WSB_SPEC.md section 0.5,
     docs/EXPRESS_BOOTSTRAPPER_DESIGN.md section 10.
 #>
 param(
-    [string] $SiteIds = $env:TABLECLOTH_SITE_IDS
+    [string] $SiteIds = $env:TABLECLOTH_SITE_IDS,
+    [string] $TargetUrl = $env:TABLECLOTH_TARGET_URL
 )
 
 $ErrorActionPreference = 'Stop'
@@ -67,11 +76,20 @@ try {
     Invoke-WebRequest "https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_$arch.exe" -OutFile $launcherPath
 
     Write-Host '  [2/2] Done. Starting TableCloth...' -ForegroundColor Green
-    if ([string]::IsNullOrWhiteSpace($SiteIds)) {
-        Start-Process $launcherPath
+    # Unsubstituted placeholders (__SPORK_...) count as 'not supplied' - the launcher
+    # applies the same rule, so a missed substitution stays harmless.
+    $launcherArgs = @()
+    if (-not [string]::IsNullOrWhiteSpace($SiteIds) -and $SiteIds -notlike '*__SPORK*') {
+        $launcherArgs += @('--site-ids', $SiteIds)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($TargetUrl) -and $TargetUrl -notlike '*__SPORK*') {
+        $launcherArgs += @('--target-url', $TargetUrl)
+    }
+    if ($launcherArgs.Count -gt 0) {
+        Start-Process $launcherPath -ArgumentList $launcherArgs
     }
     else {
-        Start-Process $launcherPath -ArgumentList @('--site-ids', $SiteIds)
+        Start-Process $launcherPath
     }
     Start-Sleep -Seconds 2
     exit 0

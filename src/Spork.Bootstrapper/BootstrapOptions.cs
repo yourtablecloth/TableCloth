@@ -14,6 +14,15 @@ internal sealed class BootstrapOptions
     /// <summary>공백 구분 사이트 Id. Spork.exe 위치 인자로 그대로 전달. 비면 일반 런처.</summary>
     public string? SiteIds { get; private init; }
 
+    /// <summary>
+    /// 열어야 할 페이지 주소. Spork.exe 에 `--target-url` 로 그대로 전달한다.
+    /// </summary>
+    /// <remarks>
+    /// 런처 단계에서는 카탈로그가 없어 판정할 수 없으므로 검증 없이 포워딩만 한다. 이 주소가
+    /// 카탈로그 도메인에 속하는지는 Spork 의 CatalogTargetUrlMatcher 가 판정하고, 아니면 버린다.
+    /// </remarks>
+    public string? TargetUrl { get; private init; }
+
     /// <summary>`x64=hash;arm64=hash` 체크섬 맵. 해당 arch 항목이 있으면 검증.</summary>
     private Dictionary<string, string> Sha256Map { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 
@@ -31,7 +40,7 @@ internal sealed class BootstrapOptions
 
     public static BootstrapOptions Parse(string[] args)
     {
-        string? template = null, siteIds = null, repo = null, dest = null, sha256Map = null, lang = null;
+        string? template = null, siteIds = null, repo = null, dest = null, sha256Map = null, lang = null, targetUrl = null;
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -41,6 +50,7 @@ internal sealed class BootstrapOptions
             {
                 case "--zip-url-template": template = value; i++; break;
                 case "--site-ids": siteIds = value; i++; break;
+                case "--target-url": targetUrl = value; i++; break;
                 case "--sha256-map": sha256Map = value; i++; break;
                 case "--github-repo": repo = value; i++; break;
                 case "--dest": dest = value; i++; break;
@@ -52,6 +62,7 @@ internal sealed class BootstrapOptions
         {
             ZipUrlTemplate = Meaningful(template) ? template : null,
             SiteIds = Meaningful(siteIds) ? siteIds : null,
+            TargetUrl = Meaningful(targetUrl) ? targetUrl : null,
             Dest = Meaningful(dest) ? dest : null,
             Lang = Meaningful(lang) ? lang : null,
             GithubRepo = Meaningful(repo) ? repo! : "yourtablecloth/TableCloth",

@@ -648,6 +648,9 @@ Spork는 원래 식탁보가 만든 일회용 Windows Sandbox 안에서 자동�
   <data name="TableCloth_Switch_SimulateFailure_Help" xml:space="preserve">
     <value>임의의 확률로 오류 발생을 시뮬레이션합니다. 이 옵션은 개발자용 기능입니다.</value>
   </data>
+  <data name="TableCloth_Switch_TargetUrl_Help" xml:space="preserve">
+    <value>열어야 할 웹 페이지 주소를 지정합니다. 카탈로그가 아는 도메인에 속하는 주소일 때만 받아들입니다.</value>
+  </data>
   <data name="TableCloth_Switch_Version_Help" xml:space="preserve">
     <value>프로그램의 버전 정보를 표시합니다.</value>
   </data>

@@ -26,6 +26,11 @@ namespace Spork.Components.Implementations
             _simulateFailureOption = new Option<bool>(ConstantStrings.TableCloth_Switch_SimulateFailure)
             { Required = false, Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_SimulateFailure_Help, };
 
+            // 무설치 `.wsb` 딥링크 / 브라우저 익스텐션이 넘기는 대상 URL. 신뢰할 수 없는 입력이므로
+            // 여기서는 문자열로만 받고, 실제 판정은 CatalogTargetUrlMatcher 가 카탈로그를 보고 한다.
+            _targetUrlOption = new Option<string>(ConstantStrings.TableCloth_Switch_TargetUrl)
+            { Required = false, Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_TargetUrl_Help, };
+
             _siteIdListArgument = new Argument<string[]>("siteIds")
             { Arity = ArgumentArity.ZeroOrMore, Description = UIStringResources.TableCloth_Arguments_SiteIdList_Help, };
 
@@ -35,6 +40,7 @@ namespace Spork.Components.Implementations
                 _certPublicKeyOption,
                 _dryRunOption,
                 _simulateFailureOption,
+                _targetUrlOption,
                 _siteIdListArgument,
             };
 
@@ -51,6 +57,7 @@ namespace Spork.Components.Implementations
         private readonly Option<string> _certPublicKeyOption;
         private readonly Option<bool> _dryRunOption;
         private readonly Option<bool> _simulateFailureOption;
+        private readonly Option<string> _targetUrlOption;
         private readonly Argument<string[]> _siteIdListArgument;
         private readonly RootCommand _rootCommand;
         private readonly HelpOption _helpOption;
@@ -90,7 +97,8 @@ namespace Spork.Components.Implementations
                 showCommandLineHelp: parseResult.GetResult(_helpOption) != null,
                 showVersionHelp: parseResult.GetResult(_versionOption) != null,
                 dryRun: parseResult.GetValue(_dryRunOption),
-                simulateFailure: parseResult.GetValue(_simulateFailureOption));
+                simulateFailure: parseResult.GetValue(_simulateFailureOption),
+                targetUrl: parseResult.GetValue(_targetUrlOption));
         }
     }
 }

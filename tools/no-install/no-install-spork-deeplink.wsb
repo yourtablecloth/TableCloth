@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  No-install TableCloth / Windows Sandbox configuration (deep-link template)
+
+  This is the PARAMETERIZED variant of no-install-spork.wsb. It is a TEMPLATE, not a
+  ready-to-run file: a producer (browser extension, quick-start web app, MCP server)
+  substitutes the two placeholders below and serves or saves the result. Everything else
+  (hidden logon shell spawning one visible window, DNS probe then fallback, TLS 1.2,
+  Chocolatey style fetch of tablecloth-prepare.ps1, zero MappedFolders, plain text and no
+  Base64) is identical to the generic file, so read that one for the rationale.
+
+  Placeholders (see docs/PARAMETERIZED_WSB_SPEC.md section 3.3):
+
+    __SPORK_SITE_IDS__     Optional. Space separated catalog site ids, e.g. 'WooriBank'.
+                           Carried to the guest in the TABLECLOTH_SITE_IDS variable.
+    __SPORK_TARGET_URL__   Optional. The exact page to open after the plugins are installed,
+                           e.g. the page the user was looking at in the host browser.
+                           Carried in the TABLECLOTH_TARGET_URL variable.
+
+  Both are optional and independent. Leaving both unsubstituted yields the generic launcher:
+  TableCloth treats any value still containing __SPORK as 'not supplied', so a missed
+  substitution degrades to the plain catalog UI instead of breaking.
+
+  Escaping rules for the producer (BOTH layers apply, in this order):
+
+    1) XML layer: escape '&', '<' and '>' as '&amp;', '&lt;', '&gt;'. Query strings in the
+       real world do contain '&' (for example ...?withyou=CTCER0149&fromSite=pib), so this
+       one is not optional. The XML parser restores the original characters before
+       PowerShell sees them, and a single quoted PowerShell string treats them literally.
+    2) PowerShell / argv layer: the value sits inside nested single quoted strings within a
+       double quoted command line, so a literal apostrophe or double quote breaks parsing no
+       matter how it is XML escaped. Percent encode them instead: apostrophe as %27 and
+       double quote as %22. Other characters need nothing: the outer quotes are argv
+       quoting, not a PowerShell string, so '$' and backtick stay literal.
+
+  Also reject, on the producer side, anything that is not an http or https absolute URL,
+  anything carrying credentials (user@host form), and anything longer than 2048 characters.
+
+  Trust model: this file can be redistributed by anyone, so the values above are UNTRUSTED
+  input by the time the guest sees them. TableCloth re-validates them inside the sandbox:
+  the target URL is opened only when it belongs to the same registrable domain as the site
+  ids (or, without site ids, when exactly one catalog service matches). Otherwise the URL is
+  dropped and the ordinary catalog UI opens. Keeping the URL in plain sight here is
+  deliberate: a person inspecting this file must be able to see which page it will open.
+-->
+<Configuration>
+  <Networking>Enable</Networking>
+  <vGPU>Disable</vGPU>
+  <LogonCommand>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -WindowStyle Normal -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-Command','$Host.UI.RawUI.WindowTitle = ''TableCloth Setup''; Write-Host '' Getting TableCloth ready...'' -ForegroundColor Cyan; if (-not (Resolve-DnsName -Name github.com -QuickTimeout -ErrorAction SilentlyContinue)) { Get-NetAdapter | Where-Object Status -eq ''Up'' | Set-DnsClientServerAddress -ServerAddresses 8.8.8.8,1.1.1.1 }; [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor 3072; $env:TABLECLOTH_SITE_IDS = ''__SPORK_SITE_IDS__''; $env:TABLECLOTH_TARGET_URL = ''__SPORK_TARGET_URL__''; try { iex ((New-Object Net.WebClient).DownloadString(''https://github.com/yourtablecloth/TableCloth/releases/latest/download/tablecloth-prepare.ps1'')) } catch { Write-Host ('' Failed: '' + $_.Exception.Message) -ForegroundColor Red; $null = Read-Host '' Press Enter to close'' }'"</Command>
+  </LogonCommand>
+</Configuration>

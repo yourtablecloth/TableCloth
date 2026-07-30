@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Spork.Browsers;
 using Spork.Components;
 using Spork.Steps;
@@ -70,7 +71,8 @@ namespace Spork.ViewModels
             IWebBrowserServiceFactory webBrowserServiceFactory,
             IMicrosoftEdgeInstaller edgeInstaller,
             IX509CertScanner certScanner,
-            TaskFactory taskFactory)
+            TaskFactory taskFactory,
+            ILogger<MainWindowViewModel> logger)
         {
             // Application은 DI로 받지 않고 WPF 표준 정적 참조 사용 (Spork.App ApplicationService와 동일 사유).
             _resourceCacheManager = resourceCacheManager;
@@ -87,6 +89,7 @@ namespace Spork.ViewModels
             _edgeInstaller = edgeInstaller;
             _certScanner = certScanner;
             _taskFactory = taskFactory;
+            _logger = logger;
         }
 
         private readonly IResourceCacheManager _resourceCacheManager;
@@ -103,12 +106,26 @@ namespace Spork.ViewModels
         private readonly IMicrosoftEdgeInstaller _edgeInstaller;
         private readonly IX509CertScanner _certScanner;
         private readonly TaskFactory _taskFactory;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// 사용자가 카탈로그 UI를 통해 진입했는지(true) 또는 명령줄 --select로 진입했는지(false).
         /// 카탈로그 진입의 경우 설치 완료 후 "카탈로그로 돌아가기" UX를 제공한다.
         /// </summary>
         private bool _enteredViaCatalog;
+
+        /// <summary>
+        /// 명령줄 진입 시 설치 대상이 되는 카탈로그 사이트 Id 목록. 기본값은 위치 인자로 받은
+        /// 사이트 Id 이고, `--target-url` 이 카탈로그 도메인 게이트를 통과하면 그 URL 이 속한
+        /// 서비스 Id 로 대체된다.
+        /// </summary>
+        private IReadOnlyList<string> _commandLineSiteIds = new string[0];
+
+        /// <summary>
+        /// 게이트를 통과한 대상 URL. 설치 완료 후 카탈로그의 대표 URL 대신 이 URL 을 연다.
+        /// 통과하지 못했거나 지정되지 않았으면 null.
+        /// </summary>
+        private string _commandLineTargetUrl;
 
         // 사용자 데이터는 IUserDataStore.Current 가 단일 진실. _userData 는 그 단축 참조.
         // 디바운스 저장도 IUserDataStore.ScheduleSave 가 담당한다.
@@ -149,13 +166,18 @@ namespace Spork.ViewModels
             // 매 실행마다 호출되어도 기존 .lnk를 덮어쓰므로 안전.
             await TryCreateSporkShortcutAsync();
 
-            if (parsedArgs.SelectedServices.Any())
+            // 사이트 Id 와 대상 URL(있으면)을 확정한다. URL 은 신뢰할 수 없는 입력이라 카탈로그
+            // 도메인 게이트를 통과한 경우에만 살아남는다.
+            ResolveCommandLineTarget(parsedArgs);
+
+            if (_commandLineSiteIds.Count > 0)
             {
                 // 명령줄로 사이트가 지정되어 들어온 경우: 종전대로 즉시 설치 흐름.
                 // 설치 성공 시 자동 종료 (--select 기반 바로가기/외부 호출 호환).
                 _enteredViaCatalog = false;
-                await RecordUsageAsync(parsedArgs.SelectedServices);
-                await EnterStepsModeAsync(_stepsComposer.ComposeSteps(), showPrecautions: true);
+                await RecordUsageAsync(_commandLineSiteIds);
+                await EnterStepsModeAsync(
+                    _stepsComposer.ComposeStepsForSites(_commandLineSiteIds), showPrecautions: true);
             }
             else
             {
@@ -164,6 +186,45 @@ namespace Spork.ViewModels
                 LoadCatalogForBrowsing();
                 ShowCatalogView = true;
             }
+        }
+
+        /// <summary>
+        /// 명령줄로 들어온 진입 대상(사이트 Id 목록 / 대상 URL)을 확정한다.
+        /// </summary>
+        /// <remarks>
+        /// 대상 URL 은 무설치 `.wsb` 나 브라우저 익스텐션이 넘기며, `.wsb` 는 신뢰 경계 밖에서
+        /// 배포되므로 여기서 카탈로그 도메인 게이트를 통과해야 한다. 게이트를 통과하지 못하면
+        /// <b>URL 만 버리고</b> 사이트 Id 채널은 기존 동작을 유지한다. 결과적으로 전혀 다른 주소가
+        /// 들어오면 사이트 지정이 없는 일반 실행과 똑같이 카탈로그 UI 가 열린다.
+        /// </remarks>
+        private void ResolveCommandLineTarget(CommandLineArgumentModel parsedArgs)
+        {
+            _commandLineSiteIds = (parsedArgs.SelectedServices ?? Enumerable.Empty<string>())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToArray();
+            _commandLineTargetUrl = null;
+
+            if (string.IsNullOrWhiteSpace(parsedArgs.TargetUrl))
+                return;
+
+            var match = CatalogTargetUrlMatcher.Match(
+                _resourceCacheManager.CatalogDocument, parsedArgs.TargetUrl, _commandLineSiteIds);
+
+            if (!match.IsAccepted)
+            {
+                // URL 원문은 남기지 않는다(신뢰할 수 없는 입력이 로그로 흘러들지 않도록). 사유만 기록.
+                _logger?.LogWarning(
+                    "The target URL passed on the command line was rejected by the catalog domain gate. Reason: {reason}",
+                    match.Reason);
+                return;
+            }
+
+            _commandLineSiteIds = match.ServiceIds.ToArray();
+            _commandLineTargetUrl = match.AcceptedUrl;
+
+            _logger?.LogInformation(
+                "The target URL was accepted by the catalog domain gate. Matched site(s): {siteIds}",
+                string.Join(", ", _commandLineSiteIds));
         }
 
         private async Task TryCreateSporkShortcutAsync()
@@ -607,11 +668,10 @@ namespace Spork.ViewModels
             ShowCatalogView = false;
             ShowStepsView = true;
 
-            var parsedArgs = _commandLineArguments.GetCurrent();
             var catalog = _resourceCacheManager.CatalogDocument;
             var targets = SelectedCatalogService != null
                 ? new[] { SelectedCatalogService.Id }
-                : parsedArgs.SelectedServices.ToArray();
+                : _commandLineSiteIds.ToArray();
 
             if (showPrecautions && SharedExtensions.HasAnyCompatNotes(catalog, targets))
             {
@@ -650,13 +710,18 @@ namespace Spork.ViewModels
 
         private IList<string> ResolveTargetSiteUrls()
         {
+            // 게이트를 통과한 대상 URL 이 있으면 카탈로그의 대표 URL 대신 그 URL 을 연다.
+            // (익스텐션이 보던 실제 페이지로 바로 진입하는 것이 이 경로의 목적이다.)
+            if (!_enteredViaCatalog && !string.IsNullOrWhiteSpace(_commandLineTargetUrl))
+                return new[] { _commandLineTargetUrl };
+
             var catalog = _resourceCacheManager.CatalogDocument;
 
             IEnumerable<string> targetIds;
             if (_enteredViaCatalog)
                 targetIds = SelectedCatalogService != null ? new[] { SelectedCatalogService.Id } : Enumerable.Empty<string>();
             else
-                targetIds = _commandLineArguments.GetCurrent().SelectedServices;
+                targetIds = _commandLineSiteIds;
 
             var idSet = new HashSet<string>(targetIds ?? Enumerable.Empty<string>(), StringComparer.Ordinal);
             return catalog.Services

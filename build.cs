@@ -407,9 +407,12 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
 
             // 무설치 실행 진입점 .wsb + 준비 스크립트 (정적 파일 — 고정 URL 자산). Release 만.
             // .wsb 는 tablecloth-prepare.ps1 을 latest/download 고정 URL 로 받아 실행하므로 함께 게시.
+            // 딥링크 템플릿(-deeplink)은 생산자용 자산이다: 익스텐션/웹앱/MCP 가 고정 URL 로 받아
+            // 플레이스홀더만 치환하면 LogonCommand 수정이 생산자 재배포 없이 반영된다.
+            // (치환 없이 그대로 실행해도 플레이스홀더가 "없음"으로 처리되어 일반 런처로 뜬다.)
             if (config == "Release")
             {
-                foreach (var noInstallAsset in new[] { "no-install-spork.wsb", "tablecloth-prepare.ps1" })
+                foreach (var noInstallAsset in new[] { "no-install-spork.wsb", "no-install-spork-deeplink.wsb", "tablecloth-prepare.ps1" })
                 {
                     var sourcePath = Path.Combine("tools", "no-install", noInstallAsset);
                     if (File.Exists(sourcePath))
