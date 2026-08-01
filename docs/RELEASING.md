@@ -108,7 +108,34 @@ gh release upload vX.Y.Z Releases\Release\x64\* Releases\Release\arm64\* --clobb
 
 ---
 
+## 8. 프리뷰(Preview) 릴리스 서명 — 현재 절차와 한계
+
+프리뷰는 위 리테일 흐름을 그대로 쓸 수 없다. **arm64 Native AOT 를 x64 개발 PC 에서 빌드할 수 없어**
+`build.cmd --sign`(전체 pack-time 서명)을 돌릴 수 없기 때문이다. 대신
+[`preview.yml`](../.github/workflows/preview.yml) 이 x64 는 `windows-latest`, arm64 는 **`windows-11-arm`
+네이티브 러너**에서 빌드해 draft 프리릴리스를 만든다.
+
+**v1.21.0-preview.1 에서 실제로 한 것:** draft 의 **바깥 `Setup.exe` 4개만**(TableCloth/Spork × x64/arm64)
+`sign-release.ps1` 로 로컬 서명했다. nupkg 내부 앱 바이너리와 `Portable.zip` 내용물은 **미서명으로 남는다**
+— nupkg 는 Velopack RELEASES 해시에 묶여 있어 사후 재서명이 불가능하고, 서명을 넣으려면 다시 pack 해야
+하기 때문이다. 게시는 `gh release edit <tag> --draft=false --prerelease` 로 prerelease 를 유지한다
+(`prereleased` 이벤트만 발생 → winget/discord 미발동).
+
+**한계는 빌드가 아니라 배선이다(2026-08-01 정정).** "arm64 를 로컬에서 못 하니 재-pack 도 불가"는 틀린
+추론이었다. §3-1 에서 확인했듯 **서명도 패키징도 아키텍처 중립**이고, `build.cs --skip-build` 는 기존
+`publish/` 폴더만으로 pack 한다. 따라서 CI 가 pack 이전의 **publish 산출물을 아티팩트로 넘겨주기만 하면**,
+x64 PC 에서 `build.cmd --skip-build --sign --preview` 로 프리뷰도 전체 pack-time 서명이 가능하다.
+아직 그렇게 하지 못하는 이유는 두 가지뿐이다.
+
+1. `preview.yml` 이 `releases/*` 만 아티팩트로 올린다(publish 산출물은 안 올림).
+2. CI 의 게시 경로(`publish`, `publish-spork`)가 `build.cs` 기대(`publish/{config}/win-{arch}`)와 다르다.
+
+이 둘을 정리하면 프리뷰도 리테일과 같은 서명 범위를 갖게 되고, 배포물이 CI 산출물 그 자체가 되어
+attestation 과도 일치하게 된다. **배선 후 이 절 전체를 실제 절차로 교체할 것.**
+
+---
+
 ## 대안 / 참고
 
-- **외부 설치 관리자만 서명**: [`tools/sign-release.ps1`](../tools/sign-release.ps1) `-Tag vX.Y.Z` → 릴리스의 **모든 `.exe`(x64+arm64 Setup)**를 내려받아 signtool로 서명·재업로드한다. 단 패키지 내부 앱 바이너리/`Update.exe`와 `Portable.zip`은 서명되지 않는다(설치 관리자 외피만 서명).
+- **외부 설치 관리자만 서명**: [`tools/sign-release.ps1`](../tools/sign-release.ps1) `-Tag vX.Y.Z` → 릴리스의 **모든 `.exe`(x64+arm64 Setup)**를 내려받아 signtool로 서명·재업로드한다. 단 패키지 내부 앱 바이너리/`Update.exe`와 `Portable.zip`은 서명되지 않는다(설치 관리자 외피만 서명). 프리뷰 레인이 현재 이 방식을 쓴다(§8).
 - 릴리스 바이너리는 로컬 서명 빌드 산출물이고 SBOM/노트는 CI 빌드 기준인 **하이브리드** 구조다. 장기적으로 CI 클라우드 서명으로 전환할 수 있다(자동 메모 `code_signing_approach` 참고: Azure Artifact Signing은 한국 개인 가입 제약, SSL.com eSigner는 유료 무인 옵션).
