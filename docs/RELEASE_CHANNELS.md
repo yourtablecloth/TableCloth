@@ -80,10 +80,13 @@ Retail  (안정, 대다수)        Preview (선행, opt-in)
 - **설정**: `PreferenceSettings.UpdateChannel`(`ReleaseChannel` = Retail/Preview, 기본 Retail, JSON 문자열 저장).
 - **UI**: 옵션 창 "미리 보기" 탭 상단 라디오 버튼(안정/미리 보기) + 설명 + 프리뷰 경고. 변경 시 저장만(재시작 불필요).
 - **업데이트(`AppUpdateManager`)**:
-  - Velopack: Retail 은 기본 채널(현행), Preview 는 `new UpdateManager(new GithubSource(repo, null, prerelease:true), new UpdateOptions { ExplicitChannel = "preview-<arch>" })`.
+  - Velopack: **양쪽 링 모두 `ExplicitChannel` 을 명시**한다(Retail = `<arch>`, Preview = `preview-<arch>` — `vpk pack --channel` 값과 같은 이름). 소스는 Preview 만 `prerelease:true`.
   - GitHub API 폴백: Retail 은 `/releases/latest` + `_Release_<arch>`(현행), Preview 는 `/releases` 최신 프리릴리스의 `-Preview_…_<arch>` 매칭.
-  - **Retail 경로는 불변**(회귀 방지). 설치 정보(IsInstalled/CurrentVersion)는 채널 무관하므로 기본 매니저 유지.
+  - **되돌리기(Preview → Retail)**: `AllowVersionDowngrade` 를 켠다. 대상 버전이 현재보다 낮기 때문(예: `1.21.0-preview.1` → `1.20.9`)이며, 이 옵션이 없으면 Velopack 이 "업데이트 없음"으로 판단한다. 안정 링에 머무는 평상시에는 켜지 않는다(의도치 않은 하향 방지).
+  - 설치 정보(IsInstalled/CurrentVersion)는 채널 무관하므로 기본 매니저 유지.
 - **설정 영속성**: 채널 선택은 preferences 파일(사용자 데이터 위치)에 저장되어 업데이트 후에도 유지되어야 한다(§14 검증 항목).
+- **앱 밖 링 변경 대조**: 설정 파일이 재설치를 살아남기 때문에, 안정 버전을 수동으로 재설치해도 설정이 계속 Preview 를 가리켜 다시 끌려 올라가는 함정이 있다. `PreferenceSettings.LastKnownInstalledChannel` 에 마지막으로 관측한 **설치본의 링**을 기록해 두고, 설치본의 링이 그 관측과 달라졌을 때만 설정을 설치본에 맞춘다(= 수동 다운그레이드 시 자동 옵트아웃). 무조건 설치본을 따르면 "Preview 로 토글 → 업데이트 전 재시작" 이 토글을 되돌려버리므로 이 조건이 필요하다. 상태 전이는 `ReleaseChannelReconciler` + 동명의 테스트가 고정한다.
+- **사용자 안내**: 이미 함정에 빠진 사용자의 수동 복구 절차는 [TROUBLESHOOTING_UPDATE_CHANNEL.md](TROUBLESHOOTING_UPDATE_CHANNEL.md).
 
 ## 9. 승격(Graduation) 경로 — AOT → Retail
 

@@ -487,7 +487,7 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
     <value>Preview</value>
   </data>
   <data name="Option_UpdateChannel_PreviewWarning" xml:space="preserve">
-    <value>Preview builds receive new features and changes before they reach the Stable release. They are experimental and may be unstable. The selected channel takes effect on the next update check. Once you move to a Preview version, reverting to an earlier version requires reinstalling the Stable build.</value>
+    <value>Preview builds receive new features and changes before they reach the Stable release. They are experimental and may be unstable. The selected channel takes effect on the next update check. To go back, switch to Stable and check for updates: the app returns to the latest Stable version on its own, even though that version number is lower.</value>
   </data>
   <data name="Option_EnableIdleAutoLogout" xml:space="preserve">
     <value>Auto-close when idle (Preview)</value>

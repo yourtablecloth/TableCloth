@@ -487,7 +487,7 @@ Spork는 원래 식탁보가 만든 일회용 Windows Sandbox 안에서 자동�
     <value>미리 보기</value>
   </data>
   <data name="Option_UpdateChannel_PreviewWarning" xml:space="preserve">
-    <value>미리 보기 빌드는 새 기능과 변경 사항을 정식(안정) 출시보다 먼저 받아보는 채널입니다. 실험적이라 불안정할 수 있습니다. 선택한 채널은 다음 업데이트 확인부터 적용됩니다. 미리 보기 버전으로 올라간 뒤에는 안정 버전을 다시 설치해야 이전 버전으로 되돌릴 수 있습니다.</value>
+    <value>미리 보기 빌드는 새 기능과 변경 사항을 정식(안정) 출시보다 먼저 받아보는 채널입니다. 실험적이라 불안정할 수 있습니다. 선택한 채널은 다음 업데이트 확인부터 적용됩니다. 되돌릴 때는 '안정'으로 바꾼 뒤 업데이트를 확인하면 됩니다. 버전 번호가 낮아지더라도 최신 안정 버전으로 스스로 돌아갑니다.</value>
   </data>
   <data name="Option_EnableIdleAutoLogout" xml:space="preserve">
     <value>자리 비움 시 자동 종료 (미리 보기)</value>
