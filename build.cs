@@ -224,7 +224,7 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
                 packArgs.Add($"/n \"{signSubject}\" /fd sha256 /tr {timestampUrl} /td sha256");
                 Console.WriteLine($"  Signing enabled (subject: {signSubject})");
             }
-            await RunCommandArgsAsync("vpk", packArgs);
+            await RunCommandArgsAsync("vpk", packArgs, throwOnFailure: true);
 
             // Velopack 출력(TableCloth-<arch>-Setup.exe / -Portable.zip)을 릴리스 자산
             // 규칙(TableCloth_<4파트버전>_<config>_<arch>{.exe,_Portable.zip})으로 변경한다.
@@ -334,7 +334,7 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
                 sporkPackArgs.Add($"/n \"{signSubject}\" /fd sha256 /tr {timestampUrl} /td sha256");
                 Console.WriteLine($"  Signing enabled (subject: {signSubject})");
             }
-            await RunCommandArgsAsync("vpk", sporkPackArgs);
+            await RunCommandArgsAsync("vpk", sporkPackArgs, throwOnFailure: true);
 
             // ⚠️ 공개 다운로드 계약(public contract): 아래 포터블 zip 자산명은 무설치 웹앱
             // (yourtablecloth.app)의 다운로더가 의존한다. 변경 시 웹앱이 조용히 깨지므로 신중히.
@@ -516,7 +516,7 @@ async Task<string> RunCommandAsync(string command, string arguments)
 // 인자 리스트 버전: ArgumentList 가 OS 수준 따옴표/이스케이프를 자동 처리하므로
 // 공백·따옴표가 포함된 값(예: --signParams)을 안전하게 전달할 수 있다.
 // (지역 함수는 오버로드가 불가하여 이름을 달리한다)
-async Task<string> RunCommandArgsAsync(string command, IEnumerable<string> arguments)
+async Task<string> RunCommandArgsAsync(string command, IEnumerable<string> arguments, bool throwOnFailure = false)
 {
     var psi = new ProcessStartInfo
     {
@@ -528,10 +528,10 @@ async Task<string> RunCommandArgsAsync(string command, IEnumerable<string> argum
     };
     foreach (var arg in arguments)
         psi.ArgumentList.Add(arg);
-    return await RunProcessAsync(psi, command);
+    return await RunProcessAsync(psi, command, throwOnFailure);
 }
 
-async Task<string> RunProcessAsync(ProcessStartInfo startInfo, string command)
+async Task<string> RunProcessAsync(ProcessStartInfo startInfo, string command, bool throwOnFailure = false)
 {
     using var process = new Process { StartInfo = startInfo };
 
@@ -562,6 +562,13 @@ async Task<string> RunProcessAsync(ProcessStartInfo startInfo, string command)
 
     if (process.ExitCode != 0)
     {
+        // vpk pack 처럼 산출물이 곧 릴리스인 단계는 실패를 즉시 드러내야 한다. 예전에는 경고만 찍고
+        // 계속 진행하다가 뒤이은 RenameRelease 의 FileNotFoundException 으로 뒤늦게 죽어, 진짜 원인
+        // (vpk 로그)이 화면 위로 밀려나 있었다. --skip-build 로 CI 산출물을 넘겨받아 패키징하는
+        // 경로에서는 이 조용한 실패가 특히 위험하다.
+        if (throwOnFailure)
+            throw new InvalidOperationException($"{command} exited with code {process.ExitCode}. See the output above for details.");
+
         Console.WriteLine($"Warning: {command} exited with code {process.ExitCode}");
     }
 

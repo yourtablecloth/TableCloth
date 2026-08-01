@@ -57,6 +57,11 @@ jobs:
       Spork_Test_Project_Path: src\Spork.Test\Spork.Test.csproj
       TableCloth_Test_Project_Path: src\TableCloth.Test\TableCloth.Test.csproj
       Platform: ${{ matrix.platform }}
+      # 게시 경로는 build.cs 가 기대하는 레이아웃을 그대로 쓴다. 로컬 x64 PC 가 이 산출물을 그대로
+      # 내려받아 `build.cmd --skip-build --sign --preview` 로 서명 패키징할 수 있게 하기 위함이다
+      # (arm64 AOT 는 로컬에서 빌드할 수 없다). 자세한 절차는 docs/RELEASING.md §8.
+      TableClothPublishDir: publish\Release\win-${{ matrix.platform }}
+      SporkPublishDir: publish\spork\Release\win-${{ matrix.platform }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -80,13 +85,13 @@ jobs:
     # Native AOT 게시 — 진입점 csproj 가 RID 지정 시 PublishAot(+크기 세트)를 자동 활성화한다.
     # (WPF 전용 PublishSingleFile/ReadyToRun 플래그를 넘기지 않는다 — AOT 와 상호배타.)
     - name: Publish TableCloth (NativeAOT)
-      run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} -c Release -o publish
+      run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} -c Release -o $env:TableClothPublishDir
 
     - name: Compute version
       id: ver
       run: |
         # 4-part 파일 버전은 게시된 exe 에서, SemVer2 프리릴리스는 태그에서.
-        $full = (Get-Item "publish\TableCloth.exe").VersionInfo.FileVersion
+        $full = (Get-Item "$env:TableClothPublishDir\TableCloth.exe").VersionInfo.FileVersion
         $sem = "${{ github.ref_name }}".TrimStart('v')   # 1.21.0-preview.1
         echo "FULL=$full" >> $env:GITHUB_OUTPUT
         echo "SEMVER=$sem" >> $env:GITHUB_OUTPUT
@@ -96,7 +101,7 @@ jobs:
     - name: Collect TableCloth symbols
       run: |
         New-Item -ItemType Directory -Force symbols\tablecloth | Out-Null
-        Get-ChildItem publish -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\tablecloth -Force
+        Get-ChildItem $env:TableClothPublishDir -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\tablecloth -Force
       shell: pwsh
 
     - name: Create Velopack package (TableCloth, preview)
@@ -104,7 +109,7 @@ jobs:
         vpk pack `
           --packId TableCloth `
           --packVersion ${{ steps.ver.outputs.SEMVER }} `
-          --packDir publish `
+          --packDir $env:TableClothPublishDir `
           --mainExe TableCloth.exe `
           --channel preview-${{ env.Platform }} `
           --outputDir releases
@@ -119,12 +124,12 @@ jobs:
       shell: pwsh
 
     - name: Publish Spork (NativeAOT)
-      run: dotnet publish $env:Spork_Project_Path -r win-${{ env.Platform }} -c Release -o publish-spork
+      run: dotnet publish $env:Spork_Project_Path -r win-${{ env.Platform }} -c Release -o $env:SporkPublishDir
 
     - name: Collect Spork symbols
       run: |
         New-Item -ItemType Directory -Force symbols\spork | Out-Null
-        Get-ChildItem publish-spork -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\spork -Force
+        Get-ChildItem $env:SporkPublishDir -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\spork -Force
       shell: pwsh
 
     - name: Create Velopack package (Spork, preview)
@@ -132,7 +137,7 @@ jobs:
         vpk pack `
           --packId Spork `
           --packVersion ${{ steps.ver.outputs.SEMVER }} `
-          --packDir publish-spork `
+          --packDir $env:SporkPublishDir `
           --mainExe Spork.exe `
           --channel spork-preview-${{ env.Platform }} `
           --outputDir releases
@@ -161,6 +166,18 @@ jobs:
         if-no-files-found: error
         retention-days: 5
 
+    # 로컬 서명용 인계 자산(docs/RELEASING.md §8). pack 이전의 게시 산출물을 그대로 넘겨,
+    # x64 개발 PC 가 `build.cmd --skip-build --sign --preview` 로 다시 pack 하면서 서명할 수 있게 한다.
+    # 서명·패키징은 아키텍처 중립이라(§3-1) arm64 페이로드도 x64 에서 패키징된다 — 로컬에서 못 하는 것은
+    # arm64 AOT '빌드'뿐이다. 심볼 수집 단계 뒤에 올리므로 대용량 AOT pdb 는 포함되지 않는다.
+    - name: Upload publish payload (for local signing)
+      uses: actions/upload-artifact@v4
+      with:
+        name: PublishPayload-${{ matrix.platform }}
+        path: "publish/**"
+        if-no-files-found: error
+        retention-days: 5
+
   create-release:
     needs: [validate-version, build]
     if: startsWith(github.ref, 'refs/tags/v')
@@ -169,9 +186,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Download all artifacts
+    # 릴리스 자산만 받는다. PublishPayload-* (로컬 서명 인계용 게시 산출물)는 수백 MB 이고
+    # 릴리스에 올리지 않으므로 여기서 받지 않는다.
+    - name: Download release artifacts
       uses: actions/download-artifact@v4
       with:
+        pattern: Preview-*
         path: artifacts
 
     - name: Organize release assets
