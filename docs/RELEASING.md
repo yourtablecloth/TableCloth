@@ -49,6 +49,37 @@ $env:TABLECLOTH_SIGN_SUBJECT = 'Jung Hyun Nam'   # 필수 (또는 --sign-subject
   - **+ Velopack 메타데이터**(`.nupkg`, `RELEASES-*`, `releases.*.json`, `assets.*.json`) — Spork 는 채널 `spork-<arch>` 라 TableCloth(채널 `<arch>`)와 이름이 겹치지 않는다.
   - 서명 범위: 앱 바이너리 + `Update.exe` + `Setup.exe` (Release 구성만).
 
+### 3-1. 서명 호스트와 아키텍처 (x64 PC 에서 arm64 를 서명해도 되는가)
+
+**된다. 그리고 이미 매 릴리스 그렇게 하고 있다.** Authenticode 는 PE 파일의 바이트를 해시해 인증서
+테이블에 서명 블록을 덧붙이는 작업이고, signtool 은 대상 바이너리를 실행하지 않는다. PE 헤더의
+`Machine` 필드는 해시 대상 바이트 중 하나일 뿐이라 서명 절차와 무관하다.
+
+실측 근거(2026-08-01) — 1.20.9 arm64 패키지 안의 앱 바이너리는 ARM64 네이티브인데 서명이 유효하고,
+그 서명은 x64 개발 PC 의 `build.cmd --sign` 이 붙인 것이다. 같은 방법으로 언제든 재확인할 수 있다:
+
+```powershell
+# 배포된 arm64 패키지에서 앱 바이너리를 꺼내 PE 아키텍처와 서명을 함께 확인
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$a = [System.IO.Compression.ZipFile]::OpenRead('Releases\Release\arm64\Spork_<버전>_Release_arm64_Portable.zip')
+$e = $a.Entries | Where-Object { $_.FullName -eq 'current/Spork.exe' }
+[System.IO.Compression.ZipFileExtensions]::ExtractToFile($e, "$env:TEMP\check.exe", $true); $a.Dispose()
+$fs = [IO.File]::OpenRead("$env:TEMP\check.exe"); $br = [IO.BinaryReader]::new($fs)
+$fs.Position = 0x3C; $fs.Position = $br.ReadInt32() + 4
+'{0:X}' -f $br.ReadUInt16()          # AA64 = ARM64, 8664 = x64, 14C = x86
+$br.Close(); Get-AuthenticodeSignature "$env:TEMP\check.exe" | Select-Object Status, SignerCertificate
+```
+
+- **패키징도 아키텍처 중립이다.** Velopack 의 `Setup.exe` 와 패키지 내부 `Update.exe` 는 x64/arm64
+  패키지 **양쪽 모두 x86 범용 스텁**이라(PE 헤더 확인) 패킹한 호스트의 아키텍처가 산출물에 새지 않는다.
+  `build.cs` 가 `vpk pack` 에 `--runtime` 을 넘기지 않고 `--channel` 로만 arch 를 구분하는 것도 이 때문에
+  문제가 되지 않는다.
+- **반대 방향(arm64 PC 에서 x64 서명)** 도 원리는 같지만, SimplySign 가상 스마트카드 CSP/미들웨어가
+  ARM64 Windows 에뮬레이션에서 정상 동작하는지는 **미검증**이다. 서명 호스트는 x64 하나로 고정하는 편이
+  안전하다(서명 의미론이 아니라 드라이버 호환성 문제).
+- **자유롭지 않은 것은 빌드다.** Native AOT 는 대상 아키텍처 툴체인이 필요하므로 크로스로 자유로운 것은
+  서명·패키징뿐이다. 이 구분이 프리뷰 레인(AOT)에서 CI 산출물에 의존해야 하는 이유다.
+
 ## 4. 서명 자산 업로드 (CI 미서명본 교체)
 
 ```powershell
