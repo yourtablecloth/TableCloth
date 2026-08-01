@@ -41,18 +41,92 @@ public sealed class AppUpdateManager : IAppUpdateManager
         _updateManager = new UpdateManager(new GithubSource(RepoUrl, null, false));
     }
 
-    // 이슈 #296: 선택된 릴리스 링에 맞는 Velopack 매니저를 만든다. Retail 은 현행 그대로(기본 채널,
-    // 정식 릴리스), Preview 는 preview-<arch> 채널 + GitHub 프리릴리스 포함으로 조회한다.
+    // 이슈 #296: 선택된 릴리스 링에 맞는 Velopack 매니저를 만든다.
     private UpdateManager BuildUpdateManager(ReleaseChannel channel)
     {
-        if (channel == ReleaseChannel.Preview)
+        var arch = GetCurrentArchitecture();
+        var wantPreview = channel == ReleaseChannel.Preview;
+
+        var options = new UpdateOptions
         {
-            var arch = GetCurrentArchitecture();
-            var previewSource = new GithubSource(RepoUrl, null, prerelease: true);
-            return new UpdateManager(previewSource, new UpdateOptions { ExplicitChannel = $"preview-{arch}" });
+            // 두 링 모두 채널을 명시한다. 비워 두면 Velopack 기본값이 "설치 시점에 구워진 채널"이라,
+            // 미리 보기 설치본에서 안정을 골라도 계속 preview-<arch> 채널을 조회해 전환이 되지 않는다
+            // (build.cs 의 vpk pack --channel 값과 같은 이름이어야 한다).
+            ExplicitChannel = wantPreview ? $"preview-{arch}" : arch,
+
+            // 미리 보기 → 안정 전환은 대상 버전이 현재보다 낮을 수 있다(예: 1.21.0-preview.1 → 1.20.9).
+            // 이 옵션이 없으면 Velopack 이 "업데이트 없음"으로 판단해 되돌아갈 방법이 사라진다.
+            // 안정 링에 머무는 평상시에는 켜지 않아 의도치 않은 하향을 막는다.
+            AllowVersionDowngrade = !wantPreview && IsInstalledBuildPreview(),
+        };
+
+        return new UpdateManager(new GithubSource(RepoUrl, null, prerelease: wantPreview), options);
+    }
+
+    /// <summary>
+    /// 지금 설치되어 실행 중인 빌드가 미리 보기 빌드인지 여부.
+    /// </summary>
+    /// <remarks>
+    /// 미리 보기만 SemVer 프리릴리스 태그(<c>X.Y.Z-preview.N</c>)를 달고 나가므로(build.cs 의
+    /// <c>--preview</c> 경로) 버전만으로 판정할 수 있다. Velopack 설치본이 아니면(포터블/개발 실행)
+    /// <see cref="UpdateManager.CurrentVersion"/>이 null 이라 안정으로 본다.
+    /// </remarks>
+    private bool IsInstalledBuildPreview()
+        => _updateManager.CurrentVersion?.IsPrerelease == true;
+
+    /// <summary>
+    /// 설정에 저장된 릴리스 링을 실제 설치본과 대조해, 앱 밖에서 링이 바뀐 경우 설정을 따라가게 한다.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// 설정 파일은 <c>%LOCALAPPDATA%\TableCloth.Data</c>에 있어 재설치를 살아남는다. 그래서 미리 보기를
+    /// 쓰던 사용자가 안정 버전을 <b>수동으로 재설치</b>해도 설정은 여전히 미리 보기를 가리키고, 다음
+    /// 업데이트 확인에서 다시 미리 보기로 끌려 올라간다. 여기서 그 상태를 감지해 안정으로 되돌린다.
+    /// </para>
+    /// <para>
+    /// 판정 기준은 "설치본의 링이 <b>지난번 관측과 달라졌는가</b>"다. 단순히 "설치본을 따른다"로 하면
+    /// 미리 보기로 토글한 뒤 업데이트를 받기 전에 재시작했을 때 토글이 곧바로 되돌아가 버린다.
+    /// 관측 기록이 없으면(이 기능 도입 전에 설치된 사용자) 설정은 건드리지 않고 기준선만 남긴다.
+    /// </para>
+    /// </remarks>
+    private async Task<ReleaseChannel> ReconcileChannelWithInstalledBuildAsync(CancellationToken cancellationToken)
+    {
+        var prefs = await _preferencesManager.LoadPreferencesAsync(cancellationToken).ConfigureAwait(false);
+
+        if (prefs == null)
+            return ReleaseChannel.Retail;
+
+        // Velopack 설치본이 아니면(포터블/개발 실행) 설치본의 링이라는 개념이 없다. 남의 설정을
+        // 건드리지 않도록 대조를 건너뛴다.
+        if (!_updateManager.IsInstalled)
+            return prefs.UpdateChannel;
+
+        var installedChannel = IsInstalledBuildPreview() ? ReleaseChannel.Preview : ReleaseChannel.Retail;
+
+        var reconciliation = ReleaseChannelReconciler.Reconcile(
+            prefs.UpdateChannel, prefs.LastKnownInstalledChannel, installedChannel);
+
+        if (!reconciliation.RequiresSave)
+            return reconciliation.Channel;
+
+        if (reconciliation.ChannelChanged)
+        {
+            _logger.LogInformation(
+                "The installed release ring changed outside the app ({Previous} -> {InstalledChannel}). " +
+                "Following the installed build so the update channel does not pull it back.",
+                prefs.LastKnownInstalledChannel, installedChannel);
+        }
+        else
+        {
+            _logger.LogInformation(
+                "Recording the installed release ring: {InstalledChannel}", installedChannel);
         }
 
-        return new UpdateManager(new GithubSource(RepoUrl, null, prerelease: false));
+        prefs.UpdateChannel = reconciliation.Channel;
+        prefs.LastKnownInstalledChannel = reconciliation.LastKnownInstalledChannel;
+        await _preferencesManager.SavePreferencesAsync(prefs, cancellationToken).ConfigureAwait(false);
+
+        return reconciliation.Channel;
     }
 
     public bool IsInstalledViaVelopack => _updateManager.IsInstalled;
@@ -69,8 +143,7 @@ public sealed class AppUpdateManager : IAppUpdateManager
         // 이슈 #296: 사용자가 선택한 릴리스 링을 읽어 채널 인식 매니저를 구성한다(기본 Retail).
         try
         {
-            var prefs = await _preferencesManager.LoadPreferencesAsync(cancellationToken).ConfigureAwait(false);
-            _channel = prefs?.UpdateChannel ?? ReleaseChannel.Retail;
+            _channel = await ReconcileChannelWithInstalledBuildAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

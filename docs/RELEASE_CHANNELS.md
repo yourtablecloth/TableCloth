@@ -89,10 +89,12 @@ Preview 빌드는 **컴파일 타임 상수**로 자신이 Preview 임을 안다
 - **정의**: Preview 게시 시 `-p:DefineConstants=PREVIEW_CHANNEL` (또는 `<IsPreviewChannel>` MSBuild 속성 → DefineConstants 매핑). Retail 은 미정의.
 - **채널 상수**: `Helpers.ReleaseChannel`(enum `Retail`/`Preview`) 를 `#if PREVIEW_CHANNEL` 로 분기. UI·업데이트가 이를 참조.
 - **업데이트(`AppUpdateManager`)**:
-  - Velopack: `new UpdateManager(source, new UpdateOptions { ExplicitChannel = channel })` — Retail=`<arch>`(또는 현행 기본), Preview=`preview-<arch>`.
+  - Velopack: **양쪽 링 모두 `ExplicitChannel` 을 명시**한다(Retail = `<arch>`, Preview = `preview-<arch>` — `vpk pack --channel` 값과 같은 이름). 비워 두면 Velopack 기본값이 "설치 시점에 구워진 채널"이라, Preview 설치본에서 Retail 을 골라도 전환이 걸리지 않는다. 소스는 Preview 만 `prerelease:true`.
   - GitHub API 폴백: Preview 는 `/releases/latest` 대신 `/releases`(프리릴리스 포함)에서 최신 prerelease 를 골라 `TableCloth-Preview_…_<arch>.exe` 매칭. Retail 은 현행(`/releases/latest` + `_Release_<arch>`).
+  - **되돌리기(Preview → Retail)**: `AllowVersionDowngrade` 를 켠다. 대상 버전이 현재보다 낮기 때문(예: `1.21.0-preview.1` → `1.20.9`)이며, 이 옵션이 없으면 Velopack 이 "업데이트 없음"으로 판단한다. 안정 링에 머무는 평상시에는 켜지 않는다(의도치 않은 하향 방지).
 - **UI 표시**: About/타이틀/스플래시에 **"Preview" 배지**(버전 옆). 사용자가 자신이 선행 채널임을 항상 인지. (Retail 은 배지 없음.)
-- **되돌아가기 안내**: Preview 창 하단 등에 "안정 버전으로 돌아가려면 Retail 설치본 재설치" 링크(§9 승격 전까지).
+- **앱 밖 링 변경 대조**: 설정 파일이 재설치를 살아남기 때문에, 안정 버전을 수동으로 재설치해도 설정이 계속 Preview 를 가리켜 다시 끌려 올라가는 함정이 있다. `PreferenceSettings.LastKnownInstalledChannel` 에 마지막으로 관측한 **설치본의 링**을 기록해 두고, 설치본의 링이 그 관측과 달라졌을 때만 설정을 설치본에 맞춘다(= 수동 다운그레이드 시 자동 옵트아웃). 무조건 설치본을 따르면 "Preview 로 토글 → 업데이트 전 재시작" 이 토글을 되돌려버리므로 이 조건이 필요하다. 상태 전이는 `ReleaseChannelReconciler` + 동명의 테스트가 고정한다.
+- **되돌아가기**: 옵션 창에서 Retail 을 고르고 업데이트를 확인하면 그대로 내려간다(재설치 불필요). 이미 함정에 빠진 사용자의 수동 복구 절차는 [TROUBLESHOOTING_UPDATE_CHANNEL.md](TROUBLESHOOTING_UPDATE_CHANNEL.md).
 
 ## 9. 승격(Graduation) 경로 — AOT → Retail
 
