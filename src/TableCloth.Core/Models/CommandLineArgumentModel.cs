@@ -70,6 +70,28 @@ namespace TableCloth.Models
 
         public IEnumerable<MappedFolderSetting> MappedFolders { get; private set; } = new List<MappedFolderSetting>();
 
+        /// <summary>
+        /// 카탈로그 도메인 게이트를 통과한 결과로 대상 사이트/URL 만 교체한 새 모델을 만든다.
+        /// </summary>
+        /// <remarks>
+        /// 게이트를 통과하지 못한 URL 은 <paramref name="targetUrl"/> 에 <see langword="null"/> 을 넘겨
+        /// 제거한다. 검증되지 않은 URL 이 하위 단계(샌드박스 구성)로 흘러가지 않게 하는 것이 목적이다.
+        /// </remarks>
+        public CommandLineArgumentModel WithResolvedTarget(IEnumerable<string> selectedServices, string targetUrl)
+            => new CommandLineArgumentModel(RawArguments,
+                selectedServices: (selectedServices ?? Enumerable.Empty<string>()).ToArray(),
+                enableMicrophone: EnableMicrophone,
+                enableWebCam: EnableWebCam,
+                enablePrinters: EnablePrinters,
+                certPrivateKeyPath: CertPrivateKeyPath,
+                certPublicKeyPath: CertPublicKeyPath,
+                showCommandLineHelp: ShowCommandLineHelp,
+                showVersionHelp: ShowVersionHelp,
+                dryRun: DryRun,
+                simulateFailure: SimulateFailure,
+                mappedFolders: MappedFolders,
+                targetUrl: targetUrl);
+
         public override string ToString()
         {
             var options = new List<string>();

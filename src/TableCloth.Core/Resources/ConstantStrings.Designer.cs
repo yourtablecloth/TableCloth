@@ -214,6 +214,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   --uri과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_Uri {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_Uri", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   --target-url과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string TableCloth_Switch_TargetUrl {

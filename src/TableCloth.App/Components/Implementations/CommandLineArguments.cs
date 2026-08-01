@@ -33,11 +33,23 @@ public sealed class CommandLineArguments : ICommandLineArguments
         _simulateFailureOption = new Option<bool>(ConstantStrings.TableCloth_Switch_SimulateFailure)
         { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_SimulateFailure_Help, };
 
+        // 딥링크가 지정한 대상 페이지. 신뢰할 수 없는 입력이므로 여기서는 문자열로만 받고,
+        // 카탈로그 도메인 판정은 CatalogTargetUrlMatcher 가 한다.
+        _targetUrlOption = new Option<string>(ConstantStrings.TableCloth_Switch_TargetUrl)
+        { Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_TargetUrl_Help, };
+
+        // `tablecloth:` 스킴 처리기가 넘기는 원문. 진입점(Program)이 파싱해 정규 인자로 바꾸므로
+        // 여기까지 값이 도달하지는 않지만, --help 에 노출하기 위해 등록해 둔다.
+        _uriOption = new Option<string>(ConstantStrings.TableCloth_Switch_Uri)
+        { Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_Uri_Help, };
+
         _siteIdListArgument = new Argument<string[]>("siteIds")
         { Arity = ArgumentArity.ZeroOrMore, Description = UIStringResources.TableCloth_Arguments_SiteIdList_Help, };
 
         _rootCommand = new RootCommand()
         {
+            _targetUrlOption,
+            _uriOption,
             _enableMicrophoneOption,
             _enableCameraOption,
             _enablePrinterOption,
@@ -66,6 +78,8 @@ public sealed class CommandLineArguments : ICommandLineArguments
     private readonly Option<string> _certPublicKeyOption;
     private readonly Option<bool> _dryRunOption;
     private readonly Option<bool> _simulateFailureOption;
+    private readonly Option<string> _targetUrlOption;
+    private readonly Option<string> _uriOption;
     private readonly Argument<string[]> _siteIdListArgument;
     private readonly RootCommand _rootCommand;
     private readonly Option _helpOption;
@@ -113,6 +127,7 @@ public sealed class CommandLineArguments : ICommandLineArguments
             showCommandLineHelp: parseResult.GetResult(_helpOption) != null,
             showVersionHelp: parseResult.GetResult(_versionOption) != null,
             dryRun: parseResult.GetValue(_dryRunOption),
-            simulateFailure: parseResult.GetValue(_simulateFailureOption));
+            simulateFailure: parseResult.GetValue(_simulateFailureOption),
+            targetUrl: parseResult.GetValue(_targetUrlOption));
     }
 }

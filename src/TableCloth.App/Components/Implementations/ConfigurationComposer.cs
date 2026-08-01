@@ -28,6 +28,8 @@ public sealed class ConfigurationComposer(
             Companions = Array.Empty<CatalogCompanion>(),
             Services = viewModel.SelectedServices.ToList(),
             MappedFolders = viewModel.MappedFolders.ToList(),
+            // 딥링크로 진입한 경우에만 값이 있다. 이 시점의 값은 이미 카탈로그 도메인 게이트를 통과했다.
+            TargetUrl = viewModel.CommandLineArgumentModel?.TargetUrl,
         };
     }
 
@@ -61,6 +63,7 @@ public sealed class ConfigurationComposer(
             EnablePrinters = argumentModel.EnablePrinters ?? default,
             CertPair = certPair,
             MappedFolders = argumentModel.MappedFolders?.ToList() ?? new(),
+            TargetUrl = argumentModel.TargetUrl,
         };
     }
 }

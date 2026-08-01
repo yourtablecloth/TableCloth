@@ -376,6 +376,45 @@ public sealed class SandboxBuilder(
         }
     }
 
+    /// <summary>
+    /// 대상 URL 을 StartupScript.cmd 본문에 넣을 수 있는 형태로 바꾼다.
+    /// </summary>
+    /// <remarks>
+    /// 두 가지를 처리한다.
+    /// <list type="number">
+    /// <item>
+    /// <b>비 ASCII → 퍼센트 인코딩.</b> 스크립트는 UTF-8 로 기록되지만 cmd 는 OEM 코드페이지로 읽어
+    /// 비 ASCII 가 섞이면 스크립트 전체가 무동작이 될 수 있다(<c>StartupScript_ShouldBePureAscii</c>).
+    /// 이미 인코딩된 <c>%XX</c> 는 건드리지 않으므로 이중 인코딩이 생기지 않는다.
+    /// </item>
+    /// <item>
+    /// <b><c>%</c> → <c>%%</c>.</b> cmd 는 큰따옴표 안에서도 <c>%</c> 를 확장하므로, <c>%20</c> 같은
+    /// 값을 그대로 두면 <c>%2</c>(인자 2) 참조로 해석돼 주소가 조용히 망가진다. <c>%%</c> 로 쓰면
+    /// cmd 가 다시 <c>%</c> 하나로 되돌린다. (<c>&amp;</c> 나 <c>^</c> 는 큰따옴표 안에서 리터럴이라
+    /// 별도 처리가 필요 없다.)
+    /// </item>
+    /// </list>
+    /// </remarks>
+    internal static string EncodeTargetUrlForBatchFile(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return string.Empty;
+
+        var builder = new StringBuilder(value.Length + 16);
+
+        foreach (var eachByte in Encoding.UTF8.GetBytes(value))
+        {
+            if (eachByte == (byte)'%')
+                builder.Append("%%");
+            else if (eachByte < 0x80)
+                builder.Append((char)eachByte);
+            else
+                builder.Append("%%").Append(eachByte.ToString("X2"));
+        }
+
+        return builder.ToString();
+    }
+
     private string GenerateSandboxStartupScript(TableClothConfiguration tableClothConfiguration)
     {
         ArgumentNullException.ThrowIfNull(tableClothConfiguration);
@@ -388,6 +427,14 @@ public sealed class SandboxBuilder(
         // verb 디스패처가 'spork' 토큰을 소비하고 나머지 인수를 Spork.App 모듈로 전달한다.
         var tableClothExeInSandbox = Path.Combine(SandboxMountPaths.AppDirectory, "TableCloth.exe");
         var idList = string.Join(" ", serviceIdList);
+
+        // 딥링크로 지정된 대상 페이지가 있으면 Spork 에 그대로 넘긴다(카탈로그 대표 URL 대신 이 주소를 연다).
+        // 이 값은 이미 카탈로그 도메인 게이트를 통과했으므로 공백/제어문자/큰따옴표가 없다.
+        if (!string.IsNullOrWhiteSpace(tableClothConfiguration.TargetUrl))
+        {
+            switches.Add(ConstantStrings.TableCloth_Switch_TargetUrl);
+            switches.Add($"\"{EncodeTargetUrlForBatchFile(tableClothConfiguration.TargetUrl)}\"");
+        }
 
         // framework-dependent 빌드일 때 호스트 dotnet 마운트가 추가됐다면 DOTNET_ROOT 노출.
         // - set: 현 batch 프로세스 트리(LogonCommand 흐름)에서 즉시 사용. .NET 호스트가 exe를 띄우기

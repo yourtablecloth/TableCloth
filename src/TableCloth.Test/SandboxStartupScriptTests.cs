@@ -144,5 +144,63 @@ namespace TableCloth.Test
             Assert.IsLessThan(citoolIndex, sacIndex, "SAC 레지스트리 설정이 citool refresh 보다 뒤에 있습니다.");
             Assert.IsLessThan(sporkIndex, citoolIndex, "citool refresh 가 Spork 실행보다 뒤에 있습니다.");
         }
+
+        /// <summary>
+        /// <c>tablecloth:https://…</c> 딥링크로 진입하면 대상 URL 이 Spork 로 전달되어야 한다.
+        /// 값이 없으면 스위치 자체가 나오지 않아야 한다(카탈로그 대표 URL 을 여는 기존 동작 유지).
+        /// </summary>
+        [TestMethod]
+        public void StartupScript_ShouldPassTargetUrlToSpork()
+        {
+            var withoutTarget = GenerateScript(DefaultConfiguration());
+            Assert.IsFalse(withoutTarget.Contains("--target-url", StringComparison.Ordinal),
+                "대상 URL 이 없는데 스위치가 붙었습니다.");
+
+            var configuration = DefaultConfiguration();
+            configuration.TargetUrl = "https://spib.wooribank.com/pib/Dream?withyou=CTCER0149&fromSite=pib";
+
+            var script = GenerateScript(configuration);
+
+            StringAssert.Contains(script, "--target-url \"https://spib.wooribank.com/pib/Dream?withyou=CTCER0149&fromSite=pib\"",
+                "대상 URL 이 Spork 인자로 전달되지 않았습니다.");
+        }
+
+        /// <summary>
+        /// cmd 는 큰따옴표 안에서도 <c>%</c> 를 확장한다. 퍼센트 인코딩된 URL 을 그대로 두면
+        /// <c>%2</c>(인자 2) 참조로 해석돼 주소가 조용히 망가지므로 <c>%%</c> 로 써야 한다.
+        /// </summary>
+        [TestMethod]
+        public void StartupScript_TargetUrl_ShouldEscapePercentSigns()
+        {
+            var configuration = DefaultConfiguration();
+            configuration.TargetUrl = "https://www.wooribank.com/search?q=%EC%9A%B0%EB%A6%AC";
+
+            var script = GenerateScript(configuration);
+
+            StringAssert.Contains(script, "q=%%EC%%9A%%B0%%EB%%A6%%AC",
+                "퍼센트 인코딩된 URL 의 % 가 이스케이프되지 않았습니다.");
+            Assert.IsFalse(script.Contains("q=%EC", StringComparison.Ordinal),
+                "이스케이프되지 않은 % 가 남아 있습니다.");
+        }
+
+        /// <summary>
+        /// 스크립트 전체가 ASCII 여야 한다는 제약(<see cref="StartupScript_ShouldBePureAscii"/>)은
+        /// 대상 URL 에도 적용된다. 원문에 한글이 있으면 퍼센트 인코딩해서 실어야 한다.
+        /// </summary>
+        [TestMethod]
+        public void StartupScript_TargetUrl_WithNonAsciiCharacters_StaysAscii()
+        {
+            var configuration = DefaultConfiguration();
+            configuration.TargetUrl = "https://www.wooribank.com/search?q=우리";
+
+            var script = GenerateScript(configuration);
+
+            var offending = script.Where(c => c > 0x7F).Distinct().ToArray();
+
+            Assert.IsEmpty(offending,
+                $"대상 URL 의 비 ASCII 문자가 그대로 스크립트에 들어갔습니다: {string.Join(", ", offending.Select(c => $"U+{(int)c:X4}"))}");
+            StringAssert.Contains(script, "q=%%EC%%9A%%B0%%EB%%A6%%AC",
+                "비 ASCII 문자가 UTF-8 퍼센트 인코딩으로 바뀌지 않았습니다.");
+        }
     }
 }

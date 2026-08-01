@@ -2,9 +2,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Avalonia.Controls;
+using Avalonia.Threading;
+using System.Collections.Generic;
 using System.Linq;
 using TableCloth.Components;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
+using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
 
@@ -22,7 +27,8 @@ public partial class MainWindowViewModel : ObservableObject
         INavigationService navigationService,
         ICommandLineArguments commandLineArguments,
         ISandboxCleanupManager sandboxCleanupManager,
-        IAppRestartManager appRestartManager)
+        IAppRestartManager appRestartManager,
+        IDeepLinkActivationChannel deepLinkActivationChannel)
     {
         _applicationService = applicationService;
         _resourceCacheManager = resourceCacheManager;
@@ -30,6 +36,7 @@ public partial class MainWindowViewModel : ObservableObject
         _commandLineArguments = commandLineArguments;
         _sandboxCleanupManager = sandboxCleanupManager;
         _appRestartManager = appRestartManager;
+        _deepLinkActivationChannel = deepLinkActivationChannel;
     }
 
     [RelayCommand]
@@ -37,23 +44,143 @@ public partial class MainWindowViewModel : ObservableObject
     {
         _applicationService.ApplyCosmeticChangeToMainWindow();
 
-        var parsedArg = _commandLineArguments.GetCurrent();
-        var services = _resourceCacheManager.CatalogDocument.Services;
+        // 앱이 떠 있는 동안 브라우저가 tablecloth: 링크를 실행하면 두 번째 인스턴스가 페이로드만
+        // 넘기고 끝난다. 그 페이로드를 여기서 받아 처리한다.
+        _deepLinkActivationChannel.StartListening(HandleDeepLinkPayload);
 
-        var commandLineSelectedService = default(CatalogInternetService);
-        if (parsedArg != null && parsedArg.SelectedServices.Any())
+        var parsedArg = _commandLineArguments.GetCurrent();
+
+        if (TryNavigateToCommandLineTarget(parsedArg))
+            return;
+
+        _navigationService.NavigateToQuickStart();
+    }
+
+    /// <summary>
+    /// 명령줄(딥링크 포함)이 지정한 사이트로 진입을 시도한다.
+    /// </summary>
+    /// <remarks>
+    /// 사이트 Id 경로는 <c>--select &lt;SiteId&gt;</c> 시절부터의 하위 호환이고, 대상 URL 경로는
+    /// <c>tablecloth:https://…</c> 딥링크가 쓴다. 후자는 카탈로그 도메인 게이트를 통과한 경우에만
+    /// 살아남으며, 통과하면 그 URL 이 샌드박스 안에서 열릴 주소가 된다.
+    /// </remarks>
+    private bool TryNavigateToCommandLineTarget(CommandLineArgumentModel? parsedArg)
+    {
+        if (parsedArg == null)
+            return false;
+
+        var catalog = _resourceCacheManager.CatalogDocument;
+        var services = catalog.Services;
+
+        // 딥링크는 `tablecloth:wooribank` 처럼 카탈로그와 대소문자가 다를 수 있다. 여기서 카탈로그의
+        // 정식 Id 로 정규화해, 이후 단계(상세 페이지의 재조회, 샌드박스 구성, 게스트의 Spork)가 모두
+        // 같은 값을 보게 한다. 하위 단계들은 Ordinal 비교라 정규화하지 않으면 조용히 빈 선택이 된다.
+        var requestedServiceIds = parsedArg.SelectedServices?.ToArray() ?? Array.Empty<string>();
+        var selectedServiceIds = services
+            .Where(x => requestedServiceIds.Contains(x.Id, StringComparer.OrdinalIgnoreCase))
+            .Select(x => x.Id)
+            .ToArray();
+        var acceptedTargetUrl = default(string);
+
+        if (!string.IsNullOrWhiteSpace(parsedArg.TargetUrl))
         {
-            commandLineSelectedService = services
-                .Where(x => parsedArg.SelectedServices.Contains(x.Id))
-                .FirstOrDefault();
+            var match = CatalogTargetUrlMatcher.Match(catalog, parsedArg.TargetUrl, selectedServiceIds);
+
+            if (match.IsAccepted)
+            {
+                selectedServiceIds = match.ServiceIds.ToArray();
+                acceptedTargetUrl = match.AcceptedUrl;
+            }
+            else if (match.Reason == CatalogTargetUrlRejectionReason.AmbiguousCandidates &&
+                     TryNavigateToCatalogForAmbiguousTarget(parsedArg.TargetUrl))
+            {
+                // 카탈로그가 아는 도메인이지만 서비스가 여러 개라(예: 우리은행 개인/기업) 자동 선택은
+                // 할 수 없다. 그 도메인으로 검색된 카탈로그를 보여 사용자가 고르게 한다.
+                return true;
+            }
         }
 
-        // --select <SiteId> 하위 호환: 기존 사용자/바로가기가 깨지지 않도록 SiteId가 들어오면
-        // 종전대로 DetailPage를 통해 진입한다. 그 외 일반 경우는 새 QuickStart 진입점을 사용한다.
-        if (commandLineSelectedService != null)
-            _navigationService.NavigateToDetail(string.Empty, commandLineSelectedService, parsedArg);
-        else
-            _navigationService.NavigateToQuickStart();
+        var selectedService = services.FirstOrDefault(x => selectedServiceIds.Contains(x.Id));
+
+        if (selectedService == null)
+            return false;
+
+        // 게이트를 통과한 URL 만 실어 보낸다. 통과하지 못했으면 null 로 지워 검증되지 않은 주소가
+        // 샌드박스 구성까지 흘러가지 않게 한다.
+        var effectiveArg = parsedArg.WithResolvedTarget(selectedServiceIds, acceptedTargetUrl);
+
+        _navigationService.NavigateToDetail(string.Empty, selectedService, effectiveArg);
+        return true;
+    }
+
+    /// <summary>
+    /// 한 도메인에 카탈로그 서비스가 여럿이라 자동 선택이 불가능한 경우, 그 도메인으로 검색한
+    /// 카탈로그 화면으로 보낸다.
+    /// </summary>
+    private bool TryNavigateToCatalogForAmbiguousTarget(string targetUrl)
+    {
+        if (!Uri.TryCreate(targetUrl, UriKind.Absolute, out var uri))
+            return false;
+
+        if (!CatalogTargetUrlMatcher.TryGetRegistrableDomain(uri.IdnHost, out var registrableDomain))
+            return false;
+
+        return _navigationService.NavigateToCatalog(registrableDomain);
+    }
+
+    /// <summary>
+    /// 실행 중인 인스턴스가 딥링크 페이로드를 받았을 때의 처리. 파이프 수신 스레드에서 호출되므로
+    /// UI 디스패처로 옮긴 뒤 창을 활성화하고 대상 사이트로 이동한다.
+    /// </summary>
+    private void HandleDeepLinkPayload(string payload)
+    {
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            if (!TableClothUri.TryParse(payload, out var request))
+                return;
+
+            ActivateMainWindow();
+
+            var arguments = request.ToCanonicalArguments();
+
+            if (arguments.Length < 1)
+                return;
+
+            // 정규 인자를 그대로 다시 해석해 최초 실행 경로와 동일하게 처리한다.
+            var siteIds = new List<string>();
+            var targetUrl = default(string);
+
+            for (var i = 0; i < arguments.Length; i++)
+            {
+                if (string.Equals(arguments[i], ConstantStrings.TableCloth_Switch_TargetUrl, StringComparison.OrdinalIgnoreCase))
+                {
+                    targetUrl = i + 1 < arguments.Length ? arguments[i + 1] : null;
+                    i++;
+                    continue;
+                }
+
+                siteIds.Add(arguments[i]);
+            }
+
+            TryNavigateToCommandLineTarget(new CommandLineArgumentModel(
+                rawArguments: arguments,
+                selectedServices: siteIds.ToArray(),
+                targetUrl: targetUrl));
+        });
+    }
+
+    private void ActivateMainWindow()
+    {
+        var window = _applicationService.GetMainWindow();
+
+        if (window == null)
+            return;
+
+        if (window.WindowState == WindowState.Minimized)
+            window.WindowState = WindowState.Normal;
+
+        window.Show();
+        window.Activate();
     }
 
     [RelayCommand]
@@ -71,4 +198,5 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly ICommandLineArguments _commandLineArguments = default!;
     private readonly ISandboxCleanupManager _sandboxCleanupManager = default!;
     private readonly IAppRestartManager _appRestartManager = default!;
+    private readonly IDeepLinkActivationChannel _deepLinkActivationChannel = default!;
 }

@@ -41,6 +41,15 @@ namespace TableCloth.Models.Configuration
         public ICollection<CatalogInternetService> Services { get; set; } = new List<CatalogInternetService>();
 
         /// <summary>
+        /// 샌드박스 안에서 열어야 할 페이지 주소입니다. 값이 없으면 카탈로그의 대표 URL을 엽니다.
+        /// </summary>
+        /// <remarks>
+        /// <c>tablecloth:https://…</c> 딥링크로 들어온 주소이며, 여기 도달한 시점에는 이미
+        /// <see cref="Catalog.CatalogTargetUrlMatcher"/> 게이트를 통과한 값이다.
+        /// </remarks>
+        public string TargetUrl { get; set; } = null;
+
+        /// <summary>
         /// 샌드박스 명세 파일 (WSB) 및 데이터 파일을 저장할 디렉터리 경로입니다.
         /// </summary>
         public string AssetsDirectoryPath { get; set; } = null;
