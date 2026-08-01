@@ -646,6 +646,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="TableCloth_Switch_SimulateFailure_Help" xml:space="preserve">
     <value>Simulates the occurrence of an error with random probability. This option is a developer feature.</value>
   </data>
+  <data name="TableCloth_Switch_Uri_Help" xml:space="preserve">
+    <value>Specifies a tablecloth: deep link to open. Used by the registered URI scheme handler.</value>
+  </data>
   <data name="TableCloth_Switch_TargetUrl_Help" xml:space="preserve">
     <value>Specifies the web page address to open. It is only accepted when the address belongs to a domain the catalog knows.</value>
   </data>

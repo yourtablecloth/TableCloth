@@ -185,6 +185,10 @@
     <value>--simulate-failure</value>
     <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
+  <data name="TableCloth_Switch_Uri" xml:space="preserve">
+    <value>--uri</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
   <data name="TableCloth_Switch_TargetUrl" xml:space="preserve">
     <value>--target-url</value>
     <comment>(Important) Please do not translate this item without intend.</comment>
