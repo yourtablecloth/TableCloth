@@ -150,9 +150,12 @@ Remove-Item publish, Releases -Recurse -Force -ErrorAction SilentlyContinue
 $run = (gh run list --workflow preview.yml --limit 1 --json databaseId | ConvertFrom-Json).databaseId
 gh run download $run --pattern 'PublishPayload-*' --dir .artifacts
 
-# 아티팩트는 publish\... 구조를 그대로 담고 있다. 두 arch 를 한 트리로 합친다.
-Get-ChildItem .artifacts -Directory | ForEach-Object {
-  Copy-Item "$($_.FullName)\publish" . -Recurse -Force
+# 아티팩트 루트는 publish\ 의 *내용물*이다(actions/upload-artifact 가 매칭된 파일들의 공통 조상을
+# 루트로 잡으므로 publish\ 접두사가 빠진다 — v1.21.0-preview.2 에서 실측). 즉 아티팩트 안은
+# Release\win-<arch>\... 와 spork\Release\win-<arch>\... 이므로 publish\ 아래로 부어 넣는다.
+New-Item -ItemType Directory publish -Force | Out-Null
+foreach ($a in (Get-ChildItem .artifacts -Directory)) {
+  foreach ($child in (Get-ChildItem $a.FullName)) { Copy-Item $child.FullName publish -Recurse -Force }
 }
 Get-ChildItem publish -Directory -Recurse | Where-Object Name -like 'win-*' |
   Select-Object -ExpandProperty FullName
