@@ -90,12 +90,18 @@ public partial class MainWindowViewModel : ObservableObject
                 selectedServiceIds = match.ServiceIds.ToArray();
                 acceptedTargetUrl = match.AcceptedUrl;
             }
-            else if (match.Reason == CatalogTargetUrlRejectionReason.AmbiguousCandidates &&
-                     TryNavigateToCatalogForAmbiguousTarget(parsedArg.TargetUrl))
+            else if (parsedArg.LaunchImmediately &&
+                     match.Reason == CatalogTargetUrlRejectionReason.AmbiguousCandidates &&
+                     match.ServiceIds.Count > 0 &&
+                     match.ServiceIds.Count <= MaxAmbiguousServicesToInstall)
             {
-                // 카탈로그가 아는 도메인이지만 서비스가 여러 개라(예: 우리은행 개인/기업) 자동 선택은
-                // 할 수 없다. 그 도메인으로 검색된 카탈로그를 보여 사용자가 고르게 한다.
-                return true;
+                // 같은 등록 도메인에 서비스가 여럿이라 하나로 확정할 수 없는 경우
+                // (예: spib.wooribank.com → 우리은행 개인/기업 동점).
+                // 딥링크는 화면을 띄우지 않는 것이 계약이므로 후보 전체의 보안 프로그램을 설치하고
+                // 요청받은 URL 을 연다. 같은 은행의 서비스라 패키지 구성이 거의 겹치고, 사용자에게
+                // 선택을 되묻는 것보다 이쪽이 링크의 의도에 맞다.
+                selectedServiceIds = match.ServiceIds.ToArray();
+                acceptedTargetUrl = match.AcceptedUrl;
             }
         }
 
@@ -120,19 +126,15 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     /// <summary>
-    /// 한 도메인에 카탈로그 서비스가 여럿이라 자동 선택이 불가능한 경우, 그 도메인으로 검색한
-    /// 카탈로그 화면으로 보낸다.
+    /// 동점 후보를 한꺼번에 설치해도 되는 최대 개수.
     /// </summary>
-    private bool TryNavigateToCatalogForAmbiguousTarget(string targetUrl)
-    {
-        if (!Uri.TryCreate(targetUrl, UriKind.Absolute, out var uri))
-            return false;
-
-        if (!CatalogTargetUrlMatcher.TryGetRegistrableDomain(uri.IdnHost, out var registrableDomain))
-            return false;
-
-        return _navigationService.NavigateToCatalog(registrableDomain);
-    }
+    /// <remarks>
+    /// 실제로 동점이 나는 경우는 같은 은행의 개인/기업(우리), 개인/기업/저축(하나) 정도라 2~3개다.
+    /// 반면 <c>fsb.or.kr</c> 처럼 공용 호스팅 도메인은 25개까지 동점이 날 수 있는데, 그것들은 서로
+    /// 다른 저축은행이라 전부 설치하는 것이 의미도 없고 시간만 오래 걸린다. 그 경우엔 URL 을 버리고
+    /// 평소처럼 앱만 연다.
+    /// </remarks>
+    private const int MaxAmbiguousServicesToInstall = 3;
 
     /// <summary>
     /// 실행 중인 인스턴스가 딥링크 페이로드를 받았을 때의 처리. 파이프 수신 스레드에서 호출되므로

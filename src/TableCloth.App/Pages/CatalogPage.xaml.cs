@@ -124,11 +124,15 @@ public partial class CatalogPage : Page
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (string.Equals(nameof(CatalogPageViewModel.SearchKeyword), e.PropertyName, StringComparison.Ordinal))
-            CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
+        if (!string.Equals(nameof(CatalogPageViewModel.SearchKeyword), e.PropertyName, StringComparison.Ordinal) &&
+            !string.Equals(nameof(CatalogPageViewModel.ShowFavoritesOnly), e.PropertyName, StringComparison.Ordinal))
+            return;
 
-        if (string.Equals(nameof(CatalogPageViewModel.ShowFavoritesOnly), e.PropertyName, StringComparison.Ordinal))
-            CollectionViewSource.GetDefaultView(SiteCatalog.ItemsSource).Refresh();
+        // 페이지가 아직 로드되지 않은 상태에서 뷰모델 값이 바뀌면(예: 검색어를 미리 넣어 페이지를
+        // 생성하는 경로) ItemsSource 가 null 이라 GetDefaultView 도 null 을 돌려준다. 그대로
+        // Refresh() 를 부르면 NullReferenceException 으로 앱이 뜨다 만다. 목록은 로드 시점에
+        // 바인딩되며 필터도 그때 적용되므로, 여기서는 조용히 건너뛰는 것이 맞다.
+        CollectionViewSource.GetDefaultView(SiteCatalog?.ItemsSource)?.Refresh();
     }
 
     private void SponsorBanner_MouseLeftButtonUp(object sender, RoutedEventArgs e)

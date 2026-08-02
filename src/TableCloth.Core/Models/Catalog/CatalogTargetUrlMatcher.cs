@@ -62,7 +62,11 @@ namespace TableCloth.Models.Catalog
         /// </summary>
         public string AcceptedUrl { get; }
 
-        /// <summary>수락된 경우 설치 단계를 조립할 카탈로그 서비스 Id 목록.</summary>
+        /// <summary>
+        /// 설치 단계를 조립할 카탈로그 서비스 Id 목록. 수락된 경우의 확정 대상이며,
+        /// <see cref="CatalogTargetUrlRejectionReason.AmbiguousCandidates"/>로 거부된 경우에는
+        /// <b>동점이었던 후보 전체</b>가 담긴다(호출자가 정책을 정할 수 있도록).
+        /// </summary>
         public IReadOnlyList<string> ServiceIds { get; }
 
         /// <summary>거부 사유. 수락 시 <see cref="CatalogTargetUrlRejectionReason.None"/>.</summary>
@@ -73,6 +77,13 @@ namespace TableCloth.Models.Catalog
 
         internal static CatalogTargetUrlMatchResult Reject(CatalogTargetUrlRejectionReason reason)
             => new CatalogTargetUrlMatchResult(false, null, null, reason);
+
+        /// <summary>
+        /// 동점이라 하나로 확정하지 못한 경우. URL 자체는 형식·도메인 검증을 통과했으므로
+        /// <paramref name="acceptedUrl"/>과 후보 목록을 함께 돌려준다.
+        /// </summary>
+        internal static CatalogTargetUrlMatchResult Ambiguous(string acceptedUrl, IReadOnlyList<string> serviceIds)
+            => new CatalogTargetUrlMatchResult(false, acceptedUrl, serviceIds, CatalogTargetUrlRejectionReason.AmbiguousCandidates);
     }
 
     /// <summary>
@@ -222,7 +233,12 @@ namespace TableCloth.Models.Catalog
             var winners = candidates.Where(x => x.Score == bestScore).ToList();
 
             if (winners.Count != 1)
-                return CatalogTargetUrlMatchResult.Reject(CatalogTargetUrlRejectionReason.AmbiguousCandidates);
+            {
+                // 하나로 확정하지 못했다. URL 자체는 검증을 통과했으므로 후보 목록과 함께 돌려주고,
+                // 어떻게 할지는 호출자가 정한다(딥링크는 후보 전체를 설치하고 실행, 그 외에는 URL 폐기).
+                return CatalogTargetUrlMatchResult.Ambiguous(
+                    acceptedUrl, winners.Select(x => x.Service.Id).ToList());
+            }
 
             return CatalogTargetUrlMatchResult.Accept(
                 acceptedUrl,

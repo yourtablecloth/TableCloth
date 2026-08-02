@@ -1,4 +1,4 @@
-using TableCloth.Models.Catalog;
+﻿using TableCloth.Models.Catalog;
 
 namespace TableCloth.Test
 {
@@ -143,11 +143,29 @@ namespace TableCloth.Test
         [TestMethod]
         public void SameDomainWithTwoServices_IsAmbiguous_WithoutSiteIds()
         {
-            // 생산자가 Id 를 안 넘기면 개인/기업 중 무엇을 설치할지 알 수 없으므로 URL 을 버린다.
+            // 생산자가 Id 를 안 넘기면 개인/기업 중 무엇을 설치할지 확정할 수 없다.
             var result = CatalogTargetUrlMatcher.Match(CreateCatalog(), WooriDeepLinkUrl);
 
             Assert.IsFalse(result.IsAccepted);
             Assert.AreEqual(CatalogTargetUrlRejectionReason.AmbiguousCandidates, result.Reason);
+
+            // 다만 동점 후보와 검증을 통과한 URL 은 함께 돌려준다 — 호출자가 정책을 정할 수 있어야
+            // 한다(딥링크는 후보 전체를 설치하고 실행, 그 외 경로는 URL 을 버린다).
+            CollectionAssert.AreEquivalent(
+                new[] { "WooriBank", "WooriBankBiz" }, result.ServiceIds.ToArray());
+            Assert.AreEqual(WooriDeepLinkUrl, result.AcceptedUrl);
+        }
+
+        [TestMethod]
+        public void SharedHostingDomain_ManyTiedCandidates_AreAllReported()
+        {
+            // fsb.or.kr 처럼 공용 호스팅 도메인은 동점 후보가 많이 나올 수 있다. 매처는 전부 보고하고,
+            // "몇 개까지 한꺼번에 설치할지"는 호출자가 상한을 둬서 판단한다.
+            var result = CatalogTargetUrlMatcher.Match(CreateCatalog(), "https://unknown.ibs.fsb.or.kr/");
+
+            Assert.AreEqual(CatalogTargetUrlRejectionReason.AmbiguousCandidates, result.Reason);
+            CollectionAssert.AreEquivalent(
+                new[] { "OKSavingsBank", "JTSavingsBank" }, result.ServiceIds.ToArray());
         }
 
         [TestMethod]
