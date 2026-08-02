@@ -679,16 +679,40 @@ namespace Spork.ViewModels
             await MainWindowInstallPackagesAsync();
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanInstallPackages))]
         private async Task MainWindowInstallPackages()
             => await MainWindowInstallPackagesAsync();
+
+        private bool CanInstallPackages()
+            => !IsInstalling;
 
         private async Task MainWindowInstallPackagesAsync()
         {
             if (InstallSteps == null || InstallSteps.Count == 0)
                 return;
 
-            // 이 경로는 명령줄(--select) 진입 전용이다. 카탈로그 진입은 모달
+            // 재진입 차단. 명령줄/딥링크 진입은 EnterStepsModeAsync 에서 이 메서드를 **커맨드를 거치지 않고**
+            // 직접 호출하므로, 커맨드의 실행 중 상태만으로는 [설치하기] 버튼이 잠기지 않는다. 그 사이
+            // 사용자가 버튼을 누르면 같은 InstallSteps 위에서 StepsPlayer 가 둘 동시에 돌아 같은 패키지를
+            // 중복 설치하게 된다(실측 제보). 두 진입 경로가 모두 지나는 이 지점에서 막는다.
+            if (IsInstalling)
+                return;
+
+            IsInstalling = true;
+
+            try
+            {
+                await RunInstallStepsAsync();
+            }
+            finally
+            {
+                IsInstalling = false;
+            }
+        }
+
+        private async Task RunInstallStepsAsync()
+        {
+            // 이 경로는 명령줄(--select/딥링크) 진입 전용이다. 카탈로그 진입은 모달
             // (InstallStepsWindow)에서 별도로 단계를 실행한다.
             var targetUrls = ResolveTargetSiteUrls();
             var hasAnyFailure = await _stepsPlayer.PlayStepsAsync(InstallSteps, ShowDryRunNotification);
@@ -778,6 +802,14 @@ namespace Spork.ViewModels
 
         public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
             => await _taskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+
+        /// <summary>
+        /// 설치 단계가 진행 중인지 여부. 진행 중에는 [설치하기] 버튼이 잠긴다
+        /// (<see cref="CanInstallPackages"/>).
+        /// </summary>
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(MainWindowInstallPackagesCommand))]
+        private bool _isInstalling;
 
         [ObservableProperty]
         private bool _showDryRunNotification;
