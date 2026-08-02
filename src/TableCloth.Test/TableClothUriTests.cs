@@ -1,4 +1,4 @@
-using TableCloth.Models;
+﻿using TableCloth.Models;
 
 namespace TableCloth.Test
 {
@@ -21,8 +21,9 @@ namespace TableCloth.Test
             Assert.AreEqual(TableClothUriRequestKind.SiteId, request.Kind);
             Assert.AreEqual("wooribank", request.SiteId);
 
-            // 사이트 Id 는 위치 인자 하나로 넘어간다(스위치가 아니다).
-            CollectionAssert.AreEqual(new[] { "wooribank" }, request.ToCanonicalArguments());
+            // 딥링크는 항상 --launch 를 동반한다(상세 화면 없이 곧바로 샌드박스 실행).
+            // 사이트 Id 자체는 위치 인자로 넘어간다(스위치가 아니다).
+            CollectionAssert.AreEqual(new[] { "--launch", "wooribank" }, request.ToCanonicalArguments());
         }
 
         [TestMethod]
@@ -35,7 +36,7 @@ namespace TableCloth.Test
             Assert.AreEqual(TableClothUriRequestKind.TargetUrl, request.Kind);
             Assert.AreEqual(url, request.TargetUrl);
 
-            CollectionAssert.AreEqual(new[] { "--target-url", url }, request.ToCanonicalArguments());
+            CollectionAssert.AreEqual(new[] { "--launch", "--target-url", url }, request.ToCanonicalArguments());
         }
 
         [TestMethod]

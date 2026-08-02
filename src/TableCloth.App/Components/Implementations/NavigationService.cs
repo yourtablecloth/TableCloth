@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Controls;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
@@ -43,6 +44,19 @@ public sealed class NavigationService(
     {
         var frame = FindNavigationFrameFromMainWindow();
         var page = appUserInterface.CreateQuickStartPage();
+        return frame.Navigate(page);
+    }
+
+    public bool NavigateToQuickStartAndLaunch(IEnumerable<CatalogInternetService> services, string? targetUrl)
+    {
+        var frame = FindNavigationFrameFromMainWindow();
+        var page = appUserInterface.CreateQuickStartPage();
+
+        // 페이지의 Loaded 커맨드가 이 값들을 보고 곧바로 실행한다(중간 화면·조작 없음).
+        page.ViewModel.PreselectedServices = services ?? Array.Empty<CatalogInternetService>();
+        page.ViewModel.PreselectedTargetUrl = targetUrl;
+        page.ViewModel.LaunchImmediately = true;
+
         return frame.Navigate(page);
     }
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -642,6 +642,9 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   </data>
   <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
     <value>Displays the help you're viewing.</value>
+  </data>
+  <data name="TableCloth_Switch_Launch_Help" xml:space="preserve">
+    <value>Starts the sandbox right away without showing the site detail screen. Used by the tablecloth: deep link handler.</value>
   </data>
   <data name="TableCloth_Switch_SimulateFailure_Help" xml:space="preserve">
     <value>Simulates the occurrence of an error with random probability. This option is a developer feature.</value>

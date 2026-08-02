@@ -196,6 +196,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   --launch과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_Launch {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_Launch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   --과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string TableCloth_Switch_Prefix {

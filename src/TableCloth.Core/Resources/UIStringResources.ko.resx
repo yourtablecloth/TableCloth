@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -641,6 +641,9 @@ Spork는 원래 식탁보가 만든 일회용 Windows Sandbox 안에서 자동�
   </data>
   <data name="TableCloth_Switch_Help_Help" xml:space="preserve">
     <value>지금 보고 있는 도움말을 표시합니다.</value>
+  </data>
+  <data name="TableCloth_Switch_Launch_Help" xml:space="preserve">
+    <value>사이트 상세 화면을 거치지 않고 곧바로 샌드박스를 실행합니다. tablecloth: 딥링크 처리기가 사용합니다.</value>
   </data>
   <data name="TableCloth_Switch_SimulateFailure_Help" xml:space="preserve">
     <value>임의의 확률로 오류 발생을 시뮬레이션합니다. 이 옵션은 개발자용 기능입니다.</value>

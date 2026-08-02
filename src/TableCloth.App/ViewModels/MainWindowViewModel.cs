@@ -99,16 +99,23 @@ public partial class MainWindowViewModel : ObservableObject
             }
         }
 
-        var selectedService = services.FirstOrDefault(x => selectedServiceIds.Contains(x.Id));
+        var selectedServices = services.Where(x => selectedServiceIds.Contains(x.Id)).ToArray();
 
-        if (selectedService == null)
+        if (selectedServices.Length < 1)
             return false;
 
-        // 게이트를 통과한 URL 만 실어 보낸다. 통과하지 못했으면 null 로 지워 검증되지 않은 주소가
+        // 딥링크 진입: 링크 한 번이 곧 "샌드박스를 띄워라"라는 지시이므로 중간 화면 없이 바로 실행한다.
+        // QuickStart 의 실행 경로를 그대로 타야 Data 마운트·NPKI 공유·환경 설정 옵션이 평소와 동일하게
+        // 적용된다(상세 화면 경로는 이것들이 빠진다).
+        if (parsedArg.LaunchImmediately)
+            return _navigationService.NavigateToQuickStartAndLaunch(selectedServices, acceptedTargetUrl);
+
+        // 예전부터 있던 `TableCloth.exe <SiteId>`(바탕화면 `.tclnk` 바로가기 등)는 종전대로 상세 화면.
+        // 게이트를 통과한 URL 만 실어 보낸다 — 통과하지 못했으면 null 로 지워 검증되지 않은 주소가
         // 샌드박스 구성까지 흘러가지 않게 한다.
         var effectiveArg = parsedArg.WithResolvedTarget(selectedServiceIds, acceptedTargetUrl);
 
-        _navigationService.NavigateToDetail(string.Empty, selectedService, effectiveArg);
+        _navigationService.NavigateToDetail(string.Empty, selectedServices[0], effectiveArg);
         return true;
     }
 
@@ -153,6 +160,7 @@ public partial class MainWindowViewModel : ObservableObject
             // 정규 인자를 그대로 다시 해석해 최초 실행 경로와 동일하게 처리한다.
             var siteIds = new List<string>();
             var targetUrl = default(string);
+            var launchImmediately = false;
 
             for (var i = 0; i < arguments.Length; i++)
             {
@@ -163,13 +171,20 @@ public partial class MainWindowViewModel : ObservableObject
                     continue;
                 }
 
+                if (string.Equals(arguments[i], ConstantStrings.TableCloth_Switch_Launch, StringComparison.OrdinalIgnoreCase))
+                {
+                    launchImmediately = true;
+                    continue;
+                }
+
                 siteIds.Add(arguments[i]);
             }
 
             TryNavigateToCommandLineTarget(new CommandLineArgumentModel(
                 rawArguments: arguments,
                 selectedServices: siteIds.ToArray(),
-                targetUrl: targetUrl));
+                targetUrl: targetUrl,
+                launchImmediately: launchImmediately));
         });
     }
 
