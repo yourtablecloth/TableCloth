@@ -20,7 +20,8 @@ namespace TableCloth.Models
             bool dryRun = default,
             bool simulateFailure = false,
             IEnumerable<MappedFolderSetting> mappedFolders = default,
-            string targetUrl = default)
+            string targetUrl = default,
+            bool launchImmediately = default)
         {
             RawArguments = rawArguments;
             SelectedServices = selectedServices ?? Enumerable.Empty<string>();
@@ -35,6 +36,7 @@ namespace TableCloth.Models
             SimulateFailure = simulateFailure;
             MappedFolders = mappedFolders ?? Enumerable.Empty<MappedFolderSetting>();
             TargetUrl = targetUrl;
+            LaunchImmediately = launchImmediately;
         }
 
         public string[] RawArguments { get; private set; }
@@ -64,6 +66,16 @@ namespace TableCloth.Models
         /// </remarks>
         public string TargetUrl { get; private set; } = null;
 
+        /// <summary>
+        /// 사이트 상세 화면을 거치지 않고 곧바로 샌드박스를 실행할지 여부.
+        /// </summary>
+        /// <remarks>
+        /// <c>tablecloth:</c> 딥링크 진입에서만 참이다. 링크 한 번이 곧 "샌드박스를 띄워라"라는 지시이므로
+        /// 중간 화면을 두지 않는다. 예전부터 있던 <c>TableCloth.exe &lt;SiteId&gt;</c>(바탕화면 `.tclnk`
+        /// 바로가기 등)는 이 값이 거짓이라 종전대로 상세 화면으로 진입한다.
+        /// </remarks>
+        public bool LaunchImmediately { get; private set; }
+
         public bool DryRun { get; private set; }
 
         public bool SimulateFailure { get; private set; }
@@ -90,7 +102,8 @@ namespace TableCloth.Models
                 dryRun: DryRun,
                 simulateFailure: SimulateFailure,
                 mappedFolders: MappedFolders,
-                targetUrl: targetUrl);
+                targetUrl: targetUrl,
+                launchImmediately: LaunchImmediately);
 
         public override string ToString()
         {

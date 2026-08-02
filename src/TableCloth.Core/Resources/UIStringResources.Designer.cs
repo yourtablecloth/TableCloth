@@ -1853,6 +1853,15 @@ namespace TableCloth.Resources {
         }
         
         /// <summary>
+        ///   Starts the sandbox right away without showing the site detail screen. Used by the tablecloth: deep link handler.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string TableCloth_Switch_Launch_Help {
+            get {
+                return ResourceManager.GetString("TableCloth_Switch_Launch_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Simulates the occurrence of an error with random probability. This option is a developer feature.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string TableCloth_Switch_SimulateFailure_Help {

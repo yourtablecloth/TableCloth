@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CommandLine;
 using System.IO;
 using System.Linq;
@@ -43,6 +43,10 @@ public sealed class CommandLineArguments : ICommandLineArguments
         _uriOption = new Option<string>(ConstantStrings.TableCloth_Switch_Uri)
         { Arity = ArgumentArity.ExactlyOne, Description = UIStringResources.TableCloth_Switch_Uri_Help, };
 
+        // 딥링크 진입 표식 — 상세 화면 없이 곧바로 샌드박스를 실행한다.
+        _launchOption = new Option<bool>(ConstantStrings.TableCloth_Switch_Launch)
+        { Arity = ArgumentArity.Zero, Description = UIStringResources.TableCloth_Switch_Launch_Help, };
+
         _siteIdListArgument = new Argument<string[]>("siteIds")
         { Arity = ArgumentArity.ZeroOrMore, Description = UIStringResources.TableCloth_Arguments_SiteIdList_Help, };
 
@@ -50,6 +54,7 @@ public sealed class CommandLineArguments : ICommandLineArguments
         {
             _targetUrlOption,
             _uriOption,
+            _launchOption,
             _enableMicrophoneOption,
             _enableCameraOption,
             _enablePrinterOption,
@@ -80,6 +85,7 @@ public sealed class CommandLineArguments : ICommandLineArguments
     private readonly Option<bool> _simulateFailureOption;
     private readonly Option<string> _targetUrlOption;
     private readonly Option<string> _uriOption;
+    private readonly Option<bool> _launchOption;
     private readonly Argument<string[]> _siteIdListArgument;
     private readonly RootCommand _rootCommand;
     private readonly Option _helpOption;
@@ -128,6 +134,7 @@ public sealed class CommandLineArguments : ICommandLineArguments
             showVersionHelp: parseResult.GetResult(_versionOption) != null,
             dryRun: parseResult.GetValue(_dryRunOption),
             simulateFailure: parseResult.GetValue(_simulateFailureOption),
-            targetUrl: parseResult.GetValue(_targetUrlOption));
+            targetUrl: parseResult.GetValue(_targetUrlOption),
+            launchImmediately: parseResult.GetValue(_launchOption));
     }
 }

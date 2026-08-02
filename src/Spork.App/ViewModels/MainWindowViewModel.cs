@@ -682,19 +682,50 @@ namespace Spork.ViewModels
             await MainWindowInstallPackagesAsync();
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanInstallPackages))]
         private async Task MainWindowInstallPackages()
             => await MainWindowInstallPackagesAsync();
+
+        private bool CanInstallPackages()
+            => !IsInstalling;
 
         private async Task MainWindowInstallPackagesAsync()
         {
             if (InstallSteps == null || InstallSteps.Count == 0)
                 return;
 
-            // 이 경로는 명령줄(--select) 진입 전용이다. 카탈로그 진입은 모달
+            // 재진입 차단. 명령줄/딥링크 진입은 EnterStepsModeAsync 에서 이 메서드를 **커맨드를 거치지 않고**
+            // 직접 호출하므로, 커맨드의 실행 중 상태만으로는 [설치하기] 버튼이 잠기지 않는다. 그 사이
+            // 사용자가 버튼을 누르면 같은 InstallSteps 위에서 StepsPlayer 가 둘 동시에 돌아 같은 패키지를
+            // 중복 설치하게 된다(실측 제보). 두 진입 경로가 모두 지나는 이 지점에서 막는다.
+            if (IsInstalling)
+                return;
+
+            IsInstalling = true;
+
+            try
+            {
+                await RunInstallStepsAsync();
+            }
+            finally
+            {
+                IsInstalling = false;
+            }
+        }
+
+        private async Task RunInstallStepsAsync()
+        {
+            // 이 경로는 명령줄(--select/딥링크) 진입 전용이다. 카탈로그 진입은 모달
             // (InstallStepsWindow)에서 별도로 단계를 실행한다.
             var targetUrls = ResolveTargetSiteUrls();
             var hasAnyFailure = await _stepsPlayer.PlayStepsAsync(InstallSteps, ShowDryRunNotification);
+
+            // 사이트를 여는 주체는 여기 하나다. 예전에는 StepsPlayer 도 카탈로그 대표 URL 을 열어서,
+            // 딥링크로 대상 URL 이 지정되면 대표 URL 과 대상 URL 이 탭 두 개로 떴다(실측 제보).
+            // 사이트 Id 만 준 경우에도 같은 주소가 두 번 열리고 있었다.
+            // 설치 성공 여부와 관계없이 여는 것은 종전 동작을 유지한다 — 일부 패키지가 실패해도
+            // 사용자가 사이트에서 직접 시도해볼 수 있어야 한다.
+            TryOpenSiteUrls(targetUrls);
 
             if (hasAnyFailure)
             {
@@ -702,9 +733,7 @@ namespace Spork.ViewModels
                 return;
             }
 
-            // 설치 성공: 대상 사이트 URL을 (가능하면 Edge로) 자동으로 연 뒤 외부 호출 측의
-            // 자동 종료 기대를 유지한다.
-            TryOpenSiteUrls(targetUrls);
+            // 설치 성공: 외부 호출 측의 자동 종료 기대를 유지한다.
             await RequestCloseAsync(this, EventArgs.Empty);
         }
 
@@ -736,16 +765,25 @@ namespace Spork.ViewModels
             if (urls == null || urls.Count == 0)
                 return;
 
-            try
+            var browser = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
+            var browserMissingNotified = false;
+
+            foreach (var url in urls)
             {
-                var browser = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
-                foreach (var url in urls)
+                try
+                {
                     Process.Start(browser.CreateWebPageOpenRequest(url, ProcessWindowStyle.Maximized));
-            }
-            catch (Exception ex)
-            {
-                // 브라우저 실행 실패는 설치 흐름을 망치지 않도록 비치명적으로 처리한다.
-                _appMessageBox.DisplayError(ex, false);
+                }
+                catch (Exception)
+                {
+                    // 드물게 샌드박스에 Edge 가 없으면 ShellExecute 폴백이 기본 브라우저를 못 찾아
+                    // 예외를 던진다(이슈 #184). 열기 실패로 설치 흐름을 망치지 않고 안내만 한 번 한다.
+                    if (browserMissingNotified)
+                        continue;
+
+                    _appMessageBox.DisplayError(UIStringResources.Sandbox_EdgeMissing_Guidance, false);
+                    browserMissingNotified = true;
+                }
             }
         }
 
@@ -781,6 +819,14 @@ namespace Spork.ViewModels
 
         public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
             => await _taskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
+
+        /// <summary>
+        /// 설치 단계가 진행 중인지 여부. 진행 중에는 [설치하기] 버튼이 잠긴다
+        /// (<see cref="CanInstallPackages"/>).
+        /// </summary>
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(MainWindowInstallPackagesCommand))]
+        private bool _isInstalling;
 
         [ObservableProperty]
         private bool _showDryRunNotification;

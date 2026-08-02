@@ -177,6 +177,10 @@
     <value>--ignore--</value>
     <comment>(Important) Please do not translate this item without intend.</comment>
   </data>
+  <data name="TableCloth_Switch_Launch" xml:space="preserve">
+    <value>--launch</value>
+    <comment>(Important) Please do not translate this item without intend.</comment>
+  </data>
   <data name="TableCloth_Switch_Prefix" xml:space="preserve">
     <value>--</value>
     <comment>(Important) Please do not translate this item without intend.</comment>

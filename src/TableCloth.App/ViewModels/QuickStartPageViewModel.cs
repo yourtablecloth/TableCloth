@@ -48,6 +48,23 @@ public partial class QuickStartPageViewModel : ObservableObject
     public async Task RequestCloseAsync(object sender, EventArgs e, CancellationToken cancellationToken = default)
         => await _taskFactory.StartNew(() => CloseRequested?.Invoke(sender, e), cancellationToken).ConfigureAwait(false);
 
+    /// <summary>
+    /// 딥링크(<c>tablecloth:</c>)로 진입했을 때 함께 실행할 카탈로그 서비스. 비어 있으면 평소처럼
+    /// 사이트 없는 빈 샌드박스를 띄운다.
+    /// </summary>
+    public IEnumerable<CatalogInternetService> PreselectedServices { get; set; } = Array.Empty<CatalogInternetService>();
+
+    /// <summary>
+    /// 딥링크가 지정한 대상 페이지 주소(카탈로그 도메인 게이트를 통과한 값). 샌드박스 안의 Spork 가
+    /// 설치 완료 후 이 주소를 연다. 없으면 카탈로그의 대표 URL 을 연다.
+    /// </summary>
+    public string? PreselectedTargetUrl { get; set; }
+
+    /// <summary>
+    /// 화면 진입 직후 사용자의 조작 없이 곧바로 샌드박스를 실행할지 여부. 딥링크 진입에서만 참이다.
+    /// </summary>
+    public bool LaunchImmediately { get; set; }
+
     [RelayCommand]
     private async Task QuickStartPageLoaded()
     {
@@ -66,6 +83,14 @@ public partial class QuickStartPageViewModel : ObservableObject
                 currentConfig.LastDisclaimerAgreedTime = LastDisclaimerAgreedTime;
                 await _preferencesManager.SavePreferencesAsync(currentConfig);
             }
+        }
+
+        // 딥링크 진입: 사용자가 아무것도 누르지 않아도 바로 샌드박스를 띄운다. 여기(QuickStart)의
+        // 실행 경로를 그대로 타야 Data 마운트·NPKI 공유·환경 설정 옵션이 평소와 동일하게 적용된다.
+        if (LaunchImmediately)
+        {
+            LaunchImmediately = false;   // 뒤로 가기 등으로 이 화면에 다시 와도 재실행하지 않는다.
+            await LaunchSandboxAsync();
         }
     }
 
@@ -103,6 +128,9 @@ public partial class QuickStartPageViewModel : ObservableObject
 
     [RelayCommand]
     private async Task LaunchSandbox()
+        => await LaunchSandboxAsync();
+
+    private async Task LaunchSandboxAsync()
     {
         // 데이터 폴더가 로컬 고정 디스크가 아니면(네트워크/클라우드/이동식 드라이브, UNC) Windows
         // 샌드박스가 마운트하지 못한다. 클라우드 동기화 폴더 등은 폴더 생성 자체는 성공할 수 있으므로,
@@ -164,8 +192,11 @@ public partial class QuickStartPageViewModel : ObservableObject
             EnablePrinters = currentConfig.UsePrinterRedirection,
             EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration,
             Companions = Array.Empty<CatalogCompanion>(),
-            Services = Array.Empty<CatalogInternetService>(),
+            // 딥링크로 사이트가 지정됐으면 그 사이트의 보안 프로그램을 설치하도록 싣는다.
+            // 지정이 없으면 종전대로 사이트 없는 빈 샌드박스.
+            Services = PreselectedServices?.ToList() ?? new List<CatalogInternetService>(),
             MappedFolders = mappedFolders,
+            TargetUrl = PreselectedTargetUrl,
         };
 
         await _sandboxLauncher.RunSandboxAsync(config);

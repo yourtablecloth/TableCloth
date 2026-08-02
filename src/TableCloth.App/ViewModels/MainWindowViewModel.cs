@@ -86,46 +86,33 @@ public partial class MainWindowViewModel : ObservableObject
         {
             var match = CatalogTargetUrlMatcher.Match(catalog, parsedArg.TargetUrl, selectedServiceIds);
 
+            // 사이트 Id 판정은 매처가 하나로 끝낸다(동점이면 카탈로그 순서). 여기서는 결과만 받는다 —
+            // URL 형식과 사이트 Id 형식의 차이는 "열 주소가 카탈로그 대표 URL 이냐 지정된 URL 이냐"뿐이다.
             if (match.IsAccepted)
             {
                 selectedServiceIds = match.ServiceIds.ToArray();
                 acceptedTargetUrl = match.AcceptedUrl;
             }
-            else if (match.Reason == CatalogTargetUrlRejectionReason.AmbiguousCandidates &&
-                     TryNavigateToCatalogForAmbiguousTarget(parsedArg.TargetUrl))
-            {
-                // 카탈로그가 아는 도메인이지만 서비스가 여러 개라(예: 우리은행 개인/기업) 자동 선택은
-                // 할 수 없다. 그 도메인으로 검색된 카탈로그를 보여 사용자가 고르게 한다.
-                return true;
-            }
         }
 
-        var selectedService = services.FirstOrDefault(x => selectedServiceIds.Contains(x.Id));
+        var selectedServices = services.Where(x => selectedServiceIds.Contains(x.Id)).ToArray();
 
-        if (selectedService == null)
+        if (selectedServices.Length < 1)
             return false;
 
-        // 게이트를 통과한 URL 만 실어 보낸다. 통과하지 못했으면 null 로 지워 검증되지 않은 주소가
+        // 딥링크 진입: 링크 한 번이 곧 "샌드박스를 띄워라"라는 지시이므로 중간 화면 없이 바로 실행한다.
+        // QuickStart 의 실행 경로를 그대로 타야 Data 마운트·NPKI 공유·환경 설정 옵션이 평소와 동일하게
+        // 적용된다(상세 화면 경로는 이것들이 빠진다).
+        if (parsedArg.LaunchImmediately)
+            return _navigationService.NavigateToQuickStartAndLaunch(selectedServices, acceptedTargetUrl);
+
+        // 예전부터 있던 `TableCloth.exe <SiteId>`(바탕화면 `.tclnk` 바로가기 등)는 종전대로 상세 화면.
+        // 게이트를 통과한 URL 만 실어 보낸다 — 통과하지 못했으면 null 로 지워 검증되지 않은 주소가
         // 샌드박스 구성까지 흘러가지 않게 한다.
         var effectiveArg = parsedArg.WithResolvedTarget(selectedServiceIds, acceptedTargetUrl);
 
-        _navigationService.NavigateToDetail(string.Empty, selectedService, effectiveArg);
+        _navigationService.NavigateToDetail(string.Empty, selectedServices[0], effectiveArg);
         return true;
-    }
-
-    /// <summary>
-    /// 한 도메인에 카탈로그 서비스가 여럿이라 자동 선택이 불가능한 경우, 그 도메인으로 검색한
-    /// 카탈로그 화면으로 보낸다.
-    /// </summary>
-    private bool TryNavigateToCatalogForAmbiguousTarget(string targetUrl)
-    {
-        if (!Uri.TryCreate(targetUrl, UriKind.Absolute, out var uri))
-            return false;
-
-        if (!CatalogTargetUrlMatcher.TryGetRegistrableDomain(uri.IdnHost, out var registrableDomain))
-            return false;
-
-        return _navigationService.NavigateToCatalog(registrableDomain);
     }
 
     /// <summary>
@@ -149,6 +136,7 @@ public partial class MainWindowViewModel : ObservableObject
             // 정규 인자를 그대로 다시 해석해 최초 실행 경로와 동일하게 처리한다.
             var siteIds = new List<string>();
             var targetUrl = default(string);
+            var launchImmediately = false;
 
             for (var i = 0; i < arguments.Length; i++)
             {
@@ -159,13 +147,20 @@ public partial class MainWindowViewModel : ObservableObject
                     continue;
                 }
 
+                if (string.Equals(arguments[i], ConstantStrings.TableCloth_Switch_Launch, StringComparison.OrdinalIgnoreCase))
+                {
+                    launchImmediately = true;
+                    continue;
+                }
+
                 siteIds.Add(arguments[i]);
             }
 
             TryNavigateToCommandLineTarget(new CommandLineArgumentModel(
                 rawArguments: arguments,
                 selectedServices: siteIds.ToArray(),
-                targetUrl: targetUrl));
+                targetUrl: targetUrl,
+                launchImmediately: launchImmediately));
         });
     }
 

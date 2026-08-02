@@ -54,14 +54,23 @@ namespace TableCloth.Models
         /// </remarks>
         public string[] ToCanonicalArguments()
         {
+            // 딥링크는 항상 `--launch` 를 함께 낸다. 사용자는 링크 하나로 "샌드박스를 띄워라"를 지시한
+            // 것이므로 상세 화면을 거치지 않고 곧바로 실행해야 한다. 반대로 예전부터 있던
+            // `TableCloth.exe <SiteId>`(바탕화면 `.tclnk` 바로가기 등)는 이 스위치가 없으므로
+            // 종전대로 상세 화면으로 진입한다 — 기존 사용자의 동작을 바꾸지 않기 위한 구분이다.
             switch (Kind)
             {
                 case TableClothUriRequestKind.SiteId:
                     // 사이트 Id 는 영숫자로 시작하는 제한된 문자 집합만 통과했으므로 위치 인자로 안전하다.
-                    return new[] { SiteId, };
+                    return new[] { Resources.ConstantStrings.TableCloth_Switch_Launch, SiteId, };
 
                 case TableClothUriRequestKind.TargetUrl:
-                    return new[] { Resources.ConstantStrings.TableCloth_Switch_TargetUrl, TargetUrl, };
+                    return new[]
+                    {
+                        Resources.ConstantStrings.TableCloth_Switch_Launch,
+                        Resources.ConstantStrings.TableCloth_Switch_TargetUrl,
+                        TargetUrl,
+                    };
 
                 default:
                     return new string[0];

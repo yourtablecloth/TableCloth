@@ -92,9 +92,12 @@ Preview 빌드는 **컴파일 타임 상수**로 자신이 Preview 임을 안다
   - Velopack: **양쪽 링 모두 `ExplicitChannel` 을 명시**한다(Retail = `<arch>`, Preview = `preview-<arch>` — `vpk pack --channel` 값과 같은 이름). 비워 두면 Velopack 기본값이 "설치 시점에 구워진 채널"이라, Preview 설치본에서 Retail 을 골라도 전환이 걸리지 않는다. 소스는 Preview 만 `prerelease:true`.
   - GitHub API 폴백: Preview 는 `/releases/latest` 대신 `/releases`(프리릴리스 포함)에서 최신 prerelease 를 골라 `TableCloth-Preview_…_<arch>.exe` 매칭. Retail 은 현행(`/releases/latest` + `_Release_<arch>`).
   - **되돌리기(Preview → Retail)**: `AllowVersionDowngrade` 를 켠다. 대상 버전이 현재보다 낮기 때문(예: `1.21.0-preview.1` → `1.20.9`)이며, 이 옵션이 없으면 Velopack 이 "업데이트 없음"으로 판단한다. 안정 링에 머무는 평상시에는 켜지 않는다(의도치 않은 하향 방지).
+  - 설치 정보(IsInstalled/CurrentVersion)는 채널 무관하므로 기본 매니저 유지.
+- **설정 영속성**: 채널 선택은 preferences 파일(사용자 데이터 위치)에 저장되어 업데이트 후에도 유지되어야 한다(§14 검증 항목).
+- **되돌리기는 수동 절차로 안내한다(자동화하지 않음)**: 설정 파일이 재설치를 살아남기 때문에, 안정 버전을 먼저 설치해도 설정이 계속 Preview 를 가리켜 다시 끌려 올라간다. 이를 앱이 자동으로 판정하는 방안(설치본의 링을 관측해 설정을 따라가게 하는 대조 로직)과 인앱 다운그레이드(`AllowVersionDowngrade`)를 함께 시도했으나 **의도대로 동작하지 않아 들어냈다**. 자동 판정이 어려운 근본 이유는 *미리 보기로 막 전환한 사용자*(설정=Preview, 설치본=Retail)와 *되돌리려는 사용자*(설정=Preview, 설치본=Retail)가 **겉보기에 같은 상태**라서다. 잘못 구분하면 방금 켠 미리 보기 설정이 저절로 꺼지는 쪽이 되어 더 나쁘다.
+  - 대신 **순서를 사용자가 정하도록** 안내한다: ① 채널을 Retail 로 바꿔 Preview 링에서 빠져나온 뒤 ② 안정 버전 설치 파일을 직접 받아 설치. 절차는 [TROUBLESHOOTING_UPDATE_CHANNEL.md](TROUBLESHOOTING_UPDATE_CHANNEL.md), 같은 취지의 문구가 옵션 창의 미리 보기 경고에도 들어간다.
+  - ①이 실제로 효력을 가지려면 위 `ExplicitChannel` 명시가 필요하다. 그것이 없으면 Retail 을 골라도 조회는 계속 `preview-<arch>` 로 가서 옵트아웃 자체가 무의미해진다.
 - **UI 표시**: About/타이틀/스플래시에 **"Preview" 배지**(버전 옆). 사용자가 자신이 선행 채널임을 항상 인지. (Retail 은 배지 없음.)
-- **앱 밖 링 변경 대조**: 설정 파일이 재설치를 살아남기 때문에, 안정 버전을 수동으로 재설치해도 설정이 계속 Preview 를 가리켜 다시 끌려 올라가는 함정이 있다. `PreferenceSettings.LastKnownInstalledChannel` 에 마지막으로 관측한 **설치본의 링**을 기록해 두고, 설치본의 링이 그 관측과 달라졌을 때만 설정을 설치본에 맞춘다(= 수동 다운그레이드 시 자동 옵트아웃). 무조건 설치본을 따르면 "Preview 로 토글 → 업데이트 전 재시작" 이 토글을 되돌려버리므로 이 조건이 필요하다. 상태 전이는 `ReleaseChannelReconciler` + 동명의 테스트가 고정한다.
-- **되돌아가기**: 옵션 창에서 Retail 을 고르고 업데이트를 확인하면 그대로 내려간다(재설치 불필요). 이미 함정에 빠진 사용자의 수동 복구 절차는 [TROUBLESHOOTING_UPDATE_CHANNEL.md](TROUBLESHOOTING_UPDATE_CHANNEL.md).
 
 ## 9. 승격(Graduation) 경로 — AOT → Retail
 

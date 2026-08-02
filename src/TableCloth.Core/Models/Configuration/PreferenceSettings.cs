@@ -136,31 +136,6 @@ namespace TableCloth.Models.Configuration
         public ReleaseChannel UpdateChannel { get; set; } = ReleaseChannel.Retail;
 
         /// <summary>
-        /// 마지막으로 관측한 <b>설치본</b>의 릴리스 링. <see cref="UpdateChannel"/>(사용자가 고른 링)과 달리
-        /// 지금 설치되어 실행 중인 빌드가 어느 링의 것인지를 기록합니다. <see langword="null"/>이면 아직
-        /// 관측한 적이 없다는 뜻입니다.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// 이 값의 목적은 <b>앱 밖에서 일어난 링 변경을 감지</b>하는 것입니다. 설정 파일은
-        /// <c>%LOCALAPPDATA%\TableCloth.Data</c>에 있어 재설치를 살아남으므로, 미리 보기를 쓰던 사용자가
-        /// 안정 버전을 수동으로 재설치해도 설정은 여전히 미리 보기를 가리켜 다음 업데이트 확인에서 다시
-        /// 미리 보기로 올라가 버립니다. 설치본의 링이 지난번 관측과 달라졌다면 사용자가 앱 밖에서 링을
-        /// 바꾼 것이므로, 그때만 <see cref="UpdateChannel"/>을 설치본에 맞춰 되돌립니다(= 자동 옵트아웃).
-        /// </para>
-        /// <para>
-        /// 무조건 "설치본을 따른다"로 하지 않는 이유: 미리 보기로 토글한 뒤 업데이트를 받기 전에 앱을
-        /// 재시작하면 아직 설치본이 안정이라 토글이 곧바로 되돌아가 버립니다.
-        /// </para>
-        /// <para>
-        /// JSON 에는 문자열로 저장된다 — <see cref="UpdateChannel"/>과 마찬가지로
-        /// <c>TableClothJsonContext</c>의 <c>UseStringEnumConverter</c>가 처리한다. 비제네릭
-        /// <c>JsonStringEnumConverter</c> 특성을 직접 붙이면 Native AOT 에서 지원되지 않는다(SYSLIB1034).
-        /// </para>
-        /// </remarks>
-        public ReleaseChannel? LastKnownInstalledChannel { get; set; } = null;
-
-        /// <summary>
         /// Disclaimer 알림을 표시해야 하는지 여부를 반환합니다.
         /// </summary>
         /// <param name="currentTime">현재 시간 (UTC)</param>
