@@ -189,8 +189,22 @@ $env:TABLECLOTH_SIGN_SUBJECT = 'Jung Hyun Nam'
 
 ### 8-4. 업로드 · 게시
 
-§4-1 의 파일별 업로드 + 크기 대조 절차를 그대로 쓴다(태그만 프리뷰 태그로). 게시는 **prerelease 를
-유지**해야 한다.
+§4-1 의 파일별 업로드 + 크기 대조 절차를 그대로 쓴다(태그만 프리뷰 태그로).
+
+⚠️ **게시 전에 릴리스 노트의 `UNSIGNED — DO NOT PUBLISH` 블록을 제거한다.** 리테일(§5)과 같은 절차인데
+프리뷰 절에는 빠져 있어 v1.21.0-preview.2 를 그 블록이 남은 채 게시했고, 사후에 고쳐야 했다(자산은
+서명돼 있었고 노트만 틀렸다). 프리뷰 노트는 `> [!NOTE]` 로 시작하는 미리 보기 배너부터 시작해야 한다.
+
+```powershell
+$tag  = 'v1.21.0-preview.N'
+$body = (gh release view $tag --json body | ConvertFrom-Json).body
+$idx  = $body.IndexOf('> [!NOTE]')      # 미리 보기 배너 앞(=UNSIGNED 블록)을 잘라낸다
+$tmp  = Join-Path $env:TEMP 'notes.md'
+[IO.File]::WriteAllText($tmp, $body.Substring($idx), (New-Object Text.UTF8Encoding $false))
+gh release edit $tag --notes-file $tmp
+```
+
+게시는 **prerelease 를 유지**해야 한다.
 
 ```powershell
 gh release edit v1.21.0-preview.N --draft=false --prerelease
