@@ -27,8 +27,12 @@ namespace TableCloth.Test
                     new CatalogInternetService { Id = "WooriBank", DisplayName = "우리은행 개인뱅킹", Url = "https://www.wooribank.com/" },
                     new CatalogInternetService { Id = "WooriBankBiz", DisplayName = "우리은행 기업뱅킹", Url = "https://nbi.wooribank.com/" },
                     new CatalogInternetService { Id = "IBKBank", DisplayName = "IBK기업은행 개인뱅킹", Url = "https://www.ibk.co.kr/" },
+                    // fsb.or.kr 은 서로 다른 저축은행들이 호스팅만 공유하는 도메인이다(실제 카탈로그엔 25곳).
+                    // 도메인당 후보 수가 경계를 넘도록 실제와 비슷하게 여러 개를 둔다.
                     new CatalogInternetService { Id = "OKSavingsBank", DisplayName = "OK저축은행", Url = "https://ok.ibs.fsb.or.kr/" },
                     new CatalogInternetService { Id = "JTSavingsBank", DisplayName = "JT저축은행", Url = "https://jt.ibs.fsb.or.kr/" },
+                    new CatalogInternetService { Id = "HBSavingsBank", DisplayName = "HB저축은행", Url = "https://hbsb.ibs.fsb.or.kr/" },
+                    new CatalogInternetService { Id = "KukjeSavingsBank", DisplayName = "국제저축은행", Url = "https://kukje.ibs.fsb.or.kr/" },
                     new CatalogInternetService { Id = "JejuBank", DisplayName = "제주은행", Url = "https://bank.jejubank.co.kr:6443/" },
                 ],
             };
@@ -141,31 +145,29 @@ namespace TableCloth.Test
         }
 
         [TestMethod]
-        public void SameDomainWithTwoServices_IsAmbiguous_WithoutSiteIds()
+        public void SameCompanyDomain_TiedCandidates_ResolveToASingleSiteInCatalogOrder()
         {
-            // 생산자가 Id 를 안 넘기면 개인/기업 중 무엇을 설치할지 확정할 수 없다.
+            // spib.wooribank.com 은 개인(www)/기업(nbi) 어느 쪽과도 라벨이 더 일치하지 않아 동점이다.
+            // 사이트 Id 판정은 항상 하나로 끝나야 한다 — 여러 개를 함께 설치하면 겹치는 패키지(AnySign,
+            // AhnLabSafeTx, nProtect, IPInside)가 중복 설치되어 단계 목록이 지저분해진다(실측 제보).
             var result = CatalogTargetUrlMatcher.Match(CreateCatalog(), WooriDeepLinkUrl);
 
-            Assert.IsFalse(result.IsAccepted);
-            Assert.AreEqual(CatalogTargetUrlRejectionReason.AmbiguousCandidates, result.Reason);
-
-            // 다만 동점 후보와 검증을 통과한 URL 은 함께 돌려준다 — 호출자가 정책을 정할 수 있어야
-            // 한다(딥링크는 후보 전체를 설치하고 실행, 그 외 경로는 URL 을 버린다).
-            CollectionAssert.AreEquivalent(
-                new[] { "WooriBank", "WooriBankBiz" }, result.ServiceIds.ToArray());
-            Assert.AreEqual(WooriDeepLinkUrl, result.AcceptedUrl);
+            Assert.IsTrue(result.IsAccepted);
+            CollectionAssert.AreEqual(new[] { "WooriBank" }, result.ServiceIds.ToArray(),
+                "동점이면 카탈로그에 먼저 적힌 항목(개인뱅킹)으로 확정되어야 합니다.");
+            Assert.AreEqual(WooriDeepLinkUrl, result.AcceptedUrl,
+                "URL 형식의 차이는 '열 주소'뿐이어야 합니다.");
         }
 
         [TestMethod]
-        public void SharedHostingDomain_ManyTiedCandidates_AreAllReported()
+        public void SharedHostingDomain_UnknownHost_IsRejected_NotGuessed()
         {
-            // fsb.or.kr 처럼 공용 호스팅 도메인은 동점 후보가 많이 나올 수 있다. 매처는 전부 보고하고,
-            // "몇 개까지 한꺼번에 설치할지"는 호출자가 상한을 둬서 판단한다.
+            // fsb.or.kr 아래는 서로 '다른 회사'라, 그중 하나를 골라 남의 은행 보안 프로그램을 깔면 안 된다.
+            // 우리은행 개인/기업 같은 '같은 회사의 갈래'와 구분되는 지점이다.
             var result = CatalogTargetUrlMatcher.Match(CreateCatalog(), "https://unknown.ibs.fsb.or.kr/");
 
+            Assert.IsFalse(result.IsAccepted);
             Assert.AreEqual(CatalogTargetUrlRejectionReason.AmbiguousCandidates, result.Reason);
-            CollectionAssert.AreEquivalent(
-                new[] { "OKSavingsBank", "JTSavingsBank" }, result.ServiceIds.ToArray());
         }
 
         [TestMethod]

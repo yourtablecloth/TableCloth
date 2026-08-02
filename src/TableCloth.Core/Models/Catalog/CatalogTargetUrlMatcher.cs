@@ -113,6 +113,19 @@ namespace TableCloth.Models.Catalog
         /// <summary>허용하는 URL 최대 길이.</summary>
         public const int MaxTargetUrlLength = 2048;
 
+        /// <summary>
+        /// 한 등록 도메인에 이 개수까지의 서비스가 있으면 "같은 회사의 갈래"로 보고 동점 시 하나를 택한다.
+        /// 넘으면 공용 호스팅 도메인으로 보고 URL 을 버린다.
+        /// </summary>
+        /// <remarks>
+        /// 실제 카탈로그에서 한 도메인을 공유하는 경우는 두 갈래다. 우리은행 개인/기업(2), 하나은행
+        /// 개인/기업/저축(3)처럼 <b>같은 회사</b>인 경우와, <c>fsb.or.kr</c> 아래 저축은행 25곳처럼
+        /// <b>서로 다른 회사</b>가 호스팅만 공유하는 경우다. 전자는 어느 쪽을 골라도 무리가 없지만
+        /// 후자는 남의 은행 프로그램을 까는 셈이라 골라선 안 된다. 둘을 자동으로 구분할 신호가
+        /// 도메인당 서비스 수뿐이라 이 값을 경계로 쓴다.
+        /// </remarks>
+        private const int MaxServicesPerDomainToDisambiguate = 3;
+
         // 무설치 런처(BootstrapOptions.Meaningful)와 같은 규칙: 치환되지 않은 플레이스홀더는 "없음"으로 본다.
         private const string PlaceholderMarker = "__SPORK";
 
@@ -215,7 +228,8 @@ namespace TableCloth.Models.Catalog
                     requestedServices.Select(x => x.Service.Id).ToList());
             }
 
-            // (2) URL 만 온 경로: 같은 등록 도메인 후보 중 호스트 라벨이 가장 많이 일치하는 유일 후보만 수락.
+            // (2) URL 만 온 경로: 같은 등록 도메인 후보 중 호스트 라벨이 가장 많이 일치하는 하나를 고른다.
+            // 카탈로그 순서를 보존해야 동점 시 결정이 재현 가능하다(LINQ 는 원본 순서를 유지한다).
             var candidates = services
                 .Where(x => TryGetRegistrableDomain(x.Host, out var domain) &&
                             string.Equals(domain, targetDomain, StringComparison.Ordinal))
@@ -232,14 +246,19 @@ namespace TableCloth.Models.Catalog
             var bestScore = candidates.Max(x => x.Score);
             var winners = candidates.Where(x => x.Score == bestScore).ToList();
 
-            if (winners.Count != 1)
+            // 공용 호스팅 도메인(예: fsb.or.kr 아래 저축은행 다수)에서 호스트가 어느 것과도 더 일치하지
+            // 않으면, 남는 후보는 서로 '다른 회사'다. 그중 하나를 골라 남의 은행 보안 프로그램을 깔아
+            // 봐야 의미가 없으므로 URL 을 버린다. 반대로 후보가 몇 개뿐인 도메인은 같은 회사의 갈래
+            // (우리은행 개인/기업, 하나은행 개인/기업/저축)라 어느 쪽을 골라도 무리가 없다.
+            if (winners.Count > 1 && candidates.Count > MaxServicesPerDomainToDisambiguate)
             {
-                // 하나로 확정하지 못했다. URL 자체는 검증을 통과했으므로 후보 목록과 함께 돌려주고,
-                // 어떻게 할지는 호출자가 정한다(딥링크는 후보 전체를 설치하고 실행, 그 외에는 URL 폐기).
                 return CatalogTargetUrlMatchResult.Ambiguous(
                     acceptedUrl, winners.Select(x => x.Service.Id).ToList());
             }
 
+            // 사이트 Id 판정은 항상 하나로 끝난다. 동점이면 카탈로그에 먼저 적힌 항목을 택한다
+            // (카탈로그는 대표 서비스를 앞에 두므로 개인뱅킹처럼 흔한 쪽이 선택된다).
+            // 여러 후보를 함께 설치하면 겹치는 패키지가 중복 설치되어 단계 목록이 지저분해진다.
             return CatalogTargetUrlMatchResult.Accept(
                 acceptedUrl,
                 new[] { winners[0].Service.Id });
