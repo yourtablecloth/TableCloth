@@ -1,9 +1,7 @@
-using Spork.Browsers;
-using Spork.Components;
+﻿using Spork.Components;
 using Spork.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -17,24 +15,15 @@ namespace Spork.Steps.Implementations
 {
     public sealed class StepsPlayer : IStepsPlayer
     {
+        // 사이트 열기를 호출자로 넘기면서 카탈로그·브라우저·메시지 박스 의존이 모두 필요 없어졌다.
+        // 남는 것은 실행 옵션(DryRun)뿐이다.
         public StepsPlayer(
-            IResourceCacheManager resourceCacheManager,
-            ICommandLineArguments commandLineArguments,
-            IWebBrowserServiceFactory webBrowserServiceFactory,
-            IAppMessageBox appMessageBox)
+            ICommandLineArguments commandLineArguments)
         {
-            _resourceCacheManager = resourceCacheManager;
             _commandLineArguments = commandLineArguments;
-            _webBrowserServiceFactory = webBrowserServiceFactory;
-            _defaultWebBrowserService = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
-            _appMessageBox = appMessageBox;
         }
 
-        private readonly IResourceCacheManager _resourceCacheManager;
         private readonly ICommandLineArguments _commandLineArguments;
-        private readonly IWebBrowserServiceFactory _webBrowserServiceFactory;
-        private readonly IWebBrowserService _defaultWebBrowserService;
-        private readonly IAppMessageBox _appMessageBox;
 
         public bool IsRunning { get; private set; }
 
@@ -72,7 +61,6 @@ namespace Spork.Steps.Implementations
             var hasAnyFailure = false;
 
             IsRunning = true;
-            var catalog = _resourceCacheManager.CatalogDocument;
             var stepsList = composedSteps.ToList();
 
             // 1단계: 모든 다운로드를 백그라운드에서 병렬로 시작
@@ -131,31 +119,12 @@ namespace Spork.Steps.Implementations
                 finally { eachItem.ShowProgress = false; }
             }
 
-        IsRunning = false;
+            IsRunning = false;
 
-            // 설치 성공 여부와 관계없이 항상 웹 사이트를 열어줍니다.
-            var targets = parsedArgs.SelectedServices;
-
-            // 드물게 샌드박스에 브라우저(Edge)가 없으면 CreateWebPageOpenRequest 가 URL 을
-            // ShellExecute 로 열려다 기본 브라우저가 없어 Process.Start 가 "응용 프로그램을 찾을 수 없습니다"로
-            // 예외를 던져 앱이 죽던 문제(이슈 #184)를 방어한다. 열기에 실패해도 안내만 하고 계속 진행한다.
-            var browserMissingNotified = false;
-            foreach (var eachUrl in catalog.Services.Where(x => targets.Contains(x.Id)).Select(x => x.Url))
-            {
-                try
-                {
-                    Process.Start(_defaultWebBrowserService.CreateWebPageOpenRequest(eachUrl, ProcessWindowStyle.Maximized));
-                }
-                catch (Exception)
-                {
-                    if (!browserMissingNotified)
-                    {
-                        _appMessageBox.DisplayError(UIStringResources.Sandbox_EdgeMissing_Guidance, false);
-                        browserMissingNotified = true;
-                    }
-                }
-            }
-
+            // 사이트 열기는 여기서 하지 않는다. 호출자(MainWindowViewModel / 카탈로그 설치 모달)가
+            // 열어야 할 주소를 알고 있고, 딥링크로 지정된 대상 URL 은 카탈로그 도메인 게이트를 통과한
+            // 값이어야 하기 때문이다. 예전에는 여기서도 카탈로그 대표 URL 을 열어 호출자의 열기와
+            // 겹쳤고, 딥링크에서는 대표 URL 과 대상 URL 이 탭 두 개로 떴다(실측 제보).
             return hasAnyFailure;
         }
 

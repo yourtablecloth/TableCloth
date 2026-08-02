@@ -717,15 +717,20 @@ namespace Spork.ViewModels
             var targetUrls = ResolveTargetSiteUrls();
             var hasAnyFailure = await _stepsPlayer.PlayStepsAsync(InstallSteps, ShowDryRunNotification);
 
+            // 사이트를 여는 주체는 여기 하나다. 예전에는 StepsPlayer 도 카탈로그 대표 URL 을 열어서,
+            // 딥링크로 대상 URL 이 지정되면 대표 URL 과 대상 URL 이 탭 두 개로 떴다(실측 제보).
+            // 사이트 Id 만 준 경우에도 같은 주소가 두 번 열리고 있었다.
+            // 설치 성공 여부와 관계없이 여는 것은 종전 동작을 유지한다 — 일부 패키지가 실패해도
+            // 사용자가 사이트에서 직접 시도해볼 수 있어야 한다.
+            TryOpenSiteUrls(targetUrls);
+
             if (hasAnyFailure)
             {
                 // 실패 시 StepsView를 유지하여 사용자가 결과를 확인할 수 있게 한다.
                 return;
             }
 
-            // 설치 성공: 대상 사이트 URL을 (가능하면 Edge로) 자동으로 연 뒤 외부 호출 측의
-            // 자동 종료 기대를 유지한다.
-            TryOpenSiteUrls(targetUrls);
+            // 설치 성공: 외부 호출 측의 자동 종료 기대를 유지한다.
             await RequestCloseAsync(this, EventArgs.Empty);
         }
 
@@ -757,16 +762,25 @@ namespace Spork.ViewModels
             if (urls == null || urls.Count == 0)
                 return;
 
-            try
+            var browser = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
+            var browserMissingNotified = false;
+
+            foreach (var url in urls)
             {
-                var browser = _webBrowserServiceFactory.GetWindowsSandboxDefaultBrowserService();
-                foreach (var url in urls)
+                try
+                {
                     Process.Start(browser.CreateWebPageOpenRequest(url, ProcessWindowStyle.Maximized));
-            }
-            catch (Exception ex)
-            {
-                // 브라우저 실행 실패는 설치 흐름을 망치지 않도록 비치명적으로 처리한다.
-                _appMessageBox.DisplayError(ex, false);
+                }
+                catch (Exception)
+                {
+                    // 드물게 샌드박스에 Edge 가 없으면 ShellExecute 폴백이 기본 브라우저를 못 찾아
+                    // 예외를 던진다(이슈 #184). 열기 실패로 설치 흐름을 망치지 않고 안내만 한 번 한다.
+                    if (browserMissingNotified)
+                        continue;
+
+                    _appMessageBox.DisplayError(UIStringResources.Sandbox_EdgeMissing_Guidance, false);
+                    browserMissingNotified = true;
+                }
             }
         }
 
