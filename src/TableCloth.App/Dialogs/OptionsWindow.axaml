@@ -16,6 +16,9 @@
         </Style>
     </Window.Styles>
     <Grid Margin="16" RowDefinitions="*,Auto">
+        <!-- 이 창은 고정 크기(CanResize=False)라 탭 내용이 뷰포트를 넘으면 스크롤바 없이 잘린다.
+             텍스트 배율(125%/150%)에서 실제로 재현되므로, 세로로 자랄 수 있는 탭은 예외 없이
+             ScrollViewer 로 감싼다(가로 스크롤은 Disabled — 설명문이 줄바꿈되도록). -->
         <TabControl Grid.Row="0" TabStripPlacement="Left" SelectedIndex="{Binding InitialTabIndex}">
             <!-- 사용자 폴더 -->
             <TabItem Header="{x:Static res:UIStringResources.QuickStart_Section_UserFolders}">
@@ -52,43 +55,49 @@
 
             <!-- 데이터 디렉터리 -->
             <TabItem Header="{x:Static res:UIStringResources.QuickStart_Section_DataDirectory}">
-                <StackPanel Margin="12">
-                    <TextBlock Margin="0 0 0 8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.QuickStart_DataDirectory_Description}" />
-                    <TextBlock Margin="0 4 0 2" FontWeight="SemiBold" Text="{x:Static res:UIStringResources.QuickStart_DataDirectory_CurrentPathLabel}" />
-                    <TextBox Margin="0 0 0 8" IsReadOnly="True" TextWrapping="Wrap" Text="{Binding DataDirectoryDisplayPath, Mode=OneWay}" />
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Button Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_SelectButton}" Command="{Binding SelectDataDirectoryCommand}" Padding="10 5" />
-                        <Button Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_ResetButton}" Command="{Binding ResetDataDirectoryCommand}" IsEnabled="{Binding DataDirectoryIsCustom}" Padding="10 5" />
-                        <Button Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_OpenButton}" Command="{Binding OpenDataDirectoryCommand}" Padding="10 5" />
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="12">
+                        <TextBlock Margin="0 0 0 8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.QuickStart_DataDirectory_Description}" />
+                        <TextBlock Margin="0 4 0 2" FontWeight="SemiBold" Text="{x:Static res:UIStringResources.QuickStart_DataDirectory_CurrentPathLabel}" />
+                        <TextBox Margin="0 0 0 8" IsReadOnly="True" TextWrapping="Wrap" Text="{Binding DataDirectoryDisplayPath, Mode=OneWay}" />
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Button Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_SelectButton}" Command="{Binding SelectDataDirectoryCommand}" Padding="10 5" />
+                            <Button Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_ResetButton}" Command="{Binding ResetDataDirectoryCommand}" IsEnabled="{Binding DataDirectoryIsCustom}" Padding="10 5" />
+                            <Button Content="{x:Static res:UIStringResources.QuickStart_DataDirectory_OpenButton}" Command="{Binding OpenDataDirectoryCommand}" Padding="10 5" />
+                        </StackPanel>
+                        <Border Margin="0 10 0 0" BorderBrush="Red" BorderThickness="1" CornerRadius="3" Padding="8"
+                                IsVisible="{Binding DataDirectoryIsNonLocal}">
+                            <TextBlock TextWrapping="Wrap" Foreground="Red" Text="{x:Static res:UIStringResources.QuickStart_DataDirectory_NonLocalWarning}" />
+                        </Border>
                     </StackPanel>
-                    <Border Margin="0 10 0 0" BorderBrush="Red" BorderThickness="1" CornerRadius="3" Padding="8"
-                            IsVisible="{Binding DataDirectoryIsNonLocal}">
-                        <TextBlock TextWrapping="Wrap" Foreground="Red" Text="{x:Static res:UIStringResources.QuickStart_DataDirectory_NonLocalWarning}" />
-                    </Border>
-                </StackPanel>
+                </ScrollViewer>
             </TabItem>
 
             <!-- 인증서 (NPKI 공유) -->
             <TabItem Header="{x:Static res:UIStringResources.Options_Section_Certificate}">
-                <StackPanel Margin="12">
-                    <TextBlock Margin="0 0 0 8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{Binding CertificateSectionDescription}" />
-                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_ShareNpkiCheckbox}" IsChecked="{Binding ShareNpkiFolder}" />
-                </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="12">
+                        <TextBlock Margin="0 0 0 8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{Binding CertificateSectionDescription}" />
+                        <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_ShareNpkiCheckbox}" IsChecked="{Binding ShareNpkiFolder}" />
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
 
             <!-- 장치 공유 -->
             <TabItem Header="{x:Static res:UIStringResources.Options_Section_DeviceSharing}">
-                <StackPanel Margin="12">
-                    <TextBlock Margin="0 0 0 8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.Options_Section_DeviceSharing_Description}" />
-                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UseMicrophoneCheckboxText}" IsChecked="{Binding EnableMicrophone}" />
-                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UseWebCameraCheckboxText}" IsChecked="{Binding EnableWebCam}" />
-                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UsePrinterCheckboxText}" IsChecked="{Binding EnablePrinters}" />
-                    <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.Option_UsePrinterCheckbox_Description}" />
-                </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="12">
+                        <TextBlock Margin="0 0 0 8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.Options_Section_DeviceSharing_Description}" />
+                        <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UseMicrophoneCheckboxText}" IsChecked="{Binding EnableMicrophone}" />
+                        <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UseWebCameraCheckboxText}" IsChecked="{Binding EnableWebCam}" />
+                        <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UsePrinterCheckboxText}" IsChecked="{Binding EnablePrinters}" />
+                        <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.Option_UsePrinterCheckbox_Description}" />
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
 
             <!-- 호환성 (워크어라운드) -->
@@ -123,43 +132,47 @@
 
             <!-- 진단 -->
             <TabItem Header="{x:Static res:UIStringResources.Options_Section_Diagnostics}">
-                <StackPanel Margin="12">
-                    <TextBlock Margin="0 0 0 8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.Option_TelemetryDescriptionText}" />
-                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UseAutoLogCollecting}" IsChecked="{Binding EnableLogAutoCollecting}" />
-                </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="12">
+                        <TextBlock Margin="0 0 0 8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.Option_TelemetryDescriptionText}" />
+                        <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_UseAutoLogCollecting}" IsChecked="{Binding EnableLogAutoCollecting}" />
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
 
             <!-- 미리 보기(Preview) -->
             <TabItem Header="{x:Static res:UIStringResources.Options_Section_Preview}">
-                <StackPanel Margin="12">
-                    <TextBlock Margin="0 0 0 8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.Options_Section_Preview_Description}" />
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="12">
+                        <TextBlock Margin="0 0 0 8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.Options_Section_Preview_Description}" />
 
-                    <!-- 이슈 #296: 업데이트 릴리스 링(안정/미리 보기). 안정=정식, 미리 보기=선행 프리릴리스(새 기능·변경을 먼저 검증). -->
-                    <TextBlock Margin="0 4 0 2" FontWeight="SemiBold"
-                               Text="{x:Static res:UIStringResources.Option_UpdateChannel_Label}" />
-                    <TextBlock Margin="0 0 0 4" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.Option_UpdateChannel_Description}" />
-                    <RadioButton Margin="0 2" GroupName="UpdateChannel"
-                                 Content="{x:Static res:UIStringResources.Option_UpdateChannel_Retail}"
-                                 IsChecked="{Binding SelectedUpdateChannel, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Retail, Mode=TwoWay}" />
-                    <RadioButton Margin="0 2" GroupName="UpdateChannel"
-                                 Content="{x:Static res:UIStringResources.Option_UpdateChannel_Preview}"
-                                 IsChecked="{Binding SelectedUpdateChannel, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Preview, Mode=TwoWay}" />
-                    <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.Option_UpdateChannel_PreviewWarning}" />
+                        <!-- 이슈 #296: 업데이트 릴리스 링(안정/미리 보기). 안정=정식, 미리 보기=선행 프리릴리스(새 기능·변경을 먼저 검증). -->
+                        <TextBlock Margin="0 4 0 2" FontWeight="SemiBold"
+                                   Text="{x:Static res:UIStringResources.Option_UpdateChannel_Label}" />
+                        <TextBlock Margin="0 0 0 4" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.Option_UpdateChannel_Description}" />
+                        <RadioButton Margin="0 2" GroupName="UpdateChannel"
+                                     Content="{x:Static res:UIStringResources.Option_UpdateChannel_Retail}"
+                                     IsChecked="{Binding SelectedUpdateChannel, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Retail, Mode=TwoWay}" />
+                        <RadioButton Margin="0 2" GroupName="UpdateChannel"
+                                     Content="{x:Static res:UIStringResources.Option_UpdateChannel_Preview}"
+                                     IsChecked="{Binding SelectedUpdateChannel, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Preview, Mode=TwoWay}" />
+                        <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.Option_UpdateChannel_PreviewWarning}" />
 
-                    <Border Height="1" Margin="0 12" Background="{DynamicResource ControlSecondaryForeground}" Opacity="0.25" />
+                        <Border Height="1" Margin="0 12" Background="{DynamicResource ControlSecondaryForeground}" Opacity="0.25" />
 
-                    <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_EnableIdleAutoLogout}" IsChecked="{Binding EnableIdleAutoLogout}" />
-                    <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static res:UIStringResources.Option_EnableIdleAutoLogout_Description}" />
-                    <StackPanel Orientation="Horizontal" Margin="22 8 0 0" VerticalAlignment="Center" IsEnabled="{Binding EnableIdleAutoLogout}">
-                        <TextBlock VerticalAlignment="Center" Margin="0 0 8 0" Text="{x:Static res:UIStringResources.Option_IdleAutoLogout_MinutesLabel}" />
-                        <ComboBox Width="80" VerticalAlignment="Center" ItemsSource="{Binding IdleTimeoutOptions}" SelectedItem="{Binding IdleAutoLogoutMinutes}" />
+                        <CheckBox Margin="0 4" Content="{x:Static res:UIStringResources.Option_EnableIdleAutoLogout}" IsChecked="{Binding EnableIdleAutoLogout}" />
+                        <TextBlock Margin="22 2 0 0" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static res:UIStringResources.Option_EnableIdleAutoLogout_Description}" />
+                        <StackPanel Orientation="Horizontal" Margin="22 8 0 0" VerticalAlignment="Center" IsEnabled="{Binding EnableIdleAutoLogout}">
+                            <TextBlock VerticalAlignment="Center" Margin="0 0 8 0" Text="{x:Static res:UIStringResources.Option_IdleAutoLogout_MinutesLabel}" />
+                            <ComboBox Width="80" VerticalAlignment="Center" ItemsSource="{Binding IdleTimeoutOptions}" SelectedItem="{Binding IdleAutoLogoutMinutes}" />
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
 
