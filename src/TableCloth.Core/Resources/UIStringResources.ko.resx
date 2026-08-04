@@ -591,6 +591,27 @@ Spork는 원래 식탁보가 만든 일회용 Windows Sandbox 안에서 자동�
   <data name="Status_Done" xml:space="preserve">
     <value>실행 준비가 완료되었습니다.</value>
   </data>
+  <data name="Splash_DeepLink_Launching" xml:space="preserve">
+    <value>'{0}' 샌드박스를 준비하고 있습니다...</value>
+  </data>
+  <data name="Splash_DeepLink_Succeeded" xml:space="preserve">
+    <value>링크에서 '{0}'{1} 인식해 샌드박스를 실행했습니다.</value>
+  </data>
+  <data name="Splash_DeepLink_Failed" xml:space="preserve">
+    <value>링크에서 '{0}'{1} 인식했지만, 샌드박스를 실행하지 못했습니다.</value>
+  </data>
+  <data name="Splash_DeepLink_FailedStatus" xml:space="preserve">
+    <value>실행하지 못했습니다</value>
+  </data>
+  <data name="Splash_DeepLink_CloseButton" xml:space="preserve">
+    <value>닫기</value>
+  </data>
+  <data name="Splash_DeepLink_RetryButton" xml:space="preserve">
+    <value>다시 시도</value>
+  </data>
+  <data name="Splash_DeepLink_OpenAppButton" xml:space="preserve">
+    <value>식탁보 열기</value>
+  </data>
   <data name="Status_EvaluatingRequirementsMet" xml:space="preserve">
     <value>시스템 환경 확인 중...</value>
   </data>

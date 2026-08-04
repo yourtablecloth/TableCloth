@@ -9,7 +9,7 @@
         xmlns:res="clr-namespace:TableCloth.Resources;assembly=TableCloth.Core"
         xmlns:xrpb="http://XamlRadialProgressBar/DotNet"
         mc:Ignorable="d"
-        Title="{x:Static res:UIStringResources.MainWindow_Title}" Height="400" Width="600"
+        Title="{x:Static res:UIStringResources.MainWindow_Title}" Height="{Binding SplashWindowHeight}" Width="600"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None" AllowsTransparency="True"
         Style="{DynamicResource MainWindowStyle}"
@@ -45,7 +45,7 @@
                 <xrpb:RadialProgressBar ArcMode="Fill" ArcDirection="Counterclockwise" ShapeModeStep="2" ArcRotationDegree="90"
                                         ShapeModeWidth="32" Width="100" Height="100" IsIndeterminate="True" 
                                         Foreground="{DynamicResource ControlDefaultForeground}"
-                                        Visibility="{Binding ShowUpdateProgress, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                                        Visibility="{Binding ShowBusyIndicator, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 
                 <!-- Update Progress Bar (when downloading update) -->
                 <Grid Visibility="{Binding ShowUpdateProgress, Converter={StaticResource BooleanToVisibilityConverter}}" Width="300" Height="100">
@@ -55,7 +55,29 @@
                     </StackPanel>
                 </Grid>
                 
-                <TextBlock Text="{Binding Status}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                <TextBlock Text="{Binding Status}" HorizontalAlignment="Center" Margin="0,10,0,0"
+                           TextWrapping="Wrap" TextAlignment="Center" MaxWidth="460" />
+
+                <!--
+                    딥링크(`tablecloth:`)로 시작된 경우의 종착 화면. 링크가 제대로 인식됐다는 사실과
+                    대상 사이트 이름을 보여주고, 이어서 무엇을 할지 고르게 한다. 인식 실패는 여기까지
+                    오지 않고 평소대로 메인 창이 열린다(App.ViewModel_InitializeDone).
+                -->
+                <StackPanel MaxWidth="460" Margin="0,12,0,0"
+                            Visibility="{Binding ShowDeepLinkActions, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Text="{Binding DeepLinkResultMessage}" HorizontalAlignment="Center"
+                               TextAlignment="Center" TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,12,0,0">
+                        <Button Content="{x:Static res:UIStringResources.Splash_DeepLink_CloseButton}"
+                                Command="{Binding CloseAfterDeepLinkCommand}" Padding="16,6" Margin="0,0,6,0" />
+                        <!-- '다시 시도'는 실패했을 때만 의미가 있다. -->
+                        <Button Content="{x:Static res:UIStringResources.Splash_DeepLink_RetryButton}"
+                                Command="{Binding RetryDeepLinkLaunchCommand}" Padding="16,6" Margin="0,0,6,0"
+                                Visibility="{Binding DeepLinkLaunchSucceeded, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                        <Button Content="{x:Static res:UIStringResources.Splash_DeepLink_OpenAppButton}"
+                                Command="{Binding OpenTableClothCommand}" Padding="16,6" />
+                    </StackPanel>
+                </StackPanel>
             </StackPanel>
         </Grid>
     </Border>

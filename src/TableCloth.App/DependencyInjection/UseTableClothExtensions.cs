@@ -62,6 +62,7 @@ public static class UseTableClothExtensions
             .AddSingleton<IMessageBoxService, MessageBoxService>()
             .AddSingleton<INavigationService, NavigationService>()
             .AddSingleton<IDeepLinkActivationChannel, DeepLinkActivationChannel>()
+            .AddSingleton<IDeepLinkResolver, DeepLinkResolver>()
             .AddSingleton<IShortcutCreator, ShortcutCreator>()
             .AddSingleton<ICommandLineArguments, CommandLineArguments>()
             .AddSingleton<IApplicationService, ApplicationService>()
