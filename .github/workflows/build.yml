@@ -350,6 +350,26 @@ jobs:
         if-no-files-found: error
         retention-days: 5
 
+    # 로컬 전체 서명용 원본 산출물(pack 이전). Velopack 은 vpk pack --signParams 로 *패킹 도중에*
+    # 서명하므로(앱 바이너리 + Update.exe + Setup.exe), 이미 패킹된 releases/* 만으로는 전체 서명을
+    # 다시 할 수 없다. 로컬이 이 페이로드를 받아 build.cmd --skip-build --sign 으로 재패킹+서명한다.
+    #
+    # arm64 Native AOT 는 x64 PC 에서 빌드할 수 없어(docs/RELEASING.md §8) 빌드는 CI 의 네이티브
+    # windows-11-arm 러너가 맡고 로컬은 서명만 담당한다. 프리뷰 레인(preview.yml)이 쓰는 것과
+    # 같은 계약이며, 리테일에도 같은 절차를 쓰기 위해 이름·경로를 동일하게 맞춘다.
+    - name: Upload publish payload (for local signing)
+      if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: PublishPayload-${{ matrix.platform }}
+        # Spork.Bootstrapper 는 publish/ 밖(-o publish-bootstrapper)으로 나가므로 함께 담는다.
+        # 무설치 레인은 리테일 전용이라 프리뷰 레인에는 없는 항목이다.
+        path: |
+          publish/**
+          publish-bootstrapper/**
+        if-no-files-found: error
+        retention-days: 5
+
     # Upload SBOM as artifact (Release builds only, for tagged releases)
     - name: Upload SBOM artifact
       if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
