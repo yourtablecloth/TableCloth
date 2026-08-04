@@ -1,0 +1,177 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:CompileBindings="True">
+    <!--
+        이슈 #296(Avalonia 이관) 회귀 수정: Fluentv2.axaml 에는 RadioButton* 리소스(브러시/두께)가 모두
+        들어와 있는데, 정작 ControlTheme(템플릿)을 담은 이 파일이 벤더링에서 빠져 있었다. 그 결과
+        RadioButton 이 템플릿 없는 ContentControl 로 떨어져 동그라미 표시자 없이 글자만 나오고,
+        사용자에게는 "선택이 안 되는 항목"으로 보였다(옵션 > 미리 보기의 업데이트 채널).
+        여기서 쓰는 리소스 키는 모두 Fluentv2.axaml 이 이미 정의한 것이라 새 색을 만들지 않는다.
+    -->
+    <Design.PreviewWith>
+        <Border Padding="50">
+            <StackPanel Spacing="5">
+                <RadioButton Content="RadioButton" />
+                <RadioButton Content="RadioButton" IsChecked="True" />
+                <RadioButton Content="RadioButton" IsEnabled="False" />
+                <RadioButton Content="RadioButton" IsChecked="True" IsEnabled="False" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <x:Double x:Key="RadioButtonSize">20</x:Double>
+    <x:Double x:Key="RadioButtonCheckGlyphSize">10</x:Double>
+    <x:Double x:Key="RadioButtonHeight">32</x:Double>
+    <Thickness x:Key="RadioButtonPadding">8,5,8,0</Thickness>
+
+    <ControlTheme x:Key="{x:Type RadioButton}" TargetType="RadioButton">
+        <Setter Property="Background" Value="{DynamicResource RadioButtonBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource RadioButtonForeground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource RadioButtonBorderBrush}" />
+        <!--
+            BorderThickness 세터를 두지 않는다. Fluentv2 의 RadioButtonBorderThemeThickness 는 x:Double 이라
+            Thickness 타입인 이 속성에 물리면 ApplyStyling 시점에 InvalidCastException 이 난다
+            (CheckBoxStyles 도 컨트롤에는 BorderThickness 를 걸지 않고 템플릿 내부에서만 쓴다).
+            아래 Ellipse 의 StrokeThickness 는 double 이므로 그 리소스를 그대로 쓸 수 있다.
+        -->
+        <Setter Property="Padding" Value="{DynamicResource RadioButtonPadding}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="MinHeight" Value="{DynamicResource RadioButtonHeight}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="Root"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+
+                    <Grid ColumnDefinitions="Auto,*">
+
+                        <Grid Grid.Column="0"
+                              VerticalAlignment="Top"
+                              Height="{StaticResource RadioButtonHeight}">
+
+                            <Ellipse Name="OuterEllipse"
+                                     Width="{StaticResource RadioButtonSize}"
+                                     Height="{StaticResource RadioButtonSize}"
+                                     UseLayoutRounding="False"
+                                     Fill="{DynamicResource RadioButtonOuterEllipseFill}"
+                                     Stroke="{DynamicResource RadioButtonOuterEllipseStroke}"
+                                     StrokeThickness="{DynamicResource RadioButtonBorderThemeThickness}" />
+
+                            <!-- 선택 상태의 테두리. 체크되면 Opacity 1 로 올라오며 OuterEllipse 를 덮는다. -->
+                            <Ellipse Name="CheckOuterEllipse"
+                                     Width="{StaticResource RadioButtonSize}"
+                                     Height="{StaticResource RadioButtonSize}"
+                                     UseLayoutRounding="False"
+                                     Opacity="0"
+                                     Fill="{DynamicResource RadioButtonOuterEllipseCheckedFill}"
+                                     Stroke="{DynamicResource RadioButtonOuterEllipseCheckedStroke}"
+                                     StrokeThickness="{DynamicResource RadioButtonBorderThemeThickness}" />
+
+                            <Ellipse Name="CheckGlyph"
+                                     Width="{StaticResource RadioButtonCheckGlyphSize}"
+                                     Height="{StaticResource RadioButtonCheckGlyphSize}"
+                                     UseLayoutRounding="False"
+                                     Opacity="0"
+                                     Fill="{DynamicResource RadioButtonCheckGlyphFill}"
+                                     Stroke="{DynamicResource RadioButtonCheckGlyphStroke}" />
+                        </Grid>
+
+                        <ContentPresenter Name="ContentPresenter"
+                                          Grid.Column="1"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Content="{TemplateBinding Content}"
+                                          Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Foreground="{DynamicResource RadioButtonForeground}" />
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- 해제 상태 -->
+        <Style Selector="^:pointerover">
+            <Style Selector="^ /template/ ContentPresenter#ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource RadioButtonForegroundPointerOver}" />
+            </Style>
+            <Style Selector="^ /template/ Border#Root">
+                <Setter Property="Background" Value="{DynamicResource RadioButtonBackgroundPointerOver}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource RadioButtonBorderBrushPointerOver}" />
+            </Style>
+            <Style Selector="^ /template/ Ellipse#OuterEllipse">
+                <Setter Property="Fill" Value="{DynamicResource RadioButtonOuterEllipseFillPointerOver}" />
+                <Setter Property="Stroke" Value="{DynamicResource RadioButtonOuterEllipseStrokePointerOver}" />
+            </Style>
+            <Style Selector="^ /template/ Ellipse#CheckOuterEllipse">
+                <Setter Property="Fill" Value="{DynamicResource RadioButtonOuterEllipseCheckedFillPointerOver}" />
+                <Setter Property="Stroke" Value="{DynamicResource RadioButtonOuterEllipseCheckedStrokePointerOver}" />
+            </Style>
+            <Style Selector="^ /template/ Ellipse#CheckGlyph">
+                <Setter Property="Fill" Value="{DynamicResource RadioButtonCheckGlyphFillPointerOver}" />
+                <Setter Property="Stroke" Value="{DynamicResource RadioButtonCheckGlyphStrokePointerOver}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Style Selector="^ /template/ ContentPresenter#ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource RadioButtonForegroundPressed}" />
+            </Style>
+            <Style Selector="^ /template/ Border#Root">
+                <Setter Property="Background" Value="{DynamicResource RadioButtonBackgroundPressed}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource RadioButtonBorderBrushPressed}" />
+            </Style>
+            <Style Selector="^ /template/ Ellipse#OuterEllipse">
+                <Setter Property="Fill" Value="{DynamicResource RadioButtonOuterEllipseFillPressed}" />
+                <Setter Property="Stroke" Value="{DynamicResource RadioButtonOuterEllipseStrokePressed}" />
+            </Style>
+            <Style Selector="^ /template/ Ellipse#CheckOuterEllipse">
+                <Setter Property="Fill" Value="{DynamicResource RadioButtonOuterEllipseCheckedFillPressed}" />
+                <Setter Property="Stroke" Value="{DynamicResource RadioButtonOuterEllipseCheckedStrokePressed}" />
+            </Style>
+            <Style Selector="^ /template/ Ellipse#CheckGlyph">
+                <Setter Property="Fill" Value="{DynamicResource RadioButtonCheckGlyphFillPressed}" />
+                <Setter Property="Stroke" Value="{DynamicResource RadioButtonCheckGlyphStrokePressed}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Style Selector="^ /template/ ContentPresenter#ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource RadioButtonForegroundDisabled}" />
+            </Style>
+            <Style Selector="^ /template/ Border#Root">
+                <Setter Property="Background" Value="{DynamicResource RadioButtonBackgroundDisabled}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource RadioButtonBorderBrushDisabled}" />
+            </Style>
+            <Style Selector="^ /template/ Ellipse#OuterEllipse">
+                <Setter Property="Fill" Value="{DynamicResource RadioButtonOuterEllipseFillDisabled}" />
+                <Setter Property="Stroke" Value="{DynamicResource RadioButtonOuterEllipseStrokeDisabled}" />
+            </Style>
+            <Style Selector="^ /template/ Ellipse#CheckOuterEllipse">
+                <Setter Property="Fill" Value="{DynamicResource RadioButtonOuterEllipseCheckedFillDisabled}" />
+                <Setter Property="Stroke" Value="{DynamicResource RadioButtonOuterEllipseCheckedStrokeDisabled}" />
+            </Style>
+            <Style Selector="^ /template/ Ellipse#CheckGlyph">
+                <Setter Property="Fill" Value="{DynamicResource RadioButtonCheckGlyphFillDisabled}" />
+                <Setter Property="Stroke" Value="{DynamicResource RadioButtonCheckGlyphStrokeDisabled}" />
+            </Style>
+        </Style>
+
+        <!-- 선택 상태: 안쪽 점과 선택 테두리를 드러낸다. -->
+        <Style Selector="^:checked">
+            <Style Selector="^ /template/ Ellipse#CheckOuterEllipse">
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+            <Style Selector="^ /template/ Ellipse#CheckGlyph">
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+            <Style Selector="^ /template/ Ellipse#OuterEllipse">
+                <Setter Property="Opacity" Value="0" />
+            </Style>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

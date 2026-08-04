@@ -14,6 +14,8 @@
 				<MergeResourceInclude Source="/Styling/Controls/ListBoxStyles.axaml"/>
 				<MergeResourceInclude Source="/Styling/Controls/TextBoxStyles.axaml"/>
 				<MergeResourceInclude Source="/Styling/Controls/CheckBoxStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/RadioButtonStyles.axaml"/>
+				<MergeResourceInclude Source="/Styling/Controls/ComboBoxStyles.axaml"/>
 				<MergeResourceInclude Source="/Styling/Controls/TabControlStyles.axaml"/>
 				<MergeResourceInclude Source="/Styling/Controls/WindowStyles.axaml"/>
 			</ResourceDictionary.MergedDictionaries>
