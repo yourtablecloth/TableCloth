@@ -22,7 +22,7 @@ public sealed class SandboxLauncher(
 {
     private readonly ILogger _logger = logger;
 
-    public async Task RunSandboxAsync(TableClothConfiguration config, CancellationToken cancellationToken = default)
+    public async Task<bool> RunSandboxAsync(TableClothConfiguration config, CancellationToken cancellationToken = default)
     {
         var comSpecPath = Helpers.GetDefaultCommandLineInterpreterPath();
 
@@ -31,7 +31,7 @@ public sealed class SandboxLauncher(
             appMessageBox.DisplayError(ErrorStrings.Error_CommandLineInterpreter_Missing, true);
 
             if (!Helpers.IsDevelopmentBuild)
-                return;
+                return false;
         }
 
         var wsbExecPath = Helpers.GetDefaultWindowsSandboxPath();
@@ -41,13 +41,13 @@ public sealed class SandboxLauncher(
             appMessageBox.DisplayError(ErrorStrings.Error_Windows_Sandbox_Missing, true);
 
             if (!Helpers.IsDevelopmentBuild)
-                return;
+                return false;
         }
 
         if (Helpers.IsWindowsSandboxRunning())
         {
             appMessageBox.DisplayError(ErrorStrings.Error_Windows_Sandbox_Already_Running, false);
-            return;
+            return false;
         }
 
         // CPU 최대 성능이 제한(스로틀)되어 있으면, 시스템 메시지 박스 대신 전용 안내 창을 띄워
@@ -80,7 +80,7 @@ public sealed class SandboxLauncher(
         if (string.IsNullOrWhiteSpace(wsbFilePath))
         {
             appMessageBox.DisplayError(ErrorStrings.Error_Fail_PrepareAssetDirectory, true);
-            return;
+            return false;
         }
 
         if (excludedFolderList.Count != 0)
@@ -91,7 +91,7 @@ public sealed class SandboxLauncher(
         if (!ValidateSandboxSpecFile(wsbFilePath, out string? reason))
         {
             appMessageBox.DisplayError(reason, true);
-            return;
+            return false;
         }
 
         var process = Helpers.CreateRunProcess(comSpecPath, wsbExecPath, wsbFilePath);
@@ -100,7 +100,10 @@ public sealed class SandboxLauncher(
         {
             process.Dispose();
             appMessageBox.DisplayError(ErrorStrings.Error_Windows_Sandbox_CanNotStart, true);
+            return false;
         }
+
+        return true;
     }
 
     public bool ValidateSandboxSpecFile(string wsbFilePath, out string? reason)

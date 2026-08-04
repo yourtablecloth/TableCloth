@@ -97,6 +97,69 @@ namespace TableCloth.Resources {
         }
 
         /// <summary>
+        ///   &apos;{0}&apos; 샌드박스를 준비하고 있습니다...과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Splash_DeepLink_Launching {
+            get {
+                return ResourceManager.GetString("Splash_DeepLink_Launching", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   링크에서 &apos;{0}&apos;을(를) 인식해 샌드박스를 실행했습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Splash_DeepLink_Succeeded {
+            get {
+                return ResourceManager.GetString("Splash_DeepLink_Succeeded", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   링크에서 &apos;{0}&apos;을(를) 인식했지만, 샌드박스를 실행하지 못했습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Splash_DeepLink_Failed {
+            get {
+                return ResourceManager.GetString("Splash_DeepLink_Failed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   실행하지 못했습니다과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Splash_DeepLink_FailedStatus {
+            get {
+                return ResourceManager.GetString("Splash_DeepLink_FailedStatus", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   닫기과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Splash_DeepLink_CloseButton {
+            get {
+                return ResourceManager.GetString("Splash_DeepLink_CloseButton", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   다시 시도과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Splash_DeepLink_RetryButton {
+            get {
+                return ResourceManager.GetString("Splash_DeepLink_RetryButton", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   식탁보 열기과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        public static string Splash_DeepLink_OpenAppButton {
+            get {
+                return ResourceManager.GetString("Splash_DeepLink_OpenAppButton", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Windows Sandbox 환경이 아닐 수 있습니다과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         public static string SandboxGuidance_Title {

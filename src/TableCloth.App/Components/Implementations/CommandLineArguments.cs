@@ -118,6 +118,9 @@ public sealed class CommandLineArguments : ICommandLineArguments
         return output.ToString();
     }
 
+    /// <inheritdoc />
+    public bool IsStartupTargetHandled { get; set; }
+
     public CommandLineArgumentModel GetCurrent()
     {
         var args = Helpers.GetCommandLineArguments();

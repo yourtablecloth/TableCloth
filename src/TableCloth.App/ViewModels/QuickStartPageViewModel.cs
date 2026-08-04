@@ -69,21 +69,7 @@ public partial class QuickStartPageViewModel : ObservableObject
     private async Task QuickStartPageLoaded()
     {
         await RefreshFromPreferencesAsync();
-
-        if (ShouldNotifyDisclaimer)
-        {
-            var disclaimerWindow = _appUserInterface.CreateDisclaimerWindow();
-            var result = _appUserInterface.ShowDialog(disclaimerWindow);
-
-            if (result.HasValue && result.Value)
-            {
-                LastDisclaimerAgreedTime = DateTime.UtcNow;
-                var currentConfig = await _preferencesManager.LoadPreferencesAsync();
-                currentConfig ??= _preferencesManager.GetDefaultPreferences();
-                currentConfig.LastDisclaimerAgreedTime = LastDisclaimerAgreedTime;
-                await _preferencesManager.SavePreferencesAsync(currentConfig);
-            }
-        }
+        await EnsureDisclaimerAgreedAsync();
 
         // 딥링크 진입: 사용자가 아무것도 누르지 않아도 바로 샌드박스를 띄운다. 여기(QuickStart)의
         // 실행 경로를 그대로 타야 Data 마운트·NPKI 공유·환경 설정 옵션이 평소와 동일하게 적용된다.
@@ -92,6 +78,48 @@ public partial class QuickStartPageViewModel : ObservableObject
             LaunchImmediately = false;   // 뒤로 가기 등으로 이 화면에 다시 와도 재실행하지 않는다.
             await LaunchSandboxAsync();
         }
+    }
+
+    /// <summary>
+    /// 최초 1회 고지(면책조항) 동의 게이트. 화면 진입과 딥링크 실행이 같은 게이트를 지나도록 분리했다.
+    /// </summary>
+    private async Task EnsureDisclaimerAgreedAsync()
+    {
+        if (!ShouldNotifyDisclaimer)
+            return;
+
+        var disclaimerWindow = _appUserInterface.CreateDisclaimerWindow();
+        var result = _appUserInterface.ShowDialog(disclaimerWindow);
+
+        if (result.HasValue && result.Value)
+        {
+            LastDisclaimerAgreedTime = DateTime.UtcNow;
+            var currentConfig = await _preferencesManager.LoadPreferencesAsync();
+            currentConfig ??= _preferencesManager.GetDefaultPreferences();
+            currentConfig.LastDisclaimerAgreedTime = LastDisclaimerAgreedTime;
+            await _preferencesManager.SavePreferencesAsync(currentConfig);
+        }
+    }
+
+    /// <summary>
+    /// 딥링크 진입에서 스플래시가 직접 호출하는 실행 경로. QuickStart 화면을 띄우지 않고도
+    /// <b>이 뷰모델의 실행 경로를 그대로</b> 타므로, Data 마운트·NPKI 공유·환경 설정 옵션이 평소와
+    /// 완전히 동일하게 적용된다(구성 로직을 복제하지 않는다).
+    /// </summary>
+    /// <returns>샌드박스를 띄우는 데 성공하면 <see langword="true"/>.</returns>
+    public async Task<bool> LaunchForDeepLinkAsync(
+        IEnumerable<CatalogInternetService> services,
+        string? targetUrl,
+        CancellationToken cancellationToken = default)
+    {
+        PreselectedServices = services ?? Array.Empty<CatalogInternetService>();
+        PreselectedTargetUrl = targetUrl;
+
+        // 평소엔 페이지 Loaded 가 채우는 상태(_dataDirectoryHostPath 등)를 여기서 채운다.
+        await RefreshFromPreferencesAsync();
+        await EnsureDisclaimerAgreedAsync();
+
+        return await LaunchSandboxAsync(cancellationToken);
     }
 
     /// <summary>
@@ -130,7 +158,7 @@ public partial class QuickStartPageViewModel : ObservableObject
     private async Task LaunchSandbox()
         => await LaunchSandboxAsync();
 
-    private async Task LaunchSandboxAsync()
+    private async Task<bool> LaunchSandboxAsync(CancellationToken cancellationToken = default)
     {
         // 데이터 폴더가 로컬 고정 디스크가 아니면(네트워크/클라우드/이동식 드라이브, UNC) Windows
         // 샌드박스가 마운트하지 못한다. 클라우드 동기화 폴더 등은 폴더 생성 자체는 성공할 수 있으므로,
@@ -139,11 +167,11 @@ public partial class QuickStartPageViewModel : ObservableObject
         {
             _appMessageBox.DisplayError(UIStringResources.QuickStart_DataDirectory_NonLocalWarning, false);
             await OpenOptions(OptionsTabKeys.DataDirectory);
-            return;
+            return false;
         }
 
         if (!await EnsureDataDirectoryAsync())
-            return;
+            return false;
 
         var currentConfig = await _preferencesManager.LoadPreferencesAsync();
         currentConfig ??= _preferencesManager.GetDefaultPreferences();
@@ -199,7 +227,7 @@ public partial class QuickStartPageViewModel : ObservableObject
             TargetUrl = PreselectedTargetUrl,
         };
 
-        await _sandboxLauncher.RunSandboxAsync(config);
+        return await _sandboxLauncher.RunSandboxAsync(config, cancellationToken);
     }
 
     [RelayCommand]

@@ -74,20 +74,56 @@ public partial class TableClothApplication : Application
         if (_splashScreen is not null)
             await _splashScreen.IntroAnimationTask;
 
-        _splashScreen?.Hide();
-
-        if (e.DialogResult.HasValue && e.DialogResult.Value)
+        if (!e.DialogResult.HasValue || !e.DialogResult.Value)
         {
-            var mainWindow = sp.GetRequiredService<MainWindow>();
-            desktop.MainWindow = mainWindow;
-            desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            mainWindow.Show();
-        }
-        else
-        {
+            _splashScreen?.Hide();
             desktop.Shutdown();
+            _splashScreen?.Close();
+            return;
         }
 
-        _splashScreen?.Close();
+        // 딥링크(`tablecloth:`)로 시작된 경우엔 스플래시를 닫지 않는다. 그 자리에서 샌드박스를 띄우고,
+        // 인식된 사이트 이름과 함께 [닫기 / 다시 시도 / 식탁보 열기] 중 하나를 고르게 한다.
+        // 인식하지 못했으면(대상 없음·게이트 탈락) 아래 평소 경로로 내려가 조용히 메인 창을 연다.
+        var resolution = _splashScreen?.ViewModel.ResolveStartupDeepLink();
+
+        if (_splashScreen is not null && resolution is { ShouldLaunchImmediately: true })
+        {
+            _splashScreen.ViewModel.OpenMainWindowRequested += (_, _) => ShowMainWindow(desktop, sp);
+
+            // 무테두리 스플래시엔 닫기 단추가 없지만 Alt+F4 는 가능하다. 메인 창을 띄우지 않은 채
+            // 스플래시만 닫히면 열린 창이 하나도 없는 상태로 남으므로(ShutdownMode 가 OnExplicitShutdown)
+            // 그 경우 앱을 정상 종료시킨다.
+            _splashScreen.Closed += (_, _) =>
+            {
+                if (desktop.MainWindow == null)
+                    desktop.Shutdown();
+            };
+
+            await _splashScreen.ViewModel.RunDeepLinkLaunchAsync(resolution);
+            return;
+        }
+
+        _splashScreen?.Hide();
+        ShowMainWindow(desktop, sp);
+    }
+
+    private void ShowMainWindow(IClassicDesktopStyleApplicationLifetime desktop, IServiceProvider sp)
+    {
+        // 딥링크 결과 화면에서 '식탁보 열기'로 들어오면 여러 번 눌릴 수 있다. 이미 열었으면 활성화만.
+        if (desktop.MainWindow != null)
+        {
+            desktop.MainWindow.Activate();
+            return;
+        }
+
+        var mainWindow = sp.GetRequiredService<MainWindow>();
+        desktop.MainWindow = mainWindow;
+        desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
+        mainWindow.Show();
+
+        var splash = _splashScreen;
+        _splashScreen = null;
+        splash?.Close();
     }
 }

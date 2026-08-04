@@ -5,10 +5,8 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using System.Collections.Generic;
-using System.Linq;
 using TableCloth.Components;
 using TableCloth.Models;
-using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
 namespace TableCloth.ViewModels;
@@ -23,20 +21,20 @@ public partial class MainWindowViewModel : ObservableObject
     [ActivatorUtilitiesConstructor]
     public MainWindowViewModel(
         IApplicationService applicationService,
-        IResourceCacheManager resourceCacheManager,
         INavigationService navigationService,
         ICommandLineArguments commandLineArguments,
         ISandboxCleanupManager sandboxCleanupManager,
         IAppRestartManager appRestartManager,
-        IDeepLinkActivationChannel deepLinkActivationChannel)
+        IDeepLinkActivationChannel deepLinkActivationChannel,
+        IDeepLinkResolver deepLinkResolver)
     {
         _applicationService = applicationService;
-        _resourceCacheManager = resourceCacheManager;
         _navigationService = navigationService;
         _commandLineArguments = commandLineArguments;
         _sandboxCleanupManager = sandboxCleanupManager;
         _appRestartManager = appRestartManager;
         _deepLinkActivationChannel = deepLinkActivationChannel;
+        _deepLinkResolver = deepLinkResolver;
     }
 
     [RelayCommand]
@@ -48,7 +46,11 @@ public partial class MainWindowViewModel : ObservableObject
         // 넘기고 끝난다. 그 페이로드를 여기서 받아 처리한다.
         _deepLinkActivationChannel.StartListening(HandleDeepLinkPayload);
 
-        var parsedArg = _commandLineArguments.GetCurrent();
+        // 딥링크로 시작된 경우 스플래시가 이미 그 자리에서 샌드박스를 띄웠다. 이 창은 사용자가
+        // '식탁보 열기'를 골라 열린 것이므로, 같은 딥링크를 두 번 실행하지 않도록 평소 화면으로 간다.
+        var parsedArg = _commandLineArguments.IsStartupTargetHandled
+            ? null
+            : _commandLineArguments.GetCurrent();
 
         if (TryNavigateToCommandLineTarget(parsedArg))
             return;
@@ -69,49 +71,24 @@ public partial class MainWindowViewModel : ObservableObject
         if (parsedArg == null)
             return false;
 
-        var catalog = _resourceCacheManager.CatalogDocument;
-        var services = catalog.Services;
+        // 대상 판정은 스플래시(최초 실행)와 이 창(실행 중 인스턴스)이 같은 구현을 쓴다.
+        var resolution = _deepLinkResolver.Resolve(parsedArg);
 
-        // 딥링크는 `tablecloth:wooribank` 처럼 카탈로그와 대소문자가 다를 수 있다. 여기서 카탈로그의
-        // 정식 Id 로 정규화해, 이후 단계(상세 페이지의 재조회, 샌드박스 구성, 게스트의 Spork)가 모두
-        // 같은 값을 보게 한다. 하위 단계들은 Ordinal 비교라 정규화하지 않으면 조용히 빈 선택이 된다.
-        var requestedServiceIds = parsedArg.SelectedServices?.ToArray() ?? Array.Empty<string>();
-        var selectedServiceIds = services
-            .Where(x => requestedServiceIds.Contains(x.Id, StringComparer.OrdinalIgnoreCase))
-            .Select(x => x.Id)
-            .ToArray();
-        var acceptedTargetUrl = default(string);
-
-        if (!string.IsNullOrWhiteSpace(parsedArg.TargetUrl))
-        {
-            var match = CatalogTargetUrlMatcher.Match(catalog, parsedArg.TargetUrl, selectedServiceIds);
-
-            // 사이트 Id 판정은 매처가 하나로 끝낸다(동점이면 카탈로그 순서). 여기서는 결과만 받는다 —
-            // URL 형식과 사이트 Id 형식의 차이는 "열 주소가 카탈로그 대표 URL 이냐 지정된 URL 이냐"뿐이다.
-            if (match.IsAccepted)
-            {
-                selectedServiceIds = match.ServiceIds.ToArray();
-                acceptedTargetUrl = match.AcceptedUrl;
-            }
-        }
-
-        var selectedServices = services.Where(x => selectedServiceIds.Contains(x.Id)).ToArray();
-
-        if (selectedServices.Length < 1)
+        if (!resolution.IsResolved)
             return false;
 
         // 딥링크 진입: 링크 한 번이 곧 "샌드박스를 띄워라"라는 지시이므로 중간 화면 없이 바로 실행한다.
         // QuickStart 의 실행 경로를 그대로 타야 Data 마운트·NPKI 공유·환경 설정 옵션이 평소와 동일하게
         // 적용된다(상세 화면 경로는 이것들이 빠진다).
-        if (parsedArg.LaunchImmediately)
-            return _navigationService.NavigateToQuickStartAndLaunch(selectedServices, acceptedTargetUrl);
+        if (resolution.LaunchImmediately)
+            return _navigationService.NavigateToQuickStartAndLaunch(resolution.Services, resolution.AcceptedTargetUrl);
 
         // 예전부터 있던 `TableCloth.exe <SiteId>`(바탕화면 `.tclnk` 바로가기 등)는 종전대로 상세 화면.
         // 게이트를 통과한 URL 만 실어 보낸다 — 통과하지 못했으면 null 로 지워 검증되지 않은 주소가
         // 샌드박스 구성까지 흘러가지 않게 한다.
-        var effectiveArg = parsedArg.WithResolvedTarget(selectedServiceIds, acceptedTargetUrl);
+        var effectiveArg = parsedArg.WithResolvedTarget(resolution.ServiceIds, resolution.AcceptedTargetUrl!);
 
-        _navigationService.NavigateToDetail(string.Empty, selectedServices[0], effectiveArg);
+        _navigationService.NavigateToDetail(string.Empty, resolution.Services[0], effectiveArg);
         return true;
     }
 
@@ -188,10 +165,10 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     private readonly IApplicationService _applicationService = default!;
-    private readonly IResourceCacheManager _resourceCacheManager = default!;
     private readonly INavigationService _navigationService = default!;
     private readonly ICommandLineArguments _commandLineArguments = default!;
     private readonly ISandboxCleanupManager _sandboxCleanupManager = default!;
     private readonly IAppRestartManager _appRestartManager = default!;
     private readonly IDeepLinkActivationChannel _deepLinkActivationChannel = default!;
+    private readonly IDeepLinkResolver _deepLinkResolver = default!;
 }

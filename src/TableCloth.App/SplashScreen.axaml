@@ -5,7 +5,7 @@
         xmlns:res="using:TableCloth.Resources"
         x:Class="TableCloth.SplashScreen"
         x:DataType="vm:SplashScreenViewModel"
-        Title="{x:Static res:UIStringResources.MainWindow_Title}" Height="470" Width="600"
+        Title="{x:Static res:UIStringResources.MainWindow_Title}" Height="{Binding SplashWindowHeight}" Width="600"
         WindowStartupLocation="CenterScreen"
         SystemDecorations="None" CanResize="False"
         PointerPressed="Window_PointerPressed">
@@ -47,8 +47,9 @@
                 <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_CopyrightText}" HorizontalAlignment="Center"
                            FontSize="11" Margin="0,2,0,12" Foreground="{DynamicResource ControlSecondaryForeground}" />
 
-                <!-- 무한 진행(업데이트 아님) -->
-                <ProgressBar Width="240" IsIndeterminate="True" IsVisible="{Binding !ShowUpdateProgress}" />
+                <!-- 무한 진행(업데이트 아님). 딥링크 실행이 끝나 액션을 고르는 중이면 감춘다. -->
+                <ProgressBar Width="240" IsIndeterminate="True"
+                             IsVisible="{Binding ShowBusyIndicator}" />
 
                 <!-- 업데이트 다운로드 진행 -->
                 <StackPanel Width="300" IsVisible="{Binding ShowUpdateProgress}">
@@ -56,7 +57,28 @@
                     <TextBlock Text="{Binding UpdateProgress, StringFormat='{}{0}%'}" HorizontalAlignment="Center" Margin="0,4,0,0" FontSize="13" />
                 </StackPanel>
 
-                <TextBlock Text="{Binding Status}" HorizontalAlignment="Center" Margin="0,8,0,0" FontSize="12" />
+                <TextBlock Text="{Binding Status}" HorizontalAlignment="Center" Margin="0,8,0,0" FontSize="12"
+                           TextWrapping="Wrap" TextAlignment="Center" MaxWidth="440" />
+
+                <!--
+                    딥링크(`tablecloth:`)로 시작된 경우의 종착 화면. 링크가 제대로 인식됐다는 사실과
+                    대상 사이트 이름을 보여주고, 이어서 무엇을 할지 고르게 한다. 인식 실패는 여기까지
+                    오지 않고 평소대로 메인 창이 열린다(App.OnInitializeDone).
+                -->
+                <StackPanel IsVisible="{Binding ShowDeepLinkActions}" MaxWidth="440" Margin="0,12,0,0">
+                    <TextBlock Text="{Binding DeepLinkResultMessage}" HorizontalAlignment="Center"
+                               TextAlignment="Center" TextWrapping="Wrap" FontSize="13" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8" Margin="0,12,0,0">
+                        <Button Content="{x:Static res:UIStringResources.Splash_DeepLink_CloseButton}"
+                                Command="{Binding CloseAfterDeepLinkCommand}" Padding="16,7" />
+                        <!-- '다시 시도'는 실패했을 때만 의미가 있다. -->
+                        <Button Content="{x:Static res:UIStringResources.Splash_DeepLink_RetryButton}"
+                                Command="{Binding RetryDeepLinkLaunchCommand}" Padding="16,7"
+                                IsVisible="{Binding !DeepLinkLaunchSucceeded}" />
+                        <Button Content="{x:Static res:UIStringResources.Splash_DeepLink_OpenAppButton}"
+                                Command="{Binding OpenTableClothCommand}" Padding="16,7" />
+                    </StackPanel>
+                </StackPanel>
             </StackPanel>
         </Grid>
     </Border>

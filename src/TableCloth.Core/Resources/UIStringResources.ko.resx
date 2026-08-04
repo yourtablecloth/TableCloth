@@ -147,6 +147,27 @@
   <data name="Splash_Slogan" xml:space="preserve">
     <value>언제나 • 안전하고 • 깨끗하게</value>
   </data>
+  <data name="Splash_DeepLink_Launching" xml:space="preserve">
+    <value>'{0}' 샌드박스를 준비하고 있습니다...</value>
+  </data>
+  <data name="Splash_DeepLink_Succeeded" xml:space="preserve">
+    <value>링크에서 '{0}'{1} 인식해 샌드박스를 실행했습니다.</value>
+  </data>
+  <data name="Splash_DeepLink_Failed" xml:space="preserve">
+    <value>링크에서 '{0}'{1} 인식했지만, 샌드박스를 실행하지 못했습니다.</value>
+  </data>
+  <data name="Splash_DeepLink_FailedStatus" xml:space="preserve">
+    <value>실행하지 못했습니다</value>
+  </data>
+  <data name="Splash_DeepLink_CloseButton" xml:space="preserve">
+    <value>닫기</value>
+  </data>
+  <data name="Splash_DeepLink_RetryButton" xml:space="preserve">
+    <value>다시 시도</value>
+  </data>
+  <data name="Splash_DeepLink_OpenAppButton" xml:space="preserve">
+    <value>식탁보 열기</value>
+  </data>
   <data name="SandboxGuidance_Title" xml:space="preserve">
     <value>Windows Sandbox 환경이 아닐 수 있습니다</value>
   </data>
