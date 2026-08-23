@@ -157,7 +157,14 @@ public partial class AboutWindowViewModel : ObservableObject
     [RelayCommand]
     private void OpenWebsite()
     {
-        Process.Start(new ProcessStartInfo(CommonStrings.AppInfoUrl) { UseShellExecute = true });
+        try
+        {
+            Process.Start(new ProcessStartInfo(CommonStrings.AppInfoUrl) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            _appMessageBox.DisplayError(ex, false);
+        }
     }
 
     /// <summary>앱과 함께 배포되는 HTML 사용 설명서를 기본 브라우저로 연다(이슈 #40).</summary>

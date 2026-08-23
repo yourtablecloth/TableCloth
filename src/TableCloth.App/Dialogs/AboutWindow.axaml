@@ -20,10 +20,8 @@
                            Foreground="{DynamicResource InfoBannerLinkForeground}" />
                 <TextBlock Text="{x:Static res:UIStringResources.Sponsor_BannerMessage}" TextWrapping="Wrap"
                            VerticalAlignment="Center" Foreground="{DynamicResource InfoBannerForeground}" />
-                <Button Content="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}"
-                        Click="SponsorBanner_Click" Padding="6 2" VerticalAlignment="Center"
-                        Background="Transparent" BorderThickness="0" Cursor="Hand"
-                        Foreground="{DynamicResource InfoBannerLinkForeground}" />
+                <Button Classes="link" Content="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}"
+                        Click="SponsorBanner_Click" VerticalAlignment="Center" />
             </StackPanel>
         </Border>
 
@@ -45,8 +43,8 @@
         <!-- Sponsors (원격 아바타는 M3 이월 → 플레이스홀더) -->
         <StackPanel Grid.Row="3" Margin="0 0 0 10" IsVisible="{Binding HasSponsors}">
             <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_SponsorsTitle}" FontWeight="SemiBold" Margin="0 0 0 6" />
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <ItemsControl ItemsSource="{Binding Sponsors}" MaxHeight="36" ClipToBounds="True">
+            <Grid ColumnDefinitions="*,Auto">
+                <ItemsControl Grid.Column="0" ItemsSource="{Binding Sponsors}" MaxHeight="36" ClipToBounds="True">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
@@ -64,17 +62,22 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock Text="{Binding AnonymousSponsorsText}" VerticalAlignment="Center"
-                           Foreground="{DynamicResource ControlSecondaryForeground}"
-                           IsVisible="{Binding HasAnonymousSponsors}" />
-            </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="..." VerticalAlignment="Center" FontWeight="Bold" Margin="4 0 0 0"
+                               Foreground="{DynamicResource InfoBannerLinkForeground}"
+                               ToolTip.Tip="{x:Static res:UIStringResources.AboutWindow_MoreSponsorsTooltip}" />
+                    <TextBlock Text="{Binding AnonymousSponsorsText}" VerticalAlignment="Center" Margin="6 0 0 0"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               IsVisible="{Binding HasAnonymousSponsors}" />
+                </StackPanel>
+            </Grid>
         </StackPanel>
 
         <!-- Contributors -->
         <StackPanel Grid.Row="4" Margin="0 0 0 10" IsVisible="{Binding HasContributors}">
             <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_ContributorsTitle}" FontWeight="SemiBold" Margin="0 0 0 6" />
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <ItemsControl ItemsSource="{Binding Contributors}" MaxHeight="36" ClipToBounds="True">
+            <Grid ColumnDefinitions="*,Auto">
+                <ItemsControl Grid.Column="0" ItemsSource="{Binding Contributors}" MaxHeight="36" ClipToBounds="True">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
@@ -92,10 +95,15 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock Text="{Binding AnonymousContributorsText}" VerticalAlignment="Center"
-                           Foreground="{DynamicResource ControlSecondaryForeground}"
-                           IsVisible="{Binding HasAnonymousContributors}" />
-            </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="..." VerticalAlignment="Center" FontWeight="Bold" Margin="4 0 0 0"
+                               Foreground="{DynamicResource InfoBannerLinkForeground}"
+                               ToolTip.Tip="{x:Static res:UIStringResources.AboutWindow_MoreContributorsTooltip}" />
+                    <TextBlock Text="{Binding AnonymousContributorsText}" VerticalAlignment="Center" Margin="6 0 0 0"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               IsVisible="{Binding HasAnonymousContributors}" />
+                </StackPanel>
+            </Grid>
         </StackPanel>
 
         <!-- License (RichTextBox → SelectableTextBlock; 내용은 평문 string) -->
@@ -108,22 +116,38 @@
             </Border>
         </Grid>
 
-        <!-- Buttons: 홈페이지 + 더 보기(⋯) 드롭다운 | 확인. 7개 버튼이 640px 에 겹쳐서, 부차 액션은 메뉴로 묶어 최적화. -->
+        <!--
+            커스텀 Fluentv2 테마에는 MenuFlyoutPresenter/MenuItem 테마가 포함되지 않는다.
+            따라서 부차 액션은 투명 Button으로 구성한 창 내부 패널로 표시한다.
+        -->
+        <Border x:Name="MoreActionsPanel"
+                Grid.Row="0" Grid.RowSpan="7" ZIndex="100"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                Margin="78 0 0 38" Padding="5" MinWidth="190"
+                Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                BorderBrush="{DynamicResource ControlDefaultBorderBrush}"
+                BorderThickness="1" CornerRadius="4" IsVisible="False">
+            <StackPanel Spacing="2">
+                <Button Theme="{DynamicResource TransparentButton}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10 6"
+                        Content="{x:Static res:UIStringResources.Button_UserManualButton}" Click="MenuUserManual_Click" />
+                <Button Theme="{DynamicResource TransparentButton}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10 6"
+                        Content="{x:Static res:UIStringResources.Button_ShowSysInfoButton}" Click="MenuSystemInfo_Click" />
+                <Button Theme="{DynamicResource TransparentButton}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10 6"
+                        Content="{x:Static res:UIStringResources.Button_CheckUpdateButton}" Click="MenuCheckUpdate_Click" />
+                <Button Theme="{DynamicResource TransparentButton}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10 6"
+                        Content="{x:Static res:UIStringResources.Button_DiscordButton}" Click="MenuDiscord_Click" />
+                <Border Height="1" Margin="4 3" Background="{DynamicResource ControlDefaultBorderBrush}" />
+                <Button Theme="{DynamicResource TransparentButton}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10 6"
+                        Content="{x:Static res:UIStringResources.Button_PrivacyLink}" Click="MenuPrivacy_Click" />
+            </StackPanel>
+        </Border>
+
+        <!-- Buttons: 홈페이지 + 더 보기(⋯) | 확인 -->
         <Grid Grid.Row="6" ColumnDefinitions="*,Auto">
             <StackPanel Grid.Column="0" HorizontalAlignment="Left" Orientation="Horizontal" Spacing="5">
-                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}" Command="{Binding OpenWebsiteCommand}" CommandParameter="{Binding}" />
-                <Button Padding="12 4" Content="⋯" FontWeight="Bold" VerticalContentAlignment="Center">
-                    <Button.Flyout>
-                        <MenuFlyout>
-                            <MenuItem Header="{x:Static res:UIStringResources.Button_UserManualButton}" Click="MenuUserManual_Click" />
-                            <MenuItem Header="{x:Static res:UIStringResources.Button_ShowSysInfoButton}" Click="MenuSystemInfo_Click" />
-                            <MenuItem Header="{x:Static res:UIStringResources.Button_CheckUpdateButton}" Click="MenuCheckUpdate_Click" />
-                            <MenuItem Header="{x:Static res:UIStringResources.Button_DiscordButton}" Click="MenuDiscord_Click" />
-                            <Separator />
-                            <MenuItem Header="{x:Static res:UIStringResources.Button_PrivacyLink}" Click="MenuPrivacy_Click" />
-                        </MenuFlyout>
-                    </Button.Flyout>
-                </Button>
+                <Button Padding="10 4" Content="{x:Static res:UIStringResources.Button_OpenHomepageButton}" Click="OpenWebsiteButton_Click" />
+                <Button Padding="12 4" Content="⋯" FontWeight="Bold" VerticalContentAlignment="Center"
+                        Click="MoreButton_Click" />
             </StackPanel>
             <Button Grid.Column="1" HorizontalAlignment="Right" Padding="14 4" MinWidth="84" HorizontalContentAlignment="Center"
                     Content="{x:Static res:UIStringResources.Button_OkayButton}" IsDefault="True" Click="OkayButton_Click" />

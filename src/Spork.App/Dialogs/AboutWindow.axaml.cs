@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Spork.ViewModels;
-using System.Diagnostics;
 using TableCloth.Events;
 
 namespace Spork.Dialogs
@@ -31,18 +30,5 @@ namespace Spork.Dialogs
 
         private void AboutWindowViewModel_CloseRequested(object? sender, DialogRequestEventArgs e)
             => Close(e.DialogResult);
-
-        private void SponsorBanner_Click(object? sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "https://yourtablecloth.app/#sponsor",
-                    UseShellExecute = true,
-                });
-            }
-            catch { }
-        }
     }
 }

@@ -9,6 +9,22 @@
         Title="{x:Static res:UIStringResources.AboutWindow_Title}"
         Width="640" Height="520" CanResize="False"
         MinWidth="320" MinHeight="280" WindowStartupLocation="CenterScreen">
+    <Window.Styles>
+        <Style Selector="Button.link">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource InfoBannerLinkForeground}" />
+        </Style>
+        <Style Selector="Button.link:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.link:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+    </Window.Styles>
+
     <Grid Margin="10" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
 
         <!-- Info Banner (WPF Hyperlink → 링크형 Button) -->
@@ -21,9 +37,8 @@
                            Foreground="{DynamicResource InfoBannerLinkForeground}" />
                 <TextBlock Text="{x:Static res:UIStringResources.Sponsor_BannerMessage}" TextWrapping="Wrap"
                            VerticalAlignment="Center" Foreground="{DynamicResource InfoBannerForeground}" />
-                <Button Content="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}"
-                        Click="SponsorBanner_Click" Padding="6 2" VerticalAlignment="Center"
-                        Foreground="{DynamicResource InfoBannerLinkForeground}" />
+                <Button Classes="link" Content="{x:Static res:UIStringResources.Sponsor_BannerDetailLink}"
+                        Command="{Binding OpenSponsorPageCommand}" VerticalAlignment="Center" />
             </StackPanel>
         </Border>
 
@@ -45,8 +60,8 @@
         <!-- Sponsors (원격 아바타 이미지는 M3 이월 → 플레이스홀더) -->
         <StackPanel Grid.Row="3" Margin="0 0 0 10" IsVisible="{Binding HasSponsors}">
             <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_SponsorsTitle}" FontWeight="SemiBold" Margin="0 0 0 6" />
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <ItemsControl ItemsSource="{Binding Sponsors}" MaxHeight="36" ClipToBounds="True">
+            <Grid ColumnDefinitions="*,Auto">
+                <ItemsControl Grid.Column="0" ItemsSource="{Binding Sponsors}" MaxHeight="36" ClipToBounds="True">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal" />
@@ -67,17 +82,22 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock Text="{Binding AnonymousSponsorsText}" VerticalAlignment="Center"
-                           Foreground="{DynamicResource ControlSecondaryForeground}"
-                           IsVisible="{Binding HasAnonymousSponsors}" />
-            </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="..." VerticalAlignment="Center" FontWeight="Bold" Margin="4 0 0 0"
+                               Foreground="{DynamicResource InfoBannerLinkForeground}"
+                               ToolTip.Tip="{x:Static res:UIStringResources.AboutWindow_MoreSponsorsTooltip}" />
+                    <TextBlock Text="{Binding AnonymousSponsorsText}" VerticalAlignment="Center" Margin="6 0 0 0"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               IsVisible="{Binding HasAnonymousSponsors}" />
+                </StackPanel>
+            </Grid>
         </StackPanel>
 
         <!-- Contributors -->
         <StackPanel Grid.Row="4" Margin="0 0 0 10" IsVisible="{Binding HasContributors}">
             <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_ContributorsTitle}" FontWeight="SemiBold" Margin="0 0 0 6" />
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <ItemsControl ItemsSource="{Binding Contributors}" MaxHeight="36" ClipToBounds="True">
+            <Grid ColumnDefinitions="*,Auto">
+                <ItemsControl Grid.Column="0" ItemsSource="{Binding Contributors}" MaxHeight="36" ClipToBounds="True">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal" />
@@ -98,10 +118,15 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <TextBlock Text="{Binding AnonymousContributorsText}" VerticalAlignment="Center"
-                           Foreground="{DynamicResource ControlSecondaryForeground}"
-                           IsVisible="{Binding HasAnonymousContributors}" />
-            </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="..." VerticalAlignment="Center" FontWeight="Bold" Margin="4 0 0 0"
+                               Foreground="{DynamicResource InfoBannerLinkForeground}"
+                               ToolTip.Tip="{x:Static res:UIStringResources.AboutWindow_MoreContributorsTooltip}" />
+                    <TextBlock Text="{Binding AnonymousContributorsText}" VerticalAlignment="Center" Margin="6 0 0 0"
+                               Foreground="{DynamicResource ControlSecondaryForeground}"
+                               IsVisible="{Binding HasAnonymousContributors}" />
+                </StackPanel>
+            </Grid>
         </StackPanel>
 
         <!-- License (WPF RichTextBox/FlowDocument → SelectableTextBlock; 내용은 평문 string) -->
