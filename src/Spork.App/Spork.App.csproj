@@ -2,10 +2,20 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
-		<UseWPF>true</UseWPF>
-		<UseWindowsForms>false</UseWindowsForms>
+		<!-- 이슈 #296: WPF → Avalonia. UseWPF 제거. -->
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<!-- 이슈 #296 Stage 2(M5): dev 빌드에서 트림/AOT/단일파일 분석기를 상시 켜 회귀를 조기 차단.
+		     (netstandard2.0 인 TableCloth.Core 는 NETSDK1210 이라 제외 — 전체 프로그램 검증은 진입점 PublishAot 이 담당.) -->
+		<IsAotCompatible>true</IsAotCompatible>
 		<LangVersion>preview</LangVersion>
+		<!-- 이슈 #296: 신규/이관 파일이 nullable 주석(?)을 쓰므로 annotations 컨텍스트 활성화(경고는 미발생 —
+		     nullable 미대응 레거시 파일 보호). App.xaml.cs 의 파일별 #nullable enable annotations 를 대체. -->
+		<Nullable>annotations</Nullable>
 		<Deterministic>true</Deterministic>
+		<!-- 이슈 #296: WPF 제거 후 비문자열 resx(Signature 등) 를 빌드하려면 이 설정 + System.Resources.Extensions 가 필요. -->
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+		<!-- GeneratedComInterface/LibraryImport(소스젠 상호운용)에는 unsafe 블록이 필요(SYSLIB1062). -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<!--
 			RootNamespace는 의도적으로 'Spork'로 설정. 본 라이브러리의 어셈블리 이름은
 			'Spork.App'이지만 내부 파일들은 기존 'Spork.Components', 'Spork.ViewModels',
@@ -18,6 +28,12 @@
 
 	<ItemGroup>
 		<PackageReference Include="AsyncAwaitBestPractices.MVVM" />
+		<!-- 이슈 #296: Avalonia UI 스택 -->
+		<PackageReference Include="Avalonia" />
+		<PackageReference Include="Avalonia.Desktop" />
+		<PackageReference Include="Avalonia.Themes.Fluent" />
+		<PackageReference Include="Avalonia.Fonts.Inter" />
+		<PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)' == 'Debug'" />
 		<PackageReference Include="CommunityToolkit.Mvvm" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
@@ -32,16 +48,35 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" />
 		<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
-		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
 		<PackageReference Include="Sentry" />
 		<PackageReference Include="Sentry.Serilog" />
 		<PackageReference Include="Serilog" />
 		<PackageReference Include="Serilog.Extensions.Logging" />
 		<PackageReference Include="System.CommandLine" />
+		<!-- 이슈 #296: WPF 제거로 암시 제공되던 System.Drawing(샌드박스 배경 이미지) / 비문자열 resx /
+		     X509Certificate2UI(인증서 상세 창) 지원을 명시 참조. -->
+		<PackageReference Include="System.Drawing.Common" />
+		<PackageReference Include="System.Resources.Extensions" />
+		<PackageReference Include="System.Windows.Extensions" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+		<!-- 이슈 #296: VNext 벤더링 공용 테마(Fluentv2). App.axaml 이 FluentTheme 대신 이 테마를 적용. -->
+		<ProjectReference Include="..\TableCloth.Theme\TableCloth.Theme.csproj" />
+	</ItemGroup>
+
+	<!--
+		AOT 안전 COM 헬퍼(GeneratedComInterface). netstandard2.0인 TableCloth.Core에는 둘 수 없어
+		src/Shared 에 두고 net10 모듈들이 공유 링크한다. TableCloth.App 도 동일하게 링크한다.
+	-->
+	<ItemGroup>
+		<Compile Include="..\Shared\Interop\NativeShellLink.cs" Link="Interop\NativeShellLink.cs" />
+		<!-- 이슈 #296: 원격 이미지(About 창 GitHub 아바타) 비동기 로더. 양 앱 공유 링크. -->
+		<Compile Include="..\Shared\Controls\RemoteImageLoader.cs" Link="Controls\RemoteImageLoader.cs" />
+		<Compile Include="..\Shared\Controls\WindowChrome.cs" Link="Controls\WindowChrome.cs" />
+		<!-- 이슈 #296(AOT): About 창 OSS 크레딧 정적 목록(리플렉션 대체). 양 앱 공유 링크. -->
+		<Compile Include="..\Shared\Components\ThirdPartyLicenses.cs" Link="Components\ThirdPartyLicenses.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -51,12 +86,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ApplicationDefinition Remove="App.xaml" />
-		<Page Include="App.xaml" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="Resources\Signature.jpg" />
+		<!-- 이슈 #296(AOT): 샌드박스 배경화면용 원본 JPEG 을 원시 바이트로 임베드(LogicalName 고정).
+		     resx System.Drawing.Bitmap 역직렬화(AOT 실패)를 우회해 AppStartup 이 GetManifestResourceStream 으로 직접 읽는다. -->
+		<EmbeddedResource Include="Resources\Signature.jpg">
+			<LogicalName>Signature.jpg</LogicalName>
+		</EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>

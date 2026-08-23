@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using TableCloth.Components;
 using TableCloth.Events;
 using TableCloth.Models;
@@ -78,14 +77,14 @@ public partial class SplashScreenViewModel : ObservableObject
                 if (parsedArgs.ShowCommandLineHelp)
                 {
                     AppStartupSucceed = false;
-                    _appMessageBox.DisplayInfo(await _commandLineArguments.GetHelpStringAsync(), MessageBoxButton.OK);
+                    _appMessageBox.DisplayInfo(await _commandLineArguments.GetHelpStringAsync(), AppMessageBoxButton.OK);
                     return;
                 }
 
                 if (parsedArgs.ShowVersionHelp)
                 {
                     AppStartupSucceed = false;
-                    _appMessageBox.DisplayInfo(await _commandLineArguments.GetVersionStringAsync(), MessageBoxButton.OK);
+                    _appMessageBox.DisplayInfo(await _commandLineArguments.GetVersionStringAsync(), AppMessageBoxButton.OK);
                     return;
                 }
             }
@@ -358,12 +357,8 @@ public partial class SplashScreenViewModel : ObservableObject
     /// 스플래시 창 높이. 딥링크 종착 화면에서는 결과 문구와 버튼 줄이 더해져 기본 높이로는 버튼이
     /// 잘리므로 창을 키운다(옵션 창에서 겪은 것과 같은 고정 높이 클리핑).
     /// </summary>
-    /// <remarks>
-    /// 뷰 메트릭이지만 여기 두는 이유: 이 창은 Style="{DynamicResource MainWindowStyle}" 가 이미
-    /// 지정돼 있어 Window.Style 에 DataTrigger 를 얹을 수 없다(Style 중복 설정 오류).
-    /// </remarks>
     public double SplashWindowHeight
-        => ShowDeepLinkActions ? 520d : 400d;
+        => ShowDeepLinkActions ? 590d : 470d;
 
     [ObservableProperty]
     private bool _deepLinkLaunchSucceeded = false;

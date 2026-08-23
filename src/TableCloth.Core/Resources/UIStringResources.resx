@@ -144,6 +144,30 @@
   <data name="AboutWindow_CopyrightText" xml:space="preserve">
     <value>© 2021-2025 rkttu.com. All rights reserved.</value>
   </data>
+  <data name="Splash_Slogan" xml:space="preserve">
+    <value>Secure • Clean • Always</value>
+  </data>
+  <data name="Splash_DeepLink_Launching" xml:space="preserve">
+    <value>Preparing the sandbox for '{0}'...</value>
+  </data>
+  <data name="Splash_DeepLink_Succeeded" xml:space="preserve">
+    <value>Recognized '{0}' from the link and started the sandbox.</value>
+  </data>
+  <data name="Splash_DeepLink_Failed" xml:space="preserve">
+    <value>Recognized '{0}' from the link, but the sandbox could not be started.</value>
+  </data>
+  <data name="Splash_DeepLink_FailedStatus" xml:space="preserve">
+    <value>Failed to start</value>
+  </data>
+  <data name="Splash_DeepLink_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Splash_DeepLink_RetryButton" xml:space="preserve">
+    <value>Try again</value>
+  </data>
+  <data name="Splash_DeepLink_OpenAppButton" xml:space="preserve">
+    <value>Open TableCloth</value>
+  </data>
   <data name="SandboxGuidance_Title" xml:space="preserve">
     <value>You may not be in a Windows Sandbox environment</value>
   </data>
@@ -591,27 +615,6 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Status_Done" xml:space="preserve">
     <value>You're ready to run.</value>
   </data>
-  <data name="Splash_DeepLink_Launching" xml:space="preserve">
-    <value>Preparing the sandbox for '{0}'...</value>
-  </data>
-  <data name="Splash_DeepLink_Succeeded" xml:space="preserve">
-    <value>Recognized '{0}' from the link and started the sandbox.</value>
-  </data>
-  <data name="Splash_DeepLink_Failed" xml:space="preserve">
-    <value>Recognized '{0}' from the link, but the sandbox could not be started.</value>
-  </data>
-  <data name="Splash_DeepLink_FailedStatus" xml:space="preserve">
-    <value>Failed to start</value>
-  </data>
-  <data name="Splash_DeepLink_CloseButton" xml:space="preserve">
-    <value>Close</value>
-  </data>
-  <data name="Splash_DeepLink_RetryButton" xml:space="preserve">
-    <value>Try again</value>
-  </data>
-  <data name="Splash_DeepLink_OpenAppButton" xml:space="preserve">
-    <value>Open TableCloth</value>
-  </data>
   <data name="Status_EvaluatingRequirementsMet" xml:space="preserve">
     <value>Checking system environment...</value>
   </data>
@@ -816,9 +819,6 @@ https://github.com/yourtablecloth/TableCloth</value>
   </data>
   <data name="AboutWindow_MoreContributorsTooltip" xml:space="preserve">
     <value>And more contributors... Thank you!</value>
-  </data>
-  <data name="AboutWindow_MoreMenuTooltip" xml:space="preserve">
-    <value>More</value>
   </data>
   <data name="AboutWindow_AnonymousContributorsFormat" xml:space="preserve">
     <value>and {0} anonymous</value>

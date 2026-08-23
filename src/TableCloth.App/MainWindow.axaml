@@ -1,0 +1,12 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TableCloth.ViewModels"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="TableCloth.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        WindowStartupLocation="CenterScreen"
+        MinWidth="800" MinHeight="600"
+        Title="{x:Static res:UIStringResources.MainWindow_Title}" Width="800" Height="600">
+    <!-- 이슈 #296: WPF Frame(Page 네비게이션) → Avalonia ContentControl(PageHost). NavigationService 가 Content 를 교체한다. -->
+    <ContentControl x:Name="PageHost" />
+</Window>

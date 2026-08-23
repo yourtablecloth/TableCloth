@@ -1,0 +1,56 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Spork.ViewModels"
+        xmlns:tablecloth="using:TableCloth"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="Spork.SplashScreen"
+        x:DataType="vm:SplashScreenViewModel"
+        Title="{x:Static res:CommonStrings.AppName}" Height="470" Width="600"
+        WindowStartupLocation="CenterScreen"
+        SystemDecorations="None" CanResize="False"
+        PointerPressed="Window_PointerPressed">
+    <!--
+        이슈 #296: TableCloth 와 동일한 VNext 스플래시(빨간 식탁보) 디자인. 상단에서 식탁보가 슬라이드인하고
+        흰 타이틀/슬로건이 페이드인. Spork 는 자체 업데이트가 없어 무한 진행바 + 상태만 표시(업데이트 % 패널 없음).
+        스플래시 자산/폰트는 공용 테마 라이브러리(TableCloth.Theme)에서 공유한다.
+    -->
+    <Border CornerRadius="8" ClipToBounds="True"
+            BorderThickness="1" BorderBrush="{DynamicResource ControlDefaultBorderBrush}"
+            Background="{DynamicResource ContainerBackground}">
+        <Grid>
+            <!-- 빨간 식탁보: 상단에서 슬라이드인. -->
+            <StackPanel x:Name="ClothImage" VerticalAlignment="Top" Opacity="0"
+                        RenderTransformOrigin="0.5,0">
+                <StackPanel.RenderTransform>
+                    <TranslateTransform Y="-700" />
+                </StackPanel.RenderTransform>
+                <Image Source="avares://TableCloth.Theme/Assets/Images/SplashStretch.png" Height="210" Stretch="Fill" />
+                <Image Source="avares://TableCloth.Theme/Assets/Images/SplashBottom.png" Stretch="Uniform" HorizontalAlignment="Stretch" />
+            </StackPanel>
+
+            <!-- 타이틀 + 슬로건: 식탁보 위에 흰색으로, 페이드인. -->
+            <StackPanel x:Name="TitleText" VerticalAlignment="Top" HorizontalAlignment="Center"
+                        Margin="0,64,0,0" Opacity="0" TextElement.Foreground="White">
+                <TextBlock Text="{x:Static res:CommonStrings.AppName}" FontSize="56" FontWeight="Bold"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{x:Static res:UIStringResources.Splash_Slogan}" FontSize="20"
+                           HorizontalAlignment="Center" Margin="0,8,0,0" />
+            </StackPanel>
+
+            <!-- 자락 아래: 버전 · 저작권 · 진행바 · 상태. -->
+            <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="24,0,24,20">
+                <TextBlock Text="{Binding AppVersion}" HorizontalAlignment="Center" FontSize="13"
+                           Foreground="{DynamicResource ControlSecondaryForeground}" />
+                <TextBlock Text="{x:Static res:UIStringResources.Build_Debug}" HorizontalAlignment="Center" FontSize="12"
+                           Foreground="{DynamicResource ControlSecondaryForeground}"
+                           IsVisible="{x:Static tablecloth:Helpers.IsDevelopmentBuild}" />
+                <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_CopyrightText}" HorizontalAlignment="Center"
+                           FontSize="11" Margin="0,2,0,12" Foreground="{DynamicResource ControlSecondaryForeground}" />
+
+                <ProgressBar Width="240" IsIndeterminate="True" />
+
+                <TextBlock Text="{Binding Status}" HorizontalAlignment="Center" Margin="0,8,0,0" FontSize="12" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

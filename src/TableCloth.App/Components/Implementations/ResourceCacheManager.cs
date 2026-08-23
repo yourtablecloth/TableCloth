@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,8 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
 
@@ -23,7 +23,7 @@ public sealed class ResourceCacheManager(
     private static readonly TimeSpan BaseRetryDelay = TimeSpan.FromSeconds(1.5);
 
     private CatalogDocument? _catalogDocument;
-    private readonly Dictionary<string, ImageSource> _imageTable = [];
+    private readonly Dictionary<string, IImage> _imageTable = [];
 
     public async Task<CatalogDocument> LoadCatalogDocumentAsync(CancellationToken cancellationToken = default)
     {
@@ -125,12 +125,10 @@ public sealed class ResourceCacheManager(
         {
             if (!_imageTable.ContainsKey(eachSiteId))
             {
-                var bitmapImage = new BitmapImage(new Uri(Path.Combine(imageDirectoryPath, $"{eachSiteId}.png")));
-
-                // https://stackoverflow.com/questions/45893536/updating-image-source-from-a-separate-thread-in-wpf
-                bitmapImage.Freeze();
-
-                _imageTable.Add(eachSiteId, bitmapImage);
+                // 이슈 #296: WPF BitmapImage(+Freeze) → Avalonia Bitmap(불변, Freeze 불필요).
+                var imagePath = Path.Combine(imageDirectoryPath, $"{eachSiteId}.png");
+                if (File.Exists(imagePath))
+                    _imageTable.Add(eachSiteId, new Bitmap(imagePath));
             }
         }
     }
@@ -145,6 +143,6 @@ public sealed class ResourceCacheManager(
         }
     }
 
-    public ImageSource? GetImage(string siteId)
-        => _imageTable.TryGetValue(siteId, out ImageSource? value) ? value ?? null : null;
+    public IImage? GetImage(string siteId)
+        => _imageTable.TryGetValue(siteId, out var value) ? value : null;
 }

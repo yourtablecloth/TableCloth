@@ -252,6 +252,7 @@ namespace TableCloth
 
         public const int GWL_STYLE = -16;
         public const int WS_SYSMENU = 0x80000;
+        public const int WS_MINIMIZEBOX = 0x00020000;
 
         [DllImport("kernel32.dll",
             SetLastError = true,

@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using TableCloth.Dialogs;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
@@ -9,6 +10,9 @@ namespace TableCloth.Components;
 
 public interface IAppUserInterface
 {
+    // 이슈 #296: WPF window.ShowDialog()(동기) 대체. 소유자를 내부 해석하고 동기 모달로 표시 후 결과 반환.
+    bool? ShowDialog(Window window);
+
     AboutWindow CreateAboutWindow();
     OptionsWindow CreateOptionsWindow(string? initialTabKey = null);
     PowerSchemeGuideWindow CreatePowerSchemeGuideWindow();

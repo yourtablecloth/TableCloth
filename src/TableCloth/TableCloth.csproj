@@ -5,7 +5,7 @@
 		<StartupObject>TableCloth.Program</StartupObject>
 		<ApplicationIcon>App.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<UseWPF>True</UseWPF>
+		<!-- 이슈 #296: WPF 제거. 치명 오류 대화상자는 Win32 MessageBox(user32)로 대체. Avalonia 스택은 TableCloth.App/Spork.App 를 통해 transitive 유입. -->
 		<Description>Keep Your Computer Sound &amp; Safe!</Description>
 		<ProductName>TableCloth</ProductName>
 		<PackageTags>TableCloth</PackageTags>
@@ -42,13 +42,31 @@
 		- PublishReadyToRun=true            : R2R 코드 생성으로 cold start 개선 (사이즈 약간 증가)
 		- PublishTrimmed=false              : WPF/XAML은 리플렉션이 강해 트리밍은 위험
 	-->
+	<!--
+		이슈 #296 Stage 2 (M5): Native AOT 게시. RuntimeIdentifier 명시(=publish) 시에만 활성화되어
+		dev `dotnet build` 에는 영향이 없다. PublishAot 은 SelfContained + 트리밍을 내포하며,
+		PublishSingleFile / PublishReadyToRun / EnableCompressionInSingleFile / IncludeNativeLibrariesForSelfExtract
+		와는 상호배타이므로 모두 제거한다. 산출물은 네이티브 exe + Skia/HarfBuzz/ANGLE 네이티브 DLL(별도 파일)이며,
+		Velopack 이 다중 파일을 정상 패키징한다(§6.3/§6.6). Stage 1(트림 전용) 비교 빌드가 필요하면
+		`-p:PublishAot=false -p:PublishTrimmed=true` 로 개별 오버라이드.
+	-->
 	<PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
-		<SelfContained>true</SelfContained>
-		<PublishSingleFile>true</PublishSingleFile>
-		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-		<PublishReadyToRun>true</PublishReadyToRun>
-		<PublishTrimmed>false</PublishTrimmed>
+		<PublishAot>true</PublishAot>
+		<!--
+			이슈 #296 Stage 2(M5) 크기 최적화. 실측(win-x64): 36.0MB → 29.8MB (~17%↓).
+			ILC 크기 우선 + 미사용 프레임워크 기능 스위치. 진단은 보존: StackTraceSupport 와
+			예외 메시지(UseSystemResourceKeys 미적용)는 유지해 Sentry 트리아지 품질을 지킨다.
+			InvariantGlobalization 은 제외 — Windows AOT 는 OS globalization(NLS)을 사용해 ICU 를
+			동봉하지 않으므로 크기 이득이 ~0.2MB 에 불과하고 한국어 문화권 동작 리스크가 있음.
+			HttpActivityPropagationSupport=false 는 전파(traceparent 주입)만 끄며 Activity 생성/로컬
+			스팬은 유지되므로 데스크톱 앱에 안전.
+		-->
+		<OptimizationPreference>Size</OptimizationPreference>
+		<EventSourceSupport>false</EventSourceSupport>
+		<MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+		<DebuggerSupport>false</DebuggerSupport>
+		<NullabilityInfoContextSupport>false</NullabilityInfoContextSupport>
+		<HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
 	</PropertyGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="commit.txt">

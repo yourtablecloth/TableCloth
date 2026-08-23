@@ -9,12 +9,13 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using TableCloth.Components;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.UserData;
 using TableCloth.Resources;
+using TableCloth.Serialization;
 
 namespace TableCloth.ViewModels;
 
@@ -32,8 +33,6 @@ public partial class QuickStartPageViewModel : ObservableObject
         ISharedLocations sharedLocations,
         ISandboxLauncher sandboxLauncher,
         IAppMessageBox appMessageBox,
-        IMessageBoxService messageBoxService,
-        IApplicationService applicationService,
         TaskFactory taskFactory)
     {
         _preferencesManager = preferencesManager;
@@ -41,8 +40,6 @@ public partial class QuickStartPageViewModel : ObservableObject
         _sharedLocations = sharedLocations;
         _sandboxLauncher = sandboxLauncher;
         _appMessageBox = appMessageBox;
-        _messageBoxService = messageBoxService;
-        _applicationService = applicationService;
         _taskFactory = taskFactory;
     }
 
@@ -92,7 +89,7 @@ public partial class QuickStartPageViewModel : ObservableObject
             return;
 
         var disclaimerWindow = _appUserInterface.CreateDisclaimerWindow();
-        var result = disclaimerWindow.ShowDialog();
+        var result = _appUserInterface.ShowDialog(disclaimerWindow);
 
         if (result.HasValue && result.Value)
         {
@@ -153,7 +150,7 @@ public partial class QuickStartPageViewModel : ObservableObject
         // 닫힌 직후엔 QuickStart도 환경 설정을 다시 읽어 NPKI 공유 상태 등 표시값을 동기화한다.
         // targetTabKey가 지정되면 옵션 창이 해당 탭을 미리 선택한 상태로 열린다.
         var optionsWindow = _appUserInterface.CreateOptionsWindow(targetTabKey);
-        optionsWindow.ShowDialog();
+        _appUserInterface.ShowDialog(optionsWindow);
         await RefreshFromPreferencesAsync();
     }
 
@@ -240,14 +237,14 @@ public partial class QuickStartPageViewModel : ObservableObject
         var debugInfo =
             $"Data: {_dataDirectoryHostPath}\n" +
             $"NPKI: {npki}";
-        _appMessageBox.DisplayInfo(debugInfo, MessageBoxButton.OK);
+        _appMessageBox.DisplayInfo(debugInfo, AppMessageBoxButton.OK);
     }
 
     [RelayCommand]
     private void AboutThisApp()
     {
         var aboutWindow = _appUserInterface.CreateAboutWindow();
-        aboutWindow.ShowDialog();
+        _appUserInterface.ShowDialog(aboutWindow);
     }
 
     /// <summary>
@@ -292,7 +289,7 @@ public partial class QuickStartPageViewModel : ObservableObject
 
             using (var stream = File.Create(userDataPath))
             {
-                await JsonSerializer.SerializeAsync(stream, userData, new JsonSerializerOptions { WriteIndented = true });
+                await JsonSerializer.SerializeAsync(stream, userData, SporkJsonContext.Default.SporkUserData);
             }
         }
         catch (Exception ex)
@@ -309,15 +306,12 @@ public partial class QuickStartPageViewModel : ObservableObject
             return true;
 
         var prompt = string.Format(UIStringResources.QuickStart_DataDirectory_CreatePrompt, _dataDirectoryHostPath);
-        var result = _messageBoxService.Show(
-            _applicationService.GetActiveWindow() ?? _applicationService.GetMainWindow(),
+        var result = _appMessageBox.DisplayQuestion(
             prompt,
-            UIStringResources.QuickStart_Title,
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question,
-            MessageBoxResult.Yes);
+            AppMessageBoxButton.YesNo,
+            AppMessageBoxResult.Yes);
 
-        if (result != MessageBoxResult.Yes)
+        if (result != AppMessageBoxResult.Yes)
         {
             // 사용자가 자동 선택된 경로에 폴더 생성을 거부했다면(예: 문서 폴더가 네트워크/클라우드
             // 드라이브로 리디렉션된 환경), 경로를 직접 바꿀 수 있는 옵션 창의 데이터 디렉터리 탭으로 안내한다.
@@ -394,7 +388,5 @@ public partial class QuickStartPageViewModel : ObservableObject
     private readonly ISharedLocations _sharedLocations = default!;
     private readonly ISandboxLauncher _sandboxLauncher = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
-    private readonly IMessageBoxService _messageBoxService = default!;
-    private readonly IApplicationService _applicationService = default!;
     private readonly TaskFactory _taskFactory = default!;
 }

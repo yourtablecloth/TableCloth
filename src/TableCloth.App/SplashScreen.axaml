@@ -1,0 +1,85 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TableCloth.ViewModels"
+        xmlns:tablecloth="using:TableCloth"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="TableCloth.SplashScreen"
+        x:DataType="vm:SplashScreenViewModel"
+        Title="{x:Static res:UIStringResources.MainWindow_Title}" Height="{Binding SplashWindowHeight}" Width="600"
+        WindowStartupLocation="CenterScreen"
+        SystemDecorations="None" CanResize="False"
+        PointerPressed="Window_PointerPressed">
+    <!--
+        이슈 #296: VNext(TableClothVNext) 스플래시 디자인 이식 — 빨간 식탁보(SplashStretch 천 + SplashBottom 자락)가
+        위에서 슬라이드인하고 흰 타이틀/슬로건이 페이드인. 단, VNext 의 자동 페이드아웃/제거는 채택하지 않는다:
+        현행 스플래시는 부트 게이트(SplashScreenLoaded 가 부팅 완료 후 InitializeDone 으로 닫음)라 진행바/상태를 유지한다.
+    -->
+    <Border CornerRadius="8" ClipToBounds="True"
+            BorderThickness="1" BorderBrush="{DynamicResource ControlDefaultBorderBrush}"
+            Background="{DynamicResource ContainerBackground}">
+        <Grid>
+            <!-- 빨간 식탁보: 상단에서 슬라이드인. SplashStretch 를 세로로 늘려 천을 만들고 SplashBottom 로 자락을 드리운다. -->
+            <StackPanel x:Name="ClothImage" VerticalAlignment="Top" Opacity="0"
+                        RenderTransformOrigin="0.5,0">
+                <StackPanel.RenderTransform>
+                    <TranslateTransform Y="-700" />
+                </StackPanel.RenderTransform>
+                <Image Source="avares://TableCloth.Theme/Assets/Images/SplashStretch.png" Height="210" Stretch="Fill" />
+                <Image Source="avares://TableCloth.Theme/Assets/Images/SplashBottom.png" Stretch="Uniform" HorizontalAlignment="Stretch" />
+            </StackPanel>
+
+            <!-- 타이틀 + 슬로건: 빨간 식탁보 위에 흰색으로, 페이드인. -->
+            <StackPanel x:Name="TitleText" VerticalAlignment="Top" HorizontalAlignment="Center"
+                        Margin="0,64,0,0" Opacity="0" TextElement.Foreground="White">
+                <TextBlock Text="{x:Static res:CommonStrings.AppName}" FontSize="56" FontWeight="Bold"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{x:Static res:UIStringResources.Splash_Slogan}" FontSize="20"
+                           HorizontalAlignment="Center" Margin="0,8,0,0" />
+            </StackPanel>
+
+            <!-- 자락 아래: 버전 · 저작권 · 진행바 · 상태 (부트 게이트 기능 유지). -->
+            <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="24,0,24,20">
+                <TextBlock Text="{Binding AppVersion}" HorizontalAlignment="Center" FontSize="13"
+                           Foreground="{DynamicResource ControlSecondaryForeground}" />
+                <TextBlock Text="{x:Static res:UIStringResources.Build_Debug}" HorizontalAlignment="Center" FontSize="12"
+                           Foreground="{DynamicResource ControlSecondaryForeground}"
+                           IsVisible="{x:Static tablecloth:Helpers.IsDevelopmentBuild}" />
+                <TextBlock Text="{x:Static res:UIStringResources.AboutWindow_CopyrightText}" HorizontalAlignment="Center"
+                           FontSize="11" Margin="0,2,0,12" Foreground="{DynamicResource ControlSecondaryForeground}" />
+
+                <!-- 무한 진행(업데이트 아님). 딥링크 실행이 끝나 액션을 고르는 중이면 감춘다. -->
+                <ProgressBar Width="240" IsIndeterminate="True"
+                             IsVisible="{Binding ShowBusyIndicator}" />
+
+                <!-- 업데이트 다운로드 진행 -->
+                <StackPanel Width="300" IsVisible="{Binding ShowUpdateProgress}">
+                    <ProgressBar Height="16" Minimum="0" Maximum="100" Value="{Binding UpdateProgress}" />
+                    <TextBlock Text="{Binding UpdateProgress, StringFormat='{}{0}%'}" HorizontalAlignment="Center" Margin="0,4,0,0" FontSize="13" />
+                </StackPanel>
+
+                <TextBlock Text="{Binding Status}" HorizontalAlignment="Center" Margin="0,8,0,0" FontSize="12"
+                           TextWrapping="Wrap" TextAlignment="Center" MaxWidth="440" />
+
+                <!--
+                    딥링크(`tablecloth:`)로 시작된 경우의 종착 화면. 링크가 제대로 인식됐다는 사실과
+                    대상 사이트 이름을 보여주고, 이어서 무엇을 할지 고르게 한다. 인식 실패는 여기까지
+                    오지 않고 평소대로 메인 창이 열린다(App.OnInitializeDone).
+                -->
+                <StackPanel IsVisible="{Binding ShowDeepLinkActions}" MaxWidth="440" Margin="0,12,0,0">
+                    <TextBlock Text="{Binding DeepLinkResultMessage}" HorizontalAlignment="Center"
+                               TextAlignment="Center" TextWrapping="Wrap" FontSize="13" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8" Margin="0,12,0,0">
+                        <Button Content="{x:Static res:UIStringResources.Splash_DeepLink_CloseButton}"
+                                Command="{Binding CloseAfterDeepLinkCommand}" Padding="16,7" />
+                        <!-- '다시 시도'는 실패했을 때만 의미가 있다. -->
+                        <Button Content="{x:Static res:UIStringResources.Splash_DeepLink_RetryButton}"
+                                Command="{Binding RetryDeepLinkLaunchCommand}" Padding="16,7"
+                                IsVisible="{Binding !DeepLinkLaunchSucceeded}" />
+                        <Button Content="{x:Static res:UIStringResources.Splash_DeepLink_OpenAppButton}"
+                                Command="{Binding OpenTableClothCommand}" Padding="16,7" />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

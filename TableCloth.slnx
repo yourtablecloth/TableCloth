@@ -12,6 +12,9 @@
     <File Path="Directory.Build.Props" />
     <File Path="SECURITY.md" />
   </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/TableCloth.Theme/TableCloth.Theme.csproj" />
+  </Folder>
   <Project Path="src/Spork.App/Spork.App.csproj" />
   <Project Path="src/Spork.Bootstrapper/Spork.Bootstrapper.csproj" />
   <Project Path="src/Spork.Sandbox/Spork.Sandbox.csproj" />

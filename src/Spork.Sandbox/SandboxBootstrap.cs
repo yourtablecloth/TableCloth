@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Models.Answers;
 using TableCloth.Models.WindowsSandbox;
+using TableCloth.Serialization;
 
 #nullable enable annotations
 
@@ -474,7 +475,7 @@ namespace Spork.Sandbox
                     return null;
 
                 using var stream = File.OpenRead(answerFilePath);
-                return JsonSerializer.Deserialize<SporkAnswers>(stream);
+                return JsonSerializer.Deserialize(stream, SporkJsonContext.Default.SporkAnswers);
             }
             catch (Exception ex)
             {

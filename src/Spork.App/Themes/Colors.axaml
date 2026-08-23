@@ -1,0 +1,41 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        이슈 #296: WPF 4테마(각 ~4.5k줄, aero2 컨트롤 템플릿 덤프)를 폐기하고 FluentTheme 를 베이스로 채택.
+        뷰가 실제 참조하는 브러시 키만 Light/Dark ThemeDictionaries 로 얇게 재현한다. Colourful 변형은 폐기하되,
+        뷰가 쓰던 accent 계열(ControlPrimary*)은 기존 Colourful 값을 그대로 옮겨 시각적 연속성을 유지한다.
+        (App.axaml 이 RequestedThemeVariant="Default" 로 OS 라이트/다크를 자동 추종하므로 수동 감지 코드는 폐기.)
+    -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="ContainerBackground"                Color="WhiteSmoke" />
+            <SolidColorBrush x:Key="ControlDefaultBackground"           Color="#FFE1E1E1" />
+            <SolidColorBrush x:Key="ControlDefaultBorderBrush"          Color="#FFAFAFAF" />
+            <SolidColorBrush x:Key="ControlDefaultForeground"           Color="#FF040404" />
+            <SolidColorBrush x:Key="ControlSecondaryForeground"         Color="#FF606060" />
+            <SolidColorBrush x:Key="ControlPrimaryMouseOverBackground"  Color="#FFA0DCFF" />
+            <SolidColorBrush x:Key="ControlPrimaryMouseOverBorderBrush" Color="#FF96D2FF" />
+            <SolidColorBrush x:Key="ControlPrimarySelectedBackground"   Color="#FFB4E6FF" />
+            <SolidColorBrush x:Key="ControlPrimarySelectedBorderBrush"  Color="#FFA0DCFF" />
+            <SolidColorBrush x:Key="InfoBannerBackground"               Color="#EFF6FF" />
+            <SolidColorBrush x:Key="InfoBannerForeground"               Color="#0F172A" />
+            <SolidColorBrush x:Key="InfoBannerLinkForeground"           Color="#1D4ED8" />
+            <SolidColorBrush x:Key="InfoBannerBorder"                   Color="#BFDBFE" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="ContainerBackground"                Color="#FF272727" />
+            <SolidColorBrush x:Key="ControlDefaultBackground"           Color="#FF2D2D2D" />
+            <SolidColorBrush x:Key="ControlDefaultBorderBrush"          Color="#FF323232" />
+            <SolidColorBrush x:Key="ControlDefaultForeground"           Color="#FFEBEBEB" />
+            <SolidColorBrush x:Key="ControlSecondaryForeground"         Color="#FFA8A8A8" />
+            <SolidColorBrush x:Key="ControlPrimaryMouseOverBackground"  Color="#FF208CF0" />
+            <SolidColorBrush x:Key="ControlPrimaryMouseOverBorderBrush" Color="#FF2896F5" />
+            <SolidColorBrush x:Key="ControlPrimarySelectedBackground"   Color="#FF1482DC" />
+            <SolidColorBrush x:Key="ControlPrimarySelectedBorderBrush"  Color="#FF28A0F0" />
+            <SolidColorBrush x:Key="InfoBannerBackground"               Color="#FF1E2733" />
+            <SolidColorBrush x:Key="InfoBannerForeground"               Color="#FFE5E7EB" />
+            <SolidColorBrush x:Key="InfoBannerLinkForeground"           Color="#FF60A5FA" />
+            <SolidColorBrush x:Key="InfoBannerBorder"                   Color="#FF334155" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

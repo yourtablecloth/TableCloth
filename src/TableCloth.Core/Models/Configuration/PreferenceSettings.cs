@@ -130,9 +130,9 @@ namespace TableCloth.Models.Configuration
         /// <summary>
         /// 업데이트를 받아올 릴리스 링(채널). 기본값은 <see cref="ReleaseChannel.Retail"/>(안정).
         /// <see cref="ReleaseChannel.Preview"/>로 바꾸면 선행 검증용 프리릴리스(미리 보기)를 받습니다(이슈 #296).
-        /// JSON 에는 문자열("Retail"/"Preview")로 저장되어 사람이 읽기 쉽고 값 추가에도 안정적입니다.
+        /// JSON 에는 문자열("Retail"/"Preview")로 저장된다(TableClothJsonContext 의 UseStringEnumConverter).
+        /// Retail(1.20.x)이 쓴 설정과 형식이 동일해 미리 보기로 전환한 사용자의 설정이 그대로 이어진다.
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ReleaseChannel UpdateChannel { get; set; } = ReleaseChannel.Retail;
 
         /// <summary>

@@ -187,11 +187,17 @@ public sealed class ResourceResolver(
                 }
                 catch
                 {
-                    var memStream = new MemoryStream();
-                    Properties.Resources.SandboxIconWin32.Save(memStream);
-                    memStream.Seek(0L, SeekOrigin.Begin);
-
-                    try { await File.WriteAllBytesAsync(targetIconFilePath, memStream.ToArray(), cancellationToken).ConfigureAwait(false); }
+                    // 이슈 #296(AOT): resx System.Drawing.Icon(SandboxIconWin32) 역직렬화는 Native AOT 에서 실패한다
+                    // (Signature 와 동일 부류). 원본 .ico 를 원시 바이트 임베디드 리소스로 읽어 직접 쓴다.
+                    try
+                    {
+                        using var iconStream = typeof(ResourceResolver).Assembly.GetManifestResourceStream("SandboxIcon.ico");
+                        if (iconStream != null)
+                        {
+                            using var fileStream = File.Create(targetIconFilePath);
+                            await iconStream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
+                        }
+                    }
                     catch { }
                 }
             }

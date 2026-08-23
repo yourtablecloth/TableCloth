@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Windows;
+using TableCloth.Models;
 using TableCloth.Resources;
 
 namespace TableCloth.Components.Implementations;
@@ -12,7 +12,7 @@ public sealed class AppRestartManager(
     private bool _restartReserved;
 
     public bool AskRestart()
-        => appMessageBox.DisplayInfo(AskStrings.Ask_RestartRequired, MessageBoxButton.OKCancel).Equals(MessageBoxResult.OK);
+        => appMessageBox.DisplayInfo(AskStrings.Ask_RestartRequired, AppMessageBoxButton.OKCancel).Equals(AppMessageBoxResult.OK);
 
     public void RestartNow()
     {

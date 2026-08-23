@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TableCloth.ViewModels"
+        xmlns:models="using:TableCloth.Models.Configuration"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="TableCloth.Dialogs.CertSelectWindow"
+        x:DataType="vm:CertSelectWindowViewModel"
+        Title="{x:Static res:UIStringResources.CertSelectWindow_Title}"
+        Width="640" Height="480" MinWidth="640" MinHeight="480"
+        WindowStartupLocation="CenterOwner">
+    <Grid RowDefinitions="9*,55">
+        <Grid Grid.Row="0" Margin="10 10 10 0" RowDefinitions="30,*,Auto,Auto,Auto">
+            <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="{x:Static res:UIStringResources.CertSelectWindow_InstructionLabel}" />
+
+            <!-- 이슈 #296: WPF ListView/GridView(컬럼) → Avalonia ListBox(헤더 행 + 5열 항목 템플릿). 만료 취소선은 후속. -->
+            <Border Grid.Row="1" BorderThickness="1" BorderBrush="{DynamicResource ControlDefaultBorderBrush}">
+                <DockPanel>
+                    <Grid DockPanel.Dock="Top" ColumnDefinitions="120,120,120,120,*" Margin="4 4 4 2">
+                        <TextBlock Grid.Column="0" FontWeight="Bold" Text="{x:Static res:UIStringResources.CertSelectWindow_CertList_CommonName}" />
+                        <TextBlock Grid.Column="1" FontWeight="Bold" Text="{x:Static res:UIStringResources.CertSelectWindow_CertList_Available}" />
+                        <TextBlock Grid.Column="2" FontWeight="Bold" Text="{x:Static res:UIStringResources.CertSelectWindow_CertList_OrganizationalUnits}" />
+                        <TextBlock Grid.Column="3" FontWeight="Bold" Text="{x:Static res:UIStringResources.CertSelectWindow_CertList_Organization}" />
+                        <TextBlock Grid.Column="4" FontWeight="Bold" Text="{x:Static res:UIStringResources.CertSelectWindow_CertList_CountryName}" />
+                    </Grid>
+                    <ListBox ItemsSource="{Binding CertPairs}" SelectedItem="{Binding SelectedCertPair}"
+                             SelectionMode="Single" DoubleTapped="CertList_DoubleTapped">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:X509CertPair">
+                                <Grid ColumnDefinitions="120,120,120,120,*">
+                                    <TextBlock Grid.Column="0" Text="{Binding CommonName}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Availability}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="2" Text="{Binding OrganizationalUnit}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="3" Text="{Binding Organization}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="4" Text="{Binding CountryName}" TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <Grid Grid.Row="2" Margin="0 5" ColumnDefinitions="*,*">
+                <Button Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="5"
+                        Content="{x:Static res:UIStringResources.Button_RefreshButton}"
+                        Command="{Binding CertSelectWindowScanCertPairCommand}" CommandParameter="{Binding}" />
+            </Grid>
+            <TextBlock Grid.Row="3" Margin="0 10 0 0" TextWrapping="Wrap" Text="{x:Static res:UIStringResources.CertSelectWindow_ManualInstructionLabelText}" />
+            <Button Grid.Row="4" HorizontalAlignment="Left" Margin="0 5" Padding="5"
+                    Content="{x:Static res:UIStringResources.CertSelectWindow_OpenNpkiCertButton}"
+                    Command="{Binding CertSelectWindowManualCertLoadCommand}" CommandParameter="{Binding}" />
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,*">
+            <WrapPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+                <Button Content="{x:Static res:UIStringResources.Button_OkayButton}" Padding="5" Margin="0 0 10 0" IsDefault="True"
+                        Command="{Binding CertSelectWindowRequestConfirmCommand}" CommandParameter="{Binding}" />
+                <Button Content="{x:Static res:UIStringResources.Button_CancelButton}" Padding="5" IsCancel="True"
+                        Command="{Binding CertSelectWindowRequestCancelCommand}" CommandParameter="{Binding}" />
+            </WrapPanel>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,55 +1,55 @@
-﻿using System;
+using Avalonia.Controls;
+using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
 using TableCloth.Models;
 using TableCloth.Models.Catalog;
 
 namespace TableCloth.Components.Implementations;
 
+// 이슈 #296: WPF Frame/Page 네비게이션 → Avalonia ContentControl(PageHost) + UserControl 페이지 전환 + 백스택.
 public sealed class NavigationService(
     IApplicationService applicationService,
     IAppUserInterface appUserInterface) : INavigationService
 {
-    public string GetPageFrameControlName()
-        => nameof(MainWindow.PageFrame);
+    private readonly Stack<Control> _backStack = new();
 
-    public Frame FindNavigationFrameFromMainWindow()
+    private ContentControl? FindPageHost()
+        => applicationService.GetMainWindow()?.FindControl<ContentControl>("PageHost");
+
+    private bool NavigateTo(Control page)
     {
-        var frameName = GetPageFrameControlName();
-        var mainWindow = applicationService.GetMainWindow();
+        var host = FindPageHost();
+        if (host == null)
+            return false;
 
-        var pageFrame = mainWindow!.FindName(frameName) as Frame;
-        ArgumentNullException.ThrowIfNull(pageFrame);
-        return pageFrame;
+        if (host.Content is Control current)
+            _backStack.Push(current);
+
+        host.Content = page;
+        return true;
     }
 
     public bool NavigateToCatalog(string searchKeyword)
-    {
-        var frame = FindNavigationFrameFromMainWindow();
-        var page = appUserInterface.CreateCatalogPage(searchKeyword);
-        return frame.Navigate(page);
-    }
+        => NavigateTo(appUserInterface.CreateCatalogPage(searchKeyword));
 
     public bool NavigateToDetail(
         string searchKeyword,
         CatalogInternetService selectedService,
         CommandLineArgumentModel? commandLineArgumentModel)
-    {
-        var frame = FindNavigationFrameFromMainWindow();
-        var page = appUserInterface.CreateDetailPage(searchKeyword, selectedService, commandLineArgumentModel);
-        return frame.Navigate(page);
-    }
+        => NavigateTo(appUserInterface.CreateDetailPage(searchKeyword, selectedService, commandLineArgumentModel));
 
     public bool NavigateToQuickStart()
+        => NavigateTo(appUserInterface.CreateQuickStartPage());
+
+    public void GoBack()
     {
-        var frame = FindNavigationFrameFromMainWindow();
-        var page = appUserInterface.CreateQuickStartPage();
-        return frame.Navigate(page);
+        var host = FindPageHost();
+        if (host != null && _backStack.Count > 0)
+            host.Content = _backStack.Pop();
     }
 
     public bool NavigateToQuickStartAndLaunch(IEnumerable<CatalogInternetService> services, string? targetUrl)
     {
-        var frame = FindNavigationFrameFromMainWindow();
         var page = appUserInterface.CreateQuickStartPage();
 
         // 페이지의 Loaded 커맨드가 이 값들을 보고 곧바로 실행한다(중간 화면·조작 없음).
@@ -57,14 +57,6 @@ public sealed class NavigationService(
         page.ViewModel.PreselectedTargetUrl = targetUrl;
         page.ViewModel.LaunchImmediately = true;
 
-        return frame.Navigate(page);
-    }
-
-    public void GoBack()
-    {
-        var frame = FindNavigationFrameFromMainWindow();
-
-        if (frame.CanGoBack)
-            frame.GoBack();
+        return NavigateTo(page);
     }
 }

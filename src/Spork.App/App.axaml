@@ -1,0 +1,44 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="using:Spork.Converters"
+             xmlns:sty="using:TableCloth.Theme.Styling"
+             x:Class="Spork.SporkApplication"
+             RequestedThemeVariant="Default">
+    <!--
+        이슈 #296: WPF Application → Avalonia Application. RequestedThemeVariant="Default" 로 OS 라이트/다크를 자동 추종.
+        컨버터는 리소스로 등록(기존 App.xaml 키와 동일하게 유지해 뷰 바인딩 무변경), 브러시는 Themes/Colors.axaml 병합.
+    -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <converters:BooleanToGridRowHeightConverter x:Key="BooleanToGridRowHeightConverter" />
+            <converters:StateToBrushConverter x:Key="stateToBrushConverter" />
+            <converters:WidthConverter x:Key="widthConverter" />
+            <converters:ServiceLogoConverter x:Key="ServiceLogoConverter" />
+            <converters:ServiceLogoExistsConverter x:Key="ServiceLogoExistsConverter" />
+
+            <!-- 이슈 #296: VNext(Fluentv2) 테마 액센트/폰트. TableCloth.App 과 동일 배선. -->
+            <Color x:Key="AccentColor">#D64549</Color>
+            <Color x:Key="AccentBrightColor">#EB4B4E</Color>
+            <FontFamily x:Key="ContentControlThemeFontFamily">avares://TableCloth.Theme/Assets/Fonts#SUITE</FontFamily>
+            <FontFamily x:Key="FixedFontFamily">avares://TableCloth.Theme/Assets/Fonts#Roboto Mono</FontFamily>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://Spork.App/Themes/Colors.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <!-- 이슈 #296: Avalonia 내장 FluentTheme → VNext 벤더링 Fluentv2(FluentAvalonia) 테마로 교체. -->
+        <sty:FluentAvaloniaTheme UseSystemFontOnWindows="False" CustomAccentColor="{StaticResource AccentColor}" />
+
+        <!-- 이슈 #296: FluentTheme 기본 TabItem 헤더가 너무 큼(폰트 ~24 + 큰 패딩)이라 공간을 과하게 차지한다.
+             WPF 수준으로 컴팩트하게 재스타일(Spork 메인 창의 사이트/인증서/보조 프로그램 탭). -->
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="12 6" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+    </Application.Styles>
+</Application>

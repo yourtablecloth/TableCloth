@@ -1,30 +1,23 @@
-﻿#nullable enable
-
+using Avalonia.Controls;
 using System;
-using System.Windows;
+using TableCloth.Dialogs;
+using TableCloth.Models;
 
 namespace TableCloth.Components.Implementations;
 
+// 이슈 #296: WPF MessageBox.Show → 자작 MessageBoxWindow(동기 모달, Dispatcher.PushFrame). 항상 UI 스레드에서 실행.
 public sealed class MessageBoxService(
     IApplicationService applicationService) : IMessageBoxService
 {
-    public MessageBoxResult Show(Window? owner, string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon, MessageBoxResult defaultResult, MessageBoxOptions options = default)
+    public AppMessageBoxResult Show(Window? owner, string messageBoxText, string caption,
+        AppMessageBoxButton button, AppMessageBoxImage icon, AppMessageBoxResult defaultResult)
     {
-        owner ??= applicationService.GetMainWindow();
+        var result = applicationService.DispatchInvoke(new Func<AppMessageBoxResult>(() =>
+        {
+            var resolvedOwner = owner ?? applicationService.GetMainWindow();
+            return MessageBoxWindow.ShowModal(resolvedOwner, messageBoxText, caption, button, icon, defaultResult);
+        }), []);
 
-        // owner 파라미터를 null 참조로 지정하더라도 Windows Forms 처럼 parent-less 메시지 박스를 만들어주지는 않음.
-        // GH-121 fix
-        if (owner != null)
-        {
-            return (MessageBoxResult)applicationService.DispatchInvoke(
-                new Func<Window, string, string, MessageBoxButton, MessageBoxImage, MessageBoxResult, MessageBoxOptions, MessageBoxResult>(MessageBox.Show),
-                new object[] { owner, messageBoxText, caption, button, icon, defaultResult, options })!;
-        }
-        else
-        {
-            return (MessageBoxResult)applicationService.DispatchInvoke(
-                new Func<string, string, MessageBoxButton, MessageBoxImage, MessageBoxResult, MessageBoxOptions, MessageBoxResult>(MessageBox.Show),
-                new object[] { messageBoxText, caption, button, icon, defaultResult, options })!;
-        }
+        return result is AppMessageBoxResult r ? r : defaultResult;
     }
 }

@@ -2,8 +2,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Avalonia.Controls;
+using Avalonia.Threading;
 using System.Collections.Generic;
-using System.Windows;
 using TableCloth.Components;
 using TableCloth.Models;
 using TableCloth.Resources;
@@ -97,17 +98,12 @@ public partial class MainWindowViewModel : ObservableObject
     /// </summary>
     private void HandleDeepLinkPayload(string payload)
     {
-        var application = Application.Current;
-
-        if (application == null)
-            return;
-
-        application.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             if (!TableClothUri.TryParse(payload, out var request))
                 return;
 
-            ActivateMainWindow(application);
+            ActivateMainWindow();
 
             var arguments = request.ToCanonicalArguments();
 
@@ -145,9 +141,9 @@ public partial class MainWindowViewModel : ObservableObject
         });
     }
 
-    private static void ActivateMainWindow(Application application)
+    private void ActivateMainWindow()
     {
-        var window = application.MainWindow;
+        var window = _applicationService.GetMainWindow();
 
         if (window == null)
             return;

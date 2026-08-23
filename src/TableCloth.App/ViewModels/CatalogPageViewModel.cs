@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows.Data;
 using TableCloth.Components;
 using TableCloth.Models.Catalog;
 using TableCloth.Resources;
@@ -54,8 +54,7 @@ public partial class CatalogPageViewModel : ObservableObject
     private readonly ICommandLineArguments _commandLineArguments = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
 
-    private static readonly PropertyGroupDescription GroupDescription =
-        new(nameof(CatalogInternetService.CategoryDisplayName));
+    // 이슈 #296: WPF CollectionViewSource/PropertyGroupDescription → VM측 계산 그룹 컬렉션(RebuildView).
 
     [RelayCommand]
     private async Task CatalogPageLoaded()
@@ -92,14 +91,7 @@ public partial class CatalogPageViewModel : ObservableObject
 
             PropertyChanged += ViewModel_PropertyChanged;
 
-            var view = (CollectionView)CollectionViewSource.GetDefaultView(Services);
-            if (view != null)
-            {
-                view.Filter = (item) => CatalogInternetService.IsMatchedItem(item, SearchKeyword, ShowFavoritesOnly);
-
-                if (!view.GroupDescriptions.Contains(GroupDescription))
-                    view.GroupDescriptions.Add(GroupDescription);
-            }
+            RebuildView();
 
             if (!HasServices)
                 HasCatalogLoadFailed = true;
@@ -115,7 +107,27 @@ public partial class CatalogPageViewModel : ObservableObject
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        => OnViewModelPropertyChangedAsync(sender, e).SafeFireAndForget();
+    {
+        // 이슈 #296: WPF 코드비하인드의 CollectionViewSource.Refresh 대체 — 검색어/즐겨찾기 변경 시 그룹 재구성.
+        if (e.PropertyName is nameof(SearchKeyword) or nameof(ShowFavoritesOnly))
+            RebuildView();
+
+        OnViewModelPropertyChangedAsync(sender, e).SafeFireAndForget();
+    }
+
+    /// <summary>
+    /// 이슈 #296: 현재 검색어/즐겨찾기 필터를 적용해 서비스를 카테고리별로 그룹화한다(CollectionViewSource 대체).
+    /// Services 가 카테고리 표시 순서로 정렬돼 있어 GroupBy 가 순서를 보존한다.
+    /// </summary>
+    private void RebuildView()
+    {
+        var groups = (Services ?? new List<CatalogInternetService>())
+            .Where(x => CatalogInternetService.IsMatchedItem(x, SearchKeyword, ShowFavoritesOnly))
+            .GroupBy(x => x.CategoryDisplayName)
+            .Select(g => new CatalogServiceGroup(g.Key, g.ToList()))
+            .ToList();
+        ServiceGroups = new ObservableCollection<CatalogServiceGroup>(groups);
+    }
 
     private async Task OnViewModelPropertyChangedAsync(object? sender, PropertyChangedEventArgs e)
     {
@@ -151,7 +163,7 @@ public partial class CatalogPageViewModel : ObservableObject
     private void AboutThisApp()
     {
         var aboutWindow = _appUserInterface.CreateAboutWindow();
-        aboutWindow.ShowDialog();
+        _appUserInterface.ShowDialog(aboutWindow);
     }
 
     [RelayCommand]
@@ -180,6 +192,10 @@ public partial class CatalogPageViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasServices))]
     private IList<CatalogInternetService> _services = new List<CatalogInternetService>();
+
+    // 이슈 #296: 뷰가 바인딩하는 파생 그룹 컬렉션. RebuildView()가 필터/그룹을 적용해 채운다.
+    [ObservableProperty]
+    private ObservableCollection<CatalogServiceGroup> _serviceGroups = new();
 
     [ObservableProperty]
     private bool _showFavoritesOnly = default;
@@ -211,4 +227,16 @@ public partial class CatalogPageViewModel : ObservableObject
 
         await _preferencesManager.SavePreferencesAsync(settings);
     }
+}
+
+/// <summary>
+/// 이슈 #296: WPF CollectionView 그룹(카테고리) 대체. 카탈로그 사이트를 카테고리별로 묶은 뷰 그룹.
+/// </summary>
+public sealed class CatalogServiceGroup(string name, IReadOnlyList<CatalogInternetService> items)
+{
+    public string Name { get; } = name;
+
+    public IReadOnlyList<CatalogInternetService> Items { get; } = items ?? Array.Empty<CatalogInternetService>();
+
+    public int ItemCount => Items.Count;
 }

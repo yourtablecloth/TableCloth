@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TableCloth.ViewModels"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="TableCloth.Dialogs.DisclaimerWindow"
+        x:DataType="vm:DisclaimerWindowViewModel"
+        WindowStartupLocation="CenterOwner"
+        Title="{x:Static res:UIStringResources.DisclaimerWindow_Title}" Height="320" Width="480">
+    <Grid Margin="8" RowDefinitions="30,*,36">
+        <TextBlock Grid.Row="0" VerticalAlignment="Center" Text="{x:Static res:UIStringResources.DisclaimerWindow_Readme}" />
+        <Border Grid.Row="1" Margin="0 6 0 10" BorderThickness="1" BorderBrush="{DynamicResource ControlDefaultBorderBrush}">
+            <ScrollViewer Padding="6">
+                <SelectableTextBlock TextWrapping="Wrap" FontSize="15" FontWeight="Bold" Foreground="Red"
+                                     Text="{x:Static res:UIStringResources.DisclaimerWindow_Content}" />
+            </ScrollViewer>
+        </Border>
+        <Button x:Name="AgreeDisclaimer" Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                Content="{x:Static res:UIStringResources.DisclaimerWindow_AgreeButtonText}"
+                Command="{Binding DisclaimerWindowAcknowledgeCommand}" CommandParameter="{Binding}" />
+    </Grid>
+</Window>

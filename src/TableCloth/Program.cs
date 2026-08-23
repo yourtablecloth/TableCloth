@@ -1,19 +1,15 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Avalonia;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
 using Spork.App.DependencyInjection;
 using Spork.Sandbox;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
-using System.Windows;
+using System.Runtime.InteropServices;
 using TableCloth.App.DependencyInjection;
-using TableCloth.Bootstrap.Dialogs;
 using TableCloth.Components.Implementations;
 using TableCloth.Models;
-using TableCloth.Models.Configuration;
 using TableCloth.Resources;
 using Velopack;
 
@@ -27,15 +23,22 @@ internal static class Program
     // 기동하여, 창을 닫아도 유휴 보호가 유지되게 한다.
     private const string IdleGuardVerb = "idle-guard";
 
+    // 이슈 #296: WPF System.Windows.MessageBox 제거. Avalonia 기동 전/치명 오류에도 쓸 수 있도록
+    // 의존성 없는 Win32 MessageBox(user32)로 대체한다. (0x10 = MB_OK | MB_ICONERROR)
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int MessageBoxW(IntPtr hWnd, string text, string caption, uint type);
+
+    private static void ShowFatalError(string message)
+    {
+        try { MessageBoxW(IntPtr.Zero, message, "Unexpected Error", 0x10u); }
+        catch { /* 메시지 박스 표시 자체가 실패해도 프로세스 종료를 막지 않는다. */ }
+    }
+
     [STAThread]
     private static int Main(string[] args)
     {
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
-        {
-            MessageBox.Show(
-                e.ExceptionObject?.ToString() ?? "Unknown Error",
-                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        };
+            ShowFatalError(e.ExceptionObject?.ToString() ?? "Unknown Error");
 
         args ??= Helpers.GetCommandLineArguments();
 
@@ -52,14 +55,14 @@ internal static class Program
         return RunTableCloth(args);
     }
 
-    // [미리 보기] 유휴 자동 종료 가드(이슈 #197). 메인 창 없는 최소 WPF 앱을 띄워 유휴 모니터만 돌린다.
+    // [미리 보기] 유휴 자동 종료 가드(이슈 #197, #296). 메인 창 없는 최소 Avalonia 앱을 띄워 유휴 모니터만 돌린다.
     // 헤드리스 헬퍼이므로 실패해도 대화상자를 띄우지 않고 조용히 종료한다.
     private static int RunIdleGuard(string[] args)
     {
         try
         {
-            var app = new Spork.IdleGuardApplication();
-            app.Run();
+            Spork.SporkAvaloniaApp.Configure(AppBuilder.Configure<Spork.IdleGuardApplication>())
+                .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
@@ -74,14 +77,8 @@ internal static class Program
         // Velopack 초기화 - 설치/업데이트/제거 시 처리
         VelopackApp.Build().Run();
 
-        // 라이선스 동의 여부 확인
-        if (!CheckLicenseAgreement())
-        {
-            Environment.Exit(1); // 라이선스 미동의 시 종료
-            return Environment.ExitCode;
-        }
-
-        // 설치 후 첫 실행 시 파일 연결 등록
+        // 이슈 #296: 라이선스 동의 게이트는 Avalonia 창을 써야 하므로 App 라이프사이클(LicenseGate)로 이관.
+        // 설치 후 첫 실행 시 파일 연결 등록(UI 아님)은 여기서 유지.
         RegisterFileAssociationsIfNeeded();
         RegisterUriSchemeIfNeeded();
 
@@ -98,18 +95,16 @@ internal static class Program
 
             var builder = Host.CreateApplicationBuilder(args);
             builder.UseTableCloth();
-
             using var appHost = builder.Build();
-            appHost.Start();
-            var app = appHost.Services.GetRequiredService<Application>();
-            app.Run();
-            appHost.StopAsync().GetAwaiter().GetResult();
+
+            // 이슈 #296: WPF Application.Run → 표준 Avalonia 기동. App 은 정적 홀더로 서비스 프로바이더를 받는다.
+            TableClothApplication.ServiceProvider = appHost.Services;
+            TableClothAvaloniaApp.Configure(AppBuilder.Configure<TableClothApplication>())
+                .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(
-                ex?.ToString() ?? "Unknown Error",
-                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowFatalError(ex?.ToString() ?? "Unknown Error");
         }
 
         return Environment.ExitCode;
@@ -129,118 +124,19 @@ internal static class Program
             // 본 호출은 TableCloth.exe(통합 진입점)에서만 일어나며, 단독 Spork.exe는 Spork.Sandbox를
             // 참조하지 않으므로 noop 그대로 사용된다.
             builder.UseSandboxBootstrap();
-
             using var appHost = builder.Build();
-            appHost.Start();
-            var app = appHost.Services.GetRequiredService<Application>();
-            app.Run();
-            appHost.StopAsync().GetAwaiter().GetResult();
+
+            // 이슈 #296: WPF Application.Run → 표준 Avalonia 기동. App 은 정적 홀더로 서비스 프로바이더를 받는다.
+            Spork.SporkApplication.ServiceProvider = appHost.Services;
+            Spork.SporkAvaloniaApp.Configure(AppBuilder.Configure<Spork.SporkApplication>())
+                .StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(
-                ex?.ToString() ?? "Unknown Error",
-                "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowFatalError(ex?.ToString() ?? "Unknown Error");
         }
 
         return Environment.ExitCode;
-    }
-
-    private static bool CheckLicenseAgreement()
-    {
-        try
-        {
-            var preferencesPath = GetPreferencesFilePath();
-            if (!File.Exists(preferencesPath))
-            {
-                // 설정 파일이 없으면 라이선스 동의 필요
-                return ShowLicenseAgreement();
-            }
-
-            var json = File.ReadAllText(preferencesPath);
-            var preferences = JsonSerializer.Deserialize<PreferenceSettings>(json);
-
-            if (preferences?.LicenseAgreedTime == null)
-            {
-                // 라이선스 동의 기록이 없으면 동의 필요
-                return ShowLicenseAgreement();
-            }
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            // 설정 파일 손상/권한 등으로 읽기에 실패하면 동의 창을 다시 띄운다.
-            // 부트스트랩 단계라 DI 로거가 아직 없으므로 Debug 출력에만 남긴다.
-            Debug.WriteLine($"[TableCloth] CheckLicenseAgreement failed: {ex}");
-            return ShowLicenseAgreement();
-        }
-    }
-
-    private static bool ShowLicenseAgreement()
-    {
-        var licenseWindow = new LicenseWindow();
-        var result = licenseWindow.ShowDialog();
-
-        if (result == true && licenseWindow.LicenseAccepted)
-        {
-            // 라이선스 동의 정보 저장
-            SaveLicenseAgreement();
-            return true;
-        }
-        else
-        {
-            // 라이선스 거부 시 메시지 표시
-            MessageBox.Show(
-                UIStringResources.License_RejectionMessage,
-                UIStringResources.License_RejectionTitle,
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
-            return false;
-        }
-    }
-
-    private static void SaveLicenseAgreement()
-    {
-        try
-        {
-            var preferencesPath = GetPreferencesFilePath();
-            var preferencesDir = Path.GetDirectoryName(preferencesPath);
-
-            if (!string.IsNullOrEmpty(preferencesDir) && !Directory.Exists(preferencesDir))
-                Directory.CreateDirectory(preferencesDir);
-
-            PreferenceSettings preferences;
-
-            if (File.Exists(preferencesPath))
-            {
-                var json = File.ReadAllText(preferencesPath);
-                preferences = JsonSerializer.Deserialize<PreferenceSettings>(json) ?? new PreferenceSettings();
-            }
-            else
-            {
-                preferences = new PreferenceSettings();
-            }
-
-            preferences.LicenseAgreedTime = DateTime.UtcNow;
-            preferences.LicenseAgreedVersion = typeof(Program).Assembly.GetName().Version?.ToString();
-
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            var updatedJson = JsonSerializer.Serialize(preferences, options);
-            File.WriteAllText(preferencesPath, updatedJson);
-        }
-        catch (Exception ex)
-        {
-            // 저장 실패는 무시 - 다음 실행 시 다시 동의 요청한다.
-            // 부트스트랩 단계라 DI 로거가 아직 없으므로 Debug 출력에만 남긴다.
-            Debug.WriteLine($"[TableCloth] SaveLicenseAgreement failed: {ex}");
-        }
-    }
-
-    private static string GetPreferencesFilePath()
-    {
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        return Path.Combine(appDataPath, "TableCloth.Data", "Preferences.json");
     }
 
     /// <summary>

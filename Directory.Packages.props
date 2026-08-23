@@ -27,6 +27,16 @@
 
 	<ItemGroup>
 		<PackageVersion Include="AsyncAwaitBestPractices.MVVM" Version="10.0.0" />
+		<!-- 이슈 #296: WPF → Avalonia. 11.3.18(최신 11.3.x, 성숙한 Native AOT 지원). -->
+		<PackageVersion Include="Avalonia" Version="11.3.18" />
+		<PackageVersion Include="Avalonia.Desktop" Version="11.3.18" />
+		<PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.18" />
+		<PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.18" />
+		<PackageVersion Include="Avalonia.Diagnostics" Version="11.3.18" />
+		<!-- 이슈 #296: 공용 테마(TableCloth.Theme)의 ProgressRingAnimatedVisual(SkiaSharp/Composition 커스텀 비주얼)용. -->
+		<PackageVersion Include="Avalonia.Skia" Version="11.3.18" />
+		<!-- 이슈 #296: Lemon.Hosting.AvaloniauiDesktop 는 Avalonia 11.3.x 의 Dispatcher.MainLoop 와 비호환(PlatformNotSupported)
+		     이어서 폐기. 표준 AppBuilder.StartWithClassicDesktopLifetime + ServiceProvider 정적 홀더로 대체. -->
 		<PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
 		<PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.1" />
@@ -41,7 +51,7 @@
 		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.1" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.1" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.1" />
-		<PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+		<!-- 이슈 #296: Microsoft.Xaml.Behaviors.Wpf / XamlRadialProgressBar 는 WPF 제거로 폐기(Avalonia 코드비하인드/ProgressBar 로 대체). -->
 		<PackageVersion Include="PnPeople.Security" Version="1.1.0" />
 		<PackageVersion Include="Sentry" Version="6.0.0" />
 		<PackageVersion Include="Sentry.Serilog" Version="6.0.0" />
@@ -49,10 +59,12 @@
 		<PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
 		<PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageVersion Include="System.CommandLine" Version="2.0.1" />
-		<PackageVersion Include="System.Management" Version="10.0.1" />
+		<!-- 이슈 #296: WPF(WindowsDesktop SDK) 제거로 암시 제공되던 System.Drawing / 비문자열 resx 지원을 명시 참조. -->
+		<PackageVersion Include="System.Drawing.Common" Version="10.0.1" />
+		<PackageVersion Include="System.Resources.Extensions" Version="10.0.1" />
+		<PackageVersion Include="System.Windows.Extensions" Version="10.0.1" />
 		<PackageVersion Include="System.Security.AccessControl" Version="6.0.1" />
 		<PackageVersion Include="System.Text.Json" Version="10.0.1" />
 		<PackageVersion Include="Velopack" Version="0.0.1298" />
-		<PackageVersion Include="XamlRadialProgressBar" Version="1.0.3" />
 	</ItemGroup>
 </Project>

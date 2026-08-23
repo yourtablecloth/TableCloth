@@ -22,7 +22,7 @@
     (yourtablecloth.app)이 GitHub 최신 릴리스의 Spork_<버전>_<config>_<platform>_Portable.zip
     URL 로 치환하거나, 인자로 전달한다. "최신 태그 확인 → URL 해석"은 웹앱 로직(repo 스코프 밖).
 
-    자산명 계약: docs/PORTABLE_MODE2_TODO.md 의 "다운로드 자산명 계약" 절 참조.
+    자산명 계약: docs/PARAMETERIZED_WSB_SPEC.md 의 "자산명 계약" 절 참조.
 #>
 param(
     [string] $SporkPortableZipUrl = '__SPORK_PORTABLE_ZIP_URL__'

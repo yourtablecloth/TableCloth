@@ -1,24 +1,21 @@
+using Avalonia.Data;
+using Avalonia.Data.Converters;
+using Avalonia.Media;
 using System;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Media;
 
 namespace TableCloth.Converters;
 
-public class BooleanToBackgroundConverter : IValueConverter
+// 이슈 #296: WPF → Avalonia. 읽기 전용(true)이면 연한 파랑, 읽기-쓰기(false)면 연한 주황 배경.
+public sealed class BooleanToBackgroundConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is bool boolValue)
-        {
-            return boolValue
-                ? new SolidColorBrush(Color.FromRgb(200, 220, 255))  // Light blue for read-only
-                : new SolidColorBrush(Color.FromRgb(255, 220, 200)); // Light orange for read-write
-        }
-        return new SolidColorBrush(Colors.Transparent);
-    }
+    private static readonly IBrush ReadOnlyBrush = new SolidColorBrush(Color.FromRgb(200, 220, 255));
+    private static readonly IBrush ReadWriteBrush = new SolidColorBrush(Color.FromRgb(255, 220, 200));
+    private static readonly IBrush TransparentBrush = new SolidColorBrush(Colors.Transparent);
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        => DependencyProperty.UnsetValue;
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => value is bool boolValue ? (boolValue ? ReadOnlyBrush : ReadWriteBrush) : TransparentBrush;
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => BindingOperations.DoNothing;
 }

@@ -1,0 +1,55 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Spork.ViewModels"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="Spork.Dialogs.InstallStepsWindow"
+        x:DataType="vm:InstallStepsWindowViewModel"
+        Title="{x:Static res:UIStringResources.SporkInstallSteps_WindowTitle}"
+        Width="560" Height="440" MinWidth="420" MinHeight="320"
+        CanResize="False" ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+    <Grid Margin="12" RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- 대상 사이트 헤더 -->
+        <Grid Grid.Row="0" Margin="0 0 0 10" ColumnDefinitions="Auto,*">
+            <Image Grid.Column="0" Width="40" Height="40" Margin="0 0 12 0" VerticalAlignment="Center"
+                   Source="{Binding TargetIconKey, Converter={StaticResource ServiceLogoConverter}}" />
+            <TextBlock Grid.Column="1" Text="{Binding TargetTitle}"
+                       FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
+        </Grid>
+
+        <TextBlock Grid.Row="1" Margin="0 0 0 8" TextWrapping="Wrap"
+                   Foreground="{DynamicResource ControlSecondaryForeground}"
+                   Text="{x:Static res:UIStringResources.Spork_AppInstructionMessage}" />
+
+        <ListBox Grid.Row="2" ItemsSource="{Binding InstallSteps}"
+                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:StepItemViewModel">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding InstallFlags}" Foreground="{Binding Installed, Converter={StaticResource stateToBrushConverter}}" Margin="0 0 5 0" FontWeight="Bold" />
+                            <TextBlock Text="{Binding TargetSiteName}" Margin="0 0 5 0" FontWeight="Bold" />
+                            <TextBlock Text="{Binding PackageName}" Margin="0 0 5 0" />
+                            <TextBlock Text="{Binding StatusMessage}" Margin="0 0 5 0" Foreground="{Binding Installed, Converter={StaticResource stateToBrushConverter}}" />
+                            <Button Command="{Binding $parent[Window].((vm:InstallStepsWindowViewModel)DataContext).ShowErrorMessageCommand}"
+                                    CommandParameter="{Binding ErrorMessage}"
+                                    Content="{x:Static res:UIStringResources.Spork_ShowDetailError}"
+                                    IsVisible="{Binding ShowErrorMessageLink}"
+                                    Margin="0 0 5 0" BorderThickness="0" Background="Transparent" Cursor="Hand" />
+                        </StackPanel>
+                        <ProgressBar Height="10" Margin="5" Value="{Binding ProgressRate}"
+                                     IsVisible="{Binding ShowProgress}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Button Grid.Row="3" Margin="0 10 0 0" Padding="14 6" HorizontalAlignment="Right"
+                Content="{x:Static res:UIStringResources.Button_CloseButton}"
+                Command="{Binding CloseDialogCommand}"
+                IsCancel="True"
+                IsVisible="{Binding ShowCloseButton}" />
+    </Grid>
+</Window>

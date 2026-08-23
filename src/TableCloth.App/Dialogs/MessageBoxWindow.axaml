@@ -1,0 +1,16 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="TableCloth.Dialogs.MessageBoxWindow"
+        SizeToContent="WidthAndHeight" CanResize="False"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        MinWidth="300" MaxWidth="560">
+    <!-- 이슈 #296: Avalonia 에는 WPF MessageBox 대응이 없어(의존성 추가 없이) 자작한 동기 모달 메시지 상자. -->
+    <Grid Margin="20" RowDefinitions="Auto,Auto">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="14">
+            <TextBlock x:Name="IconGlyph" FontSize="30" VerticalAlignment="Top" />
+            <SelectableTextBlock x:Name="MessageText" TextWrapping="Wrap" MaxWidth="440" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel x:Name="ButtonsPanel" Grid.Row="1" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Spacing="8" Margin="0,20,0,0" />
+    </Grid>
+</Window>

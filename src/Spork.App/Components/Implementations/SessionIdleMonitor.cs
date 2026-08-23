@@ -1,10 +1,9 @@
+using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
 using Spork.Dialogs;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Threading;
 
 namespace Spork.Components.Implementations
 {
@@ -45,15 +44,14 @@ namespace Spork.Components.Implementations
             // 종료 60초 전(단, 허용 시간의 절반을 넘지 않게)부터 경고를 띄운다.
             _warningLeadSeconds = Math.Min(60, Math.Max(1, _timeoutSeconds / 2));
 
-            var app = Application.Current;
-            if (app == null)
+            if (Avalonia.Application.Current == null)
             {
                 _logger?.LogWarning("Idle monitor: Application.Current is null; monitor not started.");
                 return false;
             }
 
             // 감시 타이머는 UI 스레드에서 돌린다(경고 창 생성/갱신이 UI 작업이므로).
-            app.Dispatcher.InvokeAsync(() =>
+            Dispatcher.UIThread.InvokeAsync(() =>
             {
                 _timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(1d) };
                 _timer.Tick += OnTick;

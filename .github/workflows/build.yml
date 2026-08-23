@@ -12,6 +12,8 @@ on:
         - develop
         tags:
         - 'v*'
+        # 이슈 #296: 프리뷰 태그(v*-preview.*)는 별도 preview.yml 이 처리하므로 리테일 파이프라인에서 제외.
+        - '!v*-preview*'
         paths:
         - '.github/workflows/build.yml'
         - 'docs/**'
@@ -89,6 +91,10 @@ jobs:
       Spork_Test_Project_Path: src\Spork.Test\Spork.Test.csproj
       TableCloth_Test_Project_Path: src\TableCloth.Test\TableCloth.Test.csproj
       Platform: ${{ matrix.platform }}
+      # build.cs --skip-build 가 그대로 재사용하는 게시 디렉터리 계약.
+      TableClothPublishDir: publish\${{ matrix.configuration }}\win-${{ matrix.platform }}
+      SporkPublishDir: publish\spork\${{ matrix.configuration }}\win-${{ matrix.platform }}
+      BootstrapperPublishDir: publish\bootstrapper\${{ matrix.configuration }}\win-${{ matrix.platform }}
 
     steps:
     - name: Checkout
@@ -130,9 +136,10 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Publish TableCloth project  
-    - name: Publish TableCloth project  
-      run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration -o publish
+    # Avalonia + NativeAOT 게시. 진입점 csproj가 RID 지정 시 PublishAot를 활성화하므로
+    # WPF 시절의 PublishSingleFile/PublishReadyToRun 플래그를 전달하지 않는다.
+    - name: Publish TableCloth project (NativeAOT)
+      run: dotnet publish $env:TableCloth_Project_Path -r win-${{ env.Platform }} -c:$env:Configuration -o $env:TableClothPublishDir
       env:
         Configuration: ${{ matrix.configuration }}
 
@@ -140,7 +147,7 @@ jobs:
     - name: Get version
       id: get_version
       run: |
-        $info = (Get-Item "publish\TableCloth.exe").VersionInfo
+        $info = (Get-Item "$env:TableClothPublishDir\TableCloth.exe").VersionInfo
         # 4-part FileVersion (e.g., 1.16.3.0) — used in release filename
         $fullVersion = $info.FileVersion
         # 3-part SemVer2 (e.g., 1.16.3) — required by Velopack --packVersion
@@ -160,7 +167,7 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
       run: |
         New-Item -ItemType Directory -Force symbols\tablecloth | Out-Null
-        Get-ChildItem publish -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\tablecloth -Force
+        Get-ChildItem $env:TableClothPublishDir -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\tablecloth -Force
       shell: pwsh
 
     # Create Velopack release package
@@ -171,7 +178,7 @@ jobs:
         vpk pack `
           --packId TableCloth `
           --packVersion ${{ steps.get_version.outputs.VERSION }} `
-          --packDir publish `
+          --packDir $env:TableClothPublishDir `
           --mainExe TableCloth.exe `
           --channel ${{ env.Platform }} `
           --outputDir releases
@@ -206,7 +213,7 @@ jobs:
     # Release 구성에서만 패키징한다 (Debug/비-릴리스 푸시에서는 불필요).
     - name: Publish Spork project
       if: matrix.configuration == 'Release'
-      run: dotnet publish $env:Spork_Project_Path -r win-${{ env.Platform }} --self-contained -p:PublishSingleFile=true -p:PublishReadyToRun=true -c:$env:Configuration -o publish-spork
+      run: dotnet publish $env:Spork_Project_Path -r win-${{ env.Platform }} -c:$env:Configuration -o $env:SporkPublishDir
       env:
         Configuration: ${{ matrix.configuration }}
 
@@ -215,7 +222,7 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
       run: |
         New-Item -ItemType Directory -Force symbols\spork | Out-Null
-        Get-ChildItem publish-spork -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\spork -Force
+        Get-ChildItem $env:SporkPublishDir -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\spork -Force
       shell: pwsh
 
     # Spork Velopack 패키지. 채널을 spork-<arch> 로 두어 TableCloth(채널 <arch>)와
@@ -227,7 +234,7 @@ jobs:
         vpk pack `
           --packId Spork `
           --packVersion ${{ steps.get_version.outputs.VERSION }} `
-          --packDir publish-spork `
+          --packDir $env:SporkPublishDir `
           --mainExe Spork.exe `
           --channel spork-${{ env.Platform }} `
           --outputDir releases
@@ -259,7 +266,7 @@ jobs:
     # 러너에 VS C++ 빌드 도구(MSVC 링커)가 있어야 한다(GitHub windows 이미지 기본 포함).
     - name: Publish Spork.Bootstrapper (NativeAOT)
       if: matrix.configuration == 'Release'
-      run: dotnet publish src\Spork.Bootstrapper\Spork.Bootstrapper.csproj -r win-${{ env.Platform }} -p:PublishAot=true -c:$env:Configuration -o publish-bootstrapper
+      run: dotnet publish src\Spork.Bootstrapper\Spork.Bootstrapper.csproj -r win-${{ env.Platform }} -p:PublishAot=true -c:$env:Configuration -o $env:BootstrapperPublishDir
       env:
         Configuration: ${{ matrix.configuration }}
 
@@ -271,7 +278,7 @@ jobs:
       run: |
         $ver  = "${{ steps.get_version.outputs.FULL_VERSION }}"
         $arch = "${{ env.Platform }}"
-        $src  = "publish-bootstrapper\Spork.Bootstrapper.exe"
+        $src  = "$env:BootstrapperPublishDir\Spork.Bootstrapper.exe"
         if (-not (Test-Path $src)) { throw "Bootstrapper exe not found: $src" }
         Copy-Item $src "releases\SporkBootstrap_${ver}_Release_${arch}.exe"
         Copy-Item $src "releases\SporkBootstrap_${arch}.exe"
@@ -296,7 +303,7 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/v') && matrix.configuration == 'Release'
       run: |
         New-Item -ItemType Directory -Force symbols\bootstrapper | Out-Null
-        Get-ChildItem publish-bootstrapper -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\bootstrapper -Force
+        Get-ChildItem $env:BootstrapperPublishDir -Filter *.pdb -ErrorAction SilentlyContinue | Move-Item -Destination symbols\bootstrapper -Force
       shell: pwsh
 
     # Generate SBOM (Release builds only, for tagged releases)
@@ -362,11 +369,8 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: PublishPayload-${{ matrix.platform }}
-        # Spork.Bootstrapper 는 publish/ 밖(-o publish-bootstrapper)으로 나가므로 함께 담는다.
-        # 무설치 레인은 리테일 전용이라 프리뷰 레인에는 없는 항목이다.
-        path: |
-          publish/**
-          publish-bootstrapper/**
+        # TableCloth, Spork, Spork.Bootstrapper를 build.cs의 게시 디렉터리 계약으로 함께 담는다.
+        path: "publish/**"
         if-no-files-found: error
         retention-days: 5
 

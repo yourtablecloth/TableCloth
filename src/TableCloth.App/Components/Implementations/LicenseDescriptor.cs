@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TableCloth.Components;
 using TableCloth.Resources;
 
 namespace TableCloth.Components.Implementations;
@@ -13,60 +13,30 @@ public sealed class LicenseDescriptor(
     IResourceResolver resourceResolver,
     ILogger<LicenseDescriptor> logger) : ILicenseDescriptor
 {
-    private static AssemblyName[] GetReferencedThirdPartyAssemblies()
-    {
-        var asm = Assembly.GetEntryAssembly();
-        ArgumentNullException.ThrowIfNull(asm);
-
-        var bclPublicKeyTokens = new byte[][] {
-            [0xb0, 0x3f, 0x5f, 0x7f, 0x11, 0xd5, 0x0a, 0x3a,],
-            [0x31, 0xbf, 0x38, 0x56, 0xad, 0x36, 0x4e, 0x35,],
-            [0xb7, 0x7a, 0x5c, 0x56, 0x19, 0x34, 0xe0, 0x89,],
-            [0xad, 0xb9, 0x79, 0x38, 0x29, 0xdd, 0xae, 0x60,],
-            [0xcc, 0x7b, 0x13, 0xff, 0xcd, 0x2d, 0xdd, 0x51,],
-        };
-
-        var refList = asm
-            .GetReferencedAssemblies()
-            .Prepend(asm.GetName())
-            .Where(x => !bclPublicKeyTokens.Any(y => y.SequenceEqual(x.GetPublicKeyToken() ?? [])))
-            .ToArray();
-
-        return refList;
-    }
-
+    // 이슈 #296(AOT): About 창의 OSS 라이선스 목록. 과거 구현은 Assembly.GetReferencedAssemblies() +
+    // Assembly.Load + 커스텀 어트리뷰트 리플렉션이었으나 Native AOT 에서 PlatformNotSupportedException 을
+    // 던진다(런타임 확인). 큐레이트된 정적 목록(ThirdPartyLicenses)으로 대체하되, GitHub 저장소가 있는
+    // 항목은 기존처럼 GitHub API 로 라이선스 종류를 조회해 덧붙인다(네트워크 경로는 AOT 안전).
     public async Task<string> GetLicenseDescriptionsAsync(
         CancellationToken cancellationToken = default)
     {
         var buffer = new StringBuilder();
 
-        foreach (var eachAsm in GetReferencedThirdPartyAssemblies())
+        foreach (var component in ThirdPartyLicenses.Components)
         {
-            var asm = Assembly.Load(eachAsm);
-            var asmProduct = asm.GetCustomAttribute<AssemblyProductAttribute>()?.Product;
-            var asmRepoUrl = asm.GetCustomAttributes<AssemblyMetadataAttribute>()
-                ?.Where(x => string.Equals("RepositoryUrl", x.Key, StringComparison.OrdinalIgnoreCase))
-                ?.Select(x => x.Value)
-                ?.FirstOrDefault();
-            var asmCompany = asm.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company;
-            var asmCopyright = asm.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright;
-            var asmTitle = asm.GetCustomAttribute<AssemblyTitleAttribute>()?.Title;
-            var asmTrademark = asm.GetCustomAttribute<AssemblyTrademarkAttribute>()?.Trademark;
-            var asmVersion = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+            buffer.AppendLine(component.Title);
+            buffer.AppendLine(component.Copyright);
 
-            buffer.AppendLine($@"{asmTitle} {asmVersion} (Product of {asmProduct})
-(c) {asmCompany} {asmTrademark}, All rights reserved.");
-
-            if (asmRepoUrl != null)
+            if (!string.IsNullOrWhiteSpace(component.RepositoryUrl))
             {
-                buffer.AppendLine($@"Source Repository: {asmRepoUrl}");
+                buffer.AppendLine($"Source Repository: {component.RepositoryUrl}");
 
                 try
                 {
-                    if (Uri.TryCreate(asmRepoUrl, UriKind.Absolute, out var parsedAsmRepoUrl) &&
-                        string.Equals(ConstantStrings.GitHub_Domain, parsedAsmRepoUrl.Host, StringComparison.OrdinalIgnoreCase))
+                    if (Uri.TryCreate(component.RepositoryUrl, UriKind.Absolute, out var repoUri) &&
+                        string.Equals(ConstantStrings.GitHub_Domain, repoUri.Host, StringComparison.OrdinalIgnoreCase))
                     {
-                        var parts = parsedAsmRepoUrl.GetComponents(UriComponents.Path, UriFormat.UriEscaped).Split('/');
+                        var parts = repoUri.GetComponents(UriComponents.Path, UriFormat.UriEscaped).Split('/');
                         var ownerPart = parts.ElementAtOrDefault(0);
                         var repoNamePart = parts.ElementAtOrDefault(1);
 
@@ -82,7 +52,7 @@ public sealed class LicenseDescriptor(
                 catch (Exception ex)
                 {
                     // GitHub API 호출 실패는 라이선스 설명 출력 자체를 막지 않도록 무시한다.
-                    logger.LogDebug(ex, "Failed to fetch GitHub license description for {RepoUrl}.", asmRepoUrl);
+                    logger.LogDebug(ex, "Failed to fetch GitHub license description for {RepoUrl}.", component.RepositoryUrl);
                 }
             }
 

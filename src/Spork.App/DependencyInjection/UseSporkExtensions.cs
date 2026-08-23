@@ -20,10 +20,10 @@ using System.Net.Security;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using TableCloth;
 using TableCloth.Models.Answers;
 using TableCloth.Resources;
+using TableCloth.Serialization;
 
 #nullable enable
 
@@ -132,9 +132,13 @@ public static class UseSporkExtensions
             .AddWindow<AhnLabSafeTxGuideWindow, AhnLabSafeTxGuideWindowViewModel>()
             .AddWindow<InstallStepsWindow, InstallStepsWindowViewModel>()
             .AddWindow<MainWindow, MainWindowViewModel>()
+            .AddWindow<SplashScreen, SplashScreenViewModel>()
             .AddWindow<SandboxGuidanceWindow, SandboxGuidanceWindowViewModel>()
-            .AddTransient<SiteReportWindow>()
-            .AddSingleton<Application>(sp => new SporkApplication(sp.GetRequiredService<IHost>()));
+            .AddTransient<SiteReportWindow>();
+
+        // 이슈 #296: WPF Application 등록 폐기. Avalonia App(SporkApplication)은 진입점에서 표준
+        // AppBuilder.Configure<SporkApplication>().StartWithClassicDesktopLifetime 로 생성되며, 서비스는
+        // SporkApplication.ServiceProvider 정적 홀더로 주입된다.
 
         return builder;
     }
@@ -185,7 +189,7 @@ public static class UseSporkExtensions
             if (File.Exists(answerFilePath))
             {
                 using var answerFileContent = File.OpenRead(answerFilePath);
-                answer = JsonSerializer.Deserialize<SporkAnswers>(answerFileContent);
+                answer = JsonSerializer.Deserialize(answerFileContent, SporkJsonContext.Default.SporkAnswers);
             }
         }
         catch (Exception ex)
