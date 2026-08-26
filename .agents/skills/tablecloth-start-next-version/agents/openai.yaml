@@ -1,0 +1,4 @@
+interface:
+  display_name: "Start TableCloth Version"
+  short_description: "Start the next TableCloth minor version"
+  default_prompt: "Use $tablecloth-start-next-version to begin the next TableCloth minor cycle."

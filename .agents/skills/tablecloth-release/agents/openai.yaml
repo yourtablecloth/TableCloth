@@ -1,0 +1,4 @@
+interface:
+  display_name: "TableCloth Release"
+  short_description: "Orchestrate version development and releases"
+  default_prompt: "Use $tablecloth-release to manage this TableCloth release lifecycle."

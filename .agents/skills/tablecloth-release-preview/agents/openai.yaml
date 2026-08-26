@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release TableCloth Preview"
+  short_description: "Build and publish a signed Preview release"
+  default_prompt: "Use $tablecloth-release-preview to publish the next signed TableCloth Preview."

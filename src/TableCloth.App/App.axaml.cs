@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -52,7 +53,9 @@ public partial class TableClothApplication : Application
             // 이슈 #296: WPF 시절 Program.cs 의 호스트-전 라이선스 게이트를 App 라이프사이클로 이관.
             if (!Bootstrap.LicenseGate.EnsureAgreed())
             {
-                desktop.Shutdown(1);
+                // OnFrameworkInitializationCompleted 안에서 즉시 Shutdown하면 Dispatcher가 MainLoop 시작 전에
+                // 종료되어 StartCore가 InvalidOperationException을 던진다. 초기화가 반환된 뒤 종료하도록 예약한다.
+                Dispatcher.UIThread.Post(() => desktop.Shutdown(1));
                 base.OnFrameworkInitializationCompleted();
                 return;
             }

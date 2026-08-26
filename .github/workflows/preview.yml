@@ -24,7 +24,7 @@ jobs:
 
     - name: Validate version core matches tag
       run: |
-        # v1.21.0-preview.1 → 1.21.0-preview.1 → core 1.21.0
+        # v1.22.0-preview.1 -> 1.22.0-preview.1 -> core 1.22.0
         TAG_VERSION="${GITHUB_REF#refs/tags/v}"
         CORE_VERSION="${TAG_VERSION%%-preview*}"
 
@@ -59,7 +59,8 @@ jobs:
       Platform: ${{ matrix.platform }}
       # 게시 경로는 build.cs 가 기대하는 레이아웃을 그대로 쓴다. 로컬 x64 PC 가 이 산출물을 그대로
       # 내려받아 `build.cmd --skip-build --sign --preview` 로 서명 패키징할 수 있게 하기 위함이다
-      # (arm64 AOT 는 로컬에서 빌드할 수 없다). 자세한 절차는 docs/RELEASING.md §8.
+      # (arm64 AOT 는 로컬에서 빌드할 수 없다). 자세한 절차는 docs/RELEASING.md의
+      # "로컬 SimplySign 전체 서명" 절을 따른다.
       TableClothPublishDir: publish\Release\win-${{ matrix.platform }}
       SporkPublishDir: publish\spork\Release\win-${{ matrix.platform }}
     steps:
@@ -166,9 +167,10 @@ jobs:
         if-no-files-found: error
         retention-days: 5
 
-    # 로컬 서명용 인계 자산(docs/RELEASING.md §8). pack 이전의 게시 산출물을 그대로 넘겨,
+    # 로컬 서명용 인계 자산(docs/RELEASING.md의 "로컬 SimplySign 전체 서명").
+    # pack 이전의 게시 산출물을 그대로 넘겨,
     # x64 개발 PC 가 `build.cmd --skip-build --sign --preview` 로 다시 pack 하면서 서명할 수 있게 한다.
-    # 서명·패키징은 아키텍처 중립이라(§3-1) arm64 페이로드도 x64 에서 패키징된다 — 로컬에서 못 하는 것은
+    # 서명과 패키징은 아키텍처 중립이라 arm64 페이로드도 x64에서 패키징된다. 로컬에서 못 하는 것은
     # arm64 AOT '빌드'뿐이다. 심볼 수집 단계 뒤에 올리므로 대용량 AOT pdb 는 포함되지 않는다.
     - name: Upload publish payload (for local signing)
       uses: actions/upload-artifact@v4
@@ -230,7 +232,7 @@ jobs:
         > **UNSIGNED — DO NOT PUBLISH**
         >
         > Preview .exe assets are not yet code-signed. Sign them locally (SimplySign) and re-upload
-        > before publishing this prerelease — see docs/RELEASING.md section 8.
+        > before publishing this prerelease. See the "Local SimplySign full signing" procedure in docs/RELEASING.md.
         >
         > **Remove this block before publishing.** (v1.21.0-preview.2 was published with it still in
         > place and had to be corrected afterwards; the assets were signed, only the note was wrong.)

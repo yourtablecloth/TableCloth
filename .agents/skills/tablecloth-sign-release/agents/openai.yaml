@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sign TableCloth Release"
+  short_description: "Sign x64 and arm64 release artifacts"
+  default_prompt: "Use $tablecloth-sign-release to sign and replace the draft assets for this release."

@@ -361,7 +361,7 @@ jobs:
     # 서명하므로(앱 바이너리 + Update.exe + Setup.exe), 이미 패킹된 releases/* 만으로는 전체 서명을
     # 다시 할 수 없다. 로컬이 이 페이로드를 받아 build.cmd --skip-build --sign 으로 재패킹+서명한다.
     #
-    # arm64 Native AOT 는 x64 PC 에서 빌드할 수 없어(docs/RELEASING.md §8) 빌드는 CI 의 네이티브
+    # arm64 Native AOT는 x64 PC에서 빌드할 수 없으므로 빌드는 CI의 네이티브
     # windows-11-arm 러너가 맡고 로컬은 서명만 담당한다. 프리뷰 레인(preview.yml)이 쓰는 것과
     # 같은 계약이며, 리테일에도 같은 절차를 쓰기 위해 이름·경로를 동일하게 맞춘다.
     - name: Upload publish payload (for local signing)
