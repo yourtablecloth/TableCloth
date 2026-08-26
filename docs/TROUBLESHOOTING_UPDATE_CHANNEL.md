@@ -2,6 +2,7 @@
 
 > 대상: **미리 보기(Preview) 채널로 올라간 뒤 안정(Retail) 버전으로 되돌리고 싶은** 경우.
 > 설계 배경은 [RELEASE_CHANNELS.md](RELEASE_CHANNELS.md).
+> 기준일: 2026년 8월 26일. 현재 Retail은 v1.21.1입니다.
 
 ## 1. 순서가 핵심이다
 

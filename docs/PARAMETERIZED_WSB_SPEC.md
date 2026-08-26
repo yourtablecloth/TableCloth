@@ -1,9 +1,7 @@
 # 파라미터화된 Express `.wsb` 스펙 (Parameterized WSB Spec)
 
-> 상태: **확정 (2026-07-03)**. 빠른 실행 웹앱, MCP 서버, macOS(macSandbox) 세 소비자가 공유하는
-> 정규 계약. 핵심 설계(설계 B, `{arch}` 토큰, 사이트 위치 인자, 체크섬 맵)는 확정됐고, 소비자별
-> 세부(§9)와 추후 결정(§12: 웹앱 호스팅, MCP 전송)만 각 트랙 착수 시 확정한다.
-> 모드 2 무설치 코어와 자산명 계약을 이 문서에 통합했다.
+> 상태: **핵심 무설치 경로 구현 완료 (2026-08-26)**. Retail v1.21.1은 `no-install-spork.wsb`, 딥링크 템플릿, SporkBootstrap과 아키텍처별 Spork Portable 고정 URL 자산을 제공합니다. 빠른 실행 웹앱, MCP 서버와 macSandbox 소비자에 관한 절은 각 프로젝트가 착수할 때 적용할 계약이며 현재 TableCloth 구현 완료를 뜻하지 않습니다.
+> 이 문서는 `{arch}` 토큰, 사이트 위치 인자와 체크섬 맵을 포함한 정규 계약을 보존합니다.
 > 부트스트랩 GUI화: [EXPRESS_BOOTSTRAPPER_DESIGN.md](EXPRESS_BOOTSTRAPPER_DESIGN.md) (§4의 다운로드 이후
 > 단계를 Win32/GDI + NativeAOT exe로 위임, `.ps1`은 shim으로 축소).
 >

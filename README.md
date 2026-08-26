@@ -1,4 +1,6 @@
-# 식탁보 (TableCloth) - 컴퓨터를 안전하게 사용하세요
+# 식탁보 TableCloth
+
+Windows Sandbox에서 인터넷 뱅킹과 전자정부 사이트를 사용할 때 필요한 보안 프로그램을 격리하여 실행합니다.
 
 [![식탁보 프로젝트 빌드 상황](https://github.com/yourtablecloth/TableCloth/actions/workflows/build.yml/badge.svg)](https://github.com/yourtablecloth/TableCloth/actions)
 [![식탁보 Discord](https://img.shields.io/discord/1443777680418930761?label=Discord&logo=discord&color=7289DA)](https://discord.gg/eT2UnUXyTV)
@@ -7,132 +9,121 @@
 [![UniGetUI에서 다운로드](https://img.shields.io/badge/UniGetUI-TableCloth-blue)](https://marticliment.com/unigetui/share?name=TableCloth&id=TableClothProject.TableCloth&sourceName=winget&managerName=WinGet)
 
 > [!IMPORTANT]
-> 2026년 1월 17일부로 코드 서명 인증서를 Certum을 통해 발급받게 되었습니다. 1.14.0 버전부터 최신 버전까지 코드 서명을 적용한 EXE 파일로 교체하여 업로드를 진행하였습니다.
----
+> 2026년 1월 17일부터 Certum 코드 서명 인증서를 사용합니다. v1.14.0 이후 GitHub Release의 실행 파일에는 Authenticode 서명을 적용합니다.
+
 > [!IMPORTANT]
-> Microsoft Store 정책 변경으로 인하여 식탁보 최신 버전 업데이트가 어렵게 되었습니다. Microsoft Store 버전 식탁보 앱은 삭제하고, GitHub에서 릴리즈하는 버전으로 재설치하면 최신 기능을 안정적으로 이용하실 수 있습니다.
----
+> Microsoft Store 정책 변경으로 Store 버전의 최신 업데이트를 제공하기 어렵습니다. Store 버전을 제거한 뒤 [GitHub Releases](https://github.com/yourtablecloth/TableCloth/releases) 또는 WinGet 패키지로 다시 설치하면 현재 릴리스를 사용할 수 있습니다.
+
 > [!IMPORTANT]
-> 1.13.0 버전 출시와 함께 식탁보 프로젝트는 듀얼 라이선스 모델로 변경하였습니다. AGPL 3.0 또는 상용 라이선스 중 택할 수 있습니다. 상용 라이선스 사용 시, 라이선스 파일에 기재된 연락처로 연락 부탁드립니다.
----
+> v1.13.0부터 AGPL-3.0과 상용 라이선스를 함께 제공합니다. 적용할 라이선스는 [라이선스 안내](#라이선스)를 기준으로 판단할 수 있습니다.
+
 > [!CAUTION]
-> **사칭·피싱 주의**
+> **사칭과 피싱에 주의하십시오.**
 >
-> - 식탁보는 **어떠한 경우에도** 본인인증, 회원가입, 카드 결제나 금전을 요구하지 않습니다. 이를 요구하는 화면·메시지·연락은 식탁보를 사칭한 것이니 절대 응하지 마세요.
-> - 검색 결과 상단에 보이는 **광고성 다운로드 링크**를 정식 배포처로 착각하지 마세요. 식탁보의 정식 배포처는 [GitHub Releases](https://github.com/yourtablecloth/TableCloth/releases)와 winget(`TableClothProject.TableCloth`) 뿐입니다.
-> - 식탁보가 배포하는 모든 프로그램은 **무료**로 사용하실 수 있습니다.
+> 식탁보는 본인 인증, 회원 가입, 카드 결제 또는 금전을 요구하지 않습니다. 공식 배포처는 [GitHub Releases](https://github.com/yourtablecloth/TableCloth/releases)와 WinGet 패키지 `TableClothProject.TableCloth`입니다. 검색 광고에서 제공하는 다운로드 파일은 공식 배포본으로 간주하지 않습니다.
 
-![식탁보 실행 화면](docs/images/TableCloth.png)
+![Windows Sandbox에서 실행한 Spork 화면](docs/images/Spork-Windows-Sandbox.png)
 
-## 개요
+## 프로젝트 개요
 
-이 프로젝트는 윈도우 샌드박스를 활용하여, 컴퓨터에서 인터넷 뱅킹을 사용하거나, 전자정부 인터넷 서비스를 사용할 때 설치되는 여러가지 클라이언트 보안 프로그램을 실제 컴퓨터 환경에 영향을 주지 않고 사용할 수 있도록 도와주는 프로그램입니다.
+식탁보는 호스트 Windows에서 Windows Sandbox를 시작하고 필요한 폴더와 설정만 게스트에 전달합니다. 샌드박스 안에서는 Spork가 사이트 카탈로그를 표시하고 선택한 사이트에 필요한 보안 프로그램을 설치합니다. 샌드박스를 닫으면 게스트에 설치한 프로그램과 변경 사항이 함께 폐기됩니다.
 
-보안을 명목으로 설치되는 여러가지 에이전트, 가상 키보드, 중간 암호화 프로그램들은 그 나름대로의 의미가 있습니다. 하지만 계속해서 변화하는 웹 생태계, 윈도우 운영 체제의 요구 사항을 제대로 반영하지 못하는 웹 사이트가 여전히 많습니다. 그로 인해 보안과 안정성을 추구해야 할 보조 소프트웨어들이 오히려 시스템의 성능을 저하시키거나 때로는 윈도우 운영 체제를 파괴하는 일도 발생합니다.
+v1.21.0은 WPF UI를 Avalonia로 이관하고 TableCloth와 Spork 배포본을 Native AOT로 전환했습니다. 현재 정식 버전인 [v1.21.1](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.21.1)은 첫 실행 데이터 디렉터리 처리 문제인 [#308](https://github.com/yourtablecloth/TableCloth/issues/308)을 수정한 긴급 업데이트입니다.
 
-이런 문제를 완화하고, 컴퓨터를 항상 안정적인 상태로 유지할 수 있도록 도와주기 위하여 이 프로젝트를 시작하게 되었습니다.
+정식 릴리스는 다음 네 가지 앱 조합을 제공합니다.
 
-## 설치와 사용 방법 안내
+- TableCloth x64와 ARM64
+- Spork x64와 ARM64
+- 설치 관리자와 Portable ZIP
+- Authenticode 서명과 아키텍처별 SBOM
 
-식탁보를 손쉽게 설치하고 사용하기 위해서는 UniGetUI 또는 Winget을 통한 설치 방법을 권장합니다.
+## 지원 환경
 
-1. Windows 11 Pro, Education, Enterprise SKU 이상의 OS를 설치합니다.
+- Windows 11 Pro, Education 또는 Enterprise
+- Windows Sandbox 기능
+- x64 또는 ARM64 프로세서
+- 인터넷 연결
 
-2. Windows Sandbox 옵션을 활성화합니다.
+Windows Sandbox를 제공하지 않는 Windows Home은 현재 지원 대상에 포함하지 않습니다. 조직에서 Windows Sandbox, 가상화 또는 GitHub 다운로드를 차단했다면 시스템 관리자 정책이 우선합니다.
 
-3. <https://apps.microsoft.com/detail/XPFFTQ032PTPHF?hl=ko&gl=KR&ocid=pdpshare> 에서 최신 버전의 UniGetUI를 설치합니다.
+## 설치와 실행
 
-4. <https://marticliment.com/unigetui/share/?name=TableCloth&id=TableClothProject.TableCloth&sourceName=winget&managerName=WinGet> 에서 최신 버전의 식탁보 패키지를 설치합니다.
-
-만약 winget 명령줄을 사용하는 것이 익숙하다면 아래와 같이 설치하실 수 있습니다.
+WinGet을 사용할 수 있다면 다음 명령으로 설치합니다.
 
 ```powershell
-winget install TableClothProject.TableCloth
+winget install --exact --id TableClothProject.TableCloth
 ```
 
-## 무설치(Express) 실행
+WinGet 등록소 반영에는 GitHub Release 게시 이후 시간이 더 걸릴 수 있습니다. WinGet에서 최신 버전을 찾지 못하면 [GitHub Releases](https://github.com/yourtablecloth/TableCloth/releases)에서 아키텍처에 맞는 설치 관리자를 내려받을 수 있습니다. GUI 패키지 관리가 편하다면 [UniGetUI 공유 링크](https://marticliment.com/unigetui/share/?name=TableCloth&id=TableClothProject.TableCloth&sourceName=winget&managerName=WinGet)를 사용할 수 있습니다.
 
-식탁보를 호스트에 설치하지 않고, 작은 런처(SporkBootstrap)만으로 최신 식탁보를 내려받아 Windows Sandbox 안에서 실행할 수 있습니다. 설치와 업데이트 관리가 필요 없는 일회성 실행 방식입니다.
+설치 후 TableCloth에서 공유할 데이터와 장치 옵션을 선택하고 `샌드박스 시작`을 누릅니다. 사이트 선택과 보안 프로그램 설치는 Windows Sandbox 안의 Spork에서 진행합니다.
 
-### 사용 방법
+## 무설치 Express 실행
 
-1. Windows Sandbox가 활성화된 Windows 11 Pro/Edu/Enterprise 환경을 준비합니다.
-2. 최신 릴리스에서 `no-install-spork.wsb`를 내려받아 더블클릭합니다. ([파일 소스](tools/no-install/no-install-spork.wsb))
-3. 샌드박스가 뜨면 런처가 자동으로 최신 식탁보를 내려받아(진행률은 창과 작업 표시줄에 표시) 실행합니다.
+호스트에 TableCloth를 설치하지 않고 Windows Sandbox 안에서 Spork만 실행할 수도 있습니다.
 
-### 특징
+1. 최신 정식 릴리스에서 [`no-install-spork.wsb`](https://github.com/yourtablecloth/TableCloth/releases/latest/download/no-install-spork.wsb)를 내려받습니다.
+2. 내려받은 파일을 두 번 눌러 Windows Sandbox를 시작합니다.
+3. SporkBootstrap이 현재 아키텍처에 맞는 최신 Spork Portable 패키지를 검증하고 실행할 때까지 기다립니다.
 
-- **런처(SporkBootstrap)**: Win32/GDI + NativeAOT로 만든 약 5MB의 단일 실행 파일입니다. 최신 포터블 식탁보를 무결성 검증, 압축 해제 후 실행하며, 릴리스마다 버전과 무관한 고정 URL로 배포됩니다.
-- **마운트 없는 샌드박스**: 호스트 파일 접근을 원천 차단해 유출 벡터가 없습니다. 파일 기반 인증서를 쓸 수 없으므로 모바일 인증을 기본으로 권장합니다.
-- 설계와 계약 문서: [무설치 런처 설계](docs/EXPRESS_BOOTSTRAPPER_DESIGN.md), [파라미터화된 .wsb 스펙](docs/PARAMETERIZED_WSB_SPEC.md).
+무설치 구성은 호스트 폴더를 게스트에 매핑하지 않습니다. 따라서 호스트의 파일 기반 공동인증서와 데이터 폴더를 사용할 수 없습니다. 모바일 인증처럼 호스트 파일을 요구하지 않는 인증 수단에 적합합니다.
 
-> 무설치 실행은 런처를 포함한 릴리스부터 사용할 수 있습니다. 자동 업데이트가 필요하면 위의 UniGetUI 또는 winget 설치 방식을 사용하세요. `.wsb`는 이름 해석이 실패할 때만 공용 DNS로 폴백하고 정상 DNS(사내 내부 리졸버 등)는 유지합니다. 공용 DNS가 정책상 막힌 환경이라면 내부 리졸버 사용을 권장합니다([#285](https://github.com/yourtablecloth/TableCloth/issues/285)).
+설계와 자산 계약은 [무설치 부트스트래퍼 설계](docs/EXPRESS_BOOTSTRAPPER_DESIGN.md)와 [파라미터화된 WSB 스펙](docs/PARAMETERIZED_WSB_SPEC.md)에 기록했습니다. 이름 해석에 실패한 경우에만 공용 DNS로 전환하며 정상 동작하는 사내 DNS는 유지합니다. 관련 배경은 [#285](https://github.com/yourtablecloth/TableCloth/issues/285)에서 확인할 수 있습니다.
 
-## 웹 사이트 정보 수정 안내
+## 사이트 정보 수정과 문제 제보
 
-식탁보에서 접속할 수 있는 특정 웹 사이트와 관련된 문제는 다음 중 한 가지 방법을 통하여 제보 또는 기여를 부탁드립니다.
+사이트 카탈로그 수정은 [TableClothCatalog 저장소](https://github.com/yourtablecloth/TableClothCatalog)에 이슈 또는 Pull Request로 제출할 수 있습니다. 다음 채널도 운영합니다.
 
-- **권장**: [식탁보 카탈로그 리포지터리에 이슈 등록 또는 PR 제출](https://github.com/yourtablecloth/TableClothCatalog)
-- [Google Forms를 통한 제보](https://forms.gle/Pw6pBKhqF1e5Nesw6)
-- [Discord 채널을 통한 제보/토론](https://discord.gg/eT2UnUXyTV)
+- [GitHub Issues](https://github.com/yourtablecloth/TableCloth/issues)
+- [Google Forms 제보](https://forms.gle/Pw6pBKhqF1e5Nesw6)
+- [TableCloth Discord](https://discord.gg/eT2UnUXyTV)
 
-## 빌드 환경
+## 개발 문서
 
-- Visual Studio 2026 이상
-- .NET 10.0 SDK
+- [개발 환경과 프로젝트 구조](DEVELOPMENT.md)
+- [브랜치와 버전 관리 정책](docs/BRANCHING.md)
+- [Retail과 Preview 릴리스 채널](docs/RELEASE_CHANNELS.md)
+- [릴리스 실행 절차](docs/RELEASING.md)
+- [업데이트 채널 문제 해결](docs/TROUBLESHOOTING_UPDATE_CHANNEL.md)
+- [Avalonia와 Native AOT 전환 기록](docs/AVALONIA_AOT_MIGRATION.md)
 
-## 테스트 환경
+기본 개발 환경은 Visual Studio 2026과 .NET 10 SDK입니다. Native AOT 게시에는 MSVC C++ 빌드 도구가 필요하며 ARM64를 로컬에서 게시하려면 ARM64용 C++ 빌드 도구도 설치해야 합니다. CI는 x64와 ARM64 네이티브 Windows 러너에서 각 아키텍처를 빌드합니다.
 
-- Windows 11 25H2 이상
-- 지원되는 SKU: Pro, Edu and Enterprise
-- 반드시 Windows Sandbox를 실행할 수 있는 환경이어야 합니다.
+## 후원과 수상
 
-## [개발자 가이드](./DEVELOPMENT.md)
+[GitHub Sponsors](https://github.com/sponsors/yourtablecloth)를 통해 프로젝트를 후원할 수 있습니다.
 
-## 스폰서
-
-GitHub Sponsorship을 통하여 후원해주시면 지속적으로 프로젝트를 진행하는데에 큰 도움이 됩니다. [프로젝트 후원하러 가기](https://github.com/sponsors/yourtablecloth)
-
-## 수상
-
-### 2024년 9월
+2024년 9월에 disquiet.io의 Product of the Week로 선정되었습니다.
 
 [![Product of the Week, Recognized by disquiet.io](docs/images/disquiet_product_of_the_week.jpeg)](https://disquiet.io/product/%EC%8B%9D%ED%83%81%EB%B3%B4)
 
 ## 법적 고지
 
-### 저작권 (Copyright)
+### 저작권
 
-**식탁보 (TableCloth)** 소프트웨어는 대한민국 저작권법에 따라 보호받는 저작물입니다.
+식탁보 소프트웨어는 대한민국 저작권법에 따라 보호받습니다.
 
-- **저작권 등록번호**: C-2025-051228
-- **등록일**: 2025년 11월 21일
-- **저작권자**: 남정현
-- **조회**: [한국저작권위원회 CROS 포털](https://www.cros.or.kr)에서 등록번호로 검색
+- 저작권 등록번호 `C-2025-051228`
+- 등록일 2025년 11월 21일
+- 저작권자 남정현
+- [한국저작권위원회 CROS](https://www.cros.or.kr)에서 등록번호로 조회
 
-© 2021-2026 rkttu.com. All rights reserved.
+Copyright 2021-2026 rkttu.com. All rights reserved.
 
-### 상표권 (Trademark)
+### 상표
 
-**'식탁보'** 명칭은 대한민국 특허청에 상표 출원된 등록 상표입니다.
+`식탁보` 명칭은 대한민국 특허청에 상표로 출원되어 있습니다.
 
-- **출원번호**: 4020240205929
-- **출원공고일**: 2025년 3월 17일
-- **상표권자**: rkttu.com
-- **조회**: [KIPRIS (특허정보검색서비스)](https://www.kipris.or.kr)에서 출원번호로 검색
+- 출원번호 `4020240205929`
+- 출원공고일 2025년 3월 17일
+- 출원인 rkttu.com
+- [KIPRIS](https://www.kipris.or.kr)에서 출원번호로 조회
 
-'식탁보' 명칭의 상업적 사용은 상표권자의 허가가 필요합니다.
+### 라이선스
 
-### 라이선스 (License)
+이 저장소는 AGPL-3.0과 상용 라이선스를 함께 제공합니다. AGPL-3.0 조건을 적용하는 경우 [LICENSE-AGPL](LICENSE-AGPL)을 따릅니다. 별도 상용 라이선스는 라이선스 파일에 기재된 연락처로 문의할 수 있습니다.
 
-본 프로젝트는 **듀얼 라이선스** 모델을 채택하고 있습니다:
-
-1. **AGPL 3.0**: 오픈소스 프로젝트 및 비상업적 사용
-2. **상용 라이선스**: 상업적 사용 시 별도 문의 필요
-
-자세한 내용은 [LICENSE-AGPL](./LICENSE-AGPL) 파일을 참조하세요.
-
-## 이미지 저작권 정보
+## 이미지 저작권
 
 - TableCloth Logo by [Icons8](https://img.icons8.com/color/96/000000/tablecloth.png)
 - Spork New Logo by [Freepik Flaticon](https://www.flaticon.com/free-icon/spork_5625701)

@@ -4,7 +4,7 @@ TableCloth의 Retail과 Preview 릴리스는 태그 Push로 CI 빌드를 시작�
 
 이 문서는 릴리스 유형 선택부터 태그 검증, 로컬 서명, 게시와 후속 자동화 확인까지 다룹니다. 브랜치 수명 주기는 [BRANCHING.md](BRANCHING.md), 채널별 동작은 [RELEASE_CHANNELS.md](RELEASE_CHANNELS.md)에서 설명합니다.
 
-> 기준일: 2026년 8월 23일. x64와 arm64 Native AOT 빌드는 GitHub Actions의 각 네이티브 러너가 담당하고 로컬 x64 PC는 두 아키텍처의 패키징과 Authenticode 서명을 담당합니다.
+> 기준일: 2026년 8월 26일. 현재 Retail은 v1.21.1입니다. x64와 arm64 Native AOT 빌드는 GitHub Actions의 각 네이티브 러너가 담당하고 로컬 x64 PC는 두 아키텍처의 패키징과 Authenticode 서명을 담당합니다.
 
 ## 릴리스 유형 선택
 

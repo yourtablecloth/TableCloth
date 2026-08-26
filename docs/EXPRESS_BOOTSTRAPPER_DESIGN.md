@@ -1,7 +1,7 @@
 # 무설치 부트스트래퍼 설계 (Spork.Bootstrapper)
 
-> 상태: **확정 (2026-07-05)**. 무설치(Express) 레인에서 포터블 Spork zip을 받는 동안 진행 상황을
-> 보여주는 작은 GUI 다운로더의 설계. 부모 계약: [PARAMETERIZED_WSB_SPEC.md](PARAMETERIZED_WSB_SPEC.md)
+> 상태: **구현 및 Retail 배포 완료 (2026-08-26)**. 무설치 Express 경로에서 Spork Portable ZIP을 받는 동안 진행 상황을
+> 보여주는 작은 GUI 다운로더의 설계와 구현 기록. 부모 계약: [PARAMETERIZED_WSB_SPEC.md](PARAMETERIZED_WSB_SPEC.md)
 > (파라미터화된 `.wsb` + 부트스트랩 정규 계약, 모드 2 무설치 코어·자산명 계약 포함).
 >
 > **확정 결정(2026-07-05):** (1) 최신 버전은 **인자 수신 + GitHub 폴백**, (2) UI는 **Win32/GDI(순수 P/Invoke) + NativeAOT**,
@@ -9,12 +9,9 @@
 
 ## 0. 목적과 범위
 
-Express 레인의 다운로드 대상(포터블 Spork zip)은 크다. [Spork.csproj](../src/Spork/Spork.csproj)가
-`UseWPF=true` + `SelfContained` + `PublishSingleFile` + `PublishReadyToRun` + `PublishTrimmed=false`이므로,
-WPF는 NativeAOT/트리밍이 불가해 zip이 압축 후에도 수십 MB(대략 60~90MB급)다. 현재는 이 큰 파일을
-`$ProgressPreference='SilentlyContinue'`인 `Invoke-WebRequest`로 조용히 받아, 게스트 화면에 아무 창도
-없이 긴 무반응 구간이 생긴다. 본 문서는 그 앞에 **작은 GUI 부트스트래퍼**를 세워 다운로드/검증/해제/실행을
-시각화하는 도구의 설계를 정의한다.
+Express 경로의 다운로드 대상인 Spork Portable ZIP은 v1.21.1 기준 x64 약 23MB, ARM64 약 22MB입니다. Spork는 Avalonia와 Native AOT로 게시하며 실행 파일과 Skia, HarfBuzz, ANGLE 지원 DLL을 함께 배포합니다. SporkBootstrap은 x64 약 5.2MB, ARM64 약 5.4MB의 Native AOT 단일 실행 파일로 다운로드와 검증, 압축 해제와 실행 상태를 표시합니다.
+
+초안 당시 Spork는 WPF 기반의 60MB에서 90MB급 패키지였고 PowerShell 다운로드 동안 진행 화면이 없었습니다. 현재 패키지 크기는 줄었지만 다운로드와 무결성 검증 상태를 보여주는 책임은 그대로 SporkBootstrap이 담당합니다. 아래의 WPF 비교와 후보 평가 내용은 구현 당시 판단을 보존한 기록입니다.
 
 **이 문서가 소유하는 것:** 부트스트래퍼 프로젝트 구조, 인자 계약, 최신 버전 해석 규칙, UI/UX 규약,
 크기/AOT 예산, 서명/빌드/자산명 계약, `spork-bootstrap.ps1`의 shim 개정.
@@ -175,10 +172,7 @@ exe는 `.ps1`이 포워딩하는 인자를 받는다. 이름/의미는 [SPEC §4
 
 ## 8. 크기 / NativeAOT 예산과 제약
 
-- **크기(측정):** x64 self-contained 단일 exe **4.7MB**(2026-07-05, `OptimizationPreference=Size` +
-  feature switch + 트리밍, ILC 경고 0). Spork 포터블 zip이 60~90MB급이라 선행 다운로드가 이 수준으로
-  줄면 무반응 구간이 큰 폭으로 짧아진다. 하한은 UI가 아니라 HTTP/TLS/`System.IO.Compression`/SHA256
-  (+GitHub JSON) 페이로드가 정한다.
+- **크기:** 초기 x64 측정값은 4.7MB였습니다. v1.21.1 서명본은 x64 약 5.2MB, ARM64 약 5.4MB이며 Spork Portable ZIP은 각각 약 23MB와 22MB입니다. 크기 하한은 UI보다 HTTP/TLS, `System.IO.Compression`, SHA256과 GitHub JSON 처리 코드가 결정합니다.
 - **P/Invoke 규칙:** UI는 순수 Win32/GDI 공통 컨트롤(`msctls_progress32` 등). P/Invoke는 CsWin32 없이
   손수 작성한 `[LibraryImport]`(외부 패키지 0)로 두고, 내장 `LibraryImportGenerator`가 마샬링을 소스
   생성해 리플렉션 0. **내장 COM 미사용**이라 AOT 클린(COM이 필요해지면 내장 COM이 아니라 소스 생성

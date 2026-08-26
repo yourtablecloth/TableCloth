@@ -4,7 +4,7 @@ TableCloth는 Retail과 Preview 두 릴리스 링을 운영합니다. Retail은 
 
 이 문서는 각 채널의 버전, GitHub Release, Velopack 메타데이터와 외부 배포 계약을 정리합니다. 브랜치와 버전 관리 규칙은 [BRANCHING.md](BRANCHING.md), 게시 절차는 [RELEASING.md](RELEASING.md)에서 다룹니다.
 
-> 기준일: 2026년 8월 23일. v1.21.0부터 Retail과 Preview 모두 Avalonia와 Native AOT 빌드를 사용합니다.
+> 기준일: 2026년 8월 26일. 현재 Retail은 v1.21.1이며 v1.21.0부터 Retail과 Preview 모두 Avalonia와 Native AOT 빌드를 사용합니다.
 
 ## 두 릴리스 링의 역할
 
@@ -81,4 +81,4 @@ Preview는 위 자동화에서 제외됩니다. Preview를 정식 Release로 잘
 
 ## Avalonia와 Native AOT 전환 기록
 
-v1.20에서 v1.21로 이어진 WPF 제거, Avalonia 이관과 Native AOT 검증은 [AVALONIA_AOT_MIGRATION.md](AVALONIA_AOT_MIGRATION.md)에 보존합니다. 현재 채널 정책은 두 링 모두 Avalonia와 Native AOT를 사용한다는 전제에서 운영합니다.
+v1.20에서 v1.21로 이어진 WPF 제거, Avalonia 이관과 Native AOT 검증은 [AVALONIA_AOT_MIGRATION.md](AVALONIA_AOT_MIGRATION.md)에 보존합니다. v1.21.1은 같은 배포 기반에서 첫 실행 데이터 디렉터리 문제인 [#308](https://github.com/yourtablecloth/TableCloth/issues/308)을 수정한 Retail 핫픽스입니다. 현재 채널 정책은 두 링 모두 Avalonia와 Native AOT를 사용한다는 전제에서 운영합니다.
