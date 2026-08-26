@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify TableCloth Release"
+  short_description: "Verify release provenance assets and automation"
+  default_prompt: "Use $tablecloth-verify-release to verify this TableCloth release before and after publishing."

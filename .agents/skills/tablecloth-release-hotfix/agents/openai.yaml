@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release TableCloth Hotfix"
+  short_description: "Deliver and forward-port a Retail hotfix"
+  default_prompt: "Use $tablecloth-release-hotfix to deliver this TableCloth Retail patch."

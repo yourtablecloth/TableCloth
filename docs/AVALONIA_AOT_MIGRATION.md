@@ -1,7 +1,8 @@
-# WPF → Avalonia + Native AOT 마이그레이션 계획 (이슈 #296)
+# WPF에서 Avalonia와 Native AOT로 전환한 기록 (이슈 #296)
 
-> 상태: **계획 수립 + AOT 호환성 실측 완료** (2026-07-24)
-> 대상 이슈: [#296](https://github.com/yourtablecloth/TableCloth/issues/296) — Avalonia + Native AOT 기반 UI 전환
+> 상태: **v1.21.0 정식 출시로 전환 완료** (2026-08-23)
+> 이 문서는 설계와 구현 당시의 판단을 보존하는 이력 문서입니다. 현재 릴리스 정책은 [RELEASE_CHANNELS.md](RELEASE_CHANNELS.md)와 [BRANCHING.md](BRANCHING.md)를 따릅니다.
+> 대상 이슈: [#296](https://github.com/yourtablecloth/TableCloth/issues/296), Avalonia와 Native AOT 기반 UI 전환
 > 선행 참고: [TableClothVNext](https://github.com/yourtablecloth/TableClothVNext) (Avalonia 재작성 시도 아카이브)
 
 ## 1. 목표와 성공 기준

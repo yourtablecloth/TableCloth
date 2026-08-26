@@ -1,0 +1,4 @@
+interface:
+  display_name: "Promote TableCloth Stable"
+  short_description: "Promote a Preview line to stable Retail"
+  default_prompt: "Use $tablecloth-promote-stable to promote this TableCloth version to Retail."
