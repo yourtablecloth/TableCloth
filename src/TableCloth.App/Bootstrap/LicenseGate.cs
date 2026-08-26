@@ -29,7 +29,8 @@ public static class LicenseGate
             return true;
 
         var window = new LicenseWindow();
-        var agreed = DialogHost.ShowModal(window, null) == true && window.LicenseAccepted;
+        var dialogResult = DialogHost.ShowModal(window, null);
+        var agreed = IsAgreementAccepted(dialogResult, window.LicenseAccepted);
 
         if (agreed)
         {
@@ -46,6 +47,14 @@ public static class LicenseGate
             AppMessageBoxResult.OK);
         return false;
     }
+
+    /// <summary>
+    /// 첫 실행에는 소유자 창이 없어 <see cref="DialogHost.ShowModal"/>이 일반 창으로 라이선스 창을 표시한다.
+    /// 이 경로에서는 Avalonia의 <c>Close(true)</c> 결과를 회수할 수 없으므로 창이 기록한 명시적 동의 상태도
+    /// 함께 사용한다.
+    /// </summary>
+    internal static bool IsAgreementAccepted(bool? dialogResult, bool licenseAccepted)
+        => dialogResult == true || licenseAccepted;
 
     private static bool IsLicenseAgreed()
     {
