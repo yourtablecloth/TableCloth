@@ -186,7 +186,7 @@ public sealed class ManagedAiWindowTests
                 Assert.IsFalse(Controls(window).Any(x => AutomationProperties.GetAutomationId(x) == "ManagedAiPendingResponse"));
                 Assert.IsTrue(Controls(window).OfType<TextBlock>().Any(x => x.Text == "식탁보 / fixture-other"));
                 var copies = Controls(window).OfType<Button>().Where(x => x.Classes.Contains("chat-copy")).ToArray();
-                Assert.HasCount(3, copies); // Welcome, user, assistant.
+                Assert.HasCount(2, copies); // User and assistant.
                 copies[^1].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 await Until(() => copies[^1].Content as string == "복사 완료");
                 Assert.AreEqual(markdown, await window.Clipboard!.TryGetTextAsync());
@@ -348,16 +348,22 @@ public sealed class ManagedAiWindowTests
             {
                 window.Show(); await Ready(window);
                 var starters = Controls(window).OfType<Button>().Where(x => x.Classes.Contains("chat-starter")).ToArray();
-                Assert.HasCount(4, starters);
+                Assert.HasCount(5, starters);
+                Assert.HasCount(1, Find<StackPanel>(window, "ManagedAiChatTranscript").Children);
+                var bankNames = new[] { "KB국민은행", "신한은행", "하나은행", "우리은행", "NH농협은행" };
+                var firstCardName = AutomationProperties.GetName(starters[0]);
+                Assert.Contains("찾으려는 서비스 이름을 말씀해 주세요", firstCardName!);
+                var bank = bankNames.Single(name => firstCardName!.Contains(name, StringComparison.Ordinal));
                 SaveFrame(window, screenshot);
                 var input = Find<TextBox>(window, "ManagedAiChatInput");
                 Click(window, starters[0]);
-                Assert.Contains("주민등록등본", input.Text!);
+                Assert.Contains(bank, input.Text!);
+                Assert.Contains("공식 사이트", input.Text!);
                 Assert.HasCount(0, fixture.Chat.Requests);
                 input.Text = "작성하던 내용";
                 Click(window, starters[1]);
                 StringAssert.StartsWith(input.Text!, "작성하던 내용\n\n");
-                Assert.Contains("인터넷뱅킹", input.Text!);
+                Assert.Contains("주민등록등본", input.Text!);
                 Assert.HasCount(0, fixture.Chat.Requests);
                 input.Text = new string('가', 3995);
                 Click(window, starters[0]);
@@ -377,13 +383,107 @@ public sealed class ManagedAiWindowTests
                 Click(window, Find<Button>(window, "ManagedAiNewChat"));
                 await Ready(window);
                 Assert.IsTrue(Find<StackPanel>(window, "ManagedAiStarters").IsVisible);
-                Assert.HasCount(4, Controls(window).OfType<Button>().Where(x => x.Classes.Contains("chat-starter")).ToArray());
+                Assert.HasCount(1, Find<StackPanel>(window, "ManagedAiChatTranscript").Children);
+                Assert.HasCount(5, Controls(window).OfType<Button>().Where(x => x.Classes.Contains("chat-starter")).ToArray());
                 Assert.HasCount(0, fixture.Session!.History);
             }
             finally { window.Close(); }
             return true;
         }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
         TestContext.AddResultFile(screenshot);
+    }
+
+    [TestMethod]
+    public async Task CertificateSkillRequiresConsentBeforeLocalCliBridgeAndModelTurn()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            fixture.Skills.Items = [new("tablecloth-certificate-expiry", "Certificate expiry", "Local expiry", "fixture", true)];
+            var window = fixture.Create();
+            try
+            {
+                window.Show(); await Ready(window);
+                var input = Find<TextBox>(window, "ManagedAiChatInput");
+                input.Text = "공동인증서 만료일을 알려 주세요.";
+                fixture.Messages.Answer = AppMessageBoxResult.No;
+                Click(window, Find<Button>(window, "ManagedAiChatSend"));
+                await Ready(window);
+                Assert.AreEqual(1, fixture.Messages.Questions);
+                Assert.AreEqual(0, fixture.Certificates.Calls);
+                Assert.HasCount(0, fixture.Chat.Requests);
+                Assert.Contains("만료일", input.Text!);
+
+                fixture.Messages.Answer = AppMessageBoxResult.Yes;
+                Click(window, Find<Button>(window, "ManagedAiChatSend"));
+                await Until(() => fixture.Chat.Requests.Count == 1);
+                Assert.AreEqual(1, fixture.Certificates.Calls);
+                Assert.AreEqual(Certificates.Report, fixture.Chat.Requests[0].LocalCertificateReport);
+                fixture.Chat.Complete("만료 예정 인증서가 있습니다.");
+                await Ready(window);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
+    public async Task SandboxSkillUsesHostBridgeBeforeModelTurn()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            fixture.Skills.Items = [new("tablecloth-windows-sandbox", "Windows Sandbox", "CLI control", "fixture", true)];
+            var window = fixture.Create();
+            try
+            {
+                window.Show(); await Ready(window);
+                var input = Find<TextBox>(window, "ManagedAiChatInput");
+                input.Text = "Windows Sandbox 상태를 알려 주세요.";
+                Click(window, Find<Button>(window, "ManagedAiChatSend"));
+                await Until(() => fixture.Chat.Requests.Count == 1);
+                Assert.AreEqual(SandboxCliAction.List, fixture.Sandbox.Request!.Action);
+                Assert.AreEqual(Sandbox.Report, fixture.Chat.Requests[0].LocalWindowsSandboxReport);
+                fixture.Chat.Complete("실행 중인 Sandbox가 없습니다.");
+                await Ready(window);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
+    public async Task SandboxStopKeepsDraftUntilUserAcceptsStateLoss()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            fixture.Skills.Items = [new("tablecloth-windows-sandbox", "Windows Sandbox", "CLI control", "fixture", true)];
+            var window = fixture.Create();
+            try
+            {
+                window.Show(); await Ready(window);
+                var input = Find<TextBox>(window, "ManagedAiChatInput");
+                input.Text = "샌드박스를 종료해 주세요.";
+                fixture.Messages.Answer = AppMessageBoxResult.No;
+                Click(window, Find<Button>(window, "ManagedAiChatSend"));
+                Assert.IsNull(fixture.Sandbox.Request);
+                Assert.HasCount(0, fixture.Chat.Requests);
+                Assert.AreEqual("샌드박스를 종료해 주세요.", input.Text);
+
+                fixture.Messages.Answer = AppMessageBoxResult.Yes;
+                Click(window, Find<Button>(window, "ManagedAiChatSend"));
+                await Until(() => fixture.Chat.Requests.Count == 1);
+                Assert.AreEqual(SandboxCliAction.Stop, fixture.Sandbox.Request!.Action);
+                fixture.Chat.Complete("Sandbox 종료 결과를 확인했습니다.");
+                await Ready(window);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
     }
 
     [TestMethod]
@@ -456,6 +556,43 @@ public sealed class ManagedAiWindowTests
         }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
     }
 
+    [TestMethod]
+    public async Task SkillManagementLoadsOnOpenAndTogglesWithoutClosingSettings()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            fixture.Skills.Items = [new("fixture-skill", "업무 절차", "반복 업무를 안내합니다.",
+                Path.Combine(Path.GetTempPath(), "fixture-skill"), true)];
+            var window = fixture.Create();
+            try
+            {
+                window.Show(); await Ready(window);
+                Click(window, Find<Button>(window, "ManagedAiManage"));
+                await Until(() => fixture.Skills.Calls >= 1 && Find<StackPanel>(window, "ManagedAiSkillList").Children.Count == 1);
+                var overlay = Find<Grid>(window, "ManagedAiSettings");
+                Assert.IsTrue(overlay.IsVisible);
+                Assert.Contains("1개", Find<TextBlock>(window, "ManagedAiSkillStatus").Text!);
+                Assert.Contains("활성 스킬 1개", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
+                await Ready(window);
+                Find<Button>(window, "ManagedAiSkillToggle_fixture-skill").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                await Until(() => fixture.Skills.Items.Single().Enabled == false);
+                Assert.IsTrue(overlay.IsVisible);
+                Assert.AreEqual("사용 안 함", Find<Button>(window, "ManagedAiSkillToggle_fixture-skill").Content);
+                Assert.Contains("사용하지 않도록", Find<TextBlock>(window, "ManagedAiSkillStatus").Text!);
+                Assert.Contains("활성 스킬 0개", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
+                Find<Button>(window, "ManagedAiSkillRemove_fixture-skill").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                await Until(() => fixture.Skills.Items.Count == 0);
+                Assert.IsTrue(overlay.IsVisible);
+                Assert.AreEqual(1, fixture.Messages.Questions);
+                Assert.Contains("보유 0개", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
     private static IEnumerable<Control> Controls(Window window) => window.GetVisualDescendants().OfType<Control>();
     private static void Click(Window window, Control control)
     {
@@ -494,11 +631,14 @@ public sealed class ManagedAiWindowTests
         public Runtime Runtime = new();
         public Authentication Auth = new();
         public Models Models = new();
+        public Skills Skills = new();
         public Chat Chat = new();
+        public Certificates Certificates = new();
+        public Sandbox Sandbox = new();
         public Messages Messages = new();
         public Preferences Preferences = new();
         public ManagedAiChatSession? Session;
-        public ManagedAiWindow Create() => new(Session = new(Chat, new Browser()), Runtime, Auth, Messages, Models, Preferences);
+        public ManagedAiWindow Create() => new(Session = new(Chat, new Browser()), Runtime, Auth, Messages, Models, Skills, Preferences, Certificates, Sandbox);
     }
     private sealed class Preferences : IPreferencesManager
     {
@@ -571,6 +711,26 @@ public sealed class ManagedAiWindowTests
             return Items;
         }
     }
+    private sealed class Skills : IManagedAiSkillManager
+    {
+        public string StorageDirectory => Path.Combine(Path.GetTempPath(), "tablecloth-managed-ai-test-skills");
+        public IReadOnlyList<AiSkill> Items = [];
+        public int Calls;
+        public Task<IReadOnlyList<AiSkill>> ListAsync(CancellationToken token)
+        { Calls++; return Task.FromResult(Items); }
+        public Task<IReadOnlyList<AiSkill>> ImportAsync(string sourceDirectory, CancellationToken token)
+            => throw new AssertFailedException("Unexpected skill import");
+        public Task<IReadOnlyList<AiSkill>> SetEnabledAsync(string id, bool enabled, CancellationToken token)
+        {
+            Items = Items.Select(x => x.Id == id ? x with { Enabled = enabled } : x).ToArray();
+            return Task.FromResult(Items);
+        }
+        public Task<IReadOnlyList<AiSkill>> RemoveAsync(string id, CancellationToken token)
+        {
+            Items = Items.Where(x => x.Id != id).ToArray();
+            return Task.FromResult(Items);
+        }
+    }
     private sealed class Chat : IManagedAiChatProvider
     {
         public readonly List<AiChatRequest> Requests = [];
@@ -585,6 +745,20 @@ public sealed class ManagedAiWindowTests
         public void Complete(string message) => _response!.SetResult(new(message, DateTimeOffset.UtcNow, 2, Requests[^1].Model));
         public void Fail(AiFailureCode code) => _response!.SetException(new ManagedAiException(code));
     }
+    private sealed class Certificates : IManagedAiCertificateBridge
+    {
+        public const string Report = "{\"rootFound\":true,\"scannedAt\":\"2026-09-25T13:00:00+09:00\",\"withinDays\":30,\"pairCount\":0,\"skippedDirectories\":0,\"unreadableCertificates\":0,\"certificates\":[],\"catalog\":{\"cacheFound\":false,\"serviceCount\":0}}";
+        public int Calls;
+        public Task<string> GetExpiryReportAsync(CancellationToken cancellationToken)
+        { Calls++; return Task.FromResult(Report); }
+    }
+    private sealed class Sandbox : IManagedAiSandboxBridge
+    {
+        public const string Report = """{"Action":"list","Status":"succeeded","ExitCode":0,"Output":"{}"}""";
+        public SandboxCliRequest? Request;
+        public Task<string> ExecuteAsync(SandboxCliRequest request, CancellationToken cancellationToken)
+        { Request = request; return Task.FromResult(Report); }
+    }
     private sealed class Browser : ITableClothBrowser
     {
         public Task OpenAsync(Uri target, CancellationToken token) => throw new AssertFailedException("Unexpected browser launch");
@@ -592,8 +766,9 @@ public sealed class ManagedAiWindowTests
     private sealed class Messages : IAppMessageBox
     {
         public int Questions;
+        public AppMessageBoxResult Answer = AppMessageBoxResult.Yes;
         public AppMessageBoxResult DisplayQuestion(string message, AppMessageBoxButton buttons, AppMessageBoxResult answer)
-        { Questions++; return AppMessageBoxResult.Yes; }
+        { Questions++; return Answer; }
         public AppMessageBoxResult DisplayInfo(string message, AppMessageBoxButton buttons) => throw new NotSupportedException();
         public AppMessageBoxResult DisplayError(Exception? reason, bool critical, string file, string member, int line) => throw new NotSupportedException();
         public AppMessageBoxResult DisplayError(string? message, bool critical, string file, string member, int line) => throw new NotSupportedException();

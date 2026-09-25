@@ -14,10 +14,11 @@ public sealed class ProviderTests
     {
         using var fixture = new InstallFixture();
         await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
-        var runner = new ResponseRunner(malformed ? "{}" : ValidationTests.Response());
+        var runner = new ResponseRunner(malformed ? "{}" : ValidationTests.Response(), fixture.Paths);
         var profile = new WindowsManagedAiProfile(fixture.Paths);
         var auth = new OpenAiCodexAuthManager(fixture.Paths, fixture.Installer, profile, runner);
-        var provider = new OpenAiCodexProvider(fixture.Paths, fixture.Installer, auth, profile, runner, new(), new(fixture.Paths));
+        var skills = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, profile, runner);
+        var provider = new OpenAiCodexProvider(fixture.Paths, fixture.Installer, auth, profile, runner, new(), new(fixture.Paths), skills);
         if (malformed)
             await Assert.ThrowsExactlyAsync<ManagedAiException>(() => provider.SearchAsync(new("public fixture query"), null, CancellationToken.None));
         else
@@ -33,27 +34,48 @@ public sealed class ProviderTests
     {
         using var fixture = new InstallFixture();
         await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
-        var runner = new ResponseRunner("[공식 홈페이지](https://example.com/)");
+        var runner = new ResponseRunner("[공식 홈페이지](https://example.com/)", fixture.Paths);
         var profile = new WindowsManagedAiProfile(fixture.Paths);
         var auth = new OpenAiCodexAuthManager(fixture.Paths, fixture.Installer, profile, runner);
-        var provider = new OpenAiCodexProvider(fixture.Paths, fixture.Installer, auth, profile, runner, new(), new(fixture.Paths));
+        var skills = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, profile, runner);
+        var provider = new OpenAiCodexProvider(fixture.Paths, fixture.Installer, auth, profile, runner, new(), new(fixture.Paths), skills);
         var result = await provider.ChatAsync(new("공식 홈페이지", [], "fixture-model"), null, CancellationToken.None);
         Assert.AreEqual("fixture-model", result.Model);
         Assert.AreEqual("--model", runner.Invocation!.StartInfo.ArgumentList[0]);
         Assert.AreEqual("fixture-model", runner.Invocation.StartInfo.ArgumentList[1]);
+        Assert.AreEqual("--profile", runner.Invocation.StartInfo.ArgumentList[2]);
+        Assert.AreEqual(ManagedAiPaths.SkillProfileName, runner.Invocation.StartInfo.ArgumentList[3]);
         Assert.AreEqual(1, result.SearchCalls);
         Assert.AreEqual("https://example.com/", ChatMessageLinks.Parse(result.Text).Single().Link!.AbsoluteUri);
         Assert.DoesNotContain("--output-schema", runner.Invocation!.StartInfo.ArgumentList);
+        Assert.Contains(runner.ExternalManifest.Replace("\\", "\\\\", StringComparison.Ordinal),
+            File.ReadAllText(fixture.Paths.SkillConfiguration));
         Assert.HasCount(0, Directory.GetDirectories(fixture.Paths.Under("runs")));
     }
 
-    private sealed class ResponseRunner(string message) : IJsonlProcessRunner
+    private sealed class ResponseRunner(string message, ManagedAiPaths paths) : IJsonlProcessRunner
     {
         public ProcessRunSpec? Invocation;
+        public string ExternalManifest => Path.Combine(paths.Root, "external", "SKILL.md");
         public Task<ProcessOutcome> RunAsync(ProcessRunSpec spec, Action<string> stdout, Action<string>? stderr, CancellationToken cancellationToken)
         {
-            if (spec.StartInfo.ArgumentList.SequenceEqual(new[] { "login", "status" }))
+            if (spec.StartInfo.ArgumentList.TakeLast(2).SequenceEqual(new[] { "login", "status" }))
                 stderr?.Invoke("Logged in using ChatGPT");
+            else if (spec.StartInfo.ArgumentList.Contains("app-server"))
+            {
+                Assert.Contains("skills/list", spec.Respond!("{\"id\":1,\"result\":{}}")!.Text!);
+                var response = JsonSerializer.Serialize(new
+                {
+                    id = 2,
+                    result = new
+                    {
+                        data = new[] { new { cwd = spec.StartInfo.WorkingDirectory,
+                            skills = new[] { new { name = "external", description = "External skill", path = ExternalManifest,
+                                scope = "user", enabled = true } }, errors = Array.Empty<object>() } }
+                    }
+                });
+                Assert.IsTrue(spec.Respond(response)!.Close);
+            }
             else
             {
                 Invocation = spec;

@@ -5,7 +5,7 @@ namespace TableCloth.ManagedAi.OpenAi;
 
 public sealed class OpenAiCodexProvider(ManagedAiPaths paths, IManagedRuntimeManager runtimes,
     OpenAiCodexAuthManager authentication, IManagedAiProfile profile, IJsonlProcessRunner runner,
-    ManagedAiOptions options, DiagnosticsSink diagnostics) : IManagedAiProvider, IManagedAiChatProvider
+    ManagedAiOptions options, DiagnosticsSink diagnostics, OpenAiCodexSkillManager skills) : IManagedAiProvider, IManagedAiChatProvider
 {
     public async Task<AiSearchResponse> SearchAsync(AiSearchRequest request, IProgress<AiProgress>? progress,
         CancellationToken cancellationToken)
@@ -24,8 +24,8 @@ public sealed class OpenAiCodexProvider(ManagedAiPaths paths, IManagedRuntimeMan
     private async Task<T> RunAsync<T>(string prompt, bool structured, Func<CodexJsonlParser, int, T> complete,
         IProgress<AiProgress>? progress, CancellationToken cancellationToken, string? model = null)
     {
-        profile.Prepare();
         using var lease = paths.AcquireOperation();
+        profile.Prepare();
         var runtime = await runtimes.GetActiveAsync(cancellationToken) ?? throw new ManagedAiException(AiFailureCode.RuntimeNotInstalled);
         progress?.Report(new("CheckingAuthentication"));
         if (!await authentication.CheckStatusAsync(runtime, cancellationToken))
@@ -51,6 +51,7 @@ public sealed class OpenAiCodexProvider(ManagedAiPaths paths, IManagedRuntimeMan
         var notice = NoticeAsync();
         try
         {
+            await skills.SynchronizeAsync(runtime, runDirectory, cancellationToken);
             var schema = Path.Combine(runDirectory, "search-result.schema.json");
             if (structured)
             {

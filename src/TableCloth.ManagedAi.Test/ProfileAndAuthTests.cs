@@ -20,6 +20,13 @@ public sealed class ProfileAndAuthTests
         Assert.AreEqual(pathBefore, Environment.GetEnvironmentVariable("PATH"));
         Assert.AreEqual(codexBefore, Environment.GetEnvironmentVariable("CODEX_HOME"));
         Assert.AreEqual(WindowsManagedAiProfile.Configuration, File.ReadAllText(Path.Combine(fixture.Paths.Profile, "config.toml")));
+        Assert.AreEqual(WindowsManagedAiProfile.EmptySkillConfiguration, File.ReadAllText(fixture.Paths.SkillConfiguration));
+        Assert.IsTrue(Directory.Exists(fixture.Paths.Skills));
+        Assert.IsFalse(fixture.Paths.Skills.StartsWith(fixture.Paths.RuntimeRoot + Path.DirectorySeparatorChar,
+            StringComparison.OrdinalIgnoreCase));
+        File.WriteAllText(fixture.Paths.SkillConfiguration, "unsafe skill override");
+        profile.Prepare();
+        Assert.AreEqual(WindowsManagedAiProfile.EmptySkillConfiguration, File.ReadAllText(fixture.Paths.SkillConfiguration));
         var acl = new DirectoryInfo(fixture.Paths.Profile).GetAccessControl();
         Assert.IsTrue(acl.AreAccessRulesProtected);
         using var identity = WindowsIdentity.GetCurrent();

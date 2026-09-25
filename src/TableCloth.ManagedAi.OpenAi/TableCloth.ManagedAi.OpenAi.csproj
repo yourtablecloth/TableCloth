@@ -9,5 +9,9 @@
     <ProjectReference Include="../TableCloth.ManagedAi.Core/TableCloth.ManagedAi.Core.csproj" />
     <PackageReference Include="Microsoft.Extensions.Http" />
     <EmbeddedResource Include="Schemas/search-result.schema.json" />
+    <EmbeddedResource Include="Skills/Bundled/tablecloth-certificate-expiry/SKILL.md"
+                      LogicalName="TableCloth.ManagedAi.OpenAi.Bundled.CertificateExpirySkill" />
+    <EmbeddedResource Include="Skills/Bundled/tablecloth-windows-sandbox/SKILL.md"
+                      LogicalName="TableCloth.ManagedAi.OpenAi.Bundled.WindowsSandboxSkill" />
   </ItemGroup>
 </Project>

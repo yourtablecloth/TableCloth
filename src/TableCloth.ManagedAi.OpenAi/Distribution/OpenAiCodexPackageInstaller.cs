@@ -20,8 +20,8 @@ public sealed class OpenAiCodexPackageInstaller(ManagedAiPaths paths, OpenAiRele
 
     public async Task<ManagedRuntime> InstallAsync(string? version, IProgress<AiProgress>? progress, CancellationToken token)
     {
-        profile.Prepare();
         using var lease = paths.AcquireOperation();
+        profile.Prepare();
         progress?.Report(new("ResolvingRelease"));
         var release = await metadata.GetAsync(version, token);
         var old = ReadState(paths.Current);
@@ -84,8 +84,8 @@ public sealed class OpenAiCodexPackageInstaller(ManagedAiPaths paths, OpenAiRele
 
     public async Task<ManagedRuntime> RollbackAsync(CancellationToken token)
     {
-        profile.Prepare();
         using var lease = paths.AcquireOperation();
+        profile.Prepare();
         var previous = ReadState(paths.Previous) ?? throw new ManagedAiException(AiFailureCode.NoPreviousVersion);
         var runtime = Resolve(previous);
         await VerifyVersionAsync(runtime, token);

@@ -2,6 +2,7 @@ namespace TableCloth.ManagedAi;
 
 public sealed class ManagedAiPaths
 {
+    public const string SkillProfileName = "tablecloth-skills";
     public ManagedAiPaths(string root)
     {
         if (!Path.IsPathFullyQualified(root) || root.StartsWith("\\\\", StringComparison.Ordinal)) throw Invalid();
@@ -18,6 +19,9 @@ public sealed class ManagedAiPaths
     public string Releases => Under("runtimes", "openai-codex", "releases");
     public string State => Under("runtimes", "openai-codex", "state");
     public string Profile => Under("profiles", "openai-codex", "codex-home");
+    public string Skills => Under("profiles", "openai-codex", "codex-home", "skills");
+    public string SkillState => Under("profiles", "openai-codex", "tablecloth-skills.json");
+    public string SkillConfiguration => Under("profiles", "openai-codex", "codex-home", "tablecloth-skills.config.toml");
     public string Runs => Under("runs");
     public string Downloads => Under("cache", "downloads");
     public string Logs => Under("logs");

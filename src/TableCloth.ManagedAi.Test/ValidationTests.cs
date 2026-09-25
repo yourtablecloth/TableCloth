@@ -107,6 +107,12 @@ public sealed class ValidationTests
         Assert.IsFalse(spec.StartInfo.Environment.ContainsKey("OPENAI_API_KEY"));
         Assert.IsFalse(spec.StartInfo.Environment.ContainsKey("CODEX_ACCESS_TOKEN"));
         Assert.AreEqual(runtime.ProfileDirectory, spec.StartInfo.Environment["CODEX_HOME"]);
+        var arguments = spec.StartInfo.ArgumentList.ToArray();
+        var profileIndex = Array.IndexOf(arguments, "--profile");
+        var execIndex = Array.IndexOf(arguments, "exec");
+        Assert.IsGreaterThanOrEqualTo(0, profileIndex);
+        Assert.AreEqual(ManagedAiPaths.SkillProfileName, arguments[profileIndex + 1]);
+        Assert.IsGreaterThan(profileIndex, execIndex);
         Assert.Contains("--ephemeral", spec.StartInfo.ArgumentList);
         Assert.ThrowsExactly<ManagedAiException>(() => OpenAiSearchPromptFactory.Create(new("a\0b")));
         Assert.IsLessThan(4000, OpenAiSearchPromptFactory.Create(new(new string('가', 2000))).Length);

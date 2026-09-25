@@ -41,6 +41,7 @@ public static class UseTableClothExtensions
         builder.Services.AddTransient<IManagedAiCatalogChoice, ManagedAiCatalogChoice>();
         builder.Services.AddTransient<IManagedAiLinkOpenChoice, ManagedAiLinkOpenChoice>();
         builder.Services.AddTransient<IManagedAiHostBrowser, ManagedAiHostBrowser>();
+        builder.Services.AddSingleton<IManagedAiCertificateBridge, ManagedAiCertificateBridge>();
         builder.Services.AddTransient<ManagedAiWindow>();
 
         builder.Services.AddHttpClient(

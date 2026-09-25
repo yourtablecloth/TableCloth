@@ -19,7 +19,7 @@
         <!-- 이 창은 고정 크기(CanResize=False)라 탭 내용이 뷰포트를 넘으면 스크롤바 없이 잘린다.
              텍스트 배율(125%/150%)에서 실제로 재현되므로, 세로로 자랄 수 있는 탭은 예외 없이
              ScrollViewer 로 감싼다(가로 스크롤은 Disabled — 설명문이 줄바꿈되도록). -->
-        <TabControl Grid.Row="0" TabStripPlacement="Left" SelectedIndex="{Binding InitialTabIndex}">
+        <TabControl Grid.Row="0" TabStripPlacement="Left" SelectedIndex="{Binding InitialTabIndex, Mode=TwoWay}">
             <!-- 사용자 폴더 -->
             <TabItem Header="{x:Static res:UIStringResources.QuickStart_Section_UserFolders}">
                 <Grid Margin="12" RowDefinitions="Auto,*,Auto">
@@ -173,6 +173,44 @@
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
+            </TabItem>
+            <TabItem Header="AI 스킬">
+                <Grid Margin="12" RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="8">
+                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
+                               Text="식탁보 AI 전용 Codex 스킬을 관리합니다. 활성 스킬은 다음 대화에서 사용할 수 있습니다. 런타임을 재설치해도 스킬 폴더는 유지됩니다." />
+                    <TextBlock Grid.Row="1" x:Name="AiSkillSummary" Text="{Binding SkillSummary}" FontWeight="SemiBold" />
+                    <ListBox Grid.Row="2" x:Name="AiSkillList" ItemsSource="{Binding AiSkills}" SelectedItem="{Binding SelectedAiSkill}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SkillSettingsItem">
+                                <StackPanel Margin="4" Spacing="3">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="1" Text="{Binding StateLabel}" />
+                                    </Grid>
+                                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontSize="11"
+                                               Foreground="{DynamicResource ControlSecondaryForeground}" />
+                                    <TextBlock Text="{Binding Directory}" TextTrimming="CharacterEllipsis" FontSize="11"
+                                               Foreground="{DynamicResource ControlSecondaryForeground}" ToolTip.Tip="{Binding Directory}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="6" IsEnabled="{Binding !SkillOperationBusy}">
+                        <Button x:Name="AiSkillAdd" Content="스킬 추가" Command="{Binding AddAiSkillCommand}" Padding="10 5" />
+                        <Button x:Name="AiSkillToggle" Content="{Binding SkillToggleLabel}" Command="{Binding ToggleAiSkillCommand}"
+                                IsEnabled="{Binding SelectedAiSkill, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" />
+                        <Button x:Name="AiSkillRemove" Content="스킬 제거" Command="{Binding RemoveAiSkillCommand}"
+                                IsEnabled="{Binding SelectedAiSkill, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="4" Spacing="6">
+                        <StackPanel Orientation="Horizontal" Spacing="6" IsEnabled="{Binding !SkillOperationBusy}">
+                            <Button x:Name="AiSkillRefresh" Content="목록 새로 고침" Command="{Binding RefreshSkillListCommand}" Padding="10 5" />
+                            <Button x:Name="AiSkillFolder" Content="전용 폴더 열기" Command="{Binding OpenAiSkillFolderCommand}" Padding="10 5" />
+                        </StackPanel>
+                        <TextBlock x:Name="AiSkillNotice" Text="{Binding SkillNotice}" TextWrapping="Wrap" FontSize="11"
+                                   Foreground="{DynamicResource ControlSecondaryForeground}" />
+                    </StackPanel>
+                </Grid>
             </TabItem>
         </TabControl>
 

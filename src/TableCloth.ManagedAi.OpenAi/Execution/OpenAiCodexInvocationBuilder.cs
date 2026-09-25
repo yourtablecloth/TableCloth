@@ -32,7 +32,7 @@ public static class OpenAiCodexInvocationBuilder
     public static ProcessRunSpec Search(ManagedRuntime runtime, string runDirectory, string schemaPath, string prompt, ManagedAiOptions options)
     {
         var spec = Command(runtime, runDirectory,
-            ["--search", "--ask-for-approval", "never", "--strict-config", "exec", "--json",
+            ["--profile", ManagedAiPaths.SkillProfileName, "--search", "--ask-for-approval", "never", "--strict-config", "exec", "--json",
              "--output-schema", schemaPath, "--sandbox", "read-only", "--skip-git-repo-check",
              "--ephemeral", "--color", "never", "-C", runDirectory, "-"], options.HardTimeout);
         return spec with { Input = prompt, MaxStdoutBytes = options.MaxStdoutBytes,
@@ -42,7 +42,7 @@ public static class OpenAiCodexInvocationBuilder
     public static ProcessRunSpec Chat(ManagedRuntime runtime, string runDirectory, string prompt, ManagedAiOptions options, string? model = null)
     {
         var spec = Command(runtime, runDirectory,
-            ["--search", "--ask-for-approval", "never", "--strict-config", "exec", "--json",
+            ["--profile", ManagedAiPaths.SkillProfileName, "--search", "--ask-for-approval", "never", "--strict-config", "exec", "--json",
              "--sandbox", "read-only", "--skip-git-repo-check", "--ephemeral", "--color", "never", "-C", runDirectory, "-"],
             options.HardTimeout);
         if (model is not null)

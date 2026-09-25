@@ -5,8 +5,8 @@ public sealed class OpenAiCodexAuthManager(ManagedAiPaths paths, IManagedRuntime
 {
     public async Task<bool> IsLoggedInAsync(CancellationToken cancellationToken)
     {
-        profile.Prepare();
         using var lease = paths.AcquireOperation();
+        profile.Prepare();
         var runtime = await runtimes.GetActiveAsync(cancellationToken);
         return runtime is not null && await CheckStatusAsync(runtime, cancellationToken);
     }
@@ -25,8 +25,8 @@ public sealed class OpenAiCodexAuthManager(ManagedAiPaths paths, IManagedRuntime
 
     public async Task LoginAsync(AiLoginMethod method, IProgress<AiLoginUpdate>? progress, CancellationToken cancellationToken)
     {
-        profile.Prepare();
         using var lease = paths.AcquireOperation();
+        profile.Prepare();
         var runtime = await runtimes.GetActiveAsync(cancellationToken) ?? throw new ManagedAiException(AiFailureCode.RuntimeNotInstalled);
         // Reopening Login must not start another OAuth flow when credentials are already available.
         if (await CheckStatusAsync(runtime, cancellationToken))
@@ -96,8 +96,8 @@ public sealed class OpenAiCodexAuthManager(ManagedAiPaths paths, IManagedRuntime
 
     public async Task LogoutAsync(CancellationToken cancellationToken)
     {
-        profile.Prepare();
         using var lease = paths.AcquireOperation();
+        profile.Prepare();
         var runtime = await runtimes.GetActiveAsync(cancellationToken) ?? throw new ManagedAiException(AiFailureCode.RuntimeNotInstalled);
         var result = await runner.RunAsync(OpenAiCodexInvocationBuilder.Command(runtime, paths.Profile,
             ["logout"], TimeSpan.FromSeconds(20)), _ => { }, null, cancellationToken);

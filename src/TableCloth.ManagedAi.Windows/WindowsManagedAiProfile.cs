@@ -6,6 +6,7 @@ namespace TableCloth.ManagedAi.Windows;
 
 public sealed class WindowsManagedAiProfile(ManagedAiPaths paths) : IManagedAiProfile
 {
+    public const string EmptySkillConfiguration = "# Managed by TableCloth. Changes are replaced before the next operation.\n";
     public const string Configuration = """
         forced_login_method = "chatgpt"
         cli_auth_credentials_store = "file"
@@ -37,6 +38,7 @@ public sealed class WindowsManagedAiProfile(ManagedAiPaths paths) : IManagedAiPr
         if (drive.DriveType != DriveType.Fixed) throw new ManagedAiException(AiFailureCode.InvalidPath);
         SecureDirectory(paths.Root);
         SecureDirectory(paths.Profile);
+        SecureDirectory(paths.Skills);
         SecureDirectory(paths.Logs);
         var marker = paths.Under(".tablecloth-managed-ai");
         if (!File.Exists(marker)) File.WriteAllText(marker, "1", new UTF8Encoding(false));
@@ -48,6 +50,8 @@ public sealed class WindowsManagedAiProfile(ManagedAiPaths paths) : IManagedAiPr
                 throw new ManagedAiException(AiFailureCode.BlockedByPolicy);
         }
         else File.WriteAllText(config, Configuration, new UTF8Encoding(false));
+        // Skill policy is generated after native discovery. Reset the overlay first so hand edits never reach Codex.
+        File.WriteAllText(paths.SkillConfiguration, EmptySkillConfiguration, new UTF8Encoding(false));
     }
 
     private static void SecureDirectory(string path)

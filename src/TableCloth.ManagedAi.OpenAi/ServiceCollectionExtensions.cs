@@ -7,6 +7,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddManagedOpenAi(this IServiceCollection services, ManagedAiPaths? paths = null)
     {
         services.AddSingleton(_ => paths ?? ManagedAiPaths.ForCurrentUser()).AddSingleton<ManagedAiOptions>();
+        services.AddSingleton<OpenAiCodexSkillManager>();
+        services.AddSingleton<IManagedAiSkillManager>(service => service.GetRequiredService<OpenAiCodexSkillManager>());
         services.AddHttpClient(OpenAiReleaseMetadataClient.HttpClientName, client =>
         {
             client.Timeout = Timeout.InfiniteTimeSpan;

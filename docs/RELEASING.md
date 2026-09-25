@@ -138,7 +138,7 @@ $env:TABLECLOTH_SIGN_SUBJECT = '<certificate subject>'
 .\build.cmd --skip-build --sign --preview --preview-number 1
 ```
 
-`--skip-build`는 CI가 생성한 Native AOT 산출물을 사용합니다. `build.cs`는 TableCloth와 Spork의 앱 바이너리, `Update.exe`, `Setup.exe`를 서명하면서 x64와 arm64 패키지를 다시 만듭니다. Authenticode는 대상 실행 파일을 실행하지 않으므로 x64 호스트에서 arm64 바이너리를 서명할 수 있습니다.
+`--skip-build`는 CI가 생성한 Native AOT 산출물을 사용합니다. `build.cs`는 TableCloth, 함께 배포하는 TableClothCli, Spork의 앱 바이너리와 `Update.exe`, `Setup.exe`를 서명하면서 x64와 arm64 패키지를 다시 만듭니다. [Velopack의 기본 서명 동작](https://github.com/velopack/velopack.docs/discussions/15)은 패키지 안의 PE 실행 파일에도 적용됩니다. Authenticode는 대상 실행 파일을 실행하지 않으므로 x64 호스트에서 arm64 바이너리를 서명할 수 있습니다.
 
 Preview의 `--preview-number`가 태그와 다르면 패키지 버전도 달라집니다. 패키징 로그와 생성한 메타데이터에서 전체 SemVer를 대조합니다.
 
@@ -173,7 +173,7 @@ $mismatch = foreach ($file in $files) {
 if ($mismatch) { throw ($mismatch -join [Environment]::NewLine) }
 ```
 
-최종 검증에서는 Draft의 모든 `.exe` 자산을 다시 내려받아 Authenticode 상태가 `Valid`인지 확인합니다. Portable ZIP 내부의 `TableCloth.exe`와 `Spork.exe`도 풀어서 같은 검사를 수행합니다. x64와 arm64 자산, Velopack 채널 메타데이터와 SBOM이 모두 있는지도 함께 확인합니다.
+최종 검증에서는 Draft의 모든 `.exe` 자산을 다시 내려받아 Authenticode 상태가 `Valid`인지 확인합니다. Portable ZIP 내부의 `TableCloth.exe`, `TableClothCli.exe`, `Spork.exe`도 풀어서 같은 검사를 수행합니다. x64와 arm64 자산, Velopack 채널 메타데이터와 SBOM이 모두 있는지도 함께 확인합니다.
 
 서명 검증이나 자산 대조가 하나라도 실패하면 Draft를 유지합니다. CI 미서명 자산을 남겨 둔 채 일부 파일만 게시하지 않습니다.
 

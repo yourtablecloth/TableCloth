@@ -5,8 +5,8 @@ public sealed class OpenAiCodexModelCatalog(ManagedAiPaths paths, IManagedRuntim
 {
     public async Task<IReadOnlyList<AiModel>> ListAsync(CancellationToken cancellationToken)
     {
-        profile.Prepare();
         using var lease = paths.AcquireOperation();
+        profile.Prepare();
         var runtime = await runtimes.GetActiveAsync(cancellationToken) ?? throw new ManagedAiException(AiFailureCode.RuntimeNotInstalled);
         var directory = paths.Under("runs", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);

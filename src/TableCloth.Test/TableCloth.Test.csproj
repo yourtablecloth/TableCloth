@@ -13,6 +13,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
 		<ProjectReference Include="..\TableCloth\TableCloth.csproj" />
+		<ProjectReference Include="..\TableCloth.Cli\TableCloth.Cli.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

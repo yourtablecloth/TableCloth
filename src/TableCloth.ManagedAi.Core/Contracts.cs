@@ -23,7 +23,8 @@ public enum AiFailureCode
     ProviderFailed, InvalidStructuredOutput, OutputLimitExceeded, UnsafeUrl,
     InvalidQuery, LiveSearchNotObserved, BrowserOpenFailed, NoPreviousVersion,
     SubscriptionUnavailable, ProviderNetworkUnavailable, ProviderConfigurationInvalid,
-    ProviderRequestRejected, LoginFlowUnavailable, CatalogUnavailable, ModelListUnavailable, InvalidModel
+    ProviderRequestRejected, LoginFlowUnavailable, CatalogUnavailable, ModelListUnavailable, InvalidModel,
+    SkillInvalid, SkillAlreadyInstalled, SkillIsolationFailed, CertificateScanUnavailable
 }
 
 // Only fixed codes cross the diagnostics/UI boundary. Never attach provider output or inner exceptions.
@@ -43,7 +44,8 @@ public sealed record AiSearchCandidate(string Title, Uri TargetUrl, string Descr
 public sealed record AiProgress(string Stage, int SearchCalls = 0);
 public enum AiChatRole { User, Assistant }
 public sealed record AiChatMessage(AiChatRole Role, string Text);
-public sealed record AiChatRequest(string Message, IReadOnlyList<AiChatMessage> History, string? Model = null);
+public sealed record AiChatRequest(string Message, IReadOnlyList<AiChatMessage> History, string? Model = null,
+    string? LocalCertificateReport = null, string? LocalWindowsSandboxReport = null);
 public sealed record AiChatResponse(string Text, DateTimeOffset RetrievedAtUtc, int SearchCalls, string? Model = null);
 public sealed record AiModel(string Id, string DisplayName, bool IsDefault = false)
 {
@@ -59,6 +61,15 @@ public sealed record AiModel(string Id, string DisplayName, bool IsDefault = fal
 public interface IManagedAiModelCatalog
 {
     Task<IReadOnlyList<AiModel>> ListAsync(CancellationToken cancellationToken);
+}
+public sealed record AiSkill(string Id, string Name, string Description, string Directory, bool Enabled);
+public interface IManagedAiSkillManager
+{
+    string StorageDirectory { get; }
+    Task<IReadOnlyList<AiSkill>> ListAsync(CancellationToken cancellationToken);
+    Task<IReadOnlyList<AiSkill>> ImportAsync(string sourceDirectory, CancellationToken cancellationToken);
+    Task<IReadOnlyList<AiSkill>> SetEnabledAsync(string id, bool enabled, CancellationToken cancellationToken);
+    Task<IReadOnlyList<AiSkill>> RemoveAsync(string id, CancellationToken cancellationToken);
 }
 public enum AiLoginMethod { DeviceCode, Browser }
 public enum AiLoginStage { Starting, AwaitingUser, Completed }

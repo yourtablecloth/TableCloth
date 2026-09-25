@@ -35,7 +35,11 @@ git submodule update --init --depth 1 --recursive
 
 빌드는 `external/TableClothCatalog`의 카탈로그와 이미지를 사용하여 `Images.zip`을 만듭니다. 서브모듈이 비어 있으면 카탈로그 자산 생성 단계가 실패합니다.
 
-Visual Studio에서는 `TableCloth.slnx`를 열어 빌드합니다. Visual Studio Code를 사용한다면 C# Dev Kit 확장 `ms-dotnettools.csdevkit`과 위의 Visual Studio C++ 도구를 함께 준비합니다.
+Visual Studio에서는 `TableCloth.slnx`를 열어 빌드합니다. Visual Studio Code에서는 C# Dev Kit 확장 `ms-dotnettools.csdevkit`으로 Debug 구성을 실행할 수 있습니다. 이 디버깅 과정에는 Native AOT 게시용 Visual Studio C++ 도구가 필요하지 않습니다.
+
+Dev Kit이 `dotnet TableCloth.dll`로 앱을 시작하면 실행 프로세스는 `dotnet.exe`입니다. 앱은 `dotnet.exe`의 설치 폴더 대신 `TableCloth.dll`이 있는 Debug 출력 폴더에서 `TableCloth.exe`와 `Images.zip`을 찾습니다.
+
+Native AOT의 `bin\Release\...\native`는 중간 산출물 폴더이므로 게시 결과를 실행할 때에는 `dotnet publish`가 만든 폴더를 사용합니다.
 
 ## 프로젝트 구조
 
@@ -51,6 +55,7 @@ src/
   Spork.Bootstrapper/      무설치 Express용 소형 다운로드 런처
   TableCloth.Theme/        TableCloth와 Spork가 공유하는 Avalonia 테마
   TableCloth.Core/         카탈로그 모델, 리소스와 공용 인프라
+  TableCloth.Cli/          TableClothCli.exe 인증서 및 Catalog 조회 도구
   TableCloth.ManagedAi.Core/       AI 대화 계약, URL 검증과 모델 선택
   TableCloth.ManagedAi.OpenAi/     Codex 설치, 인증, 모델 조회와 실행
   TableCloth.ManagedAi.Windows/    Windows 프로세스 격리와 전용 프로필
@@ -65,6 +70,20 @@ src/
 ### 식탁보 AI Preview
 
 사용자 화면에서는 AI 기능을 `식탁보 AI (Preview)`로 표시합니다. `TableCloth.App/ManagedAi`가 채팅 UI와 Catalog 연결을 담당하며 Managed AI 프로젝트 세 개가 플랫폼 중립 계약, OpenAI 통합과 Windows 격리를 나누어 구현합니다. `TableCloth.ManagedAi.Poc` 이름은 최초 설계 단계에서 만든 진단 프로젝트 경로와 명령 호환성을 유지합니다. 제품에 노출하는 기능 단계는 Preview입니다.
+
+전용 스킬은 `%LOCALAPPDATA%\TableCloth\ManagedAi\profiles\openai-codex\codex-home\skills`에 저장합니다. Codex 런타임은 `runtimes\openai-codex` 아래에 설치하므로 두 수명 주기가 겹치지 않습니다. 공급자는 모델 요청 직전에 native `skills/list`를 읽고 전용 프로필 밖의 검색 결과를 `tablecloth-skills.config.toml`에서 비활성화합니다. 일반 설정 창의 `AI 스킬` 탭과 대화 창에서 목록 조회, 폴더 가져오기, 개별 사용 설정, 제거, 저장 위치 열기를 제공합니다. 대화 창의 수치는 실제 스킬 호출 횟수가 아니라 다음 대화에 제공할 활성 스킬 수입니다. 런타임이 없는 동안에도 전용 폴더 목록과 사용 설정을 관리할 수 있으며 상세 설명은 런타임을 설치한 뒤 확인합니다. 현재 Preview 정책은 shell, hook, subagent와 스킬의 MCP 의존성 자동 설치를 끄므로 지침 중심 스킬을 지원 범위로 봅니다.
+
+`TableClothCli.exe`는 TableCloth 게시 출력에 함께 포함하는 호스트 전용 읽기 도구입니다. 첫 스킬 동기화 시 앱이 내장 `tablecloth-certificate-expiry`를 전용 스킬 폴더에 설치합니다. 사용자가 인증서 만료 질문을 보내고 로컬 조회 결과의 OpenAI 전송에 동의하면 앱이 CLI를 고정 인수로 실행합니다. Codex 프로필의 shell 차단 설정은 유지합니다. CLI는 `signCert.der`의 공개 만료 정보만 읽고 `signPri.key`는 존재 여부만 확인합니다. 기본 JSON에는 이름과 경로를 넣지 않으며, 로컬에서 `--details`를 지정한 경우에만 두 항목을 출력합니다. `catalog services`는 기존 `TableCloth.Data\CatalogCache.xml`을 오프라인으로 읽습니다. Catalog에는 인증서와 서비스의 대응 관계가 없습니다.
+
+내장 `tablecloth-windows-sandbox` 스킬은 호스트의 `wsb.exe` 실행 별칭을 사용합니다. 앱은 요청을 분석한 뒤 `list`, 기본 설정의 `start`, `stop`, `connect`, `ip`만 고정 인수로 실행하고 결과를 대화에 전달합니다. 대상 ID가 없으면 실행 중인 Sandbox가 하나일 때만 자동 선택하며 종료 전에는 확인 창을 표시합니다. `exec`, 폴더 공유와 임의 구성은 지원하지 않습니다. 이 기능은 [Microsoft의 Windows Sandbox CLI](https://learn.microsoft.com/en-us/windows/security/application-security/application-isolation/windows-sandbox/windows-sandbox-cli)를 설치한 환경에서만 동작합니다. 기존 식탁보 웹사이트 열기 흐름은 별도로 생성한 `.wsb` 구성을 계속 사용합니다.
+
+다음 명령으로 로컬 조회 출력을 확인할 수 있습니다. `--root`와 `--file`은 명시적으로 지정한 테스트 또는 사용자 경로에만 적용합니다.
+
+```powershell
+TableClothCli.exe certificates expiring --within-days 30 --with-catalog-summary
+TableClothCli.exe certificates expiring --within-days 30 --details
+TableClothCli.exe catalog services --query 은행 --limit 20
+```
 
 [AI Preview 구현 및 검증 보고서](docs/poc/managed-ai-runtime.md)는 현재 기능, 테스트 증거와 남은 실기기 검증을 설명합니다. [원본 PoC 설계](docs/poc/managed-ai-runtime-design.ko.md)는 구현 전 가설과 승인 조건을 기록한 자료이므로 원래 명칭을 유지합니다.
 
