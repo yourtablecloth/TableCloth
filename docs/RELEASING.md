@@ -138,7 +138,7 @@ $env:TABLECLOTH_SIGN_SUBJECT = '<certificate subject>'
 .\build.cmd --skip-build --sign --preview --preview-number 1
 ```
 
-`--skip-build`는 CI가 생성한 Native AOT 산출물을 사용합니다. `build.cs`는 TableCloth, 함께 배포하는 TableClothCli, Spork의 앱 바이너리와 `Update.exe`, `Setup.exe`를 서명하면서 x64와 arm64 패키지를 다시 만듭니다. [Velopack의 기본 서명 동작](https://github.com/velopack/velopack.docs/discussions/15)은 패키지 안의 PE 실행 파일에도 적용됩니다. Authenticode는 대상 실행 파일을 실행하지 않으므로 x64 호스트에서 arm64 바이너리를 서명할 수 있습니다.
+`--skip-build`는 CI가 생성한 Native AOT 산출물을 사용합니다. `build.cs`는 `--runtime win-x64` 또는 `--runtime win-arm64`를 지정하여 TableCloth, 함께 배포하는 TableClothCli, Spork의 앱 바이너리와 각 아키텍처의 `Update.exe`, `Setup.exe`를 서명하면서 패키지를 다시 만듭니다. [Velopack의 기본 서명 동작](https://github.com/velopack/velopack.docs/discussions/15)은 패키지 안의 PE 실행 파일에도 적용됩니다. Authenticode는 대상 실행 파일을 실행하지 않으므로 x64 호스트에서 arm64 바이너리를 서명할 수 있습니다.
 
 Preview의 `--preview-number`가 태그와 다르면 패키지 버전도 달라집니다. 패키징 로그와 생성한 메타데이터에서 전체 SemVer를 대조합니다.
 

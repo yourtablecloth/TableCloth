@@ -127,6 +127,7 @@ jobs:
           --packDir $env:TableClothPublishDir `
           --mainExe TableCloth.exe `
           --channel preview-${{ env.Platform }} `
+          --runtime win-${{ env.Platform }} `
           --outputDir releases
       shell: pwsh
 
@@ -155,6 +156,7 @@ jobs:
           --packDir $env:SporkPublishDir `
           --mainExe Spork.exe `
           --channel spork-preview-${{ env.Platform }} `
+          --runtime win-${{ env.Platform }} `
           --outputDir releases
       shell: pwsh
 

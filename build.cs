@@ -213,6 +213,7 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
                 "--icon", iconPath,
                 // 채널로 아키텍처(+링)를 분리해 Setup/Portable/메타데이터 이름 충돌을 막는다.
                 "--channel", tcChannel,
+                "--runtime", $"win-{platform}",
             };
             // 코드 서명(--sign): Release 패키지에 한해 Velopack 이 pack 시점에
             // 앱 바이너리 + Update.exe + Setup.exe 를 한 번에 서명한다. signtool 은
@@ -327,6 +328,7 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
                 "--icon", sporkIcon,
                 // 채널을 'spork(-preview)-<arch>' 로 두어 TableCloth 및 정식/프리뷰 메타데이터 이름 충돌을 막는다.
                 "--channel", sporkChannel,
+                "--runtime", $"win-{platform}",
             };
             if (doSign && config == "Release")
             {
