@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Components;
+using TableCloth.ManagedAi;
 using TableCloth.Models;
 using TableCloth.Models.Configuration;
 using TableCloth.Resources;
@@ -37,6 +38,7 @@ public static class OptionsTabKeys
     public const string Compatibility = nameof(Compatibility);
     public const string Diagnostics = nameof(Diagnostics);
     public const string Preview = nameof(Preview);
+    public const string AiSkills = nameof(AiSkills);
 }
 
 [Obsolete("This class is reserved for design-time usage.", false)]
@@ -55,13 +57,15 @@ public partial class OptionsWindowViewModel : ObservableObject
         IAppRestartManager appRestartManager,
         IAppMessageBox appMessageBox,
         ISharedLocations sharedLocations,
-        TaskFactory taskFactory)
+        TaskFactory taskFactory,
+        IManagedAiSkillManager skillsManager)
     {
         _preferencesManager = preferencesManager;
         _appRestartManager = appRestartManager;
         _appMessageBox = appMessageBox;
         _sharedLocations = sharedLocations;
         _taskFactory = taskFactory;
+        _skillsManager = skillsManager;
 
         BuildCompatibilityOptions();
     }
@@ -73,7 +77,7 @@ public partial class OptionsWindowViewModel : ObservableObject
 
     /// <summary>
     /// 탭 키 문자열을 <see cref="InitialTabIndex"/>로 적용한다. XAML의 TabControl에 정의된
-    /// 탭 순서(사용자 폴더 / 데이터 디렉터리 / 인증서 / 장치 공유 / 호환성 / 진단)와 동기화되어야 한다.
+    /// 탭 순서(사용자 폴더 / 데이터 디렉터리 / 인증서 / 장치 공유 / 호환성 / 진단 / 미리 보기 / AI 스킬)와 동기화되어야 한다.
     /// </summary>
     public void SetInitialTab(string? tabKey)
     {
@@ -91,6 +95,7 @@ public partial class OptionsWindowViewModel : ObservableObject
             OptionsTabKeys.Compatibility => 4,
             OptionsTabKeys.Diagnostics => 5,
             OptionsTabKeys.Preview => 6,
+            OptionsTabKeys.AiSkills => 7,
             _ => 0,
         };
     }
@@ -138,6 +143,8 @@ public partial class OptionsWindowViewModel : ObservableObject
         }
 
         PropertyChanged += ViewModel_PropertyChanged;
+        _optionsLoaded = true;
+        if (InitialTabIndex == 7 && !SkillsLoaded) await RefreshSkillsAsync();
     }
 
     [RelayCommand]
@@ -524,7 +531,13 @@ public partial class OptionsWindowViewModel : ObservableObject
         // 저장 대상이 아닌 UI 전용 상태(호환성 탭 검색어/결과 없음 플래그)는
         // 아래의 preferences 로드를 유발하지 않도록 즉시 무시한다(검색은 매 키 입력마다 발생).
         if (e.PropertyName is nameof(CompatibilityOptionSearchText)
-            or nameof(HasNoCompatibilityMatches))
+            or nameof(HasNoCompatibilityMatches)
+            or nameof(InitialTabIndex)
+            or nameof(SelectedAiSkill)
+            or nameof(SkillOperationBusy)
+            or nameof(SkillSummary)
+            or nameof(SkillNotice)
+            or nameof(SkillToggleLabel))
         {
             return;
         }

@@ -30,6 +30,16 @@ Windows Sandbox에서 인터넷 뱅킹과 전자정부 사이트를 사용할 �
 
 v1.21.0은 WPF UI를 Avalonia로 이관하고 TableCloth와 Spork 배포본을 Native AOT로 전환했습니다. 현재 정식 버전인 [v1.21.1](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.21.1)은 첫 실행 데이터 디렉터리 처리 문제인 [#308](https://github.com/yourtablecloth/TableCloth/issues/308)을 수정한 긴급 업데이트입니다.
 
+## 식탁보 AI Preview
+
+빠른 시작 화면에서 `식탁보 AI (Preview)`를 열 수 있습니다. 이 기능은 TableCloth 전용 위치에 OpenAI Codex 런타임을 설치하고 사용자의 ChatGPT 로그인으로 대화를 처리합니다. 선택한 모델은 기존 애플리케이션 설정에 저장합니다. 응답의 웹 링크를 누르면 Windows Sandbox 또는 현재 Windows 브라우저를 선택할 수 있습니다. Sandbox 경로는 TableCloth Catalog를 확인하고 Spork로 필요한 소프트웨어를 설치한 뒤 페이지를 엽니다.
+
+일반 설정 창의 `AI 스킬` 탭에서 전용 Codex 스킬을 조회하고 추가, 활성화, 비활성화, 제거할 수 있습니다. AI 대화 창에도 활성 스킬 수를 표시하고 스킬 관리 기능을 제공합니다. TableCloth는 전용 프로필 밖에서 Codex가 찾은 사용자 및 프로젝트 스킬을 대화 실행 전에 끕니다. 스킬 파일과 사용 설정은 Codex 런타임 릴리스 폴더와 분리하므로 런타임 업데이트나 재설치 후에도 유지합니다.
+
+내장 `tablecloth-certificate-expiry` 스킬은 공동인증서 만료일 질문을 처리합니다. 사용자가 동의하면 호스트의 `TableClothCli.exe`가 기본 NPKI 폴더에서 인증서 공개 정보와 로컬 Catalog 캐시 현황을 조회합니다. 대화에는 인증서 이름, 경로와 개인키를 제외한 결과만 전달합니다. CLI는 인증서와 특정 Catalog 서비스의 관계를 추정하지 않습니다.
+
+AI Preview 메시지를 전송하면 사용자의 OpenAI 구독 사용량을 소비합니다. 기능의 구현 상태, 보안 경계와 아직 실행하지 않은 실기기 검증은 [AI Preview 구현 및 검증 보고서](docs/poc/managed-ai-runtime.md)에 기록했습니다. [최초 PoC 설계](docs/poc/managed-ai-runtime-design.ko.md)는 구현 전 기준과 의사결정 이력을 보존합니다.
+
 정식 릴리스는 다음 네 가지 앱 조합을 제공합니다.
 
 - TableCloth x64와 ARM64
@@ -86,6 +96,7 @@ WinGet 등록소 반영에는 GitHub Release 게시 이후 시간이 더 걸릴 
 - [릴리스 실행 절차](docs/RELEASING.md)
 - [업데이트 채널 문제 해결](docs/TROUBLESHOOTING_UPDATE_CHANNEL.md)
 - [Avalonia와 Native AOT 전환 기록](docs/AVALONIA_AOT_MIGRATION.md)
+- [식탁보 AI Preview 구현 및 검증](docs/poc/managed-ai-runtime.md)
 
 기본 개발 환경은 Visual Studio 2026과 .NET 10 SDK입니다. Native AOT 게시에는 MSVC C++ 빌드 도구가 필요하며 ARM64를 로컬에서 게시하려면 ARM64용 C++ 빌드 도구도 설치해야 합니다. CI는 x64와 ARM64 네이티브 Windows 러너에서 각 아키텍처를 빌드합니다.
 

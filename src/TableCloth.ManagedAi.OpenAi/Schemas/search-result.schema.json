@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["answer", "results", "warnings"],
+  "properties": {
+    "answer": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "results": {
+      "type": "array", "minItems": 0, "maxItems": 5,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["title", "target_url", "description", "source_name", "source_url", "reason"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "target_url": { "type": "string", "maxLength": 2048 },
+          "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "source_name": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "source_url": { "type": "string", "maxLength": 2048 },
+          "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
+        }
+      }
+    },
+    "warnings": { "type": "array", "maxItems": 5, "items": { "type": "string", "minLength": 1, "maxLength": 300 } }
+  }
+}

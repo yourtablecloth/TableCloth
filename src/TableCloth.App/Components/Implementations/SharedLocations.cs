@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using TableCloth.Models.Catalog;
 
 namespace TableCloth.Components.Implementations;
 
@@ -21,7 +22,7 @@ public sealed class SharedLocations : ISharedLocations
         => GetDataPath("Preferences.json");
 
     public string CatalogCacheFilePath
-        => GetDataPath("CatalogCache.xml");
+        => CatalogCacheLocation.ForCurrentUser();
 
     public string GetTempPath()
         => GetDataPath("Sandbox");
@@ -50,6 +51,12 @@ public sealed class SharedLocations : ISharedLocations
     {
         get
         {
+            // When launched through `dotnet TableCloth.dll`, MainModule is dotnet.exe.
+            // AppContext.BaseDirectory still points to the application payload.
+            var applicationExecutable = Path.Combine(AppContext.BaseDirectory, "TableCloth.exe");
+            if (File.Exists(applicationExecutable))
+                return applicationExecutable;
+
             var mainModule = Process.GetCurrentProcess().MainModule;
             ArgumentNullException.ThrowIfNull(mainModule);
 
@@ -60,14 +67,7 @@ public sealed class SharedLocations : ISharedLocations
     }
 
     public string ExecutableDirectoryPath
-    {
-        get
-        {
-            var directoryName = Path.GetDirectoryName(ExecutableFilePath);
-            ArgumentNullException.ThrowIfNullOrEmpty(directoryName);
-            return directoryName;
-        }
-    }
+        => Path.TrimEndingDirectorySeparator(AppContext.BaseDirectory);
 
     public string ImagesZipFilePath
         => Path.Combine(ExecutableDirectoryPath, "Images.zip");

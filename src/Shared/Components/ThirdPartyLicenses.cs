@@ -33,6 +33,7 @@ namespace TableCloth.Components
         {
             new("Avalonia", "(c) AvaloniaUI OÜ and contributors", "https://github.com/AvaloniaUI/Avalonia"),
             new("CommunityToolkit.Mvvm", "(c) .NET Foundation and contributors", "https://github.com/CommunityToolkit/dotnet"),
+            new("Markdig", "(c) Alexandre Mutel", "https://github.com/xoofx/markdig"),
             new("Serilog", "(c) Serilog contributors", "https://github.com/serilog/serilog"),
             new("Sentry SDK for .NET", "(c) Functional Software, Inc. dba Sentry", "https://github.com/getsentry/sentry-dotnet"),
             new("System.CommandLine", "(c) .NET Foundation and contributors", "https://github.com/dotnet/command-line-api"),

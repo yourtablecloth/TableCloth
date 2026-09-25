@@ -2,6 +2,8 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using System.Diagnostics;
 using TableCloth.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using TableCloth.ManagedAi;
 
 namespace TableCloth.Pages;
 
@@ -36,5 +38,14 @@ public partial class QuickStartPage : UserControl
             });
         }
         catch { }
+    }
+
+    private void ManagedAi_Click(object? sender, RoutedEventArgs e)
+    {
+        var services = TableClothApplication.ServiceProvider;
+        if (services is null) return;
+        var window = services.GetRequiredService<ManagedAiWindow>();
+        if (TopLevel.GetTopLevel(this) is Window owner) window.Show(owner);
+        else window.Show();
     }
 }

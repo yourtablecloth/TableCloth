@@ -58,6 +58,17 @@ public sealed class SandboxBuilder(
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
 
+        if (tableClothConfiguration.ManagedAiBrowserOnlyUrl is { } browserOnlyUrl)
+        {
+            var target = ManagedAi.PublicWebUrl.Validate(browserOnlyUrl);
+            if (tableClothConfiguration.Services.Count != 0 || tableClothConfiguration.MappedFolders.Count != 0)
+                throw new ManagedAi.ManagedAiException(ManagedAi.AiFailureCode.BrowserOpenFailed);
+            var browserSpec = ManagedAi.Windows.BrowserOnlySandboxSpec.Create(target);
+            var browserFile = Path.Combine(outputDirectory, "ManagedAiBrowser.wsb");
+            await File.WriteAllTextAsync(browserFile, browserSpec, cancellationToken).ConfigureAwait(false);
+            return browserFile;
+        }
+
         // 통합 단일 바이너리 모델: 호스트 TableCloth 설치 폴더 전체(실행 파일 + 부속 DLL)를
         // 세션 staging의 App 폴더로 복사. 샌드박스는 이 App 폴더를 RO 마운트하여 동일 폴더의
         // TableCloth.exe를 'spork' verb로 실행한다. self-contained 게시물이면 런타임도 함께 복사되므로
