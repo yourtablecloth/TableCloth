@@ -21,11 +21,21 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-    - name: Validate version core matches tag
+    - name: Validate Preview tag, branch and version
       run: |
         # v1.22.0-preview.1 -> 1.22.0-preview.1 -> core 1.22.0
         TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+        if [[ ! "$TAG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-preview\.[1-9][0-9]*$ ]]; then
+          echo "::error::Invalid Preview tag: $TAG_VERSION"
+          exit 1
+        fi
+        if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/develop; then
+          echo "::error::Preview tag commit must be contained in origin/develop."
+          exit 1
+        fi
         CORE_VERSION="${TAG_VERSION%%-preview*}"
 
         VERSION_MAJOR=$(grep -oP '(?<=<TableClothVersionMajor>)[^<]+' Directory.Build.Props)
@@ -56,6 +66,7 @@ jobs:
       TableCloth_Project_Path: src\TableCloth\TableCloth.csproj
       Spork_Test_Project_Path: src\Spork.Test\Spork.Test.csproj
       TableCloth_Test_Project_Path: src\TableCloth.Test\TableCloth.Test.csproj
+      ManagedAi_Test_Project_Path: src\TableCloth.ManagedAi.Test\TableCloth.ManagedAi.Test.csproj
       Platform: ${{ matrix.platform }}
       # 게시 경로는 build.cs 가 기대하는 레이아웃을 그대로 쓴다. 로컬 x64 PC 가 이 산출물을 그대로
       # 내려받아 `build.cmd --skip-build --sign --preview` 로 서명 패키징할 수 있게 하기 위함이다
@@ -72,7 +83,7 @@ jobs:
     - name: Install .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 10.0.x
+        dotnet-version: 11.0.100-rc.1.26425.128
 
     - name: Install Velopack CLI
       run: dotnet tool install -g vpk
@@ -82,6 +93,9 @@ jobs:
 
     - name: Run tests (TableCloth.Test)
       run: dotnet test $env:TableCloth_Test_Project_Path -c Release
+
+    - name: Run tests (TableCloth.ManagedAi.Test)
+      run: dotnet test $env:ManagedAi_Test_Project_Path -c Release
 
     # Native AOT 게시 — 진입점 csproj 가 RID 지정 시 PublishAot(+크기 세트)를 자동 활성화한다.
     # (WPF 전용 PublishSingleFile/ReadyToRun 플래그를 넘기지 않는다 — AOT 와 상호배타.)

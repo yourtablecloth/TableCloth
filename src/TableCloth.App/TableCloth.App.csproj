@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
+		<TargetFramework>net11.0-windows10.0.18362.0</TargetFramework>
 		<!-- 이슈 #296: WPF → Avalonia. UseWPF 제거. -->
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<!-- 이슈 #296 Stage 2(M5): dev 빌드에서 트림/AOT/단일파일 분석기를 상시 켜 회귀를 조기 차단.

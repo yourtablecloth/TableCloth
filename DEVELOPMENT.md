@@ -1,6 +1,6 @@
 # TableCloth 개발 환경과 프로젝트 구조
 
-TableCloth는 Windows 11과 .NET 10을 기준으로 개발합니다. v1.21.0부터 TableCloth와 Spork UI는 Avalonia를 사용하며 RID를 지정한 Release 게시에서는 Native AOT를 활성화합니다. 현재 정식 버전은 v1.21.1입니다.
+TableCloth의 `develop` 브랜치는 Windows 11과 .NET 11 RC1 SDK를 기준으로 v1.22.0 Preview를 개발합니다. v1.21.0부터 TableCloth와 Spork UI는 Avalonia를 사용하며 RID를 지정한 Release 게시에서는 Native AOT를 활성화합니다. 현재 정식 버전은 v1.21.1입니다.
 
 브랜치와 버전 운영은 [브랜치와 버전 관리 정책](docs/BRANCHING.md)을 따릅니다. 다음 Minor 버전은 `develop`에서 `X.Y.0-preview.N`으로 검증합니다. 최신 정식 버전의 긴급 패치는 `main`에서 `X.Y.Z`로 게시한 뒤 다음 개발 브랜치로 순방향 전파합니다. 채널 계약과 게시 절차는 [릴리스 채널](docs/RELEASE_CHANNELS.md)과 [릴리스 실행 절차](docs/RELEASING.md)에 기록했습니다.
 
@@ -9,8 +9,8 @@ TableCloth는 Windows 11과 .NET 10을 기준으로 개발합니다. v1.21.0부�
 
 ## 개발 도구
 
-- Visual Studio 2026
-- .NET 10 SDK
+- Visual Studio 2026 Insiders 또는 C# Dev Kit
+- .NET 11 RC1 SDK `11.0.100-rc.1.26425.128` (`global.json`에 고정)
 - Desktop development with C++ 워크로드
 - Windows 11 SDK
 - Git과 GitHub CLI

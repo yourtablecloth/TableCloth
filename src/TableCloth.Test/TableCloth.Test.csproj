@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSTest.Sdk/4.0.1">
 
 	<PropertyGroup>
-		<TargetFrameworks>net10.0-windows10.0.18362.0</TargetFrameworks>
+		<TargetFrameworks>net11.0-windows10.0.18362.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>

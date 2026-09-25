@@ -24,6 +24,7 @@ on:
         - '*.slnx'
         - '*.cs'
         - '*.props'
+        - 'global.json'
     pull_request:
         paths:
         - '.github/workflows/**'
@@ -35,6 +36,7 @@ on:
         - '*.slnx'
         - '*.cs'
         - '*.props'
+        - 'global.json'
 jobs:
   validate-version:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -90,6 +92,7 @@ jobs:
       TableCloth_Core_Project_Path: src\TableCloth.Core\TableCloth.Core.csproj
       Spork_Test_Project_Path: src\Spork.Test\Spork.Test.csproj
       TableCloth_Test_Project_Path: src\TableCloth.Test\TableCloth.Test.csproj
+      ManagedAi_Test_Project_Path: src\TableCloth.ManagedAi.Test\TableCloth.ManagedAi.Test.csproj
       Platform: ${{ matrix.platform }}
       # build.cs --skip-build 가 그대로 재사용하는 게시 디렉터리 계약.
       TableClothPublishDir: publish\${{ matrix.configuration }}\win-${{ matrix.platform }}
@@ -106,7 +109,7 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 10.0.x
+        dotnet-version: 11.0.100-rc.1.26425.128
 
     # Install Velopack CLI
     - name: Install Velopack CLI
@@ -121,6 +124,11 @@ jobs:
     # Run tests for TableCloth.Test
     - name: Run tests for TableCloth.Test
       run: dotnet test $env:TableCloth_Test_Project_Path -c:$env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
+
+    - name: Run tests for TableCloth.ManagedAi.Test
+      run: dotnet test $env:ManagedAi_Test_Project_Path -c:$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
 

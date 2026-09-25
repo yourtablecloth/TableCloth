@@ -4,7 +4,7 @@ TableCloth는 2026년 8월 23일에 게시한 v1.21.0부터 정식 버전과 다
 
 이 문서는 브랜치의 역할, 버전 증가 기준, 핫픽스 전파 방식과 정식 승격 조건을 다룹니다. 채널별 배포 계약은 [RELEASE_CHANNELS.md](RELEASE_CHANNELS.md), 실제 게시 명령은 [RELEASING.md](RELEASING.md)에서 이어집니다.
 
-> 기준일: 2026년 8월 26일. 현재 Retail은 v1.21.1입니다. 아직 다음 Minor 개발 주기를 시작하지 않아 원격 `develop` 브랜치는 만들지 않았습니다. 다음 버전을 시작할 때 이 문서와 `tablecloth-start-next-version` 스킬에 따라 생성합니다.
+> 기준일: 2026년 9월 26일. 현재 Retail은 v1.21.1입니다. `develop`에서 v1.22.0 Preview 개발을 시작했으며 .NET 11 RC1 SDK를 사용합니다.
 
 ## 정식 버전과 다음 버전의 병행 개발
 

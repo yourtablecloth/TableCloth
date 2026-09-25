@@ -98,7 +98,7 @@ WinGet 등록소 반영에는 GitHub Release 게시 이후 시간이 더 걸릴 
 - [Avalonia와 Native AOT 전환 기록](docs/AVALONIA_AOT_MIGRATION.md)
 - [식탁보 AI Preview 구현 및 검증](docs/poc/managed-ai-runtime.md)
 
-기본 개발 환경은 Visual Studio 2026과 .NET 10 SDK입니다. Native AOT 게시에는 MSVC C++ 빌드 도구가 필요하며 ARM64를 로컬에서 게시하려면 ARM64용 C++ 빌드 도구도 설치해야 합니다. CI는 x64와 ARM64 네이티브 Windows 러너에서 각 아키텍처를 빌드합니다.
+현재 정식 v1.21.1은 .NET 10을 사용합니다. `develop`의 v1.22.0 Preview는 `global.json`에 고정한 .NET 11 RC1 SDK `11.0.100-rc.1.26425.128`로 빌드합니다. 개발 환경은 Visual Studio 2026 Insiders 또는 C# Dev Kit을 사용합니다. Native AOT 게시에는 MSVC C++ 빌드 도구가 필요하며 ARM64를 로컬에서 게시하려면 ARM64용 C++ 빌드 도구도 설치해야 합니다. CI는 x64와 ARM64 네이티브 Windows 러너에서 각 아키텍처를 빌드합니다.
 
 ## 후원과 수상
 

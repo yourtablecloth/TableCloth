@@ -4,7 +4,7 @@ TableCloth는 Retail과 Preview 두 릴리스 링을 운영합니다. Retail은 
 
 이 문서는 각 채널의 버전, GitHub Release, Velopack 메타데이터와 외부 배포 계약을 정리합니다. 브랜치와 버전 관리 규칙은 [BRANCHING.md](BRANCHING.md), 게시 절차는 [RELEASING.md](RELEASING.md)에서 다룹니다.
 
-> 기준일: 2026년 8월 26일. 현재 Retail은 v1.21.1이며 v1.21.0부터 Retail과 Preview 모두 Avalonia와 Native AOT 빌드를 사용합니다.
+> 기준일: 2026년 9월 26일. 현재 Retail은 v1.21.1이며 `develop`의 v1.22.0 Preview는 .NET 11 RC1 SDK를 사용합니다. v1.21.0부터 Retail과 Preview 모두 Avalonia와 Native AOT 빌드를 사용합니다.
 
 ## 두 릴리스 링의 역할
 

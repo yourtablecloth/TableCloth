@@ -38,7 +38,7 @@ var previewNumber = GetArgValue("--preview-number") ?? "1";
 if (showHelp)
 {
     Console.WriteLine("""
-        TableCloth Build Script (.NET 10)
+        TableCloth Build Script (.NET 11 RC1)
         
         Usage: dotnet run --file build.cs [options]
         

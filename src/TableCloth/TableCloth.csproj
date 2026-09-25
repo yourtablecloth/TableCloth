@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
+		<TargetFramework>net11.0-windows10.0.18362.0</TargetFramework>
 		<StartupObject>TableCloth.Program</StartupObject>
 		<ApplicationIcon>App.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -126,7 +126,7 @@
 	<Target Name="CopyTableClothCliForDevelopment" AfterTargets="Build"
 	        Condition="'$(RuntimeIdentifier)' == ''">
 		<ItemGroup>
-			<_TableClothCliDevFiles Include="..\TableCloth.Cli\bin\$(Configuration)\net10.0-windows10.0.18362.0\TableClothCli.*" />
+			<_TableClothCliDevFiles Include="..\TableCloth.Cli\bin\$(Configuration)\net11.0-windows10.0.18362.0\TableClothCli.*" />
 		</ItemGroup>
 		<Copy SourceFiles="@(_TableClothCliDevFiles)" DestinationFolder="$(TargetDir)"
 		      SkipUnchangedFiles="true" />

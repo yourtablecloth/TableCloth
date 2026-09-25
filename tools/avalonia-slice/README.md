@@ -20,7 +20,7 @@ Native AOT 링크에는 MSVC C++ 툴체인이 필요하다(`vswhere.exe`가 PATH
 ```powershell
 $env:PATH = "C:\Program Files (x86)\Microsoft Visual Studio\Installer;" + $env:PATH
 dotnet publish -c Release -r win-x64 -p:PublishAot=true
-& .\bin\Release\net10.0-windows\win-x64\publish\avalonia-slice.exe
+& .\bin\Release\net11.0-windows\win-x64\publish\avalonia-slice.exe
 # 개발 실행(비 AOT): dotnet run
 ```
 

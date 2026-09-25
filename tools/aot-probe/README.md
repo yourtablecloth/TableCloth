@@ -24,7 +24,7 @@ Native AOT 링크에는 MSVC C++ 툴체인이 필요하다. `vswhere.exe`가 PAT
 # Developer PowerShell for VS, 또는:
 $env:PATH = "C:\Program Files (x86)\Microsoft Visual Studio\Installer;" + $env:PATH
 dotnet publish -c Release -r win-x64 -p:PublishAot=true
-& .\bin\Release\net10.0-windows\win-x64\publish\aot-probe.exe
+& .\bin\Release\net11.0-windows\win-x64\publish\aot-probe.exe
 ```
 
 ## 실측 결과 (2026-07-24, .NET 10.0.302 / ILCompiler 10.0.10)
