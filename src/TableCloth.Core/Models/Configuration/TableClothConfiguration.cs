@@ -50,6 +50,12 @@ namespace TableCloth.Models.Configuration
         public string TargetUrl { get; set; } = null;
 
         /// <summary>
+        /// AI Preview 화면에서 사용자가 선택한 URL을 호스트 폴더 매핑 없이 브라우저 전용 샌드박스로 엽니다.
+        /// 기존 카탈로그 딥링크와 분리하며 SandboxBuilder가 공개 웹 URL 정책을 다시 검사합니다.
+        /// </summary>
+        public string ManagedAiBrowserOnlyUrl { get; set; } = null;
+
+        /// <summary>
         /// 샌드박스 명세 파일 (WSB) 및 데이터 파일을 저장할 디렉터리 경로입니다.
         /// </summary>
         public string AssetsDirectoryPath { get; set; } = null;

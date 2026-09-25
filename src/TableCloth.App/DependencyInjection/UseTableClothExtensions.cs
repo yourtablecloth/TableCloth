@@ -9,6 +9,9 @@ using TableCloth.Dialogs;
 using TableCloth.Pages;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
+using TableCloth.ManagedAi;
+using TableCloth.ManagedAi.OpenAi;
+using TableCloth.ManagedAi.Windows;
 
 namespace TableCloth.App.DependencyInjection;
 
@@ -29,6 +32,16 @@ public static class UseTableClothExtensions
             .AddConsole();
 
         builder.Services.AddLogging();
+
+        builder.Services.AddManagedOpenAi();
+        builder.Services.AddSingleton<IJsonlProcessRunner, JsonlProcessRunner>();
+        builder.Services.AddSingleton<IManagedAiProfile, WindowsManagedAiProfile>();
+        builder.Services.AddTransient<ITableClothBrowser, TableClothBrowserAdapter>();
+        builder.Services.AddTransient<IManagedAiCatalogLauncher, ManagedAiCatalogLauncher>();
+        builder.Services.AddTransient<IManagedAiCatalogChoice, ManagedAiCatalogChoice>();
+        builder.Services.AddTransient<IManagedAiLinkOpenChoice, ManagedAiLinkOpenChoice>();
+        builder.Services.AddTransient<IManagedAiHostBrowser, ManagedAiHostBrowser>();
+        builder.Services.AddTransient<ManagedAiWindow>();
 
         builder.Services.AddHttpClient(
             nameof(ConstantStrings.UserAgentText),

@@ -51,11 +51,22 @@ src/
   Spork.Bootstrapper/      무설치 Express용 소형 다운로드 런처
   TableCloth.Theme/        TableCloth와 Spork가 공유하는 Avalonia 테마
   TableCloth.Core/         카탈로그 모델, 리소스와 공용 인프라
+  TableCloth.ManagedAi.Core/       AI 대화 계약, URL 검증과 모델 선택
+  TableCloth.ManagedAi.OpenAi/     Codex 설치, 인증, 모델 조회와 실행
+  TableCloth.ManagedAi.Windows/    Windows 프로세스 격리와 전용 프로필
+  TableCloth.ManagedAi.Poc/        AI Preview용 진단 콘솔 호스트
+  TableCloth.ManagedAi.Test/       AI 런타임과 공급자 단위 테스트
   TableCloth.Test/         호스트 및 공용 로직 단위 테스트
   Spork.Test/              Spork 로직 단위 테스트
 ```
 
 호스트 TableCloth는 실행 파일과 부속 DLL을 세션 staging의 `App` 폴더로 복사하고 `Images.zip`을 `App\images`에 풉니다. Windows Sandbox는 이 staging 폴더를 데스크톱의 `App`으로 매핑한 뒤 `TableCloth.exe spork`를 실행합니다. Spork는 로컬 이미지와 카탈로그 스냅샷을 먼저 사용할 수 있어 게스트 네트워크가 불안정한 경우에도 기본 카탈로그 흐름을 유지합니다.
+
+### 식탁보 AI Preview
+
+사용자 화면에서는 AI 기능을 `식탁보 AI (Preview)`로 표시합니다. `TableCloth.App/ManagedAi`가 채팅 UI와 Catalog 연결을 담당하며 Managed AI 프로젝트 세 개가 플랫폼 중립 계약, OpenAI 통합과 Windows 격리를 나누어 구현합니다. `TableCloth.ManagedAi.Poc` 이름은 최초 설계 단계에서 만든 진단 프로젝트 경로와 명령 호환성을 유지합니다. 제품에 노출하는 기능 단계는 Preview입니다.
+
+[AI Preview 구현 및 검증 보고서](docs/poc/managed-ai-runtime.md)는 현재 기능, 테스트 증거와 남은 실기기 검증을 설명합니다. [원본 PoC 설계](docs/poc/managed-ai-runtime-design.ko.md)는 구현 전 가설과 승인 조건을 기록한 자료이므로 원래 명칭을 유지합니다.
 
 ## 빌드와 Native AOT 게시
 
@@ -65,11 +76,10 @@ src/
 dotnet build TableCloth.slnx
 ```
 
-단위 테스트는 다음 두 프로젝트를 실행합니다.
+전체 단위 테스트는 솔루션에서 실행합니다.
 
 ```powershell
-dotnet test src/TableCloth.Test/TableCloth.Test.csproj
-dotnet test src/Spork.Test/Spork.Test.csproj
+dotnet test TableCloth.slnx
 ```
 
 RID를 지정하면 진입점 프로젝트가 `PublishAot=true`를 적용합니다. x64 TableCloth와 Spork 게시 예시는 다음과 같습니다.

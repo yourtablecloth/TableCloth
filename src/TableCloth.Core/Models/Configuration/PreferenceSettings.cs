@@ -55,6 +55,11 @@ namespace TableCloth.Models.Configuration
         public string LastUsedCertHash { get; set; } = null;
 
         /// <summary>
+        /// 식탁보 AI 채팅에서 마지막으로 선택한 OpenAI 모델 ID를 기록합니다.
+        /// </summary>
+        public string LastSelectedAiModel { get; set; } = null;
+
+        /// <summary>
         /// 라이선스 동의 시점을 기록합니다.
         /// </summary>
         public DateTime? LicenseAgreedTime { get; set; } = null;
