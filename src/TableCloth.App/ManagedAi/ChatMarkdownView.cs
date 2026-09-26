@@ -184,7 +184,7 @@ public sealed class ChatMarkdownView : StackPanel
                     else span.FontStyle = FontStyle.Italic;
                     Append(span.Inlines, emphasis, linksEnabled); target.Add(span); break;
                 case LinkInline { IsImage: true } image:
-                    target.Add(new Run("[이미지: " + ChatMessageLinks.PlainText(image) + "]")); break;
+                    target.Add(new Run(ManagedAiText.Select("[이미지: ", "[Image: ") + ChatMessageLinks.PlainText(image) + "]")); break;
                 case LinkInline link:
                     if (linksEnabled && ChatMarkdown.GetWebLink(link.Url) is { } uri)
                         AddLink(target, uri, link);
@@ -211,7 +211,9 @@ public sealed class ChatMarkdownView : StackPanel
         var button = new Button { Content = caption, Padding = new Thickness(0), Margin = new Thickness(0), MinHeight = 0, FontSize = 15 };
         button.Classes.Add("link"); button.Classes.Add("markdown-link");
         AutomationProperties.SetName(button, name + " | " + uri.OriginalString);
-        ToolTip.SetTip(button, uri.OriginalString + "\n식탁보에서 열기. Catalog에 등록된 서비스는 Spork로 필요한 소프트웨어를 설치합니다.");
+        ToolTip.SetTip(button, uri.OriginalString + "\n" + ManagedAiText.Select(
+            "식탁보에서 열기. Catalog에 등록된 서비스는 Spork로 필요한 소프트웨어를 설치합니다.",
+            "Open with TableCloth. For Catalog services, Spork installs the required software."));
         button.Click += (_, _) => _openLink(uri);
         target.Add(new InlineUIContainer { Child = button, BaselineAlignment = BaselineAlignment.Center });
     }

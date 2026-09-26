@@ -19,7 +19,11 @@ public sealed class ProfileAndAuthTests
         profile.Prepare();
         Assert.AreEqual(pathBefore, Environment.GetEnvironmentVariable("PATH"));
         Assert.AreEqual(codexBefore, Environment.GetEnvironmentVariable("CODEX_HOME"));
-        Assert.AreEqual(WindowsManagedAiProfile.Configuration, File.ReadAllText(Path.Combine(fixture.Paths.Profile, "config.toml")));
+        var canonicalConfig = WindowsManagedAiProfile.Configuration.Replace("\r\n", "\n", StringComparison.Ordinal);
+        Assert.AreEqual(canonicalConfig, File.ReadAllText(Path.Combine(fixture.Paths.Profile, "config.toml")));
+        File.WriteAllText(Path.Combine(fixture.Paths.Profile, "config.toml"),
+            canonicalConfig.Replace("\n", "\r\n", StringComparison.Ordinal));
+        profile.Prepare();
         Assert.AreEqual(WindowsManagedAiProfile.EmptySkillConfiguration, File.ReadAllText(fixture.Paths.SkillConfiguration));
         Assert.IsTrue(Directory.Exists(fixture.Paths.Skills));
         Assert.IsFalse(fixture.Paths.Skills.StartsWith(fixture.Paths.RuntimeRoot + Path.DirectorySeparatorChar,

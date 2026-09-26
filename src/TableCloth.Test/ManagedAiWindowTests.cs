@@ -15,6 +15,7 @@ using TableCloth.Models.Configuration;
 using TableCloth.Serialization;
 using TableCloth.ManagedAi.OpenAi;
 using System.Text.Json;
+using System.Globalization;
 using TableCloth.Theme.Controls;
 
 namespace TableCloth.Test;
@@ -23,6 +24,31 @@ namespace TableCloth.Test;
 public sealed class ManagedAiWindowTests
 {
     public TestContext TestContext { get; set; } = null!;
+
+    [TestMethod]
+    public async Task EnglishUiUsesEnglishAcrossChatAndSkillSettings()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            var window = fixture.Create(CultureInfo.GetCultureInfo("en-US"));
+            try
+            {
+                Assert.AreEqual("TableCloth AI (Preview)", window.Title);
+                window.Show(); await Ready(window);
+                Assert.AreEqual("Send", Find<Button>(window, "ManagedAiChatSend").Content);
+                Assert.Contains("enabled skills", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
+                Assert.AreEqual("Ready to chat. Press Shift+Enter to send a message.", Find<TextBlock>(window, "ManagedAiStatus").Text);
+                Click(window, Find<Button>(window, "ManagedAiManage"));
+                Assert.AreEqual("Sign out", Find<Button>(window, "ManagedAiSignOut").Content);
+                Assert.AreEqual("Reload skills", Find<Button>(window, "ManagedAiSkillRefresh").Content);
+                Assert.AreEqual("AI skills", ManagedAiText.SkillsTabTitle);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
 
     [TestMethod]
     public async Task ModelChoiceSurvivesReopeningAndRetainsOtherPreferences()
@@ -638,7 +664,11 @@ public sealed class ManagedAiWindowTests
         public Messages Messages = new();
         public Preferences Preferences = new();
         public ManagedAiChatSession? Session;
-        public ManagedAiWindow Create() => new(Session = new(Chat, new Browser()), Runtime, Auth, Messages, Models, Skills, Preferences, Certificates, Sandbox);
+        public ManagedAiWindow Create(CultureInfo? culture = null)
+        {
+            CultureInfo.CurrentUICulture = culture ?? CultureInfo.GetCultureInfo("ko-KR");
+            return new(Session = new(Chat, new Browser()), Runtime, Auth, Messages, Models, Skills, Preferences, Certificates, Sandbox);
+        }
     }
     private sealed class Preferences : IPreferencesManager
     {

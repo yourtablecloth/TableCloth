@@ -20,7 +20,7 @@ public sealed record SkillSettingsItem(AiSkill Skill)
     public string Description => Skill.Description;
     public string Directory => Skill.Directory;
     public bool Enabled => Skill.Enabled;
-    public string StateLabel => Enabled ? "사용 중" : "사용 안 함";
+    public string StateLabel => Enabled ? ManagedAiText.Select("사용 중", "Enabled") : ManagedAiText.Select("사용 안 함", "Disabled");
 }
 
 public partial class OptionsWindowViewModel
@@ -38,12 +38,13 @@ public partial class OptionsWindowViewModel
     private bool _skillOperationBusy;
 
     [ObservableProperty]
-    private string _skillSummary = "AI 스킬 목록을 불러오고 있습니다.";
+    private string _skillSummary = ManagedAiText.Select("AI 스킬 목록을 불러오고 있습니다.", "Loading AI skills.");
 
     [ObservableProperty]
     private string _skillNotice = string.Empty;
 
-    public string SkillToggleLabel => SelectedAiSkill?.Enabled == true ? "비활성화" : "활성화";
+    public string SkillToggleLabel => SelectedAiSkill?.Enabled == true
+        ? ManagedAiText.Select("비활성화", "Disable") : ManagedAiText.Select("활성화", "Enable");
 
     partial void OnSelectedAiSkillChanged(SkillSettingsItem? value)
         => OnPropertyChanged(nameof(SkillToggleLabel));
@@ -59,16 +60,18 @@ public partial class OptionsWindowViewModel
     private async Task RefreshSkillsAsync()
     {
         if (_skillsManager is null || SkillOperationBusy) return;
-        await RunSkillActionAsync(() => _skillsManager.ListAsync(CancellationToken.None), "스킬 목록을 새로 불러왔습니다.");
+        await RunSkillActionAsync(() => _skillsManager.ListAsync(CancellationToken.None),
+            ManagedAiText.Select("스킬 목록을 새로 불러왔습니다.", "Skill list refreshed."));
     }
 
     [RelayCommand]
     private async Task AddAiSkill()
     {
         if (_skillsManager is null || SkillOperationBusy) return;
-        var source = await PickFolderAsync("SKILL.md가 들어 있는 스킬 폴더 선택");
+        var source = await PickFolderAsync(ManagedAiText.Select("SKILL.md가 들어 있는 스킬 폴더 선택", "Select a skill folder containing SKILL.md"));
         if (string.IsNullOrWhiteSpace(source)) return;
-        await RunSkillActionAsync(() => _skillsManager.ImportAsync(source, CancellationToken.None), "스킬을 가져왔습니다.");
+        await RunSkillActionAsync(() => _skillsManager.ImportAsync(source, CancellationToken.None),
+            ManagedAiText.Select("스킬을 가져왔습니다.", "Skill imported."));
     }
 
     [RelayCommand]
@@ -76,18 +79,20 @@ public partial class OptionsWindowViewModel
     {
         if (_skillsManager is null || SkillOperationBusy || SelectedAiSkill is not { } selected) return;
         await RunSkillActionAsync(() => _skillsManager.SetEnabledAsync(selected.Id, !selected.Enabled, CancellationToken.None),
-            $"{selected.Name} 스킬의 사용 설정을 변경했습니다.");
+            ManagedAiText.Select($"{selected.Name} 스킬의 사용 설정을 변경했습니다.", $"Updated the enabled state of {selected.Name}."));
     }
 
     [RelayCommand]
     private async Task RemoveAiSkill()
     {
         if (_skillsManager is null || SkillOperationBusy || SelectedAiSkill is not { } selected) return;
-        var confirmed = _appMessageBox.DisplayQuestion($"{selected.Name} 스킬과 전용 폴더의 파일을 삭제하시겠습니까?",
+        var confirmed = _appMessageBox.DisplayQuestion(ManagedAiText.Select(
+                $"{selected.Name} 스킬과 전용 폴더의 파일을 삭제하시겠습니까?",
+                $"Delete the {selected.Name} skill and its files from the dedicated folder?"),
             AppMessageBoxButton.YesNo, AppMessageBoxResult.No);
         if (confirmed != AppMessageBoxResult.Yes) return;
         await RunSkillActionAsync(() => _skillsManager.RemoveAsync(selected.Id, CancellationToken.None),
-            $"{selected.Name} 스킬을 제거했습니다.");
+            ManagedAiText.Select($"{selected.Name} 스킬을 제거했습니다.", $"Removed the {selected.Name} skill."));
     }
 
     [RelayCommand]
@@ -99,13 +104,13 @@ public partial class OptionsWindowViewModel
             Directory.CreateDirectory(_skillsManager.StorageDirectory);
             Process.Start(new ProcessStartInfo(_skillsManager.StorageDirectory) { UseShellExecute = true })?.Dispose();
         }
-        catch { SkillNotice = "전용 스킬 폴더를 열지 못했습니다."; }
+        catch { SkillNotice = ManagedAiText.Select("전용 스킬 폴더를 열지 못했습니다.", "Could not open the dedicated skill folder."); }
     }
 
     private async Task RunSkillActionAsync(Func<Task<System.Collections.Generic.IReadOnlyList<AiSkill>>> action, string success)
     {
         SkillOperationBusy = true;
-        SkillNotice = "전용 스킬을 확인하고 있습니다.";
+        SkillNotice = ManagedAiText.Select("전용 스킬을 확인하고 있습니다.", "Checking dedicated skills.");
         try
         {
             var skills = await action();
@@ -113,7 +118,9 @@ public partial class OptionsWindowViewModel
             AiSkills.Clear();
             foreach (var skill in skills) AiSkills.Add(new(skill));
             SelectedAiSkill = AiSkills.FirstOrDefault(x => x.Id == selectedId);
-            SkillSummary = $"보유 스킬 {AiSkills.Count}개, 활성 스킬 {AiSkills.Count(x => x.Enabled)}개";
+            SkillSummary = ManagedAiText.Select(
+                $"보유 스킬 {AiSkills.Count}개, 활성 스킬 {AiSkills.Count(x => x.Enabled)}개",
+                $"{AiSkills.Count} skills, {AiSkills.Count(x => x.Enabled)} enabled");
             SkillNotice = success;
             SkillsLoaded = true;
         }
@@ -121,13 +128,14 @@ public partial class OptionsWindowViewModel
         {
             SkillNotice = ex.Code switch
             {
-                AiFailureCode.SkillAlreadyInstalled => "같은 이름의 스킬이 이미 있습니다.",
-                AiFailureCode.SkillInvalid => "스킬 폴더나 SKILL.md를 확인할 수 없습니다.",
-                AiFailureCode.RuntimeBusy => "다른 창에서 AI 작업을 진행하고 있습니다. 잠시 후 다시 시도할 수 있습니다.",
-                _ => "스킬 목록을 갱신하지 못했습니다. 잠시 후 다시 시도할 수 있습니다."
+                AiFailureCode.SkillAlreadyInstalled => ManagedAiText.Select("같은 이름의 스킬이 이미 있습니다.", "A skill with this name already exists."),
+                AiFailureCode.SkillInvalid => ManagedAiText.Select("스킬 폴더나 SKILL.md를 확인할 수 없습니다.", "Could not read the skill folder or SKILL.md."),
+                AiFailureCode.RuntimeBusy => ManagedAiText.Select("다른 창에서 AI 작업을 진행하고 있습니다. 잠시 후 다시 시도할 수 있습니다.", "Another window is using AI. Try again shortly."),
+                AiFailureCode.BlockedByPolicy => ManagedAiText.Select("전용 Codex 설정이 정책 검사를 통과하지 못했습니다. 설정을 복구한 뒤 다시 시도할 수 있습니다.", "The dedicated Codex configuration failed its policy check. Restore the configuration and try again."),
+                _ => ManagedAiText.Select("스킬 목록을 갱신하지 못했습니다. 잠시 후 다시 시도할 수 있습니다.", "Could not refresh skills. Try again shortly.")
             };
         }
-        catch { SkillNotice = "스킬 작업을 완료하지 못했습니다. 잠시 후 다시 시도할 수 있습니다."; }
+        catch { SkillNotice = ManagedAiText.Select("스킬 작업을 완료하지 못했습니다. 잠시 후 다시 시도할 수 있습니다.", "Could not complete the skill operation. Try again shortly."); }
         finally { SkillOperationBusy = false; }
     }
 }

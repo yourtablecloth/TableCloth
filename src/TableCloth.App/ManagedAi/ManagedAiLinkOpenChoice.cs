@@ -43,7 +43,7 @@ internal sealed class ManagedAiLinkOpenWindow : Window
 {
     public ManagedAiLinkOpenWindow(Uri target)
     {
-        Title = "링크 열기";
+        Title = ManagedAiText.Select("링크 열기", "Open link");
         Width = 560;
         SizeToContent = SizeToContent.Height;
         MaxHeight = 520;
@@ -55,7 +55,7 @@ internal sealed class ManagedAiLinkOpenWindow : Window
         var root = new Grid { RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto"), Margin = new Thickness(20), RowSpacing = 12 };
         root.Children.Add(new TextBlock
         {
-            Text = "이 링크를 어디에서 열지 선택합니다.",
+            Text = ManagedAiText.Select("이 링크를 어디에서 열지 선택합니다.", "Choose where to open this link."),
             FontSize = 18,
             FontWeight = Avalonia.Media.FontWeight.SemiBold,
             TextWrapping = TextWrapping.Wrap
@@ -71,8 +71,11 @@ internal sealed class ManagedAiLinkOpenWindow : Window
         root.Children.Add(destination);
         var description = new TextBlock
         {
-            Text = "Windows Sandbox를 선택하면 TableCloth Catalog를 확인하고 필요한 소프트웨어를 Spork로 설치합니다. " +
-                "현재 브라우저를 선택하면 Windows 기본 브라우저에서 바로 엽니다.",
+            Text = ManagedAiText.Select(
+                "Windows Sandbox를 선택하면 TableCloth Catalog를 확인하고 필요한 소프트웨어를 Spork로 설치합니다. " +
+                    "현재 브라우저를 선택하면 Windows 기본 브라우저에서 바로 엽니다.",
+                "Windows Sandbox checks the TableCloth Catalog and installs required software with Spork. " +
+                    "Current browser opens the link directly in the Windows default browser."),
             TextWrapping = TextWrapping.Wrap
         };
         Grid.SetRow(description, 2);
@@ -84,12 +87,12 @@ internal sealed class ManagedAiLinkOpenWindow : Window
             HorizontalAlignment = HorizontalAlignment.Right,
             Spacing = 8
         };
-        var cancel = Button("취소", "ManagedAiLinkCancel");
+        var cancel = Button(ManagedAiText.Select("취소", "Cancel"), "ManagedAiLinkCancel");
         cancel.IsCancel = true;
         cancel.Click += (_, _) => Close(ManagedAiLinkOpenDestination.Cancel);
-        var browser = Button("현재 브라우저에서 열기", "ManagedAiLinkCurrentBrowser");
+        var browser = Button(ManagedAiText.Select("현재 브라우저에서 열기", "Open in current browser"), "ManagedAiLinkCurrentBrowser");
         browser.Click += (_, _) => Close(ManagedAiLinkOpenDestination.CurrentBrowser);
-        var sandbox = Button("Windows Sandbox에서 열기", "ManagedAiLinkWindowsSandbox");
+        var sandbox = Button(ManagedAiText.Select("Windows Sandbox에서 열기", "Open in Windows Sandbox"), "ManagedAiLinkWindowsSandbox");
         sandbox.IsDefault = true;
         sandbox.Classes.Add("accent");
         sandbox.Click += (_, _) => Close(ManagedAiLinkOpenDestination.WindowsSandbox);

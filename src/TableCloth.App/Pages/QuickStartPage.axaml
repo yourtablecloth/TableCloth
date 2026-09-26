@@ -3,6 +3,7 @@
              xmlns:res="using:TableCloth.Resources"
              xmlns:vm="using:TableCloth.ViewModels"
              xmlns:tablecloth="using:TableCloth"
+             xmlns:ai="using:TableCloth.ManagedAi"
              x:Class="TableCloth.Pages.QuickStartPage"
              x:DataType="vm:QuickStartPageViewModel">
     <Grid RowDefinitions="Auto,*,Auto">
@@ -30,7 +31,7 @@
             <Button Classes="link" HorizontalAlignment="Center" Margin="0 16 0 0"
                     Content="{Binding NpkiStatusText}" Command="{Binding OpenOptionsCommand}" CommandParameter="Certificate" />
             <Button Classes="link" HorizontalAlignment="Center" Margin="0 12 0 0"
-                    Content="식탁보 AI (Preview)" Click="ManagedAi_Click" />
+                    Content="{x:Static ai:ManagedAiText.PreviewTitle}" Click="ManagedAi_Click" />
         </StackPanel>
 
         <!-- Footer -->

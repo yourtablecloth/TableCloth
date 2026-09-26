@@ -26,6 +26,17 @@
 		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
 	</PropertyGroup>
 
+	<!-- .NET 11 RC1 does not pass the referenced Core project's Korean satellite to ILC by default. -->
+	<Target Name="IncludeCoreKoreanResourcesInNativeAot" BeforeTargets="WriteIlcRspFileForCompilation"
+	        Condition="'$(PublishAot)' == 'true'">
+		<ItemGroup>
+			<_CoreKoreanResources Include="@(ResolvedFileToPublish)"
+			                      Condition="'%(ResolvedFileToPublish.RelativePath)' == 'ko\TableCloth.Core.resources.dll'" />
+			<IlcSatelliteAssembly Include="@(_CoreKoreanResources)" />
+		</ItemGroup>
+		<Error Condition="'@(_CoreKoreanResources)' == ''" Text="Korean TableCloth.Core resources are missing from the NativeAOT inputs." />
+	</Target>
+
 	<!--
 		Phase 5 — 게시 정책. RuntimeIdentifier가 명시된 경우(=실제 publish 호출)에만 활성화되어
 		`dotnet build`(dev 사이클)에는 영향을 주지 않는다. Velopack 배포 흐름:

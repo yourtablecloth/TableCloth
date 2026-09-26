@@ -46,13 +46,17 @@ public sealed class WindowsManagedAiProfile(ManagedAiPaths paths) : IManagedAiPr
         // This profile is app-owned. Fail closed on edits that could enable tools or another authentication provider.
         if (File.Exists(config))
         {
-            if (new FileInfo(config).Length > 8192 || File.ReadAllText(config) != Configuration)
+            if (new FileInfo(config).Length > 8192 || NormalizeLineEndings(File.ReadAllText(config)) != NormalizeLineEndings(Configuration))
                 throw new ManagedAiException(AiFailureCode.BlockedByPolicy);
         }
-        else File.WriteAllText(config, Configuration, new UTF8Encoding(false));
+        else File.WriteAllText(config, NormalizeLineEndings(Configuration), new UTF8Encoding(false));
         // Skill policy is generated after native discovery. Reset the overlay first so hand edits never reach Codex.
         File.WriteAllText(paths.SkillConfiguration, EmptySkillConfiguration, new UTF8Encoding(false));
     }
+
+    // Windows CI can compile raw string literals with CRLF while an existing user profile was written with LF.
+    // Preserve the strict policy comparison while ignoring only that checkout-dependent difference.
+    private static string NormalizeLineEndings(string value) => value.Replace("\r\n", "\n", StringComparison.Ordinal);
 
     private static void SecureDirectory(string path)
     {

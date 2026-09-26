@@ -84,7 +84,7 @@ CI가 남기는 아티팩트는 다음과 같습니다.
 | --- | --- | --- |
 | `Velopack-<arch>-Release` 또는 `Preview-<arch>` | 미서명 패키지와 메타데이터 | Draft의 최초 자산 |
 | `PublishPayload-<arch>` | 패키징 전 Native AOT 게시 산출물 | 로컬 전체 서명 |
-| `SBOM-<arch>` | SPDX SBOM | Draft와 최종 Release |
+| `SBOM-<arch>` | SPDX SBOM | Retail 태그의 Draft와 최종 Release |
 
 로컬 서명에는 `PublishPayload-x64`와 `PublishPayload-arm64`가 모두 필요합니다. 한쪽 아키텍처가 빠진 상태에서는 패키징을 시작하지 않습니다.
 
@@ -173,7 +173,9 @@ $mismatch = foreach ($file in $files) {
 if ($mismatch) { throw ($mismatch -join [Environment]::NewLine) }
 ```
 
-최종 검증에서는 Draft의 모든 `.exe` 자산을 다시 내려받아 Authenticode 상태가 `Valid`인지 확인합니다. Portable ZIP 내부의 `TableCloth.exe`, `TableClothCli.exe`, `Spork.exe`도 풀어서 같은 검사를 수행합니다. x64와 arm64 자산, Velopack 채널 메타데이터와 SBOM이 모두 있는지도 함께 확인합니다.
+최종 검증에서는 Draft의 모든 `.exe` 자산을 다시 내려받아 Authenticode 상태가 `Valid`인지 확인합니다. Portable ZIP 내부의 `TableCloth.exe`, `TableClothCli.exe`, `Spork.exe`도 풀어서 같은 검사를 수행합니다. x64와 arm64 자산과 Velopack 채널 메타데이터를 확인하고 Retail에서는 SBOM도 확인합니다.
+
+NativeAOT 설치본에서는 한국어 Windows의 기본 화면과 AI 대화창이 한국어인지 확인합니다. 영어 UI 환경에서는 AI 대화창, 링크 선택창, 스킬 설정창을 영어로 표시하는지 살펴봅니다. 기존 Codex 전용 프로필을 유지한 채 두 내장 스킬을 다시 불러오고 `BlockedByPolicy`가 발생하지 않는지도 확인합니다.
 
 서명 검증이나 자산 대조가 하나라도 실패하면 Draft를 유지합니다. CI 미서명 자산을 남겨 둔 채 일부 파일만 게시하지 않습니다.
 

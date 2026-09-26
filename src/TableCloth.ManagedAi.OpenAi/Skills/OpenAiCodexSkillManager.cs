@@ -1,4 +1,5 @@
 using System.Text;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -95,7 +96,9 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
             var manifest = Path.Combine(directory, "SKILL.md");
             if (!File.Exists(manifest)) continue;
             ManagedAiPaths.RejectReparsePoints(manifest);
-            result.Add(new(id, id, "런타임 설치 후 스킬 설명을 확인할 수 있습니다.", directory,
+            result.Add(new(id, id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ko"
+                ? "런타임 설치 후 스킬 설명을 확인할 수 있습니다."
+                : "Install the runtime to view this skill's description.", directory,
                 !state.Enabled.TryGetValue(id, out var enabled) || enabled));
         }
         return result.OrderBy(x => x.Name, StringComparer.CurrentCultureIgnoreCase).ToArray();
