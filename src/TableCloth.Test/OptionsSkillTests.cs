@@ -4,6 +4,7 @@ using Avalonia.Headless;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using System.Globalization;
 using TableCloth.Components;
 using TableCloth.Dialogs;
 using TableCloth.ManagedAi;
@@ -18,6 +19,7 @@ public sealed class OptionsSkillTests
     [TestMethod]
     public async Task SettingsCommandsListToggleAndRemoveTheSelectedSkill()
     {
+        using var culture = new UiCultureScope("ko-KR");
         var skills = new SkillManager();
         var messages = new Messages();
         var viewModel = new OptionsWindowViewModel(null!, null!, messages, null!, new TaskFactory(), skills);
@@ -44,6 +46,7 @@ public sealed class OptionsSkillTests
         using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
         await headless.Dispatch<bool>(async () =>
         {
+            using var culture = new UiCultureScope("ko-KR");
             Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
             var viewModel = new DesignViewModel { InitialTabIndex = 7, SkillSummary = "보유 스킬 1개, 활성 스킬 1개" };
             viewModel.AiSkills.Add(new(new("fixture-skill", "업무 절차", "업무 안내", "C:\\fixture-skill", true)));
@@ -68,6 +71,15 @@ public sealed class OptionsSkillTests
             finally { window.Close(); }
             return true;
         }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    private sealed class UiCultureScope : IDisposable
+    {
+        private readonly CultureInfo _previous = CultureInfo.CurrentUICulture;
+
+        public UiCultureScope(string name) => CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(name);
+
+        public void Dispose() => CultureInfo.CurrentUICulture = _previous;
     }
 
     private sealed class DesignViewModel : OptionsWindowViewModel { }
