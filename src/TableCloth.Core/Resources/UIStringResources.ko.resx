@@ -895,13 +895,13 @@ https://github.com/yourtablecloth/TableCloth</value>
     <value>시작</value>
   </data>
   <data name="QuickStart_NpkiStatus_Sharing" xml:space="preserve">
-    <value>공동인증서 폴더를 샌드박스와 공유합니다.</value>
+    <value>공동인증서 폴더 공유</value>
   </data>
   <data name="QuickStart_NpkiStatus_NotSharing" xml:space="preserve">
-    <value>공동인증서 폴더를 샌드박스와 공유하지 않습니다.</value>
+    <value>공동인증서 폴더 공유 안함</value>
   </data>
   <data name="QuickStart_NpkiStatus_NoFolder" xml:space="preserve">
-    <value>호스트에 공동인증서 폴더가 없어 공유되지 않습니다.</value>
+    <value>공동인증서 폴더 공유 안함</value>
   </data>
   <data name="Options_Section_Certificate" xml:space="preserve">
     <value>인증서</value>
@@ -1050,7 +1050,7 @@ https://github.com/yourtablecloth/TableCloth</value>
     <value>이 환경에 공동인증서가 없습니다.</value>
   </data>
   <data name="QuickStart_OpenCatalogButton" xml:space="preserve">
-    <value>카탈로그에서 사이트 선택</value>
+    <value>접속할 사이트 선택</value>
   </data>
   <data name="CatalogWindow_Title" xml:space="preserve">
     <value>사이트 선택</value>

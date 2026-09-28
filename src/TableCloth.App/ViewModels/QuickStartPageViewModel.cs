@@ -172,7 +172,6 @@ public partial class QuickStartPageViewModel : ObservableObject
 
     partial void OnStartInputChanged(string value)
     {
-        WebAddressStatusText = string.Empty;
         RefreshSuggestions(value);
     }
 
@@ -228,22 +227,21 @@ public partial class QuickStartPageViewModel : ObservableObject
             return;
         }
 
-        WebAddressStatusText = UIStringResources.QuickStart_SpecialCommand_Help;
+        _appMessageBox.DisplayInfo(UIStringResources.QuickStart_SpecialCommand_Help);
     }
 
     [ObservableProperty]
     private string _webAddress = string.Empty;
 
     [ObservableProperty]
-    private string _webAddressStatusText = string.Empty;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanOpenWebAddress))]
+    [NotifyPropertyChangedFor(nameof(CanStart))]
     private bool _isOpeningWebAddress;
 
-    public bool CanOpenWebAddress => !IsOpeningWebAddress;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanStart))]
+    private bool _isStarting;
 
-    partial void OnWebAddressChanged(string value) => WebAddressStatusText = string.Empty;
+    public bool CanStart => !IsStarting && !IsOpeningWebAddress;
 
     [RelayCommand]
     private async Task OpenWebAddress()
@@ -252,28 +250,25 @@ public partial class QuickStartPageViewModel : ObservableObject
             return;
 
         IsOpeningWebAddress = true;
-        WebAddressStatusText = UIStringResources.QuickStart_WebAddress_Checking;
         try
         {
             var result = await _internetAddressLauncher.LaunchAsync(WebAddress);
-            WebAddressStatusText = result switch
+            var error = result switch
             {
                 InternetAddressLaunchResult.InvalidAddress => UIStringResources.QuickStart_WebAddress_Invalid,
                 InternetAddressLaunchResult.CatalogUnavailable => UIStringResources.QuickStart_WebAddress_CatalogUnavailable,
                 InternetAddressLaunchResult.LaunchFailed => UIStringResources.QuickStart_WebAddress_LaunchFailed,
-                InternetAddressLaunchResult.CatalogServiceLaunched => UIStringResources.QuickStart_WebAddress_CatalogLaunched,
-                InternetAddressLaunchResult.BrowserOnlyLaunched => UIStringResources.QuickStart_WebAddress_BrowserLaunched,
-                _ => string.Empty,
+                _ => null,
             };
+            if (error is not null)
+                _appMessageBox.DisplayError(error, false);
         }
         catch (OperationCanceledException)
         {
-            WebAddressStatusText = string.Empty;
         }
         catch (Exception ex)
         {
             _appMessageBox.DisplayError(ex, false);
-            WebAddressStatusText = UIStringResources.QuickStart_WebAddress_LaunchFailed;
         }
         finally
         {

@@ -20,12 +20,12 @@
             </StackPanel>
         </Border>
 
-        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" MaxWidth="600" Margin="24 32 24 24">
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="600" Margin="24">
             <TextBlock HorizontalAlignment="Center" TextAlignment="Center" FontSize="28" FontWeight="Bold" Text="{x:Static res:UIStringResources.QuickStart_Title}" />
             <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0 12 0 20" TextWrapping="Wrap"
                        Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.QuickStart_Instruction}" />
             <TextBox x:Name="StartInput" MinWidth="520" Watermark="{x:Static res:UIStringResources.QuickStart_InputWatermark}"
-                     Text="{Binding StartInput, Mode=TwoWay}" IsEnabled="{Binding CanOpenWebAddress}"
+                     Text="{Binding StartInput, Mode=TwoWay}" IsEnabled="{Binding CanStart}"
                      KeyDown="StartInput_KeyDown" />
             <Border x:Name="StartSuggestions" IsVisible="{Binding HasSuggestions}" Margin="0 4 0 0"
                     Background="{DynamicResource ControlFillColorDefaultBrush}"
@@ -39,7 +39,7 @@
                                         Padding="10 5" Click="Suggestion_Click" KeyDown="Suggestion_KeyDown">
                                     <StackPanel Spacing="2">
                                         <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Text="{Binding Url}" FontSize="12" TextTrimming="CharacterEllipsis"
+                                        <TextBlock Classes="suggestion-url" Text="{Binding Url}" FontSize="12" TextTrimming="CharacterEllipsis"
                                                    Foreground="{DynamicResource ControlSecondaryForeground}" />
                                     </StackPanel>
                                 </Button>
@@ -49,17 +49,21 @@
                 </ScrollViewer>
             </Border>
             <Button x:Name="StartButton" HorizontalAlignment="Center" MinWidth="220" Margin="0 12 0 0"
-                    Padding="28 12" FontSize="16" FontWeight="Bold" IsDefault="True" IsEnabled="{Binding CanOpenWebAddress}"
+                    Padding="28 12" FontSize="16" FontWeight="Bold" IsDefault="True" IsEnabled="{Binding CanStart}"
                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                     Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Click="Start_Click" />
-            <ProgressBar Margin="0 12 0 0" IsVisible="{Binding IsOpeningWebAddress}" IsIndeterminate="True" />
-            <TextBlock Margin="0 8 0 0" Text="{Binding WebAddressStatusText}" TextWrapping="Wrap" />
-            <Button HorizontalAlignment="Center" MinWidth="220" Margin="0 12 0 0"
-                    Content="{x:Static res:UIStringResources.QuickStart_OpenCatalogButton}" Click="OpenCatalog_Click" />
-            <Button Classes="link" HorizontalAlignment="Center" Margin="0 16 0 0"
-                    Content="{Binding NpkiStatusText}" Command="{Binding OpenOptionsCommand}" CommandParameter="Certificate" />
-            <Button Classes="link" HorizontalAlignment="Center" Margin="0 12 0 0"
-                    Content="{x:Static ai:ManagedAiText.PreviewTitle}" Click="ManagedAi_Click" />
+            <Border Width="176" Height="1" HorizontalAlignment="Center" Margin="0 24 0 16"
+                    Background="{DynamicResource ControlDefaultForeground}" />
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="8">
+                <Button Classes="link" VerticalAlignment="Center"
+                        Content="{x:Static res:UIStringResources.QuickStart_OpenCatalogButton}" Click="OpenCatalog_Click" />
+                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource ControlSecondaryForeground}" Text="·" />
+                <Button Classes="link" VerticalAlignment="Center"
+                        Content="{Binding NpkiStatusText}" Command="{Binding OpenOptionsCommand}" CommandParameter="Certificate" />
+                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource ControlSecondaryForeground}" Text="·" />
+                <Button Classes="link" VerticalAlignment="Center"
+                        Content="{x:Static ai:ManagedAiText.QuickStartLinkTitle}" Click="ManagedAi_Click" />
+            </StackPanel>
         </StackPanel>
 
         <!-- Footer -->

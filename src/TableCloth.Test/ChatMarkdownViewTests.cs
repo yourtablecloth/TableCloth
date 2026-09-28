@@ -3,6 +3,7 @@ using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Headless;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
 using Avalonia.Threading;
@@ -21,6 +22,11 @@ public sealed class MarkdownTestAppBuilder
 public sealed class ChatMarkdownViewTests
 {
     public TestContext TestContext { get; set; } = null!;
+    private const string BubbleSample =
+        "직장인 연말정산은 보통 회사에 서류를 제출해 처리하고, 공제 자료는 국세청 " +
+        "[홈택스 연말정산 간소화 서비스](https://www.hometax.go.kr/)에서 조회하시면 됩니다. " +
+        "모바일에서는 [손택스](https://www.hometax.go.kr/) 앱을 이용할 수 있습니다. " +
+        "회사에 제출하는 방식과 기간은 회사 담당자에게 확인해 주세요.";
     private const string Sample = """
         # 식탁보 서비스 안내
 
@@ -51,6 +57,92 @@ public sealed class ChatMarkdownViewTests
 
         [official]: https://yourtablecloth.app/ "식탁보"
         """;
+
+    [TestMethod]
+    public async Task InlineLinksFitWithinChatBubble()
+    {
+        using var session = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts", "markdown-chat-bubble-900.png");
+        await session.Dispatch(() =>
+        {
+            Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
+            var body = new StackPanel { Spacing = 8 };
+            body.Children.Add(new TextBlock { Text = "식탁보 / gpt-6-luna", FontSize = 12 });
+            var clicked = new List<Uri>();
+            var markdown = new ChatMarkdownView(BubbleSample, clicked.Add);
+            body.Children.Add(markdown);
+            var bubble = new Border
+            {
+                Child = body, Padding = new Thickness(16, 12), CornerRadius = new CornerRadius(12),
+                MaxWidth = 690, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+                BorderThickness = new Thickness(1), BorderBrush = Avalonia.Media.Brushes.LightGray,
+                Background = Avalonia.Media.Brushes.White,
+            };
+            var transcript = new StackPanel { Margin = new Thickness(20) };
+            transcript.Children.Add(bubble);
+            var window = new Window { Width = 900, Height = 250, Content = transcript };
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+                AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+                var links = markdown.GetVisualDescendants().OfType<Button>()
+                    .Where(button => button.Classes.Contains("markdown-link")).ToArray();
+                Assert.HasCount(2, links);
+                var paragraph = markdown.Children.OfType<SelectableTextBlock>().Single();
+                Assert.IsGreaterThanOrEqualTo(2, paragraph.TextLayout.TextLines.Count);
+                var firstLine = paragraph.TextLayout.TextLines[0];
+                foreach (var line in paragraph.TextLayout.TextLines)
+                {
+                    Assert.IsLessThan(0.01, Math.Abs(line.Height - firstLine.Height));
+                    Assert.IsLessThan(0.01, Math.Abs(line.Baseline - firstLine.Baseline));
+                }
+                foreach (var link in links)
+                {
+                    var caption = link.GetVisualDescendants().OfType<TextBlock>().Single();
+                    Assert.IsLessThan(0.01, Math.Abs(TextBlock.GetBaselineOffset(link) - caption.TextLayout.Baseline));
+                }
+                var lastLinkBottom = links[^1].TranslatePoint(new Point(0, links[^1].Bounds.Height), bubble);
+                Assert.IsNotNull(lastLinkBottom);
+                Assert.IsGreaterThanOrEqualTo(12d, bubble.Bounds.Height - lastLinkBottom.Value.Y);
+                Directory.CreateDirectory(Path.GetDirectoryName(screenshot)!);
+                using var frame = window.CaptureRenderedFrame();
+                Assert.IsNotNull(frame);
+                frame.Save(screenshot);
+                var clickPoint = links[^1].TranslatePoint(
+                    new Point(links[^1].Bounds.Width / 2, links[^1].Bounds.Height / 2), window);
+                Assert.IsNotNull(clickPoint);
+                window.MouseDown(clickPoint.Value, MouseButton.Left);
+                window.MouseUp(clickPoint.Value, MouseButton.Left);
+                Assert.HasCount(1, clicked);
+
+                var firstCaption = links[0].GetVisualDescendants().OfType<TextBlock>().Single();
+                var initialBaseline = TextBlock.GetBaselineOffset(links[0]);
+                firstCaption.FontSize = 20;
+                Dispatcher.UIThread.RunJobs();
+                AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+                var updatedBaseline = TextBlock.GetBaselineOffset(links[0]);
+                Assert.AreNotEqual(initialBaseline, updatedBaseline);
+                Assert.IsLessThan(0.01, Math.Abs(updatedBaseline - firstCaption.TextLayout.Baseline));
+
+                var laterLink = new ChatMarkdownView("첫 줄입니다.  \n둘째 줄 [링크](https://example.com/) 다음 글", _ => { });
+                var laterBubble = new Border { Child = laterLink, Padding = new Thickness(16, 12) };
+                transcript.Children.Add(laterBubble);
+                Dispatcher.UIThread.RunJobs();
+                AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+                var laterParagraph = laterLink.Children.OfType<SelectableTextBlock>().Single();
+                var laterButton = laterLink.GetVisualDescendants().OfType<Button>().Single();
+                Assert.HasCount(2, laterParagraph.TextLayout.TextLines);
+                Assert.IsLessThan(0.01, Math.Abs(laterParagraph.TextLayout.TextLines[0].Baseline -
+                    laterParagraph.TextLayout.TextLines[1].Baseline));
+                var finalLinkBottom = laterButton.TranslatePoint(new Point(0, laterButton.Bounds.Height), laterBubble);
+                Assert.IsNotNull(finalLinkBottom);
+                Assert.IsGreaterThanOrEqualTo(12d, laterBubble.Bounds.Height - finalLinkBottom.Value.Y);
+            }
+            finally { window.Close(); }
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+        TestContext.AddResultFile(screenshot);
+    }
 
     [TestMethod]
     [DataRow(640, false)]

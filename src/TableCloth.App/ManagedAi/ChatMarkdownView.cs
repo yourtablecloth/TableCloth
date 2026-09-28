@@ -161,11 +161,11 @@ public sealed class ChatMarkdownView : StackPanel
     private SelectableTextBlock Paragraph(ContainerInline? inlines)
     {
         var text = new SelectableTextBlock { TextWrapping = TextWrapping.Wrap, FontSize = 15, LineHeight = 24 };
-        if (inlines is not null) Append(text.Inlines!, inlines);
+        if (inlines is not null) Append(text.Inlines!, inlines, text);
         return text;
     }
 
-    private void Append(InlineCollection target, ContainerInline source, bool linksEnabled = true)
+    private void Append(InlineCollection target, ContainerInline source, SelectableTextBlock paragraph, bool linksEnabled = true)
     {
         foreach (var inline in source)
         {
@@ -182,40 +182,51 @@ public sealed class ChatMarkdownView : StackPanel
                     if (emphasis.DelimiterChar == '~') span.TextDecorations = TextDecorations.Strikethrough;
                     else if (emphasis.DelimiterCount == 2) span.FontWeight = FontWeight.Bold;
                     else span.FontStyle = FontStyle.Italic;
-                    Append(span.Inlines, emphasis, linksEnabled); target.Add(span); break;
+                    Append(span.Inlines, emphasis, paragraph, linksEnabled); target.Add(span); break;
                 case LinkInline { IsImage: true } image:
                     target.Add(new Run(ManagedAiText.Select("[이미지: ", "[Image: ") + ChatMessageLinks.PlainText(image) + "]")); break;
                 case LinkInline link:
                     if (linksEnabled && ChatMarkdown.GetWebLink(link.Url) is { } uri)
-                        AddLink(target, uri, link);
-                    else Append(target, link, linksEnabled: false);
+                        AddLink(target, uri, link, paragraph);
+                    else Append(target, link, paragraph, linksEnabled: false);
                     break;
                 case AutolinkInline auto:
                     if (linksEnabled && !auto.IsEmail && ChatMarkdown.GetWebLink(auto.Url) is { } autoUri)
-                        AddLink(target, autoUri, null, auto.Url);
+                        AddLink(target, autoUri, null, paragraph, auto.Url);
                     else target.Add(new Run(auto.Url));
                     break;
                 case TaskList: break; // Rendered in the list marker column, outside the text baseline.
-                case ContainerInline nested: Append(target, nested, linksEnabled); break;
+                case ContainerInline nested: Append(target, nested, paragraph, linksEnabled); break;
             }
         }
     }
 
-    private void AddLink(InlineCollection target, Uri uri, ContainerInline? label, string? plainLabel = null)
+    private void AddLink(InlineCollection target, Uri uri, ContainerInline? label, SelectableTextBlock paragraph, string? plainLabel = null)
     {
         var caption = new TextBlock { TextWrapping = TextWrapping.Wrap, MaxWidth = 440 };
-        if (label is not null) Append(caption.Inlines!, label, linksEnabled: false);
+        if (label is not null) Append(caption.Inlines!, label, paragraph, linksEnabled: false);
         else caption.Text = plainLabel;
         var name = label is null ? plainLabel : ChatMessageLinks.PlainText(label);
         if (string.IsNullOrWhiteSpace(name)) caption.Text = name = uri.OriginalString;
-        var button = new Button { Content = caption, Padding = new Thickness(0), Margin = new Thickness(0), MinHeight = 0, FontSize = 15 };
+        var button = new Button { Content = caption, Padding = new Thickness(0), Margin = new Thickness(0),
+            MinHeight = 0, FontSize = 15 };
+        paragraph.LayoutUpdated += (_, _) => UpdateLinkBaseline(paragraph, button, caption);
         button.Classes.Add("link"); button.Classes.Add("markdown-link");
         AutomationProperties.SetName(button, name + " | " + uri.OriginalString);
         ToolTip.SetTip(button, uri.OriginalString + "\n" + ManagedAiText.Select(
             "식탁보에서 열기. Catalog에 등록된 서비스는 Spork로 필요한 소프트웨어를 설치합니다.",
             "Open with TableCloth. For Catalog services, Spork installs the required software."));
         button.Click += (_, _) => _openLink(uri);
-        target.Add(new InlineUIContainer { Child = button, BaselineAlignment = BaselineAlignment.Center });
+        target.Add(new InlineUIContainer { Child = button, BaselineAlignment = BaselineAlignment.Baseline });
+    }
+
+    private static void UpdateLinkBaseline(SelectableTextBlock paragraph, Button button, TextBlock caption)
+    {
+        // Give Avalonia the link text's baseline so the button does not lower its entire line.
+        var baseline = caption.TextLayout.Baseline;
+        if (!double.IsFinite(baseline) || TextBlock.GetBaselineOffset(button) == baseline) return;
+        TextBlock.SetBaselineOffset(button, baseline);
+        paragraph.InvalidateMeasure();
     }
 
     private static Border Frame(Control? child, Thickness padding)

@@ -17,7 +17,7 @@ public sealed record QuickStartSuggestion(
     string DisplayName,
     string Url)
 {
-    public string Completion => Kind == QuickStartSuggestionKind.WebAddress ? Url : DisplayName;
+    public string Completion => Url;
 }
 
 public static class QuickStartSuggestionSearch

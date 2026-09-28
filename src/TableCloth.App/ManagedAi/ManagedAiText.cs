@@ -9,7 +9,7 @@ public static class ManagedAiText
     public static string Select(string korean, string english) => IsKorean ? korean : english;
 
     public static string SkillsTabTitle => Select("AI 스킬", "AI skills");
-    public static string PreviewTitle => Select("식탁보 AI (Preview)", "TableCloth AI (Preview)");
+    public static string QuickStartLinkTitle => Select("식탁보 AI (베타)", "TableCloth AI (Beta)");
     public static string SkillsTabDescription => Select(
         "식탁보 AI 전용 Codex 스킬을 관리합니다. 활성 스킬은 다음 대화에서 사용할 수 있습니다. 런타임을 재설치해도 스킬 폴더는 유지됩니다.",
         "Manage Codex skills dedicated to TableCloth AI. Enabled skills are available in the next chat. Reinstalling the runtime keeps the skill folder.");

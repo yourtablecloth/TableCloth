@@ -49,26 +49,37 @@ public partial class QuickStartPage : UserControl
 
     private async void Start_Click(object? sender, RoutedEventArgs e)
     {
-        ViewModel.DismissSuggestions();
-        var route = ViewModel.ClassifyStart();
-        switch (route.Kind)
+        if (!ViewModel.CanStart)
+            return;
+
+        ViewModel.IsStarting = true;
+        try
         {
-            case QuickStartRouteKind.EmptySandbox:
-                await ViewModel.LaunchSandboxCommand.ExecuteAsync(null);
-                break;
-            case QuickStartRouteKind.WebAddress:
-                ViewModel.WebAddress = route.Value;
-                await ViewModel.OpenWebAddressCommand.ExecuteAsync(null);
-                break;
-            case QuickStartRouteKind.CatalogSearch:
-                OpenCatalog(route.Value);
-                break;
-            case QuickStartRouteKind.SpecialCommand:
-                ViewModel.ShowSpecialCommandResult(route.Value);
-                break;
-            case QuickStartRouteKind.AiQuestion:
-                OpenManagedAi(route.Value);
-                break;
+            ViewModel.DismissSuggestions();
+            var route = ViewModel.ClassifyStart();
+            switch (route.Kind)
+            {
+                case QuickStartRouteKind.EmptySandbox:
+                    await ViewModel.LaunchSandboxCommand.ExecuteAsync(null);
+                    break;
+                case QuickStartRouteKind.WebAddress:
+                    ViewModel.WebAddress = route.Value;
+                    await ViewModel.OpenWebAddressCommand.ExecuteAsync(null);
+                    break;
+                case QuickStartRouteKind.CatalogSearch:
+                    OpenCatalog(route.Value);
+                    break;
+                case QuickStartRouteKind.SpecialCommand:
+                    ViewModel.ShowSpecialCommandResult(route.Value);
+                    break;
+                case QuickStartRouteKind.AiQuestion:
+                    OpenManagedAi(route.Value);
+                    break;
+            }
+        }
+        finally
+        {
+            ViewModel.IsStarting = false;
         }
     }
 
@@ -77,6 +88,11 @@ public partial class QuickStartPage : UserControl
         if (sender is not Button { DataContext: QuickStartSuggestion suggestion })
             return;
 
+        AcceptSuggestion(suggestion);
+    }
+
+    private void AcceptSuggestion(QuickStartSuggestion suggestion)
+    {
         ViewModel.AcceptSuggestion(suggestion);
         StartInput.Focus();
         StartInput.CaretIndex = StartInput.Text?.Length ?? 0;
@@ -89,11 +105,14 @@ public partial class QuickStartPage : UserControl
             ViewModel.DismissSuggestions();
             e.Handled = true;
         }
-        else if (e.Key == Key.Down && ViewModel.HasSuggestions)
+        else if ((e.Key is Key.Down or Key.Up) && ViewModel.HasSuggestions)
         {
-            StartSuggestions.GetVisualDescendants().OfType<Button>()
-                .FirstOrDefault(button => button.Classes.Contains("start-suggestion"))?.Focus();
-            e.Handled = true;
+            var buttons = GetSuggestionButtons();
+            if (buttons.Length > 0)
+            {
+                FocusSuggestion(buttons[e.Key == Key.Down ? 0 : buttons.Length - 1]);
+                e.Handled = true;
+            }
         }
     }
 
@@ -110,18 +129,45 @@ public partial class QuickStartPage : UserControl
             return;
         }
 
+        if (e.Key == Key.Enter && button.DataContext is QuickStartSuggestion suggestion)
+        {
+            AcceptSuggestion(suggestion);
+            e.Handled = true;
+            return;
+        }
+
         if (e.Key is not (Key.Down or Key.Up))
             return;
 
-        var buttons = StartSuggestions.GetVisualDescendants().OfType<Button>()
-            .Where(item => item.Classes.Contains("start-suggestion")).ToArray();
+        var buttons = GetSuggestionButtons();
         var index = System.Array.IndexOf(buttons, button);
+        if (index < 0)
+            return;
         var next = index + (e.Key == Key.Down ? 1 : -1);
         if (next >= 0 && next < buttons.Length)
-            buttons[next].Focus();
+            FocusSuggestion(buttons[next]);
         else if (next < 0)
             StartInput.Focus();
         e.Handled = true;
+    }
+
+    private static void FocusSuggestion(Button button)
+    {
+        button.Focus();
+        button.BringIntoView();
+    }
+
+    private Button[] GetSuggestionButtons()
+    {
+        var buttons = StartSuggestions.GetVisualDescendants().OfType<Button>()
+            .Where(button => button.Classes.Contains("start-suggestion")).ToArray();
+        if (buttons.Length == 0 && ViewModel.HasSuggestions)
+        {
+            StartSuggestions.UpdateLayout();
+            buttons = StartSuggestions.GetVisualDescendants().OfType<Button>()
+                .Where(button => button.Classes.Contains("start-suggestion")).ToArray();
+        }
+        return buttons;
     }
 
     private void ManagedAi_Click(object? sender, RoutedEventArgs e) => OpenManagedAi(null);

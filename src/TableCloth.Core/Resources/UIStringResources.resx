@@ -896,13 +896,13 @@ https://github.com/yourtablecloth/TableCloth</value>
     <value>Start</value>
   </data>
   <data name="QuickStart_NpkiStatus_Sharing" xml:space="preserve">
-    <value>Joint certificate folder is being shared with the sandbox.</value>
+    <value>Joint certificate folder shared</value>
   </data>
   <data name="QuickStart_NpkiStatus_NotSharing" xml:space="preserve">
-    <value>Joint certificate folder is not shared with the sandbox.</value>
+    <value>Joint certificate folder not shared</value>
   </data>
   <data name="QuickStart_NpkiStatus_NoFolder" xml:space="preserve">
-    <value>No joint certificate folder was found on the host, so nothing is shared.</value>
+    <value>Joint certificate folder not shared</value>
   </data>
   <data name="Options_Section_Certificate" xml:space="preserve">
     <value>Certificate</value>
@@ -1051,7 +1051,7 @@ Create it and open it now?</value>
     <value>No joint certificates were found in this environment.</value>
   </data>
   <data name="QuickStart_OpenCatalogButton" xml:space="preserve">
-    <value>Choose a site from the catalog</value>
+    <value>Choose a site</value>
   </data>
   <data name="CatalogWindow_Title" xml:space="preserve">
     <value>Choose a site</value>

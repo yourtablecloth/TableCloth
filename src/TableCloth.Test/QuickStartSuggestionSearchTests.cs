@@ -14,12 +14,12 @@ public sealed class QuickStartSuggestionSearchTests
     ];
 
     [TestMethod]
-    public void NameAndAddressSuggestionsUseTheCorrectCompletion()
+    public void NameAndAddressSuggestionsCompleteWithTheCatalogUrl()
     {
         var names = QuickStartSuggestionSearch.Find("국민", Services);
         Assert.HasCount(2, names);
         Assert.IsTrue(names.All(item => item.Kind == QuickStartSuggestionKind.CatalogName));
-        Assert.AreEqual("국민은행", names.Single(item => item.DisplayName == "국민은행").Completion);
+        Assert.AreEqual("https://bank.example/", names.Single(item => item.DisplayName == "국민은행").Completion);
 
         var addresses = QuickStartSuggestionSearch.Find("https://bank.", Services);
         Assert.HasCount(1, addresses);
