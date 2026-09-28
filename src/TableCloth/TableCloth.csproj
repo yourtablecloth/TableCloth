@@ -136,9 +136,18 @@
 	</ItemGroup>
 	<Target Name="CopyTableClothCliForDevelopment" AfterTargets="Build"
 	        Condition="'$(RuntimeIdentifier)' == ''">
+		<MSBuild Projects="..\TableCloth.Cli\TableCloth.Cli.csproj" Targets="GetTargetPath"
+		         Properties="Configuration=$(Configuration);Platform=$(Platform)">
+			<Output TaskParameter="TargetOutputs" ItemName="_TableClothCliDevTarget" />
+		</MSBuild>
+		<PropertyGroup>
+			<_TableClothCliDevOutputDir>@(_TableClothCliDevTarget->'%(RootDir)%(Directory)')</_TableClothCliDevOutputDir>
+		</PropertyGroup>
 		<ItemGroup>
-			<_TableClothCliDevFiles Include="..\TableCloth.Cli\bin\$(Configuration)\net11.0-windows10.0.18362.0\TableClothCli.*" />
+			<_TableClothCliDevFiles Include="$(_TableClothCliDevOutputDir)TableClothCli.*" />
 		</ItemGroup>
+		<Error Condition="'@(_TableClothCliDevFiles)' == ''"
+		       Text="TableClothCli development output was not found at '$(_TableClothCliDevOutputDir)'." />
 		<Copy SourceFiles="@(_TableClothCliDevFiles)" DestinationFolder="$(TargetDir)"
 		      SkipUnchangedFiles="true" />
 	</Target>
