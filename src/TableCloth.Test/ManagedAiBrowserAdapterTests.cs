@@ -70,7 +70,7 @@ public sealed class ManagedAiBrowserAdapterTests
         await SandboxAdapter(launcher, new CatalogCache(new()), new CatalogLauncher(), new Choice())
             .OpenAsync(new Uri(url), CancellationToken.None);
         Assert.IsNotNull(launcher.Configuration);
-        Assert.AreEqual(url, launcher.Configuration.ManagedAiBrowserOnlyUrl);
+        Assert.AreEqual(url, launcher.Configuration.BrowserOnlyUrl);
         Assert.IsNull(launcher.Configuration.TargetUrl);
         Assert.HasCount(0, launcher.Configuration.Services);
         Assert.HasCount(0, launcher.Configuration.MappedFolders);
@@ -205,11 +205,11 @@ public sealed class ManagedAiBrowserAdapterTests
             });
             var provider = new ViewModelProvider();
             var ui = new AppUserInterface(provider, cache, null!);
-            provider.ViewModel = new QuickStartPageViewModel(preferences, ui, new SharedLocations(), sandbox, null!, new TaskFactory());
+            provider.ViewModel = new QuickStartPageViewModel(preferences, ui, new SharedLocations(), sandbox, null!, new TaskFactory(), null!);
             const string url = "https://secure.bank.example/product?q=%7e%2f&x=1";
             await SandboxAdapter(sandbox, cache, new ManagedAiCatalogLauncher(ui), new Choice()).OpenAsync(new(url), CancellationToken.None);
             var config = sandbox.Configuration!;
-            Assert.IsNull(config.ManagedAiBrowserOnlyUrl);
+            Assert.IsNull(config.BrowserOnlyUrl);
             Assert.AreEqual(url, config.TargetUrl);
             Assert.AreSame(service, config.Services.Single());
             Assert.IsTrue(config.EnableSandboxGpuAcceleration);
@@ -229,6 +229,48 @@ public sealed class ManagedAiBrowserAdapterTests
             Assert.AreEqual(service.Packages[0].Url, argument.PackageUrl);
             Assert.AreEqual("/quiet", argument.Arguments);
             Assert.Contains("PackageInstallStep", stepFactory.Names);
+        }
+        finally { directory.Delete(); }
+    }
+
+    [TestMethod]
+    public async Task EnteredAddressReachesQuickStartConfigurationAndSporkInstallSteps()
+    {
+        var directory = Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "address-flow-" + Guid.NewGuid().ToString("N")));
+        try
+        {
+            var service = Service("ExampleBank", "https://bank.example/");
+            service.Packages.Add(new() { Name = "BankSecurity", Url = "https://bank.example/setup.exe", Arguments = "/quiet" });
+            var cache = new CatalogCache(new() { Services = [service] });
+            var sandbox = new RecordingLauncher();
+            var preferences = new Preferences(new()
+            {
+                DataDirectoryHostPath = directory.FullName,
+                LastDisclaimerAgreedTime = DateTime.UtcNow,
+                ShareNpkiFolder = false,
+            });
+            var provider = new ViewModelProvider();
+            var ui = new AppUserInterface(provider, cache, null!);
+            provider.ViewModel = new QuickStartPageViewModel(preferences, ui, new SharedLocations(), sandbox, null!, new TaskFactory(), null!);
+            const string url = "https://secure.bank.example/product?q=%7e%2f&x=1";
+
+            var result = await new InternetAddressSandboxLauncher(cache, new Choice(), new CatalogServiceLauncher(ui), sandbox)
+                .LaunchAsync(url);
+
+            Assert.AreEqual(InternetAddressLaunchResult.CatalogServiceLaunched, result);
+            var config = sandbox.Configuration!;
+            Assert.IsNull(config.BrowserOnlyUrl);
+            Assert.AreEqual(url, config.TargetUrl);
+            Assert.AreSame(service, config.Services.Single());
+            Assert.AreEqual(directory.FullName, config.MappedFolders.Single().HostFolder);
+
+            var method = typeof(SandboxBuilder).GetMethod("GenerateSandboxStartupScript", BindingFlags.Instance | BindingFlags.NonPublic)!;
+            var script = (string)method.Invoke(new SandboxBuilder(null!, null!, null!, null!), [config])!;
+            Assert.Contains("spork ExampleBank", script);
+            Assert.Contains("--target-url", script);
+            var steps = new Spork.Steps.Implementations.StepsComposer(new TaskFactory(), new StepFactory(), new Arguments(), cache, null!)
+                .ComposeStepsForSites(config.Services.Select(x => x.Id), forceReinstall: true).ToArray();
+            Assert.IsTrue(steps.Any(step => step.PackageName == "BankSecurity"));
         }
         finally { directory.Delete(); }
     }

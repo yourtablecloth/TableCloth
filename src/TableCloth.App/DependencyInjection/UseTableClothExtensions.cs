@@ -39,6 +39,9 @@ public static class UseTableClothExtensions
         builder.Services.AddTransient<ITableClothBrowser, TableClothBrowserAdapter>();
         builder.Services.AddTransient<IManagedAiCatalogLauncher, ManagedAiCatalogLauncher>();
         builder.Services.AddTransient<IManagedAiCatalogChoice, ManagedAiCatalogChoice>();
+        builder.Services.AddTransient<ICatalogServiceChoice, ManagedAiCatalogChoice>();
+        builder.Services.AddTransient<ICatalogServiceLauncher, CatalogServiceLauncher>();
+        builder.Services.AddTransient<IInternetAddressSandboxLauncher, InternetAddressSandboxLauncher>();
         builder.Services.AddTransient<IManagedAiLinkOpenChoice, ManagedAiLinkOpenChoice>();
         builder.Services.AddTransient<IManagedAiHostBrowser, ManagedAiHostBrowser>();
         builder.Services.AddSingleton<IManagedAiCertificateBridge, ManagedAiCertificateBridge>();

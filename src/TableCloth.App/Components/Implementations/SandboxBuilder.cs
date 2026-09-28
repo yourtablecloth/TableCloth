@@ -58,13 +58,13 @@ public sealed class SandboxBuilder(
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
 
-        if (tableClothConfiguration.ManagedAiBrowserOnlyUrl is { } browserOnlyUrl)
+        if (tableClothConfiguration.BrowserOnlyUrl is { } browserOnlyUrl)
         {
             var target = ManagedAi.PublicWebUrl.Validate(browserOnlyUrl);
             if (tableClothConfiguration.Services.Count != 0 || tableClothConfiguration.MappedFolders.Count != 0)
                 throw new ManagedAi.ManagedAiException(ManagedAi.AiFailureCode.BrowserOpenFailed);
             var browserSpec = ManagedAi.Windows.BrowserOnlySandboxSpec.Create(target);
-            var browserFile = Path.Combine(outputDirectory, "ManagedAiBrowser.wsb");
+            var browserFile = Path.Combine(outputDirectory, "BrowserOnly.wsb");
             await File.WriteAllTextAsync(browserFile, browserSpec, cancellationToken).ConfigureAwait(false);
             return browserFile;
         }

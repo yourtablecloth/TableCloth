@@ -30,6 +30,22 @@
                     Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Command="{Binding LaunchSandboxCommand}" />
             <Button HorizontalAlignment="Center" MinWidth="220" Margin="0 12 0 0"
                     Content="{x:Static res:UIStringResources.QuickStart_OpenCatalogButton}" Click="OpenCatalog_Click" />
+            <StackPanel Margin="0 20 0 0" Spacing="8">
+                <TextBlock FontWeight="SemiBold" Text="{x:Static res:UIStringResources.QuickStart_WebAddress_Title}" />
+                <TextBlock Text="{x:Static res:UIStringResources.QuickStart_WebAddress_Instruction}"
+                           TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <TextBox x:Name="WebAddressInput" Grid.Column="0" Watermark="https://example.com/"
+                             Text="{Binding WebAddress, Mode=TwoWay}"
+                             IsEnabled="{Binding CanOpenWebAddress}" />
+                    <Button x:Name="WebAddressLaunch" Grid.Column="1" Content="{x:Static res:UIStringResources.QuickStart_WebAddress_LaunchButton}"
+                            Command="{Binding OpenWebAddressCommand}"
+                            IsDefault="True"
+                            IsEnabled="{Binding CanOpenWebAddress}" />
+                </Grid>
+                <ProgressBar IsVisible="{Binding IsOpeningWebAddress}" IsIndeterminate="True" />
+                <TextBlock Text="{Binding WebAddressStatusText}" TextWrapping="Wrap" />
+            </StackPanel>
             <Button Classes="link" HorizontalAlignment="Center" Margin="0 16 0 0"
                     Content="{Binding NpkiStatusText}" Command="{Binding OpenOptionsCommand}" CommandParameter="Certificate" />
             <Button Classes="link" HorizontalAlignment="Center" Margin="0 12 0 0"

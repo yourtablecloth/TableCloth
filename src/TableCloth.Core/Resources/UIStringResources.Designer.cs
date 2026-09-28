@@ -2398,5 +2398,40 @@ namespace TableCloth.Resources {
         public static string CatalogWindow_ResultCount {
             get { return ResourceManager.GetString("CatalogWindow_ResultCount", resourceCulture); }
         }
+        public static string QuickStart_WebAddress_Title {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_Title", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_Instruction {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_Instruction", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_LaunchButton {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_LaunchButton", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_Checking {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_Checking", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_Invalid {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_Invalid", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_CatalogUnavailable {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_CatalogUnavailable", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_LaunchFailed {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_LaunchFailed", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_CatalogLaunched {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_CatalogLaunched", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_BrowserLaunched {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_BrowserLaunched", resourceCulture); }
+        }
     }
 }

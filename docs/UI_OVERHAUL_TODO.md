@@ -10,6 +10,7 @@
 > **잔여 작업:** 호스트의 `CatalogPage`와 `DetailPage`가 레거시 진입 폴백으로 남아 있습니다. 리소스 문자열, 부가 UI 배치와 공동인증서 미사용 UX도 후속 작업에 포함합니다. 스냅샷과 자산명 계약은
 > [PARAMETERIZED_WSB_SPEC](PARAMETERIZED_WSB_SPEC.md) §7에서 확인할 수 있습니다.
 > **후속 변경 (2026-09-27):** QuickStart에서 호스트 카탈로그를 검색하는 별도 목록 창을 다시 열 수 있습니다. 선택한 서비스는 레거시 `DetailPage` 대신 QuickStart 실행 경로로 넘겨 Data, NPKI 및 사용자 폴더 설정을 유지합니다. 호스트 카탈로그 다운로드와 캐시 접근은 스플래시 초기화 단계에서 계속 수행합니다.
+> **후속 변경 (2026-09-28):** QuickStart의 주소 입력에서 공개 웹 URL을 직접 열 수 있습니다. Catalog 일치 시 서비스 설치를 먼저 실행하고 미등록 도메인은 브라우저 전용 샌드박스로 엽니다. 이 경로는 AI 대화와 카탈로그 목록 창을 거치지 않습니다.
 > **참고:** 이슈 [#296](https://github.com/yourtablecloth/TableCloth/issues/296)의 Avalonia와 Native AOT 전환은 v1.21.0에서 완료했습니다. 이 문서는 남아 있는 호스트 카탈로그 폴백과 정리 작업을 추적하는 이력 문서로 유지합니다.
 
 ## 배경과 목표

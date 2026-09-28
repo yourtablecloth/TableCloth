@@ -12,10 +12,7 @@ using TableCloth.Models.Catalog;
 
 namespace TableCloth.ManagedAi;
 
-public interface IManagedAiCatalogChoice
-{
-    Task<string?> SelectAsync(Uri target, IReadOnlyList<CatalogInternetService> candidates, CancellationToken cancellationToken);
-}
+public interface IManagedAiCatalogChoice : ICatalogServiceChoice { }
 
 public sealed class ManagedAiCatalogChoice(IApplicationService application) : IManagedAiCatalogChoice
 {

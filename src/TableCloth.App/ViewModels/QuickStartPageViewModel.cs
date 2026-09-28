@@ -33,7 +33,8 @@ public partial class QuickStartPageViewModel : ObservableObject
         ISharedLocations sharedLocations,
         ISandboxLauncher sandboxLauncher,
         IAppMessageBox appMessageBox,
-        TaskFactory taskFactory)
+        TaskFactory taskFactory,
+        IInternetAddressSandboxLauncher internetAddressLauncher)
     {
         _preferencesManager = preferencesManager;
         _appUserInterface = appUserInterface;
@@ -41,6 +42,7 @@ public partial class QuickStartPageViewModel : ObservableObject
         _sandboxLauncher = sandboxLauncher;
         _appMessageBox = appMessageBox;
         _taskFactory = taskFactory;
+        _internetAddressLauncher = internetAddressLauncher;
     }
 
     public event EventHandler? CloseRequested;
@@ -157,6 +159,56 @@ public partial class QuickStartPageViewModel : ObservableObject
     [RelayCommand]
     private async Task LaunchSandbox()
         => await LaunchSandboxAsync();
+
+    [ObservableProperty]
+    private string _webAddress = string.Empty;
+
+    [ObservableProperty]
+    private string _webAddressStatusText = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanOpenWebAddress))]
+    private bool _isOpeningWebAddress;
+
+    public bool CanOpenWebAddress => !IsOpeningWebAddress;
+
+    partial void OnWebAddressChanged(string value) => WebAddressStatusText = string.Empty;
+
+    [RelayCommand]
+    private async Task OpenWebAddress()
+    {
+        if (IsOpeningWebAddress)
+            return;
+
+        IsOpeningWebAddress = true;
+        WebAddressStatusText = UIStringResources.QuickStart_WebAddress_Checking;
+        try
+        {
+            var result = await _internetAddressLauncher.LaunchAsync(WebAddress);
+            WebAddressStatusText = result switch
+            {
+                InternetAddressLaunchResult.InvalidAddress => UIStringResources.QuickStart_WebAddress_Invalid,
+                InternetAddressLaunchResult.CatalogUnavailable => UIStringResources.QuickStart_WebAddress_CatalogUnavailable,
+                InternetAddressLaunchResult.LaunchFailed => UIStringResources.QuickStart_WebAddress_LaunchFailed,
+                InternetAddressLaunchResult.CatalogServiceLaunched => UIStringResources.QuickStart_WebAddress_CatalogLaunched,
+                InternetAddressLaunchResult.BrowserOnlyLaunched => UIStringResources.QuickStart_WebAddress_BrowserLaunched,
+                _ => string.Empty,
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            WebAddressStatusText = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            _appMessageBox.DisplayError(ex, false);
+            WebAddressStatusText = UIStringResources.QuickStart_WebAddress_LaunchFailed;
+        }
+        finally
+        {
+            IsOpeningWebAddress = false;
+        }
+    }
 
     private async Task<bool> LaunchSandboxAsync(CancellationToken cancellationToken = default)
     {
@@ -387,6 +439,7 @@ public partial class QuickStartPageViewModel : ObservableObject
     private readonly IAppUserInterface _appUserInterface = default!;
     private readonly ISharedLocations _sharedLocations = default!;
     private readonly ISandboxLauncher _sandboxLauncher = default!;
+    private readonly IInternetAddressSandboxLauncher _internetAddressLauncher = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
     private readonly TaskFactory _taskFactory = default!;
 }

@@ -63,7 +63,7 @@ public sealed class TableClothBrowserAdapter(ISandboxLauncher launcher, IResourc
 
         if (!await launcher.RunSandboxAsync(new TableClothConfiguration
         {
-            ManagedAiBrowserOnlyUrl = safe.AbsoluteUri
+            BrowserOnlyUrl = safe.AbsoluteUri
         }, cancellationToken)) throw new ManagedAiException(AiFailureCode.BrowserOpenFailed);
     }
 
