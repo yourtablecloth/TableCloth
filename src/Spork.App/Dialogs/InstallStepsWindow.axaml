@@ -27,21 +27,21 @@
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="vm:StepItemViewModel">
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding InstallFlags}" Foreground="{Binding Installed, Converter={StaticResource stateToBrushConverter}}" Margin="0 0 5 0" FontWeight="Bold" />
-                            <TextBlock Text="{Binding TargetSiteName}" Margin="0 0 5 0" FontWeight="Bold" />
-                            <TextBlock Text="{Binding PackageName}" Margin="0 0 5 0" />
-                            <TextBlock Text="{Binding StatusMessage}" Margin="0 0 5 0" Foreground="{Binding Installed, Converter={StaticResource stateToBrushConverter}}" />
+                    <Grid MinHeight="42" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding InstallFlags}" Foreground="{Binding Installed, Converter={StaticResource stateToBrushConverter}}" Margin="0 0 5 0" FontWeight="Bold" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding TargetSiteName}" Margin="0 0 5 0" FontWeight="Bold" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding PackageName}" Margin="0 0 5 0" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding StatusMessage}" Margin="0 0 5 0" VerticalAlignment="Center" Foreground="{Binding Installed, Converter={StaticResource stateToBrushConverter}}" />
                             <Button Command="{Binding $parent[Window].((vm:InstallStepsWindowViewModel)DataContext).ShowErrorMessageCommand}"
                                     CommandParameter="{Binding ErrorMessage}"
                                     Content="{x:Static res:UIStringResources.Spork_ShowDetailError}"
                                     IsVisible="{Binding ShowErrorMessageLink}"
                                     Margin="0 0 5 0" BorderThickness="0" Background="Transparent" Cursor="Hand" />
                         </StackPanel>
-                        <ProgressBar Height="10" Margin="5" Value="{Binding ProgressRate}"
+                        <ProgressBar Height="8" Margin="5 0 5 0" VerticalAlignment="Bottom" Value="{Binding ProgressRate}"
                                      IsVisible="{Binding ShowProgress}" />
-                    </StackPanel>
+                    </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
