@@ -67,9 +67,9 @@ src/
 
 호스트 TableCloth는 실행 파일과 부속 DLL을 세션 staging의 `App` 폴더로 복사하고 `Images.zip`을 `App\images`에 풉니다. Windows Sandbox는 이 staging 폴더를 데스크톱의 `App`으로 매핑한 뒤 `TableCloth.exe spork`를 실행합니다. Spork는 로컬 이미지와 카탈로그 스냅샷을 먼저 사용할 수 있어 게스트 네트워크가 불안정한 경우에도 기본 카탈로그 흐름을 유지합니다.
 
-### 식탁보 AI Preview
+### 식탁보 AI (베타)
 
-사용자 화면에서는 AI 기능을 `식탁보 AI (Preview)`로 표시합니다. `TableCloth.App/ManagedAi`가 채팅 UI와 Catalog 연결을 담당하며 Managed AI 프로젝트 세 개가 플랫폼 중립 계약, OpenAI 통합과 Windows 격리를 나누어 구현합니다. `TableCloth.ManagedAi.Poc` 이름은 최초 설계 단계에서 만든 진단 프로젝트 경로와 명령 호환성을 유지합니다. 제품에 노출하는 기능 단계는 Preview입니다.
+사용자 화면에서는 AI 기능을 `식탁보 AI (베타)`로 표시합니다. `TableCloth.App/ManagedAi`가 채팅 UI와 Catalog 연결을 담당하며 Managed AI 프로젝트 세 개가 플랫폼 중립 계약, OpenAI 통합과 Windows 격리를 나누어 구현합니다. `TableCloth.ManagedAi.Poc` 이름은 최초 설계 단계에서 만든 진단 프로젝트 경로와 명령 호환성을 유지합니다. 배포 채널의 Preview 표기와 사용자 화면의 베타 표기는 별도로 관리합니다.
 
 전용 스킬은 `%LOCALAPPDATA%\TableCloth\ManagedAi\profiles\openai-codex\codex-home\skills`에 저장합니다. Codex 런타임은 `runtimes\openai-codex` 아래에 설치하므로 두 수명 주기가 겹치지 않습니다. 공급자는 모델 요청 직전에 native `skills/list`를 읽고 전용 프로필 밖의 검색 결과를 `tablecloth-skills.config.toml`에서 비활성화합니다. 일반 설정 창의 `AI 스킬` 탭과 대화 창에서 목록 조회, 폴더 가져오기, 개별 사용 설정, 제거, 저장 위치 열기를 제공합니다. 대화 창의 수치는 실제 스킬 호출 횟수가 아니라 다음 대화에 제공할 활성 스킬 수입니다. 런타임이 없는 동안에도 전용 폴더 목록과 사용 설정을 관리할 수 있으며 상세 설명은 런타임을 설치한 뒤 확인합니다. 현재 Preview 정책은 shell, hook, subagent와 스킬의 MCP 의존성 자동 설치를 끄므로 지침 중심 스킬을 지원 범위로 봅니다.
 

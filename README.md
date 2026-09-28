@@ -34,9 +34,9 @@ Windows Sandbox에서 인터넷 뱅킹과 전자정부 사이트를 사용할 �
 
 v1.21.0은 WPF UI를 Avalonia로 이관하고 TableCloth와 Spork 배포본을 Native AOT로 전환했습니다. 현재 정식 버전인 [v1.21.1](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.21.1)은 첫 실행 데이터 디렉터리 처리 문제인 [#308](https://github.com/yourtablecloth/TableCloth/issues/308)을 수정한 긴급 업데이트입니다.
 
-## 식탁보 AI Preview
+## 식탁보 AI (베타)
 
-빠른 시작 화면에서 `식탁보 AI (Preview)`를 열 수 있습니다. 이 기능은 TableCloth 전용 위치에 OpenAI Codex 런타임을 설치하고 사용자의 ChatGPT 로그인으로 대화를 처리합니다. 선택한 모델은 기존 애플리케이션 설정에 저장합니다. 응답의 웹 링크를 누르면 Windows Sandbox 또는 현재 Windows 브라우저를 선택할 수 있습니다. Sandbox 경로는 TableCloth Catalog를 확인하고 Spork로 필요한 소프트웨어를 설치한 뒤 페이지를 엽니다.
+빠른 시작 화면에서 `식탁보 AI (베타)`를 열 수 있습니다. 이 기능은 TableCloth 전용 위치에 OpenAI Codex 런타임을 설치하고 사용자의 ChatGPT 로그인으로 대화를 처리합니다. 선택한 모델은 기존 애플리케이션 설정에 저장합니다. 응답의 웹 링크를 누르면 Windows Sandbox 또는 현재 Windows 브라우저를 선택할 수 있습니다. Sandbox 경로는 TableCloth Catalog를 확인하고 Spork로 필요한 소프트웨어를 설치한 뒤 페이지를 엽니다.
 
 일반 설정 창의 `AI 스킬` 탭에서 전용 Codex 스킬을 조회하고 추가, 활성화, 비활성화, 제거할 수 있습니다. AI 대화 창에도 활성 스킬 수를 표시하고 스킬 관리 기능을 제공합니다. TableCloth는 전용 프로필 밖에서 Codex가 찾은 사용자 및 프로젝트 스킬을 대화 실행 전에 끕니다. 스킬 파일과 사용 설정은 Codex 런타임 릴리스 폴더와 분리하므로 런타임 업데이트나 재설치 후에도 유지합니다.
 

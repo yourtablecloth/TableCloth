@@ -20,51 +20,56 @@
             </StackPanel>
         </Border>
 
-        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="600" Margin="24">
-            <TextBlock HorizontalAlignment="Center" TextAlignment="Center" FontSize="28" FontWeight="Bold" Text="{x:Static res:UIStringResources.QuickStart_Title}" />
-            <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0 12 0 20" TextWrapping="Wrap"
-                       Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.QuickStart_Instruction}" />
-            <TextBox x:Name="StartInput" MinWidth="520" Watermark="{x:Static res:UIStringResources.QuickStart_InputWatermark}"
-                     Text="{Binding StartInput, Mode=TwoWay}" IsEnabled="{Binding CanStart}"
-                     KeyDown="StartInput_KeyDown" />
-            <Border x:Name="StartSuggestions" IsVisible="{Binding HasSuggestions}" Margin="0 4 0 0"
-                    Background="{DynamicResource ControlFillColorDefaultBrush}"
-                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
-                    BorderThickness="1" CornerRadius="6">
-                <ScrollViewer MaxHeight="208" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding Suggestions}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="tablecloth:QuickStartSuggestion">
-                                <Button Classes="start-suggestion" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                                        Padding="10 5" Click="Suggestion_Click" KeyDown="Suggestion_KeyDown">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Classes="suggestion-url" Text="{Binding Url}" FontSize="12" TextTrimming="CharacterEllipsis"
-                                                   Foreground="{DynamicResource ControlSecondaryForeground}" />
-                                    </StackPanel>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Border>
-            <Button x:Name="StartButton" HorizontalAlignment="Center" MinWidth="220" Margin="0 12 0 0"
-                    Padding="28 12" FontSize="16" FontWeight="Bold" IsDefault="True" IsEnabled="{Binding CanStart}"
-                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                    Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Click="Start_Click" />
-            <Border Width="176" Height="1" HorizontalAlignment="Center" Margin="0 24 0 16"
-                    Background="{DynamicResource ControlDefaultForeground}" />
-            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="8">
-                <Button Classes="link" VerticalAlignment="Center"
-                        Content="{x:Static res:UIStringResources.QuickStart_OpenCatalogButton}" Click="OpenCatalog_Click" />
-                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource ControlSecondaryForeground}" Text="·" />
-                <Button Classes="link" VerticalAlignment="Center"
-                        Content="{Binding NpkiStatusText}" Command="{Binding OpenOptionsCommand}" CommandParameter="Certificate" />
-                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource ControlSecondaryForeground}" Text="·" />
-                <Button Classes="link" VerticalAlignment="Center"
-                        Content="{x:Static ai:ManagedAiText.QuickStartLinkTitle}" Click="ManagedAi_Click" />
+        <Grid Grid.Row="1">
+            <Image Source="avares://TableCloth.App/Resources/TableClothLogo.png"
+                   Width="220" Height="220" Opacity="0.12" IsHitTestVisible="False"
+                   HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 16 0 0" />
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="600" Margin="24">
+                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" FontSize="28" FontWeight="Bold" Text="{x:Static res:UIStringResources.QuickStart_Title}" />
+                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0 12 0 20" TextWrapping="Wrap"
+                           Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.QuickStart_Instruction}" />
+                <TextBox x:Name="StartInput" MinWidth="520" Watermark="{x:Static res:UIStringResources.QuickStart_InputWatermark}"
+                         Text="{Binding StartInput, Mode=TwoWay}" IsEnabled="{Binding CanStart}"
+                         KeyDown="StartInput_KeyDown" />
+                <Border x:Name="StartSuggestions" IsVisible="{Binding HasSuggestions}" Margin="0 4 0 0"
+                        Background="{DynamicResource ControlFillColorDefaultBrush}"
+                        BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                        BorderThickness="1" CornerRadius="6">
+                    <ScrollViewer MaxHeight="208" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Suggestions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="tablecloth:QuickStartSuggestion">
+                                    <Button Classes="start-suggestion" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                            Padding="10 5" Click="Suggestion_Click" KeyDown="Suggestion_KeyDown">
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Classes="suggestion-url" Text="{Binding Url}" FontSize="12" TextTrimming="CharacterEllipsis"
+                                                       Foreground="{DynamicResource ControlSecondaryForeground}" />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+                <Button x:Name="StartButton" HorizontalAlignment="Center" MinWidth="220" Margin="0 12 0 0"
+                        Padding="28 12" FontSize="16" FontWeight="Bold" IsDefault="True" IsEnabled="{Binding CanStart}"
+                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                        Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Click="Start_Click" />
+                <Border Width="176" Height="1" HorizontalAlignment="Center" Margin="0 24 0 16"
+                        Background="{DynamicResource QuickStartDividerBrush}" />
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="8">
+                    <Button Classes="link" VerticalAlignment="Center"
+                            Content="{x:Static res:UIStringResources.QuickStart_OpenCatalogButton}" Click="OpenCatalog_Click" />
+                    <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource ControlSecondaryForeground}" Text="·" />
+                    <Button Classes="link" VerticalAlignment="Center"
+                            Content="{Binding NpkiStatusText}" Command="{Binding OpenOptionsCommand}" CommandParameter="Certificate" />
+                    <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource ControlSecondaryForeground}" Text="·" />
+                    <Button Classes="link" VerticalAlignment="Center"
+                            Content="{x:Static ai:ManagedAiText.ProductTitle}" Click="ManagedAi_Click" />
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Grid>
 
         <!-- Footer -->
         <Grid Grid.Row="2" Margin="16 8 16 12" ColumnDefinitions="Auto,*,Auto">

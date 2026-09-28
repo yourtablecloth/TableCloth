@@ -35,7 +35,7 @@ public sealed class ManagedAiWindowTests
             var window = fixture.Create(CultureInfo.GetCultureInfo("en-US"));
             try
             {
-                Assert.AreEqual("TableCloth AI (Preview)", window.Title);
+                Assert.AreEqual("TableCloth AI (Beta)", window.Title);
                 window.Show(); await Ready(window);
                 Assert.AreEqual("Send", Find<Button>(window, "ManagedAiChatSend").Content);
                 Assert.Contains("enabled skills", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
@@ -189,7 +189,7 @@ public sealed class ManagedAiWindowTests
             window.Width = width;
             try
             {
-                Assert.AreEqual("식탁보 AI (Preview)", window.Title);
+                Assert.AreEqual("식탁보 AI (베타)", window.Title);
                 window.Show();
                 await Ready(window);
                 Assert.IsFalse(Find<Button>(window, "ManagedAiConnect").IsVisible);

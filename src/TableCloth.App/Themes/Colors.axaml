@@ -12,6 +12,7 @@
             <SolidColorBrush x:Key="ControlDefaultBorderBrush"          Color="#FFAFAFAF" />
             <SolidColorBrush x:Key="ControlDefaultForeground"           Color="#FF040404" />
             <SolidColorBrush x:Key="ControlSecondaryForeground"         Color="#FF606060" />
+            <SolidColorBrush x:Key="QuickStartDividerBrush"              Color="#FFB8B8B8" />
             <SolidColorBrush x:Key="ControlPrimaryMouseOverBackground"  Color="#FFA0DCFF" />
             <SolidColorBrush x:Key="ControlPrimaryMouseOverBorderBrush" Color="#FF96D2FF" />
             <SolidColorBrush x:Key="ControlPrimarySelectedBackground"   Color="#FFB4E6FF" />
@@ -33,6 +34,7 @@
             <SolidColorBrush x:Key="ControlDefaultBorderBrush"          Color="#FF323232" />
             <SolidColorBrush x:Key="ControlDefaultForeground"           Color="#FFEBEBEB" />
             <SolidColorBrush x:Key="ControlSecondaryForeground"         Color="#FFA8A8A8" />
+            <SolidColorBrush x:Key="QuickStartDividerBrush"              Color="#FF626262" />
             <SolidColorBrush x:Key="ControlPrimaryMouseOverBackground"  Color="#FF208CF0" />
             <SolidColorBrush x:Key="ControlPrimaryMouseOverBorderBrush" Color="#FF2896F5" />
             <SolidColorBrush x:Key="ControlPrimarySelectedBackground"   Color="#FF1482DC" />

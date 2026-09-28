@@ -106,7 +106,7 @@ public sealed class ManagedAiWindow : Window
         _skills = skills; _preferences = preferences;
         _certificateBridge = certificateBridge ?? new ManagedAiCertificateBridge(new JsonlProcessRunner());
         _sandboxBridge = sandboxBridge ?? new ManagedAiSandboxBridge(new SandboxCliProcessRunner());
-        Title = L("식탁보 AI (Preview)", "TableCloth AI (Preview)");
+        Title = ManagedAiText.ProductTitle;
         Width = 900; Height = 780; MinWidth = 640; MinHeight = 540;
         var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*,Auto"), Margin = new Thickness(20) };
         var header = new StackPanel { Spacing = 8 };
