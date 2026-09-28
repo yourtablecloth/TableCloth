@@ -171,8 +171,25 @@ namespace TableCloth
         public static string[] GetCommandLineArguments()
             => _effectiveCommandLineArguments ?? Environment.GetCommandLineArgs().Skip(1).ToArray();
 
+        // WindowsSandboxServer can stay alive after every Sandbox session has closed.
+        public static bool IsWindowsSandboxSessionProcessName(string processName)
+            => string.Equals(processName, "WindowsSandbox", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(processName, "WindowsSandboxClient", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(processName, "WindowsSandboxRemoteSession", StringComparison.OrdinalIgnoreCase);
+
         public static bool IsWindowsSandboxRunning()
-            => Process.GetProcesses().Where(x => x.ProcessName.StartsWith("WindowsSandbox", StringComparison.OrdinalIgnoreCase)).Any();
+        {
+            var processes = Process.GetProcesses();
+            try
+            {
+                return processes.Any(process => IsWindowsSandboxSessionProcessName(process.ProcessName));
+            }
+            finally
+            {
+                foreach (var process in processes)
+                    process.Dispose();
+            }
+        }
 
         public static void OpenExplorer(string targetDirectoryPath)
         {
