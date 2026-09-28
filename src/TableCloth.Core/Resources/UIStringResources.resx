@@ -851,7 +851,13 @@ https://github.com/yourtablecloth/TableCloth</value>
     <value>Quick Start</value>
   </data>
   <data name="QuickStart_Instruction" xml:space="preserve">
-    <value>Launch an empty sandbox, choose a Catalog site first, or enter a web address below.</value>
+    <value>Enter an organization, web address, or question. Leave the field empty to open a sandbox.</value>
+  </data>
+  <data name="QuickStart_InputWatermark" xml:space="preserve">
+    <value>Enter an organization, web address, or question</value>
+  </data>
+  <data name="QuickStart_SpecialCommand_Help" xml:space="preserve">
+    <value>Special commands: #debug shows local diagnostic paths. Other commands are reserved for future use.</value>
   </data>
   <data name="QuickStart_Section_Certificate" xml:space="preserve">
     <value>Joint Certificate</value>
@@ -887,7 +893,7 @@ https://github.com/yourtablecloth/TableCloth</value>
     <value>This folder is not on a local fixed disk. Windows Sandbox cannot mount folders on network, cloud, or removable drives, so it is recommended to pick a folder on a local disk (e.g. C:).</value>
   </data>
   <data name="QuickStart_LaunchButton" xml:space="preserve">
-    <value>Launch Sandbox</value>
+    <value>Start</value>
   </data>
   <data name="QuickStart_NpkiStatus_Sharing" xml:space="preserve">
     <value>Joint certificate folder is being shared with the sandbox.</value>

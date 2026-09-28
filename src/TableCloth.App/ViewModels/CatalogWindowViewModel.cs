@@ -14,6 +14,7 @@ public partial class CatalogWindowViewModel : ObservableObject
 {
     private readonly INavigationService _navigationService;
     private readonly List<CatalogInternetService> _services;
+    private bool _nameOnlySearch;
 
     public CatalogWindowViewModel(IResourceCacheManager resourceCacheManager, INavigationService navigationService)
     {
@@ -43,10 +44,26 @@ public partial class CatalogWindowViewModel : ObservableObject
     partial void OnFilteredServicesChanged(ObservableCollection<CatalogInternetService> value)
         => OnPropertyChanged(nameof(ResultCountText));
 
+    public void SearchByName(string query)
+    {
+        _nameOnlySearch = true;
+        SearchKeyword = query;
+        RefreshResults();
+    }
+
+    public void ShowAll()
+    {
+        _nameOnlySearch = false;
+        SearchKeyword = string.Empty;
+        RefreshResults();
+    }
+
     private void RefreshResults()
     {
         FilteredServices = new ObservableCollection<CatalogInternetService>(
-            _services.Where(service => CatalogInternetService.IsMatchedItem(service, SearchKeyword)));
+            _services.Where(service => _nameOnlySearch
+                ? QuickStartInputRouter.MatchesCatalogName(service, SearchKeyword)
+                : CatalogInternetService.IsMatchedItem(service, SearchKeyword)));
 
         if (SelectedService != null && !FilteredServices.Contains(SelectedService))
             SelectedService = null;

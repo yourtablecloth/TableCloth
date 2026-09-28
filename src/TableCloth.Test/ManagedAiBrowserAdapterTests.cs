@@ -205,7 +205,7 @@ public sealed class ManagedAiBrowserAdapterTests
             });
             var provider = new ViewModelProvider();
             var ui = new AppUserInterface(provider, cache, null!);
-            provider.ViewModel = new QuickStartPageViewModel(preferences, ui, new SharedLocations(), sandbox, null!, new TaskFactory(), null!);
+            provider.ViewModel = new QuickStartPageViewModel(preferences, ui, new SharedLocations(), sandbox, null!, new TaskFactory(), null!, null!);
             const string url = "https://secure.bank.example/product?q=%7e%2f&x=1";
             await SandboxAdapter(sandbox, cache, new ManagedAiCatalogLauncher(ui), new Choice()).OpenAsync(new(url), CancellationToken.None);
             var config = sandbox.Configuration!;
@@ -251,7 +251,7 @@ public sealed class ManagedAiBrowserAdapterTests
             });
             var provider = new ViewModelProvider();
             var ui = new AppUserInterface(provider, cache, null!);
-            provider.ViewModel = new QuickStartPageViewModel(preferences, ui, new SharedLocations(), sandbox, null!, new TaskFactory(), null!);
+            provider.ViewModel = new QuickStartPageViewModel(preferences, ui, new SharedLocations(), sandbox, null!, new TaskFactory(), null!, null!);
             const string url = "https://secure.bank.example/product?q=%7e%2f&x=1";
 
             var result = await new InternetAddressSandboxLauncher(cache, new Choice(), new CatalogServiceLauncher(ui), sandbox)

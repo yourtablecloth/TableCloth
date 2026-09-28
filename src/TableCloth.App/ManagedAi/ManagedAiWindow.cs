@@ -278,6 +278,13 @@ public sealed class ManagedAiWindow : Window
         AddWelcome();
     }
 
+    public void SetInitialPrompt(string prompt)
+    {
+        _input.Text = prompt;
+        _input.CaretIndex = prompt.Length;
+        Opened += (_, _) => Dispatcher.UIThread.Post(() => _input.Focus(), DispatcherPriority.Loaded);
+    }
+
     private void CloseSettings()
     {
         _settingsOverlay.IsVisible = false;

@@ -1,10 +1,14 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Input;
+using Avalonia.VisualTree;
 using System.Diagnostics;
+using System.Linq;
 using TableCloth.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using TableCloth.ManagedAi;
 using TableCloth.Dialogs;
+using TableCloth;
 
 namespace TableCloth.Pages;
 
@@ -43,19 +47,103 @@ public partial class QuickStartPage : UserControl
         catch { }
     }
 
-    private void ManagedAi_Click(object? sender, RoutedEventArgs e)
+    private async void Start_Click(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.DismissSuggestions();
+        var route = ViewModel.ClassifyStart();
+        switch (route.Kind)
+        {
+            case QuickStartRouteKind.EmptySandbox:
+                await ViewModel.LaunchSandboxCommand.ExecuteAsync(null);
+                break;
+            case QuickStartRouteKind.WebAddress:
+                ViewModel.WebAddress = route.Value;
+                await ViewModel.OpenWebAddressCommand.ExecuteAsync(null);
+                break;
+            case QuickStartRouteKind.CatalogSearch:
+                OpenCatalog(route.Value);
+                break;
+            case QuickStartRouteKind.SpecialCommand:
+                ViewModel.ShowSpecialCommandResult(route.Value);
+                break;
+            case QuickStartRouteKind.AiQuestion:
+                OpenManagedAi(route.Value);
+                break;
+        }
+    }
+
+    private void Suggestion_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { DataContext: QuickStartSuggestion suggestion })
+            return;
+
+        ViewModel.AcceptSuggestion(suggestion);
+        StartInput.Focus();
+        StartInput.CaretIndex = StartInput.Text?.Length ?? 0;
+    }
+
+    private void StartInput_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape && ViewModel.HasSuggestions)
+        {
+            ViewModel.DismissSuggestions();
+            e.Handled = true;
+        }
+        else if (e.Key == Key.Down && ViewModel.HasSuggestions)
+        {
+            StartSuggestions.GetVisualDescendants().OfType<Button>()
+                .FirstOrDefault(button => button.Classes.Contains("start-suggestion"))?.Focus();
+            e.Handled = true;
+        }
+    }
+
+    private void Suggestion_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (sender is not Button button)
+            return;
+
+        if (e.Key == Key.Escape)
+        {
+            ViewModel.DismissSuggestions();
+            StartInput.Focus();
+            e.Handled = true;
+            return;
+        }
+
+        if (e.Key is not (Key.Down or Key.Up))
+            return;
+
+        var buttons = StartSuggestions.GetVisualDescendants().OfType<Button>()
+            .Where(item => item.Classes.Contains("start-suggestion")).ToArray();
+        var index = System.Array.IndexOf(buttons, button);
+        var next = index + (e.Key == Key.Down ? 1 : -1);
+        if (next >= 0 && next < buttons.Length)
+            buttons[next].Focus();
+        else if (next < 0)
+            StartInput.Focus();
+        e.Handled = true;
+    }
+
+    private void ManagedAi_Click(object? sender, RoutedEventArgs e) => OpenManagedAi(null);
+
+    private void OpenManagedAi(string? initialPrompt)
     {
         var services = TableClothApplication.ServiceProvider;
         if (services is null) return;
         var window = services.GetRequiredService<ManagedAiWindow>();
+        if (initialPrompt is not null) window.SetInitialPrompt(initialPrompt);
         if (TopLevel.GetTopLevel(this) is Window owner) window.Show(owner);
         else window.Show();
     }
 
-    private void OpenCatalog_Click(object? sender, RoutedEventArgs e)
+    private void OpenCatalog_Click(object? sender, RoutedEventArgs e) => OpenCatalog(null);
+
+    private void OpenCatalog(string? nameQuery)
     {
         if (_catalogWindow is { IsVisible: true })
         {
+            if (nameQuery is not null) _catalogWindow.ViewModel.SearchByName(nameQuery);
+            else _catalogWindow.ViewModel.ShowAll();
             _catalogWindow.Activate();
             return;
         }
@@ -65,6 +153,7 @@ public partial class QuickStartPage : UserControl
             return;
 
         var window = services.GetRequiredService<CatalogWindow>();
+        if (nameQuery is not null) window.ViewModel.SearchByName(nameQuery);
         _catalogWindow = window;
         window.Closed += (_, _) => _catalogWindow = null;
 

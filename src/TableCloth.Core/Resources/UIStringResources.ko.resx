@@ -850,7 +850,13 @@ https://github.com/yourtablecloth/TableCloth</value>
     <value>빠른 시작</value>
   </data>
   <data name="QuickStart_Instruction" xml:space="preserve">
-    <value>빈 샌드박스를 시작하거나 카탈로그에서 사이트를 고를 수 있습니다. 웹 주소를 직접 입력할 수도 있습니다.</value>
+    <value>기관 이름, 웹 주소 또는 질문을 입력하세요. 비워 두면 빈 샌드박스를 시작합니다.</value>
+  </data>
+  <data name="QuickStart_InputWatermark" xml:space="preserve">
+    <value>기관 이름, 웹 주소, 또는 질문을 입력해주세요</value>
+  </data>
+  <data name="QuickStart_SpecialCommand_Help" xml:space="preserve">
+    <value>특수 명령: #debug는 로컬 진단 경로를 표시합니다. 다른 명령은 추후 기능을 위해 예약했습니다.</value>
   </data>
   <data name="QuickStart_Section_Certificate" xml:space="preserve">
     <value>공동인증서</value>
@@ -886,7 +892,7 @@ https://github.com/yourtablecloth/TableCloth</value>
     <value>이 폴더가 로컬 고정 디스크에 있지 않습니다. Windows 샌드박스는 네트워크·클라우드·이동식 드라이브의 폴더를 마운트하지 못하므로, 로컬 디스크(예: C:)에 있는 폴더로 지정하는 것을 권장합니다.</value>
   </data>
   <data name="QuickStart_LaunchButton" xml:space="preserve">
-    <value>샌드박스 시작</value>
+    <value>시작</value>
   </data>
   <data name="QuickStart_NpkiStatus_Sharing" xml:space="preserve">
     <value>공동인증서 폴더를 샌드박스와 공유합니다.</value>

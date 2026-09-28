@@ -2433,5 +2433,12 @@ namespace TableCloth.Resources {
         public static string QuickStart_WebAddress_BrowserLaunched {
             get { return ResourceManager.GetString("QuickStart_WebAddress_BrowserLaunched", resourceCulture); }
         }
+        public static string QuickStart_InputWatermark {
+            get { return ResourceManager.GetString("QuickStart_InputWatermark", resourceCulture); }
+        }
+
+        public static string QuickStart_SpecialCommand_Help {
+            get { return ResourceManager.GetString("QuickStart_SpecialCommand_Help", resourceCulture); }
+        }
     }
 }

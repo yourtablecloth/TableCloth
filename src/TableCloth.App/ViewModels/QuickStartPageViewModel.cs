@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -34,7 +35,8 @@ public partial class QuickStartPageViewModel : ObservableObject
         ISandboxLauncher sandboxLauncher,
         IAppMessageBox appMessageBox,
         TaskFactory taskFactory,
-        IInternetAddressSandboxLauncher internetAddressLauncher)
+        IInternetAddressSandboxLauncher internetAddressLauncher,
+        IResourceCacheManager resourceCacheManager)
     {
         _preferencesManager = preferencesManager;
         _appUserInterface = appUserInterface;
@@ -43,6 +45,7 @@ public partial class QuickStartPageViewModel : ObservableObject
         _appMessageBox = appMessageBox;
         _taskFactory = taskFactory;
         _internetAddressLauncher = internetAddressLauncher;
+        _resourceCacheManager = resourceCacheManager;
     }
 
     public event EventHandler? CloseRequested;
@@ -159,6 +162,74 @@ public partial class QuickStartPageViewModel : ObservableObject
     [RelayCommand]
     private async Task LaunchSandbox()
         => await LaunchSandboxAsync();
+
+    [ObservableProperty]
+    private string _startInput = string.Empty;
+
+    public ObservableCollection<QuickStartSuggestion> Suggestions { get; } = new();
+
+    public bool HasSuggestions => Suggestions.Count > 0;
+
+    partial void OnStartInputChanged(string value)
+    {
+        WebAddressStatusText = string.Empty;
+        RefreshSuggestions(value);
+    }
+
+    public void AcceptSuggestion(QuickStartSuggestion suggestion)
+    {
+        StartInput = suggestion.Completion;
+        DismissSuggestions();
+    }
+
+    public void DismissSuggestions()
+    {
+        Suggestions.Clear();
+        OnPropertyChanged(nameof(HasSuggestions));
+    }
+
+    private void RefreshSuggestions(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input) || input.TrimStart().StartsWith('#'))
+        {
+            DismissSuggestions();
+            return;
+        }
+
+        IReadOnlyList<QuickStartSuggestion> matches;
+        try { matches = QuickStartSuggestionSearch.Find(input, _resourceCacheManager.CatalogDocument.Services); }
+        catch { matches = Array.Empty<QuickStartSuggestion>(); }
+
+        Suggestions.Clear();
+        foreach (var match in matches)
+            Suggestions.Add(match);
+        OnPropertyChanged(nameof(HasSuggestions));
+    }
+
+    public QuickStartRoute ClassifyStart()
+    {
+        var route = QuickStartInputRouter.Classify(StartInput, Array.Empty<CatalogInternetService>());
+        if (route.Kind != QuickStartRouteKind.AiQuestion)
+            return route;
+
+        // Splash normally loads the Catalog before this page appears. If it is
+        // unavailable, a short question still has the AI path available.
+        IEnumerable<CatalogInternetService> services;
+        try { services = _resourceCacheManager.CatalogDocument.Services; }
+        catch { services = Array.Empty<CatalogInternetService>(); }
+        return QuickStartInputRouter.Classify(StartInput, services);
+    }
+
+    public void ShowSpecialCommandResult(string command)
+    {
+        if (string.Equals(command, "#debug", StringComparison.OrdinalIgnoreCase))
+        {
+            ShowDebugInfoCommand.Execute(null);
+            return;
+        }
+
+        WebAddressStatusText = UIStringResources.QuickStart_SpecialCommand_Help;
+    }
 
     [ObservableProperty]
     private string _webAddress = string.Empty;
@@ -440,6 +511,7 @@ public partial class QuickStartPageViewModel : ObservableObject
     private readonly ISharedLocations _sharedLocations = default!;
     private readonly ISandboxLauncher _sandboxLauncher = default!;
     private readonly IInternetAddressSandboxLauncher _internetAddressLauncher = default!;
+    private readonly IResourceCacheManager _resourceCacheManager = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
     private readonly TaskFactory _taskFactory = default!;
 }

@@ -51,6 +51,24 @@ public sealed class ManagedAiWindowTests
     }
 
     [TestMethod]
+    public async Task InitialQuestionAppearsAsAnUnsentChatDraft()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var window = new Fixture().Create();
+            try
+            {
+                window.SetInitialPrompt("이 사이트는 어떻게 이용하나요?");
+                window.Show(); await Ready(window);
+                Assert.AreEqual("이 사이트는 어떻게 이용하나요?", Find<TextBox>(window, "ManagedAiChatInput").Text);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
     public async Task ModelChoiceSurvivesReopeningAndRetainsOtherPreferences()
     {
         var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts", "chat-model-cost-640-light.png");

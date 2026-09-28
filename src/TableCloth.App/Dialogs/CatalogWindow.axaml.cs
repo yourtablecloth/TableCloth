@@ -18,6 +18,8 @@ public partial class CatalogWindow : Window
         Closed += (_, _) => viewModel.CloseRequested -= OnCloseRequested;
     }
 
+    public CatalogWindowViewModel ViewModel => (CatalogWindowViewModel)DataContext!;
+
     private void OnCloseRequested(object? sender, EventArgs e) => Close();
 
     private void ServiceList_DoubleTapped(object? sender, TappedEventArgs e)

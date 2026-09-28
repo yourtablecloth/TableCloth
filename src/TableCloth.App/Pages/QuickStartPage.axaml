@@ -20,32 +20,42 @@
             </StackPanel>
         </Border>
 
-        <!-- Centered hero -->
-        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="520" Margin="24">
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" MaxWidth="600" Margin="24 32 24 24">
             <TextBlock HorizontalAlignment="Center" TextAlignment="Center" FontSize="28" FontWeight="Bold" Text="{x:Static res:UIStringResources.QuickStart_Title}" />
-            <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0 12 0 24" TextWrapping="Wrap"
+            <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0 12 0 20" TextWrapping="Wrap"
                        Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.QuickStart_Instruction}" />
-            <Button HorizontalAlignment="Center" MinWidth="220" Padding="28 12" FontSize="16" FontWeight="Bold"
+            <TextBox x:Name="StartInput" MinWidth="520" Watermark="{x:Static res:UIStringResources.QuickStart_InputWatermark}"
+                     Text="{Binding StartInput, Mode=TwoWay}" IsEnabled="{Binding CanOpenWebAddress}"
+                     KeyDown="StartInput_KeyDown" />
+            <Border x:Name="StartSuggestions" IsVisible="{Binding HasSuggestions}" Margin="0 4 0 0"
+                    Background="{DynamicResource ControlFillColorDefaultBrush}"
+                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="6">
+                <ScrollViewer MaxHeight="208" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Suggestions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="tablecloth:QuickStartSuggestion">
+                                <Button Classes="start-suggestion" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                        Padding="10 5" Click="Suggestion_Click" KeyDown="Suggestion_KeyDown">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding Url}" FontSize="12" TextTrimming="CharacterEllipsis"
+                                                   Foreground="{DynamicResource ControlSecondaryForeground}" />
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+            <Button x:Name="StartButton" HorizontalAlignment="Center" MinWidth="220" Margin="0 12 0 0"
+                    Padding="28 12" FontSize="16" FontWeight="Bold" IsDefault="True" IsEnabled="{Binding CanOpenWebAddress}"
                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                    Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Command="{Binding LaunchSandboxCommand}" />
+                    Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Click="Start_Click" />
+            <ProgressBar Margin="0 12 0 0" IsVisible="{Binding IsOpeningWebAddress}" IsIndeterminate="True" />
+            <TextBlock Margin="0 8 0 0" Text="{Binding WebAddressStatusText}" TextWrapping="Wrap" />
             <Button HorizontalAlignment="Center" MinWidth="220" Margin="0 12 0 0"
                     Content="{x:Static res:UIStringResources.QuickStart_OpenCatalogButton}" Click="OpenCatalog_Click" />
-            <StackPanel Margin="0 20 0 0" Spacing="8">
-                <TextBlock FontWeight="SemiBold" Text="{x:Static res:UIStringResources.QuickStart_WebAddress_Title}" />
-                <TextBlock Text="{x:Static res:UIStringResources.QuickStart_WebAddress_Instruction}"
-                           TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}" />
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                    <TextBox x:Name="WebAddressInput" Grid.Column="0" Watermark="https://example.com/"
-                             Text="{Binding WebAddress, Mode=TwoWay}"
-                             IsEnabled="{Binding CanOpenWebAddress}" />
-                    <Button x:Name="WebAddressLaunch" Grid.Column="1" Content="{x:Static res:UIStringResources.QuickStart_WebAddress_LaunchButton}"
-                            Command="{Binding OpenWebAddressCommand}"
-                            IsDefault="True"
-                            IsEnabled="{Binding CanOpenWebAddress}" />
-                </Grid>
-                <ProgressBar IsVisible="{Binding IsOpeningWebAddress}" IsIndeterminate="True" />
-                <TextBlock Text="{Binding WebAddressStatusText}" TextWrapping="Wrap" />
-            </StackPanel>
             <Button Classes="link" HorizontalAlignment="Center" Margin="0 16 0 0"
                     Content="{Binding NpkiStatusText}" Command="{Binding OpenOptionsCommand}" CommandParameter="Certificate" />
             <Button Classes="link" HorizontalAlignment="Center" Margin="0 12 0 0"

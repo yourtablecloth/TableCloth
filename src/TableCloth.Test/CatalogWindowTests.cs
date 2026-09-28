@@ -42,6 +42,14 @@ public sealed class CatalogWindowTests
                 Assert.HasCount(1, viewModel.FilteredServices);
                 Assert.AreSame(beta, viewModel.FilteredServices[0]);
 
+                viewModel.SearchByName("beta");
+                Assert.HasCount(1, viewModel.FilteredServices);
+                viewModel.ShowAll();
+                Assert.HasCount(2, viewModel.FilteredServices);
+                viewModel.SearchByName("beta.example");
+                Assert.HasCount(0, viewModel.FilteredServices);
+                viewModel.SearchByName("beta");
+
                 list.SelectedItem = beta;
                 viewModel.LaunchSelectedCommand.Execute(null);
                 Assert.AreSame(beta, navigation.SelectedService);
