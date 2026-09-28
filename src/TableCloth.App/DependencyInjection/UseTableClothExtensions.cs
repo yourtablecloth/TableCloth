@@ -91,6 +91,7 @@ public static class UseTableClothExtensions
             .AddWindow<PowerSchemeGuideWindow, PowerSchemeGuideWindowViewModel>()
             .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
             .AddWindow<MainWindow, MainWindowViewModel>()
+            .AddWindow<CatalogWindow, CatalogWindowViewModel>()
             .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
             .AddPage<DetailPage, DetailPageViewModel>()
             .AddPage<QuickStartPage, QuickStartPageViewModel>()

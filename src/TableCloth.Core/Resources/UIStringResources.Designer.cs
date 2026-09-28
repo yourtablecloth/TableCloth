@@ -2379,5 +2379,24 @@ namespace TableCloth.Resources {
                 return ResourceManager.GetString("SporkCatalog_Certificates_Empty", resourceCulture);
             }
         }
+        public static string QuickStart_OpenCatalogButton {
+            get { return ResourceManager.GetString("QuickStart_OpenCatalogButton", resourceCulture); }
+        }
+
+        public static string CatalogWindow_Title {
+            get { return ResourceManager.GetString("CatalogWindow_Title", resourceCulture); }
+        }
+
+        public static string CatalogWindow_Instruction {
+            get { return ResourceManager.GetString("CatalogWindow_Instruction", resourceCulture); }
+        }
+
+        public static string CatalogWindow_LaunchButton {
+            get { return ResourceManager.GetString("CatalogWindow_LaunchButton", resourceCulture); }
+        }
+
+        public static string CatalogWindow_ResultCount {
+            get { return ResourceManager.GetString("CatalogWindow_ResultCount", resourceCulture); }
+        }
     }
 }

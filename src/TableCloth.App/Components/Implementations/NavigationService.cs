@@ -52,7 +52,7 @@ public sealed class NavigationService(
     {
         var page = appUserInterface.CreateQuickStartPage();
 
-        // 페이지의 Loaded 커맨드가 이 값들을 보고 곧바로 실행한다(중간 화면·조작 없음).
+        // 페이지의 Loaded 커맨드가 이 값들을 보고 곧바로 실행한다.
         page.ViewModel.PreselectedServices = services ?? Array.Empty<CatalogInternetService>();
         page.ViewModel.PreselectedTargetUrl = targetUrl;
         page.ViewModel.LaunchImmediately = true;

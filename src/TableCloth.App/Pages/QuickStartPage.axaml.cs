@@ -4,11 +4,14 @@ using System.Diagnostics;
 using TableCloth.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using TableCloth.ManagedAi;
+using TableCloth.Dialogs;
 
 namespace TableCloth.Pages;
 
 public partial class QuickStartPage : UserControl
 {
+    private CatalogWindow? _catalogWindow;
+
     public QuickStartPage() => InitializeComponent();
 
     public QuickStartPage(QuickStartPageViewModel viewModel)
@@ -47,5 +50,27 @@ public partial class QuickStartPage : UserControl
         var window = services.GetRequiredService<ManagedAiWindow>();
         if (TopLevel.GetTopLevel(this) is Window owner) window.Show(owner);
         else window.Show();
+    }
+
+    private void OpenCatalog_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_catalogWindow is { IsVisible: true })
+        {
+            _catalogWindow.Activate();
+            return;
+        }
+
+        var services = TableClothApplication.ServiceProvider;
+        if (services is null)
+            return;
+
+        var window = services.GetRequiredService<CatalogWindow>();
+        _catalogWindow = window;
+        window.Closed += (_, _) => _catalogWindow = null;
+
+        if (TopLevel.GetTopLevel(this) is Window owner)
+            window.Show(owner);
+        else
+            window.Show();
     }
 }

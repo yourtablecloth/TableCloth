@@ -1043,4 +1043,19 @@ https://github.com/yourtablecloth/TableCloth</value>
   <data name="SporkCatalog_Certificates_Empty" xml:space="preserve">
     <value>이 환경에 공동인증서가 없습니다.</value>
   </data>
+  <data name="QuickStart_OpenCatalogButton" xml:space="preserve">
+    <value>카탈로그에서 사이트 선택</value>
+  </data>
+  <data name="CatalogWindow_Title" xml:space="preserve">
+    <value>사이트 선택</value>
+  </data>
+  <data name="CatalogWindow_Instruction" xml:space="preserve">
+    <value>카탈로그에서 사이트를 선택하면 Windows 샌드박스에서 엽니다. 필요한 소프트웨어는 샌드박스 안에서 설치합니다.</value>
+  </data>
+  <data name="CatalogWindow_LaunchButton" xml:space="preserve">
+    <value>선택한 사이트 열기</value>
+  </data>
+  <data name="CatalogWindow_ResultCount" xml:space="preserve">
+    <value>사이트 {0}개</value>
+  </data>
 </root>

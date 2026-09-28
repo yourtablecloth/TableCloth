@@ -28,6 +28,8 @@ Windows Sandbox에서 인터넷 뱅킹과 전자정부 사이트를 사용할 �
 
 식탁보는 호스트 Windows에서 Windows Sandbox를 시작하고 필요한 폴더와 설정만 게스트에 전달합니다. 샌드박스 안에서는 Spork가 사이트 카탈로그를 표시하고 선택한 사이트에 필요한 보안 프로그램을 설치합니다. 샌드박스를 닫으면 게스트에 설치한 프로그램과 변경 사항이 함께 폐기됩니다.
 
+빠른 시작 화면의 `카탈로그에서 사이트 선택`을 누르면 호스트에 별도 서비스 목록 창이 열립니다. 검색으로 서비스를 고른 뒤 `선택한 사이트 열기`를 누르면 현재 Data 폴더, 공동인증서 공유 및 사용자 폴더 설정을 적용하여 샌드박스를 시작합니다. 선택한 서비스의 소프트웨어 설치와 사이트 접속은 샌드박스 안의 Spork가 처리합니다. 사이트를 미리 고르지 않고 샌드박스를 시작하는 기존 경로도 유지합니다.
+
 v1.21.0은 WPF UI를 Avalonia로 이관하고 TableCloth와 Spork 배포본을 Native AOT로 전환했습니다. 현재 정식 버전인 [v1.21.1](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.21.1)은 첫 실행 데이터 디렉터리 처리 문제인 [#308](https://github.com/yourtablecloth/TableCloth/issues/308)을 수정한 긴급 업데이트입니다.
 
 ## 식탁보 AI Preview
