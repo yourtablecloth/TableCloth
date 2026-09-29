@@ -199,7 +199,7 @@ public sealed class ManagedAiWindowTests
                 fixture.Preferences.FailSave = false;
                 models.SelectedIndex = 0; models.SelectedIndex = 1;
                 await Until(() => fixture.Preferences.Read().LastSelectedAiModel == "fixture-other");
-                Assert.IsFalse(Find<TextBlock>(window, "ManagedAiPreferenceNotice").IsVisible);
+                await Until(() => !Find<TextBlock>(window, "ManagedAiPreferenceNotice").IsVisible);
                 Assert.HasCount(0, fixture.Chat.Requests);
             }
             finally { window.Close(); }
@@ -733,13 +733,16 @@ public sealed class ManagedAiWindowTests
                 Assert.Contains("활성 스킬 1개", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
                 await Ready(window);
                 Find<Button>(window, "ManagedAiSkillToggle_fixture-skill").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                await Until(() => fixture.Skills.Items.Single().Enabled == false);
+                await Until(() => !fixture.Skills.Items.Single().Enabled &&
+                    Equals(Find<Button>(window, "ManagedAiSkillToggle_fixture-skill").Content, "사용 안 함") &&
+                    Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!.Contains("활성 스킬 0개"));
                 Assert.IsTrue(overlay.IsVisible);
                 Assert.AreEqual("사용 안 함", Find<Button>(window, "ManagedAiSkillToggle_fixture-skill").Content);
                 Assert.Contains("사용하지 않도록", Find<TextBlock>(window, "ManagedAiSkillStatus").Text!);
                 Assert.Contains("활성 스킬 0개", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
                 Find<Button>(window, "ManagedAiSkillRemove_fixture-skill").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                await Until(() => fixture.Skills.Items.Count == 0);
+                await Until(() => fixture.Skills.Items.Count == 0 &&
+                    Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!.Contains("보유 0개"));
                 Assert.IsTrue(overlay.IsVisible);
                 Assert.AreEqual(1, fixture.Messages.Questions);
                 Assert.Contains("보유 0개", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
