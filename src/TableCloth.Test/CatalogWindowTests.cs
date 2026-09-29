@@ -26,6 +26,7 @@ public sealed class CatalogWindowTests
             var window = new CatalogWindow(viewModel);
             try
             {
+                Assert.AreEqual(WindowStartupLocation.CenterOwner, window.WindowStartupLocation);
                 window.Show();
                 await Task.Yield();
                 var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts", "catalog-list-800-light.png");

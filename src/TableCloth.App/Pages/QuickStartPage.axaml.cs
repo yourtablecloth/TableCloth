@@ -178,8 +178,7 @@ public partial class QuickStartPage : UserControl
         if (services is null) return;
         var window = services.GetRequiredService<ManagedAiWindow>();
         if (initialPrompt is not null) window.SetInitialPrompt(initialPrompt);
-        if (TopLevel.GetTopLevel(this) is Window owner) window.Show(owner);
-        else window.Show();
+        ShowCentered(window);
     }
 
     private void OpenCatalog_Click(object? sender, RoutedEventArgs e) => OpenCatalog(null);
@@ -203,9 +202,20 @@ public partial class QuickStartPage : UserControl
         _catalogWindow = window;
         window.Closed += (_, _) => _catalogWindow = null;
 
+        ShowCentered(window);
+    }
+
+    private void ShowCentered(Window window)
+    {
         if (TopLevel.GetTopLevel(this) is Window owner)
+        {
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.Show(owner);
+        }
         else
+        {
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             window.Show();
+        }
     }
 }

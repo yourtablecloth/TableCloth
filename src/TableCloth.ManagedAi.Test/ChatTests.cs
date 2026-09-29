@@ -152,6 +152,28 @@ public sealed class ChatTests
     }
 
     [TestMethod]
+    public void ChatPromptUsesInstalledProductContextAndUiLanguage()
+    {
+        var context = new AiClientContext(new Version(1, 22, 0, 0), new Uri("https://yourtablecloth.app/"),
+            AiResponseLanguage.English);
+        var prompt = OpenAiChatPromptFactory.Create(new AiChatRequest("How do I open a website?", [], ClientContext: context));
+
+        Assert.Contains("Installed TableCloth version (not necessarily the latest release): 1.22.0.0", prompt);
+        Assert.Contains("Official TableCloth homepage supplied by the application: \"https://yourtablecloth.app/\"", prompt);
+        Assert.Contains("Spork runs inside the sandbox", prompt);
+        Assert.Contains("browser-only sandbox", prompt);
+        Assert.Contains("https://github.com/yourtablecloth/TableCloth/releases", prompt);
+        Assert.Contains("Answer naturally and concisely in English", prompt);
+        Assert.DoesNotContain("Answer naturally and concisely in formal Korean.", prompt);
+
+        var korean = OpenAiChatPromptFactory.Create(new AiChatRequest("식탁보 사용법", [],
+            ClientContext: context with { ResponseLanguage = AiResponseLanguage.Korean }));
+        Assert.Contains("Answer naturally and concisely in formal Korean.", korean);
+        Assert.ThrowsExactly<ManagedAiException>(() => OpenAiChatPromptFactory.Create(new AiChatRequest("test", [],
+            ClientContext: context with { OfficialHomepage = new Uri("http://example.com/") })));
+    }
+
+    [TestMethod]
     public void EmbeddedSearchSchemaOmitsUnsupportedUriFormat()
     {
         using var stream = typeof(OpenAiCodexProvider).Assembly.GetManifestResourceStream("TableCloth.ManagedAi.OpenAi.Schemas.search-result.schema.json")!;

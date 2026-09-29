@@ -7,11 +7,12 @@ public sealed class ManagedAiChatSession(IManagedAiChatProvider provider, ITable
     public void Clear() => _history.Clear();
 
     public async Task<AiChatResponse> SendAsync(string message, IProgress<AiProgress>? progress, CancellationToken token,
-        string? model = null, string? localCertificateReport = null, string? localWindowsSandboxReport = null)
+        string? model = null, string? localCertificateReport = null, string? localWindowsSandboxReport = null,
+        AiClientContext? clientContext = null)
     {
         // Each request starts an ephemeral Codex turn. Only bounded in-memory context is sent for follow-ups.
         var response = await provider.ChatAsync(new(message, _history.ToArray(), model, localCertificateReport,
-            localWindowsSandboxReport), progress, token);
+            localWindowsSandboxReport, clientContext), progress, token);
         _history.Add(new(AiChatRole.User, message));
         _history.Add(new(AiChatRole.Assistant, response.Text));
         while (_history.Count > 12 || _history.Sum(x => x.Text.Length) > 20000)

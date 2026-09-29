@@ -44,8 +44,11 @@ public sealed record AiSearchCandidate(string Title, Uri TargetUrl, string Descr
 public sealed record AiProgress(string Stage, int SearchCalls = 0);
 public enum AiChatRole { User, Assistant }
 public sealed record AiChatMessage(AiChatRole Role, string Text);
+public enum AiResponseLanguage { Korean, English }
+public sealed record AiClientContext(Version? InstalledVersion, Uri OfficialHomepage, AiResponseLanguage ResponseLanguage);
 public sealed record AiChatRequest(string Message, IReadOnlyList<AiChatMessage> History, string? Model = null,
-    string? LocalCertificateReport = null, string? LocalWindowsSandboxReport = null);
+    string? LocalCertificateReport = null, string? LocalWindowsSandboxReport = null,
+    AiClientContext? ClientContext = null);
 public sealed record AiChatResponse(string Text, DateTimeOffset RetrievedAtUtc, int SearchCalls, string? Model = null);
 public sealed record AiModel(string Id, string DisplayName, bool IsDefault = false)
 {

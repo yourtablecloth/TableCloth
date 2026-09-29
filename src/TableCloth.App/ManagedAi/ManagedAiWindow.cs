@@ -18,6 +18,7 @@ using TableCloth.Components;
 using TableCloth.ManagedAi.OpenAi;
 using TableCloth.ManagedAi.Windows;
 using TableCloth.Models;
+using TableCloth.Resources;
 using TableCloth.Theme.Controls;
 
 namespace TableCloth.ManagedAi;
@@ -37,6 +38,7 @@ public sealed class ManagedAiWindow : Window
     private readonly IManagedAiCertificateBridge _certificateBridge;
     private readonly IManagedAiSandboxBridge _sandboxBridge;
     private readonly IPreferencesManager _preferences;
+    private readonly AiClientContext _clientContext;
     private Task _modelSaveTask = Task.CompletedTask;
     private string? _preferredModelId;
     private bool _preferencesLoaded;
@@ -106,8 +108,12 @@ public sealed class ManagedAiWindow : Window
         _skills = skills; _preferences = preferences;
         _certificateBridge = certificateBridge ?? new ManagedAiCertificateBridge(new JsonlProcessRunner());
         _sandboxBridge = sandboxBridge ?? new ManagedAiSandboxBridge(new SandboxCliProcessRunner());
+        _clientContext = new(typeof(ManagedAiWindow).Assembly.GetName().Version,
+            new Uri(CommonStrings.AppInfoUrl, UriKind.Absolute),
+            ManagedAiText.IsKorean ? AiResponseLanguage.Korean : AiResponseLanguage.English);
         Title = ManagedAiText.ProductTitle;
         Width = 900; Height = 780; MinWidth = 640; MinHeight = 540;
+        WindowStartupLocation = WindowStartupLocation.CenterOwner;
         var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*,Auto"), Margin = new Thickness(20) };
         var header = new StackPanel { Spacing = 8 };
         var heading = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
@@ -115,8 +121,17 @@ public sealed class ManagedAiWindow : Window
         title.Children.Add(new TextBlock { Text = Title, FontSize = 24, FontWeight = FontWeight.SemiBold });
         title.Children.Add(_account);
         heading.Children.Add(title);
-        var clear = ActionButton(L("새 대화", "New chat"), _ =>
-        { _session.Clear(); _transcript.Children.Clear(); AddWelcome(); return Task.CompletedTask; });
+        var clear = new Button { Content = L("새 대화", "New chat"), Margin = new Thickness(0, 0, 8, 6) };
+        clear.Click += (_, _) =>
+        {
+            if ((_session.History.Count > 0 || _transcript.Children.Any(child => !ReferenceEquals(child, _starters)) ||
+                 !string.IsNullOrWhiteSpace(_input.Text)) &&
+                _messages.DisplayQuestion(L("새 대화를 시작하면 기존 대화 내용과 작성 중인 메시지가 모두 사라집니다. 계속하시겠습니까?",
+                    "Starting a new chat will erase the conversation and your draft. Continue?"),
+                    AppMessageBoxButton.YesNo, AppMessageBoxResult.No) != AppMessageBoxResult.Yes) return;
+            _session.Clear(); _input.Text = string.Empty; _transcript.Children.Clear(); AddWelcome();
+        };
+        _actions.Add(clear);
         AutomationProperties.SetAutomationId(clear, "ManagedAiNewChat");
         Grid.SetColumn(clear, 1); heading.Children.Add(clear);
         header.Children.Add(heading);
@@ -187,7 +202,7 @@ public sealed class ManagedAiWindow : Window
         settings.Children.Add(SettingsButton(L("기기 코드로 로그인", "Sign in with device code"), "ManagedAiDeviceLogin", async token =>
         { if (await EnsureRuntimeAsync(token)) await LoginAsync(AiLoginMethod.DeviceCode, token); }));
         settings.Children.Add(SettingsButton(L("이전 런타임 버전 복원", "Restore previous runtime"), "ManagedAiRollback", async token =>
-        { await _runtimes.RollbackAsync(token); _skillsLoaded = false; await RefreshStatusAsync(token); }));
+        { await RunBackendAsync(_runtimes.RollbackAsync, token); _skillsLoaded = false; await RefreshStatusAsync(token); }));
         settings.Children.Add(new TextBlock { Text = L("전용 스킬", "Dedicated skills"), FontWeight = FontWeight.SemiBold, Margin = new Thickness(0, 8, 0, 0) });
         settings.Children.Add(Text(L("이 백엔드의 전용 폴더에 있는 활성 스킬을 대화에 제공합니다. 런타임을 다시 설치해도 스킬과 사용 설정을 보존합니다.",
             "Enabled skills in this backend's dedicated folder are available to chats. Reinstalling the runtime preserves the skills and their enabled states.")));
@@ -250,11 +265,15 @@ public sealed class ManagedAiWindow : Window
             { e.Handled = true; await SendAsync(); }
         }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
         _cancel.Click += (_, _) => _operation?.Cancel();
-        Opened += async (_, _) => await RunAsync(async token =>
+        Opened += (_, _) => Dispatcher.UIThread.Post(() =>
         {
-            await RefreshSkillsAsync(token);
-            await RefreshStatusAsync(token);
-        });
+            if (IsVisible)
+                _ = RunAsync(async token =>
+                {
+                    await RefreshSkillsAsync(token);
+                    await RefreshStatusAsync(token);
+                });
+        }, DispatcherPriority.Background);
         Activated += async (_, _) =>
         {
             if (!_statusKnown || _operation is not null || _closing || _skillRefreshInProgress) return;
@@ -323,7 +342,7 @@ public sealed class ManagedAiWindow : Window
             return;
         }
         _skillStatus.Text = L("스킬 폴더를 검사하고 전용 저장소로 복사하고 있습니다.", "Checking the skill folder and copying it to dedicated storage.");
-        RenderSkills(await _skills.ImportAsync(source, token));
+        RenderSkills(await RunBackendAsync(ct => _skills.ImportAsync(source, ct), token));
         _skillsLoaded = true;
         _skillStatus.Text = L("스킬을 가져왔습니다. 다음 메시지부터 사용할 수 있습니다.", "Skill imported. It is available from the next message.");
     }
@@ -331,7 +350,7 @@ public sealed class ManagedAiWindow : Window
     private async Task RefreshSkillsAsync(CancellationToken token)
     {
         _skillStatus.Text = L("전용 스킬과 격리 설정을 확인하고 있습니다.", "Checking dedicated skills and isolation settings.");
-        var skills = await _skills.ListAsync(token);
+        var skills = await RunBackendAsync(_skills.ListAsync, token);
         RenderSkills(skills);
         _skillsLoaded = true;
         _skillStatus.Text = skills.Count == 0
@@ -375,7 +394,7 @@ public sealed class ManagedAiWindow : Window
             AutomationProperties.SetAutomationId(toggle, "ManagedAiSkillToggle_" + skill.Id);
             toggle.Click += async (_, _) => await RunAsync(async token =>
             {
-                var updated = await _skills.SetEnabledAsync(skill.Id, !skill.Enabled, token);
+                var updated = await RunBackendAsync(ct => _skills.SetEnabledAsync(skill.Id, !skill.Enabled, ct), token);
                 RenderSkills(updated);
                 _skillStatus.Text = !skill.Enabled
                     ? L($"{skill.Name} 스킬을 사용하도록 설정했습니다.", $"Enabled the {skill.Name} skill.")
@@ -391,7 +410,7 @@ public sealed class ManagedAiWindow : Window
                     AppMessageBoxButton.YesNo, AppMessageBoxResult.No) != AppMessageBoxResult.Yes) return;
                 await RunAsync(async token =>
                 {
-                    RenderSkills(await _skills.RemoveAsync(skill.Id, token));
+                    RenderSkills(await RunBackendAsync(ct => _skills.RemoveAsync(skill.Id, ct), token));
                     _skillStatus.Text = L($"{skill.Name} 스킬을 제거했습니다.", $"Removed the {skill.Name} skill.");
                 }, keepSettingsOpen: true);
             };
@@ -406,8 +425,8 @@ public sealed class ManagedAiWindow : Window
     {
         _starters.Children.Clear(); _starterButtons.Clear(); _starters.IsVisible = true;
         _starters.Children.Add(new TextBlock { Text = L("이런 질문으로 시작할 수 있습니다", "Try one of these questions"), FontSize = 16, FontWeight = FontWeight.SemiBold });
-        _starters.Children.Add(Text(L("카드를 누르면 예시 질문이 입력됩니다. 내용을 수정한 뒤 전송할 수 있습니다.",
-            "Choose a card to fill in a sample question. You can edit it before sending.")));
+        _starters.Children.Add(Text(L("카드를 누르면 예시 질문이 입력됩니다. 내용을 수정한 뒤 전송할 수 있습니다. Shift 키를 누른 채 클릭하면 바로 전송합니다.",
+            "Choose a card to fill in a sample question. You can edit it before sending, or Shift-click to send it immediately.")));
         var choices = new UniformGrid { Columns = 2 };
         var bank = StarterBankExamples[Random.Shared.Next(StarterBankExamples.Length)];
         AddStarter(L("서비스 찾기", "Find a service"),
@@ -440,13 +459,21 @@ public sealed class ManagedAiWindow : Window
                 VerticalAlignment = VerticalAlignment.Stretch, VerticalContentAlignment = VerticalAlignment.Top };
             button.Classes.Add("chat-starter");
             AutomationProperties.SetName(button, title + ". " + (description ?? prompt));
-            button.Click += (_, _) =>
+            var sendOnClick = false;
+            button.AddHandler(InputElement.PointerPressedEvent, (_, e) =>
+                sendOnClick = (e.KeyModifiers & KeyModifiers.Shift) != 0,
+                Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            button.Click += async (_, _) =>
             {
+                var sendImmediately = sendOnClick;
+                sendOnClick = false;
                 if (_operation is not null) return;
                 var draft = string.IsNullOrWhiteSpace(_input.Text) ? prompt : _input.Text.TrimEnd() + "\n\n" + prompt;
                 if (draft.Length > _input.MaxLength) { _status.Text = L("입력란의 글자 수를 줄이면 추천 문장을 추가할 수 있습니다.",
                     "Shorten your message before adding this suggestion."); return; }
                 _input.Text = draft; _input.CaretIndex = draft.Length; _input.Focus();
+                if (sendImmediately && _loggedIn && _models.SelectedItem is AiModel)
+                { await SendAsync(); return; }
                 _status.Text = L("추천 문장을 추가했습니다. 내용을 수정한 뒤 Shift+Enter로 전송할 수 있습니다.",
                     "Suggestion added. Edit it and press Shift+Enter to send.");
             };
@@ -524,15 +551,17 @@ public sealed class ManagedAiWindow : Window
             {
                 _status.Text = L("로컬 인증서 만료일을 확인하고 있습니다.", "Checking local certificate expiry dates.");
                 if (_pendingStatus is not null) _pendingStatus.Text = _status.Text;
-                localReport = await _certificateBridge.GetExpiryReportAsync(token);
+                localReport = await RunBackendAsync(_certificateBridge.GetExpiryReportAsync, token);
             }
             if (sandboxRequest is not null)
             {
                 _status.Text = L("Windows Sandbox 명령을 실행하고 있습니다.", "Running the Windows Sandbox command.");
                 if (_pendingStatus is not null) _pendingStatus.Text = _status.Text;
-                localSandboxReport = await _sandboxBridge.ExecuteAsync(sandboxRequest, token);
+                localSandboxReport = await RunBackendAsync(ct => _sandboxBridge.ExecuteAsync(sandboxRequest, ct), token);
             }
-            var response = await _session.SendAsync(text, Progress(), token, model.Id, localReport, localSandboxReport);
+            var progress = Progress();
+            var response = await RunBackendAsync(ct => _session.SendAsync(text, progress, ct,
+                model.Id, localReport, localSandboxReport, _clientContext), token);
             RemovePending();
             AddMessage($"{L("식탁보", "TableCloth")} / {response.Model ?? model.Id}", response.Text);
             _status.Text = response.SearchCalls > 0
@@ -579,6 +608,14 @@ public sealed class ManagedAiWindow : Window
         }
         void ShowFailure(string message) { _status.Text = message; if (errorInChat) AddMessage(L("안내", "Notice"), message); }
     }
+
+    // Backend methods can perform synchronous filesystem and process setup before their first await.
+    // Resume on the captured UI context after the worker completes to update Avalonia controls.
+    private static Task<T> RunBackendAsync<T>(Func<CancellationToken, Task<T>> action, CancellationToken token)
+        => Task.Run(() => action(token), token);
+
+    private static Task RunBackendActionAsync(Func<CancellationToken, Task> action, CancellationToken token)
+        => Task.Run(() => action(token), token);
 
     private void UpdateEnabled()
     {
@@ -641,7 +678,7 @@ public sealed class ManagedAiWindow : Window
         {
             try
             {
-                _preferredModelId = (await _preferences.LoadPreferencesAsync(token))?.LastSelectedAiModel;
+                _preferredModelId = (await RunBackendAsync(_preferences.LoadPreferencesAsync, token))?.LastSelectedAiModel;
                 _preferencesLoaded = true;
                 ShowPreferenceNotice(null);
             }
@@ -651,9 +688,9 @@ public sealed class ManagedAiWindow : Window
         }
         _statusKnown = false; _loggedIn = false;
         _models.ItemsSource = null; _models.SelectedItem = null;
-        var runtime = await _runtimes.GetActiveAsync(token);
+        var runtime = await RunBackendAsync(_runtimes.GetActiveAsync, token);
         _runtimeInstalled = runtime is not null;
-        _loggedIn = runtime is not null && await _authentication.IsLoggedInAsync(token);
+        _loggedIn = runtime is not null && await RunBackendAsync(_authentication.IsLoggedInAsync, token);
         _statusKnown = true;
         _account.Text = runtime is null ? L("AI 사용 준비를 누르면 런타임 설치와 OpenAI 로그인을 진행합니다.",
                 "Select Set up AI to install the runtime and sign in to OpenAI.")
@@ -662,7 +699,7 @@ public sealed class ManagedAiWindow : Window
                 : L("OpenAI에 연결하면 대화를 시작할 수 있습니다.", "Connect to OpenAI to start chatting."));
         if (!_loggedIn) { _models.ItemsSource = null; _models.SelectedItem = null; return; }
         _status.Text = L("사용할 수 있는 모델을 불러오고 있습니다.", "Loading available models.");
-        var models = await _modelCatalog.ListAsync(token);
+        var models = await RunBackendAsync(_modelCatalog.ListAsync, token);
         if (models.Count == 0) throw new ManagedAiException(AiFailureCode.ModelListUnavailable);
         var selected = AiModelSelection.Select(models, _preferredModelId, DateOnly.FromDateTime(DateTime.UtcNow));
         _updatingModelList = true;
@@ -707,12 +744,15 @@ public sealed class ManagedAiWindow : Window
         {
             // Read the latest settings for every write so unrelated preferences are retained.
             // Serialize rapid selections, and let Closing drain these writes without cancellation.
-            var settings = await _preferences.LoadPreferencesAsync() ?? _preferences.GetDefaultPreferences();
-            if (settings.LastSelectedAiModel != id)
+            await Task.Run(async () =>
             {
-                settings.LastSelectedAiModel = id;
-                await _preferences.SavePreferencesAsync(settings);
-            }
+                var settings = await _preferences.LoadPreferencesAsync() ?? _preferences.GetDefaultPreferences();
+                if (settings.LastSelectedAiModel != id)
+                {
+                    settings.LastSelectedAiModel = id;
+                    await _preferences.SavePreferencesAsync(settings);
+                }
+            });
             if (_preferredModelId == id) ShowPreferenceNotice(null);
         }
         catch
@@ -730,12 +770,12 @@ public sealed class ManagedAiWindow : Window
     private async Task ConnectAsync(CancellationToken token)
     {
         if (!await EnsureRuntimeAsync(token)) return;
-        if (!await _authentication.IsLoggedInAsync(token)) await LoginAsync(AiLoginMethod.Browser, token);
+        if (!await RunBackendAsync(_authentication.IsLoggedInAsync, token)) await LoginAsync(AiLoginMethod.Browser, token);
         else await RefreshStatusAsync(token);
     }
     private async Task LogoutAsync(CancellationToken token)
     {
-        await _authentication.LogoutAsync(token);
+        await RunBackendActionAsync(_authentication.LogoutAsync, token);
         ResetConnection();
         await RefreshStatusAsync(token);
         _status.Text = L("로그아웃했습니다. OpenAI 로그인으로 다시 연결할 수 있습니다.",
@@ -743,9 +783,10 @@ public sealed class ManagedAiWindow : Window
     }
     private async Task<bool> EnsureRuntimeAsync(CancellationToken token)
     {
-        if (await _runtimes.GetActiveAsync(token) is not null) return true;
+        if (await RunBackendAsync(_runtimes.GetActiveAsync, token) is not null) return true;
         if (!ConfirmInstall()) { _status.Text = L("설치를 취소했습니다.", "Installation canceled."); return false; }
-        await _runtimes.InstallAsync(null, Progress(), token);
+        var progress = Progress();
+        await RunBackendAsync(ct => _runtimes.InstallAsync(null, progress, ct), token);
         _runtimeInstalled = true; _skillsLoaded = false;
         return true;
     }
@@ -756,7 +797,8 @@ public sealed class ManagedAiWindow : Window
     {
         if (!ConfirmInstall())
         { _status.Text = L("설치를 취소했습니다.", "Installation canceled."); return; }
-        await _runtimes.InstallAsync(null, Progress(), token);
+        var progress = Progress();
+        await RunBackendAsync(ct => _runtimes.InstallAsync(null, progress, ct), token);
         _skillsLoaded = false;
         await RefreshStatusAsync(token); _status.Text = L("런타임 설치를 완료했습니다.", "Runtime installation complete.");
     }
@@ -779,7 +821,7 @@ public sealed class ManagedAiWindow : Window
                 _loginPanel.IsVisible = true;
             }
         });
-        try { await _authentication.LoginAsync(method, progress, token); }
+        try { await RunBackendActionAsync(ct => _authentication.LoginAsync(method, progress, ct), token); }
         finally
         {
             acceptingLoginUpdates = false;

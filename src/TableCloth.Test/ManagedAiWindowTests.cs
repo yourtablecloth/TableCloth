@@ -26,6 +26,29 @@ public sealed class ManagedAiWindowTests
     public TestContext TestContext { get; set; } = null!;
 
     [TestMethod]
+    public async Task StartupChecksStayOffUiThread()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            var window = fixture.Create();
+            try
+            {
+                Assert.AreEqual(WindowStartupLocation.CenterOwner, window.WindowStartupLocation);
+                window.Show(); await Ready(window);
+                Assert.IsFalse(fixture.Skills.ListCalledOnUiThread ?? true);
+                Assert.IsFalse(fixture.Runtime.GetActiveCalledOnUiThread ?? true);
+                Assert.IsFalse(fixture.Auth.StatusCalledOnUiThread ?? true);
+                Assert.IsFalse(fixture.Models.ListCalledOnUiThread ?? true);
+                Assert.IsFalse(fixture.Preferences.LoadCalledOnUiThread ?? true);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
     public async Task EnglishUiUsesEnglishAcrossChatAndSkillSettings()
     {
         using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
@@ -44,6 +67,17 @@ public sealed class ManagedAiWindowTests
                 Assert.AreEqual("Sign out", Find<Button>(window, "ManagedAiSignOut").Content);
                 Assert.AreEqual("Reload skills", Find<Button>(window, "ManagedAiSkillRefresh").Content);
                 Assert.AreEqual("AI skills", ManagedAiText.SkillsTabTitle);
+                Click(window, Find<Button>(window, "ManagedAiSettingsClose"));
+                Find<TextBox>(window, "ManagedAiChatInput").Text = "How do I use TableCloth?";
+                Click(window, Find<Button>(window, "ManagedAiChatSend"));
+                await Until(() => fixture.Chat.Requests.Count == 1);
+                var context = fixture.Chat.Requests[0].ClientContext;
+                Assert.IsNotNull(context);
+                Assert.AreEqual(AiResponseLanguage.English, context.ResponseLanguage);
+                Assert.AreEqual("https://yourtablecloth.app/", context.OfficialHomepage.AbsoluteUri);
+                Assert.AreEqual(typeof(ManagedAiWindow).Assembly.GetName().Version, context.InstalledVersion);
+                fixture.Chat.Complete("Open the Quick Start screen.");
+                await Ready(window);
             }
             finally { window.Close(); }
             return true;
@@ -438,6 +472,84 @@ public sealed class ManagedAiWindowTests
     }
 
     [TestMethod]
+    public async Task ShiftClickStarterSendsItsQuestionImmediately()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            var window = fixture.Create();
+            try
+            {
+                window.Show(); await Ready(window);
+                var starter = Controls(window).OfType<Button>().First(x => x.Classes.Contains("chat-starter"));
+                Click(window, starter, RawInputModifiers.Shift);
+                await Until(() => fixture.Chat.Requests.Count == 1);
+                Assert.Contains("인터넷뱅킹 공식 사이트", fixture.Chat.Requests.Single().Message);
+                Assert.AreEqual(string.Empty, Find<TextBox>(window, "ManagedAiChatInput").Text);
+                Assert.IsFalse(Find<StackPanel>(window, "ManagedAiStarters").IsVisible);
+                fixture.Chat.Complete("공식 사이트 안내입니다.");
+                await Ready(window);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
+    public async Task NewChatConfirmsBeforeDiscardingConversationOrDraft()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            var window = fixture.Create();
+            try
+            {
+                window.Show(); await Ready(window);
+                var newChat = Find<Button>(window, "ManagedAiNewChat");
+                var transcript = Find<StackPanel>(window, "ManagedAiChatTranscript");
+                var input = Find<TextBox>(window, "ManagedAiChatInput");
+                Click(window, newChat);
+                Assert.AreEqual(0, fixture.Messages.Questions);
+
+                input.Text = "작성 중인 질문";
+                fixture.Messages.Answer = AppMessageBoxResult.No;
+                Click(window, newChat);
+                Assert.AreEqual(1, fixture.Messages.Questions);
+                Assert.AreEqual(AppMessageBoxResult.No, fixture.Messages.LastDefault);
+                Assert.AreEqual("작성 중인 질문", input.Text);
+                fixture.Messages.Answer = AppMessageBoxResult.Yes;
+                Click(window, newChat);
+                Assert.AreEqual(string.Empty, input.Text);
+
+                input.Text = "첫 질문";
+                Click(window, Find<Button>(window, "ManagedAiChatSend"));
+                await Until(() => fixture.Chat.Requests.Count == 1);
+                fixture.Chat.Complete("첫 답변");
+                await Ready(window);
+                input.Text = "다음 질문 초안";
+                var messageCount = transcript.Children.Count;
+                fixture.Messages.Answer = AppMessageBoxResult.No;
+                Click(window, newChat);
+                Assert.Contains("기존 대화 내용", fixture.Messages.LastQuestion!);
+                Assert.AreEqual(messageCount, transcript.Children.Count);
+                Assert.AreEqual("다음 질문 초안", input.Text);
+                Assert.HasCount(2, fixture.Session!.History);
+
+                fixture.Messages.Answer = AppMessageBoxResult.Yes;
+                Click(window, newChat);
+                Assert.AreEqual(string.Empty, input.Text);
+                Assert.HasCount(0, fixture.Session.History);
+                Assert.HasCount(1, transcript.Children);
+                Assert.IsTrue(Find<StackPanel>(window, "ManagedAiStarters").IsVisible);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
     public async Task CertificateSkillRequiresConsentBeforeLocalCliBridgeAndModelTurn()
     {
         using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
@@ -638,14 +750,14 @@ public sealed class ManagedAiWindowTests
     }
 
     private static IEnumerable<Control> Controls(Window window) => window.GetVisualDescendants().OfType<Control>();
-    private static void Click(Window window, Control control)
+    private static void Click(Window window, Control control, RawInputModifiers modifiers = RawInputModifiers.None)
     {
         Dispatcher.UIThread.RunJobs();
         Assert.IsTrue(control.IsEffectivelyVisible);
         var point = control.TranslatePoint(new Point(control.Bounds.Width / 2, control.Bounds.Height / 2), window);
         Assert.IsNotNull(point);
-        window.MouseDown(point.Value, MouseButton.Left);
-        window.MouseUp(point.Value, MouseButton.Left);
+        window.MouseDown(point.Value, MouseButton.Left, modifiers);
+        window.MouseUp(point.Value, MouseButton.Left, modifiers);
         Dispatcher.UIThread.RunJobs();
     }
     private static void SaveFrame(Window window, string path)
@@ -658,7 +770,9 @@ public sealed class ManagedAiWindowTests
     }
     private static T Find<T>(Window window, string id) where T : Control
         => Controls(window).OfType<T>().Single(x => AutomationProperties.GetAutomationId(x) == id);
-    private static Task Ready(Window window) => Until(() => !Find<Button>(window, "ManagedAiCancel").IsVisible);
+    private static Task Ready(Window window) => Until(() =>
+        !Find<Button>(window, "ManagedAiCancel").IsVisible &&
+        Find<Button>(window, "ManagedAiConnect").Content?.ToString() is not ("연결 확인 중" or "Checking connection"));
     private static async Task Until(Func<bool> condition)
     {
         for (var i = 0; i < 200; i++)
@@ -691,6 +805,7 @@ public sealed class ManagedAiWindowTests
     private sealed class Preferences : IPreferencesManager
     {
         public string Json = "{}";
+        public bool? LoadCalledOnUiThread;
         public bool FailSave;
         public TaskCompletionSource? SaveGate;
         public List<string> Saved = [];
@@ -699,7 +814,8 @@ public sealed class ManagedAiWindowTests
         public PreferenceSettings Read() => JsonSerializer.Deserialize(Json, TableClothJsonContext.Default.PreferenceSettings)!;
         public static string Serialize(PreferenceSettings settings) => JsonSerializer.Serialize(settings, TableClothJsonContext.Default.PreferenceSettings);
         public PreferenceSettings GetDefaultPreferences() => new();
-        public Task<PreferenceSettings?> LoadPreferencesAsync(CancellationToken token = default) => Task.FromResult<PreferenceSettings?>(Read());
+        public Task<PreferenceSettings?> LoadPreferencesAsync(CancellationToken token = default)
+        { LoadCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); return Task.FromResult<PreferenceSettings?>(Read()); }
         public async Task SavePreferencesAsync(PreferenceSettings settings, CancellationToken token = default)
         {
             MaxConcurrentSaves = Math.Max(MaxConcurrentSaves, ++_activeSaves);
@@ -716,8 +832,10 @@ public sealed class ManagedAiWindowTests
     {
         public bool Installed = true;
         public int Installs;
+        public bool? GetActiveCalledOnUiThread;
         private readonly ManagedRuntime _runtime = new(new("1.2.3", "fixture", "hash"), "fixture", "fixture", "fixture", DateTimeOffset.UtcNow);
-        public Task<ManagedRuntime?> GetActiveAsync(CancellationToken token) => Task.FromResult(Installed ? _runtime : null);
+        public Task<ManagedRuntime?> GetActiveAsync(CancellationToken token)
+        { GetActiveCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); return Task.FromResult(Installed ? _runtime : null); }
         public Task<ManagedRuntime> InstallAsync(string? version, IProgress<AiProgress>? progress, CancellationToken token)
         { Installs++; Installed = true; return Task.FromResult(_runtime); }
         public Task<ManagedRuntime> RollbackAsync(CancellationToken token) => throw new NotSupportedException();
@@ -725,12 +843,14 @@ public sealed class ManagedAiWindowTests
     private sealed class Authentication : IProviderAuthentication
     {
         public bool LoggedIn = true;
+        public bool? StatusCalledOnUiThread;
         public bool FailLogout;
         public List<string> Actions = [];
         public AiLoginMethod? Method;
         public TaskCompletionSource? LoginCompletion;
         public IProgress<AiLoginUpdate>? Progress;
-        public Task<bool> IsLoggedInAsync(CancellationToken token) => Task.FromResult(LoggedIn);
+        public Task<bool> IsLoggedInAsync(CancellationToken token)
+        { StatusCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); return Task.FromResult(LoggedIn); }
         public Task LoginAsync(CancellationToken token) => throw new NotSupportedException();
         public async Task LoginAsync(AiLoginMethod method, IProgress<AiLoginUpdate>? progress, CancellationToken token)
         {
@@ -748,11 +868,13 @@ public sealed class ManagedAiWindowTests
     private sealed class Models : IManagedAiModelCatalog
     {
         public IReadOnlyList<AiModel> Items = [new("fixture-default", "기본 모델", true), new("fixture-other", "다른 모델")];
+        public bool? ListCalledOnUiThread;
         public int Calls;
         public bool Fail;
         public TaskCompletionSource? Completion;
         public async Task<IReadOnlyList<AiModel>> ListAsync(CancellationToken token)
         {
+            ListCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess();
             Calls++;
             if (Fail) throw new ManagedAiException(AiFailureCode.ModelListUnavailable);
             if (Completion is not null) await Completion.Task.WaitAsync(token);
@@ -763,9 +885,10 @@ public sealed class ManagedAiWindowTests
     {
         public string StorageDirectory => Path.Combine(Path.GetTempPath(), "tablecloth-managed-ai-test-skills");
         public IReadOnlyList<AiSkill> Items = [];
+        public bool? ListCalledOnUiThread;
         public int Calls;
         public Task<IReadOnlyList<AiSkill>> ListAsync(CancellationToken token)
-        { Calls++; return Task.FromResult(Items); }
+        { ListCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); Calls++; return Task.FromResult(Items); }
         public Task<IReadOnlyList<AiSkill>> ImportAsync(string sourceDirectory, CancellationToken token)
             => throw new AssertFailedException("Unexpected skill import");
         public Task<IReadOnlyList<AiSkill>> SetEnabledAsync(string id, bool enabled, CancellationToken token)
@@ -815,8 +938,10 @@ public sealed class ManagedAiWindowTests
     {
         public int Questions;
         public AppMessageBoxResult Answer = AppMessageBoxResult.Yes;
+        public AppMessageBoxResult LastDefault;
+        public string? LastQuestion;
         public AppMessageBoxResult DisplayQuestion(string message, AppMessageBoxButton buttons, AppMessageBoxResult answer)
-        { Questions++; return Answer; }
+        { Questions++; LastDefault = answer; LastQuestion = message; return Answer; }
         public AppMessageBoxResult DisplayInfo(string message, AppMessageBoxButton buttons) => throw new NotSupportedException();
         public AppMessageBoxResult DisplayError(Exception? reason, bool critical, string file, string member, int line) => throw new NotSupportedException();
         public AppMessageBoxResult DisplayError(string? message, bool critical, string file, string member, int line) => throw new NotSupportedException();

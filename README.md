@@ -38,6 +38,8 @@ v1.21.0은 WPF UI를 Avalonia로 이관하고 TableCloth와 Spork 배포본을 N
 
 빠른 시작 화면에서 `식탁보 AI (베타)`를 열 수 있습니다. 이 기능은 TableCloth 전용 위치에 OpenAI Codex 런타임을 설치하고 사용자의 ChatGPT 로그인으로 대화를 처리합니다. 선택한 모델은 기존 애플리케이션 설정에 저장합니다. 응답의 웹 링크를 누르면 Windows Sandbox 또는 현재 Windows 브라우저를 선택할 수 있습니다. Sandbox 경로는 TableCloth Catalog를 확인하고 Spork로 필요한 소프트웨어를 설치한 뒤 페이지를 엽니다.
 
+AI 대화에는 실행 중인 식탁보의 버전, 공식 홈페이지, Windows Sandbox와 Spork의 역할을 기본 문맥으로 전달합니다. 답변 언어는 AI 창의 표시 언어를 따르며, 외부 사이트의 최신 절차는 웹 검색 결과에 근거합니다.
+
 일반 설정 창의 `AI 스킬` 탭에서 전용 Codex 스킬을 조회하고 추가, 활성화, 비활성화, 제거할 수 있습니다. AI 대화 창에도 활성 스킬 수를 표시하고 스킬 관리 기능을 제공합니다. TableCloth는 전용 프로필 밖에서 Codex가 찾은 사용자 및 프로젝트 스킬을 대화 실행 전에 끕니다. 스킬 파일과 사용 설정은 Codex 런타임 릴리스 폴더와 분리하므로 런타임 업데이트나 재설치 후에도 유지합니다.
 
 내장 `tablecloth-certificate-expiry` 스킬은 공동인증서 만료일 질문을 처리합니다. 사용자가 동의하면 호스트의 `TableClothCli.exe`가 기본 NPKI 폴더에서 인증서 공개 정보와 로컬 Catalog 캐시 현황을 조회합니다. 대화에는 인증서 이름, 경로와 개인키를 제외한 결과만 전달합니다. CLI는 인증서와 특정 Catalog 서비스의 관계를 추정하지 않습니다.
