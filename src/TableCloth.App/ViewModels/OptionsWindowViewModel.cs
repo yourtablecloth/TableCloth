@@ -35,10 +35,11 @@ public static class OptionsTabKeys
     public const string DataDirectory = nameof(DataDirectory);
     public const string Certificate = nameof(Certificate);
     public const string DeviceSharing = nameof(DeviceSharing);
+    public const string Session = nameof(Session);
     public const string Compatibility = nameof(Compatibility);
     public const string Diagnostics = nameof(Diagnostics);
-    public const string Preview = nameof(Preview);
     public const string AiSkills = nameof(AiSkills);
+    public const string Preview = nameof(Preview);
 }
 
 [Obsolete("This class is reserved for design-time usage.", false)]
@@ -77,7 +78,7 @@ public partial class OptionsWindowViewModel : ObservableObject
 
     /// <summary>
     /// 탭 키 문자열을 <see cref="InitialTabIndex"/>로 적용한다. XAML의 TabControl에 정의된
-    /// 탭 순서(사용자 폴더 / 데이터 디렉터리 / 인증서 / 장치 공유 / 호환성 / 진단 / 미리 보기 / AI 스킬)와 동기화되어야 한다.
+    /// 탭 순서(사용자 폴더 / 데이터 디렉터리 / 인증서 / 장치 공유 / 샌드박스 세션 / 호환성 / 진단 / AI 스킬 / 미리 보기)와 동기화되어야 한다.
     /// </summary>
     public void SetInitialTab(string? tabKey)
     {
@@ -92,10 +93,11 @@ public partial class OptionsWindowViewModel : ObservableObject
             OptionsTabKeys.DataDirectory => 1,
             OptionsTabKeys.Certificate => 2,
             OptionsTabKeys.DeviceSharing => 3,
-            OptionsTabKeys.Compatibility => 4,
-            OptionsTabKeys.Diagnostics => 5,
-            OptionsTabKeys.Preview => 6,
+            OptionsTabKeys.Session => 4,
+            OptionsTabKeys.Compatibility => 5,
+            OptionsTabKeys.Diagnostics => 6,
             OptionsTabKeys.AiSkills => 7,
+            OptionsTabKeys.Preview => 8,
             _ => 0,
         };
     }
@@ -118,7 +120,7 @@ public partial class OptionsWindowViewModel : ObservableObject
             EnableSandboxPublicDnsFallback = currentConfig.EnableSandboxPublicDnsFallback;
             EnableZScalerRootCertPropagation = currentConfig.EnableZScalerRootCertPropagation;
 
-            // [미리 보기] 유휴 자동 종료(이슈 #197). 값이 옵션 목록에 없으면 가장 가까운 기본값으로 보정.
+            // 유휴 자동 종료(이슈 #197). 값이 옵션 목록에 없으면 기본값으로 보정.
             EnableIdleAutoLogout = currentConfig.EnableIdleAutoLogout;
             IdleAutoLogoutMinutes = IdleTimeoutOptions.Contains(currentConfig.IdleAutoLogoutMinutes)
                 ? currentConfig.IdleAutoLogoutMinutes
@@ -144,7 +146,7 @@ public partial class OptionsWindowViewModel : ObservableObject
 
         PropertyChanged += ViewModel_PropertyChanged;
         _optionsLoaded = true;
-        if (InitialTabIndex == 7 && !SkillsLoaded) await RefreshSkillsAsync();
+        if (InitialTabIndex == ResolveTabIndex(OptionsTabKeys.AiSkills) && !SkillsLoaded) await RefreshSkillsAsync();
     }
 
     [RelayCommand]
@@ -456,7 +458,7 @@ public partial class OptionsWindowViewModel : ObservableObject
         HasNoCompatibilityMatches = CompatibilityOptions.Count == 0;
     }
 
-    // [미리 보기] 유휴 자동 종료(이슈 #197). 기본 꺼짐 + 유휴 허용 시간(분).
+    // 유휴 자동 종료(이슈 #197). 기본 꺼짐 + 유휴 허용 시간(분).
     [ObservableProperty]
     private bool _enableIdleAutoLogout;
 

@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace Spork.Components.Implementations
 {
     /// <summary>
-    /// [미리 보기] <see cref="ISessionIdleMonitor"/>의 기본 구현(이슈 #197). <c>GetLastInputInfo</c>로 세션의
+    /// <see cref="ISessionIdleMonitor"/>의 기본 구현(이슈 #197). <c>GetLastInputInfo</c>로 세션의
     /// 유휴 시간을 1초 간격으로 확인한다. 허용 시간 종료 <see cref="_warningLeadSeconds"/>초 전부터 경고 창을
     /// 띄워 카운트다운을 보여주고, 사용자가 다시 활동하면 경고를 닫는다. 그대로 시간이 다 되면 게스트에서
     /// <c>shutdown</c>으로 샌드박스를 종료한다. Data 디렉터리는 읽기-쓰기로 마운트되어 있어 급종료로도
@@ -38,7 +38,7 @@ namespace Spork.Components.Implementations
         {
             var policy = _policyProvider.GetIdleAutoLogoutPolicy();
             if (!policy.Enabled || policy.TimeoutMinutes <= 0)
-                return false; // 미리 보기 기능이 꺼져 있으면(기본값) 아무 것도 하지 않는다.
+                return false; // 자동 종료 설정이 꺼져 있으면(기본값) 아무 것도 하지 않는다.
 
             _timeoutSeconds = policy.TimeoutMinutes * 60;
             // 종료 60초 전(단, 허용 시간의 절반을 넘지 않게)부터 경고를 띄운다.

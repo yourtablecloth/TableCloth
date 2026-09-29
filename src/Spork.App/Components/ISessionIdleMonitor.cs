@@ -1,7 +1,7 @@
 namespace Spork.Components
 {
     /// <summary>
-    /// [미리 보기] 샌드박스 세션의 유휴 시간을 감시해, 정책상 허용 시간을 넘기면 자동으로 종료하는 모니터(이슈 #197).
+    /// 샌드박스 세션의 유휴 시간을 감시해, 정책상 허용 시간을 넘기면 자동으로 종료하는 모니터(이슈 #197).
     /// 정책이 비활성이면 <see cref="Start"/>는 아무 일도 하지 않는다.
     /// </summary>
     public interface ISessionIdleMonitor

@@ -492,11 +492,17 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
   <data name="Option_UsePrinterCheckboxText" xml:space="preserve">
     <value>Using with printers</value>
   </data>
+  <data name="Options_Section_Session" xml:space="preserve">
+    <value>Sandbox session</value>
+  </data>
+  <data name="Options_Section_Session_Description" xml:space="preserve">
+    <value>Configure automatic shutdown of the sandbox session.</value>
+  </data>
   <data name="Options_Section_Preview" xml:space="preserve">
     <value>Preview</value>
   </data>
   <data name="Options_Section_Preview_Description" xml:space="preserve">
-    <value>Preview features are experimental and may change or be removed without notice. Enable only if you'd like to try them.</value>
+    <value>Choose the update channel for TableCloth.</value>
   </data>
   <data name="Option_UpdateChannel_Label" xml:space="preserve">
     <value>Update channel</value>
@@ -514,10 +520,10 @@ We recommend that you do not use TableCloth for tasks that cannot be performed i
     <value>Preview builds receive new features and changes before they reach the Stable release. They are experimental and may be unstable. The selected channel takes effect on the next update check. To roll back, order matters: first select Stable here to leave the Preview ring, then download and run a Stable installer yourself. The app never downgrades itself.</value>
   </data>
   <data name="Option_EnableIdleAutoLogout" xml:space="preserve">
-    <value>Auto-close when idle (Preview)</value>
+    <value>Close sandbox session when idle</value>
   </data>
   <data name="Option_EnableIdleAutoLogout_Description" xml:space="preserve">
-    <value>If there is no keyboard/mouse input for the set time, the sandbox session is shut down automatically, reducing the risk of leaving an authenticated banking session open while away. A brief warning appears before shutdown, and any input cancels it. (Preview limitation: the session is terminated, but the sandbox window may not close immediately.)</value>
+    <value>If you do not use the keyboard or mouse for the selected time, the sandbox session closes automatically. A warning appears first; pressing a key or moving the mouse cancels the shutdown. The Windows Sandbox window may not close immediately after the session ends.</value>
   </data>
   <data name="Option_IdleAutoLogout_MinutesLabel" xml:space="preserve">
     <value>Idle time allowed (minutes)</value>
@@ -851,7 +857,7 @@ https://github.com/yourtablecloth/TableCloth</value>
     <value>Quick Start</value>
   </data>
   <data name="QuickStart_Instruction" xml:space="preserve">
-    <value>Enter an organization, web address, or question. Leave the field empty to open a sandbox.</value>
+    <value>Enter text and select Start. Leave the field empty to open a blank sandbox.</value>
   </data>
   <data name="QuickStart_InputWatermark" xml:space="preserve">
     <value>Enter an organization, web address, or question</value>

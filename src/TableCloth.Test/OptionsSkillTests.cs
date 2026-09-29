@@ -48,7 +48,8 @@ public sealed class OptionsSkillTests
         {
             using var culture = new UiCultureScope("ko-KR");
             Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
-            var viewModel = new DesignViewModel { InitialTabIndex = 7, SkillSummary = "보유 스킬 1개, 활성 스킬 1개" };
+            var viewModel = new DesignViewModel { SkillSummary = "보유 스킬 1개, 활성 스킬 1개" };
+            viewModel.SetInitialTab(OptionsTabKeys.AiSkills);
             viewModel.AiSkills.Add(new(new("fixture-skill", "업무 절차", "업무 안내", "C:\\fixture-skill", true)));
             var window = new OptionsWindow { DataContext = viewModel, Width = 600, Height = 480 };
             try
@@ -58,6 +59,7 @@ public sealed class OptionsSkillTests
                 var tabs = window.GetVisualDescendants().OfType<TabControl>().Single();
                 Assert.AreEqual(7, tabs.SelectedIndex);
                 Assert.AreEqual("AI 스킬", ((TabItem)tabs.SelectedItem!).Header);
+                Assert.AreEqual("미리 보기", tabs.Items.Cast<TabItem>().Last().Header);
                 Assert.HasCount(1, window.FindControl<ListBox>("AiSkillList")!.ItemsSource!.Cast<object>());
                 Assert.Contains("활성 스킬 1개", window.FindControl<TextBlock>("AiSkillSummary")!.Text!);
                 var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts", "options-ai-skills-600-light.png");
@@ -67,6 +69,35 @@ public sealed class OptionsSkillTests
                 using var frame = window.CaptureRenderedFrame();
                 Assert.IsNotNull(frame);
                 frame.Save(screenshot);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
+    public async Task IdleShutdownAppearsInSandboxSessionTab()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            using var culture = new UiCultureScope("ko-KR");
+            var viewModel = new DesignViewModel();
+            viewModel.SetInitialTab(OptionsTabKeys.Session);
+            var window = new OptionsWindow { DataContext = viewModel };
+            try
+            {
+                window.Show();
+                await Task.Yield();
+                var tabs = window.GetVisualDescendants().OfType<TabControl>().Single();
+                Assert.AreEqual(4, tabs.SelectedIndex);
+                Assert.AreEqual("샌드박스 세션", ((TabItem)tabs.SelectedItem!).Header);
+                var idle = window.GetVisualDescendants().OfType<CheckBox>()
+                    .Single(x => Equals(x.Content, "자리 비움 시 자동 종료"));
+                Assert.IsFalse(idle.IsChecked ?? false);
+                idle.IsChecked = true;
+                Assert.IsTrue(viewModel.EnableIdleAutoLogout);
+                Assert.IsTrue(window.GetVisualDescendants().OfType<ComboBox>().Single().IsEnabled);
             }
             finally { window.Close(); }
             return true;

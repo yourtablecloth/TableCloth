@@ -51,7 +51,7 @@ public partial class OptionsWindowViewModel
 
     partial void OnInitialTabIndexChanged(int value)
     {
-        if (_optionsLoaded && value == 7) RefreshSkillsAsync().SafeFireAndForget();
+        if (_optionsLoaded && value == ResolveTabIndex(OptionsTabKeys.AiSkills)) RefreshSkillsAsync().SafeFireAndForget();
     }
 
     [RelayCommand]

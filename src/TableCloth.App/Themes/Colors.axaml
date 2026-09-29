@@ -10,6 +10,7 @@
             <SolidColorBrush x:Key="ContainerBackground"                Color="WhiteSmoke" />
             <SolidColorBrush x:Key="ControlDefaultBackground"           Color="#FFE1E1E1" />
             <SolidColorBrush x:Key="ControlDefaultBorderBrush"          Color="#FFAFAFAF" />
+            <SolidColorBrush x:Key="OptionsListBorderBrush"             Color="#FFAFAFAF" />
             <SolidColorBrush x:Key="ControlDefaultForeground"           Color="#FF040404" />
             <SolidColorBrush x:Key="ControlSecondaryForeground"         Color="#FF606060" />
             <SolidColorBrush x:Key="QuickStartDividerBrush"              Color="#FFB8B8B8" />
@@ -32,6 +33,7 @@
             <SolidColorBrush x:Key="ContainerBackground"                Color="#FF272727" />
             <SolidColorBrush x:Key="ControlDefaultBackground"           Color="#FF2D2D2D" />
             <SolidColorBrush x:Key="ControlDefaultBorderBrush"          Color="#FF323232" />
+            <SolidColorBrush x:Key="OptionsListBorderBrush"             Color="#FF626262" />
             <SolidColorBrush x:Key="ControlDefaultForeground"           Color="#FFEBEBEB" />
             <SolidColorBrush x:Key="ControlSecondaryForeground"         Color="#FFA8A8A8" />
             <SolidColorBrush x:Key="QuickStartDividerBrush"              Color="#FF626262" />

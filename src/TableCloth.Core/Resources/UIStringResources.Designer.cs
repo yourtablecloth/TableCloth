@@ -1326,6 +1326,18 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string Options_Section_Session {
+            get {
+                return ResourceManager.GetString("Options_Section_Session", resourceCulture);
+            }
+        }
+
+        public static string Options_Section_Session_Description {
+            get {
+                return ResourceManager.GetString("Options_Section_Session_Description", resourceCulture);
+            }
+        }
+
         public static string Options_Section_Preview {
             get {
                 return ResourceManager.GetString("Options_Section_Preview", resourceCulture);

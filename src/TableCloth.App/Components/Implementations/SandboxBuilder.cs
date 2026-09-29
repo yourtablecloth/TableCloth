@@ -94,7 +94,7 @@ public sealed class SandboxBuilder(
 
         // 인증서가 있으면 App\certs 하위로 떨궈둔다. App 폴더가 그대로 샌드박스 Desktop\App로
         // 노출되므로 추가 마운트 없이 Spork가 AppContext.BaseDirectory\certs에서 그대로 읽는다.
-        // [미리 보기] 유휴 자동 종료 정책은 전역 환경 설정이므로, 진입 경로(QuickStart/Detail/명령줄)와
+        // 유휴 자동 종료 정책은 전역 환경 설정이므로, 진입 경로(QuickStart/Detail/명령줄)와
         // 무관하게 여기서 한 번 읽어 SporkAnswers에 실어 보낸다. 기본값은 꺼짐이라 정상 사용자엔 영향이 없다.
         var preferences = await preferencesManager.LoadPreferencesAsync(cancellationToken).ConfigureAwait(false)
             ?? preferencesManager.GetDefaultPreferences();
@@ -109,7 +109,7 @@ public sealed class SandboxBuilder(
             // 시작 시점 테마를 맞춘다(이슈 #246).
             HostUsesLightTheme = DetectHostUsesLightTheme(),
             HostHighContrastScheme = DetectHostHighContrastScheme(),
-            // [미리 보기] 유휴 자동 종료(이슈 #197).
+            // 유휴 자동 종료(이슈 #197).
             EnableIdleAutoLogout = preferences.EnableIdleAutoLogout,
             IdleAutoLogoutMinutes = preferences.IdleAutoLogoutMinutes,
             // 공용 DNS 폴백 옵션(이슈 #285). 게스트는 probe-then-fallback으로만 적용.
@@ -518,7 +518,7 @@ reg add ""HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System"" /v Wa
 reg add ""HKLM\SOFTWARE\Policies\Google\Chrome\LocalNetworkAccessAllowedForUrls"" /v 1 /t REG_SZ /d ""*"" /f >nul 2>&1
 ";
 
-        // [미리 보기] 유휴 자동 종료(이슈 #197). 기능이 켜져 있으면 Spork 런처와 독립된 idle-guard 프로세스를
+        // 유휴 자동 종료(이슈 #197). 기능이 켜져 있으면 Spork 런처와 독립된 idle-guard 프로세스를
         // start로 분리 기동한다. 이렇게 하면 사용자가 Spork 창을 닫아도(또는 아예 안 열어도) 유휴 보호가 유지된다.
         // 유휴 시간 등 세부 정책은 같은 폴더의 SporkAnswers.json에서 가드가 직접 읽는다.
         var idleGuardScript = tableClothConfiguration.EnableIdleAutoLogout
