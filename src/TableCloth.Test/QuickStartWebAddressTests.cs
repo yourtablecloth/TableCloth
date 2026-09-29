@@ -8,6 +8,7 @@ using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using TableCloth.Components;
+using TableCloth.Dialogs;
 using TableCloth.Models.Catalog;
 using TableCloth.Pages;
 using TableCloth.Resources;
@@ -18,6 +19,38 @@ namespace TableCloth.Test;
 [TestClass, DoNotParallelize]
 public sealed class QuickStartWebAddressTests
 {
+    [TestMethod]
+    public async Task CatalogLinkOpensAsModalChildOfMainWindow()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var catalog = new CatalogWindow();
+            var previous = TableClothApplication.ServiceProvider;
+            TableClothApplication.ServiceProvider = new CatalogWindowProvider(catalog);
+            var page = new QuickStartPage();
+            var owner = new Window { Content = page, Width = 800, Height = 600 };
+            try
+            {
+                owner.Show();
+                var dialogTask = page.OpenCatalogAsync(null);
+                for (var i = 0; i < 100 && !catalog.IsVisible; i++) await Task.Delay(10);
+                Assert.IsTrue(catalog.IsVisible);
+                Assert.AreSame(owner, catalog.Owner);
+                Assert.IsFalse(dialogTask.IsCompleted);
+                catalog.Close();
+                await dialogTask;
+            }
+            finally
+            {
+                catalog.Close();
+                owner.Close();
+                TableClothApplication.ServiceProvider = previous;
+            }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
     [TestMethod]
     public async Task ArrowKeysNavigateSuggestionsAndEnterAcceptsFocusedItem()
     {
@@ -228,6 +261,11 @@ public sealed class QuickStartWebAddressTests
             LaunchCount++;
             return PendingResult?.Task ?? Task.FromResult(InternetAddressLaunchResult.CatalogServiceLaunched);
         }
+    }
+
+    private sealed class CatalogWindowProvider(CatalogWindow window) : IServiceProvider
+    {
+        public object? GetService(Type serviceType) => serviceType == typeof(CatalogWindow) ? window : null;
     }
 
     private static void RaiseKey(Control control, Key key)

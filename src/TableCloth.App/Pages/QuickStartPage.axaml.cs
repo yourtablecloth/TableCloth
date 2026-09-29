@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.VisualTree;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using TableCloth.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using TableCloth.ManagedAi;
@@ -14,8 +15,6 @@ namespace TableCloth.Pages;
 
 public partial class QuickStartPage : UserControl
 {
-    private CatalogWindow? _catalogWindow;
-
     public QuickStartPage() => InitializeComponent();
 
     public QuickStartPage(QuickStartPageViewModel viewModel)
@@ -67,13 +66,13 @@ public partial class QuickStartPage : UserControl
                     await ViewModel.OpenWebAddressCommand.ExecuteAsync(null);
                     break;
                 case QuickStartRouteKind.CatalogSearch:
-                    OpenCatalog(route.Value);
+                    await OpenCatalogAsync(route.Value);
                     break;
                 case QuickStartRouteKind.SpecialCommand:
                     ViewModel.ShowSpecialCommandResult(route.Value);
                     break;
                 case QuickStartRouteKind.AiQuestion:
-                    OpenManagedAi(route.Value);
+                    await OpenManagedAiAsync(route.Value);
                     break;
             }
         }
@@ -170,52 +169,30 @@ public partial class QuickStartPage : UserControl
         return buttons;
     }
 
-    private void ManagedAi_Click(object? sender, RoutedEventArgs e) => OpenManagedAi(null);
+    private async void ManagedAi_Click(object? sender, RoutedEventArgs e) => await OpenManagedAiAsync(null);
 
-    private void OpenManagedAi(string? initialPrompt)
+    internal async Task OpenManagedAiAsync(string? initialPrompt)
     {
         var services = TableClothApplication.ServiceProvider;
         if (services is null) return;
+        if (TopLevel.GetTopLevel(this) is not Window owner) return;
         var window = services.GetRequiredService<ManagedAiWindow>();
         if (initialPrompt is not null) window.SetInitialPrompt(initialPrompt);
-        ShowCentered(window);
+        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        await window.ShowDialog(owner);
     }
 
-    private void OpenCatalog_Click(object? sender, RoutedEventArgs e) => OpenCatalog(null);
+    private async void OpenCatalog_Click(object? sender, RoutedEventArgs e) => await OpenCatalogAsync(null);
 
-    private void OpenCatalog(string? nameQuery)
+    internal async Task OpenCatalogAsync(string? nameQuery)
     {
-        if (_catalogWindow is { IsVisible: true })
-        {
-            if (nameQuery is not null) _catalogWindow.ViewModel.SearchByName(nameQuery);
-            else _catalogWindow.ViewModel.ShowAll();
-            _catalogWindow.Activate();
-            return;
-        }
-
         var services = TableClothApplication.ServiceProvider;
-        if (services is null)
-            return;
+        if (services is null) return;
+        if (TopLevel.GetTopLevel(this) is not Window owner) return;
 
         var window = services.GetRequiredService<CatalogWindow>();
         if (nameQuery is not null) window.ViewModel.SearchByName(nameQuery);
-        _catalogWindow = window;
-        window.Closed += (_, _) => _catalogWindow = null;
-
-        ShowCentered(window);
-    }
-
-    private void ShowCentered(Window window)
-    {
-        if (TopLevel.GetTopLevel(this) is Window owner)
-        {
-            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            window.Show(owner);
-        }
-        else
-        {
-            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            window.Show();
-        }
+        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        await window.ShowDialog(owner);
     }
 }

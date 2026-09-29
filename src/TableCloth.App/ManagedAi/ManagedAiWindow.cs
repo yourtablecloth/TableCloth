@@ -78,7 +78,6 @@ public sealed class ManagedAiWindow : Window
     private bool _skillsLoaded;
     private bool _certificateSkillEnabled;
     private bool _sandboxSkillEnabled;
-    private bool _skillRefreshInProgress;
     private readonly ProgressRing _busyBar = new() { IsIndeterminate = true, Width = 24, Height = 24,
         HorizontalAlignment = HorizontalAlignment.Left, IsVisible = false, IsActive = false };
     private readonly TextBlock _elapsed = new() { FontSize = 12, IsVisible = false };
@@ -274,14 +273,6 @@ public sealed class ManagedAiWindow : Window
                     await RefreshStatusAsync(token);
                 });
         }, DispatcherPriority.Background);
-        Activated += async (_, _) =>
-        {
-            if (!_statusKnown || _operation is not null || _closing || _skillRefreshInProgress) return;
-            _skillRefreshInProgress = true;
-            try { await RefreshSkillsAsync(CancellationToken.None); }
-            catch { _skillCount.Text = L("활성 스킬 수를 확인하지 못했습니다.", "Could not check the number of enabled skills."); }
-            finally { _skillRefreshInProgress = false; }
-        };
         Closing += async (_, e) =>
         {
             if (_operation is not null) { e.Cancel = true; _closing = true; _operation.Cancel(); }
@@ -425,8 +416,8 @@ public sealed class ManagedAiWindow : Window
     {
         _starters.Children.Clear(); _starterButtons.Clear(); _starters.IsVisible = true;
         _starters.Children.Add(new TextBlock { Text = L("이런 질문으로 시작할 수 있습니다", "Try one of these questions"), FontSize = 16, FontWeight = FontWeight.SemiBold });
-        _starters.Children.Add(Text(L("카드를 누르면 예시 질문이 입력됩니다. 내용을 수정한 뒤 전송할 수 있습니다. Shift 키를 누른 채 클릭하면 바로 전송합니다.",
-            "Choose a card to fill in a sample question. You can edit it before sending, or Shift-click to send it immediately.")));
+        _starters.Children.Add(Text(L("카드를 누르면 예시 질문을 바로 전송합니다.",
+            "Choose a card to send its sample question immediately.")));
         var choices = new UniformGrid { Columns = 2 };
         var bank = StarterBankExamples[Random.Shared.Next(StarterBankExamples.Length)];
         AddStarter(L("서비스 찾기", "Find a service"),
@@ -459,23 +450,14 @@ public sealed class ManagedAiWindow : Window
                 VerticalAlignment = VerticalAlignment.Stretch, VerticalContentAlignment = VerticalAlignment.Top };
             button.Classes.Add("chat-starter");
             AutomationProperties.SetName(button, title + ". " + (description ?? prompt));
-            var sendOnClick = false;
-            button.AddHandler(InputElement.PointerPressedEvent, (_, e) =>
-                sendOnClick = (e.KeyModifiers & KeyModifiers.Shift) != 0,
-                Avalonia.Interactivity.RoutingStrategies.Tunnel);
             button.Click += async (_, _) =>
             {
-                var sendImmediately = sendOnClick;
-                sendOnClick = false;
                 if (_operation is not null) return;
                 var draft = string.IsNullOrWhiteSpace(_input.Text) ? prompt : _input.Text.TrimEnd() + "\n\n" + prompt;
                 if (draft.Length > _input.MaxLength) { _status.Text = L("입력란의 글자 수를 줄이면 추천 문장을 추가할 수 있습니다.",
                     "Shorten your message before adding this suggestion."); return; }
                 _input.Text = draft; _input.CaretIndex = draft.Length; _input.Focus();
-                if (sendImmediately && _loggedIn && _models.SelectedItem is AiModel)
-                { await SendAsync(); return; }
-                _status.Text = L("추천 문장을 추가했습니다. 내용을 수정한 뒤 Shift+Enter로 전송할 수 있습니다.",
-                    "Suggestion added. Edit it and press Shift+Enter to send.");
+                await SendAsync();
             };
             _starterButtons.Add(button); choices.Children.Add(button);
         }
@@ -527,23 +509,23 @@ public sealed class ManagedAiWindow : Window
         var text = _input.Text.Trim();
         var certificateLookup = _certificateSkillEnabled && CertificateExpiryIntent.Matches(text);
         var sandboxRequest = _sandboxSkillEnabled ? WindowsSandboxIntent.Parse(text) : null;
-        if (certificateLookup && _messages.DisplayQuestion(
-            L("이 컴퓨터의 공동인증서 만료일과 로컬 Catalog 현황을 읽고 인증서 이름과 경로를 제외한 조회 결과를 OpenAI 대화에 전송하시겠습니까?",
-              "Read certificate expiry dates and local Catalog status, then send the results without certificate names or paths to the OpenAI chat?"),
-            AppMessageBoxButton.YesNo, AppMessageBoxResult.No) != AppMessageBoxResult.Yes)
-        { _status.Text = L("인증서 조회를 취소했습니다. 메시지는 입력란에 남아 있습니다.",
-            "Certificate scan canceled. Your message remains in the input box."); return; }
-        if (sandboxRequest?.Action == SandboxCliAction.Stop && _messages.DisplayQuestion(
-            L("Windows Sandbox를 종료하시겠습니까? 해당 Sandbox의 파일과 설치 상태가 사라집니다.",
-              "Stop Windows Sandbox? Its files and installed software will be lost."),
-            AppMessageBoxButton.YesNo, AppMessageBoxResult.No) != AppMessageBoxResult.Yes)
-        { _status.Text = L("Windows Sandbox 종료를 취소했습니다. 메시지는 입력란에 남아 있습니다.",
-            "Stopping Windows Sandbox was canceled. Your message remains in the input box."); return; }
-        _starters.IsVisible = false;
-        AddMessage(L("사용자", "You"), text, user: true);
-        _input.Text = string.Empty;
         await RunAsync(async token =>
         {
+            if (certificateLookup && _messages.DisplayQuestion(
+                L("이 컴퓨터의 공동인증서 만료일과 로컬 Catalog 현황을 읽고 인증서 이름과 경로를 제외한 조회 결과를 OpenAI 대화에 전송하시겠습니까?",
+                  "Read certificate expiry dates and local Catalog status, then send the results without certificate names or paths to the OpenAI chat?"),
+                AppMessageBoxButton.YesNo, AppMessageBoxResult.No) != AppMessageBoxResult.Yes)
+            { _status.Text = L("인증서 조회를 취소했습니다. 메시지는 입력란에 남아 있습니다.",
+                "Certificate scan canceled. Your message remains in the input box."); return; }
+            if (sandboxRequest?.Action == SandboxCliAction.Stop && _messages.DisplayQuestion(
+                L("Windows Sandbox를 종료하시겠습니까? 해당 Sandbox의 파일과 설치 상태가 사라집니다.",
+                  "Stop Windows Sandbox? Its files and installed software will be lost."),
+                AppMessageBoxButton.YesNo, AppMessageBoxResult.No) != AppMessageBoxResult.Yes)
+            { _status.Text = L("Windows Sandbox 종료를 취소했습니다. 메시지는 입력란에 남아 있습니다.",
+                "Stopping Windows Sandbox was canceled. Your message remains in the input box."); return; }
+            _starters.IsVisible = false;
+            AddMessage(L("사용자", "You"), text, user: true);
+            _input.Text = string.Empty;
             AddPending(model);
             string? localReport = null;
             string? localSandboxReport = null;
@@ -560,8 +542,17 @@ public sealed class ManagedAiWindow : Window
                 localSandboxReport = await RunBackendAsync(ct => _sandboxBridge.ExecuteAsync(sandboxRequest, ct), token);
             }
             var progress = Progress();
-            var response = await RunBackendAsync(ct => _session.SendAsync(text, progress, ct,
-                model.Id, localReport, localSandboxReport, _clientContext), token);
+            AiChatResponse response;
+            try
+            {
+                response = await SendWithBusyRetryAsync(ct => _session.SendAsync(text, progress, ct,
+                    model.Id, localReport, localSandboxReport, _clientContext), token);
+            }
+            catch (ManagedAiException ex) when (ex.Code == AiFailureCode.RuntimeBusy)
+            {
+                _input.Text = text;
+                throw;
+            }
             RemovePending();
             AddMessage($"{L("식탁보", "TableCloth")} / {response.Model ?? model.Id}", response.Text);
             _status.Text = response.SearchCalls > 0
@@ -569,6 +560,21 @@ public sealed class ManagedAiWindow : Window
                 : L("응답을 완료했습니다.", "Response complete.");
         }, errorInChat: true);
         _input.Focus();
+    }
+
+    private async Task<AiChatResponse> SendWithBusyRetryAsync(Func<CancellationToken, Task<AiChatResponse>> send,
+        CancellationToken token)
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            try { return await RunBackendAsync(send, token); }
+            catch (ManagedAiException ex) when (ex.Code == AiFailureCode.RuntimeBusy && attempt < 10)
+            {
+                _status.Text = L("다른 AI 작업이 끝나기를 기다리고 있습니다.", "Waiting for another AI operation to finish.");
+                if (_pendingStatus is not null) _pendingStatus.Text = _status.Text;
+                await Task.Delay(TimeSpan.FromSeconds(1), token);
+            }
+        }
     }
 
     private async Task RunAsync(Func<CancellationToken, Task> action, bool errorInChat = false, bool keepSettingsOpen = false)
@@ -594,7 +600,10 @@ public sealed class ManagedAiWindow : Window
                 ResetConnection(); _statusKnown = true;
                 if (ex.Code == AiFailureCode.RuntimeNotInstalled) _runtimeInstalled = false;
             }
-            ShowFailure(FailureText(ex.Code));
+            ShowFailure(ex.Code == AiFailureCode.RuntimeBusy && errorInChat
+                ? L("다른 AI 작업이 계속 진행 중입니다. 질문을 입력란에 남겼으므로 다시 보내기를 누를 수 있습니다.",
+                    "Another AI operation is still running. Your question remains in the input box so you can send it again.")
+                : FailureText(ex.Code));
         }
         catch { ShowFailure(L("요청을 완료하지 못했습니다. 연결 상태를 확인한 후 다시 시도할 수 있습니다.",
             "Could not complete the request. Check your connection and try again.")); }
@@ -882,7 +891,8 @@ public sealed class ManagedAiWindow : Window
         AiFailureCode.ModelListUnavailable => L("모델 목록을 불러오지 못했습니다. 모델 목록 다시 불러오기 버튼으로 재시도할 수 있습니다.", "Could not load models. Reload the model list to retry."),
         AiFailureCode.InvalidModel => L("선택한 모델을 사용할 수 없습니다. OpenAI 계정 / 설정에서 모델 목록을 새로 고친 후 다시 선택할 수 있습니다.",
             "The selected model is unavailable. Refresh the model list in OpenAI account / settings and choose again."),
-        AiFailureCode.RuntimeBusy => L("다른 창에서 설치 또는 대화를 진행하고 있습니다.", "Another window is installing or chatting."),
+        AiFailureCode.RuntimeBusy => L("식탁보 전용 Codex 환경을 사용하는 작업이 진행 중입니다.",
+            "An operation is using TableCloth's dedicated Codex environment."),
         AiFailureCode.ProviderTimeout => L("제한 시간을 초과해 요청을 종료했습니다. 메시지를 다시 보내 재시도할 수 있습니다.", "The request timed out. Send the message again to retry."),
         AiFailureCode.NoPreviousVersion => L("복원할 이전 버전이 없습니다.", "No previous runtime version is available."),
         AiFailureCode.InvalidQuery => L("메시지가 비어 있거나 너무 깁니다. 4,000자 이내의 메시지를 입력할 수 있습니다.", "Enter a message of up to 4,000 characters."),
