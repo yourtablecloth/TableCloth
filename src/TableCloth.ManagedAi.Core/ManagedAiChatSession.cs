@@ -11,9 +11,10 @@ public sealed class ManagedAiChatSession(IManagedAiChatProvider provider, ITable
         AiClientContext? clientContext = null)
     {
         // Each request starts an ephemeral Codex turn. Only bounded in-memory context is sent for follow-ups.
-        var response = await provider.ChatAsync(new(message, _history.ToArray(), model, localCertificateReport,
+        var safeMessage = SensitiveDataSanitizer.Sanitize(message);
+        var response = await provider.ChatAsync(new(safeMessage, _history.ToArray(), model, localCertificateReport,
             localWindowsSandboxReport, clientContext), progress, token);
-        _history.Add(new(AiChatRole.User, message));
+        _history.Add(new(AiChatRole.User, safeMessage));
         _history.Add(new(AiChatRole.Assistant, response.Text));
         while (_history.Count > 12 || _history.Sum(x => x.Text.Length) > 20000)
             _history.RemoveRange(0, Math.Min(2, _history.Count));

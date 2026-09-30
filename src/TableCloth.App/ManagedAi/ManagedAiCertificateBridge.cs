@@ -46,7 +46,6 @@ public sealed class ManagedAiCertificateBridge(IJsonlProcessRunner runner, strin
         start.ArgumentList.Add("expiring");
         start.ArgumentList.Add("--within-days");
         start.ArgumentList.Add("30");
-        start.ArgumentList.Add("--with-catalog-summary");
         string? report = null;
         var outcome = await runner.RunAsync(new(start, null, TimeSpan.FromSeconds(20), 64 * 1024, 1024, 64 * 1024),
             line =>
@@ -62,34 +61,44 @@ public sealed class ManagedAiCertificateBridge(IJsonlProcessRunner runner, strin
             var root = parsed.RootElement;
             foreach (var property in root.EnumerateObject())
                 if (property.Name is not ("rootFound" or "scannedAt" or "withinDays" or "pairCount" or
-                    "skippedDirectories" or "unreadableCertificates" or "certificates" or "catalog"))
+                    "skippedDirectories" or "unreadableCertificates" or "certificates"))
                     throw new JsonException();
             if (root.GetProperty("withinDays").GetInt32() != 30 ||
                 root.GetProperty("pairCount").GetInt32() is < 0 or > 200 ||
                 root.GetProperty("skippedDirectories").GetInt32() is < 0 or > 2000 ||
                 root.GetProperty("unreadableCertificates").GetInt32() is < 0 or > 200 ||
                 root.GetProperty("rootFound").ValueKind is not (JsonValueKind.True or JsonValueKind.False) ||
-                root.GetProperty("certificates").GetArrayLength() > 200)
+                root.GetProperty("certificates").GetArrayLength() > root.GetProperty("pairCount").GetInt32())
                 throw new JsonException();
+            var expiredCount = 0;
+            var expiringCount = 0;
             foreach (var item in root.GetProperty("certificates").EnumerateArray())
             {
                 foreach (var property in item.EnumerateObject())
                     if (property.Name is not ("number" or "expiresAt" or "daysRemaining" or "status"))
                         throw new JsonException();
+                var status = item.GetProperty("status").GetString();
                 if (item.GetProperty("number").GetInt32() is < 1 or > 200 ||
                     item.GetProperty("daysRemaining").GetInt32() is < -100000 or > 30 ||
-                    item.GetProperty("status").GetString() is not ("expired" or "expiring") ||
+                    status is not ("expired" or "expiring") ||
                     !item.GetProperty("expiresAt").TryGetDateTimeOffset(out _)) throw new JsonException();
+                if (status == "expired") expiredCount++;
+                else expiringCount++;
             }
-            var catalog = root.GetProperty("catalog");
-            foreach (var property in catalog.EnumerateObject())
-                if (property.Name is not ("cacheFound" or "serviceCount" or "snapshotModifiedAt"))
-                    throw new JsonException();
-            if (catalog.GetProperty("cacheFound").ValueKind is not (JsonValueKind.True or JsonValueKind.False) ||
-                catalog.GetProperty("serviceCount").GetInt32() is < 0 or > 100000)
-                throw new JsonException();
             if (!root.GetProperty("scannedAt").TryGetDateTimeOffset(out _)) throw new JsonException();
-            return report;
+            using var output = new MemoryStream();
+            using (var writer = new Utf8JsonWriter(output))
+            {
+                writer.WriteStartObject();
+                writer.WriteBoolean("rootFound", root.GetProperty("rootFound").GetBoolean());
+                writer.WriteNumber("withinDays", 30);
+                writer.WriteNumber("expiredCount", expiredCount);
+                writer.WriteNumber("expiringCount", expiringCount);
+                writer.WriteBoolean("scanIncomplete", root.GetProperty("skippedDirectories").GetInt32() > 0 ||
+                    root.GetProperty("unreadableCertificates").GetInt32() > 0);
+                writer.WriteEndObject();
+            }
+            return Encoding.UTF8.GetString(output.ToArray());
         }
         catch (Exception ex) when (ex is JsonException or InvalidOperationException or KeyNotFoundException)
         { throw new ManagedAiException(AiFailureCode.CertificateScanUnavailable); }

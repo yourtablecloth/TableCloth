@@ -158,6 +158,12 @@ public sealed class ManagedAiWindowTests
                 var models = Find<ComboBox>(window, "ManagedAiModels");
                 Assert.AreEqual("gpt-6-luna", ((AiModel)models.SelectedItem!).Id);
                 Assert.Contains("크레딧", Find<TextBlock>(window, "ManagedAiModelHint").Text!);
+                var notice = Find<Border>(window, "ManagedAiPrivacyNotice");
+                Assert.IsTrue(notice.IsEffectivelyVisible);
+                Assert.Contains("민감 개인정보", AutomationProperties.GetName(notice)!);
+                var noticePosition = notice.TranslatePoint(new Point(0, 0), window);
+                Assert.IsNotNull(noticePosition);
+                Assert.IsTrue(noticePosition.Value.Y >= 0 && noticePosition.Value.Y + notice.Bounds.Height <= window.Bounds.Height);
                 SaveFrame(window, screenshot);
                 // A separate settings edit after opening the window must not be overwritten.
                 var settings = fixture.Preferences.Read(); settings.Favorites.Add("added-later");
@@ -607,6 +613,64 @@ public sealed class ManagedAiWindowTests
                 Assert.AreEqual(Certificates.Report, fixture.Chat.Requests[0].LocalCertificateReport);
                 fixture.Chat.Complete("만료 예정 인증서가 있습니다.");
                 await Ready(window);
+                Assert.IsTrue(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
+    public async Task CertificateScreenshotLinkIsRejectedBeforeAnyModelTurn()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            var window = fixture.Create();
+            try
+            {
+                window.Show(); await Ready(window);
+                var input = Find<TextBox>(window, "ManagedAiChatInput");
+                input.Text = "인증서 스크린샷 https://example.com/screenshot";
+                Click(window, Find<Button>(window, "ManagedAiChatSend"));
+                await Ready(window);
+                Assert.AreEqual(string.Empty, input.Text);
+                Assert.HasCount(0, fixture.Chat.Requests);
+                Assert.AreEqual(0, fixture.Certificates.Calls);
+                Assert.Contains("전송하지 않았습니다", Find<TextBlock>(window, "ManagedAiStatus").Text!);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
+    public async Task PersonalDataIsMaskedInInputAndBeforeModelTurn()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            var window = fixture.Create();
+            try
+            {
+                window.Show(); await Ready(window);
+                var input = Find<TextBox>(window, "ManagedAiChatInput");
+                input.Text = "연락처 010-1234-5678, 주민번호 900101-1234567, 주소: 테헤란로 123";
+                await Until(() => input.Text!.Contains("[전화번호]") && input.Text.Contains("[주민등록번호]") &&
+                    input.Text.Contains("[주소]"));
+                Assert.DoesNotContain("010-1234-5678", input.Text!);
+                Assert.DoesNotContain("900101", input.Text!);
+                Assert.DoesNotContain("테헤란로", input.Text!);
+                Click(window, Find<Button>(window, "ManagedAiChatSend"));
+                await Until(() => fixture.Chat.Requests.Count == 1);
+                Assert.Contains("[전화번호]", fixture.Chat.Requests[0].Message);
+                Assert.Contains("[주민등록번호]", fixture.Chat.Requests[0].Message);
+                Assert.Contains("[주소]", fixture.Chat.Requests[0].Message);
+                fixture.Chat.Complete("확인했습니다.");
+                await Ready(window);
+                Assert.DoesNotContain("010-1234-5678", fixture.Session!.History[0].Text);
             }
             finally { window.Close(); }
             return true;
@@ -987,7 +1051,7 @@ public sealed class ManagedAiWindowTests
     }
     private sealed class Certificates : IManagedAiCertificateBridge
     {
-        public const string Report = "{\"rootFound\":true,\"scannedAt\":\"2026-09-25T13:00:00+09:00\",\"withinDays\":30,\"pairCount\":0,\"skippedDirectories\":0,\"unreadableCertificates\":0,\"certificates\":[],\"catalog\":{\"cacheFound\":false,\"serviceCount\":0}}";
+        public const string Report = "{\"rootFound\":true,\"withinDays\":30,\"expiredCount\":0,\"expiringCount\":0,\"scanIncomplete\":false}";
         public int Calls;
         public Task<string> GetExpiryReportAsync(CancellationToken cancellationToken)
         { Calls++; return Task.FromResult(Report); }

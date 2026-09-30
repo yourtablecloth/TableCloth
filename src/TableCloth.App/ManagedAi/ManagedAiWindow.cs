@@ -43,11 +43,12 @@ public sealed class ManagedAiWindow : Window
     private string? _preferredModelId;
     private bool _preferencesLoaded;
     private bool _updatingModelList;
+    private bool _sanitizingInput;
     private readonly TextBox _input = new()
     {
-        Watermark = L("메시지를 입력합니다. Shift+Enter로 전송하고 Enter로 줄을 바꿉니다.",
-            "Type a message. Press Shift+Enter to send and Enter for a new line."),
-        AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MaxLength = 4000, MinHeight = 78, MaxHeight = 180
+        Watermark = L("메시지를 입력합니다. 인증서 자료와 스크린샷은 받지 않습니다.",
+            "Type a message. Certificate details and screenshots are not accepted."),
+        AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MaxLength = 4000, MinHeight = 60, MaxHeight = 180
     };
     private readonly TextBlock _status = Text(L("웹 링크를 누르면 Windows Sandbox 또는 현재 브라우저를 선택할 수 있습니다.",
         "Select Windows Sandbox or your current browser when opening a web link."));
@@ -111,7 +112,7 @@ public sealed class ManagedAiWindow : Window
             new Uri(CommonStrings.AppInfoUrl, UriKind.Absolute),
             ManagedAiText.IsKorean ? AiResponseLanguage.Korean : AiResponseLanguage.English);
         Title = ManagedAiText.ProductTitle;
-        Width = 900; Height = 780; MinWidth = 640; MinHeight = 540;
+        Width = 800; Height = 600; MinWidth = 640; MinHeight = 540;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*,Auto"), Margin = new Thickness(20) };
         var header = new StackPanel { Spacing = 8 };
@@ -159,19 +160,46 @@ public sealed class ManagedAiWindow : Window
         root.Children.Add(header);
         _scroll = new ScrollViewer { Content = _transcript, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
         Grid.SetRow(_scroll, 1); root.Children.Add(_scroll);
-        var composer = new StackPanel { Spacing = 8, Margin = new Thickness(0, 12, 0, 0) };
+        var composer = new StackPanel { Spacing = 4, Margin = new Thickness(0, 4, 0, 0) };
         composer.Children.Add(_busyBar);
         composer.Children.Add(_status);
         composer.Children.Add(_elapsed);
+        var privacyNotice = new Border
+        {
+            Padding = new Thickness(10, 5), CornerRadius = new CornerRadius(6), BorderThickness = new Thickness(1)
+        };
+        var privacyContent = new StackPanel { Spacing = 2 };
+        var privacyWarning = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 8 };
+        privacyWarning.Children.Add(new TextBlock
+        {
+            Text = L("민감정보 주의", "Sensitive data"), FontWeight = FontWeight.Bold,
+            FontSize = 12, VerticalAlignment = VerticalAlignment.Center
+        });
+        var privacyText = Text(L("민감 개인정보, 공동인증서 파일, 스크린샷을 입력하거나 링크로 공유하지 마십시오.",
+            "Do not enter sensitive personal information or share certificate files and screenshots, including through links."));
+        Grid.SetColumn(privacyText, 1); privacyWarning.Children.Add(privacyText);
+        privacyContent.Children.Add(privacyWarning);
+        privacyContent.Children.Add(new TextBlock
+        {
+            Text = L("전화번호, 주민등록번호, 주소 형식은 자동으로 가립니다. 모든 개인정보를 식별하지는 못합니다. 대화는 창 메모리에 보관하며 OpenAI 구독을 사용합니다.",
+                "Phone, ID-number, and address patterns are masked automatically, but some data may be missed. Chats remain in this window's memory and use your OpenAI subscription."),
+            TextWrapping = TextWrapping.Wrap, FontSize = 11
+        });
+        privacyNotice.Child = privacyContent;
+        privacyNotice.Bind(Border.BackgroundProperty, privacyNotice.GetResourceObservable("InfoBarWarningSeverityBackgroundBrush"));
+        privacyNotice.Bind(Border.BorderBrushProperty, privacyNotice.GetResourceObservable("SystemFillColorCautionBrush"));
+        AutomationProperties.SetAutomationId(privacyNotice, "ManagedAiPrivacyNotice");
+        AutomationProperties.SetName(privacyNotice, privacyText.Text);
+        composer.Children.Add(privacyNotice);
         var editor = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 10 };
+        ToolTip.SetTip(_input, L("Shift+Enter로 전송합니다. 식탁보 AI는 인증서별 세부 정보를 볼 수 없습니다.",
+            "Press Shift+Enter to send. TableCloth AI cannot view individual certificate details."));
         editor.Children.Add(_input);
         var sendButtons = new StackPanel { Spacing = 8, VerticalAlignment = VerticalAlignment.Bottom };
         _send.Classes.Add("accent");
         sendButtons.Children.Add(_send); sendButtons.Children.Add(_cancel);
         Grid.SetColumn(sendButtons, 1); editor.Children.Add(sendButtons);
         composer.Children.Add(editor);
-        composer.Children.Add(Text(L("대화는 이 창의 메모리에만 보관합니다. 전송 시 OpenAI 구독 사용량을 사용하며 AI 응답의 정확성을 보장하지 않습니다.",
-            "Chats remain only in this window's memory. Sending uses your OpenAI subscription, and AI responses may be inaccurate.")));
         Grid.SetRow(composer, 2); root.Children.Add(composer);
         // The application's theme has no MenuFlyoutPresenter/MenuItem template.
         // Use the same in-window panel approach as AboutWindow with themed native buttons.
@@ -256,7 +284,7 @@ public sealed class ManagedAiWindow : Window
         };
         _timer.Tick += (_, _) => _elapsed.Text = L($"{(int)_watch.Elapsed.TotalSeconds}초 경과",
             $"{(int)_watch.Elapsed.TotalSeconds}s elapsed");
-        _input.TextChanged += (_, _) => UpdateEnabled();
+        _input.TextChanging += (_, _) => SanitizeInput();
         _send.Click += async (_, _) => await SendAsync();
         _input.AddHandler(KeyDownEvent, async (_, e) =>
         {
@@ -507,13 +535,28 @@ public sealed class ManagedAiWindow : Window
     {
         if (_operation is not null || !_loggedIn || _models.SelectedItem is not AiModel model || string.IsNullOrWhiteSpace(_input.Text)) return;
         var text = _input.Text.Trim();
+        if (CertificateInputGuard.ContainsProhibitedMaterial(text))
+        {
+            _input.Text = string.Empty;
+            _status.Text = L("인증서 상세 정보 또는 이미지 링크를 감지해 메시지를 전송하지 않았습니다. 식탁보 AI는 만료 또는 갱신 대상 수만 확인할 수 있습니다.",
+                "Certificate details or an image link were detected, so the message was not sent. TableCloth AI can only check expiry counts.");
+            return;
+        }
+        var sanitized = SensitiveDataSanitizer.Sanitize(text);
+        if (sanitized != text)
+        {
+            _input.Text = sanitized;
+            _status.Text = L("개인정보로 보이는 내용을 가렸습니다. 전송 전에 수정된 문장을 확인해 주십시오.",
+                "Potential personal data was masked. Review the edited message before sending.");
+            return;
+        }
         var certificateLookup = _certificateSkillEnabled && CertificateExpiryIntent.Matches(text);
         var sandboxRequest = _sandboxSkillEnabled ? WindowsSandboxIntent.Parse(text) : null;
         await RunAsync(async token =>
         {
             if (certificateLookup && _messages.DisplayQuestion(
-                L("이 컴퓨터의 공동인증서 만료일과 로컬 Catalog 현황을 읽고 인증서 이름과 경로를 제외한 조회 결과를 OpenAI 대화에 전송하시겠습니까?",
-                  "Read certificate expiry dates and local Catalog status, then send the results without certificate names or paths to the OpenAI chat?"),
+                L("이 컴퓨터에서 이미 만료된 공동인증서 수와 30일 이내에 만료될 인증서 수를 확인한 뒤 OpenAI 대화에 전송하시겠습니까? 식탁보 AI는 인증서별 세부 정보를 볼 수 없습니다.",
+                  "Send only the counts of expired certificates and certificates expiring within 30 days to the OpenAI chat? TableCloth AI cannot view individual certificate details."),
                 AppMessageBoxButton.YesNo, AppMessageBoxResult.No) != AppMessageBoxResult.Yes)
             { _status.Text = L("인증서 조회를 취소했습니다. 메시지는 입력란에 남아 있습니다.",
                 "Certificate scan canceled. Your message remains in the input box."); return; }
@@ -560,6 +603,28 @@ public sealed class ManagedAiWindow : Window
                 : L("응답을 완료했습니다.", "Response complete.");
         }, errorInChat: true);
         _input.Focus();
+    }
+
+    private void SanitizeInput()
+    {
+        if (_sanitizingInput) return;
+        var original = _input.Text ?? string.Empty;
+        var sanitized = SensitiveDataSanitizer.Sanitize(original);
+        if (sanitized != original)
+        {
+            _sanitizingInput = true;
+            try
+            {
+                var caret = Math.Clamp(_input.CaretIndex, 0, original.Length);
+                var safeCaret = SensitiveDataSanitizer.Sanitize(original[..caret]).Length;
+                _input.Text = sanitized;
+                _input.CaretIndex = Math.Min(safeCaret, sanitized.Length);
+            }
+            finally { _sanitizingInput = false; }
+            _status.Text = L("개인정보로 보이는 내용을 입력란에서 가렸습니다. 자동 필터는 모든 형식을 식별하지 못합니다.",
+                "Potential personal data was masked in the input. The automatic filter may miss some formats.");
+        }
+        UpdateEnabled();
     }
 
     private async Task<AiChatResponse> SendWithBusyRetryAsync(Func<CancellationToken, Task<AiChatResponse>> send,

@@ -2,6 +2,7 @@ using System.Text;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Security.Cryptography;
 
 namespace TableCloth.ManagedAi.OpenAi;
 
@@ -156,6 +157,7 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
     {
         EnsureBundledSkill("tablecloth-certificate-expiry", "certificate-expiry-skill.installed",
             "TableCloth.ManagedAi.OpenAi.Bundled.CertificateExpirySkill");
+        UpgradeBundledCertificateSkill();
         EnsureBundledSkill("tablecloth-windows-sandbox", "windows-sandbox-skill.installed",
             "TableCloth.ManagedAi.OpenAi.Bundled.WindowsSandboxSkill");
     }
@@ -177,6 +179,28 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
             source.CopyTo(target);
         }
         File.WriteAllText(marker, "1", new UTF8Encoding(false));
+    }
+
+    private void UpgradeBundledCertificateSkill()
+    {
+        const string priorLfHash = "C08D90D73961A2134E684641D7A40638A94FC584B5555D854F4B8FB4D81E3182";
+        const string priorCrlfHash = "0ABDAE1744AF5F66E45B39FB2FE829EE13869BA37062FB9C7ECC958D1CC118FE";
+        var manifest = Path.Combine(paths.Skills, "tablecloth-certificate-expiry", "SKILL.md");
+        if (!File.Exists(manifest)) return;
+        ManagedAiPaths.RejectReparsePoints(manifest);
+        var currentHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(manifest)));
+        if (currentHash is not (priorLfHash or priorCrlfHash)) return;
+        using var source = typeof(OpenAiCodexSkillManager).Assembly.GetManifestResourceStream(
+            "TableCloth.ManagedAi.OpenAi.Bundled.CertificateExpirySkill")
+            ?? throw new ManagedAiException(AiFailureCode.SkillInvalid);
+        var staging = manifest + ".update-" + Guid.NewGuid().ToString("N");
+        try
+        {
+            using (var target = new FileStream(staging, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                source.CopyTo(target);
+            File.Move(staging, manifest, overwrite: true);
+        }
+        finally { if (File.Exists(staging)) File.Delete(staging); }
     }
 
     private async Task<string> ImportCoreAsync(string sourceDirectory, CancellationToken cancellationToken)

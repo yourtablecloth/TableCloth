@@ -178,6 +178,11 @@ public partial class QuickStartPage : UserControl
         if (TopLevel.GetTopLevel(this) is not Window owner) return;
         var window = services.GetRequiredService<ManagedAiWindow>();
         if (initialPrompt is not null) window.SetInitialPrompt(initialPrompt);
+        if (owner.ClientSize.Width > 0 && owner.ClientSize.Height > 0)
+        {
+            window.Width = owner.ClientSize.Width;
+            window.Height = owner.ClientSize.Height;
+        }
         window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
         await window.ShowDialog(owner);
     }
