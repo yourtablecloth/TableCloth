@@ -196,15 +196,7 @@ public sealed class AppUpdateManager : IAppUpdateManager
             // 현재 아키텍처 확인
             var arch = GetCurrentArchitecture();
 
-            // 파일 이름 규칙(이슈 #296): Retail = TableCloth_{ver}_Release_{arch}.exe,
-            // Preview = TableCloth-Preview_{ver}_Release_{arch}.exe. 채널에 맞는 자산만 고른다
-            // ("-Preview" 포함 여부로 링 구분 — Retail 이 프리뷰 자산을 잡지 않도록).
-            var wantPreview = _channel == ReleaseChannel.Preview;
-            var matchingAsset = releaseInfo.Assets.FirstOrDefault(a =>
-                a.Name != null &&
-                a.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) &&
-                a.Name.Contains($"_Release_{arch}", StringComparison.OrdinalIgnoreCase) &&
-                a.Name.Contains("-Preview", StringComparison.OrdinalIgnoreCase) == wantPreview);
+            var matchingAsset = FindInstallerAsset(releaseInfo.Assets, arch, _channel);
 
             if (matchingAsset?.BrowserDownloadUrl != null &&
                 Uri.TryCreate(matchingAsset.BrowserDownloadUrl, UriKind.Absolute, out var downloadUri))
@@ -213,18 +205,8 @@ public sealed class AppUpdateManager : IAppUpdateManager
                 return downloadUri;
             }
 
-            // 아키텍처별 파일을 찾지 못하면 첫 번째 exe 파일 사용
-            var fallbackAsset = releaseInfo.Assets.FirstOrDefault(a =>
-                a.Name != null &&
-                a.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase));
-
-            if (fallbackAsset?.BrowserDownloadUrl != null &&
-                Uri.TryCreate(fallbackAsset.BrowserDownloadUrl, UriKind.Absolute, out var fallbackUri))
-            {
-                _logger.LogInformation("Using fallback release asset: {AssetName}", fallbackAsset.Name);
-                return fallbackUri;
-            }
-
+            // 일치하는 설치 파일이 없으면 호출자가 릴리스 페이지로 안내한다.
+            // Spork/SporkBootstrap 등 다른 프로그램을 업데이트로 선택하지 않는다(#283).
             return null;
         }
         catch (Exception ex)
@@ -232,6 +214,22 @@ public sealed class AppUpdateManager : IAppUpdateManager
             _logger.LogWarning(ex, "Failed to get latest release download URL.");
             return null;
         }
+    }
+
+    internal static GitHubAssetInfo? FindInstallerAsset(
+        GitHubAssetInfo[] assets,
+        string arch,
+        ReleaseChannel channel)
+    {
+        // Retail = TableCloth_{ver}_Release_{arch}.exe,
+        // Preview = TableCloth-Preview_{ver}_Release_{arch}.exe.
+        var prefix = channel == ReleaseChannel.Preview ? "TableCloth-Preview_" : "TableCloth_";
+        var suffix = $"_Release_{arch}.exe";
+
+        return assets.FirstOrDefault(a =>
+            a.Name != null &&
+            a.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) &&
+            a.Name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase));
     }
 
     // 이슈 #296: 채널에 따라 GitHub 릴리스 폴백 소스를 분기. Retail 은 /releases/latest(프리릴리스 제외),
@@ -336,7 +334,7 @@ public sealed class AppUpdateManager : IAppUpdateManager
         public GitHubAssetInfo[]? Assets { get; set; }
     }
 
-    private sealed class GitHubAssetInfo
+    internal sealed class GitHubAssetInfo
     {
         public string? Name { get; set; }
         public string? BrowserDownloadUrl { get; set; }
