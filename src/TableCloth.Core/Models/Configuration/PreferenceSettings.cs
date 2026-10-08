@@ -88,6 +88,9 @@ namespace TableCloth.Models.Configuration
         /// </summary>
         public bool ShareNpkiFolder { get; set; } = true;
 
+        /// <summary>호스트 공유 없이 게스트에서 실행 파일을 다운로드하는 Safe Mode를 사용합니다.</summary>
+        public bool EnableSafeMode { get; set; } = false;
+
         /// <summary>
         /// 샌드박스에서 GPU 가속(vGPU + Edge 하드웨어 가속)을 사용할지 여부.
         /// 기본값은 false — 즉 호환성·안정성을 우선시하여 GPU를 끄고 소프트웨어 렌더링으로 동작합니다.

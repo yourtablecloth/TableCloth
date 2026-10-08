@@ -78,11 +78,13 @@ WinGet 등록소 반영에는 GitHub Release 게시 이후 시간이 더 걸릴 
 
 ## 무설치 Express 실행
 
+공유 폴더를 사용하는 실행에서 PC에 블루스크린이 발생하면 설치형 식탁보의 **환경 설정 > 샌드박스 세션 > Safe Mode 사용**을 선택할 수 있습니다. Safe Mode는 호스트 폴더와 클립보드 및 장치 공유를 제외하고 네트워크를 유지합니다. 개발 브랜치에서 추가한 기능으로 이번 변경을 포함한 빌드에서 사용할 수 있습니다. 제한 기능과 비교 절차는 [Safe Mode 및 중지 오류 가이드](docs/SAFE_MODE.ko.md)에 설명했습니다. [English guide](docs/SAFE_MODE.md)
+
 호스트에 TableCloth를 설치하지 않고 Windows Sandbox 안에서 Spork만 실행할 수도 있습니다.
 
 1. 최신 정식 릴리스에서 [`no-install-spork.wsb`](https://github.com/yourtablecloth/TableCloth/releases/latest/download/no-install-spork.wsb)를 내려받습니다.
 2. 내려받은 파일을 두 번 눌러 Windows Sandbox를 시작합니다.
-3. SporkBootstrap이 현재 아키텍처에 맞는 최신 Spork Portable 패키지를 검증하고 실행할 때까지 기다립니다.
+3. SporkBootstrap이 현재 아키텍처에 맞는 최신 Spork Portable 패키지를 다운로드하고 실행할 때까지 기다립니다.
 
 무설치 구성은 호스트 폴더를 게스트에 매핑하지 않습니다. 따라서 호스트의 파일 기반 공동인증서와 데이터 폴더를 사용할 수 없습니다. 모바일 인증처럼 호스트 파일을 요구하지 않는 인증 수단에 적합합니다.
 

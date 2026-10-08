@@ -83,6 +83,8 @@
 		<EmbeddedResource Include="Resources\SandboxIcon.ico">
 			<LogicalName>SandboxIcon.ico</LogicalName>
 		</EmbeddedResource>
+
+		<EmbeddedResource Include="Resources\SafeModeStartup.ps1" LogicalName="SafeModeStartup.ps1" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -65,6 +65,22 @@ public sealed class ManagedAiSandboxBridgeTests
         Assert.AreEqual("sandbox-cli-runner", result.Stdout);
     }
 
+    [TestMethod]
+    public async Task SafeModeStartPassesFixedConfigurationAsOneCliArgument()
+    {
+        var runner = new Runner("{}");
+        var bridge = new ManagedAiSandboxBridge(runner, @"C:\fixture\wsb.exe");
+        var report = await bridge.ExecuteAsync(new(SandboxCliAction.Start, SafeMode: true, PublicDnsFallback: false), CancellationToken.None);
+        var args = runner.Commands.Single();
+        Assert.AreEqual("start", args[0]);
+        Assert.AreEqual("--config", args[1]);
+        SafeModeTests.AssertPolicy(System.Xml.Linq.XDocument.Parse(args[2]).Root!);
+        Assert.Contains("if ($false -and", args[2]);
+        Assert.AreEqual("--raw", args[3]);
+        using var json = JsonDocument.Parse(report);
+        Assert.AreEqual("SafeMode", json.RootElement.GetProperty("Mode").GetString());
+    }
+
     private sealed class Runner(params string[] output) : ISandboxCliProcessRunner
     {
         private int _index;

@@ -17,6 +17,8 @@ namespace Spork
         {
             InitializeComponent();
             DataContext = viewModel;
+            if (Environment.GetEnvironmentVariable("TABLECLOTH_SAFE_MODE") == "1")
+                Title += " [Safe Mode]";
             viewModel.WindowLoaded += ViewModel_WindowLoaded;
             viewModel.CloseRequested += ViewModel_CloseRequested;
             Loaded += OnLoaded;

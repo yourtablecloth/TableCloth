@@ -56,6 +56,8 @@
                         Padding="28 12" FontSize="16" FontWeight="Bold" IsDefault="True" IsEnabled="{Binding CanStart}"
                         HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                         Content="{x:Static res:UIStringResources.QuickStart_LaunchButton}" Click="Start_Click" />
+                <Button x:Name="ExecutionModeButton" Classes="link" HorizontalAlignment="Center" Margin="0 4 0 0"
+                        Content="{Binding ExecutionModeText}" Command="{Binding OpenOptionsCommand}" CommandParameter="Session" />
                 <Border Width="176" Height="1" HorizontalAlignment="Center" Margin="0 24 0 16"
                         Background="{DynamicResource QuickStartDividerBrush}" />
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="8">

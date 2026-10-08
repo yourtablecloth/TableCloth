@@ -9,12 +9,15 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using TableCloth.Components.Implementations;
+using TableCloth.Models.Configuration;
 
 namespace TableCloth.ManagedAi;
 
 public enum SandboxCliAction { List, Start, Stop, Connect, Ip }
 
-public sealed record SandboxCliRequest(SandboxCliAction Action, Guid? Id = null);
+public sealed record SandboxCliRequest(SandboxCliAction Action, Guid? Id = null,
+    bool SafeMode = false, bool PublicDnsFallback = true);
 
 public static class WindowsSandboxIntent
 {
@@ -109,7 +112,8 @@ public sealed class SandboxCliProcessRunner : ISandboxCliProcessRunner
 }
 
 internal sealed record SandboxCliReport(string Action, string Status, int? ExitCode = null,
-    string? Output = null, string? Id = null);
+    string? Output = null, string? Id = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Mode = null);
 
 [JsonSerializable(typeof(SandboxCliReport))]
 internal partial class SandboxCliJsonContext : JsonSerializerContext;
@@ -137,9 +141,13 @@ public sealed class ManagedAiSandboxBridge(ISandboxCliProcessRunner runner, stri
                 id = ids[0];
             }
 
-            var result = await RunAsync(request.Action, id, cancellationToken);
+            var safeStart = request.Action == SandboxCliAction.Start && request.SafeMode;
+            var configuration = safeStart
+                ? SafeModeSandboxSpec.Create(new TableClothConfiguration { EnableSafeMode = true }, request.PublicDnsFallback)
+                : null;
+            var result = await RunAsync(request.Action, id, cancellationToken, configuration);
             return Serialize(new(action, result.ExitCode == 0 ? "succeeded" : "failed", result.ExitCode,
-                result.Output, id?.ToString("D")));
+                result.Output, id?.ToString("D"), safeStart ? "SafeMode" : null));
         }
         catch (Exception ex) when (ex is Win32Exception or System.IO.FileNotFoundException or System.IO.DirectoryNotFoundException)
         {
@@ -152,7 +160,7 @@ public sealed class ManagedAiSandboxBridge(ISandboxCliProcessRunner runner, stri
     }
 
     private async Task<(int ExitCode, string Output)> RunAsync(SandboxCliAction action, Guid? id,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken, string? configuration = null)
     {
         var start = new ProcessStartInfo(_executable)
         {
@@ -161,6 +169,11 @@ public sealed class ManagedAiSandboxBridge(ISandboxCliProcessRunner runner, stri
             StandardOutputEncoding = new UTF8Encoding(false, true), StandardErrorEncoding = new UTF8Encoding(false, true)
         };
         start.ArgumentList.Add(action.ToString().ToLowerInvariant());
+        if (configuration is not null)
+        {
+            start.ArgumentList.Add("--config");
+            start.ArgumentList.Add(configuration);
+        }
         if (id is not null)
         {
             start.ArgumentList.Add("--id");

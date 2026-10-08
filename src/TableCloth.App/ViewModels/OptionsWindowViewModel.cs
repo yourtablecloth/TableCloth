@@ -116,6 +116,7 @@ public partial class OptionsWindowViewModel : ObservableObject
             EnablePrinters = currentConfig.UsePrinterRedirection;
             EnableLogAutoCollecting = currentConfig.UseLogCollection;
             ShareNpkiFolder = currentConfig.ShareNpkiFolder;
+            EnableSafeMode = currentConfig.EnableSafeMode;
             EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration;
             EnableSandboxPublicDnsFallback = currentConfig.EnableSandboxPublicDnsFallback;
             EnableZScalerRootCertPropagation = currentConfig.EnableZScalerRootCertPropagation;
@@ -355,6 +356,9 @@ public partial class OptionsWindowViewModel : ObservableObject
     private bool _shareNpkiFolder;
 
     [ObservableProperty]
+    private bool _enableSafeMode;
+
+    [ObservableProperty]
     private bool _enableSandboxGpuAcceleration;
 
     // 공용 DNS 폴백(이슈 #285). 기본 켜짐 — 게스트 DNS 해석 실패 시에만 공용 DNS로 폴백(probe-then-fallback).
@@ -573,6 +577,10 @@ public partial class OptionsWindowViewModel : ObservableObject
 
             case nameof(ShareNpkiFolder):
                 currentConfig.ShareNpkiFolder = viewModel.ShareNpkiFolder;
+                break;
+
+            case nameof(EnableSafeMode):
+                currentConfig.EnableSafeMode = viewModel.EnableSafeMode;
                 break;
 
             case nameof(EnableSandboxGpuAcceleration):

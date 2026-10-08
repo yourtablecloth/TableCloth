@@ -139,6 +139,14 @@ public partial class QuickStartPageViewModel : ObservableObject
         _dataDirectoryHostPath = _sharedLocations.GetEffectiveDataDirectoryPath(currentConfig.DataDirectoryHostPath);
         LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
+        ExecutionModeText = currentConfig.EnableSafeMode ? SafeModeText.Status : SafeModeText.NormalStatus;
+
+        if (currentConfig.EnableSafeMode)
+        {
+            NpkiStatusText = UIStringResources.QuickStart_NpkiStatus_NotSharing;
+            return;
+        }
+
         var npkiHostPath = TryGetHostNpkiDirectoryPath();
         if (!currentConfig.ShareNpkiFolder)
             NpkiStatusText = UIStringResources.QuickStart_NpkiStatus_NotSharing;
@@ -278,6 +286,18 @@ public partial class QuickStartPageViewModel : ObservableObject
 
     private async Task<bool> LaunchSandboxAsync(CancellationToken cancellationToken = default)
     {
+        var currentConfig = await _preferencesManager.LoadPreferencesAsync(cancellationToken);
+        currentConfig ??= _preferencesManager.GetDefaultPreferences();
+        if (currentConfig.EnableSafeMode)
+        {
+            return await _sandboxLauncher.RunSandboxAsync(new TableClothConfiguration
+            {
+                EnableSafeMode = true,
+                Services = PreselectedServices?.ToList() ?? new List<CatalogInternetService>(),
+                TargetUrl = PreselectedTargetUrl,
+            }, cancellationToken);
+        }
+
         // 데이터 폴더가 로컬 고정 디스크가 아니면(네트워크/클라우드/이동식 드라이브, UNC) Windows
         // 샌드박스가 마운트하지 못한다. 클라우드 동기화 폴더 등은 폴더 생성 자체는 성공할 수 있으므로,
         // 생성을 유도하기 전에 먼저 검사해 옵션의 데이터 디렉터리 탭으로 안내하고 실행을 멈춘다. (이슈 #282)
@@ -290,9 +310,6 @@ public partial class QuickStartPageViewModel : ObservableObject
 
         if (!await EnsureDataDirectoryAsync())
             return false;
-
-        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
-        currentConfig ??= _preferencesManager.GetDefaultPreferences();
 
         await MigrateUserDataIfNeededAsync(currentConfig);
 
@@ -484,6 +501,9 @@ public partial class QuickStartPageViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string _npkiStatusText = string.Empty;
+
+    [ObservableProperty]
+    private string _executionModeText = string.Empty;
 
     public bool ShouldNotifyDisclaimer
     {

@@ -672,6 +672,8 @@ internal static partial class Program
             foreach (var siteId in siteIds.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                 psi.ArgumentList.Add(siteId);
         }
+        var version = FileVersionInfo.GetVersionInfo(exe);
+        Log($"guest executable: {exe}; fileVersion={version.FileVersion}; productVersion={version.ProductVersion}; safeMode={Environment.GetEnvironmentVariable("TABLECLOTH_SAFE_MODE") == "1"}");
         Process.Start(psi);
         Log($"launched: {exe} (siteIds='{siteIds}', targetUrl={(targetUrl != null ? "<supplied>" : "<none>")})");
     }

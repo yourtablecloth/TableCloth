@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using TableCloth.Models;
@@ -15,11 +15,12 @@ public sealed class ConfigurationComposer(
     {
         var selectedCert = viewModel.SelectedCertFile;
 
-        if (!viewModel.MapNpkiCert)
+        if (!viewModel.MapNpkiCert || viewModel.EnableSafeMode)
             selectedCert = null;
 
         return new TableClothConfiguration()
         {
+            EnableSafeMode = viewModel.EnableSafeMode,
             CertPair = selectedCert,
             EnableMicrophone = viewModel.EnableMicrophone,
             EnableWebCam = viewModel.EnableWebCam,

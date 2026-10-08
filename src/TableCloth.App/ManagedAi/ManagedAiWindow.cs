@@ -90,8 +90,10 @@ public sealed class ManagedAiWindow : Window
     private bool _runtimeInstalled;
     private bool _loggedIn;
     private bool _statusKnown;
-    private readonly Button _send = new() { Content = L("보내기", "Send"), MinWidth = 86, IsEnabled = false };
-    private readonly Button _cancel = new() { Content = L("중지", "Stop"), IsVisible = false };
+    private readonly Button _send = new() { Content = L("보내기", "Send"), MinWidth = 86,
+        HorizontalAlignment = HorizontalAlignment.Stretch, IsEnabled = false };
+    private readonly Button _cancel = new() { Content = L("중지", "Stop"),
+        HorizontalAlignment = HorizontalAlignment.Stretch, IsVisible = false };
     private readonly StackPanel _loginPanel = new() { Spacing = 8, Margin = new Thickness(0, 10), IsVisible = false };
     private readonly SelectableTextBlock _loginCode = new() { FontSize = 22, FontWeight = FontWeight.SemiBold };
     private readonly Button _loginLink = new() { Content = L("OpenAI 로그인 페이지 열기", "Open OpenAI sign-in page") };
@@ -554,6 +556,20 @@ public sealed class ManagedAiWindow : Window
         var sandboxRequest = _sandboxSkillEnabled ? WindowsSandboxIntent.Parse(text) : null;
         await RunAsync(async token =>
         {
+            if (sandboxRequest?.Action == SandboxCliAction.Start)
+            {
+                var preferences = await RunBackendAsync(_preferences.LoadPreferencesAsync, token)
+                    ?? _preferences.GetDefaultPreferences();
+                sandboxRequest = sandboxRequest with { SafeMode = preferences.EnableSafeMode,
+                    PublicDnsFallback = preferences.EnableSandboxPublicDnsFallback };
+                if (sandboxRequest.SafeMode && _messages.DisplayQuestion(SafeModeText.Confirmation,
+                    AppMessageBoxButton.YesNo, AppMessageBoxResult.No) != AppMessageBoxResult.Yes)
+                {
+                    _status.Text = L("Safe Mode 시작을 취소했습니다. 메시지는 입력란에 남아 있습니다.",
+                        "Safe Mode startup canceled. Your message remains in the input box.");
+                    return;
+                }
+            }
             if (certificateLookup && _messages.DisplayQuestion(
                 L("이 컴퓨터에서 이미 만료된 공동인증서 수와 30일 이내에 만료될 인증서 수를 확인한 뒤 OpenAI 대화에 전송하시겠습니까? 식탁보 AI는 인증서별 세부 정보를 볼 수 없습니다.",
                   "Send only the counts of expired certificates and certificates expiring within 30 days to the OpenAI chat? TableCloth AI cannot view individual certificate details."),
@@ -580,7 +596,8 @@ public sealed class ManagedAiWindow : Window
             }
             if (sandboxRequest is not null)
             {
-                _status.Text = L("Windows Sandbox 명령을 실행하고 있습니다.", "Running the Windows Sandbox command.");
+                _status.Text = sandboxRequest.SafeMode ? SafeModeText.Status :
+                    L("Windows Sandbox 명령을 실행하고 있습니다.", "Running the Windows Sandbox command.");
                 if (_pendingStatus is not null) _pendingStatus.Text = _status.Text;
                 localSandboxReport = await RunBackendAsync(ct => _sandboxBridge.ExecuteAsync(sandboxRequest, ct), token);
             }

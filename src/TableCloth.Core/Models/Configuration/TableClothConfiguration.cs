@@ -10,6 +10,9 @@ namespace TableCloth.Models.Configuration
     [Serializable]
     public sealed class TableClothConfiguration
     {
+        /// <summary>공유 없는 Safe Mode 실행을 요청합니다. 전역 설정이 켜져 있으면 항상 적용합니다.</summary>
+        public bool EnableSafeMode { get; set; }
+
         /// <summary>
         /// 선택한 X.509 인증서 정보입니다.
         /// </summary>

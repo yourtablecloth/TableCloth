@@ -733,6 +733,40 @@ public sealed class ManagedAiWindowTests
     }
 
     [TestMethod]
+    public async Task SafeModeSandboxStartRequiresConsentAndUsesFixedPolicyRequest()
+    {
+        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            fixture.Preferences.Json = """{"EnableSafeMode":true,"EnableSandboxPublicDnsFallback":false,"ShareNpkiFolder":true}""";
+            fixture.Skills.Items = [new("tablecloth-windows-sandbox", "Windows Sandbox", "CLI control", "fixture", true)];
+            var window = fixture.Create();
+            try
+            {
+                window.Show(); await Ready(window);
+                var input = Find<TextBox>(window, "ManagedAiChatInput");
+                input.Text = "샌드박스를 시작해 주세요.";
+                fixture.Messages.Answer = AppMessageBoxResult.No;
+                Click(window, Find<Button>(window, "ManagedAiChatSend")); await Ready(window);
+                Assert.IsNull(fixture.Sandbox.Request);
+                Assert.HasCount(0, fixture.Chat.Requests);
+                Assert.Contains("Safe Mode", fixture.Messages.LastQuestion!);
+                Assert.AreEqual(AppMessageBoxResult.No, fixture.Messages.LastDefault);
+                Assert.AreEqual("샌드박스를 시작해 주세요.", input.Text);
+                fixture.Messages.Answer = AppMessageBoxResult.Yes;
+                Click(window, Find<Button>(window, "ManagedAiChatSend"));
+                await Until(() => fixture.Chat.Requests.Count == 1);
+                Assert.IsTrue(fixture.Sandbox.Request!.SafeMode);
+                Assert.IsFalse(fixture.Sandbox.Request.PublicDnsFallback);
+                fixture.Chat.Complete("Safe Mode로 시작했습니다."); await Ready(window);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
     public async Task SandboxStopKeepsDraftUntilUserAcceptsStateLoss()
     {
         using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));

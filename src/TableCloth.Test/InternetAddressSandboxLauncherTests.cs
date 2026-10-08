@@ -148,7 +148,7 @@ public sealed class InternetAddressSandboxLauncherTests
         try
         {
             const string address = "https://unlisted.example/path?q=%27%3B%24%28x%29";
-            var builder = new SandboxBuilder(null!, null!, null!, null!);
+            var builder = new SandboxBuilder(null!, null!, null!, new SafeModeTests.Preferences(new()));
             var path = await builder.GenerateSandboxConfigurationAsync(directory.FullName,
                 new TableClothConfiguration { BrowserOnlyUrl = address }, new List<SandboxMappedFolder>());
 

@@ -58,6 +58,10 @@ public sealed class SandboxBuilder(
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
 
+        var preferences = await preferencesManager.LoadPreferencesAsync(cancellationToken).ConfigureAwait(false)
+            ?? preferencesManager.GetDefaultPreferences();
+        tableClothConfiguration.EnableSafeMode |= preferences.EnableSafeMode;
+
         if (tableClothConfiguration.BrowserOnlyUrl is { } browserOnlyUrl)
         {
             var target = ManagedAi.PublicWebUrl.Validate(browserOnlyUrl);
@@ -67,6 +71,14 @@ public sealed class SandboxBuilder(
             var browserFile = Path.Combine(outputDirectory, "BrowserOnly.wsb");
             await File.WriteAllTextAsync(browserFile, browserSpec, cancellationToken).ConfigureAwait(false);
             return browserFile;
+        }
+
+        if (tableClothConfiguration.EnableSafeMode)
+        {
+            var safeModeFile = Path.Combine(outputDirectory, "SafeMode.wsb");
+            var spec = SafeModeSandboxSpec.Create(tableClothConfiguration, preferences.EnableSandboxPublicDnsFallback);
+            await File.WriteAllTextAsync(safeModeFile, spec, cancellationToken).ConfigureAwait(false);
+            return safeModeFile;
         }
 
         // 통합 단일 바이너리 모델: 호스트 TableCloth 설치 폴더 전체(실행 파일 + 부속 DLL)를
@@ -96,9 +108,6 @@ public sealed class SandboxBuilder(
         // 노출되므로 추가 마운트 없이 Spork가 AppContext.BaseDirectory\certs에서 그대로 읽는다.
         // 유휴 자동 종료 정책은 전역 환경 설정이므로, 진입 경로(QuickStart/Detail/명령줄)와
         // 무관하게 여기서 한 번 읽어 SporkAnswers에 실어 보낸다. 기본값은 꺼짐이라 정상 사용자엔 영향이 없다.
-        var preferences = await preferencesManager.LoadPreferencesAsync(cancellationToken).ConfigureAwait(false)
-            ?? preferencesManager.GetDefaultPreferences();
-
         // StartupScript가 idle-guard 프로세스 기동 여부를 판단할 수 있도록 설정값을 구성에도 반영한다.
         tableClothConfiguration.EnableIdleAutoLogout = preferences.EnableIdleAutoLogout;
 
