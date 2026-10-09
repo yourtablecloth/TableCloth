@@ -38,11 +38,7 @@
                                          Text="{Binding CompatibilityNotes}" IsVisible="{Binding ShowCompatibilityNotesRow}" />
                 </Grid>
 
-                <TextBlock Margin="8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
-                           Text="{x:Static res:SafeModeText.Status}" IsVisible="{Binding EnableSafeMode}" />
-                <TextBlock Margin="8" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
-                           Text="{x:Static res:SafeModeText.GuestVersionNotice}" IsVisible="{Binding EnableSafeMode}" />
-                <Grid Margin="8" ColumnDefinitions="120,*" RowDefinitions="30,80,30,30,30" IsEnabled="{Binding !EnableSafeMode}">
+                <Grid Margin="8" ColumnDefinitions="120,*" RowDefinitions="30,80,30,30,30">
                     <WrapPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
                         <CheckBox VerticalAlignment="Center" Content="{x:Static res:UIStringResources.Button_MapNpkiCertButton}" IsChecked="{Binding MapNpkiCert}" />
                         <Button VerticalAlignment="Center" Margin="10 0 0 0" Content="{x:Static res:UIStringResources.Button_BrowseButton}"
@@ -55,7 +51,7 @@
                 </Grid>
 
                 <!-- Mapped Folders Section -->
-                <Grid Margin="8" ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,120,Auto" IsEnabled="{Binding !EnableSafeMode}">
+                <Grid Margin="8" ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,120,Auto">
                     <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Bold" Text="{x:Static res:UIStringResources.MappedFolder_SectionTitle}" Margin="5 0 0 5" />
                     <TextBlock Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Margin="5 0 0 5" Foreground="{DynamicResource ControlSecondaryForeground}" Text="{x:Static res:UIStringResources.MappedFolder_Description}" />
                     <ListBox Grid.Row="2" Grid.Column="1" Margin="5" ItemsSource="{Binding MappedFolders}" SelectedItem="{Binding SelectedMappedFolder}">

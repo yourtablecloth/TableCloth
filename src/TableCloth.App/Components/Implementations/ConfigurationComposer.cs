@@ -15,12 +15,11 @@ public sealed class ConfigurationComposer(
     {
         var selectedCert = viewModel.SelectedCertFile;
 
-        if (!viewModel.MapNpkiCert || viewModel.EnableSafeMode)
+        if (!viewModel.MapNpkiCert)
             selectedCert = null;
 
         return new TableClothConfiguration()
         {
-            EnableSafeMode = viewModel.EnableSafeMode,
             CertPair = selectedCert,
             EnableMicrophone = viewModel.EnableMicrophone,
             EnableWebCam = viewModel.EnableWebCam,

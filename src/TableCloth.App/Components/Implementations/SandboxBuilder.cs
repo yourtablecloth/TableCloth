@@ -58,9 +58,16 @@ public sealed class SandboxBuilder(
         if (!Directory.Exists(outputDirectory))
             Directory.CreateDirectory(outputDirectory);
 
-        var preferences = await preferencesManager.LoadPreferencesAsync(cancellationToken).ConfigureAwait(false)
-            ?? preferencesManager.GetDefaultPreferences();
-        tableClothConfiguration.EnableSafeMode |= preferences.EnableSafeMode;
+        if (tableClothConfiguration.EnableSafeMode)
+        {
+            if (tableClothConfiguration.BrowserOnlyUrl is not null || tableClothConfiguration.TargetUrl is not null ||
+                tableClothConfiguration.Services.Count != 0)
+                throw new ArgumentException("Safe Mode cannot be combined with site or browser launch options.", nameof(tableClothConfiguration));
+            var safeModeFile = Path.Combine(outputDirectory, "SafeMode.wsb");
+            var spec = SafeModeSandboxSpec.Create(tableClothConfiguration);
+            await File.WriteAllTextAsync(safeModeFile, spec, cancellationToken).ConfigureAwait(false);
+            return safeModeFile;
+        }
 
         if (tableClothConfiguration.BrowserOnlyUrl is { } browserOnlyUrl)
         {
@@ -73,13 +80,8 @@ public sealed class SandboxBuilder(
             return browserFile;
         }
 
-        if (tableClothConfiguration.EnableSafeMode)
-        {
-            var safeModeFile = Path.Combine(outputDirectory, "SafeMode.wsb");
-            var spec = SafeModeSandboxSpec.Create(tableClothConfiguration, preferences.EnableSandboxPublicDnsFallback);
-            await File.WriteAllTextAsync(safeModeFile, spec, cancellationToken).ConfigureAwait(false);
-            return safeModeFile;
-        }
+        var preferences = await preferencesManager.LoadPreferencesAsync(cancellationToken).ConfigureAwait(false)
+            ?? preferencesManager.GetDefaultPreferences();
 
         // 통합 단일 바이너리 모델: 호스트 TableCloth 설치 폴더 전체(실행 파일 + 부속 DLL)를
         // 세션 staging의 App 폴더로 복사. 샌드박스는 이 App 폴더를 RO 마운트하여 동일 폴더의

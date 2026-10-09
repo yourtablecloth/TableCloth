@@ -86,7 +86,6 @@ public partial class DetailPageViewModel : ObservableObject
         EnableWebCam = currentConfig.UseVideoRedirection;
         EnablePrinters = currentConfig.UsePrinterRedirection;
         EnableSandboxGpuAcceleration = currentConfig.EnableSandboxGpuAcceleration;
-        EnableSafeMode = currentConfig.EnableSafeMode;
         LastDisclaimerAgreedTime = currentConfig.LastDisclaimerAgreedTime;
 
         // 저장된 매핑 폴더 로드
@@ -103,7 +102,7 @@ public partial class DetailPageViewModel : ObservableObject
 
         // 인증서 스캔을 백그라운드에서 수행하여 UI 블로킹 방지
         var lastUsedCertHash = currentConfig.LastUsedCertHash;
-        var allCerts = EnableSafeMode ? new List<X509CertPair>() : await Task.Run(() =>
+        var allCerts = await Task.Run(() =>
             _certPairScanner.ScanX509Pairs(_certPairScanner.GetCandidateDirectories()).ToList());
         
         var selectedCert = default(X509CertPair?);
@@ -210,9 +209,6 @@ public partial class DetailPageViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _mapNpkiCert;
-
-    [ObservableProperty]
-    private bool _enableSafeMode;
 
     [ObservableProperty]
     private bool _enableLogAutoCollecting;

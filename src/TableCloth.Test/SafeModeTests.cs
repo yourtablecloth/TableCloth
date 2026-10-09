@@ -9,9 +9,11 @@ using System.Xml.Linq;
 using TableCloth.Components;
 using TableCloth.Components.Implementations;
 using TableCloth.Dialogs;
+using TableCloth.Models;
 using TableCloth.Models.Catalog;
 using TableCloth.Models.Configuration;
 using TableCloth.Models.WindowsSandbox;
+using TableCloth.Pages;
 using TableCloth.Resources;
 using TableCloth.Serialization;
 using TableCloth.ViewModels;
@@ -22,19 +24,19 @@ namespace TableCloth.Test;
 public sealed class SafeModeTests
 {
     [TestMethod]
-    [DataRow(true, false)]
-    [DataRow(false, true)]
-    public async Task SafeModeSkipsAllHostStagingEvenWhenEverySharingOptionIsEnabled(bool stored, bool requested)
+    [DataRow(false)]
+    [DataRow(true)]
+    public async Task SafeModeSkipsAllHostStagingAndSavedPreferences(bool savedDnsFallback)
     {
         var settings = AllSharingEnabled();
-        settings.EnableSafeMode = stored;
+        settings.EnableSandboxPublicDnsFallback = savedDnsFallback;
         var preferences = new Preferences(settings);
         using var key = RSA.Create(2048);
         var request = new CertificateRequest("CN=Safe Mode Test", key, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         using var certificate = request.CreateSelfSigned(DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddDays(1));
         var config = new TableClothConfiguration
         {
-            EnableSafeMode = requested,
+            EnableSafeMode = true,
             EnableMicrophone = true, EnableWebCam = true, EnablePrinters = true, EnableSandboxGpuAcceleration = true,
             HostDotnetRootPath = "C:\\host-runtime", AssetsDirectoryPath = "C:\\host-app",
             MappedFolders = settings.MappedFolders,
@@ -50,12 +52,11 @@ public sealed class SafeModeTests
             Assert.AreEqual("SafeMode.wsb", Path.GetFileName(path));
             AssertPolicy(XDocument.Load(path!).Root!);
             Assert.HasCount(1, output.GetFileSystemInfos());
-            if (requested)
-            {
-                var artifactDirectory = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts");
-                Directory.CreateDirectory(artifactDirectory);
-                File.Copy(path!, Path.Combine(artifactDirectory, "SafeMode.wsb"), true);
-            }
+            var artifactDirectory = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts");
+            Directory.CreateDirectory(artifactDirectory);
+            File.Copy(path!, Path.Combine(artifactDirectory, "SafeMode.wsb"), true);
+            Assert.AreEqual(0, preferences.LoadCount);
+            Assert.Contains("if ($true -and", XDocument.Load(path!).Root!.Element("LogonCommand")!.Value);
             Assert.IsEmpty(excluded);
             Assert.IsTrue(config.EnableSafeMode);
             Assert.IsTrue(settings.ShareNpkiFolder);
@@ -67,15 +68,35 @@ public sealed class SafeModeTests
     }
 
     [TestMethod]
-    public void SafeModeIsOptInAndSurvivesPreferenceSerialization()
+    [DataRow("site")]
+    [DataRow("target")]
+    [DataRow("browser")]
+    public async Task SafeModeCannotBeCombinedWithOtherLaunchRoutes(string route)
     {
-        Assert.IsFalse(new PreferenceSettings().EnableSafeMode);
-        var settings = System.Text.Json.JsonSerializer.Deserialize("{}", TableClothJsonContext.Default.PreferenceSettings)!;
-        Assert.IsFalse(settings.EnableSafeMode);
-        settings = AllSharingEnabled(); settings.EnableSafeMode = true;
+        var config = new TableClothConfiguration { EnableSafeMode = true };
+        if (route == "site") config.Services = [new() { Id = "bank", Url = "https://www.example.com/" }];
+        if (route == "target") config.TargetUrl = "https://www.example.com/";
+        if (route == "browser") config.BrowserOnlyUrl = "https://www.example.com/";
+        var output = Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "safe-route-" + Guid.NewGuid().ToString("N")));
+        try
+        {
+            var builder = new SandboxBuilder(null!, null!, null!, null!);
+            await Assert.ThrowsExactlyAsync<ArgumentException>(() =>
+                builder.GenerateSandboxConfigurationAsync(output.FullName, config, new List<SandboxMappedFolder>()));
+            Assert.IsEmpty(output.GetFileSystemInfos());
+        }
+        finally { output.Delete(true); }
+    }
+
+    [TestMethod]
+    public void LegacySafeModePreferenceIsIgnoredAndNotSavedAgain()
+    {
+        var settings = System.Text.Json.JsonSerializer.Deserialize(
+            """{"EnableSafeMode":true,"ShareNpkiFolder":true,"MappedFolders":[{"HostFolder":"C:\\\\Data"}]}""",
+            TableClothJsonContext.Default.PreferenceSettings)!;
         var json = System.Text.Json.JsonSerializer.Serialize(settings, TableClothJsonContext.Default.PreferenceSettings);
         var restored = System.Text.Json.JsonSerializer.Deserialize(json, TableClothJsonContext.Default.PreferenceSettings)!;
-        Assert.IsTrue(restored.EnableSafeMode);
+        Assert.DoesNotContain("EnableSafeMode", json);
         Assert.IsTrue(restored.ShareNpkiFolder);
         Assert.HasCount(1, restored.MappedFolders);
     }
@@ -88,13 +109,13 @@ public sealed class SafeModeTests
             Services = [new() { Id = "bank-a", Url = "https://www.example.com/" }, new() { Id = "bank-b", Url = "https://other.example.com/" }],
             TargetUrl = "https://www.example.com/path?q=';&next=$(`x)&a=1",
         };
-        var spec = SafeModeSandboxSpec.Create(config, false);
+        var spec = SafeModeSandboxSpec.Create(config);
         var root = XDocument.Parse(spec).Root!;
         AssertPolicy(root);
         var command = root.Element("LogonCommand")!.Element("Command")!.Value;
         Assert.Contains("bank-a bank-b", command);
         Assert.Contains("q=%27;&next=$(`x)&a=1", command);
-        Assert.Contains("if ($false -and", command);
+        Assert.Contains("if ($true -and", command);
         Assert.Contains("guest executable=", command);
         Assert.DoesNotContain("__SAFE_", command);
         Assert.DoesNotContain("-EncodedCommand", command);
@@ -109,7 +130,7 @@ public sealed class SafeModeTests
     public void UntrustedTargetUrlsAreRejected(string target)
     {
         var config = new TableClothConfiguration { Services = [new() { Id = "bank", Url = "https://www.example.com/" }], TargetUrl = target };
-        Assert.ThrowsExactly<ArgumentException>(() => SafeModeSandboxSpec.Create(config, true));
+        Assert.ThrowsExactly<ArgumentException>(() => SafeModeSandboxSpec.Create(config));
     }
 
     [TestMethod]
@@ -119,35 +140,65 @@ public sealed class SafeModeTests
     public void UntrustedSiteIdsAreRejected(string id)
     {
         Assert.ThrowsExactly<ArgumentException>(() => SafeModeSandboxSpec.Create(
-            new TableClothConfiguration { Services = [new() { Id = id }] }, true));
+            new TableClothConfiguration { Services = [new() { Id = id }] }));
     }
 
     [TestMethod]
-    public async Task DeepLinkSafeModeLaunchSkipsNonLocalDataValidationAndCertificateSharing()
+    public async Task SafeModeButtonSkipsInputSelectionPreferencesAndHostFolders()
     {
-        var settings = AllSharingEnabled(); settings.EnableSafeMode = true;
-        settings.LastDisclaimerAgreedTime = DateTime.UtcNow;
         var launcher = new Launcher();
         var locations = new Locations();
-        // Data mount checks, directory creation/migration and NPKI lookup must not run in Safe Mode.
-        var vm = new QuickStartPageViewModel(new Preferences(settings), null!, locations, launcher, null!,
+        // The dedicated button must not read preferences, check host folders or route the normal input.
+        var vm = new QuickStartPageViewModel(null!, null!, locations, launcher, null!,
             new TaskFactory(), null!, null!);
         var service = new CatalogInternetService { Id = "bank", Url = "https://www.example.com/" };
-        Assert.IsTrue(await vm.LaunchForDeepLinkAsync([service], "https://www.example.com/path"));
+        vm.PreselectedServices = [service];
+        vm.PreselectedTargetUrl = "https://www.example.com/path";
+        vm.StartInput = "은행 사이트를 찾아 주세요.";
+        await vm.LaunchSafeModeCommand.ExecuteAsync(null);
         var config = launcher.Configuration!;
         Assert.IsTrue(config.EnableSafeMode);
         Assert.IsEmpty(config.MappedFolders);
         Assert.IsNull(config.CertPair);
-        Assert.AreSame(service, config.Services.Single());
-        Assert.AreEqual("https://www.example.com/path", config.TargetUrl);
-        Assert.AreEqual(SafeModeText.Status, vm.ExecutionModeText);
+        Assert.IsEmpty(config.Services);
+        Assert.IsNull(config.TargetUrl);
+        Assert.AreEqual("은행 사이트를 찾아 주세요.", vm.StartInput);
+        Assert.IsFalse(vm.IsStarting);
         Assert.AreEqual(0, locations.MountChecks);
     }
 
     [TestMethod]
-    [DataRow("ko-KR", "Safe Mode 사용")]
-    [DataRow("en-US", "Use Safe Mode")]
-    public async Task SessionTabShowsAndPersistsSafeModeWithoutChangingNormalOptions(string culture, string label)
+    public async Task LegacySafeModeSettingDoesNotChangeNormalDeepLinkLaunch()
+    {
+        var data = Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "normal-mode-" + Guid.NewGuid().ToString("N")));
+        try
+        {
+            var settings = System.Text.Json.JsonSerializer.Deserialize(
+                """{"EnableSafeMode":true,"UseAudioRedirection":true,"ShareNpkiFolder":false}""",
+                TableClothJsonContext.Default.PreferenceSettings)!;
+            settings.LastDisclaimerAgreedTime = DateTime.UtcNow;
+            settings.DataDirectoryHostPath = data.FullName;
+            var launcher = new Launcher();
+            var locations = new Locations { Mountable = true };
+            var vm = new QuickStartPageViewModel(new Preferences(settings), null!, locations, launcher, null!,
+                new TaskFactory(), null!, null!);
+            var service = new CatalogInternetService { Id = "bank", Url = "https://www.example.com/" };
+            Assert.IsTrue(await vm.LaunchForDeepLinkAsync([service], "https://www.example.com/path"));
+            var config = launcher.Configuration!;
+            Assert.IsFalse(config.EnableSafeMode);
+            Assert.IsTrue(config.EnableMicrophone);
+            Assert.AreEqual(data.FullName, config.MappedFolders.Single().HostFolder);
+            Assert.AreSame(service, config.Services.Single());
+            Assert.AreEqual("https://www.example.com/path", config.TargetUrl);
+            Assert.AreEqual(1, locations.MountChecks);
+        }
+        finally { data.Delete(true); }
+    }
+
+    [TestMethod]
+    [DataRow("ko-KR", "샌드박스를 시작하는데 문제가 있으신가요?")]
+    [DataRow("en-US", "Having trouble starting the sandbox?")]
+    public async Task TroubleshootingLinkLaunchesSafeModeAndSettingsHaveNoToggle(string culture, string label)
     {
         using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
         await headless.Dispatch<bool>(async () =>
@@ -159,26 +210,46 @@ public sealed class SafeModeTests
             vm.SetInitialTab(OptionsTabKeys.Session);
             await vm.OptionsWindowLoadedCommand.ExecuteAsync(null);
             var window = new OptionsWindow { DataContext = vm, Width = 600, Height = 480 };
+            var launcher = new Launcher();
+            var quickStartVm = new QuickStartPageViewModel(null!, null!, null!, launcher, null!, new TaskFactory(), null!, null!);
+            var page = new QuickStartPage { DataContext = quickStartVm };
+            var mainWindow = new Window { Content = page, Width = 800, Height = 680 };
+            var confirmation = new MessageBoxWindow(SafeModeText.Confirmation, UIStringResources.TitleText_Info,
+                AppMessageBoxButton.YesNo, AppMessageBoxImage.Question, AppMessageBoxResult.No);
             try
             {
                 window.Show(); await Task.Yield();
-                var toggle = window.FindControl<CheckBox>("SafeModeToggle")!;
-                Assert.AreEqual(label, toggle.Content);
-                Assert.IsFalse(toggle.IsChecked ?? false);
-                toggle.IsChecked = true;
-                Assert.IsTrue(preferences.Value.EnableSafeMode);
+                Assert.IsNull(window.FindControl<CheckBox>("SafeModeToggle"));
+                mainWindow.Show(); await Task.Yield();
+                var button = page.FindControl<Button>("SafeModeStartLink")!;
+                Assert.AreEqual(label, button.Content);
+                Assert.IsTrue(button.Classes.Contains("link"));
+                Assert.IsFalse(button.IsDefault);
+                Assert.IsTrue(button.IsEnabled);
+                var point = button.TranslatePoint(new Point(button.Bounds.Width / 2, button.Bounds.Height / 2), mainWindow);
+                Assert.IsNotNull(point);
+                mainWindow.MouseDown(point.Value, Avalonia.Input.MouseButton.Left);
+                mainWindow.MouseUp(point.Value, Avalonia.Input.MouseButton.Left);
+                await Task.Yield();
+                Assert.IsTrue(launcher.Configuration!.EnableSafeMode);
+                quickStartVm.IsStarting = true; Dispatcher.UIThread.RunJobs();
+                Assert.IsFalse(button.IsEnabled);
+                quickStartVm.IsStarting = false;
                 Assert.IsTrue(preferences.Value.UseAudioRedirection);
                 Assert.IsTrue(preferences.Value.ShareNpkiFolder);
                 Assert.IsTrue(preferences.Value.EnableSandboxGpuAcceleration);
                 Dispatcher.UIThread.RunJobs(); AvaloniaHeadlessPlatform.ForceRenderTimerTick();
-                using var frame = window.CaptureRenderedFrame(); Assert.IsNotNull(frame);
+                using var frame = mainWindow.CaptureRenderedFrame(); Assert.IsNotNull(frame);
                 var directory = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts");
-                Directory.CreateDirectory(directory); frame.Save(Path.Combine(directory, $"safe-mode-options-{culture}.png"));
-                toggle.IsChecked = false;
-                Assert.IsFalse(preferences.Value.EnableSafeMode);
+                Directory.CreateDirectory(directory); frame.Save(Path.Combine(directory, $"safe-mode-start-{culture}.png"));
+                confirmation.Show(); await Task.Yield();
+                Dispatcher.UIThread.RunJobs(); AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+                using var confirmationFrame = confirmation.CaptureRenderedFrame();
+                Assert.IsNotNull(confirmationFrame);
+                confirmationFrame.Save(Path.Combine(directory, $"safe-mode-confirmation-{culture}.png"));
                 Assert.HasCount(1, preferences.Value.MappedFolders);
             }
-            finally { window.Close(); CultureInfo.CurrentUICulture = previous; }
+            finally { confirmation.Close(); mainWindow.Close(); window.Close(); CultureInfo.CurrentUICulture = previous; }
             return true;
         }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
     }
@@ -203,8 +274,10 @@ public sealed class SafeModeTests
     internal sealed class Preferences(PreferenceSettings value) : IPreferencesManager
     {
         public PreferenceSettings Value = value;
+        public int LoadCount;
         public PreferenceSettings GetDefaultPreferences() => new();
-        public Task<PreferenceSettings?> LoadPreferencesAsync(CancellationToken cancellationToken = default) => Task.FromResult<PreferenceSettings?>(Value);
+        public Task<PreferenceSettings?> LoadPreferencesAsync(CancellationToken cancellationToken = default)
+        { LoadCount++; return Task.FromResult<PreferenceSettings?>(Value); }
         public Task SavePreferencesAsync(PreferenceSettings preferences, CancellationToken cancellationToken = default)
         { Value = preferences; return Task.CompletedTask; }
     }
@@ -220,8 +293,9 @@ public sealed class SafeModeTests
     private sealed class Locations : ISharedLocations
     {
         public int MountChecks;
+        public bool Mountable;
         public string GetEffectiveDataDirectoryPath(string? configuredPath) => configuredPath ?? "C:\\Data";
-        public bool IsMountableDataDirectory(string? path) { MountChecks++; return false; }
+        public bool IsMountableDataDirectory(string? path) { MountChecks++; return Mountable; }
         public string ExecutableDirectoryPath => throw new InvalidOperationException();
         public string ImagesZipFilePath => throw new InvalidOperationException();
         public string CatalogCacheFilePath => throw new InvalidOperationException();

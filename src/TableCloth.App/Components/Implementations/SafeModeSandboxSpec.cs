@@ -12,7 +12,7 @@ internal static class SafeModeSandboxSpec
 {
     internal const string GuestReleaseUrl = "https://github.com/yourtablecloth/TableCloth/releases/latest";
 
-    internal static string Create(TableClothConfiguration config, bool publicDnsFallback)
+    internal static string Create(TableClothConfiguration config)
     {
         var services = config.Services.ToList();
         var ids = services.Select(x => x.Id).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
@@ -33,7 +33,7 @@ internal static class SafeModeSandboxSpec
         target = target.Replace("'", "%27", StringComparison.Ordinal).Replace("\"", "%22", StringComparison.Ordinal);
         var script = string.Join(' ', ReadResource("SafeModeStartup.ps1").Split('\n')
             .Select(line => line.Trim()).Where(line => !line.StartsWith('#')))
-            .Replace("__SAFE_DNS_FALLBACK__", publicDnsFallback ? "$true" : "$false", StringComparison.Ordinal)
+            .Replace("__SAFE_DNS_FALLBACK__", "$true", StringComparison.Ordinal)
             .Replace("__SAFE_SITE_IDS__", string.Join(' ', ids), StringComparison.Ordinal)
             .Replace("__SAFE_TARGET_URL__", target, StringComparison.Ordinal);
         var childArguments = "-NoProfile -ExecutionPolicy Bypass -Command " + QuoteWindowsArgument(script);

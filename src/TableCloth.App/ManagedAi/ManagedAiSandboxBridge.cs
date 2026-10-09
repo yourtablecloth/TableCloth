@@ -16,8 +16,7 @@ namespace TableCloth.ManagedAi;
 
 public enum SandboxCliAction { List, Start, Stop, Connect, Ip }
 
-public sealed record SandboxCliRequest(SandboxCliAction Action, Guid? Id = null,
-    bool SafeMode = false, bool PublicDnsFallback = true);
+public sealed record SandboxCliRequest(SandboxCliAction Action, Guid? Id = null, bool SafeMode = false);
 
 public static class WindowsSandboxIntent
 {
@@ -143,7 +142,7 @@ public sealed class ManagedAiSandboxBridge(ISandboxCliProcessRunner runner, stri
 
             var safeStart = request.Action == SandboxCliAction.Start && request.SafeMode;
             var configuration = safeStart
-                ? SafeModeSandboxSpec.Create(new TableClothConfiguration { EnableSafeMode = true }, request.PublicDnsFallback)
+                ? SafeModeSandboxSpec.Create(new TableClothConfiguration { EnableSafeMode = true })
                 : null;
             var result = await RunAsync(request.Action, id, cancellationToken, configuration);
             return Serialize(new(action, result.ExitCode == 0 ? "succeeded" : "failed", result.ExitCode,

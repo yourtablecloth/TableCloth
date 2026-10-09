@@ -556,20 +556,6 @@ public sealed class ManagedAiWindow : Window
         var sandboxRequest = _sandboxSkillEnabled ? WindowsSandboxIntent.Parse(text) : null;
         await RunAsync(async token =>
         {
-            if (sandboxRequest?.Action == SandboxCliAction.Start)
-            {
-                var preferences = await RunBackendAsync(_preferences.LoadPreferencesAsync, token)
-                    ?? _preferences.GetDefaultPreferences();
-                sandboxRequest = sandboxRequest with { SafeMode = preferences.EnableSafeMode,
-                    PublicDnsFallback = preferences.EnableSandboxPublicDnsFallback };
-                if (sandboxRequest.SafeMode && _messages.DisplayQuestion(SafeModeText.Confirmation,
-                    AppMessageBoxButton.YesNo, AppMessageBoxResult.No) != AppMessageBoxResult.Yes)
-                {
-                    _status.Text = L("Safe Mode 시작을 취소했습니다. 메시지는 입력란에 남아 있습니다.",
-                        "Safe Mode startup canceled. Your message remains in the input box.");
-                    return;
-                }
-            }
             if (certificateLookup && _messages.DisplayQuestion(
                 L("이 컴퓨터에서 이미 만료된 공동인증서 수와 30일 이내에 만료될 인증서 수를 확인한 뒤 OpenAI 대화에 전송하시겠습니까? 식탁보 AI는 인증서별 세부 정보를 볼 수 없습니다.",
                   "Send only the counts of expired certificates and certificates expiring within 30 days to the OpenAI chat? TableCloth AI cannot view individual certificate details."),
