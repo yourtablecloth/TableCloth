@@ -6,6 +6,8 @@ Implementation status on September 25, 2026: the `poc/managed-ai-runtime` branch
 
 The product-facing name is **TableCloth AI (Preview)**. The `poc/managed-ai-runtime` branch, `docs/poc` directory and `TableCloth.ManagedAi.Poc` diagnostic project retain their original names for traceability. The [original Korean design](managed-ai-runtime-design.ko.md) is preserved as supplied. Its historical statements are a design baseline, not current execution evidence. This report covers the implementation, local checks, consent flow and remaining gates.
 
+The separate RDP-host experiment was retired on October 23, 2026. Its [research archive](rdp-sandbox.md), [Korean companion](rdp-sandbox.ko.md), and [evidence summary](rdp-sandbox-evidence.json) retain the private-broker findings, hosting results, and qualification limits. Only that research documentation was added to this branch; the retired embedded viewer is outside the implementation described here.
+
 ## Implementation boundaries
 
 The existing `TableCloth.slnx` includes the five managed-AI projects and a separate `TableCloth.Cli` project. `ManagedAi.Core` owns search/chat contracts, bounded conversation history, link parsing and URL validation. `ManagedAi.OpenAi` owns distribution, authentication, invocation and parsing. `ManagedAi.Windows` owns ACLs, bounded process streams and Windows Job Objects. `ManagedAi.Poc` supplies a diagnostic console host. `ManagedAi.Test` uses the repository's existing MSTest SDK instead of introducing xUnit. `TableCloth.Cli` builds `TableClothCli.exe` for host-side certificate and cached Catalog queries.
