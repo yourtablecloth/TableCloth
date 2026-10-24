@@ -104,8 +104,21 @@ public sealed class LoginFlowTests
         await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
         var runner = new LoginRunner { KeepRunning = true, SaveCredentials = false };
         var progress = new Updates();
-        using var cancellation = new CancellationTokenSource(TimeSpan.FromMilliseconds(150));
-        await Assert.ThrowsAsync<OperationCanceledException>(() => Auth(fixture, runner).LoginAsync(AiLoginMethod.Browser, progress, cancellation.Token));
+        using var cancellation = new CancellationTokenSource();
+        var login = Auth(fixture, runner).LoginAsync(AiLoginMethod.Browser, progress, cancellation.Token);
+        try
+        {
+            // Timeouts diagnose a stalled test; cancellation follows actual pending-login entry.
+            await runner.LoginStarted.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            cancellation.Cancel();
+            await Assert.ThrowsAsync<OperationCanceledException>(() => login.WaitAsync(TimeSpan.FromSeconds(10)));
+        }
+        finally
+        {
+            cancellation.Cancel();
+            try { await login.WaitAsync(TimeSpan.FromSeconds(10)); }
+            catch (OperationCanceledException) { }
+        }
         Assert.IsTrue(runner.LoginStopped);
         Assert.IsFalse(progress.Values.Any(x => x.Stage == AiLoginStage.Completed));
         using var lease = fixture.Paths.AcquireOperation();
@@ -135,6 +148,7 @@ public sealed class LoginFlowTests
         public bool LoggedIn, Fail;
         public bool SaveCredentials = true;
         public bool KeepRunning, LoginStopped;
+        public TaskCompletionSource LoginStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public List<string[]> Calls = [];
         public async Task<ProcessOutcome> RunAsync(ProcessRunSpec spec, Action<string> stdout, Action<string>? stderr, CancellationToken cancellationToken)
         {
@@ -152,6 +166,7 @@ public sealed class LoginFlowTests
             LoggedIn = SaveCredentials;
             try
             {
+                LoginStarted.TrySetResult();
                 if (KeepRunning) await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
                 return new ProcessOutcome(0, 100, 0);
             }
