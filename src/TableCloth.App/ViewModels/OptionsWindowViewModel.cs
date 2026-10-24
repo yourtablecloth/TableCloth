@@ -59,7 +59,8 @@ public partial class OptionsWindowViewModel : ObservableObject
         IAppMessageBox appMessageBox,
         ISharedLocations sharedLocations,
         TaskFactory taskFactory,
-        IManagedAiSkillManager skillsManager)
+        IManagedAiSkillManager skillsManager,
+        IManagedAiSkillMarketplace? skillMarketplace = null)
     {
         _preferencesManager = preferencesManager;
         _appRestartManager = appRestartManager;
@@ -67,6 +68,7 @@ public partial class OptionsWindowViewModel : ObservableObject
         _sharedLocations = sharedLocations;
         _taskFactory = taskFactory;
         _skillsManager = skillsManager;
+        _skillMarketplace = skillMarketplace;
 
         BuildCompatibilityOptions();
     }
@@ -539,7 +541,9 @@ public partial class OptionsWindowViewModel : ObservableObject
             or nameof(SkillOperationBusy)
             or nameof(SkillSummary)
             or nameof(SkillNotice)
-            or nameof(SkillToggleLabel))
+            or nameof(SkillToggleLabel)
+            or nameof(CanToggleAiSkill)
+            or nameof(CanOpenSkillMarketplace))
         {
             return;
         }

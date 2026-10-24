@@ -96,6 +96,87 @@ public sealed class SkillTests
         finally { if (Directory.Exists(sourceRoot)) Directory.Delete(sourceRoot, recursive: true); }
     }
 
+    [TestMethod]
+    public async Task InvalidLocalSkillRemainsManageableWithoutAllowingChatOrReenable()
+    {
+        using var fixture = new InstallFixture();
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        CreateSkill(fixture.Paths.Skills, "normal-skill");
+        CreateSkill(fixture.Paths.Skills, "broken-skill");
+        var runner = new SkillRunner(fixture.Paths);
+        runner.InvalidIds.Add("broken-skill");
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, new SkillProfile(fixture.Paths), runner);
+
+        var skills = await manager.ListAsync(CancellationToken.None);
+        Assert.HasCount(4, skills);
+        Assert.AreEqual("Managed skill.", skills.Single(x => x.Id == "normal-skill").Description);
+        Assert.IsTrue(skills.Single(x => x.Id == "normal-skill").IsValid);
+        var broken = skills.Single(x => x.Id == "broken-skill");
+        Assert.IsFalse(broken.IsValid);
+        Assert.IsTrue(broken.Enabled);
+        Assert.AreEqual("broken-skill", broken.Name);
+        Assert.DoesNotContain(SkillRunner.RawError, broken.Description);
+        Assert.Contains(Escaped(Path.Combine(broken.Directory, "SKILL.md")), File.ReadAllText(fixture.Paths.SkillConfiguration));
+
+        Assert.AreEqual(AiFailureCode.SkillInvalid,
+            (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.SetEnabledAsync("broken-skill", true, CancellationToken.None))).Code);
+        Assert.IsFalse(File.Exists(fixture.Paths.SkillState));
+        skills = await manager.SetEnabledAsync("broken-skill", false, CancellationToken.None);
+        Assert.IsFalse(skills.Single(x => x.Id == "broken-skill").Enabled);
+        var state = File.ReadAllText(fixture.Paths.SkillState);
+        Assert.AreEqual(AiFailureCode.SkillInvalid,
+            (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.SetEnabledAsync("broken-skill", true, CancellationToken.None))).Code);
+        Assert.AreEqual(state, File.ReadAllText(fixture.Paths.SkillState));
+
+        var runtime = await fixture.Installer.GetActiveAsync(CancellationToken.None);
+        Assert.IsNotNull(runtime);
+        var working = fixture.Paths.Under("runs", "strict-skill-check");
+        Directory.CreateDirectory(working);
+        using (fixture.Paths.AcquireOperation())
+            Assert.AreEqual(AiFailureCode.SkillInvalid,
+                (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.SynchronizeAsync(runtime, working, CancellationToken.None))).Code);
+
+        skills = await manager.RemoveAsync("broken-skill", CancellationToken.None);
+        Assert.HasCount(3, skills);
+        Assert.IsTrue(skills.All(x => x.IsValid));
+        Assert.IsFalse(Directory.Exists(broken.Directory));
+        using (fixture.Paths.AcquireOperation())
+            Assert.HasCount(3, await manager.SynchronizeAsync(runtime, working, CancellationToken.None));
+    }
+
+    [TestMethod]
+    public async Task ExistingInvalidSkillDoesNotBlockValidImportAndInvalidNewSkillRollsBack()
+    {
+        using var fixture = new InstallFixture();
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        var existing = CreateSkill(fixture.Paths.Skills, "existing-broken");
+        var sourceRoot = fixture.Paths.Under("cache", "import-fixture");
+        var goodSource = CreateSkill(sourceRoot, "good-import");
+        var badSource = CreateSkill(sourceRoot, "bad-import");
+        var runner = new SkillRunner(fixture.Paths);
+        runner.InvalidIds.UnionWith(["existing-broken", "bad-import"]);
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, new SkillProfile(fixture.Paths), runner);
+
+        var skills = await manager.ImportAsync(goodSource, CancellationToken.None);
+        Assert.IsTrue(skills.Single(x => x.Id == "good-import").IsValid);
+        Assert.IsFalse(skills.Single(x => x.Id == "existing-broken").IsValid);
+        Assert.IsTrue(File.Exists(Path.Combine(fixture.Paths.Skills, "good-import", "SKILL.md")));
+        Assert.AreEqual(AiFailureCode.SkillInvalid,
+            (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.ImportAsync(badSource, CancellationToken.None))).Code);
+        Assert.IsFalse(Directory.Exists(Path.Combine(fixture.Paths.Skills, "bad-import")));
+        Assert.IsTrue(Directory.Exists(existing));
+        Assert.IsTrue(Directory.Exists(badSource));
+        Assert.IsTrue((await manager.ListAsync(CancellationToken.None)).Single(x => x.Id == "good-import").IsValid);
+    }
+
+    private static string CreateSkill(string root, string id)
+    {
+        var directory = Path.Combine(root, id);
+        Directory.CreateDirectory(directory);
+        File.WriteAllText(Path.Combine(directory, "SKILL.md"), $"---\nname: {id}\ndescription: Skill fixture.\n---\n");
+        return directory;
+    }
+
     private static string Response(string path) => JsonSerializer.Serialize(new
     {
         id = 2,
@@ -119,7 +200,9 @@ public sealed class SkillTests
 
     private sealed class SkillRunner(ManagedAiPaths paths) : IJsonlProcessRunner
     {
+        public const string RawError = "Provider detail containing private document text.";
         public ProcessRunSpec? Invocation;
+        public HashSet<string> InvalidIds { get; } = new(StringComparer.OrdinalIgnoreCase);
         public string ExternalManifest => Path.Combine(paths.Root, "external-skills", "outside", "SKILL.md");
         public string ManagedManifest => Path.Combine(paths.Skills, "owned-skill", "SKILL.md");
         public string SystemManifest => Path.Combine(paths.Skills, ".system", "built-in", "SKILL.md");
@@ -130,17 +213,21 @@ public sealed class SkillTests
             Invocation = spec;
             Assert.AreEqual(CodexSkillListExchange.Initialize, spec.Input);
             Assert.Contains("skills/list", spec.Respond!("{\"id\":1,\"result\":{}}")!.Text!);
-            var managed = Directory.Exists(paths.Skills)
+            var directories = Directory.Exists(paths.Skills)
                 ? Directory.GetDirectories(paths.Skills).Where(x => !Path.GetFileName(x).StartsWith('.'))
-                    .Select(x => new { name = Path.GetFileName(x), description = "Managed skill.",
-                        path = Path.Combine(x, "SKILL.md"), scope = "user", enabled = true }).ToArray()
+                    .ToArray()
                 : [];
+            var managed = directories.Where(x => !InvalidIds.Contains(Path.GetFileName(x)))
+                .Select(x => new { name = Path.GetFileName(x), description = "Managed skill.",
+                    path = Path.Combine(x, "SKILL.md"), scope = "user", enabled = true }).ToArray();
+            var errors = directories.Where(x => InvalidIds.Contains(Path.GetFileName(x)))
+                .Select(x => new { path = Path.Combine(x, "SKILL.md"), message = RawError }).ToArray();
             var all = managed.Cast<object>().Concat([
                 new { name = "outside", description = "External skill.", path = ExternalManifest, scope = "user", enabled = true },
                 new { name = "built-in", description = "System skill.", path = SystemManifest, scope = "system", enabled = true }
             ]).ToArray();
             var response = JsonSerializer.Serialize(new { id = 2, result = new
-            { data = new[] { new { cwd = spec.StartInfo.WorkingDirectory, skills = all, errors = Array.Empty<object>() } } } });
+            { data = new[] { new { cwd = spec.StartInfo.WorkingDirectory, skills = all, errors } } } });
             Assert.IsTrue(spec.Respond(response)!.Close);
             return Task.FromResult(new ProcessOutcome(0, response.Length, 0));
         }

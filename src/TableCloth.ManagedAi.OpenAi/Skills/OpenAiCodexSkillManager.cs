@@ -34,7 +34,7 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
         if (runtime is null) return ListStoredSkills();
         var workingDirectory = paths.Under("runs", "skills-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(workingDirectory);
-        try { return await SynchronizeAsync(runtime, workingDirectory, cancellationToken); }
+        try { return await DiscoverAsync(runtime, workingDirectory, allowInvalidSkills: true, cancellationToken); }
         finally { paths.DeleteOwnedDirectory(workingDirectory); }
     }
 
@@ -44,7 +44,14 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
         profile.Prepare();
         EnsureBundledSkills();
         var destination = await ImportCoreAsync(sourceDirectory, cancellationToken);
-        try { return await ListCoreAsync(cancellationToken); }
+        try
+        {
+            var listed = await ListCoreAsync(cancellationToken);
+            var importedId = Path.GetFileName(destination);
+            if (listed.SingleOrDefault(x => string.Equals(x.Id, importedId, StringComparison.OrdinalIgnoreCase)) is not { IsValid: true })
+                throw new ManagedAiException(AiFailureCode.SkillInvalid);
+            return listed;
+        }
         catch (ManagedAiException ex) when (ex.Code == AiFailureCode.SkillInvalid)
         {
             paths.DeleteOwnedDirectory(destination);
@@ -59,6 +66,9 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
         profile.Prepare();
         EnsureBundledSkills();
         if (!File.Exists(Path.Combine(paths.Skills, id, "SKILL.md"))) throw new ManagedAiException(AiFailureCode.SkillInvalid);
+        if (enabled && (await ListCoreAsync(cancellationToken)).SingleOrDefault(x =>
+            string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase)) is not { IsValid: true })
+            throw new ManagedAiException(AiFailureCode.SkillInvalid);
         var state = LoadState();
         state.Enabled[id] = enabled;
         SaveState(state);
@@ -121,8 +131,11 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
     }
 
     // The caller holds the managed runtime operation lease so discovery and the following model invocation are serialized.
-    public async Task<IReadOnlyList<AiSkill>> SynchronizeAsync(ManagedRuntime runtime, string workingDirectory,
-        CancellationToken cancellationToken)
+    public Task<IReadOnlyList<AiSkill>> SynchronizeAsync(ManagedRuntime runtime, string workingDirectory,
+        CancellationToken cancellationToken) => DiscoverAsync(runtime, workingDirectory, allowInvalidSkills: false, cancellationToken);
+
+    private async Task<IReadOnlyList<AiSkill>> DiscoverAsync(ManagedRuntime runtime, string workingDirectory,
+        bool allowInvalidSkills, CancellationToken cancellationToken)
     {
         EnsureBundledSkills();
         Directory.CreateDirectory(paths.Skills);
@@ -139,17 +152,30 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
         var catalog = exchange.Complete(outcome.ExitCode);
         var state = LoadState();
         var managed = new List<AiSkill>();
+        var invalid = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var error in catalog.Errors)
-            if (TryManagedId(error.Path, out _)) throw new ManagedAiException(AiFailureCode.SkillInvalid);
+        {
+            if (!TryManagedId(error.Path, out var id)) continue;
+            if (!allowInvalidSkills) throw new ManagedAiException(AiFailureCode.SkillInvalid);
+            invalid[id] = Path.Combine(paths.Skills, id, "SKILL.md");
+        }
 
         foreach (var skill in catalog.Skills)
         {
-            if (!TryManagedId(skill.Path, out var id)) continue;
+            if (!TryManagedId(skill.Path, out var id) || invalid.ContainsKey(id)) continue;
             var enabled = !state.Enabled.TryGetValue(id, out var configured) || configured;
             managed.Add(new(id, skill.Name, skill.Description, Path.GetDirectoryName(skill.Path)!, enabled));
         }
-        WriteSkillConfiguration(catalog.Skills, state);
+        foreach (var id in invalid.Keys)
+        {
+            var enabled = !state.Enabled.TryGetValue(id, out var configured) || configured;
+            managed.Add(new(id, id, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ko"
+                ? "SKILL.md를 읽을 수 없습니다. 파일을 수정하거나 스킬을 제거할 수 있습니다."
+                : "Could not read SKILL.md. You can edit the file or remove this skill.", Path.Combine(paths.Skills, id), enabled)
+                { IsValid = false });
+        }
+        WriteSkillConfiguration(catalog.Skills, state, invalid.Values);
         return managed.OrderBy(x => x.Name, StringComparer.CurrentCultureIgnoreCase).ToArray();
     }
 
@@ -263,9 +289,11 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
         return files;
     }
 
-    private void WriteSkillConfiguration(IReadOnlyList<CodexSkillMetadata> discovered, ManagedSkillState state)
+    private void WriteSkillConfiguration(IReadOnlyList<CodexSkillMetadata> discovered, ManagedSkillState state,
+        IEnumerable<string>? invalidManifests = null)
     {
         var disabled = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (invalidManifests is not null) disabled.UnionWith(invalidManifests);
         foreach (var skill in discovered)
         {
             if (TryManagedId(skill.Path, out var id))

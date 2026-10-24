@@ -17,17 +17,34 @@ public sealed record SkillSettingsItem(AiSkill Skill)
 {
     public string Id => Skill.Id;
     public string Name => Skill.Name;
-    public string Description => Skill.Description;
+    public string Description => Skill.IsValid ? Skill.Description : ManagedAiText.Select(
+        "SKILL.md를 읽을 수 없습니다. 이 스킬을 비활성화하거나 제거한 뒤 다시 가져올 수 있습니다.",
+        "Could not read SKILL.md. You can disable the skill or remove it and import it again.");
     public string Directory => Skill.Directory;
     public bool Enabled => Skill.Enabled;
-    public string StateLabel => Enabled ? ManagedAiText.Select("사용 중", "Enabled") : ManagedAiText.Select("사용 안 함", "Disabled");
+    public bool IsValid => Skill.IsValid;
+    public string StateLabel => !IsValid ? ManagedAiText.Select("SKILL.md 확인 필요", "Invalid SKILL.md")
+        : Enabled ? ManagedAiText.Select("사용 중", "Enabled") : ManagedAiText.Select("사용 안 함", "Disabled");
 }
 
 public partial class OptionsWindowViewModel
 {
     private readonly IManagedAiSkillManager? _skillsManager;
+    private readonly IManagedAiSkillMarketplace? _skillMarketplace;
     private bool _optionsLoaded;
     private bool SkillsLoaded { get; set; }
+
+    public bool CanOpenSkillMarketplace => _skillsManager is not null && _skillMarketplace is not null && !SkillOperationBusy;
+
+    partial void OnSkillOperationBusyChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanOpenSkillMarketplace));
+        OnPropertyChanged(nameof(CanToggleAiSkill));
+    }
+
+    public SkillMarketplaceWindowViewModel? CreateSkillMarketplaceViewModel() =>
+        CanOpenSkillMarketplace && _skillsManager is not null && _skillMarketplace is not null
+            ? new(_skillsManager, _skillMarketplace, _appMessageBox) : null;
 
     public ObservableCollection<SkillSettingsItem> AiSkills { get; } = new();
 
@@ -46,8 +63,13 @@ public partial class OptionsWindowViewModel
     public string SkillToggleLabel => SelectedAiSkill?.Enabled == true
         ? ManagedAiText.Select("비활성화", "Disable") : ManagedAiText.Select("활성화", "Enable");
 
+    public bool CanToggleAiSkill => !SkillOperationBusy && SelectedAiSkill is { } item && (item.IsValid || item.Enabled);
+
     partial void OnSelectedAiSkillChanged(SkillSettingsItem? value)
-        => OnPropertyChanged(nameof(SkillToggleLabel));
+    {
+        OnPropertyChanged(nameof(SkillToggleLabel));
+        OnPropertyChanged(nameof(CanToggleAiSkill));
+    }
 
     partial void OnInitialTabIndexChanged(int value)
     {
@@ -77,7 +99,7 @@ public partial class OptionsWindowViewModel
     [RelayCommand]
     private async Task ToggleAiSkill()
     {
-        if (_skillsManager is null || SkillOperationBusy || SelectedAiSkill is not { } selected) return;
+        if (_skillsManager is null || !CanToggleAiSkill || SelectedAiSkill is not { } selected) return;
         await RunSkillActionAsync(() => _skillsManager.SetEnabledAsync(selected.Id, !selected.Enabled, CancellationToken.None),
             ManagedAiText.Select($"{selected.Name} 스킬의 사용 설정을 변경했습니다.", $"Updated the enabled state of {selected.Name}."));
     }

@@ -186,11 +186,13 @@
                     <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="6" IsEnabled="{Binding !SkillOperationBusy}">
                         <Button x:Name="AiSkillAdd" Content="{x:Static ai:ManagedAiText.SkillsAdd}" Command="{Binding AddAiSkillCommand}" Padding="10 5" />
                         <Button x:Name="AiSkillToggle" Content="{Binding SkillToggleLabel}" Command="{Binding ToggleAiSkillCommand}"
-                                IsEnabled="{Binding SelectedAiSkill, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" />
+                                IsEnabled="{Binding CanToggleAiSkill}" Padding="10 5" />
                         <Button x:Name="AiSkillRemove" Content="{x:Static ai:ManagedAiText.SkillsRemove}" Command="{Binding RemoveAiSkillCommand}"
                                 IsEnabled="{Binding SelectedAiSkill, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" />
                     </StackPanel>
                     <StackPanel Grid.Row="4" Spacing="6">
+                        <Button x:Name="AiSkillMarketplace" Content="{x:Static ai:ManagedAiText.SkillsMarketplace}"
+                                Click="OpenSkillMarketplace_Click" IsEnabled="{Binding CanOpenSkillMarketplace}" Padding="10 5" />
                         <StackPanel Orientation="Horizontal" Spacing="6" IsEnabled="{Binding !SkillOperationBusy}">
                             <Button x:Name="AiSkillRefresh" Content="{x:Static ai:ManagedAiText.SkillsRefresh}" Command="{Binding RefreshSkillListCommand}" Padding="10 5" />
                             <Button x:Name="AiSkillFolder" Content="{x:Static ai:ManagedAiText.SkillsOpenFolder}" Command="{Binding OpenAiSkillFolderCommand}" Padding="10 5" />
