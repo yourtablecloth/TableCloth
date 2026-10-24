@@ -43,6 +43,10 @@ public sealed record MarketplaceSkillItem(SkillCatalogEntry Entry, AiSkill? Inst
         : ManagedAiText.Select("스킬을 식탁보 AI 전용 폴더에 설치할 수 있습니다.", "You can install this skill into the dedicated TableCloth AI folder.");
 }
 
+/// <summary>
+/// Owns UI state on its caller's UI synchronization context. Construct and invoke it on that context;
+/// service calls run off the UI thread and their continuations return to the captured context.
+/// </summary>
 public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDisposable
 {
     private readonly IManagedAiSkillManager _manager;
