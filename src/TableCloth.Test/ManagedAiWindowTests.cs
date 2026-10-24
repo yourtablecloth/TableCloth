@@ -44,6 +44,9 @@ public sealed class ManagedAiWindowTests
                 var dialogTask = page.OpenManagedAiAsync("식탁보 사용법을 알려 주세요.");
                 await Until(() => ai.IsVisible);
                 Assert.AreSame(owner, ai.Owner);
+                Assert.AreEqual(840d, ai.Width);
+                Assert.AreEqual(640d, ai.Height);
+                Assert.IsTrue(ai.Width > owner.Width && ai.Height > owner.Height);
                 Assert.IsFalse(dialogTask.IsCompleted);
                 Assert.AreEqual("식탁보 사용법을 알려 주세요.", Find<TextBox>(ai, "ManagedAiChatInput").Text);
                 await Ready(ai);
@@ -93,7 +96,7 @@ public sealed class ManagedAiWindowTests
             var window = fixture.Create(CultureInfo.GetCultureInfo("en-US"));
             try
             {
-                Assert.AreEqual("TableCloth AI (Beta)", window.Title);
+                Assert.AreEqual("TableCloth AI", window.Title);
                 window.Show(); await Ready(window);
                 Assert.AreEqual("Send", Find<Button>(window, "ManagedAiChatSend").Content);
                 Assert.Contains("enabled skills", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
@@ -120,6 +123,80 @@ public sealed class ManagedAiWindowTests
     }
 
     [TestMethod]
+    [DataRow("en-US", false, 840)]
+    [DataRow("en-US", true, 840)]
+    [DataRow("ko-KR", false, 840)]
+    [DataRow("ko-KR", true, 840)]
+    [DataRow("en-US", false, 640)]
+    [DataRow("en-US", true, 640)]
+    [DataRow("ko-KR", false, 640)]
+    [DataRow("ko-KR", true, 640)]
+    public async Task CompactSummaryAndWelcomeFitWithinTheAiWindow(string culture, bool dark, int width)
+    {
+        var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts",
+            $"chat-compact-{culture}-{width}-{(dark ? "dark" : "light")}.png");
+        var headless = HeadlessTestSession.Shared;
+        await headless.Dispatch<bool>(async () =>
+        {
+            Application.Current!.RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light;
+            var fixture = new Fixture();
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            fixture.Models.Items = [new("gpt-6-astra", "Astra", true) { TokenCost = new(250, 25, 1250, today) },
+                new("gpt-6-luna", "Luna") { TokenCost = new(2.5m, .25m, 12.5m, today) }];
+            var window = fixture.Create(CultureInfo.GetCultureInfo(culture));
+            window.Width = width;
+            try
+            {
+                Assert.AreEqual(640d, window.Height);
+                var caption = culture == "ko-KR" ? "식탁보 AI" : "TableCloth AI";
+                Assert.AreEqual(caption, window.Title);
+                window.Show(); await Ready(window);
+                Dispatcher.UIThread.RunJobs();
+                Assert.IsFalse(Controls(window).OfType<TextBlock>().Any(text =>
+                    text.Text is "식탁보 AI" or "식탁보 AI (베타)" or "TableCloth AI" or "TableCloth AI (Beta)"));
+
+                var summary = Find<Grid>(window, "ManagedAiSummaryRow");
+                var runtime = Find<TextBlock>(window, "ManagedAiRuntimeStatus");
+                var models = Find<ComboBox>(window, "ManagedAiModels");
+                var cost = Find<TextBlock>(window, "ManagedAiModelHint");
+                Assert.Contains("Codex 0.156.1", runtime.Text!);
+                Assert.Contains("ChatGPT", runtime.Text!);
+                Assert.AreEqual("gpt-6-luna", ((AiModel)models.SelectedItem!).Id);
+                Assert.Contains("gpt-6-luna", AutomationProperties.GetName(models)!);
+                Assert.Contains("gpt-6-luna", AutomationProperties.GetHelpText(models)!);
+                Assert.Contains(2.5m.ToString("0.###", CultureInfo.CurrentCulture), cost.Text!);
+                Assert.Contains(12.5m.ToString("0.###", CultureInfo.CurrentCulture), cost.Text!);
+                Assert.DoesNotContain("\n", cost.Text!);
+
+                var summaryBounds = VisibleBounds(window, summary);
+                var runtimeBounds = VisibleBounds(window, runtime);
+                var modelBounds = VisibleBounds(window, models);
+                var costBounds = VisibleBounds(window, cost);
+                foreach (var bounds in new[] { runtimeBounds, modelBounds, costBounds })
+                {
+                    Assert.IsTrue(bounds.Left >= summaryBounds.Left - 1 && bounds.Right <= summaryBounds.Right + 1);
+                    Assert.IsTrue(bounds.Top >= summaryBounds.Top - 1 && bounds.Bottom <= summaryBounds.Bottom + 1);
+                    Assert.IsLessThanOrEqualTo(2d, Math.Abs(bounds.Center.Y - modelBounds.Center.Y),
+                        "Runtime status, model selection, and token costs must occupy one row.");
+                }
+                Assert.IsLessThanOrEqualTo(modelBounds.Left + 1, runtimeBounds.Right, "Runtime status overlaps model selection.");
+                Assert.IsLessThanOrEqualTo(costBounds.Left + 1, modelBounds.Right, "Model selection overlaps token costs.");
+                foreach (var control in new Control[] { Find<TextBox>(window, "ManagedAiChatInput"),
+                    Find<Button>(window, "ManagedAiChatSend"), Find<Button>(window, "ManagedAiNewChat"),
+                    Find<Button>(window, "ManagedAiManage") })
+                    VisibleBounds(window, control);
+                var notice = Find<Border>(window, "ManagedAiPrivacyNotice");
+                Assert.IsTrue(notice.GetVisualAncestors().Contains(Find<StackPanel>(window, "ManagedAiStarters")));
+                VisibleBounds(window, notice);
+                SaveFrame(window, screenshot);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+        TestContext.AddResultFile(screenshot);
+    }
+
+    [TestMethod]
     public async Task InitialQuestionAppearsAsAnUnsentChatDraft()
     {
         var headless = HeadlessTestSession.Shared;
@@ -131,6 +208,7 @@ public sealed class ManagedAiWindowTests
                 window.SetInitialPrompt("이 사이트는 어떻게 이용하나요?");
                 window.Show(); await Ready(window);
                 Assert.AreEqual("이 사이트는 어떻게 이용하나요?", Find<TextBox>(window, "ManagedAiChatInput").Text);
+                Assert.IsTrue(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
             }
             finally { window.Close(); }
             return true;
@@ -157,7 +235,8 @@ public sealed class ManagedAiWindowTests
                 window.Show(); await Ready(window);
                 var models = Find<ComboBox>(window, "ManagedAiModels");
                 Assert.AreEqual("gpt-6-luna", ((AiModel)models.SelectedItem!).Id);
-                Assert.Contains("크레딧", Find<TextBlock>(window, "ManagedAiModelHint").Text!);
+                Assert.Contains(2.5m.ToString("0.###", CultureInfo.CurrentCulture), Find<TextBlock>(window, "ManagedAiModelHint").Text!);
+                Assert.Contains(12.5m.ToString("0.###", CultureInfo.CurrentCulture), Find<TextBlock>(window, "ManagedAiModelHint").Text!);
                 var notice = Find<Border>(window, "ManagedAiPrivacyNotice");
                 Assert.IsTrue(notice.IsEffectivelyVisible);
                 Assert.Contains("민감 개인정보", AutomationProperties.GetName(notice)!);
@@ -170,6 +249,8 @@ public sealed class ManagedAiWindowTests
                 fixture.Preferences.Json = Preferences.Serialize(settings);
                 models.SelectedIndex = 0;
                 await Until(() => fixture.Preferences.Read().LastSelectedAiModel == "gpt-6-astra");
+                Assert.Contains("250", Find<TextBlock>(window, "ManagedAiModelHint").Text!);
+                Assert.Contains("1250", Find<TextBlock>(window, "ManagedAiModelHint").Text!);
                 window.Close(); await Until(() => !window.IsVisible);
                 window = fixture.Create(); window.Show(); await Ready(window);
                 Assert.AreEqual("gpt-6-astra", ((AiModel)Find<ComboBox>(window, "ManagedAiModels").SelectedItem!).Id);
@@ -264,15 +345,36 @@ public sealed class ManagedAiWindowTests
             window.Width = width;
             try
             {
-                Assert.AreEqual("식탁보 AI (베타)", window.Title);
+                Assert.AreEqual("식탁보 AI", window.Title);
                 window.Show();
                 await Ready(window);
                 Assert.IsFalse(Find<Button>(window, "ManagedAiConnect").IsVisible);
                 var models = Find<ComboBox>(window, "ManagedAiModels");
                 Assert.AreEqual("fixture-default", ((AiModel)models.SelectedItem!).Id);
-                models.SelectedIndex = 1;
+                VisibleBounds(window, models);
+                Assert.IsTrue(models.Focus(NavigationMethod.Tab));
+                Dispatcher.UIThread.RunJobs();
+                Assert.IsTrue(ToolTip.GetIsOpen(models));
+                Assert.Contains("fixture-default", ToolTip.GetTip(models)!.ToString()!);
+                window.KeyPressQwerty(PhysicalKey.F4, RawInputModifiers.None);
+                window.KeyReleaseQwerty(PhysicalKey.F4, RawInputModifiers.None);
+                await Until(() => models.IsDropDownOpen);
+                Assert.IsFalse(ToolTip.GetIsOpen(models));
+                window.KeyPressQwerty(PhysicalKey.Escape, RawInputModifiers.None);
+                window.KeyReleaseQwerty(PhysicalKey.Escape, RawInputModifiers.None);
+                await Until(() => !models.IsDropDownOpen);
+                Assert.IsTrue(models.Focus(NavigationMethod.Tab));
+                window.KeyPressQwerty(PhysicalKey.ArrowDown, RawInputModifiers.None);
+                window.KeyReleaseQwerty(PhysicalKey.ArrowDown, RawInputModifiers.None);
+                await Until(() => (models.SelectedItem as AiModel)?.Id == "fixture-other");
+                Assert.Contains("fixture-other", AutomationProperties.GetName(models)!);
+                Assert.Contains("다른 모델", AutomationProperties.GetName(models)!);
+                Assert.Contains("fixture-other", AutomationProperties.GetHelpText(models)!);
+                Assert.IsTrue(ToolTip.GetIsOpen(models));
+                Assert.Contains("fixture-other", ToolTip.GetTip(models)!.ToString()!);
                 var input = Find<TextBox>(window, "ManagedAiChatInput");
                 input.Focus(); input.Text = "첫 줄"; input.CaretIndex = input.Text.Length;
+                Assert.IsFalse(ToolTip.GetIsOpen(models));
                 window.KeyPressQwerty(PhysicalKey.Enter, RawInputModifiers.None);
                 window.KeyReleaseQwerty(PhysicalKey.Enter, RawInputModifiers.None);
                 Assert.AreEqual("첫 줄\n", input.Text!.Replace("\r\n", "\n"));
@@ -357,6 +459,45 @@ public sealed class ManagedAiWindowTests
                 Assert.AreEqual("OpenAI 로그인", connect.Content);
                 Assert.IsNull(Find<ComboBox>(window, "ManagedAiModels").SelectedItem);
                 Assert.IsFalse(Find<Button>(window, "ManagedAiChatSend").IsEnabled);
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
+    public async Task CanceledLoginAfterInstallationRetainsInstalledRuntimeStatus()
+    {
+        var headless = HeadlessTestSession.Shared;
+        await headless.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            fixture.Runtime.Installed = false;
+            fixture.Auth.LoggedIn = false;
+            fixture.Auth.LoginCompletion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            var window = fixture.Create(CultureInfo.GetCultureInfo("en-US"));
+            try
+            {
+                window.Show(); await Ready(window);
+                var runtime = Find<TextBlock>(window, "ManagedAiRuntimeStatus");
+                Assert.Contains("Not installed", runtime.Text!);
+                Click(window, Find<Button>(window, "ManagedAiConnect"));
+                await Until(() => fixture.Auth.Progress is not null);
+                Assert.IsTrue(fixture.Runtime.Installed);
+                Assert.AreEqual(1, fixture.Runtime.Installs);
+                Assert.IsFalse(fixture.Auth.LoginCompletion.Task.IsCompleted);
+                Click(window, Find<Button>(window, "ManagedAiCancel"));
+                await Ready(window);
+
+                Assert.Contains("Codex 0.156.1", runtime.Text!);
+                Assert.Contains("ChatGPT offline", runtime.Text!);
+                Assert.DoesNotContain("Not installed", runtime.Text!);
+                Assert.IsTrue(fixture.Runtime.Installed);
+                Assert.IsFalse(fixture.Auth.LoggedIn);
+                Assert.AreEqual(0, fixture.Models.Calls);
+                Assert.IsNull(Find<ComboBox>(window, "ManagedAiModels").SelectedItem);
+                Assert.HasCount(0, fixture.Chat.Requests);
+                Assert.AreEqual("Sign in to OpenAI", Find<Button>(window, "ManagedAiConnect").Content);
             }
             finally { window.Close(); }
             return true;
@@ -469,6 +610,7 @@ public sealed class ManagedAiWindowTests
                 var starters = Controls(window).OfType<Button>().Where(x => x.Classes.Contains("chat-starter")).ToArray();
                 Assert.HasCount(5, starters);
                 Assert.HasCount(1, Find<StackPanel>(window, "ManagedAiChatTranscript").Children);
+                Assert.IsTrue(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
                 var bankNames = new[] { "KB국민은행", "신한은행", "하나은행", "우리은행", "NH농협은행" };
                 var firstCardName = AutomationProperties.GetName(starters[0]);
                 Assert.Contains("찾으려는 서비스 이름을 말씀해 주세요", firstCardName!);
@@ -486,11 +628,14 @@ public sealed class ManagedAiWindowTests
                 Assert.Contains("공식 사이트", fixture.Chat.Requests[0].Message);
                 Assert.AreEqual(string.Empty, input.Text);
                 Assert.IsFalse(Find<StackPanel>(window, "ManagedAiStarters").IsVisible);
+                Assert.IsFalse(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
                 fixture.Chat.Complete("공식 사이트 안내입니다.");
                 await Ready(window);
+                Assert.IsFalse(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
                 Click(window, Find<Button>(window, "ManagedAiNewChat"));
                 await Ready(window);
                 Assert.IsTrue(Find<StackPanel>(window, "ManagedAiStarters").IsVisible);
+                Assert.IsTrue(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
                 Assert.HasCount(1, Find<StackPanel>(window, "ManagedAiChatTranscript").Children);
                 Assert.HasCount(5, Controls(window).OfType<Button>().Where(x => x.Classes.Contains("chat-starter")).ToArray());
                 Assert.HasCount(0, fixture.Session!.History);
@@ -605,15 +750,18 @@ public sealed class ManagedAiWindowTests
                 Assert.AreEqual(0, fixture.Certificates.Calls);
                 Assert.HasCount(0, fixture.Chat.Requests);
                 Assert.Contains("만료일", input.Text!);
+                Assert.IsTrue(Find<StackPanel>(window, "ManagedAiStarters").IsVisible);
+                Assert.IsTrue(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
 
                 fixture.Messages.Answer = AppMessageBoxResult.Yes;
                 Click(window, Find<Button>(window, "ManagedAiChatSend"));
                 await Until(() => fixture.Chat.Requests.Count == 1);
                 Assert.AreEqual(1, fixture.Certificates.Calls);
                 Assert.AreEqual(Certificates.Report, fixture.Chat.Requests[0].LocalCertificateReport);
+                Assert.IsFalse(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
                 fixture.Chat.Complete("만료 예정 인증서가 있습니다.");
                 await Ready(window);
-                Assert.IsTrue(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
+                Assert.IsFalse(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
             }
             finally { window.Close(); }
             return true;
@@ -639,6 +787,8 @@ public sealed class ManagedAiWindowTests
                 Assert.HasCount(0, fixture.Chat.Requests);
                 Assert.AreEqual(0, fixture.Certificates.Calls);
                 Assert.Contains("전송하지 않았습니다", Find<TextBlock>(window, "ManagedAiStatus").Text!);
+                Assert.IsTrue(Find<StackPanel>(window, "ManagedAiStarters").IsVisible);
+                Assert.IsTrue(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
             }
             finally { window.Close(); }
             return true;
@@ -901,6 +1051,19 @@ public sealed class ManagedAiWindowTests
     }
 
     private static IEnumerable<Control> Controls(Window window) => window.GetVisualDescendants().OfType<Control>();
+    private static Rect VisibleBounds(Window window, Control control)
+    {
+        Assert.IsTrue(control.IsEffectivelyVisible, AutomationProperties.GetAutomationId(control));
+        var position = control.TranslatePoint(default, window);
+        Assert.IsNotNull(position);
+        var bounds = new Rect(position.Value, control.Bounds.Size);
+        Assert.IsTrue(bounds.Width > 0 && bounds.Height > 0);
+        Assert.IsTrue(bounds.Left >= -1 && bounds.Top >= -1 &&
+            bounds.Right <= window.ClientSize.Width + 1 && bounds.Bottom <= window.ClientSize.Height + 1,
+            $"{AutomationProperties.GetAutomationId(control)} falls outside the visible window: {bounds}.");
+        return bounds;
+    }
+
     private static void Click(Window window, Control control, RawInputModifiers modifiers = RawInputModifiers.None)
     {
         Dispatcher.UIThread.RunJobs();
@@ -988,7 +1151,7 @@ public sealed class ManagedAiWindowTests
         public bool Installed = true;
         public int Installs;
         public bool? GetActiveCalledOnUiThread;
-        private readonly ManagedRuntime _runtime = new(new("1.2.3", "fixture", "hash"), "fixture", "fixture", "fixture", DateTimeOffset.UtcNow);
+        private readonly ManagedRuntime _runtime = new(new("0.156.1", "fixture", "hash"), "fixture", "fixture", "fixture", DateTimeOffset.UtcNow);
         public Task<ManagedRuntime?> GetActiveAsync(CancellationToken token)
         { GetActiveCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); return Task.FromResult(Installed ? _runtime : null); }
         public Task<ManagedRuntime> InstallAsync(string? version, IProgress<AiProgress>? progress, CancellationToken token)

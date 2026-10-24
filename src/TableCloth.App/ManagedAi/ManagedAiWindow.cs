@@ -46,14 +46,13 @@ public sealed class ManagedAiWindow : Window
     private bool _sanitizingInput;
     private readonly TextBox _input = new()
     {
-        Watermark = L("메시지를 입력합니다. 인증서 자료와 스크린샷은 받지 않습니다.",
-            "Type a message. Certificate details and screenshots are not accepted."),
+        Watermark = L("메시지를 입력합니다.", "Type a message."),
         AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MaxLength = 4000, MinHeight = 60, MaxHeight = 180
     };
     private readonly TextBlock _status = Text(L("웹 링크를 누르면 Windows Sandbox 또는 현재 브라우저를 선택할 수 있습니다.",
         "Select Windows Sandbox or your current browser when opening a web link."));
-    private readonly TextBlock _account = Text(L("로그인 상태를 확인하고 있습니다.", "Checking sign-in status."));
-    private readonly StackPanel _transcript = new() { Spacing = 16, Margin = new Thickness(20) };
+    private readonly TextBlock _account = Text(L("Codex | 연결 확인 중", "Codex | Checking connection"));
+    private readonly StackPanel _transcript = new() { Spacing = 16, Margin = new Thickness(0, 12) };
     private readonly ScrollViewer _scroll;
     private readonly List<Control> _actions = [];
     private readonly Button _manage = new() { Content = L("OpenAI 계정 / 설정", "OpenAI account / settings") };
@@ -64,13 +63,13 @@ public sealed class ManagedAiWindow : Window
     private readonly Button _signIn;
     private readonly Button _signOut;
     private readonly Button _reconnect;
-    private readonly StackPanel _starters = new() { Spacing = 8, MaxWidth = 690, HorizontalAlignment = HorizontalAlignment.Left,
-        Margin = new Thickness(0, 0, 48, 0) };
+    private readonly StackPanel _starters = new() { Spacing = 8, HorizontalAlignment = HorizontalAlignment.Stretch };
     private readonly List<Button> _starterButtons = [];
     private readonly Button _connect = new() { Content = L("연결 확인 중", "Checking connection"), IsEnabled = false };
-    private readonly ComboBox _models = new() { MinWidth = 190, MaxWidth = 310,
-        PlaceholderText = L("연결 후 모델을 선택할 수 있습니다.", "Connect to choose a model.") };
-    private readonly TextBlock _modelHint = Text(L("연결하면 대화 모델을 자동으로 불러옵니다.", "Chat models load automatically after connecting."));
+    private readonly ComboBox _models = new() { MinWidth = 145, MaxWidth = 220, FontSize = 12,
+        Padding = new Thickness(8, 4), HorizontalAlignment = HorizontalAlignment.Stretch,
+        VerticalAlignment = VerticalAlignment.Center, PlaceholderText = L("모델 선택", "Choose model") };
+    private readonly TextBlock _modelHint = Text(L("크레딧 단가 확인 전", "Credit rates pending"));
     private readonly TextBlock _skillCount = Text(L("활성 스킬을 확인하고 있습니다.", "Checking enabled skills."));
     private readonly TextBlock _preferenceNotice = new() { IsVisible = false, TextWrapping = TextWrapping.Wrap, FontSize = 12 };
     private readonly StackPanel _skillList = new() { Spacing = 8 };
@@ -88,6 +87,7 @@ public sealed class ManagedAiWindow : Window
     private ProgressRing? _pendingRing;
     private TextBlock? _pendingStatus;
     private bool _runtimeInstalled;
+    private string? _runtimeVersion;
     private bool _loggedIn;
     private bool _statusKnown;
     private readonly Button _send = new() { Content = L("보내기", "Send"), MinWidth = 86,
@@ -113,17 +113,32 @@ public sealed class ManagedAiWindow : Window
         _clientContext = new(typeof(ManagedAiWindow).Assembly.GetName().Version,
             new Uri(CommonStrings.AppInfoUrl, UriKind.Absolute),
             ManagedAiText.IsKorean ? AiResponseLanguage.Korean : AiResponseLanguage.English);
-        Title = ManagedAiText.ProductTitle;
-        Width = 800; Height = 600; MinWidth = 640; MinHeight = 540;
+        Title = L("식탁보 AI", "TableCloth AI");
+        Width = 840; Height = 640; MinWidth = 640; MinHeight = 540;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*,Auto"), Margin = new Thickness(20) };
+        var root = new Grid { RowDefinitions = new RowDefinitions("Auto,*,Auto"), Margin = new Thickness(16) };
         var header = new StackPanel { Spacing = 8 };
-        var heading = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
-        var title = new StackPanel { Spacing = 3 };
-        title.Children.Add(new TextBlock { Text = Title, FontSize = 24, FontWeight = FontWeight.SemiBold });
-        title.Children.Add(_account);
-        heading.Children.Add(title);
-        var clear = new Button { Content = L("새 대화", "New chat"), Margin = new Thickness(0, 0, 8, 6) };
+        var summary = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*,Auto"), ColumnSpacing = 8 };
+        _account.TextWrapping = TextWrapping.NoWrap;
+        _account.VerticalAlignment = VerticalAlignment.Center;
+        summary.Children.Add(_account);
+        AutomationProperties.SetName(_models, L("대화 모델", "Chat model"));
+        _models.GotFocus += (_, _) => UpdateModelDetails();
+        _models.LostFocus += (_, _) => ToolTip.SetIsOpen(_models, false);
+        _models.DropDownOpened += (_, _) => UpdateModelDetails();
+        _models.DropDownClosed += (_, _) => UpdateModelDetails();
+        Grid.SetColumn(_models, 1); summary.Children.Add(_models);
+        _modelHint.TextWrapping = TextWrapping.NoWrap;
+        _modelHint.VerticalAlignment = VerticalAlignment.Center;
+        Grid.SetColumn(_modelHint, 2); summary.Children.Add(_modelHint);
+        AutomationProperties.SetAutomationId(summary, "ManagedAiSummaryRow");
+        header.Children.Add(summary);
+        var toolbar = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto"), ColumnSpacing = 8 };
+        _skillCount.VerticalAlignment = VerticalAlignment.Center;
+        ToolTip.SetTip(_skillCount, L("활성 스킬은 대화에 제공됩니다. 각 응답에서 실제로 사용한 스킬 수를 뜻하지는 않습니다.",
+            "Enabled skills are available to the chat. This is not the number used in each response."));
+        toolbar.Children.Add(_skillCount);
+        var clear = new Button { Content = L("새 대화", "New chat"), Padding = new Thickness(10, 4), FontSize = 12 };
         clear.Click += (_, _) =>
         {
             if ((_session.History.Count > 0 || _transcript.Children.Any(child => !ReferenceEquals(child, _starters)) ||
@@ -135,21 +150,13 @@ public sealed class ManagedAiWindow : Window
         };
         _actions.Add(clear);
         AutomationProperties.SetAutomationId(clear, "ManagedAiNewChat");
-        Grid.SetColumn(clear, 1); heading.Children.Add(clear);
-        header.Children.Add(heading);
-        var connection = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 10 };
-        var modelRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        modelRow.Children.Add(new TextBlock { Text = L("대화 모델", "Chat model"), VerticalAlignment = VerticalAlignment.Center });
-        modelRow.Children.Add(_models);
-        connection.Children.Add(modelRow);
+        Grid.SetColumn(clear, 1); toolbar.Children.Add(clear);
+        _manage.Padding = new Thickness(10, 4);
+        _manage.FontSize = 12;
         ToolTip.SetTip(_manage, L("로그인, Codex 런타임과 전용 스킬 설정을 엽니다.", "Open sign-in, Codex runtime, and dedicated skill settings."));
         _actions.Add(_manage);
-        Grid.SetColumn(_manage, 1); connection.Children.Add(_manage);
-        header.Children.Add(connection);
-        header.Children.Add(_modelHint);
-        ToolTip.SetTip(_skillCount, L("활성 스킬은 대화에 제공됩니다. 각 응답에서 실제로 사용한 스킬 수를 뜻하지는 않습니다.",
-            "Enabled skills are available to the chat. This is not the number used in each response."));
-        header.Children.Add(_skillCount);
+        Grid.SetColumn(_manage, 2); toolbar.Children.Add(_manage);
+        header.Children.Add(toolbar);
         header.Children.Add(_preferenceNotice);
         _connect.Classes.Add("accent");
         _connect.Click += async (_, _) => await RunAsync(ConnectAsync);
@@ -166,36 +173,8 @@ public sealed class ManagedAiWindow : Window
         composer.Children.Add(_busyBar);
         composer.Children.Add(_status);
         composer.Children.Add(_elapsed);
-        var privacyNotice = new Border
-        {
-            Padding = new Thickness(10, 5), CornerRadius = new CornerRadius(6), BorderThickness = new Thickness(1)
-        };
-        var privacyContent = new StackPanel { Spacing = 2 };
-        var privacyWarning = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*"), ColumnSpacing = 8 };
-        privacyWarning.Children.Add(new TextBlock
-        {
-            Text = L("민감정보 주의", "Sensitive data"), FontWeight = FontWeight.Bold,
-            FontSize = 12, VerticalAlignment = VerticalAlignment.Center
-        });
-        var privacyText = Text(L("민감 개인정보, 공동인증서 파일, 스크린샷을 입력하거나 링크로 공유하지 마십시오.",
-            "Do not enter sensitive personal information or share certificate files and screenshots, including through links."));
-        Grid.SetColumn(privacyText, 1); privacyWarning.Children.Add(privacyText);
-        privacyContent.Children.Add(privacyWarning);
-        privacyContent.Children.Add(new TextBlock
-        {
-            Text = L("전화번호, 주민등록번호, 주소 형식은 자동으로 가립니다. 모든 개인정보를 식별하지는 못합니다. 대화는 창 메모리에 보관하며 OpenAI 구독을 사용합니다.",
-                "Phone, ID-number, and address patterns are masked automatically, but some data may be missed. Chats remain in this window's memory and use your OpenAI subscription."),
-            TextWrapping = TextWrapping.Wrap, FontSize = 11
-        });
-        privacyNotice.Child = privacyContent;
-        privacyNotice.Bind(Border.BackgroundProperty, privacyNotice.GetResourceObservable("InfoBarWarningSeverityBackgroundBrush"));
-        privacyNotice.Bind(Border.BorderBrushProperty, privacyNotice.GetResourceObservable("SystemFillColorCautionBrush"));
-        AutomationProperties.SetAutomationId(privacyNotice, "ManagedAiPrivacyNotice");
-        AutomationProperties.SetName(privacyNotice, privacyText.Text);
-        composer.Children.Add(privacyNotice);
         var editor = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 10 };
-        ToolTip.SetTip(_input, L("Shift+Enter로 전송합니다. 식탁보 AI는 인증서별 세부 정보를 볼 수 없습니다.",
-            "Press Shift+Enter to send. TableCloth AI cannot view individual certificate details."));
+        ToolTip.SetTip(_input, L("Shift+Enter로 전송합니다.", "Press Shift+Enter to send."));
         editor.Children.Add(_input);
         var sendButtons = new StackPanel { Spacing = 8, VerticalAlignment = VerticalAlignment.Bottom };
         _send.Classes.Add("accent");
@@ -267,6 +246,7 @@ public sealed class ManagedAiWindow : Window
         AutomationProperties.SetAutomationId(_connect, "ManagedAiConnect");
         AutomationProperties.SetAutomationId(_models, "ManagedAiModels");
         AutomationProperties.SetAutomationId(_modelHint, "ManagedAiModelHint");
+        AutomationProperties.SetAutomationId(_account, "ManagedAiRuntimeStatus");
         AutomationProperties.SetAutomationId(_skillCount, "ManagedAiActiveSkillCount");
         AutomationProperties.SetAutomationId(_preferenceNotice, "ManagedAiPreferenceNotice");
         AutomationProperties.SetAutomationId(_skillStatus, "ManagedAiSkillStatus");
@@ -445,6 +425,7 @@ public sealed class ManagedAiWindow : Window
     private void AddWelcome()
     {
         _starters.Children.Clear(); _starterButtons.Clear(); _starters.IsVisible = true;
+        _starters.Children.Add(CreatePrivacyNotice());
         _starters.Children.Add(new TextBlock { Text = L("이런 질문으로 시작할 수 있습니다", "Try one of these questions"), FontSize = 16, FontWeight = FontWeight.SemiBold });
         _starters.Children.Add(Text(L("카드를 누르면 예시 질문을 바로 전송합니다.",
             "Choose a card to send its sample question immediately.")));
@@ -491,6 +472,35 @@ public sealed class ManagedAiWindow : Window
             };
             _starterButtons.Add(button); choices.Children.Add(button);
         }
+    }
+
+    private static Border CreatePrivacyNotice()
+    {
+        var notice = new Border
+        {
+            Padding = new Thickness(10, 8), CornerRadius = new CornerRadius(6), BorderThickness = new Thickness(1),
+            Margin = new Thickness(0, 0, 0, 8), HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+        var content = new StackPanel { Spacing = 3 };
+        content.Children.Add(new TextBlock
+        {
+            Text = L("민감정보 주의", "Sensitive data"), FontWeight = FontWeight.Bold, FontSize = 12
+        });
+        var warning = L("민감 개인정보, 공동인증서 파일, 스크린샷을 입력하거나 링크로 공유하지 마십시오.",
+            "Do not enter sensitive personal information or share certificate files and screenshots, including through links.");
+        content.Children.Add(Text(warning));
+        content.Children.Add(new TextBlock
+        {
+            Text = L("전화번호, 주민등록번호, 주소 형식은 자동으로 가립니다. 모든 개인정보를 식별하지는 못합니다. 대화는 창 메모리에 보관하며 OpenAI 구독을 사용합니다.",
+                "Phone, ID-number, and address patterns are masked automatically, but some data may be missed. Chats remain in this window's memory and use your OpenAI subscription."),
+            TextWrapping = TextWrapping.Wrap, FontSize = 11
+        });
+        notice.Child = content;
+        notice.Bind(Border.BackgroundProperty, notice.GetResourceObservable("InfoBarWarningSeverityBackgroundBrush"));
+        notice.Bind(Border.BorderBrushProperty, notice.GetResourceObservable("SystemFillColorCautionBrush"));
+        AutomationProperties.SetAutomationId(notice, "ManagedAiPrivacyNotice");
+        AutomationProperties.SetName(notice, warning);
+        return notice;
     }
 
     private void AddMessage(string author, string content, bool user = false)
@@ -666,7 +676,8 @@ public sealed class ManagedAiWindow : Window
             if (ex.Code is AiFailureCode.AuthenticationRequired or AiFailureCode.RuntimeNotInstalled)
             {
                 ResetConnection(); _statusKnown = true;
-                if (ex.Code == AiFailureCode.RuntimeNotInstalled) _runtimeInstalled = false;
+                if (ex.Code == AiFailureCode.RuntimeNotInstalled) { _runtimeInstalled = false; _runtimeVersion = null; }
+                UpdateRuntimeStatus();
             }
             ShowFailure(ex.Code == AiFailureCode.RuntimeBusy && errorInChat
                 ? L("다른 AI 작업이 계속 진행 중입니다. 질문을 입력란에 남겼으므로 다시 보내기를 누를 수 있습니다.",
@@ -746,8 +757,21 @@ public sealed class ManagedAiWindow : Window
     {
         _loggedIn = false; _statusKnown = false;
         _models.ItemsSource = null; _models.SelectedItem = null;
-        _account.Text = L("OpenAI 연결을 완료하면 대화를 시작할 수 있습니다.", "Connect to OpenAI to start chatting.");
+        UpdateRuntimeStatus();
     }
+
+    private void UpdateRuntimeStatus()
+    {
+        var runtime = _runtimeVersion is null ? "Codex" : $"Codex {_runtimeVersion}";
+        var connection = _loggedIn ? L("ChatGPT 연결됨", "ChatGPT connected")
+            : !_statusKnown ? L("연결 확인 중", "Checking connection")
+            : _runtimeInstalled ? L("ChatGPT 연결 안 됨", "ChatGPT offline")
+            : L("미설치", "Not installed");
+        _account.Text = $"{runtime} | {connection}";
+        ToolTip.SetTip(_account, _account.Text);
+        AutomationProperties.SetName(_account, _account.Text);
+    }
+
     private async Task RefreshStatusAsync(CancellationToken token)
     {
         await _modelSaveTask;
@@ -765,15 +789,13 @@ public sealed class ManagedAiWindow : Window
         }
         _statusKnown = false; _loggedIn = false;
         _models.ItemsSource = null; _models.SelectedItem = null;
+        UpdateRuntimeStatus();
         var runtime = await RunBackendAsync(_runtimes.GetActiveAsync, token);
         _runtimeInstalled = runtime is not null;
+        _runtimeVersion = runtime?.Coordinate.Version;
         _loggedIn = runtime is not null && await RunBackendAsync(_authentication.IsLoggedInAsync, token);
         _statusKnown = true;
-        _account.Text = runtime is null ? L("AI 사용 준비를 누르면 런타임 설치와 OpenAI 로그인을 진행합니다.",
-                "Select Set up AI to install the runtime and sign in to OpenAI.")
-            : $"Codex {runtime.Coordinate.Version}  |  " + (_loggedIn
-                ? L("ChatGPT 연결됨", "Connected to ChatGPT")
-                : L("OpenAI에 연결하면 대화를 시작할 수 있습니다.", "Connect to OpenAI to start chatting."));
+        UpdateRuntimeStatus();
         if (!_loggedIn) { _models.ItemsSource = null; _models.SelectedItem = null; return; }
         _status.Text = L("사용할 수 있는 모델을 불러오고 있습니다.", "Loading available models.");
         var models = await RunBackendAsync(_modelCatalog.ListAsync, token);
@@ -788,15 +810,30 @@ public sealed class ManagedAiWindow : Window
             "Ready to chat. Press Shift+Enter to send a message.");
     }
 
+    private void UpdateModelDetails()
+    {
+        var selected = _models.SelectedItem as AiModel;
+        var details = selected is null
+            ? L("연결하면 대화 모델을 선택할 수 있습니다.", "Connect to choose a chat model.")
+            : L($"다음 응답에 사용할 모델: {selected.Id}", $"Model for the next response: {selected.Id}");
+        AutomationProperties.SetName(_models, selected is null ? L("대화 모델", "Chat model")
+            : L($"대화 모델: {selected.DisplayName} ({selected.Id})", $"Chat model: {selected.DisplayName} ({selected.Id})"));
+        AutomationProperties.SetHelpText(_models, details);
+        ToolTip.SetTip(_models, _models.IsDropDownOpen ? null : details);
+        ToolTip.SetIsOpen(_models, selected is not null && _models.IsEnabled && _models.IsFocused && !_models.IsDropDownOpen);
+    }
+
     private void UpdateModelHint()
     {
-        _modelHint.Text = _models.SelectedItem is AiModel model
-            ? L($"다음 응답에 사용할 모델: {model.Id}", $"Model for the next response: {model.Id}")
-            : L("연결하면 대화 모델을 자동으로 불러옵니다.", "Chat models load automatically after connecting.");
+        var selected = _models.SelectedItem as AiModel;
+        UpdateModelDetails();
         if (_models.SelectedItem is AiModel { TokenCost: { } cost } && cost.IsCurrent(DateOnly.FromDateTime(DateTime.UtcNow)))
         {
-            _modelHint.Text += L($"\n100만 토큰당 입력 {cost.Input:0.###}, 출력 {cost.Output:0.###} 크레딧",
-                $"\nPer million tokens: {cost.Input:0.###} input and {cost.Output:0.###} output credits");
+            _modelHint.Text = L($"입력 {cost.Input:0.###} / 출력 {cost.Output:0.###} 크레딧/100만 토큰",
+                $"In {cost.Input:0.###} / out {cost.Output:0.###} credits/1M tokens");
+            AutomationProperties.SetName(_modelHint, L(
+                $"100만 토큰당 입력 {cost.Input:0.###}, 출력 {cost.Output:0.###} 크레딧",
+                $"Per million tokens: {cost.Input:0.###} input and {cost.Output:0.###} output credits"));
             ToolTip.SetTip(_modelHint, L(
                 $"{cost.VerifiedOn:yyyy년 M월 d일} 확인한 Standard 단가입니다. 캐시 입력은 {cost.CachedInput:0.###} 크레딧입니다.\n" +
                     "기본 모델은 입력과 출력 각 100만 토큰의 합계로 비교합니다. 실제 구독 사용량과 청구액은 달라질 수 있습니다.\n",
@@ -804,8 +841,15 @@ public sealed class ManagedAiWindow : Window
                     "The default model compares the combined cost of one million input and output tokens. Actual subscription usage and charges may differ.\n")
                 + OpenAiCodexRateCard.Source);
         }
-        else ToolTip.SetTip(_modelHint, L("최근에 확인한 단가가 없으면 최신 Luna 모델을 선택하고, Luna 모델도 없으면 목록의 첫 모델을 선택합니다.",
-            "Without recent rate data, the latest Luna model is selected. If none is available, the first model is selected."));
+        else
+        {
+            _modelHint.Text = selected is null ? L("크레딧 단가 확인 전", "Credit rates pending")
+                : L("단가 정보 없음", "Rates unavailable");
+            AutomationProperties.SetName(_modelHint, _modelHint.Text);
+            ToolTip.SetTip(_modelHint, selected is null
+                ? L("연결하면 모델과 크레딧 단가를 불러옵니다.", "Models and credit rates load after connecting.")
+                : L("선택한 모델에 최근 확인한 크레딧 단가가 없습니다.", "No recently verified credit rates are available for the selected model."));
+        }
     }
 
     private void RememberModel(AiModel model)
@@ -863,8 +907,10 @@ public sealed class ManagedAiWindow : Window
         if (await RunBackendAsync(_runtimes.GetActiveAsync, token) is not null) return true;
         if (!ConfirmInstall()) { _status.Text = L("설치를 취소했습니다.", "Installation canceled."); return false; }
         var progress = Progress();
-        await RunBackendAsync(ct => _runtimes.InstallAsync(null, progress, ct), token);
+        var runtime = await RunBackendAsync(ct => _runtimes.InstallAsync(null, progress, ct), token);
         _runtimeInstalled = true; _skillsLoaded = false;
+        _runtimeVersion = runtime.Coordinate.Version;
+        UpdateRuntimeStatus();
         return true;
     }
     private bool ConfirmInstall() => _messages.DisplayQuestion(L("OpenAI 공식 Codex를 TableCloth 전용 폴더에 설치하거나 업데이트하시겠습니까?",
@@ -904,7 +950,8 @@ public sealed class ManagedAiWindow : Window
             acceptingLoginUpdates = false;
             _loginUri = null; _loginCode.Text = string.Empty; _loginPanel.IsVisible = false;
         }
-        _account.Text = L("ChatGPT 연결됨", "Connected to ChatGPT");
+        _loggedIn = true;
+        UpdateRuntimeStatus();
         _status.Text = L("ChatGPT 로그인을 확인했습니다. 사용할 수 있는 모델을 불러오고 있습니다.",
             "ChatGPT sign-in confirmed. Loading available models.");
         await RefreshStatusAsync(token);
