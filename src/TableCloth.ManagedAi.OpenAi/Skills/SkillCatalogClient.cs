@@ -61,8 +61,8 @@ public sealed class SkillCatalogClient(IHttpClientFactory clients)
                 SkillCatalogValidation.Repository(repository);
                 var path = Attribute(source, "Path", 160);
                 SkillCatalogValidation.Path(path, allowRoot: true);
-                var sourceRef = Attribute(source, "Ref", 40, optional: true);
-                if (sourceRef.Length != 0 && !SkillCatalogValidation.IsSha(sourceRef)) throw Invalid();
+                var sourceRef = Attribute(source, "Ref", 40);
+                if (!SkillCatalogValidation.IsSha(sourceRef)) throw Invalid();
                 var author = Child(skill, "Author", optional: true);
                 if (author is not null) Shape(author, "Author", ["Name", "Url"], []);
                 var license = Child(skill, "License");
@@ -74,16 +74,13 @@ public sealed class SkillCatalogClient(IHttpClientFactory clients)
                 var runtime = Attribute(requirements, "Runtime", 32);
                 if (runtime != "Codex") throw Invalid();
                 var authorUrl = author is null ? string.Empty : Attribute(author, "Url", optional: true);
-                var licenseSource = Attribute(license, "Source", optional: true);
+                var licenseSource = Attribute(license, "Source");
                 SkillCatalogValidation.OptionalHttpsUrl(authorUrl);
                 SkillCatalogValidation.OptionalHttpsUrl(licenseSource);
                 result.Add(new(id, Attribute(skill, "Category", 64), Attribute(skill, "DisplayName", 128),
                     Text(Child(skill, "Description"), 4096, required: true), repository, path, sourceRef,
                     author is null ? string.Empty : Attribute(author, "Name", 128), Attribute(license, "SPDX", 128),
-                    Choice(license, "ReviewStatus", ["pending", "verified", "rejected"]),
                     Choice(install, "Mode", ["upstream", "adapter"]),
-                    Choice(install, "ReviewStatus", ["pending", "approved", "rejected"]),
-                    Choice(skill, "Status", ["listed", "unlisted"]),
                     Choice(requirements, "Network", ["required", "optional", "none"]),
                     Text(Child(skill, "Notes", optional: true), 8192))
                 { AuthorUrl = authorUrl, LicenseSource = licenseSource, Runtime = runtime });

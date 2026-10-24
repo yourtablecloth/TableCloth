@@ -19,34 +19,28 @@ public sealed record SkillCategoryChoice(string Id, string Name)
     public override string ToString() => Name;
 }
 
-public sealed record MarketplaceSkillItem(SkillCatalogEntry Entry, bool Installed)
+public sealed record MarketplaceSkillItem(SkillCatalogEntry Entry, AiSkill? InstalledSkill)
 {
+    public bool Installed => InstalledSkill is not null;
+    public bool CanUpdate => InstalledSkill is not null && new SkillSettingsItem(InstalledSkill, Entry).CanUpdate;
     public string Id => Entry.Id;
     public string Name => Entry.DisplayName;
     public string Description => Entry.Description;
     public string Category => ManagedAiText.SkillCategory(Entry.Category);
-    public string State => Installed ? ManagedAiText.Select("설치됨", "Installed")
-        : Entry.Status != "listed" ? ManagedAiText.Select("목록에서 제외", "Unlisted")
-        : Entry.LicenseReviewStatus == "rejected" || Entry.InstallReviewStatus == "rejected" ? ManagedAiText.Select("검토 거절", "Review rejected")
-        : Entry.CanInstall ? ManagedAiText.Select("설치 가능", "Available") : ManagedAiText.Select("검토 중", "Under review");
+    public string State => InstalledSkill is not null ? new SkillSettingsItem(InstalledSkill, Entry).VersionLabel
+        : ManagedAiText.Select("설치 가능", "Available");
     public string Author => ManagedAiText.Select($"저자: {Entry.Author}", $"Author: {Entry.Author}");
     public string License => ManagedAiText.Select($"라이선스: {Entry.LicenseSpdx}", $"License: {Entry.LicenseSpdx}");
-    public string Review => ManagedAiText.Select(
-        $"라이선스 검토: {ManagedAiText.SkillReview(Entry.LicenseReviewStatus)} / 설치 검토: {ManagedAiText.SkillReview(Entry.InstallReviewStatus)}",
-        $"License review: {ManagedAiText.SkillReview(Entry.LicenseReviewStatus)} / Install review: {ManagedAiText.SkillReview(Entry.InstallReviewStatus)}");
     public string Requirements => ManagedAiText.Select(
         $"런타임: {Entry.Runtime} / 설치 방식: {Entry.InstallMode} / 네트워크: {ManagedAiText.SkillNetwork(Entry.Network)}",
         $"Runtime: {Entry.Runtime} / Install mode: {Entry.InstallMode} / Network: {ManagedAiText.SkillNetwork(Entry.Network)}");
     public string LicenseSource => string.IsNullOrEmpty(Entry.LicenseSource) ? "" : ManagedAiText.Select($"라이선스 근거: {Entry.LicenseSource}", $"License evidence: {Entry.LicenseSource}");
-    public string Source => Entry.Repository + (string.IsNullOrEmpty(Entry.SourcePath) ? "" : "\n" + Entry.SourcePath)
-        + (string.IsNullOrEmpty(Entry.SourceRef) ? "" : "\n" + Entry.SourceRef);
+    public string Source => Entry.Repository + (string.IsNullOrEmpty(Entry.SourcePath) ? "" : "\n" + Entry.SourcePath);
     public string Notes => Entry.Notes;
-    public string InstallReason => Installed ? ManagedAiText.Select("이 ID의 스킬을 전용 폴더에 설치했습니다.", "A skill with this ID is installed in the dedicated folder.")
-        : Entry.Status != "listed" ? ManagedAiText.Select("카탈로그에서 설치 대상으로 등록하지 않은 후보입니다.", "The catalog has not listed this candidate for installation.")
-        : Entry.LicenseReviewStatus == "rejected" || Entry.InstallReviewStatus == "rejected" ? ManagedAiText.Select("카탈로그 검토에서 설치를 승인하지 않았습니다.", "Catalog review has not approved installation.")
-        : Entry.CanInstall ? ManagedAiText.Select("검토를 완료한 원본 버전을 설치할 수 있습니다.", "The reviewed upstream revision is available to install.")
-        : ManagedAiText.Select("라이선스와 설치 검토를 완료하고 원본 버전을 고정한 뒤 설치할 수 있습니다. MCP 어댑터 후보는 어댑터 구현도 필요합니다.",
-            "Installation requires completed license and installation reviews and a pinned upstream revision. MCP candidates also require an adapter.");
+    public string InstalledRevision => InstalledSkill is null ? ManagedAiText.Select("아직 설치하지 않았습니다.", "Not installed yet.") : SkillSettingsItem.InstalledRevisionText(InstalledSkill);
+    public string CatalogRevision => SkillSettingsItem.CatalogRevisionText(Entry);
+    public string VersionDescription => InstalledSkill is not null ? new SkillSettingsItem(InstalledSkill, Entry).VersionDescription
+        : ManagedAiText.Select("스킬을 식탁보 AI 전용 폴더에 설치할 수 있습니다.", "You can install this skill into the dedicated TableCloth AI folder.");
 }
 
 public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDisposable
@@ -59,6 +53,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     private IReadOnlyList<AiSkill> _installed = [];
     private IReadOnlyList<SkillCatalogEntry> _catalog = [];
     private bool _disposed;
+    private bool _catalogAvailable;
     private TaskCompletionSource? _localCompletion;
 
     internal Task WaitForLocalOperationAsync() => _localCompletion?.Task ?? Task.CompletedTask;
@@ -103,6 +98,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     {
         OnPropertyChanged(nameof(HasSelectedCatalogSkill));
         InstallSkillCommand.NotifyCanExecuteChanged();
+        UpdateCatalogSkillCommand.NotifyCanExecuteChanged();
         OpenSourceCommand.NotifyCanExecuteChanged();
         OpenLicenseSourceCommand.NotifyCanExecuteChanged();
     }
@@ -117,6 +113,8 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     {
         RefreshCatalogCommand.NotifyCanExecuteChanged();
         InstallSkillCommand.NotifyCanExecuteChanged();
+        UpdateCatalogSkillCommand.NotifyCanExecuteChanged();
+        UpdateInstalledSkillCommand.NotifyCanExecuteChanged();
     }
 
     private void NotifyLocalCommands()
@@ -128,13 +126,17 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         OpenSelectedFolderCommand.NotifyCanExecuteChanged();
         OpenRootFolderCommand.NotifyCanExecuteChanged();
         InstallSkillCommand.NotifyCanExecuteChanged();
+        UpdateCatalogSkillCommand.NotifyCanExecuteChanged();
+        UpdateInstalledSkillCommand.NotifyCanExecuteChanged();
     }
 
     private bool CanUseLocal() => !LocalBusy && !_disposed;
     private bool CanUseSelectedLocal() => CanUseLocal() && SelectedInstalledSkill is { } item && InstalledSkills.Contains(item);
     private bool CanToggleSelected() => CanUseSelectedLocal() && SelectedInstalledSkill is { } item && (item.IsValid || item.Enabled);
     private bool CanRefreshCatalog() => !CatalogBusy && !_disposed;
-    private bool CanInstall() => CanUseLocal() && !CatalogBusy && SelectedCatalogSkill is { Installed: false, Entry.CanInstall: true } item && CatalogSkills.Contains(item);
+    private bool CanInstall() => CanUseLocal() && !CatalogBusy && SelectedCatalogSkill is { Installed: false } item && CatalogSkills.Contains(item);
+    private bool CanUpdateCatalog() => CanUseLocal() && !CatalogBusy && SelectedCatalogSkill is { CanUpdate: true } item && CatalogSkills.Contains(item);
+    private bool CanUpdateInstalled() => CanUseSelectedLocal() && !CatalogBusy && SelectedInstalledSkill is { CanUpdate: true };
     private bool CanOpenSource() => !_disposed && SelectedCatalogSkill is { } item && CatalogSkills.Contains(item) && TryGetSourceUri(item.Entry, out _);
     private bool CanOpenLicenseSource() => !_disposed && SelectedCatalogSkill is { } item && CatalogSkills.Contains(item) && TryGetLicenseUri(item.Entry, out _);
 
@@ -149,6 +151,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         try
         {
             _catalog = await Task.Run(() => _marketplace.ListAsync(_token), _token);
+            _catalogAvailable = true;
             var category = SelectedCategory?.Id ?? "";
             Categories.Clear();
             Categories.Add(new("", ManagedAiText.Select("모든 분야", "All categories")));
@@ -156,12 +159,19 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
                 Categories.Add(new(id, ManagedAiText.SkillCategory(id)));
             SelectedCategory = Categories.FirstOrDefault(x => string.Equals(x.Id, category, StringComparison.OrdinalIgnoreCase)) ?? Categories[0];
             ApplyCatalogFilter();
-            CatalogNotice = ManagedAiText.Select("카탈로그를 새로 불러왔습니다. 검토 중인 후보는 원본과 조건을 확인할 수 있습니다.",
-                "Catalog refreshed. Candidates under review include their upstream source and conditions.");
+            ApplyInstalledFilter();
+            CatalogNotice = ManagedAiText.Select("카탈로그를 새로 불러왔습니다.", "Catalog refreshed.");
         }
         catch (OperationCanceledException) when (_lifetime.IsCancellationRequested) { }
-        catch { CatalogNotice = ManagedAiText.Select("원격 카탈로그를 불러오지 못했습니다. 설치된 스킬은 계속 관리할 수 있습니다.",
-            "Could not load the remote catalog. You can continue managing installed skills."); }
+        catch
+        {
+            _catalogAvailable = false;
+            _catalog = [];
+            ApplyCatalogFilter();
+            ApplyInstalledFilter();
+            CatalogNotice = ManagedAiText.Select("원격 카탈로그를 불러오지 못했습니다. 설치된 스킬은 계속 관리할 수 있습니다.",
+                "Could not load the remote catalog. You can continue managing installed skills.");
+        }
         finally { CatalogBusy = false; }
     }
 
@@ -188,7 +198,37 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     {
         if (!CanInstall()) return Task.CompletedTask;
         var id = SelectedCatalogSkill!.Id;
-        return RunLocalAsync(() => _marketplace.InstallAsync(id, _token), ManagedAiText.Select("스킬을 설치했습니다.", "Skill installed."));
+        return RunMarketplaceActionAsync(() => _marketplace.InstallAsync(id, _token), ManagedAiText.Select("스킬을 설치했습니다.", "Skill installed."), true);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanUpdateCatalog))]
+    private Task UpdateCatalogSkill()
+    {
+        if (!CanUpdateCatalog()) return Task.CompletedTask;
+        return UpdateAsync(SelectedCatalogSkill!.Id, true);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanUpdateInstalled))]
+    private Task UpdateInstalledSkill()
+    {
+        if (!CanUpdateInstalled()) return Task.CompletedTask;
+        return UpdateAsync(SelectedInstalledSkill!.Id);
+    }
+
+    private Task UpdateAsync(string id, bool fromCatalog = false)
+    {
+        var success = ManagedAiText.Select("스킬 파일을 카탈로그의 커밋으로 업데이트했습니다.", "Skill files updated to the catalog commit.");
+        return RunMarketplaceActionAsync(() => _marketplace.UpdateAsync(id, _token), success, fromCatalog);
+    }
+
+    private async Task RunMarketplaceActionAsync(Func<Task<IReadOnlyList<AiSkill>>> action, string success, bool fromCatalog)
+    {
+        if (await RunLocalAsync(action, success))
+        {
+            await RefreshCatalog();
+            LocalNotice = _catalogAvailable ? success : success + " " + CatalogNotice;
+        }
+        if (fromCatalog) CatalogNotice = LocalNotice;
     }
 
     [RelayCommand(CanExecute = nameof(CanToggleSelected))]
@@ -213,9 +253,10 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         return RunLocalAsync(() => _manager.RemoveAsync(selected.Id, _token), ManagedAiText.Select("스킬을 제거했습니다.", "Skill removed."));
     }
 
-    private async Task RunLocalAsync(Func<Task<IReadOnlyList<AiSkill>>> action, string success)
+    private async Task<bool> RunLocalAsync(Func<Task<IReadOnlyList<AiSkill>>> action, string success)
     {
-        if (!CanUseLocal()) return;
+        if (!CanUseLocal()) return false;
+        var succeeded = false;
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         _localCompletion = completion;
         LocalBusy = true;
@@ -226,8 +267,10 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
             ApplyInstalledFilter();
             ApplyCatalogFilter();
             LocalNotice = success;
+            succeeded = true;
         }
         catch (OperationCanceledException) when (_lifetime.IsCancellationRequested) { }
+        catch (OperationCanceledException) { LocalNotice = ManagedAiText.Select("스킬 작업을 취소했습니다.", "Skill operation canceled."); }
         catch (ManagedAiException ex)
         {
             LocalNotice = ex.Code switch
@@ -241,6 +284,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         }
         catch { LocalNotice = ManagedAiText.Select("스킬 작업을 완료하지 못했습니다. 잠시 후 다시 시도할 수 있습니다.", "Could not complete the skill operation. Try again shortly."); }
         finally { LocalBusy = false; completion.TrySetResult(); }
+        return succeeded;
     }
 
     private void ApplyCatalogFilter()
@@ -251,7 +295,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         CatalogSkills.Clear();
         foreach (var entry in _catalog.Where(x => (category.Length == 0 || string.Equals(x.Category, category, StringComparison.OrdinalIgnoreCase))
             && Matches(search, x.Id, x.DisplayName, x.Description, x.Author, x.Category, ManagedAiText.SkillCategory(x.Category), x.Notes)))
-            CatalogSkills.Add(new(entry, _installed.Any(x => string.Equals(x.Id, entry.Id, StringComparison.OrdinalIgnoreCase))));
+            CatalogSkills.Add(new(entry, _installed.FirstOrDefault(x => string.Equals(x.Id, entry.Id, StringComparison.OrdinalIgnoreCase))));
         SelectedCatalogSkill = CatalogSkills.FirstOrDefault(x => string.Equals(x.Id, selected, StringComparison.OrdinalIgnoreCase));
         OnPropertyChanged(nameof(CatalogSummary));
         OnPropertyChanged(nameof(CatalogEmpty));
@@ -262,7 +306,8 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         var selected = SelectedInstalledSkill?.Id;
         var search = InstalledSearch.Trim();
         InstalledSkills.Clear();
-        foreach (var item in _installed.Where(x => Matches(search, x.Id, x.Name, x.Description))) InstalledSkills.Add(new(item));
+        foreach (var item in _installed.Where(x => Matches(search, x.Id, x.Name, x.Description)))
+            InstalledSkills.Add(new(item, _catalog.FirstOrDefault(x => string.Equals(x.Id, item.Id, StringComparison.OrdinalIgnoreCase))));
         SelectedInstalledSkill = InstalledSkills.FirstOrDefault(x => string.Equals(x.Id, selected, StringComparison.OrdinalIgnoreCase));
         OnPropertyChanged(nameof(InstalledSummary));
         OnPropertyChanged(nameof(InstalledEmpty));

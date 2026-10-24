@@ -65,29 +65,30 @@ public sealed class SkillMarketplaceTests
     }
 
     [TestMethod]
-    public async Task ReviewGatesAndFiltersKeepSelectionAndInstalledIdsConsistent()
+    public async Task InstallAndFiltersKeepSelectionAndInstalledIdsConsistent()
     {
         var manager = new SkillManager();
         var remote = new Marketplace(manager);
         using var model = new SkillMarketplaceWindowViewModel(manager, remote, new Messages());
         await model.LoadAsync();
         Assert.IsTrue(model.CatalogSkills.Single(x => x.Id == "FIXTURE").Installed);
-        model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "pending");
-        Assert.IsFalse(model.InstallSkillCommand.CanExecute(null));
+        model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "available");
+        Assert.IsTrue(model.InstallSkillCommand.CanExecute(null));
         Assert.IsTrue(model.OpenSourceCommand.CanExecute(null));
         await model.InstallSkillCommand.ExecuteAsync(null);
-        Assert.AreEqual(0, remote.InstallCount);
+        Assert.AreEqual(1, remote.InstallCount);
+        Assert.IsTrue(model.SelectedCatalogSkill!.Installed);
 
         model.CatalogSearch = "NomaDamas";
         Assert.HasCount(2, model.CatalogSkills);
-        Assert.AreEqual("pending", model.SelectedCatalogSkill!.Id);
+        Assert.AreEqual("available", model.SelectedCatalogSkill!.Id);
         model.SelectedCategory = model.Categories.Single(x => x.Id == "Finance");
         Assert.HasCount(1, model.CatalogSkills);
         Assert.IsNull(model.SelectedCatalogSkill);
         model.SelectedCatalogSkill = model.CatalogSkills.Single();
         Assert.IsTrue(model.InstallSkillCommand.CanExecute(null));
         await model.InstallSkillCommand.ExecuteAsync(null);
-        Assert.AreEqual(1, remote.InstallCount);
+        Assert.AreEqual(2, remote.InstallCount);
         Assert.IsTrue(model.SelectedCatalogSkill!.Installed);
         Assert.IsFalse(model.InstallSkillCommand.CanExecute(null));
 
@@ -97,6 +98,142 @@ public sealed class SkillMarketplaceTests
         Assert.IsNull(model.SelectedInstalledSkill);
         Assert.IsFalse(model.RemoveSkillCommand.CanExecute(null));
         Assert.IsFalse(model.ToggleSkillCommand.CanExecute(null));
+    }
+
+    [TestMethod]
+    public async Task BothTabsUpdateChangedRevisionsAndKeepTheEnabledState()
+    {
+        using var culture = new UiCultureScope("en-US");
+        var manager = new SkillManager { Items = [TrackedSkill() with { Enabled = false }] };
+        var remote = new Marketplace(manager);
+        using var model = new SkillMarketplaceWindowViewModel(manager, remote, new Messages());
+        await model.LoadAsync();
+        model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "FIXTURE");
+        model.SelectedInstalledSkill = model.InstalledSkills.Single();
+        Assert.IsTrue(model.UpdateCatalogSkillCommand.CanExecute(null));
+        Assert.IsTrue(model.UpdateInstalledSkillCommand.CanExecute(null));
+        Assert.Contains(new string('a', 40), model.SelectedCatalogSkill.InstalledRevision);
+        Assert.Contains(new string('b', 40), model.SelectedCatalogSkill.CatalogRevision);
+        await model.UpdateCatalogSkillCommand.ExecuteAsync(null);
+        Assert.AreEqual(1, remote.UpdateCount);
+        Assert.IsFalse(manager.Items.Single().Enabled);
+        Assert.AreEqual(new string('b', 40), manager.Items.Single().Source!.SourceRef);
+        Assert.Contains("Latest", model.SelectedCatalogSkill!.State);
+        Assert.Contains("Latest", model.SelectedInstalledSkill!.VersionLabel);
+        Assert.IsFalse(model.UpdateCatalogSkillCommand.CanExecute(null));
+
+        remote.Entries = remote.Entries.Select(x => x.Id == "FIXTURE" ? x with { SourceRef = new string('c', 40) } : x).ToArray();
+        await model.RefreshCatalogCommand.ExecuteAsync(null);
+        Assert.IsTrue(model.UpdateInstalledSkillCommand.CanExecute(null));
+        await model.UpdateInstalledSkillCommand.ExecuteAsync(null);
+        Assert.AreEqual(2, remote.UpdateCount);
+        Assert.AreEqual(new string('c', 40), manager.Items.Single().Source!.SourceRef);
+        Assert.IsFalse(manager.Items.Single().Enabled);
+        await model.RemoveSkillCommand.ExecuteAsync(null);
+        Assert.IsEmpty(manager.Items);
+        Assert.IsFalse(model.SelectedCatalogSkill!.Installed);
+        Assert.IsTrue(model.InstallSkillCommand.CanExecute(null));
+    }
+
+    [TestMethod]
+    public async Task SuccessfulUpdateRefreshesTheCatalogWhenItsRevisionChangesDuringTheOperation()
+    {
+        var manager = new SkillManager { Items = [TrackedSkill()] };
+        var remote = new Marketplace(manager) { RevisionOnUpdate = new string('d', 40) };
+        using var model = new SkillMarketplaceWindowViewModel(manager, remote, new Messages());
+        await model.LoadAsync();
+        model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "FIXTURE");
+        model.SelectedInstalledSkill = model.InstalledSkills.Single();
+        await model.UpdateCatalogSkillCommand.ExecuteAsync(null);
+        Assert.AreEqual(new string('d', 40), model.SelectedCatalogSkill!.Entry.SourceRef);
+        Assert.AreEqual(new string('d', 40), manager.Items.Single().Source!.SourceRef);
+        Assert.IsFalse(model.UpdateCatalogSkillCommand.CanExecute(null));
+        Assert.IsFalse(model.UpdateInstalledSkillCommand.CanExecute(null));
+    }
+
+    [TestMethod]
+    public void CommitComparisonUsesEqualityWithoutAssumingVersionOrder()
+    {
+        var entry = Entry("FIXTURE") with { SourceRef = new string('a', 40) };
+        var installed = TrackedSkill() with { Source = TrackedSkill().Source! with { SourceRef = new string('f', 40) } };
+        Assert.IsTrue(new SkillSettingsItem(installed, entry).CanUpdate);
+        installed = installed with { Source = installed.Source! with { SourceRef = new string('A', 40) } };
+        Assert.IsFalse(new SkillSettingsItem(installed, entry).CanUpdate);
+    }
+
+    [TestMethod]
+    public async Task SuccessfulUpdateKeepsItsResultWhenTheFollowUpCatalogRefreshFails()
+    {
+        using var culture = new UiCultureScope("en-US");
+        var manager = new SkillManager { Items = [TrackedSkill()] };
+        var remote = new Marketplace(manager) { FailureAfterUpdate = true };
+        using var model = new SkillMarketplaceWindowViewModel(manager, remote, new Messages());
+        await model.LoadAsync();
+        model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "FIXTURE");
+        model.SelectedInstalledSkill = model.InstalledSkills.Single();
+        await model.UpdateCatalogSkillCommand.ExecuteAsync(null);
+        Assert.AreEqual(new string('b', 40), manager.Items.Single().Source!.SourceRef);
+        Assert.Contains("Skill files updated", model.CatalogNotice);
+        Assert.Contains("Could not load the remote catalog", model.CatalogNotice);
+        Assert.IsTrue(model.RemoveSkillCommand.CanExecute(null));
+        Assert.IsTrue(model.ToggleSkillCommand.CanExecute(null));
+        Assert.IsFalse(model.UpdateInstalledSkillCommand.CanExecute(null));
+    }
+
+    [TestMethod]
+    public async Task LocalIdCollisionAndDifferentSourceCannotBeOverwritten()
+    {
+        var manager = new SkillManager();
+        var remote = new Marketplace(manager);
+        using var model = new SkillMarketplaceWindowViewModel(manager, remote, new Messages());
+        await model.LoadAsync();
+        model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "FIXTURE");
+        model.SelectedInstalledSkill = model.InstalledSkills.Single();
+        Assert.IsFalse(model.InstallSkillCommand.CanExecute(null));
+        Assert.IsFalse(model.UpdateCatalogSkillCommand.CanExecute(null));
+        Assert.IsFalse(model.UpdateInstalledSkillCommand.CanExecute(null));
+        await model.InstallSkillCommand.ExecuteAsync(null);
+        await model.UpdateCatalogSkillCommand.ExecuteAsync(null);
+        await model.UpdateInstalledSkillCommand.ExecuteAsync(null);
+        Assert.AreEqual(0, remote.InstallCount);
+        Assert.AreEqual(0, remote.UpdateCount);
+
+        manager.Items = [TrackedSkill() with { Source = TrackedSkill().Source! with { SourcePath = "other-skill" } }];
+        await model.RefreshInstalledCommand.ExecuteAsync(null);
+        Assert.IsFalse(model.UpdateCatalogSkillCommand.CanExecute(null));
+        Assert.IsFalse(model.UpdateInstalledSkillCommand.CanExecute(null));
+        Assert.IsTrue(model.RemoveSkillCommand.CanExecute(null));
+    }
+
+    [TestMethod]
+    public async Task FailedOrCancelledUpdateAndCatalogRemovalKeepLocalControlsAvailable()
+    {
+        using var culture = new UiCultureScope("en-US");
+        var manager = new SkillManager { Items = [TrackedSkill()] };
+        var remote = new Marketplace(manager) { UpdateFailure = true };
+        using var model = new SkillMarketplaceWindowViewModel(manager, remote, new Messages());
+        await model.LoadAsync();
+        model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "FIXTURE");
+        model.SelectedInstalledSkill = model.InstalledSkills.Single();
+        await model.UpdateCatalogSkillCommand.ExecuteAsync(null);
+        Assert.AreEqual(new string('a', 40), manager.Items.Single().Source!.SourceRef);
+        Assert.IsFalse(model.LocalBusy);
+        Assert.IsTrue(model.RemoveSkillCommand.CanExecute(null));
+        Assert.IsTrue(model.ToggleSkillCommand.CanExecute(null));
+        Assert.IsFalse(string.IsNullOrWhiteSpace(model.CatalogNotice));
+        remote.UpdateFailure = false;
+        remote.CancelUpdate = true;
+        await model.UpdateInstalledSkillCommand.ExecuteAsync(null);
+        Assert.AreEqual(new string('a', 40), manager.Items.Single().Source!.SourceRef);
+        Assert.IsFalse(model.LocalBusy);
+        Assert.IsTrue(model.RemoveSkillCommand.CanExecute(null));
+        Assert.AreEqual("Skill operation canceled.", model.LocalNotice);
+        remote.Entries = [];
+        await model.RefreshCatalogCommand.ExecuteAsync(null);
+        Assert.IsFalse(model.UpdateInstalledSkillCommand.CanExecute(null));
+        Assert.IsTrue(model.RemoveSkillCommand.CanExecute(null));
+        await model.RemoveSkillCommand.ExecuteAsync(null);
+        Assert.IsEmpty(manager.Items);
     }
 
     [TestMethod]
@@ -198,10 +335,10 @@ public sealed class SkillMarketplaceTests
         {
             using var culture = new UiCultureScope(cultureName);
             Application.Current!.RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light;
-            var manager = new SkillManager();
+            var manager = new SkillManager { Items = [TrackedSkill()] };
             using var model = new SkillMarketplaceWindowViewModel(manager, new Marketplace(manager), new Messages());
             await model.LoadAsync();
-            model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "pending");
+            model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "available");
             model.SelectedInstalledSkill = model.InstalledSkills.Single();
             var window = new SkillMarketplaceWindow { DataContext = model, Width = width, Height = height };
             try
@@ -210,9 +347,10 @@ public sealed class SkillMarketplaceTests
                 await Task.Yield();
                 Dispatcher.UIThread.RunJobs();
                 Assert.AreEqual(cultureName == "ko-KR" ? "스킬 마켓플레이스" : "Skill marketplace", window.Title);
-                Assert.IsFalse(window.FindControl<Button>("CatalogInstall")!.IsEffectivelyEnabled);
+                Assert.IsTrue(window.FindControl<Button>("CatalogInstall")!.IsEffectivelyEnabled);
                 Assert.IsTrue(window.FindControl<Button>("CatalogOpenSource")!.IsEffectivelyEnabled);
-                Assert.Contains(cultureName == "ko-KR" ? "라이선스" : "license", window.FindControl<TextBlock>("CatalogInstallReason")!.Text!);
+                Assert.IsNull(window.FindControl<Control>("CatalogInstallReason"));
+                Assert.Contains(new string('b', 40), window.FindControl<SelectableTextBlock>("CatalogRevision")!.Text!);
                 Save(window, $"marketplace-{cultureName}-{width}-{(dark ? "dark" : "light")}-catalog.png");
                 foreach (var name in new[] { "CatalogInstall", "CatalogOpenSource", "CatalogOpenLicense" })
                 {
@@ -225,12 +363,60 @@ public sealed class SkillMarketplaceTests
                 await Task.Yield();
                 Assert.IsTrue(window.FindControl<Button>("InstalledToggle")!.IsEffectivelyEnabled);
                 Assert.IsTrue(window.FindControl<Button>("InstalledRemove")!.IsEffectivelyEnabled);
+                Assert.IsTrue(window.FindControl<Button>("InstalledUpdate")!.IsEffectivelyEnabled);
+                Assert.Contains(new string('a', 40), window.FindControl<SelectableTextBlock>("InstalledRevision")!.Text!);
+                Assert.Contains(new string('b', 40), window.FindControl<SelectableTextBlock>("InstalledCatalogRevision")!.Text!);
                 Assert.Contains(cultureName == "ko-KR" ? "활성 스킬" : "enabled", window.FindControl<TextBlock>("InstalledSummary")!.Text!);
                 Save(window, $"marketplace-{cultureName}-{width}-{(dark ? "dark" : "light")}-installed.png");
             }
             finally { window.Close(); }
             return true;
         }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
+    public async Task BoundButtonsUpdateAndRemoveTheSelectedInstalledSkill()
+    {
+        await HeadlessTestSession.Shared.Dispatch<bool>(async () =>
+        {
+            var manager = new SkillManager { Items = [TrackedSkill()] };
+            var remote = new Marketplace(manager);
+            var messages = new Messages();
+            using var model = new SkillMarketplaceWindowViewModel(manager, remote, messages);
+            await model.LoadAsync();
+            model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "FIXTURE");
+            model.SelectedInstalledSkill = model.InstalledSkills.Single();
+            var window = new SkillMarketplaceWindow { DataContext = model };
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+                var update = window.FindControl<Button>("CatalogUpdate")!;
+                Assert.IsTrue(update.IsEffectivelyEnabled);
+                update.Command!.Execute(update.CommandParameter);
+                await Until(() => remote.UpdateCount == 1 && !model.LocalBusy);
+                Assert.AreEqual(new string('b', 40), manager.Items.Single().Source!.SourceRef);
+                Assert.IsFalse(window.FindControl<Button>("CatalogUpdate")!.IsEffectivelyEnabled);
+                window.FindControl<TabControl>("MarketplaceTabs")!.SelectedIndex = 1;
+                Dispatcher.UIThread.RunJobs();
+                var remove = window.FindControl<Button>("InstalledRemove")!;
+                Assert.IsTrue(remove.IsEffectivelyEnabled);
+                remove.Command!.Execute(remove.CommandParameter);
+                await Until(() => manager.Items.Count == 0 && !model.LocalBusy);
+                Assert.AreEqual(1, messages.Questions);
+                Assert.IsTrue(model.InstalledEmpty);
+                Assert.IsTrue(model.InstallSkillCommand.CanExecute(null));
+            }
+            finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    private static async Task Until(Func<bool> ready)
+    {
+        var deadline = DateTime.UtcNow.AddSeconds(5);
+        while (!ready() && DateTime.UtcNow < deadline) { Dispatcher.UIThread.RunJobs(); await Task.Delay(10); }
+        Assert.IsTrue(ready(), "The skill operation did not finish.");
     }
 
     [TestMethod]
@@ -253,10 +439,14 @@ public sealed class SkillMarketplaceTests
         frame.Save(Path.Combine(directory, filename));
     }
 
-    private static SkillCatalogEntry Entry(string id) => new(id, "Finance", id == "pending" ? "전자공시 조회 / Disclosure search" : id,
+    private static SkillCatalogEntry Entry(string id) => new(id, "Finance", id == "available" ? "전자공시 조회 / Disclosure search" : id,
         "기업의 공시와 재무 정보를 조회합니다. Search corporate disclosures and financial information.",
-        "https://github.com/NomaDamas/k-skill", "k-dart", "", "NomaDamas", "MIT", "pending", "upstream", "pending", "listed", "required",
-        "사용자 API 키를 사용합니다. User API credentials are required. The catalog lists candidates while installation review is pending.");
+        "https://github.com/NomaDamas/k-skill", "k-dart", new string('b', 40), "NomaDamas", "MIT", "upstream", "required",
+        "사용자 API 키를 사용합니다. User API credentials are required.")
+        { LicenseSource = "https://github.com/NomaDamas/k-skill/blob/" + new string('b', 40) + "/LICENSE" };
+
+    private static AiSkill TrackedSkill() => new("fixture", "업무 절차 / Work instructions", "로컬 문서 작성 지원 / Local document support", "C:\\fixture-skills\\fixture", true)
+    { Source = new("fixture", "https://github.com/NomaDamas/k-skill", "k-dart", new string('a', 40)) };
 
     private sealed class UiCultureScope : IDisposable
     {
@@ -296,20 +486,39 @@ public sealed class SkillMarketplaceTests
         public bool Failure;
         public bool WaitForCancellation;
         public int InstallCount;
+        public int UpdateCount;
+        public bool UpdateFailure;
+        public bool CancelUpdate;
+        public bool FailureAfterUpdate;
+        public string? RevisionOnUpdate;
+        public IReadOnlyList<SkillCatalogEntry> Entries = [Entry("FIXTURE") with { Author = "Local author" }, Entry("available") with { Category = "Legal" }, Entry("another")];
         public TaskCompletionSource Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public async Task<IReadOnlyList<SkillCatalogEntry>> ListAsync(CancellationToken token)
         {
             Started.TrySetResult();
             if (WaitForCancellation) await Task.Delay(Timeout.Infinite, token);
             if (Failure) throw new ManagedAiException(AiFailureCode.CatalogUnavailable);
-            return [Entry("FIXTURE") with { Author = "Local author" }, Entry("pending") with { Category = "Legal" },
-                Entry("approved") with { SourceRef = new string('a', 40), LicenseReviewStatus = "verified", InstallReviewStatus = "approved",
-                    LicenseSource = "https://github.com/NomaDamas/k-skill/blob/" + new string('a', 40) + "/LICENSE" }];
+            return Entries;
         }
         public Task<IReadOnlyList<AiSkill>> InstallAsync(string id, CancellationToken token)
         {
             InstallCount++;
-            manager.Items = manager.Items.Append(new(id, id, "Installed from catalog", "C:\\fixture-skills\\" + id, true)).ToArray();
+            var entry = Entries.Single(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+            manager.Items = manager.Items.Append(new AiSkill(id, id, "Installed from catalog", "C:\\fixture-skills\\" + id, true)
+                { Source = new(entry.Id, entry.Repository, entry.SourcePath, entry.SourceRef) }).ToArray();
+            return Task.FromResult(manager.Items);
+        }
+        public Task<IReadOnlyList<AiSkill>> UpdateAsync(string id, CancellationToken token)
+        {
+            UpdateCount++;
+            if (UpdateFailure) throw new ManagedAiException(AiFailureCode.ProviderNetworkUnavailable);
+            if (CancelUpdate) throw new OperationCanceledException();
+            if (RevisionOnUpdate is not null)
+                Entries = Entries.Select(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase) ? x with { SourceRef = RevisionOnUpdate } : x).ToArray();
+            var entry = Entries.Single(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+            manager.Items = manager.Items.Select(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase)
+                ? x with { Source = new(entry.Id, entry.Repository, entry.SourcePath, entry.SourceRef) } : x).ToArray();
+            if (FailureAfterUpdate) Failure = true;
             return Task.FromResult(manager.Items);
         }
     }

@@ -1293,6 +1293,8 @@ public sealed class ManagedAiWindowTests
             => throw new ManagedAiException(AiFailureCode.CatalogUnavailable);
         public Task<IReadOnlyList<AiSkill>> InstallAsync(string id, CancellationToken token)
             => throw new AssertFailedException("Unexpected remote skill install");
+        public Task<IReadOnlyList<AiSkill>> UpdateAsync(string id, CancellationToken token)
+            => throw new AssertFailedException("Unexpected remote skill update");
     }
     private sealed class Chat : IManagedAiChatProvider
     {

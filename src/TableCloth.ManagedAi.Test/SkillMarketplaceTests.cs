@@ -15,17 +15,17 @@ public sealed class SkillMarketplaceTests
     private const string Api = "https://api.github.com/repos/fixture/skills";
 
     [TestMethod]
-    public void RepositoryCandidateCatalogMatchesRuntimeParserAndKeepsAllTwelveCandidatesPending()
+    public void RepositoryCatalogMatchesRuntimeParserWithoutReviewState()
     {
         var entries = SkillCatalogClient.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Fixtures", "SkillCatalog.xml")));
-        Assert.HasCount(12, entries);
-        Assert.IsTrue(entries.All(x => x.LicenseReviewStatus == "pending" && x.InstallReviewStatus == "pending" && !x.CanInstall));
+        Assert.HasCount(10, entries);
+        Assert.IsTrue(entries.All(x => x.CanInstall));
         Assert.IsTrue(entries.All(x => x.SourceRef.Length == 40));
-        Assert.AreEqual("adapter", entries.Single(x => x.Id == "korean-law-mcp").InstallMode);
+        Assert.AreEqual("upstream", entries.Single(x => x.Id == "korean-law-mcp").InstallMode);
     }
 
     [TestMethod]
-    public void VersionOneCatalogReadsProvenanceAndKeepsPendingCandidatesUnavailable()
+    public void VersionOneCatalogReadsProvenanceAndUsesTechnicalInstallationRequirements()
     {
         var entry = SkillCatalogClient.Parse(Bytes(Catalog())).Single();
         Assert.AreEqual("fixture-skill", entry.Id);
@@ -33,34 +33,33 @@ public sealed class SkillMarketplaceTests
         Assert.AreEqual("https://github.com/fixture", entry.AuthorUrl);
         Assert.AreEqual("https://github.com/fixture/skills/blob/" + Commit + "/LICENSE", entry.LicenseSource);
         Assert.AreEqual("Review the upstream dependencies.", entry.Notes);
-        Assert.IsFalse(entry.CanInstall);
-        Assert.IsFalse((entry with { LicenseReviewStatus = "verified" }).CanInstall);
-        Assert.IsFalse((entry with { InstallReviewStatus = "approved" }).CanInstall);
-        Assert.IsTrue((entry with { LicenseReviewStatus = "verified", InstallReviewStatus = "approved" }).CanInstall);
-        Assert.IsFalse((entry with { LicenseReviewStatus = "verified", InstallReviewStatus = "approved", InstallMode = "adapter" }).CanInstall);
-        Assert.IsFalse((entry with { LicenseReviewStatus = "verified", InstallReviewStatus = "approved", SourceRef = "main" }).CanInstall);
-        Assert.IsFalse((entry with { LicenseReviewStatus = "verified", InstallReviewStatus = "approved", Runtime = "Other" }).CanInstall);
-        Assert.IsFalse((entry with { LicenseReviewStatus = "verified", InstallReviewStatus = "approved", LicenseSource = string.Empty }).CanInstall);
-        Assert.IsFalse((entry with { LicenseReviewStatus = "verified", InstallReviewStatus = "approved", LicenseSource = "https://github.com/fixture/skills/blob/main/LICENSE" }).CanInstall);
+        Assert.IsTrue(entry.CanInstall);
+        Assert.IsFalse((entry with { InstallMode = "adapter" }).CanInstall);
+        Assert.IsFalse((entry with { SourceRef = "main" }).CanInstall);
+        Assert.IsFalse((entry with { Runtime = "Other" }).CanInstall);
+        Assert.IsFalse((entry with { LicenseSource = string.Empty }).CanInstall);
+        Assert.IsFalse((entry with { LicenseSource = "https://github.com/fixture/skills/blob/main/LICENSE" }).CanInstall);
+        var legacy = Catalog().Replace("Status=\"listed\"", "Status=\"anything\"", StringComparison.Ordinal)
+            .Replace("<License ", "<License ReviewStatus=\"rejected\" ", StringComparison.Ordinal)
+            .Replace("<Install ", "<Install ReviewStatus=\"pending\" ", StringComparison.Ordinal);
+        Assert.AreEqual(entry, SkillCatalogClient.Parse(Bytes(legacy)).Single());
     }
 
     [TestMethod]
-    public void InitialCatalogShapeWithoutOptionalProvenanceRemainsVisibleAndBlocked()
+    public void CatalogWithoutPinnedSourceOrLicenseIsRejected()
     {
         var xml = "<SkillCatalog Version=\"1\"><Skill Id=\"k-dart\" Category=\"Finance\" DisplayName=\"DART\" Status=\"listed\">" +
             "<Description>Public filings.</Description><Source Repository=\"https://github.com/NomaDamas/k-skill\" Path=\"k-dart\"/>" +
             "<License SPDX=\"MIT\" ReviewStatus=\"pending\"/><Requirements Runtime=\"Codex\" Network=\"required\"/>" +
             "<Install Mode=\"upstream\" ReviewStatus=\"pending\"/></Skill></SkillCatalog>";
-        var entry = SkillCatalogClient.Parse(Bytes(xml)).Single();
-        Assert.AreEqual(string.Empty, entry.SourceRef);
-        Assert.IsFalse(entry.CanInstall);
+        Assert.AreEqual(AiFailureCode.SkillInvalid,
+            Assert.ThrowsExactly<ManagedAiException>(() => SkillCatalogClient.Parse(Bytes(xml))).Code);
     }
 
     [TestMethod]
     [DataRow("Version=\"1\"", "Version=\"2\"")]
     [DataRow("Runtime=\"Codex\"", "Runtime=\"Other\"")]
     [DataRow("Mode=\"upstream\"", "Mode=\"execute\"")]
-    [DataRow("ReviewStatus=\"pending\"", "ReviewStatus=\"unknown\"")]
     [DataRow("Network=\"required\"", "Network=\"anything\"")]
     [DataRow("Path=\"skill\"", "Path=\"../skill\"")]
     [DataRow("Path=\"skill\"", "Path=\"skill\\child\"")]
@@ -98,13 +97,13 @@ public sealed class SkillMarketplaceTests
     }
 
     [TestMethod]
-    public async Task MarketplaceRechecksLatestReviewBeforeDownloadingAnyUpstreamFiles()
+    public async Task MarketplaceRechecksLatestTechnicalRequirementsBeforeDownloadingAnyUpstreamFiles()
     {
         using var fixture = new Fixture();
-        fixture.Http.Reply(SkillCatalogClient.CatalogUrl, Catalog(approved: true));
+        fixture.Http.Reply(SkillCatalogClient.CatalogUrl, Catalog());
         var marketplace = fixture.Marketplace;
         Assert.IsTrue((await marketplace.ListAsync(CancellationToken.None)).Single().CanInstall);
-        fixture.Http.Reply(SkillCatalogClient.CatalogUrl, Catalog());
+        fixture.Http.Reply(SkillCatalogClient.CatalogUrl, Catalog().Replace("Mode=\"upstream\"", "Mode=\"adapter\"", StringComparison.Ordinal));
         var error = await Assert.ThrowsExactlyAsync<ManagedAiException>(() => marketplace.InstallAsync("fixture-skill", CancellationToken.None));
         Assert.AreEqual(AiFailureCode.BlockedByPolicy, error.Code);
         Assert.HasCount(2, fixture.Http.Requests);
@@ -205,7 +204,6 @@ public sealed class SkillMarketplaceTests
     }
 
     [TestMethod]
-    [DataRow("")]
     [DataRow("https://github.com/fixture/skills/blob/main/LICENSE")]
     [DataRow("https://github.com/other/skills/blob/1111111111111111111111111111111111111111/LICENSE")]
     [DataRow("https://github.com/fixture/skills/blob/1111111111111111111111111111111111111111/../LICENSE")]
@@ -213,7 +211,7 @@ public sealed class SkillMarketplaceTests
     {
         using var fixture = new Fixture();
         fixture.ValidRepository();
-        fixture.Http.Reply(SkillCatalogClient.CatalogUrl, Catalog(approved: true).Replace(
+        fixture.Http.Reply(SkillCatalogClient.CatalogUrl, Catalog().Replace(
             "Source=\"https://github.com/fixture/skills/blob/" + Commit + "/LICENSE\"", "Source=\"" + licenseSource + "\"", StringComparison.Ordinal));
         Assert.AreEqual(AiFailureCode.BlockedByPolicy,
             (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => fixture.Marketplace.InstallAsync("fixture-skill", CancellationToken.None))).Code);
@@ -224,14 +222,16 @@ public sealed class SkillMarketplaceTests
     [TestMethod]
     public async Task InstallerRejectsLinkedLicenseAndReservedLicenseFileCollision()
     {
-        foreach (var variation in new[] { "link", "collision" })
+        foreach (var variation in new[] { "link", "collision", "source" })
         {
             using var fixture = new Fixture();
             fixture.ValidRepository();
             if (variation == "link")
                 fixture.Tree(RootTree, [TreeItem("skill", "040000", "tree", SkillTree, 0), TreeItem("LICENSE", "120000", "blob", RootTree, 5)]);
-            else
+            else if (variation == "collision")
                 fixture.Tree(SkillTree, [TreeItem("SKILL.md", "100644", "blob", RootTree, 5), TreeItem("LICENSE.upstream", "100644", "blob", RootTree, 5)]);
+            else
+                fixture.Tree(SkillTree, [TreeItem("SKILL.md", "100644", "blob", RootTree, 5), TreeItem(".tablecloth-source.json", "100644", "blob", RootTree, 5)]);
             Assert.AreEqual(AiFailureCode.SkillInvalid,
                 (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => fixture.Marketplace.InstallAsync("fixture-skill", CancellationToken.None))).Code);
             Assert.IsFalse(fixture.Manager.Imported);
@@ -286,7 +286,7 @@ public sealed class SkillMarketplaceTests
         using var fixture = new Fixture();
         fixture.ValidRepository();
         var sourcePath = string.Join('/', Enumerable.Repeat("s", 30));
-        fixture.Http.Reply(SkillCatalogClient.CatalogUrl, Catalog(approved: true).Replace("Path=\"skill\"", "Path=\"" + sourcePath + "\"", StringComparison.Ordinal));
+        fixture.Http.Reply(SkillCatalogClient.CatalogUrl, Catalog().Replace("Path=\"skill\"", "Path=\"" + sourcePath + "\"", StringComparison.Ordinal));
         fixture.Http.Reply(Api + "/git/trees/" + RootTree, JsonSerializer.Serialize(new
         {
             sha = RootTree, truncated = false,
@@ -311,14 +311,126 @@ public sealed class SkillMarketplaceTests
         Assert.IsFalse(Directory.EnumerateFileSystemEntries(fixture.Paths.Under("cache", "marketplace")).Any());
     }
 
+    [TestMethod]
+    public async Task ExistingLocalIdAndDifferentCatalogOriginCannotBeOverwritten()
+    {
+        using var fixture = new Fixture();
+        fixture.ValidRepository();
+        fixture.Manager.Items = [new("fixture-skill", "Local", "Local.", "C:\\fixture", true)];
+        Assert.AreEqual(AiFailureCode.SkillAlreadyInstalled,
+            (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => fixture.Marketplace.InstallAsync("fixture-skill", CancellationToken.None))).Code);
+        Assert.AreEqual(AiFailureCode.BlockedByPolicy,
+            (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => fixture.Marketplace.UpdateAsync("fixture-skill", CancellationToken.None))).Code);
+        fixture.Manager.Items = [fixture.Manager.Items.Single() with { Source = new("fixture-skill", "https://github.com/other/skills", "skill", Commit) }];
+        Assert.AreEqual(AiFailureCode.BlockedByPolicy,
+            (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => fixture.Marketplace.UpdateAsync("fixture-skill", CancellationToken.None))).Code);
+        Assert.IsTrue(fixture.Http.Requests.All(x => x == SkillCatalogClient.CatalogUrl));
+        Assert.IsFalse(fixture.Manager.Imported);
+    }
+
+    [TestMethod]
+    public async Task MarketplaceUpdatePassesCapturedSourceToStoreAndSameVersionDoesNotDownload()
+    {
+        using var fixture = new Fixture();
+        fixture.ValidRepository();
+        var previous = new AiSkillSource("fixture-skill", "https://github.com/fixture/skills", "skill", new string('0', 40));
+        fixture.Manager.Items = [new("fixture-skill", "Catalog skill", "Installed.", "C:\\fixture", false) { Source = previous }];
+        var result = await fixture.Marketplace.UpdateAsync("fixture-skill", CancellationToken.None);
+        Assert.AreEqual(previous, fixture.Manager.CapturedPreviousSource);
+        Assert.AreEqual(Commit, result.Single().Source!.SourceRef);
+        Assert.IsFalse(result.Single().Enabled);
+        fixture.Http.Requests.Clear();
+        fixture.Manager.Imported = false;
+        await fixture.Marketplace.UpdateAsync("fixture-skill", CancellationToken.None);
+        Assert.HasCount(1, fixture.Http.Requests);
+        Assert.IsFalse(fixture.Manager.Imported);
+    }
+
+    [TestMethod]
+    [DataRow("integrity")]
+    [DataRow("cancel")]
+    [DataRow("success")]
+    public async Task DownloadedUpdateUsesRealStoreAndKeepsExistingInstallUntilValidated(string outcome)
+    {
+        using var fixture = new Fixture();
+        fixture.ValidRepository();
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, new NoRuntime(), new StoredProfile(fixture.Paths), new NoRunner());
+        var first = fixture.Paths.Under("cache", "previous-source", "fixture-skill");
+        Directory.CreateDirectory(first);
+        File.WriteAllText(Path.Combine(first, "SKILL.md"), "Previous version instructions.");
+        File.WriteAllText(Path.Combine(first, "old-only.txt"), "Preserve until committed.");
+        var previous = new AiSkillSource("fixture-skill", "https://github.com/fixture/skills", "skill", new string('0', 40));
+        var old = (await manager.StoreCatalogAsync(first, previous, null, CancellationToken.None)).Single(x => x.Id == "fixture-skill");
+        await manager.SetEnabledAsync(old.Id, false, CancellationToken.None);
+        var files = Directory.GetFiles(old.Directory).ToDictionary(x => Path.GetFileName(x)!, File.ReadAllText);
+        var state = File.ReadAllText(fixture.Paths.SkillState);
+        var marketplace = new ManagedAiSkillMarketplace(new(fixture.Http), new(fixture.Http, fixture.Paths, manager), manager);
+        using var cancellation = new CancellationTokenSource();
+        if (outcome == "integrity") fixture.Content("skill/SKILL.md", "Tampered content.", RootTree);
+        if (outcome == "cancel") fixture.Http.BeforeReply = url => { if (url.Contains("/contents/", StringComparison.Ordinal)) cancellation.Cancel(); };
+        if (outcome == "cancel")
+            await Assert.ThrowsAsync<OperationCanceledException>(() => marketplace.UpdateAsync(old.Id, cancellation.Token));
+        else if (outcome == "integrity")
+            Assert.AreEqual(AiFailureCode.SkillInvalid,
+                (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => marketplace.UpdateAsync(old.Id, cancellation.Token))).Code);
+        else await marketplace.UpdateAsync(old.Id, cancellation.Token);
+        var current = (await manager.ListAsync(CancellationToken.None)).Single(x => x.Id == old.Id);
+        Assert.IsFalse(current.Enabled);
+        Assert.AreEqual(state, File.ReadAllText(fixture.Paths.SkillState));
+        if (outcome == "success")
+        {
+            Assert.AreEqual(Commit, current.Source!.SourceRef);
+            Assert.AreEqual("# Fixture skill\n", File.ReadAllText(Path.Combine(current.Directory, "SKILL.md")));
+            Assert.IsFalse(File.Exists(Path.Combine(current.Directory, "old-only.txt")));
+            Assert.AreEqual("Fixture upstream license.\n", File.ReadAllText(Path.Combine(current.Directory, "LICENSE.upstream")));
+        }
+        else
+        {
+            Assert.AreEqual(previous, current.Source);
+            foreach (var file in files) Assert.AreEqual(file.Value, File.ReadAllText(Path.Combine(current.Directory, file.Key)));
+        }
+        Assert.IsFalse(Directory.GetDirectories(fixture.Paths.Skills).Any(x => Path.GetFileName(x).StartsWith('.')));
+        Assert.IsFalse(Directory.EnumerateFileSystemEntries(fixture.Paths.Under("cache", "marketplace")).Any());
+    }
+
+    [TestMethod]
+    [DataRow("success")]
+    [DataRow("invalid")]
+    [DataRow("cancel")]
+    public async Task CacheCleanupIoFailureDoesNotReplaceTheCommittedResultOrPrimaryException(string outcome)
+    {
+        using var fixture = new Fixture();
+        fixture.ValidRepository();
+        using var cancellation = new CancellationTokenSource();
+        FileStream? lockedCache = null;
+        fixture.Manager.OnStored = source =>
+        {
+            lockedCache = new(Path.Combine(source, "SKILL.md"), FileMode.Open, FileAccess.Read, FileShare.None);
+            if (outcome == "invalid") throw new ManagedAiException(AiFailureCode.SkillInvalid);
+            if (outcome == "cancel") { cancellation.Cancel(); throw new OperationCanceledException(cancellation.Token); }
+        };
+        try
+        {
+            if (outcome == "cancel")
+                await Assert.ThrowsAsync<OperationCanceledException>(() => fixture.Marketplace.InstallAsync("fixture-skill", cancellation.Token));
+            else if (outcome == "invalid")
+                Assert.AreEqual(AiFailureCode.SkillInvalid,
+                    (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => fixture.Marketplace.InstallAsync("fixture-skill", cancellation.Token))).Code);
+            else Assert.AreEqual(Commit,
+                (await fixture.Marketplace.InstallAsync("fixture-skill", cancellation.Token)).Single().Source!.SourceRef);
+            Assert.IsNotNull(lockedCache);
+        }
+        finally { lockedCache?.Dispose(); }
+    }
+
     private static byte[] Bytes(string value) => Encoding.UTF8.GetBytes(value);
-    private static string Catalog(bool approved = false) => "<SkillCatalog Version=\"1\">" + CatalogSkill(approved) + "</SkillCatalog>";
-    private static string CatalogSkill(bool approved = false) =>
+    private static string Catalog() => "<SkillCatalog Version=\"1\">" + CatalogSkill() + "</SkillCatalog>";
+    private static string CatalogSkill() =>
         $"<Skill Id=\"fixture-skill\" Category=\"Finance\" DisplayName=\"Fixture\" Status=\"listed\">" +
         $"<Description>A fixture skill.</Description><Source Repository=\"https://github.com/fixture/skills\" Path=\"skill\" Ref=\"{Commit}\"/>" +
         "<Author Name=\"Author\" Url=\"https://github.com/fixture\"/>" +
-        $"<License SPDX=\"MIT\" ReviewStatus=\"{(approved ? "verified" : "pending")}\" Source=\"https://github.com/fixture/skills/blob/{Commit}/LICENSE\"/>" +
-        $"<Requirements Runtime=\"Codex\" Network=\"required\"/><Install Mode=\"upstream\" ReviewStatus=\"{(approved ? "approved" : "pending")}\"/>" +
+        $"<License SPDX=\"MIT\" Source=\"https://github.com/fixture/skills/blob/{Commit}/LICENSE\"/>" +
+        "<Requirements Runtime=\"Codex\" Network=\"required\"/><Install Mode=\"upstream\"/>" +
         "<Notes>Review the upstream dependencies.</Notes></Skill>";
 
     private static object TreeItem(string path, string mode, string type, string sha, long size) => new { path, mode, type, sha, size };
@@ -336,7 +448,7 @@ public sealed class SkillMarketplaceTests
         {
             Paths = new(Path.Combine(Path.GetTempPath(), "tc-market-" + Guid.NewGuid().ToString("N")));
             Manager = new(Paths);
-            Marketplace = new(new(Http), new(Http, Paths, Manager));
+            Marketplace = new(new(Http), new(Http, Paths, Manager), Manager);
         }
         public ManagedAiPaths Paths { get; }
         public HttpFixture Http { get; } = new();
@@ -345,7 +457,7 @@ public sealed class SkillMarketplaceTests
 
         public void ValidRepository()
         {
-            Http.Reply(SkillCatalogClient.CatalogUrl, Catalog(approved: true));
+            Http.Reply(SkillCatalogClient.CatalogUrl, Catalog());
             Http.Reply(Api + "/git/commits/" + Commit, JsonSerializer.Serialize(new { sha = Commit, tree = new { sha = RootTree } }));
             var license = "Fixture upstream license.\n";
             Tree(RootTree, [TreeItem("skill", "040000", "tree", SkillTree, 0), TreeItem("LICENSE", "100644", "blob", BlobSha(Bytes(license)), Bytes(license).Length)]);
@@ -394,16 +506,21 @@ public sealed class SkillMarketplaceTests
         }
     }
 
-    private sealed class ImportManager(ManagedAiPaths paths) : IManagedAiSkillManager
+    private sealed class ImportManager(ManagedAiPaths paths) : IManagedAiSkillManager, IManagedAiCatalogSkillStore
     {
         public bool Imported;
         public bool AcquiredOwnLease;
         public ManagedAiException? Failure;
+        public AiSkillSource? CapturedPreviousSource;
+        public Action<string>? OnStored;
         public Dictionary<string, string> Contents { get; } = [];
+        public IReadOnlyList<AiSkill> Items = [];
         public string StorageDirectory => paths.Skills;
-        public Task<IReadOnlyList<AiSkill>> ImportAsync(string sourceDirectory, CancellationToken cancellationToken)
+        public Task<IReadOnlyList<AiSkill>> StoreCatalogAsync(string sourceDirectory, AiSkillSource source, AiSkillSource? expectedSource,
+            CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            CapturedPreviousSource = expectedSource;
             using var lease = paths.AcquireOperation();
             AcquiredOwnLease = true;
             Assert.AreEqual("fixture-skill", Path.GetFileName(sourceDirectory));
@@ -412,10 +529,33 @@ public sealed class SkillMarketplaceTests
                 Contents[Path.GetRelativePath(sourceDirectory, file).Replace('\\', '/')] = File.ReadAllText(file);
             if (Failure is not null) throw Failure;
             Imported = true;
-            return Task.FromResult<IReadOnlyList<AiSkill>>([new("fixture-skill", "Fixture", "Fixture.", sourceDirectory, true)]);
+            Items = [new("fixture-skill", "Fixture", "Fixture.", sourceDirectory, Items.FirstOrDefault()?.Enabled ?? true) { Source = source }];
+            OnStored?.Invoke(sourceDirectory);
+            return Task.FromResult(Items);
         }
-        public Task<IReadOnlyList<AiSkill>> ListAsync(CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<IReadOnlyList<AiSkill>> ImportAsync(string sourceDirectory, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<IReadOnlyList<AiSkill>> ListAsync(CancellationToken cancellationToken) => Task.FromResult(Items);
         public Task<IReadOnlyList<AiSkill>> SetEnabledAsync(string id, bool enabled, CancellationToken cancellationToken) => throw new NotSupportedException();
         public Task<IReadOnlyList<AiSkill>> RemoveAsync(string id, CancellationToken cancellationToken) => throw new NotSupportedException();
+    }
+
+    private sealed class NoRuntime : IManagedRuntimeManager
+    {
+        public Task<ManagedRuntime?> GetActiveAsync(CancellationToken token) => Task.FromResult<ManagedRuntime?>(null);
+        public Task<ManagedRuntime> InstallAsync(string? version, IProgress<AiProgress>? progress, CancellationToken token) => throw new NotSupportedException();
+        public Task<ManagedRuntime> RollbackAsync(CancellationToken token) => throw new NotSupportedException();
+    }
+    private sealed class NoRunner : IJsonlProcessRunner
+    {
+        public Task<ProcessOutcome> RunAsync(ProcessRunSpec spec, Action<string> stdout, Action<string>? stderr,
+            CancellationToken token) => throw new AssertFailedException("No runtime is installed.");
+    }
+    private sealed class StoredProfile(ManagedAiPaths paths) : IManagedAiProfile
+    {
+        public void Prepare()
+        {
+            Directory.CreateDirectory(paths.Skills);
+            File.WriteAllText(paths.SkillConfiguration, "# Empty generated policy.\n");
+        }
     }
 }

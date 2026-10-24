@@ -169,6 +169,157 @@ public sealed class SkillTests
         Assert.IsTrue((await manager.ListAsync(CancellationToken.None)).Single(x => x.Id == "good-import").IsValid);
     }
 
+    [TestMethod]
+    public async Task CatalogReplacementPersistsSourceAndPreservesDisabledStateAcrossManagerRestart()
+    {
+        using var fixture = new InstallFixture();
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        var first = CreateSkill(fixture.Paths.Under("cache", "version-one"), "catalog-skill");
+        var second = CreateSkill(fixture.Paths.Under("cache", "version-two"), "catalog-skill");
+        File.AppendAllText(Path.Combine(second, "SKILL.md"), "New version content.\n");
+        File.WriteAllText(Path.Combine(first, "obsolete.txt"), "Old version only.");
+        var runner = new SkillRunner(fixture.Paths);
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, new SkillProfile(fixture.Paths), runner);
+        var oldSource = CatalogSource();
+        var newSource = oldSource with { SourceRef = new string('2', 40) };
+        var installed = await manager.StoreCatalogAsync(first, oldSource, null, CancellationToken.None);
+        Assert.AreEqual(oldSource, installed.Single(x => x.Id == "catalog-skill").Source);
+        await manager.SetEnabledAsync("catalog-skill", false, CancellationToken.None);
+        var enabledState = File.ReadAllText(fixture.Paths.SkillState);
+
+        manager = new(fixture.Paths, fixture.Installer, new SkillProfile(fixture.Paths), runner);
+        var updated = await manager.StoreCatalogAsync(second, newSource, oldSource, CancellationToken.None);
+        var skill = updated.Single(x => x.Id == "catalog-skill");
+        Assert.AreEqual(newSource, skill.Source);
+        Assert.IsFalse(skill.Enabled);
+        Assert.AreEqual(enabledState, File.ReadAllText(fixture.Paths.SkillState));
+        Assert.Contains("New version content.", File.ReadAllText(Path.Combine(skill.Directory, "SKILL.md")));
+        Assert.IsFalse(File.Exists(Path.Combine(skill.Directory, "obsolete.txt")));
+        Assert.IsFalse(Directory.GetDirectories(fixture.Paths.Skills).Any(x => Path.GetFileName(x).StartsWith('.')));
+        manager = new(fixture.Paths, fixture.Installer, new SkillProfile(fixture.Paths), runner);
+        Assert.AreEqual(newSource, (await manager.ListAsync(CancellationToken.None)).Single(x => x.Id == "catalog-skill").Source);
+        await manager.RemoveAsync("catalog-skill", CancellationToken.None);
+        Assert.IsFalse(Directory.Exists(skill.Directory));
+        var local = (await manager.ImportAsync(first, CancellationToken.None)).Single(x => x.Id == "catalog-skill");
+        Assert.IsNull(local.Source);
+    }
+
+    [TestMethod]
+    public async Task CatalogReplacementCannotOverwriteLocalSkillsOrAChangedCatalogOriginOrVersion()
+    {
+        using var fixture = new InstallFixture();
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        var source = CreateSkill(fixture.Paths.Under("cache", "catalog-source"), "catalog-skill");
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, new SkillProfile(fixture.Paths), new SkillRunner(fixture.Paths));
+        var local = (await manager.ImportAsync(source, CancellationToken.None)).Single(x => x.Id == "catalog-skill");
+        var original = File.ReadAllText(Path.Combine(local.Directory, "SKILL.md"));
+        Assert.AreEqual(AiFailureCode.SkillAlreadyInstalled,
+            (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.StoreCatalogAsync(source, CatalogSource(), null, CancellationToken.None))).Code);
+        Assert.AreEqual(AiFailureCode.BlockedByPolicy,
+            (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.StoreCatalogAsync(source, CatalogSource(), CatalogSource(), CancellationToken.None))).Code);
+        Assert.AreEqual(original, File.ReadAllText(Path.Combine(local.Directory, "SKILL.md")));
+        await manager.RemoveAsync("catalog-skill", CancellationToken.None);
+        await manager.StoreCatalogAsync(source, CatalogSource(), null, CancellationToken.None);
+        foreach (var expected in new[]
+        {
+            CatalogSource() with { Repository = "https://github.com/other/skills" },
+            CatalogSource() with { SourcePath = "other" },
+            CatalogSource() with { SourceRef = new string('3', 40) }
+        })
+            Assert.AreEqual(AiFailureCode.BlockedByPolicy,
+                (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.StoreCatalogAsync(source,
+                    CatalogSource() with { SourceRef = new string('2', 40) }, expected, CancellationToken.None))).Code);
+        Assert.AreEqual(CatalogSource(), (await manager.ListAsync(CancellationToken.None)).Single(x => x.Id == "catalog-skill").Source);
+    }
+
+    [TestMethod]
+    [DataRow("invalid")]
+    [DataRow("provider")]
+    [DataRow("cancel")]
+    public async Task FailedOrCanceledCatalogValidationRestoresFilesSourceEnabledStateAndPolicy(string failure)
+    {
+        using var fixture = new InstallFixture();
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        var first = CreateSkill(fixture.Paths.Under("cache", "version-one"), "catalog-skill");
+        var second = CreateSkill(fixture.Paths.Under("cache", "version-two"), "catalog-skill");
+        File.AppendAllText(Path.Combine(second, "SKILL.md"), "replacement-version\n");
+        var runner = new SkillRunner(fixture.Paths);
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, new SkillProfile(fixture.Paths), runner);
+        var old = (await manager.StoreCatalogAsync(first, CatalogSource(), null, CancellationToken.None)).Single(x => x.Id == "catalog-skill");
+        await manager.SetEnabledAsync(old.Id, false, CancellationToken.None);
+        var originalFiles = Directory.GetFiles(old.Directory).ToDictionary(x => Path.GetFileName(x)!, File.ReadAllText);
+        var originalState = File.ReadAllText(fixture.Paths.SkillState);
+        var originalPolicy = File.ReadAllText(fixture.Paths.SkillConfiguration);
+        using var cancellation = new CancellationTokenSource();
+        if (failure == "invalid") runner.InvalidMarker = "replacement-version";
+        else runner.BeforeDiscovery = token =>
+        {
+            if (!File.ReadAllText(Path.Combine(old.Directory, "SKILL.md")).Contains("replacement-version", StringComparison.Ordinal)) return Task.CompletedTask;
+            if (failure == "provider") throw new ManagedAiException(AiFailureCode.ProviderFailed);
+            cancellation.Cancel();
+            token.ThrowIfCancellationRequested();
+            return Task.CompletedTask;
+        };
+        var replacement = CatalogSource() with { SourceRef = new string('2', 40) };
+        if (failure == "cancel")
+            await Assert.ThrowsAsync<OperationCanceledException>(() => manager.StoreCatalogAsync(second, replacement, CatalogSource(), cancellation.Token));
+        else
+            Assert.AreEqual(failure == "invalid" ? AiFailureCode.SkillInvalid : AiFailureCode.ProviderFailed,
+                (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.StoreCatalogAsync(second, replacement, CatalogSource(), cancellation.Token))).Code);
+        foreach (var file in originalFiles) Assert.AreEqual(file.Value, File.ReadAllText(Path.Combine(old.Directory, file.Key!)));
+        Assert.AreEqual(originalState, File.ReadAllText(fixture.Paths.SkillState));
+        Assert.AreEqual(originalPolicy, File.ReadAllText(fixture.Paths.SkillConfiguration));
+        Assert.IsFalse(Directory.GetDirectories(fixture.Paths.Skills).Any(x => Path.GetFileName(x).StartsWith('.')));
+        var restored = (await manager.ListAsync(CancellationToken.None)).Single(x => x.Id == old.Id);
+        Assert.AreEqual(CatalogSource(), restored.Source);
+        Assert.IsFalse(restored.Enabled);
+        Assert.IsTrue(restored.IsValid);
+    }
+
+    [TestMethod]
+    public async Task LocalImportCannotSupplyCatalogProvenanceMetadata()
+    {
+        using var fixture = new InstallFixture();
+        var source = CreateSkill(fixture.Paths.Under("cache", "spoofed-source"), "catalog-skill");
+        File.WriteAllText(Path.Combine(source, ".tablecloth-source.json"), "{}");
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, new SkillProfile(fixture.Paths), new SkillRunner(fixture.Paths));
+        Assert.AreEqual(AiFailureCode.SkillInvalid,
+            (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.ImportAsync(source, CancellationToken.None))).Code);
+        Assert.IsFalse(Directory.Exists(Path.Combine(fixture.Paths.Skills, "catalog-skill")));
+    }
+
+    [TestMethod]
+    public async Task CommittedCatalogUpdateKeepsItsSuccessfulResultWhenBackupCleanupIsBlocked()
+    {
+        using var fixture = new InstallFixture();
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        var first = CreateSkill(fixture.Paths.Under("cache", "previous-version"), "catalog-skill");
+        var second = CreateSkill(fixture.Paths.Under("cache", "replacement-version"), "catalog-skill");
+        File.AppendAllText(Path.Combine(second, "SKILL.md"), "Replacement instructions.\n");
+        var runner = new SkillRunner(fixture.Paths);
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, new SkillProfile(fixture.Paths), runner);
+        await manager.StoreCatalogAsync(first, CatalogSource(), null, CancellationToken.None);
+        FileStream? lockedBackup = null;
+        runner.BeforeDiscovery = _ =>
+        {
+            var backup = Directory.EnumerateDirectories(fixture.Paths.Skills, ".previous-*").SingleOrDefault();
+            if (backup is not null && lockedBackup is null)
+                lockedBackup = new(Path.Combine(backup, "SKILL.md"), FileMode.Open, FileAccess.Read, FileShare.None);
+            return Task.CompletedTask;
+        };
+        try
+        {
+            var nextSource = CatalogSource() with { SourceRef = new string('2', 40) };
+            var result = await manager.StoreCatalogAsync(second, nextSource, CatalogSource(), CancellationToken.None);
+            Assert.IsNotNull(lockedBackup);
+            Assert.AreEqual(nextSource, result.Single(x => x.Id == "catalog-skill").Source);
+            Assert.Contains("Replacement instructions.", File.ReadAllText(Path.Combine(fixture.Paths.Skills, "catalog-skill", "SKILL.md")));
+        }
+        finally { lockedBackup?.Dispose(); }
+    }
+
+    private static AiSkillSource CatalogSource() => new("catalog-skill", "https://github.com/fixture/skills", "skill", new string('1', 40));
+
     private static string CreateSkill(string root, string id)
     {
         var directory = Path.Combine(root, id);
@@ -203,13 +354,17 @@ public sealed class SkillTests
         public const string RawError = "Provider detail containing private document text.";
         public ProcessRunSpec? Invocation;
         public HashSet<string> InvalidIds { get; } = new(StringComparer.OrdinalIgnoreCase);
+        public string? InvalidMarker;
+        public Func<CancellationToken, Task>? BeforeDiscovery;
         public string ExternalManifest => Path.Combine(paths.Root, "external-skills", "outside", "SKILL.md");
         public string ManagedManifest => Path.Combine(paths.Skills, "owned-skill", "SKILL.md");
         public string SystemManifest => Path.Combine(paths.Skills, ".system", "built-in", "SKILL.md");
 
-        public Task<ProcessOutcome> RunAsync(ProcessRunSpec spec, Action<string> stdout, Action<string>? stderr,
+        public async Task<ProcessOutcome> RunAsync(ProcessRunSpec spec, Action<string> stdout, Action<string>? stderr,
             CancellationToken cancellationToken)
         {
+            if (BeforeDiscovery is not null) await BeforeDiscovery(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             Invocation = spec;
             Assert.AreEqual(CodexSkillListExchange.Initialize, spec.Input);
             Assert.Contains("skills/list", spec.Respond!("{\"id\":1,\"result\":{}}")!.Text!);
@@ -217,10 +372,12 @@ public sealed class SkillTests
                 ? Directory.GetDirectories(paths.Skills).Where(x => !Path.GetFileName(x).StartsWith('.'))
                     .ToArray()
                 : [];
-            var managed = directories.Where(x => !InvalidIds.Contains(Path.GetFileName(x)))
+            bool Invalid(string directory) => InvalidIds.Contains(Path.GetFileName(directory)) || InvalidMarker is not null &&
+                File.ReadAllText(Path.Combine(directory, "SKILL.md")).Contains(InvalidMarker, StringComparison.Ordinal);
+            var managed = directories.Where(x => !Invalid(x))
                 .Select(x => new { name = Path.GetFileName(x), description = "Managed skill.",
                     path = Path.Combine(x, "SKILL.md"), scope = "user", enabled = true }).ToArray();
-            var errors = directories.Where(x => InvalidIds.Contains(Path.GetFileName(x)))
+            var errors = directories.Where(Invalid)
                 .Select(x => new { path = Path.Combine(x, "SKILL.md"), message = RawError }).ToArray();
             var all = managed.Cast<object>().Concat([
                 new { name = "outside", description = "External skill.", path = ExternalManifest, scope = "user", enabled = true },
@@ -229,7 +386,7 @@ public sealed class SkillTests
             var response = JsonSerializer.Serialize(new { id = 2, result = new
             { data = new[] { new { cwd = spec.StartInfo.WorkingDirectory, skills = all, errors } } } });
             Assert.IsTrue(spec.Respond(response)!.Close);
-            return Task.FromResult(new ProcessOutcome(0, response.Length, 0));
+            return new ProcessOutcome(0, response.Length, 0);
         }
     }
 }

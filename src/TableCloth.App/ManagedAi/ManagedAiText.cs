@@ -30,6 +30,7 @@ public static class ManagedAiText
     public static string MarketplaceSearch => Select("이름, 설명, 저자 검색", "Search name, description, author");
     public static string MarketplaceInstalledSearch => Select("설치된 스킬 검색", "Search installed skills");
     public static string MarketplaceInstall => Select("스킬 설치", "Install skill");
+    public static string MarketplaceUpdate => Select("업데이트", "Update skill");
     public static string MarketplaceSource => Select("원본 열기", "Open upstream source");
     public static string MarketplaceLicenseSource => Select("라이선스 원문 열기", "Open license source");
     public static string MarketplaceSelectedFolder => Select("선택한 스킬 폴더 열기", "Open selected skill folder");
@@ -52,14 +53,6 @@ public static class ManagedAiText
         "realestate" or "real-estate" => Select("부동산", "Real estate"),
         "documents" or "document" => Select("문서", "Documents"),
         _ => category
-    };
-    public static string SkillReview(string review) => review.ToLowerInvariant() switch
-    {
-        "pending" => Select("검토 대기", "Pending"),
-        "verified" => Select("확인 완료", "Verified"),
-        "approved" => Select("승인 완료", "Approved"),
-        "rejected" => Select("승인하지 않음", "Rejected"),
-        _ => review
     };
     public static string SkillNetwork(string network) => network.ToLowerInvariant() switch
     {

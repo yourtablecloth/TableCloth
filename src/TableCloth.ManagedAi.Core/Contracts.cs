@@ -68,6 +68,7 @@ public interface IManagedAiModelCatalog
 public sealed record AiSkill(string Id, string Name, string Description, string Directory, bool Enabled)
 {
     public bool IsValid { get; init; } = true;
+    public AiSkillSource? Source { get; init; }
 }
 public interface IManagedAiSkillManager
 {

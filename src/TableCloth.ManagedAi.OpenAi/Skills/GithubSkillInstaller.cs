@@ -6,7 +6,7 @@ using System.Text.Json;
 namespace TableCloth.ManagedAi.OpenAi;
 
 public sealed class GithubSkillInstaller(IHttpClientFactory clients, ManagedAiPaths paths,
-    IManagedAiSkillManager skills)
+    IManagedAiCatalogSkillStore skills)
 {
     private const int MaxMetadataBytes = 2 * 1024 * 1024;
     private const int MaxTotalMetadataBytes = 16 * 1024 * 1024;
@@ -17,6 +17,13 @@ public sealed class GithubSkillInstaller(IHttpClientFactory clients, ManagedAiPa
     private const int MaxDirectories = 64;
 
     public async Task<IReadOnlyList<AiSkill>> InstallAsync(SkillCatalogEntry entry, CancellationToken cancellationToken)
+        => await DownloadAndStoreAsync(entry, expectedSource: null, cancellationToken);
+
+    public async Task<IReadOnlyList<AiSkill>> UpdateAsync(SkillCatalogEntry entry, AiSkillSource expectedSource,
+        CancellationToken cancellationToken) => await DownloadAndStoreAsync(entry, expectedSource, cancellationToken);
+
+    private async Task<IReadOnlyList<AiSkill>> DownloadAndStoreAsync(SkillCatalogEntry entry, AiSkillSource? expectedSource,
+        CancellationToken cancellationToken)
     {
         if (!entry.CanInstall) throw new ManagedAiException(AiFailureCode.BlockedByPolicy);
         SkillCatalogValidation.ValidateId(entry.Id);
@@ -25,7 +32,7 @@ public sealed class GithubSkillInstaller(IHttpClientFactory clients, ManagedAiPa
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeout.CancelAfter(TimeSpan.FromMinutes(2));
         var budget = new DownloadBudget();
-        // The skill manager takes its own operation lease during ImportAsync. Downloads do not hold that lease.
+        // The skill manager takes its own operation lease when committing. Downloads do not hold that lease.
         var staging = paths.Under("cache", "marketplace", Guid.NewGuid().ToString("N"));
         var source = paths.Under("cache", "marketplace", Path.GetFileName(staging), entry.Id);
         try
@@ -75,7 +82,7 @@ public sealed class GithubSkillInstaller(IHttpClientFactory clients, ManagedAiPa
             if (!files.Any(x => x.Path == "SKILL.md") ||
                 files.Any(x => x.Path != "SKILL.md" && System.IO.Path.GetFileName(x.Path).Equals("SKILL.md", StringComparison.OrdinalIgnoreCase)))
                 throw Invalid();
-            if (names.Contains("LICENSE.upstream") || files.Count >= MaxFiles)
+            if (names.Contains("LICENSE.upstream") || names.Contains(OpenAiCodexSkillManager.SourceMetadataFileName) || files.Count >= MaxFiles)
                 throw Invalid();
             var licensePath = entry.LicenseSourcePath ?? throw Invalid();
             SkillCatalogValidation.Path(licensePath);
@@ -97,7 +104,8 @@ public sealed class GithubSkillInstaller(IHttpClientFactory clients, ManagedAiPa
             var licenseTarget = paths.Under("cache", "marketplace", Path.GetFileName(staging), entry.Id, "LICENSE.upstream");
             await using (var output = new FileStream(licenseTarget, FileMode.CreateNew, FileAccess.Write, FileShare.None))
                 await output.WriteAsync(licenseContent, timeout.Token);
-            return await skills.ImportAsync(source, timeout.Token);
+            return await skills.StoreCatalogAsync(source,
+                new(entry.Id, entry.Repository, entry.SourcePath, entry.SourceRef), expectedSource, timeout.Token);
         }
         catch (Exception ex) when (ex is JsonException or InvalidOperationException or KeyNotFoundException or
             FormatException or ArgumentException)
@@ -105,7 +113,7 @@ public sealed class GithubSkillInstaller(IHttpClientFactory clients, ManagedAiPa
         catch (Exception ex) when (ex is HttpRequestException or IOException ||
             ex is OperationCanceledException && !cancellationToken.IsCancellationRequested)
         { throw new ManagedAiException(AiFailureCode.CatalogUnavailable); }
-        finally { paths.DeleteOwnedDirectory(staging); }
+        finally { SkillDirectoryCleanup.DeleteOwnedBestEffort(paths, staging); }
     }
 
     private async Task<string> GetCommitTreeAsync(string api, string commit, DownloadBudget budget, CancellationToken cancellationToken)
@@ -200,7 +208,8 @@ public sealed class GithubSkillInstaller(IHttpClientFactory clients, ManagedAiPa
     private sealed record RemoteFile(string Path, string Sha, long Size);
 }
 
-public sealed class ManagedAiSkillMarketplace(SkillCatalogClient catalog, GithubSkillInstaller installer) : IManagedAiSkillMarketplace
+public sealed class ManagedAiSkillMarketplace(SkillCatalogClient catalog, GithubSkillInstaller installer,
+    IManagedAiSkillManager skills) : IManagedAiSkillMarketplace
 {
     public Task<IReadOnlyList<SkillCatalogEntry>> ListAsync(CancellationToken cancellationToken) => catalog.ListAsync(cancellationToken);
 
@@ -210,6 +219,22 @@ public sealed class ManagedAiSkillMarketplace(SkillCatalogClient catalog, Github
         // Re-read the catalog instead of trusting a stale row or a caller-supplied source URL.
         var entry = (await catalog.ListAsync(cancellationToken)).SingleOrDefault(x => x.Id == id);
         if (entry is null || !entry.CanInstall) throw new ManagedAiException(AiFailureCode.BlockedByPolicy);
+        if ((await skills.ListAsync(cancellationToken)).Any(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase)))
+            throw new ManagedAiException(AiFailureCode.SkillAlreadyInstalled);
         return await installer.InstallAsync(entry, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<AiSkill>> UpdateAsync(string id, CancellationToken cancellationToken)
+    {
+        SkillCatalogValidation.ValidateId(id);
+        var entry = (await catalog.ListAsync(cancellationToken)).SingleOrDefault(x => x.Id == id);
+        if (entry is null || !entry.CanInstall) throw new ManagedAiException(AiFailureCode.BlockedByPolicy);
+        var installed = await skills.ListAsync(cancellationToken);
+        var current = installed.SingleOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+        var source = new AiSkillSource(entry.Id, entry.Repository, entry.SourcePath, entry.SourceRef);
+        if (current?.Source is not { } provenance || !provenance.HasSameOrigin(source))
+            throw new ManagedAiException(AiFailureCode.BlockedByPolicy);
+        if (provenance.HasSameVersion(source)) return installed;
+        return await installer.UpdateAsync(entry, provenance, cancellationToken);
     }
 }

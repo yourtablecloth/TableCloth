@@ -2,15 +2,13 @@ namespace TableCloth.ManagedAi;
 
 public sealed record SkillCatalogEntry(string Id, string Category, string DisplayName, string Description,
     string Repository, string SourcePath, string SourceRef, string Author, string LicenseSpdx,
-    string LicenseReviewStatus, string InstallMode, string InstallReviewStatus, string Status,
-    string Network, string Notes)
+    string InstallMode, string Network, string Notes)
 {
     public string AuthorUrl { get; init; } = string.Empty;
     public string LicenseSource { get; init; } = string.Empty;
     public string Runtime { get; init; } = "Codex";
 
-    public bool CanInstall => Status == "listed" && LicenseReviewStatus == "verified" &&
-        InstallReviewStatus == "approved" && InstallMode == "upstream" && Runtime == "Codex" &&
+    public bool CanInstall => InstallMode == "upstream" && Runtime == "Codex" &&
         SourceRef.Length == 40 && SourceRef.All(char.IsAsciiHexDigit) && LicenseSourcePath is not null;
 
     public string? LicenseSourcePath
@@ -42,4 +40,23 @@ public interface IManagedAiSkillMarketplace
 {
     Task<IReadOnlyList<SkillCatalogEntry>> ListAsync(CancellationToken cancellationToken);
     Task<IReadOnlyList<AiSkill>> InstallAsync(string id, CancellationToken cancellationToken);
+    Task<IReadOnlyList<AiSkill>> UpdateAsync(string id, CancellationToken cancellationToken);
+}
+
+public sealed record AiSkillSource(string CatalogId, string Repository, string SourcePath, string SourceRef)
+{
+    public bool HasSameOrigin(AiSkillSource other) =>
+        string.Equals(CatalogId, other.CatalogId, StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(Repository, other.Repository, StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(SourcePath, other.SourcePath, StringComparison.Ordinal);
+
+    public bool HasSameVersion(AiSkillSource other) => HasSameOrigin(other) &&
+        string.Equals(SourceRef, other.SourceRef, StringComparison.OrdinalIgnoreCase);
+}
+
+// Downloads finish outside the runtime lease. The store owns validation, provenance and replacement.
+public interface IManagedAiCatalogSkillStore
+{
+    Task<IReadOnlyList<AiSkill>> StoreCatalogAsync(string sourceDirectory, AiSkillSource source,
+        AiSkillSource? expectedSource, CancellationToken cancellationToken);
 }

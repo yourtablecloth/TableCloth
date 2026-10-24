@@ -190,6 +190,8 @@ public sealed class OptionsSkillTests
         { Interlocked.Increment(ref _listCount); return Task.FromResult<IReadOnlyList<SkillCatalogEntry>>([]); }
         public Task<IReadOnlyList<AiSkill>> InstallAsync(string id, CancellationToken token)
             => throw new AssertFailedException("Unexpected install");
+        public Task<IReadOnlyList<AiSkill>> UpdateAsync(string id, CancellationToken token)
+            => throw new AssertFailedException("Unexpected update");
     }
 
     private sealed class Preferences : IPreferencesManager
