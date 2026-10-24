@@ -65,7 +65,11 @@ public interface IManagedAiModelCatalog
 {
     Task<IReadOnlyList<AiModel>> ListAsync(CancellationToken cancellationToken);
 }
-public sealed record AiSkill(string Id, string Name, string Description, string Directory, bool Enabled);
+public sealed record AiSkill(string Id, string Name, string Description, string Directory, bool Enabled)
+{
+    public bool IsValid { get; init; } = true;
+    public AiSkillSource? Source { get; init; }
+}
 public interface IManagedAiSkillManager
 {
     string StorageDirectory { get; }

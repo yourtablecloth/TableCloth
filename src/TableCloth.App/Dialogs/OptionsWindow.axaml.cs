@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using System;
+using TableCloth.Controls;
 using TableCloth.ViewModels;
 
 namespace TableCloth.Dialogs;
@@ -29,6 +30,14 @@ public partial class OptionsWindow : Window
     }
 
     private void ViewModel_CloseRequested(object? sender, EventArgs e) => Close();
+
+    private async void OpenSkillMarketplace_Click(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not OptionsWindowViewModel viewModel || viewModel.CreateSkillMarketplaceViewModel() is not { } marketplace) return;
+        var window = new SkillMarketplaceWindow(marketplace);
+        WindowChrome.RemoveMinimizeBox(window);
+        await window.ShowDialog(this);
+    }
 
     private void CloseButton_Click(object? sender, RoutedEventArgs e) => Close();
 }

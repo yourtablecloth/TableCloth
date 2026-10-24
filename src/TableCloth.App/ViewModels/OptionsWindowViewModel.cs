@@ -59,7 +59,8 @@ public partial class OptionsWindowViewModel : ObservableObject
         IAppMessageBox appMessageBox,
         ISharedLocations sharedLocations,
         TaskFactory taskFactory,
-        IManagedAiSkillManager skillsManager)
+        IManagedAiSkillManager skillsManager,
+        IManagedAiSkillMarketplace? skillMarketplace = null)
     {
         _preferencesManager = preferencesManager;
         _appRestartManager = appRestartManager;
@@ -67,6 +68,7 @@ public partial class OptionsWindowViewModel : ObservableObject
         _sharedLocations = sharedLocations;
         _taskFactory = taskFactory;
         _skillsManager = skillsManager;
+        _skillMarketplace = skillMarketplace;
 
         BuildCompatibilityOptions();
     }
@@ -145,8 +147,6 @@ public partial class OptionsWindowViewModel : ObservableObject
         }
 
         PropertyChanged += ViewModel_PropertyChanged;
-        _optionsLoaded = true;
-        if (InitialTabIndex == ResolveTabIndex(OptionsTabKeys.AiSkills) && !SkillsLoaded) await RefreshSkillsAsync();
     }
 
     [RelayCommand]
@@ -535,11 +535,7 @@ public partial class OptionsWindowViewModel : ObservableObject
         if (e.PropertyName is nameof(CompatibilityOptionSearchText)
             or nameof(HasNoCompatibilityMatches)
             or nameof(InitialTabIndex)
-            or nameof(SelectedAiSkill)
-            or nameof(SkillOperationBusy)
-            or nameof(SkillSummary)
-            or nameof(SkillNotice)
-            or nameof(SkillToggleLabel))
+            or nameof(CanOpenSkillMarketplace))
         {
             return;
         }

@@ -1,0 +1,152 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TableCloth.ViewModels"
+        xmlns:ai="using:TableCloth.ManagedAi"
+        x:Class="TableCloth.Dialogs.SkillMarketplaceWindow"
+        x:DataType="vm:SkillMarketplaceWindowViewModel"
+        Title="{x:Static ai:ManagedAiText.MarketplaceTitle}"
+        Width="1000" Height="700" MinWidth="760" MinHeight="560"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="Padding" Value="12 6" />
+            <Setter Property="Margin" Value="0 0 6 6" />
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+    </Window.Styles>
+    <Grid Margin="20" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+        <StackPanel Spacing="5">
+            <TextBlock Text="{x:Static ai:ManagedAiText.MarketplaceTitle}" FontSize="23" FontWeight="SemiBold" />
+            <TextBlock Text="{x:Static ai:ManagedAiText.MarketplaceDescription}" TextWrapping="Wrap" />
+            <TextBlock Text="{x:Static ai:ManagedAiText.MarketplaceScope}" FontSize="11"
+                       Foreground="{DynamicResource ControlSecondaryForeground}" />
+        </StackPanel>
+        <TabControl Grid.Row="1" x:Name="MarketplaceTabs">
+            <TabItem Header="{x:Static ai:ManagedAiText.MarketplaceBrowse}">
+                <Grid Margin="0 12 0 0" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="8">
+                    <Grid ColumnDefinitions="*,200" ColumnSpacing="10">
+                        <TextBox x:Name="CatalogSearch" Text="{Binding CatalogSearch}" Watermark="{x:Static ai:ManagedAiText.MarketplaceSearch}" />
+                        <ComboBox Grid.Column="1" x:Name="CatalogCategory" ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}"
+                                  HorizontalAlignment="Stretch" />
+                    </Grid>
+                    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <TextBlock x:Name="CatalogSummary" Text="{Binding CatalogSummary}" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" x:Name="CatalogRefresh" Content="{x:Static ai:ManagedAiText.SkillsRefresh}" Command="{Binding RefreshCatalogCommand}" Margin="0" />
+                    </Grid>
+                    <Grid Grid.Row="2" ColumnDefinitions="5*,6*" ColumnSpacing="16">
+                        <Grid>
+                            <ListBox x:Name="CatalogSkillList" ItemsSource="{Binding CatalogSkills}" SelectedItem="{Binding SelectedCatalogSkill}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:MarketplaceSkillItem">
+                                        <StackPanel Margin="4 6" Spacing="4">
+                                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontSize="12" />
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding Category}" FontSize="11" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Grid.Column="1" Text="{Binding State}" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <TextBlock Text="{x:Static ai:ManagedAiText.MarketplaceNoResults}" IsVisible="{Binding CatalogEmpty}"
+                                       TextWrapping="Wrap" Margin="12" IsHitTestVisible="False" />
+                        </Grid>
+                        <Grid Grid.Column="1" RowDefinitions="*,Auto" RowSpacing="8">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <Grid>
+                                    <TextBlock Text="{x:Static ai:ManagedAiText.MarketplaceChoose}" TextWrapping="Wrap" IsVisible="{Binding !HasSelectedCatalogSkill}" Margin="0 8" />
+                                    <StackPanel Spacing="10" IsVisible="{Binding HasSelectedCatalogSkill}">
+                                        <TextBlock Text="{Binding SelectedCatalogSkill.Name}" TextWrapping="Wrap" FontSize="20" FontWeight="SemiBold" />
+                                        <TextBlock x:Name="CatalogVersionState" Text="{Binding SelectedCatalogSkill.State}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <SelectableTextBlock x:Name="CatalogInstalledRevision" Text="{Binding SelectedCatalogSkill.InstalledRevision}" TextWrapping="Wrap" FontSize="11" />
+                                        <SelectableTextBlock x:Name="CatalogRevision" Text="{Binding SelectedCatalogSkill.CatalogRevision}" TextWrapping="Wrap" FontSize="11" />
+                                        <TextBlock Text="{Binding SelectedCatalogSkill.Description}" TextWrapping="Wrap" />
+                                        <StackPanel Spacing="5">
+                                            <TextBlock Text="{Binding SelectedCatalogSkill.Author}" TextWrapping="Wrap" />
+                                            <TextBlock Text="{Binding SelectedCatalogSkill.License}" TextWrapping="Wrap" />
+                                            <TextBlock Text="{Binding SelectedCatalogSkill.Requirements}" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <SelectableTextBlock x:Name="CatalogSource" Text="{Binding SelectedCatalogSkill.Source}" TextWrapping="Wrap" FontSize="11" />
+                                        <SelectableTextBlock Text="{Binding SelectedCatalogSkill.LicenseSource}" TextWrapping="Wrap" FontSize="11" />
+                                        <TextBlock x:Name="CatalogConditions" Text="{Binding SelectedCatalogSkill.Notes}" TextWrapping="Wrap" />
+                                        <Border BorderBrush="{DynamicResource OptionsListBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="10">
+                                            <TextBlock x:Name="CatalogVersionDescription" Text="{Binding SelectedCatalogSkill.VersionDescription}" TextWrapping="Wrap" />
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </ScrollViewer>
+                            <WrapPanel Grid.Row="1" IsVisible="{Binding HasSelectedCatalogSkill}">
+                                <Button x:Name="CatalogInstall" Content="{x:Static ai:ManagedAiText.MarketplaceInstall}" Command="{Binding InstallSkillCommand}" IsVisible="{Binding !SelectedCatalogSkill.Installed}" />
+                                <Button x:Name="CatalogUpdate" Content="{x:Static ai:ManagedAiText.MarketplaceUpdate}" Command="{Binding UpdateCatalogSkillCommand}" IsVisible="{Binding SelectedCatalogSkill.Installed}" />
+                                <Button x:Name="CatalogOpenSource" Content="{x:Static ai:ManagedAiText.MarketplaceSource}" Command="{Binding OpenSourceCommand}" />
+                                <Button x:Name="CatalogOpenLicense" Content="{x:Static ai:ManagedAiText.MarketplaceLicenseSource}" Command="{Binding OpenLicenseSourceCommand}" />
+                            </WrapPanel>
+                        </Grid>
+                    </Grid>
+                    <TextBlock Grid.Row="3" x:Name="CatalogNotice" Text="{Binding CatalogNotice}" TextWrapping="Wrap" FontSize="12"
+                               Foreground="{DynamicResource ControlSecondaryForeground}" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="{x:Static ai:ManagedAiText.MarketplaceInstalled}">
+                <Grid Margin="0 12 0 0" RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="8">
+                    <TextBox x:Name="InstalledSearch" Text="{Binding InstalledSearch}" Watermark="{x:Static ai:ManagedAiText.MarketplaceInstalledSearch}" />
+                    <TextBlock Grid.Row="1" x:Name="InstalledSummary" Text="{Binding InstalledSummary}" />
+                    <Grid Grid.Row="2" ColumnDefinitions="5*,6*" ColumnSpacing="16">
+                        <Grid>
+                            <ListBox x:Name="InstalledSkillList" ItemsSource="{Binding InstalledSkills}" SelectedItem="{Binding SelectedInstalledSkill}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:SkillSettingsItem">
+                                        <StackPanel Margin="4 6" Spacing="4">
+                                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontSize="12" />
+                                            <TextBlock Text="{Binding StateLabel}" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}" />
+                                            <TextBlock Text="{Binding VersionLabel}" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <TextBlock Text="{x:Static ai:ManagedAiText.MarketplaceNoResults}" IsVisible="{Binding InstalledEmpty}"
+                                       TextWrapping="Wrap" Margin="12" IsHitTestVisible="False" />
+                        </Grid>
+                        <Grid Grid.Column="1" RowDefinitions="*,Auto" RowSpacing="8">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <Grid>
+                                    <TextBlock Text="{x:Static ai:ManagedAiText.MarketplaceInstalledChoose}" TextWrapping="Wrap" IsVisible="{Binding !HasSelectedInstalledSkill}" Margin="0 8" />
+                                    <StackPanel Spacing="10" IsVisible="{Binding HasSelectedInstalledSkill}">
+                                        <TextBlock Text="{Binding SelectedInstalledSkill.Name}" TextWrapping="Wrap" FontSize="20" FontWeight="SemiBold" />
+                                        <TextBlock x:Name="InstalledVersionState" Text="{Binding SelectedInstalledSkill.VersionLabel}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <SelectableTextBlock x:Name="InstalledRevision" Text="{Binding SelectedInstalledSkill.InstalledRevision}" TextWrapping="Wrap" FontSize="11" />
+                                        <SelectableTextBlock x:Name="InstalledCatalogRevision" Text="{Binding SelectedInstalledSkill.CatalogRevision}" TextWrapping="Wrap" FontSize="11" />
+                                        <TextBlock Text="{Binding SelectedInstalledSkill.StateLabel}" />
+                                        <TextBlock Text="{Binding SelectedInstalledSkill.Description}" TextWrapping="Wrap" />
+                                        <SelectableTextBlock Text="{Binding SelectedInstalledSkill.Source}" TextWrapping="Wrap" FontSize="11" />
+                                        <TextBlock Text="{Binding SelectedInstalledSkill.VersionDescription}" TextWrapping="Wrap" />
+                                        <SelectableTextBlock Text="{Binding SelectedInstalledSkill.Directory}" TextWrapping="Wrap" FontSize="11" />
+                                    </StackPanel>
+                                </Grid>
+                            </ScrollViewer>
+                            <WrapPanel Grid.Row="1" IsVisible="{Binding HasSelectedInstalledSkill}">
+                                <Button x:Name="InstalledUpdate" Content="{x:Static ai:ManagedAiText.MarketplaceUpdate}" Command="{Binding UpdateInstalledSkillCommand}" />
+                                <Button x:Name="InstalledToggle" Content="{Binding ToggleLabel}" Command="{Binding ToggleSkillCommand}" />
+                                <Button x:Name="InstalledRemove" Content="{x:Static ai:ManagedAiText.SkillsRemove}" Command="{Binding RemoveSkillCommand}" />
+                                <Button x:Name="InstalledOpenFolder" Content="{x:Static ai:ManagedAiText.MarketplaceSelectedFolder}" Command="{Binding OpenSelectedFolderCommand}" />
+                            </WrapPanel>
+                        </Grid>
+                    </Grid>
+                    <WrapPanel Grid.Row="3">
+                        <Button x:Name="InstalledImport" Content="{x:Static ai:ManagedAiText.MarketplaceImport}" Command="{Binding ImportSkillCommand}" />
+                        <Button x:Name="InstalledRefresh" Content="{x:Static ai:ManagedAiText.SkillsRefresh}" Command="{Binding RefreshInstalledCommand}" />
+                        <Button x:Name="InstalledRootFolder" Content="{x:Static ai:ManagedAiText.SkillsOpenFolder}" Command="{Binding OpenRootFolderCommand}" />
+                    </WrapPanel>
+                    <TextBlock Grid.Row="4" x:Name="InstalledNotice" Text="{Binding LocalNotice}" TextWrapping="Wrap" FontSize="12"
+                               Foreground="{DynamicResource ControlSecondaryForeground}" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Button Grid.Row="2" Content="{x:Static ai:ManagedAiText.MarketplaceClose}" Click="CloseButton_Click"
+                HorizontalAlignment="Right" IsCancel="True" Margin="0" />
+    </Grid>
+</Window>
