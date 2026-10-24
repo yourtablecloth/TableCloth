@@ -1,0 +1,350 @@
+{
+  "schemaVersion": 1,
+  "archivedOn": "2026-10-24",
+  "scope": "HistoricalResearchArchiveNoExperimentalRerun",
+  "provenance": {
+    "branch": "poc/codex-sandbox-computer-use",
+    "branchTip": "bf973738d423e69df39de0534d791a228677c6f0",
+    "researchToolsTrackedAtBranchTip": false,
+    "source": "Local untracked README.md, README.ko.md, validation.json and five PowerShell scripts",
+    "originalValidationRecordedOn": "2026-10-23",
+    "latestRecordedGuestRunOn": "2026-10-24",
+    "localOriginals": "Artifacts/codex-sandbox-research/tools/codex-sandbox-poc",
+    "localOriginalsIgnored": true,
+    "localOriginalsAvailableInFreshCheckout": false,
+    "review": "Read original records and scripts; no independent guest or runtime reproduction",
+    "sourceFiles": [
+      {
+        "file": "GuestBootstrap.ps1",
+        "length": 15746,
+        "sha256": "6e11275ff7cf0049a68683f9d01d7d1ac10b551a0f8cf8785bd7e17cf2f9c6cf"
+      },
+      {
+        "file": "GuestServiceProbe.ps1",
+        "length": 5809,
+        "sha256": "fa86fe71b78217b5f79f2f87fdcc476fd0a9524de49bd75edcce1dba207cd246"
+      },
+      {
+        "file": "GuestShell.ps1",
+        "length": 1763,
+        "sha256": "890799b3a41dca88ecfb4f953ec05842d70d8d833a0aa49aaac2477d0f8194b7"
+      },
+      {
+        "file": "Prepare-CodexSandbox.ps1",
+        "length": 10522,
+        "sha256": "c5188dd24cfd6bfa9bee67cce431172bd4df3401df259237b81e1c610a8ec34f"
+      },
+      {
+        "file": "README.ko.md",
+        "length": 18554,
+        "sha256": "b03bf1bac32ca3cddad6000b2eea64ee09ef08870a9002fabf71317509f2bed6"
+      },
+      {
+        "file": "README.md",
+        "length": 15907,
+        "sha256": "28466666abdd407310d473f4a101d00a4f593fea3a4c4802acbc9a8367fcb339"
+      },
+      {
+        "file": "Test-CodexSandbox.ps1",
+        "length": 14376,
+        "sha256": "a22321bbab94c58ba9e86574039c8d9fdd107471451a081048eb1f0f7082c0bf"
+      },
+      {
+        "file": "validation.json",
+        "length": 10245,
+        "sha256": "06bbb3b26508fce40129c32d0fb06c214961b949c95e95b378f68ae68fd6c158"
+      }
+    ]
+  },
+  "guestRuns": [
+    {
+      "recordedOn": "2026-10-23",
+      "version": "0.156.1",
+      "target": "x86_64-pc-windows-msvc",
+      "osReported": "10.0.26100.0",
+      "architecture": "x64",
+      "status": "ReadyForManualLogin",
+      "stagedAndGuestFilesCompared": 49,
+      "hashMismatches": 0,
+      "offlineChecks": {
+        "version": {
+          "exitCode": 0,
+          "timedOut": false,
+          "outputLimitExceeded": false,
+          "expectedVersionMatched": true
+        },
+        "help": {
+          "exitCode": 0,
+          "timedOut": false,
+          "outputLimitExceeded": false
+        },
+        "pluginHelp": {
+          "exitCode": 0,
+          "timedOut": false,
+          "outputLimitExceeded": false
+        }
+      },
+      "pluginDiscovery": {
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "jsonParsed": true,
+        "pluginCount": null,
+        "computerUseAvailabilityEstablished": false
+      },
+      "serviceCapabilityProbe": {
+        "status": "Passed",
+        "purpose": "DisposableScmCapabilityProbeOnly",
+        "compiled": true,
+        "registered": true,
+        "started": true,
+        "session0": true,
+        "stopped": true,
+        "deleted": true
+      },
+      "authenticationAtBootstrap": false,
+      "userReports": {
+        "reportedOn": "2026-10-23",
+        "tuiEntry": "UserConfirmedWelcomeOrLoginScreen",
+        "loginSucceeded": true,
+        "computerUseListedInAuthenticatedCatalog": false,
+        "scope": "ObservedRuntimeAndCurrentAuthenticatedUserCatalog"
+      },
+      "modelInteractionVerified": false,
+      "computerUseProvisioned": false,
+      "recordedHashes": {
+        "packageSha256FromReceipt": "a2e017db9807e6a2269a26fea0e1d9546469cef4d472a33016bc9f3ad7d3b733",
+        "packageArchiveRevalidatedDuringOriginalStaging": false,
+        "bootstrapSha256": "fe4c801a9c2f94d064779b526664447357fa5c9709a5119f3eb3cf82cb9c4f87",
+        "manifestSha256": "7b2f58719aed618ef04cb671bfbb9d866a7331e14371bc7487f050d7522ada8d",
+        "wsbSha256": "b25500f102b7e3e68997f3dca74ea83f0d9e118cb7bc0e544cefc1856983944c"
+      }
+    },
+    {
+      "recordedOn": "2026-10-24",
+      "version": "0.164.0",
+      "target": "x86_64-pc-windows-msvc",
+      "osReported": "10.0.26100.0",
+      "architecture": "x64",
+      "status": "ReadyForManualLogin",
+      "phase": "Complete",
+      "stagedAndGuestFilesCompared": 49,
+      "hashMismatches": 0,
+      "offlineChecks": {
+        "version": {
+          "exitCode": 0,
+          "timedOut": false,
+          "outputLimitExceeded": false,
+          "expectedVersionMatched": true
+        },
+        "help": {
+          "exitCode": 0,
+          "timedOut": false,
+          "outputLimitExceeded": false
+        },
+        "pluginHelp": {
+          "exitCode": 0,
+          "timedOut": false,
+          "outputLimitExceeded": false
+        }
+      },
+      "pluginDiscovery": {
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "jsonParsed": true,
+        "schemaRecognized": true,
+        "pluginCount": 0,
+        "installedPluginCount": 0,
+        "availablePluginCount": 0
+      },
+      "serviceCapabilityProbe": {
+        "status": "Passed",
+        "purpose": "DisposableScmCapabilityProbeOnly",
+        "compiled": true,
+        "registered": true,
+        "started": true,
+        "session0": true,
+        "stopped": true,
+        "deleted": true
+      },
+      "authenticationAttemptedByBootstrap": false,
+      "authenticationVerified": false,
+      "interactiveTuiVerified": false,
+      "modelRequestsAutomated": 0,
+      "computerUseProvisioned": false,
+      "recordedHashes": {
+        "packageSha256": "700116be3143576d006467af8576f7f4c9dada1feddfdb7f69743bfde0997018",
+        "bootstrapSha256": "428b8d2b0ac1bc47eb377b900cb940b310957ae245cdd128d372603f5e2f2edf",
+        "manifestSha256": "eb3e0b057f30924505a8c6f7403956237663198722098ead541c3647ec944d07",
+        "wsbSha256": "2b1529e7596468c61dc4c3ce8c023a2fec71d53ea85fdbcb43d3ccc331ad0f54"
+      }
+    }
+  ],
+  "parserCorrection": {
+    "recognizedResponseArrays": [
+      "installed",
+      "available"
+    ],
+    "pluginCountMeaning": "Available array count; not installed plus available",
+    "earlierGuestCountReconstructed": false,
+    "earlierGuestEvidenceUnchanged": true,
+    "correctedParserExecutedInLaterGuest": true,
+    "earlierLiveRunSources": [
+      {
+        "path": "Prepare-CodexSandbox.ps1",
+        "sha256": "c5188dd24cfd6bfa9bee67cce431172bd4df3401df259237b81e1c610a8ec34f"
+      },
+      {
+        "path": "GuestBootstrap.ps1",
+        "sha256": "ff0cedce2584a8966b01b3d3d4266da4e52606aec6d6596dd4de418b804dc1d5"
+      },
+      {
+        "path": "GuestShell.ps1",
+        "sha256": "890799b3a41dca88ecfb4f953ec05842d70d8d833a0aa49aaac2477d0f8194b7"
+      },
+      {
+        "path": "GuestServiceProbe.ps1",
+        "sha256": "fa86fe71b78217b5f79f2f87fdcc476fd0a9524de49bd75edcce1dba207cd246"
+      },
+      {
+        "path": "Test-CodexSandbox.ps1",
+        "sha256": "515c6de403716dd609931ba6de9aef63b2a95afda8bbb0389363bd847591bcd6"
+      }
+    ],
+    "laterSourceSnapshot": [
+      {
+        "path": "Prepare-CodexSandbox.ps1",
+        "sha256": "c5188dd24cfd6bfa9bee67cce431172bd4df3401df259237b81e1c610a8ec34f"
+      },
+      {
+        "path": "GuestBootstrap.ps1",
+        "sha256": "6e11275ff7cf0049a68683f9d01d7d1ac10b551a0f8cf8785bd7e17cf2f9c6cf"
+      },
+      {
+        "path": "GuestShell.ps1",
+        "sha256": "890799b3a41dca88ecfb4f953ec05842d70d8d833a0aa49aaac2477d0f8194b7"
+      },
+      {
+        "path": "GuestServiceProbe.ps1",
+        "sha256": "fa86fe71b78217b5f79f2f87fdcc476fd0a9524de49bd75edcce1dba207cd246"
+      },
+      {
+        "path": "Test-CodexSandbox.ps1",
+        "sha256": "a22321bbab94c58ba9e86574039c8d9fdd107471451a081048eb1f0f7082c0bf"
+      }
+    ]
+  },
+  "hostObservations": {
+    "runtime01561": {
+      "environment": "FreshIsolatedHostProfile",
+      "runtimeVersion": "0.156.1",
+      "sameConfigAsGuest": true,
+      "authenticated": false,
+      "authenticationRequested": false,
+      "authFileCreated": false,
+      "modelRequests": 0,
+      "exitCode": 0,
+      "timedOut": false,
+      "jsonParsed": true,
+      "topLevelKeys": [
+        "installed",
+        "available"
+      ],
+      "installedPluginCount": 0,
+      "availablePluginCount": 0,
+      "qualification": "PreAuthenticationProfileOnly"
+    },
+    "runtime01640": {
+      "version": "0.164.0",
+      "target": "x86_64-pc-windows-msvc",
+      "packageChecksumsSafeTarLayoutVersionAndReceiptVerified": true,
+      "profileAdapter": "WorkspaceFixtureNoAuthentication",
+      "windowsProfileAclQualificationPerformed": false,
+      "authenticationAttempted": false,
+      "modelRequestAttempted": false,
+      "authFileCreated": false,
+      "publicComputerUseProvisioningCommandIdentified": false,
+      "publicAppServerSchema": {
+        "methodCount": 202,
+        "namedComputerUseMethodCount": 0,
+        "experimentalMethodCount": 272,
+        "experimentalNamedComputerUseMethodCount": 0,
+        "computerUseConfigurationTypesPresent": true
+      },
+      "computerUseFeature": {
+        "name": "computer_use",
+        "stage": "stable",
+        "enabled": true,
+        "readinessEstablished": false
+      },
+      "installerSource": "src/TableCloth.ManagedAi.OpenAi/Distribution/OpenAiCodexPackageInstaller.cs",
+      "repositoryCommit": "bf973738d423e69df39de0534d791a228677c6f0"
+    },
+    "managedConfigHashUnchanged": true,
+    "activeApplicationRuntimeUnchanged": true,
+    "probeServiceCountAfter": 0
+  },
+  "historicalFixtureVerification": {
+    "result": "Passed",
+    "checks": 64,
+    "powerShellVersion": "5.1.26100.9711",
+    "sandboxLaunchedByTests": false,
+    "hostServiceRegisteredByTests": false,
+    "scope": "CurrentSourcesIncludingPluginParserRegression"
+  },
+  "computerUse": {
+    "provisioned": false,
+    "qualified": false,
+    "blocker": "StandaloneCliProvisioningRouteNotEstablishedAndNotListedInObservedAuthenticatedCatalog",
+    "acceptanceCriteria": [
+      "Documented supported guest provisioning route",
+      "Verified guest tool availability",
+      "Demonstrated guest UI action"
+    ],
+    "unverified": [
+      "Model inference in either guest",
+      "Authenticated TUI and catalog in 0.164.0 guest",
+      "Computer Use service or runtime provisioning",
+      "Screenshot or UI input using Computer Use",
+      "ARM64 execution"
+    ]
+  },
+  "archiveReview": {
+    "sandboxLaunched": false,
+    "codexExecuted": false,
+    "authenticationAttempted": false,
+    "modelRequestAttempted": false,
+    "serviceProbeExecuted": false,
+    "historicalFixturesRerun": false,
+    "checks": [
+      "Source record and script review",
+      "JSON syntax",
+      "Local Markdown file links",
+      "Published fields privacy review"
+    ]
+  },
+  "publication": {
+    "retained": [
+      "Fixed outcomes",
+      "Version and architecture coordinates",
+      "Dates",
+      "Source and evidence SHA-256 values"
+    ],
+    "omitted": [
+      "Local account names and home paths",
+      "Run and session identifiers",
+      "Authentication material",
+      "Raw plugin responses",
+      "Conversation content",
+      "Screenshots"
+    ],
+    "scope": "Published archive only; ignored artifact contents are outside this review"
+  },
+  "officialDocumentationCheckedOn": "2026-10-24",
+  "sources": [
+    "https://learn.chatgpt.com/docs/computer-use",
+    "https://learn.chatgpt.com/docs/cli/reference",
+    "https://learn.microsoft.com/en-us/windows/security/application-security/application-isolation/windows-sandbox/windows-sandbox-configure-using-wsb-file"
+  ]
+}

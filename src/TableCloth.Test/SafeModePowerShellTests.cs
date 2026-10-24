@@ -43,13 +43,15 @@ public sealed class SafeModePowerShellTests
                     if ($child.ExitCode) { throw 'Native argument receiver failed.' }
                     @{ Download=$script:Download; ArgumentsJson=$output } | ConvertTo-Json -Compress | Set-Content -LiteralPath (Join-Path $env:TEMP 'arguments.json')
                 }
+                # Apply the fixture architecture after native PowerShell initializes its environment.
+                $env:PROCESSOR_ARCHITECTURE = $env:TEST_ARCHITECTURE
+                $env:PROCESSOR_ARCHITEW6432 = $null
                 & $env:TEST_WORKER
                 """);
             var executable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsPowerShell", "v1.0", "powershell.exe");
             var start = new ProcessStartInfo(executable) { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true };
             foreach (var arg in new[] { "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", harness }) start.ArgumentList.Add(arg);
-            start.Environment["TEMP"] = directory.FullName; start.Environment["PROCESSOR_ARCHITECTURE"] = architecture;
-            start.Environment.Remove("PROCESSOR_ARCHITEW6432");
+            start.Environment["TEMP"] = directory.FullName; start.Environment["TEST_ARCHITECTURE"] = architecture;
             start.Environment["TABLECLOTH_SITE_IDS"] = legacy ? "\"bank-a bank-b\"" : "bank-a bank-b";
             const string target = "https://www.example.com/?a=%27;&q=$(`x)&b=1";
             start.Environment["TABLECLOTH_TARGET_URL"] = target;
@@ -171,6 +173,9 @@ public sealed class SafeModePowerShellTests
                 function Out-File { param($LiteralPath, $Encoding); process { $_ | Set-Content -LiteralPath (Join-Path $env:TEMP 'log.txt') } }
                 function Add-Content { param($LiteralPath); process { [IO.File]::AppendAllText((Join-Path $env:TEMP 'log.txt'), ($_ + [Environment]::NewLine)) } }
                 function Read-Host { param($Prompt); 'closed' }
+                # This process runs the architecture-sensitive command, after the outer receiver starts it.
+                $env:PROCESSOR_ARCHITECTURE = $env:TEST_ARCHITECTURE
+                $env:PROCESSOR_ARCHITEW6432 = $null
                 Invoke-Expression $Inner | Out-Null
                 @{ SiteIds=$env:TABLECLOTH_SITE_IDS; TargetUrl=$env:TABLECLOTH_TARGET_URL; Mode=$env:TABLECLOTH_SAFE_MODE;
                    Log=[IO.File]::ReadAllText((Join-Path $env:TEMP 'log.txt')); LogosPresentAtLaunch=$script:LogosPresentAtLaunch;
@@ -183,8 +188,7 @@ public sealed class SafeModePowerShellTests
                 UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true,
             };
             start.Environment["TEMP"] = directory.FullName;
-            start.Environment["PROCESSOR_ARCHITECTURE"] = architecture;
-            start.Environment.Remove("PROCESSOR_ARCHITEW6432");
+            start.Environment["TEST_ARCHITECTURE"] = architecture;
             start.Environment["TEST_SCENARIO"] = scenario;
             start.Environment["TEST_EXECUTABLE"] = executable;
             start.Environment["TEST_INNER_RECEIVER"] = innerReceiver;

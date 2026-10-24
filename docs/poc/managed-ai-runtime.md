@@ -8,6 +8,8 @@ The product-facing name is **TableCloth AI (Preview)**. The `poc/managed-ai-runt
 
 The separate RDP-host experiment was retired on October 23, 2026. Its [research archive](rdp-sandbox.md), [Korean companion](rdp-sandbox.ko.md), and [evidence summary](rdp-sandbox-evidence.json) retain the private-broker findings, hosting results, and qualification limits. Only that research documentation was added to this branch; the retired embedded viewer is outside the implementation described here.
 
+The separate standalone-Codex-in-Sandbox investigation is preserved in the [research archive](codex-sandbox-computer-use.md), [Korean companion](codex-sandbox-computer-use.ko.md), and [sanitized evidence summary](codex-sandbox-computer-use-evidence.json). Historical x64 runs with CLI `0.156.1` and `0.164.0` confirmed local CLI startup and a disposable SCM probe. Computer Use provisioning and UI control remain unverified. These findings add no Computer Use capability to the host-side AI integration described here.
+
 ## Implementation boundaries
 
 The existing `TableCloth.slnx` includes the five managed-AI projects and a separate `TableCloth.Cli` project. `ManagedAi.Core` owns search/chat contracts, bounded conversation history, link parsing and URL validation. `ManagedAi.OpenAi` owns distribution, authentication, invocation and parsing. `ManagedAi.Windows` owns ACLs, bounded process streams and Windows Job Objects. `ManagedAi.Poc` supplies a diagnostic console host. `ManagedAi.Test` uses the repository's existing MSTest SDK instead of introducing xUnit. `TableCloth.Cli` builds `TableClothCli.exe` for host-side certificate and cached Catalog queries.
