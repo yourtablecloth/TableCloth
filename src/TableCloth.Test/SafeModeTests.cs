@@ -200,7 +200,7 @@ public sealed class SafeModeTests
     [DataRow("en-US", "Having trouble starting the sandbox?")]
     public async Task TroubleshootingLinkLaunchesSafeModeAndSettingsHaveNoToggle(string culture, string label)
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var previous = CultureInfo.CurrentUICulture;

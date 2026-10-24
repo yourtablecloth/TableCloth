@@ -43,7 +43,7 @@ public sealed class OptionsSkillTests
     [TestMethod]
     public async Task SettingsWindowDisplaysTheDedicatedSkillTabAndCatalog()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             using var culture = new UiCultureScope("ko-KR");
@@ -78,7 +78,7 @@ public sealed class OptionsSkillTests
     [TestMethod]
     public async Task IdleShutdownAppearsInSandboxSessionTab()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             using var culture = new UiCultureScope("ko-KR");

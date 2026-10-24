@@ -22,7 +22,7 @@ public sealed class QuickStartWebAddressTests
     [TestMethod]
     public async Task CatalogLinkOpensAsModalChildOfMainWindow()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var catalog = new CatalogWindow();
@@ -54,7 +54,7 @@ public sealed class QuickStartWebAddressTests
     [TestMethod]
     public async Task ArrowKeysNavigateSuggestionsAndEnterAcceptsFocusedItem()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             Application.Current!.RequestedThemeVariant = ThemeVariant.Dark;
@@ -135,7 +135,7 @@ public sealed class QuickStartWebAddressTests
     [TestMethod]
     public async Task SuggestionClickCompletesCatalogUrlBeforeStart()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var launcher = new Launcher();
@@ -197,7 +197,7 @@ public sealed class QuickStartWebAddressTests
     [TestMethod]
     public async Task AddressInputDisablesStartUntilLaunchCompletes()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var launcher = new Launcher

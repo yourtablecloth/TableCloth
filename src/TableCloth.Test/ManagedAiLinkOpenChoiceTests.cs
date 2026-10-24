@@ -23,7 +23,7 @@ public sealed class ManagedAiLinkOpenChoiceTests
     {
         var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts",
             $"link-open-choice-{(dark ? "dark" : "light")}.png");
-        using var session = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var session = HeadlessTestSession.Shared;
         await session.Dispatch<bool>(async () =>
         {
             Application.Current!.RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light;
@@ -57,7 +57,7 @@ public sealed class ManagedAiLinkOpenChoiceTests
     [TestMethod]
     public async Task ClosingDialogReturnsCancel()
     {
-        using var session = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var session = HeadlessTestSession.Shared;
         await session.Dispatch<bool>(async () =>
         {
             var owner = new Window();
