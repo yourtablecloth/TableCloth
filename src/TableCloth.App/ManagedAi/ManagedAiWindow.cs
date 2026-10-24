@@ -123,6 +123,10 @@ public sealed class ManagedAiWindow : Window
         _account.VerticalAlignment = VerticalAlignment.Center;
         summary.Children.Add(_account);
         AutomationProperties.SetName(_models, L("대화 모델", "Chat model"));
+        _models.GotFocus += (_, _) => UpdateModelDetails();
+        _models.LostFocus += (_, _) => ToolTip.SetIsOpen(_models, false);
+        _models.DropDownOpened += (_, _) => UpdateModelDetails();
+        _models.DropDownClosed += (_, _) => UpdateModelDetails();
         Grid.SetColumn(_models, 1); summary.Children.Add(_models);
         _modelHint.TextWrapping = TextWrapping.NoWrap;
         _modelHint.VerticalAlignment = VerticalAlignment.Center;
@@ -806,12 +810,23 @@ public sealed class ManagedAiWindow : Window
             "Ready to chat. Press Shift+Enter to send a message.");
     }
 
+    private void UpdateModelDetails()
+    {
+        var selected = _models.SelectedItem as AiModel;
+        var details = selected is null
+            ? L("연결하면 대화 모델을 선택할 수 있습니다.", "Connect to choose a chat model.")
+            : L($"다음 응답에 사용할 모델: {selected.Id}", $"Model for the next response: {selected.Id}");
+        AutomationProperties.SetName(_models, selected is null ? L("대화 모델", "Chat model")
+            : L($"대화 모델: {selected.DisplayName} ({selected.Id})", $"Chat model: {selected.DisplayName} ({selected.Id})"));
+        AutomationProperties.SetHelpText(_models, details);
+        ToolTip.SetTip(_models, _models.IsDropDownOpen ? null : details);
+        ToolTip.SetIsOpen(_models, selected is not null && _models.IsEnabled && _models.IsFocused && !_models.IsDropDownOpen);
+    }
+
     private void UpdateModelHint()
     {
         var selected = _models.SelectedItem as AiModel;
-        ToolTip.SetTip(_models, selected is null
-            ? L("연결하면 대화 모델을 선택할 수 있습니다.", "Connect to choose a chat model.")
-            : L($"다음 응답에 사용할 모델: {selected.Id}", $"Model for the next response: {selected.Id}"));
+        UpdateModelDetails();
         if (_models.SelectedItem is AiModel { TokenCost: { } cost } && cost.IsCurrent(DateOnly.FromDateTime(DateTime.UtcNow)))
         {
             _modelHint.Text = L($"입력 {cost.Input:0.###} / 출력 {cost.Output:0.###} 크레딧/100만 토큰",
