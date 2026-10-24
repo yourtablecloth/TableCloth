@@ -36,7 +36,7 @@ v1.21.0은 WPF UI를 Avalonia로 이관하고 TableCloth와 Spork 배포본을 N
 
 ## 식탁보 AI (베타)
 
-빠른 시작 화면에서 `식탁보 AI (베타)`를 열 수 있습니다. [v1.22.0-preview.5](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.22.0-preview.5)부터 AI 창은 메인 창과 같은 초기 크기로 열립니다. 이 기능은 TableCloth 전용 위치에 OpenAI Codex 런타임을 설치하고 사용자의 ChatGPT 로그인으로 대화를 처리합니다. 선택한 모델은 기존 애플리케이션 설정에 저장합니다. 응답의 웹 링크를 누르면 Windows Sandbox 또는 현재 Windows 브라우저를 선택할 수 있습니다. Sandbox 경로는 TableCloth Catalog를 확인하고 Spork로 필요한 소프트웨어를 설치한 뒤 페이지를 엽니다.
+빠른 시작 화면에서 `식탁보 AI (베타)`를 열 수 있습니다. 2026년 10월 24일 기준 [v1.22.0-preview.6](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.22.0-preview.6)에서 AI 창은 메인 창보다 조금 큰 840×640의 초기 크기로 열립니다. 창 안의 큰 제목을 제거하고 Codex 버전, 연결 상태, 대화 모델과 100만 토큰당 입력 및 출력 크레딧 단가를 상단 한 줄에 표시합니다. 이 기능은 TableCloth 전용 위치에 OpenAI Codex 런타임을 설치하고 사용자의 ChatGPT 로그인으로 대화를 처리합니다. 선택한 모델은 기존 애플리케이션 설정에 저장합니다. 응답의 웹 링크를 누르면 Windows Sandbox 또는 현재 Windows 브라우저를 선택할 수 있습니다. Sandbox 경로는 TableCloth Catalog를 확인하고 Spork로 필요한 소프트웨어를 설치한 뒤 페이지를 엽니다.
 
 AI 대화에는 실행 중인 식탁보의 버전, 공식 홈페이지, Windows Sandbox와 Spork의 역할을 기본 문맥으로 전달합니다. 답변 언어는 AI 창의 표시 언어를 따르며, 외부 사이트의 최신 절차는 웹 검색 결과에 근거합니다.
 
@@ -44,7 +44,7 @@ AI 대화에는 실행 중인 식탁보의 버전, 공식 홈페이지, Windows 
 
 내장 `tablecloth-certificate-expiry` 스킬은 공동인증서 만료일 질문을 처리합니다. 사용자가 조회에 동의하면 호스트의 `TableClothCli.exe`가 기본 NPKI 폴더에서 공개 인증서의 만료 여부를 확인합니다. AI에는 만료된 인증서 수, 향후 30일 안에 만료되는 인증서 수와 조회 완료 여부만 전달합니다. 인증서 이름, 발급자, 일련번호, 파일 경로, 공개 인증서의 내용, 개인키와 Catalog 정보는 전달하지 않습니다. 식탁보 AI는 개별 인증서의 세부 정보나 스크린샷을 직접 확인할 수 없습니다.
 
-AI 창은 민감 개인정보, 공동인증서 파일과 스크린샷을 입력하거나 링크로 공유하지 말라는 안내를 입력란 위에 항상 표시합니다. 텍스트 입력에서는 일부 국내 전화번호, 주민등록번호와 주소 형식을 자동으로 가립니다. 정규표현식 기반 필터가 모든 개인정보를 찾아내지는 못합니다. 인식 가능한 인증서 세부 정보와 인증서 스크린샷 링크는 전송 전에 거부합니다. AI 창에는 파일 첨부 기능이 없습니다. 자세한 사용 범위는 [홈페이지의 식탁보 AI 안내](https://yourtablecloth.app/docs/managed-ai)와 [개인정보 처리방침](https://yourtablecloth.app/docs/privacy)에서 확인할 수 있습니다.
+AI 창은 민감 개인정보, 공동인증서 파일과 스크린샷을 입력하거나 링크로 공유하지 말라는 안내를 새 대화의 시작 화면에만 표시합니다. 텍스트 입력에서는 일부 국내 전화번호, 주민등록번호와 주소 형식을 자동으로 가립니다. 정규표현식 기반 필터가 모든 개인정보를 찾아내지는 못합니다. 인식 가능한 인증서 세부 정보와 인증서 스크린샷 링크는 전송 전에 거부합니다. AI 창에는 파일 첨부 기능이 없습니다. 자세한 사용 범위는 [홈페이지의 식탁보 AI 안내](https://yourtablecloth.app/docs/managed-ai)와 [개인정보 처리방침](https://yourtablecloth.app/docs/privacy)에서 확인할 수 있습니다.
 
 AI Preview 메시지를 전송하면 사용자의 OpenAI 구독 사용량을 소비합니다. 기능의 구현 상태, 보안 경계와 아직 실행하지 않은 실기기 검증은 [AI Preview 구현 및 검증 보고서](docs/poc/managed-ai-runtime.md)에 기록했습니다. [최초 PoC 설계](docs/poc/managed-ai-runtime-design.ko.md)는 구현 전 기준과 의사결정 이력을 보존합니다.
 
@@ -78,7 +78,7 @@ WinGet 등록소 반영에는 GitHub Release 게시 이후 시간이 더 걸릴 
 
 ## 무설치 Express 실행
 
-공유 폴더를 사용하는 실행에서 PC에 블루스크린이 발생하면 빠른 시작의 **샌드박스를 시작하는데 문제가 있으신가요?** 링크를 눌러 Safe Mode 실행을 비교할 수 있습니다. Safe Mode는 호스트 폴더와 클립보드 및 장치 공유를 제외하고 네트워크를 유지합니다. 일반 실행 옵션과 조합하지 않으며 입력란과 호스트에서 선택한 기관을 전달하지 않습니다. 기관은 Sandbox 안의 Spork에서 선택합니다. 2026년 10월 10일 기준 개발 브랜치의 기능으로 이번 변경을 포함한 빌드에서 사용할 수 있습니다. 프리뷰 동작은 정식 출시 전에 달라질 수 있습니다. 제한 기능과 비교 절차는 [Safe Mode 및 중지 오류 가이드](docs/SAFE_MODE.ko.md)에 설명했습니다. [English guide](docs/SAFE_MODE.md)
+공유 폴더를 사용하는 실행에서 PC에 블루스크린이 발생하면 빠른 시작의 **샌드박스를 시작하는데 문제가 있으신가요?** 링크를 눌러 Safe Mode 실행을 비교할 수 있습니다. Safe Mode는 호스트 폴더와 클립보드 및 장치 공유를 제외하고 네트워크를 유지합니다. 일반 실행 옵션과 조합하지 않으며 입력란과 호스트에서 선택한 기관을 전달하지 않습니다. 기관은 Sandbox 안의 Spork에서 선택합니다. 2026년 10월 24일 기준 [v1.22.0-preview.6](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.22.0-preview.6)에서 사용할 수 있습니다. 프리뷰 동작은 정식 출시 전에 달라질 수 있습니다. 제한 기능과 비교 절차는 [Safe Mode 및 중지 오류 가이드](docs/SAFE_MODE.ko.md)에 설명했습니다. [English guide](docs/SAFE_MODE.md)
 
 호스트에 TableCloth를 설치하지 않고 Windows Sandbox 안에서 Spork만 실행할 수도 있습니다.
 

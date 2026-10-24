@@ -1,12 +1,12 @@
 # Safe Mode and Windows Sandbox crash diagnosis
 
-As of October 10, 2026, the `develop` branch offers a Quick Start troubleshooting link for Safe Mode. Choosing to continue prepares a Windows Sandbox without host folder mappings. Release availability depends on a build containing this change.
+As of October 24, 2026, Safe Mode is available in [v1.22.0-preview.6](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.22.0-preview.6) through the Quick Start troubleshooting link. Choosing to continue prepares a Windows Sandbox without host folder mappings.
 
 This guide covers the execution policy, features that become unavailable, guest downloads and diagnostics, crash comparisons, and information for a bug report.
 
 Read the execution policy first, then use the comparison steps to distinguish a host crash from a guest setup failure. The feature implements the scope in [issue #311](https://github.com/yourtablecloth/TableCloth/issues/311).
 
-> Usage instructions updated on October 10, 2026. Select **Having trouble starting the sandbox?** on Quick Start to use this development feature. Preview behavior may change before a stable release.
+> Usage instructions updated on October 24, 2026 for [v1.22.0-preview.6](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.22.0-preview.6). Select **Having trouble starting the sandbox?** on Quick Start to use Safe Mode. Preview behavior may change before a stable release.
 
 ## Execution without host folder mappings
 
