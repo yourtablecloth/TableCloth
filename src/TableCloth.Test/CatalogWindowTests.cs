@@ -16,7 +16,7 @@ public sealed class CatalogWindowTests
     [TestMethod]
     public async Task SearchAndSelectionPassCatalogServiceToQuickStartLaunch()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var alpha = new CatalogInternetService { Id = "alpha", DisplayName = "Alpha Bank", Url = "https://alpha.example/" };

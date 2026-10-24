@@ -61,7 +61,7 @@ public sealed class ChatMarkdownViewTests
     [TestMethod]
     public async Task InlineLinksFitWithinChatBubble()
     {
-        using var session = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var session = HeadlessTestSession.Shared;
         var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts", "markdown-chat-bubble-900.png");
         await session.Dispatch(() =>
         {
@@ -149,7 +149,7 @@ public sealed class ChatMarkdownViewTests
     [DataRow(900, true)]
     public async Task RendersMarkdownAndRoutesOnlyClickedWebLinks(int width, bool dark)
     {
-        using var session = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var session = HeadlessTestSession.Shared;
         var directory = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts");
         Directory.CreateDirectory(directory);
         var path = Path.Combine(directory, $"markdown-{width}-{(dark ? "dark" : "light")}.png");
@@ -190,7 +190,7 @@ public sealed class ChatMarkdownViewTests
     [TestMethod]
     public async Task UnsafeLinksImagesAndComplexInputDoNotCreateActiveControls()
     {
-        using var session = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var session = HeadlessTestSession.Shared;
         await session.Dispatch(() =>
         {
             var view = new ChatMarkdownView("[로컬](http://localhost/) ![이미지](https://tracker.example/pixel) `https://code.example/`", _ => Assert.Fail());

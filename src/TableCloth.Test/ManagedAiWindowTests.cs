@@ -29,7 +29,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task QuickStartOpensAiAsModalChildOfMainWindow()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var ai = new Fixture().Create();
@@ -63,7 +63,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task StartupChecksStayOffUiThread()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -86,7 +86,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task EnglishUiUsesEnglishAcrossChatAndSkillSettings()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -122,7 +122,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task InitialQuestionAppearsAsAnUnsentChatDraft()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var window = new Fixture().Create();
@@ -141,7 +141,7 @@ public sealed class ManagedAiWindowTests
     public async Task ModelChoiceSurvivesReopeningAndRetainsOtherPreferences()
     {
         var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts", "chat-model-cost-640-light.png");
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
@@ -197,7 +197,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task ClosingDrainsRapidSelectionsInOrder()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture(); var window = fixture.Create();
@@ -222,7 +222,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task SaveFailureIsVisibleWithoutDiscardingCurrentChoiceAndCanRecover()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture(); var window = fixture.Create();
@@ -254,7 +254,7 @@ public sealed class ManagedAiWindowTests
     public async Task ModelSelectionKeyboardCopyAndVisibleProgressWorkTogether(int width, bool dark)
     {
         var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts", $"chat-{width}-{(dark ? "dark" : "light")}.png");
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         // Explicit Task<bool> dispatch awaits the whole async test; Dispatch<Task> would return a nested task.
         await headless.Dispatch<bool>(async () =>
         {
@@ -331,7 +331,7 @@ public sealed class ManagedAiWindowTests
     [DataRow(true)]
     public async Task SingleConnectionActionInstallsIfNeededLogsInAndLoadsModels(bool installed)
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture(); fixture.Runtime.Installed = installed; fixture.Auth.LoggedIn = false;
@@ -369,7 +369,7 @@ public sealed class ManagedAiWindowTests
     public async Task SettingsPanelRendersAndSupportsLogoutLoginAndReconnect(int width, bool dark)
     {
         var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts", $"chat-settings-{width}-{(dark ? "dark" : "light")}.png");
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             Application.Current!.RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light;
@@ -431,7 +431,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task ReconnectDoesNotStartLoginIfLogoutFails()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture(); fixture.Auth.FailLogout = true;
@@ -457,7 +457,7 @@ public sealed class ManagedAiWindowTests
     public async Task StarterCardsSendImmediatelyWhenConnected(int width, bool dark, bool loggedIn)
     {
         var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts", $"chat-starters-{width}-{(dark ? "dark" : "light")}.png");
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             Application.Current!.RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light;
@@ -506,7 +506,7 @@ public sealed class ManagedAiWindowTests
     [DataRow(RawInputModifiers.Shift)]
     public async Task StarterClickSendsRegardlessOfShift(RawInputModifiers modifiers)
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -533,7 +533,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task NewChatConfirmsBeforeDiscardingConversationOrDraft()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -586,7 +586,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task CertificateSkillRequiresConsentBeforeLocalCliBridgeAndModelTurn()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -623,7 +623,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task CertificateScreenshotLinkIsRejectedBeforeAnyModelTurn()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -648,7 +648,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task PersonalDataIsMaskedInInputAndBeforeModelTurn()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -680,7 +680,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task CertificateStarterRetriesTransientRuntimeContention()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -709,7 +709,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task SandboxSkillUsesHostBridgeBeforeModelTurn()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -735,7 +735,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task LegacySafeModeSettingDoesNotChangeAiSandboxStart()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -761,7 +761,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task SandboxStopKeepsDraftUntilUserAcceptsStateLoss()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -793,7 +793,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task CompletedLoginHidesInstructionsDuringModelDiscoveryAndIgnoresLateProgress()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
@@ -832,7 +832,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task FailedModelDiscoveryCanRetryAndAuthenticationFailureReturnsToConnectionFlow()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture(); fixture.Models.Fail = true;
@@ -863,7 +863,7 @@ public sealed class ManagedAiWindowTests
     [TestMethod]
     public async Task SkillManagementLoadsOnOpenAndTogglesWithoutClosingSettings()
     {
-        using var headless = HeadlessUnitTestSession.StartNew(typeof(MarkdownTestAppBuilder));
+        var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
             var fixture = new Fixture();
