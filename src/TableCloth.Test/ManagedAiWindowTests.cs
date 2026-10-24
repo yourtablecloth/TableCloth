@@ -9,6 +9,8 @@ using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using TableCloth.Components;
+using TableCloth.Dialogs;
+using TableCloth.ViewModels;
 using TableCloth.ManagedAi;
 using TableCloth.Models;
 using TableCloth.Models.Configuration;
@@ -103,7 +105,7 @@ public sealed class ManagedAiWindowTests
                 Assert.AreEqual("Ready to chat. Press Shift+Enter to send a message.", Find<TextBlock>(window, "ManagedAiStatus").Text);
                 Click(window, Find<Button>(window, "ManagedAiManage"));
                 Assert.AreEqual("Sign out", Find<Button>(window, "ManagedAiSignOut").Content);
-                Assert.AreEqual("Reload skills", Find<Button>(window, "ManagedAiSkillRefresh").Content);
+                Assert.AreEqual("Manage installed AI skills", Find<Button>(window, "ManagedAiSkillMarketplace").Content);
                 Assert.AreEqual("AI skills", ManagedAiText.SkillsTabTitle);
                 Click(window, Find<Button>(window, "ManagedAiSettingsClose"));
                 Find<TextBox>(window, "ManagedAiChatInput").Text = "How do I use TableCloth?";
@@ -1011,41 +1013,92 @@ public sealed class ManagedAiWindowTests
     }
 
     [TestMethod]
-    public async Task SkillManagementLoadsOnOpenAndTogglesWithoutClosingSettings()
+    [DataRow("ko-KR", false)]
+    [DataRow("en-US", true)]
+    public async Task SkillMenuOpensInstalledMarketplaceAndRefreshesChatAfterClosing(string culture, bool dark)
     {
-        var headless = HeadlessTestSession.Shared;
-        await headless.Dispatch<bool>(async () =>
+        await HeadlessTestSession.Shared.Dispatch<bool>(async () =>
         {
+            Application.Current!.RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light;
             var fixture = new Fixture();
-            fixture.Skills.Items = [new("fixture-skill", "업무 절차", "반복 업무를 안내합니다.",
+            fixture.Skills.Items = [new("fixture-skill", "업무 절차", "Work instructions.",
                 Path.Combine(Path.GetTempPath(), "fixture-skill"), true)];
-            var window = fixture.Create();
+            var window = fixture.Create(CultureInfo.GetCultureInfo(culture));
+            SkillMarketplaceWindow? child = null;
             try
             {
                 window.Show(); await Ready(window);
+                var initialCalls = fixture.Skills.Calls;
                 Click(window, Find<Button>(window, "ManagedAiManage"));
-                await Until(() => fixture.Skills.Calls >= 1 && Find<StackPanel>(window, "ManagedAiSkillList").Children.Count == 1);
                 var overlay = Find<Grid>(window, "ManagedAiSettings");
                 Assert.IsTrue(overlay.IsVisible);
-                Assert.Contains("1개", Find<TextBlock>(window, "ManagedAiSkillStatus").Text!);
-                Assert.Contains("활성 스킬 1개", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
+                Assert.AreEqual(initialCalls, fixture.Skills.Calls);
+                Assert.IsFalse(Controls(window).Any(x => AutomationProperties.GetAutomationId(x) is
+                    "ManagedAiSkillImport" or "ManagedAiSkillRefresh" or "ManagedAiSkillFolder" or "ManagedAiSkillList"));
+                SaveFrame(window, Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts", $"chat-skill-marketplace-entry-{culture}.png"));
+                Find<Button>(window, "ManagedAiSkillMarketplace").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                await Until(() => window.OwnedWindows.OfType<SkillMarketplaceWindow>().Any());
+                child = window.OwnedWindows.OfType<SkillMarketplaceWindow>().Single();
+                Assert.AreSame(window, child.Owner);
+                Assert.AreEqual(1, child.FindControl<TabControl>("MarketplaceTabs")!.SelectedIndex);
+                Assert.IsFalse(overlay.IsVisible);
+                Assert.IsFalse(Find<Button>(window, "ManagedAiCancel").IsVisible);
+                await window.OpenSkillMarketplaceAsync();
+                Assert.HasCount(1, window.OwnedWindows);
+                var model = (SkillMarketplaceWindowViewModel)child.DataContext!;
+                await Until(() => model.InstalledSkills.Count == 1 && !model.LocalBusy && !model.CatalogBusy);
+                Assert.Contains(culture == "ko-KR" ? "계속 관리" : "continue managing", model.CatalogNotice);
+                model.SelectedInstalledSkill = model.InstalledSkills.Single();
+                await model.ToggleSkillCommand.ExecuteAsync(null);
+                Assert.IsFalse(fixture.Skills.Items.Single().Enabled);
+                child.Close();
+                await Until(() => Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!
+                    .Contains(culture == "ko-KR" ? "활성 스킬 0개" : "0 enabled skills"));
                 await Ready(window);
-                Find<Button>(window, "ManagedAiSkillToggle_fixture-skill").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                await Until(() => !fixture.Skills.Items.Single().Enabled &&
-                    Equals(Find<Button>(window, "ManagedAiSkillToggle_fixture-skill").Content, "사용 안 함") &&
-                    Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!.Contains("활성 스킬 0개"));
-                Assert.IsTrue(overlay.IsVisible);
-                Assert.AreEqual("사용 안 함", Find<Button>(window, "ManagedAiSkillToggle_fixture-skill").Content);
-                Assert.Contains("사용하지 않도록", Find<TextBlock>(window, "ManagedAiSkillStatus").Text!);
-                Assert.Contains("활성 스킬 0개", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
-                Find<Button>(window, "ManagedAiSkillRemove_fixture-skill").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                await Until(() => fixture.Skills.Items.Count == 0 &&
-                    Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!.Contains("보유 0개"));
-                Assert.IsTrue(overlay.IsVisible);
-                Assert.AreEqual(1, fixture.Messages.Questions);
-                Assert.Contains("보유 0개", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
+                Assert.IsTrue(window.IsVisible);
+                Assert.IsFalse(overlay.IsVisible);
+                Assert.AreEqual(initialCalls + 2, fixture.Skills.Calls);
+                Assert.AreEqual(0, fixture.Messages.Questions);
             }
-            finally { window.Close(); }
+            finally { child?.Close(); window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
+    public async Task ClosingMarketplaceDuringMutationWaitsForLeaseReleaseBeforeRefreshingChat()
+    {
+        await HeadlessTestSession.Shared.Dispatch<bool>(async () =>
+        {
+            var fixture = new Fixture();
+            fixture.Skills.Items = [new("fixture-skill", "Skill", "Instructions.", "C:\\fixture", true)];
+            var window = fixture.Create();
+            SkillMarketplaceWindow? child = null;
+            try
+            {
+                window.Show(); await Ready(window);
+                var open = window.OpenSkillMarketplaceAsync();
+                await Until(() => window.OwnedWindows.OfType<SkillMarketplaceWindow>().Any());
+                child = window.OwnedWindows.OfType<SkillMarketplaceWindow>().Single();
+                var model = (SkillMarketplaceWindowViewModel)child.DataContext!;
+                await Until(() => model.InstalledSkills.Count == 1 && !model.LocalBusy);
+                fixture.Skills.ToggleCleanup = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                model.SelectedInstalledSkill = model.InstalledSkills.Single();
+                var toggle = model.ToggleSkillCommand.ExecuteAsync(null);
+                await Until(() => fixture.Skills.LeaseHeld);
+                var beforeClose = fixture.Skills.Calls;
+                child.Close();
+                await Until(() => Find<Button>(window, "ManagedAiCancel").IsVisible);
+                Assert.IsTrue(fixture.Skills.LeaseHeld);
+                Assert.AreEqual(beforeClose, fixture.Skills.Calls);
+                fixture.Skills.ToggleCleanup.SetResult();
+                await toggle;
+                await open;
+                Assert.AreEqual(0, fixture.Skills.BusyReads);
+                Assert.AreEqual(beforeClose + 1, fixture.Skills.Calls);
+                Assert.Contains("활성 스킬 0개", Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!);
+            }
+            finally { fixture.Skills.ToggleCleanup?.TrySetResult(); child?.Close(); window.Close(); }
             return true;
         }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
     }
@@ -1104,6 +1157,7 @@ public sealed class ManagedAiWindowTests
         public Authentication Auth = new();
         public Models Models = new();
         public Skills Skills = new();
+        public Marketplace Marketplace = new();
         public Chat Chat = new();
         public Certificates Certificates = new();
         public Sandbox Sandbox = new();
@@ -1113,7 +1167,7 @@ public sealed class ManagedAiWindowTests
         public ManagedAiWindow Create(CultureInfo? culture = null)
         {
             CultureInfo.CurrentUICulture = culture ?? CultureInfo.GetCultureInfo("ko-KR");
-            return new(Session = new(Chat, new Browser()), Runtime, Auth, Messages, Models, Skills, Preferences, Certificates, Sandbox);
+            return new(Session = new(Chat, new Browser()), Runtime, Auth, Messages, Models, Skills, Preferences, Certificates, Sandbox, Marketplace);
         }
     }
     private sealed class AiWindowProvider(ManagedAiWindow window) : IServiceProvider
@@ -1205,20 +1259,40 @@ public sealed class ManagedAiWindowTests
         public IReadOnlyList<AiSkill> Items = [];
         public bool? ListCalledOnUiThread;
         public int Calls;
+        public TaskCompletionSource? ToggleCleanup;
+        public bool LeaseHeld;
+        public int BusyReads;
         public Task<IReadOnlyList<AiSkill>> ListAsync(CancellationToken token)
-        { ListCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); Calls++; return Task.FromResult(Items); }
+        {
+            ListCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); Calls++;
+            if (LeaseHeld) { BusyReads++; throw new ManagedAiException(AiFailureCode.RuntimeBusy); }
+            return Task.FromResult(Items);
+        }
         public Task<IReadOnlyList<AiSkill>> ImportAsync(string sourceDirectory, CancellationToken token)
             => throw new AssertFailedException("Unexpected skill import");
-        public Task<IReadOnlyList<AiSkill>> SetEnabledAsync(string id, bool enabled, CancellationToken token)
+        public async Task<IReadOnlyList<AiSkill>> SetEnabledAsync(string id, bool enabled, CancellationToken token)
         {
             Items = Items.Select(x => x.Id == id ? x with { Enabled = enabled } : x).ToArray();
-            return Task.FromResult(Items);
+            if (ToggleCleanup is not null)
+            {
+                LeaseHeld = true;
+                try { await Task.Delay(Timeout.Infinite, token); }
+                finally { await ToggleCleanup.Task; LeaseHeld = false; }
+            }
+            return Items;
         }
         public Task<IReadOnlyList<AiSkill>> RemoveAsync(string id, CancellationToken token)
         {
             Items = Items.Where(x => x.Id != id).ToArray();
             return Task.FromResult(Items);
         }
+    }
+    private sealed class Marketplace : IManagedAiSkillMarketplace
+    {
+        public Task<IReadOnlyList<SkillCatalogEntry>> ListAsync(CancellationToken token)
+            => throw new ManagedAiException(AiFailureCode.CatalogUnavailable);
+        public Task<IReadOnlyList<AiSkill>> InstallAsync(string id, CancellationToken token)
+            => throw new AssertFailedException("Unexpected remote skill install");
     }
     private sealed class Chat : IManagedAiChatProvider
     {

@@ -163,46 +163,17 @@
             </TabItem>
 
             <TabItem Header="{x:Static ai:ManagedAiText.SkillsTabTitle}">
-                <Grid Margin="12" RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="8">
-                    <TextBlock Grid.Row="0" TextWrapping="Wrap" Foreground="{DynamicResource ControlSecondaryForeground}"
-                               Text="{x:Static ai:ManagedAiText.SkillsTabDescription}" />
-                    <TextBlock Grid.Row="1" x:Name="AiSkillSummary" Text="{Binding SkillSummary}" FontWeight="SemiBold" />
-                    <ListBox Grid.Row="2" x:Name="AiSkillList" ItemsSource="{Binding AiSkills}" SelectedItem="{Binding SelectedAiSkill}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate x:DataType="vm:SkillSettingsItem">
-                                <StackPanel Margin="4" Spacing="3">
-                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Grid.Column="1" Text="{Binding StateLabel}" />
-                                    </Grid>
-                                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontSize="11"
-                                               Foreground="{DynamicResource ControlSecondaryForeground}" />
-                                    <TextBlock Text="{Binding Directory}" TextTrimming="CharacterEllipsis" FontSize="11"
-                                               Foreground="{DynamicResource ControlSecondaryForeground}" ToolTip.Tip="{Binding Directory}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                    <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="6" IsEnabled="{Binding !SkillOperationBusy}">
-                        <Button x:Name="AiSkillAdd" Content="{x:Static ai:ManagedAiText.SkillsAdd}" Command="{Binding AddAiSkillCommand}" Padding="10 5" />
-                        <Button x:Name="AiSkillToggle" Content="{Binding SkillToggleLabel}" Command="{Binding ToggleAiSkillCommand}"
-                                IsEnabled="{Binding CanToggleAiSkill}" Padding="10 5" />
-                        <Button x:Name="AiSkillRemove" Content="{x:Static ai:ManagedAiText.SkillsRemove}" Command="{Binding RemoveAiSkillCommand}"
-                                IsEnabled="{Binding SelectedAiSkill, Converter={StaticResource NullToBooleanConverter}}" Padding="10 5" />
-                    </StackPanel>
-                    <StackPanel Grid.Row="4" Spacing="6">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="12" Spacing="12">
+                        <TextBlock x:Name="AiSkillsGuide" TextWrapping="Wrap"
+                                   Text="{x:Static ai:ManagedAiText.SkillsTabDescription}" />
+                        <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}"
+                                   Text="{x:Static ai:ManagedAiText.SkillsTabScope}" />
                         <Button x:Name="AiSkillMarketplace" Content="{x:Static ai:ManagedAiText.SkillsMarketplace}"
-                                Click="OpenSkillMarketplace_Click" IsEnabled="{Binding CanOpenSkillMarketplace}" Padding="10 5" />
-                        <StackPanel Orientation="Horizontal" Spacing="6" IsEnabled="{Binding !SkillOperationBusy}">
-                            <Button x:Name="AiSkillRefresh" Content="{x:Static ai:ManagedAiText.SkillsRefresh}" Command="{Binding RefreshSkillListCommand}" Padding="10 5" />
-                            <Button x:Name="AiSkillFolder" Content="{x:Static ai:ManagedAiText.SkillsOpenFolder}" Command="{Binding OpenAiSkillFolderCommand}" Padding="10 5" />
-                        </StackPanel>
-                        <TextBlock x:Name="AiSkillNotice" Text="{Binding SkillNotice}" TextWrapping="Wrap" FontSize="11"
-                                   Foreground="{DynamicResource ControlSecondaryForeground}" />
+                                Click="OpenSkillMarketplace_Click" IsEnabled="{Binding CanOpenSkillMarketplace}" Padding="12 6" />
                     </StackPanel>
-                </Grid>
+                </ScrollViewer>
             </TabItem>
-
             <!-- 미리 보기 업데이트 채널 -->
             <TabItem Header="{x:Static res:UIStringResources.Options_Section_Preview}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">

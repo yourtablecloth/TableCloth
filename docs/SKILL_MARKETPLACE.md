@@ -10,6 +10,8 @@ This guide explains the window, catalog contract, installation policy, local sto
 
 Open **Options > AI skills > Open skill marketplace**. The marketplace provides separate catalog and installed-skill views. Search narrows the lists, and the catalog also supports a category filter. Selecting a candidate shows its source, author, license, review state, and adoption notes.
 
+The Options tab contains a short guide and the marketplace entry. In the AI window, **OpenAI account / settings > Dedicated skills > Manage installed AI skills** opens the installed-skill view directly. Closing that dialog refreshes the AI window's enabled-skill count and skill availability.
+
 Catalog loading and local management use separate operation states. A failed catalog request leaves installed-skill management available. The [window](../src/TableCloth.App/Dialogs/SkillMarketplaceWindow.axaml) and [view model](../src/TableCloth.App/ViewModels/SkillMarketplaceWindowViewModel.cs) own this behavior.
 
 ## A separate versioned XML catalog

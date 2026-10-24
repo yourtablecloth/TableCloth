@@ -8,13 +8,17 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.Dialogs;
 
+public enum SkillMarketplaceTab { Catalog, Installed }
+
 public partial class SkillMarketplaceWindow : Window
 {
     public SkillMarketplaceWindow() => InitializeComponent();
 
-    public SkillMarketplaceWindow(SkillMarketplaceWindowViewModel viewModel) : this()
+    public SkillMarketplaceWindow(SkillMarketplaceWindowViewModel viewModel,
+        SkillMarketplaceTab initialTab = SkillMarketplaceTab.Catalog) : this()
     {
         DataContext = viewModel;
+        this.FindControl<TabControl>("MarketplaceTabs")!.SelectedIndex = initialTab == SkillMarketplaceTab.Installed ? 1 : 0;
         viewModel.PickFolderAsync = PickFolderAsync;
         Opened += OnOpened;
         Closed += OnClosed;

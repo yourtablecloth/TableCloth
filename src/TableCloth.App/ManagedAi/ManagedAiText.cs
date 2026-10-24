@@ -11,9 +11,11 @@ public static class ManagedAiText
     public static string SkillsTabTitle => Select("AI 스킬", "AI skills");
     public static string ProductTitle => Select("식탁보 AI (베타)", "TableCloth AI (Beta)");
     public static string SkillsTabDescription => Select(
-        "식탁보 AI 전용 Codex 스킬을 관리합니다. 마켓플레이스에서 원격 후보와 설치된 스킬을 살펴볼 수 있습니다. 활성 스킬은 다음 대화에서 사용하며 런타임을 재설치해도 스킬 폴더는 유지됩니다.",
-        "Manage Codex skills dedicated to TableCloth AI. Open the marketplace to browse remote candidates and installed skills. Enabled skills are available in the next chat. Reinstalling the runtime keeps the skill folder.");
-    public static string SkillsAdd => Select("스킬 추가", "Add skill");
+        "원격 스킬 탐색과 설치된 AI 스킬 관리는 스킬 마켓플레이스에서 진행합니다. 활성화한 스킬은 다음 대화부터 사용할 수 있습니다.",
+        "Browse remote skills and manage installed AI skills in the skill marketplace. Enabled skills are available in the next chat.");
+    public static string SkillsTabScope => Select(
+        "식탁보 AI 전용 Codex 폴더의 스킬을 관리합니다. 런타임을 재설치해도 스킬 폴더는 유지됩니다.",
+        "The marketplace manages the dedicated TableCloth AI Codex skill folder. Reinstalling the runtime keeps the skill folder.");
     public static string SkillsRemove => Select("스킬 제거", "Remove skill");
     public static string SkillsRefresh => Select("목록 새로 고침", "Refresh list");
     public static string SkillsOpenFolder => Select("전용 폴더 열기", "Open dedicated folder");

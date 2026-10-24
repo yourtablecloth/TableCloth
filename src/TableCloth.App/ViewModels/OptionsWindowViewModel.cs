@@ -147,8 +147,6 @@ public partial class OptionsWindowViewModel : ObservableObject
         }
 
         PropertyChanged += ViewModel_PropertyChanged;
-        _optionsLoaded = true;
-        if (InitialTabIndex == ResolveTabIndex(OptionsTabKeys.AiSkills) && !SkillsLoaded) await RefreshSkillsAsync();
     }
 
     [RelayCommand]
@@ -537,12 +535,6 @@ public partial class OptionsWindowViewModel : ObservableObject
         if (e.PropertyName is nameof(CompatibilityOptionSearchText)
             or nameof(HasNoCompatibilityMatches)
             or nameof(InitialTabIndex)
-            or nameof(SelectedAiSkill)
-            or nameof(SkillOperationBusy)
-            or nameof(SkillSummary)
-            or nameof(SkillNotice)
-            or nameof(SkillToggleLabel)
-            or nameof(CanToggleAiSkill)
             or nameof(CanOpenSkillMarketplace))
         {
             return;

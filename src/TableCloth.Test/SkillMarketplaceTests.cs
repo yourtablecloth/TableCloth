@@ -34,13 +34,6 @@ public sealed class SkillMarketplaceTests
         Assert.IsTrue(model.OpenSelectedFolderCommand.CanExecute(null));
         Assert.IsTrue(model.RemoveSkillCommand.CanExecute(null));
 
-        var options = new OptionsWindowViewModel(null!, null!, new Messages(), null!, new TaskFactory(), manager);
-        await options.RefreshSkillListCommand.ExecuteAsync(null);
-        options.SelectedAiSkill = options.AiSkills.Single();
-        Assert.IsFalse(options.CanToggleAiSkill);
-        await options.ToggleAiSkillCommand.ExecuteAsync(null);
-        Assert.IsFalse(manager.Items.Single().Enabled);
-
         await model.RemoveSkillCommand.ExecuteAsync(null);
         Assert.IsEmpty(manager.Items);
     }

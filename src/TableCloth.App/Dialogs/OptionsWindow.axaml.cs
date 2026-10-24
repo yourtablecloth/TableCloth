@@ -37,7 +37,6 @@ public partial class OptionsWindow : Window
         var window = new SkillMarketplaceWindow(marketplace);
         WindowChrome.RemoveMinimizeBox(window);
         await window.ShowDialog(this);
-        await viewModel.RefreshSkillListCommand.ExecuteAsync(null);
     }
 
     private void CloseButton_Click(object? sender, RoutedEventArgs e) => Close();

@@ -59,6 +59,9 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     private IReadOnlyList<AiSkill> _installed = [];
     private IReadOnlyList<SkillCatalogEntry> _catalog = [];
     private bool _disposed;
+    private TaskCompletionSource? _localCompletion;
+
+    internal Task WaitForLocalOperationAsync() => _localCompletion?.Task ?? Task.CompletedTask;
 
     public SkillMarketplaceWindowViewModel(IManagedAiSkillManager manager, IManagedAiSkillMarketplace marketplace, IAppMessageBox messages)
     {
@@ -213,6 +216,8 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     private async Task RunLocalAsync(Func<Task<IReadOnlyList<AiSkill>>> action, string success)
     {
         if (!CanUseLocal()) return;
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _localCompletion = completion;
         LocalBusy = true;
         LocalNotice = ManagedAiText.Select("전용 스킬을 확인하고 있습니다.", "Checking dedicated skills.");
         try
@@ -235,7 +240,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
             };
         }
         catch { LocalNotice = ManagedAiText.Select("스킬 작업을 완료하지 못했습니다. 잠시 후 다시 시도할 수 있습니다.", "Could not complete the skill operation. Try again shortly."); }
-        finally { LocalBusy = false; }
+        finally { LocalBusy = false; completion.TrySetResult(); }
     }
 
     private void ApplyCatalogFilter()
