@@ -388,7 +388,7 @@ public sealed partial class SkillMarketplaceTests
                 await Task.Yield();
                 Dispatcher.UIThread.RunJobs();
                 Assert.AreEqual(cultureName == "ko-KR" ? "스킬 마켓플레이스" : "Skill marketplace", window.Title);
-                Assert.AreEqual(2, window.FindControl<TabControl>("MarketplaceTabs")!.Items.Count);
+                Assert.AreEqual(3, window.FindControl<TabControl>("MarketplaceTabs")!.Items.Count);
                 Assert.IsTrue(window.FindControl<Button>("CatalogInstall")!.IsEffectivelyEnabled);
                 Assert.IsTrue(window.FindControl<Button>("CatalogOpenSource")!.IsEffectivelyEnabled);
                 Assert.IsNull(window.FindControl<Control>("CatalogInstallReason"));

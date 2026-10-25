@@ -37,6 +37,7 @@ public sealed class ManagedAiWindow : Window
     private readonly IManagedAiModelCatalog _modelCatalog;
     private readonly IManagedAiSkillManager _skills;
     private readonly IManagedAiSkillMarketplace? _skillMarketplace;
+    private readonly IManagedAiScriptRuntimeManager? _scriptRuntimes;
     private readonly Button _openSkillMarketplace;
     private readonly Button _browseSkills = new()
     {
@@ -110,10 +111,11 @@ public sealed class ManagedAiWindow : Window
         IProviderAuthentication authentication, IAppMessageBox messages, IManagedAiModelCatalog modelCatalog,
         IManagedAiSkillManager skills, IPreferencesManager preferences,
         IManagedAiCertificateBridge? certificateBridge = null, IManagedAiSandboxBridge? sandboxBridge = null,
-        IManagedAiSkillMarketplace? skillMarketplace = null)
+        IManagedAiSkillMarketplace? skillMarketplace = null, IManagedAiScriptRuntimeManager? scriptRuntimes = null)
     {
         _session = session; _runtimes = runtimes; _authentication = authentication; _messages = messages; _modelCatalog = modelCatalog;
         _skills = skills; _preferences = preferences; _skillMarketplace = skillMarketplace;
+        _scriptRuntimes = scriptRuntimes;
         _certificateBridge = certificateBridge ?? new ManagedAiCertificateBridge(new JsonlProcessRunner());
         _sandboxBridge = sandboxBridge ?? new ManagedAiSandboxBridge(new SandboxCliProcessRunner());
         _clientContext = new(typeof(ManagedAiWindow).Assembly.GetName().Version,
@@ -348,7 +350,7 @@ public sealed class ManagedAiWindow : Window
     {
         if (_skillMarketplace is null || _operation is not null || _skillMarketplaceWindow is not null) return;
         CloseSettings();
-        using var viewModel = new SkillMarketplaceWindowViewModel(_skills, _skillMarketplace, _messages);
+        using var viewModel = new SkillMarketplaceWindowViewModel(_skills, _skillMarketplace, _messages, _scriptRuntimes);
         var window = new SkillMarketplaceWindow(viewModel, initialTab);
         _skillMarketplaceWindow = window;
         WindowChrome.RemoveMinimizeBox(window);

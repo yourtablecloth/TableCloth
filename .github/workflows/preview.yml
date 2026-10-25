@@ -136,6 +136,7 @@ jobs:
         $prefix = "TableCloth-Preview_${{ steps.ver.outputs.FULL }}_Release_${{ env.Platform }}"
         Move-Item -LiteralPath "releases\TableCloth-preview-${{ env.Platform }}-Setup.exe" -Destination "releases\$prefix.exe"
         Move-Item -LiteralPath "releases\TableCloth-preview-${{ env.Platform }}-Portable.zip" -Destination "releases\${prefix}_Portable.zip"
+        ./tools/Sync-ReleaseAssetIndex.ps1 -AssetDirectory releases -Channel "preview-${{ env.Platform }}" -InstallerName "$prefix.exe" -PortableName "${prefix}_Portable.zip"
         Write-Host "Renamed -> $prefix.exe / ${prefix}_Portable.zip"
       shell: pwsh
 
@@ -165,6 +166,7 @@ jobs:
         $prefix = "Spork-Preview_${{ steps.ver.outputs.FULL }}_Release_${{ env.Platform }}"
         Move-Item -LiteralPath "releases\Spork-spork-preview-${{ env.Platform }}-Setup.exe" -Destination "releases\$prefix.exe"
         Move-Item -LiteralPath "releases\Spork-spork-preview-${{ env.Platform }}-Portable.zip" -Destination "releases\${prefix}_Portable.zip"
+        ./tools/Sync-ReleaseAssetIndex.ps1 -AssetDirectory releases -Channel "spork-preview-${{ env.Platform }}" -InstallerName "$prefix.exe" -PortableName "${prefix}_Portable.zip"
         Write-Host "Renamed -> $prefix.exe / ${prefix}_Portable.zip"
       shell: pwsh
 

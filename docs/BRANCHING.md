@@ -95,7 +95,7 @@ GitHub의 [보호된 브랜치](https://docs.github.com/repositories/configuring
 - 병합 전 최신 대상 브랜치 반영
 - 강제 Push와 태그 이동 차단
 
-현재 릴리스 워크플로는 태그와 `Directory.Build.Props`의 버전 일치 여부를 확인하지만 태그의 브랜치 소속까지 강제하지 않습니다. 자동 검증을 추가하기 전까지 릴리스 담당자와 저장소 스킬이 다음 조건을 검사합니다.
+현재 릴리스 워크플로는 태그와 `Directory.Build.Props`의 버전 일치 여부를 확인합니다. Preview 워크플로는 태그 형식과 태그 커밋의 `origin/develop` 포함 여부도 검사합니다. Retail 태그와 `origin/main` HEAD의 일치는 릴리스 담당자와 저장소 스킬이 별도로 확인합니다. 릴리스 전에는 다음 조건을 대조합니다.
 
 - Retail 태그 커밋과 `origin/main` HEAD의 일치
 - Preview 태그 커밋의 `origin/develop` 포함 여부

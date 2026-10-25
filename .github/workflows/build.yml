@@ -215,6 +215,7 @@ jobs:
           throw "Expected Velopack Portable not found: $portableSrc"
         }
         Move-Item -LiteralPath $portableSrc -Destination $portableDst
+        ./tools/Sync-ReleaseAssetIndex.ps1 -AssetDirectory releases -Channel "${{ env.Platform }}" -InstallerName "$prefix.exe" -PortableName "${prefix}_Portable.zip"
         Write-Host "Renamed: $portableDst"
       shell: pwsh
 
@@ -268,6 +269,7 @@ jobs:
         $portableDst = "releases\${prefix}_Portable.zip"
         if (-not (Test-Path $portableSrc)) { throw "Expected Spork Portable not found: $portableSrc" }
         Move-Item -LiteralPath $portableSrc -Destination $portableDst
+        ./tools/Sync-ReleaseAssetIndex.ps1 -AssetDirectory releases -Channel "spork-${{ env.Platform }}" -InstallerName "$prefix.exe" -PortableName "${prefix}_Portable.zip"
         Write-Host "Renamed: $portableDst"
       shell: pwsh
 

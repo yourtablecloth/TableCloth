@@ -27,6 +27,7 @@
   <Folder Name="/Managed AI Preview/">
     <Project Path="src/TableCloth.Cli/TableCloth.Cli.csproj" />
     <Project Path="src/TableCloth.ManagedAi.Core/TableCloth.ManagedAi.Core.csproj" />
+    <Project Path="src/TableCloth.ManagedAi.AppContainer/TableCloth.ManagedAi.AppContainer.csproj" />
     <Project Path="src/TableCloth.ManagedAi.OpenAi/TableCloth.ManagedAi.OpenAi.csproj" />
     <Project Path="src/TableCloth.ManagedAi.Windows/TableCloth.ManagedAi.Windows.csproj" />
     <Project Path="src/TableCloth.ManagedAi.Poc/TableCloth.ManagedAi.Poc.csproj" />

@@ -63,11 +63,12 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     internal Task WaitForLocalOperationAsync() => _localCompletion?.Task ?? Task.CompletedTask;
 
     public SkillMarketplaceWindowViewModel(IManagedAiSkillManager manager, IManagedAiSkillMarketplace marketplace,
-        IAppMessageBox messages)
+        IAppMessageBox messages, IManagedAiScriptRuntimeManager? scriptRuntimes = null)
     {
         _manager = manager;
         _marketplace = marketplace;
         _messages = messages;
+        _scriptRuntimes = scriptRuntimes;
         _token = _lifetime.Token;
         Categories.Add(new("", ManagedAiText.Select("모든 분야", "All categories")));
         _selectedCategory = Categories[0];
@@ -130,6 +131,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         RemoveSkillCommand.NotifyCanExecuteChanged();
         OpenSelectedFolderCommand.NotifyCanExecuteChanged();
         OpenRootFolderCommand.NotifyCanExecuteChanged();
+        InstallSkillRuntimesCommand.NotifyCanExecuteChanged();
         InstallSkillCommand.NotifyCanExecuteChanged();
         UpdateCatalogSkillCommand.NotifyCanExecuteChanged();
         UpdateInstalledSkillCommand.NotifyCanExecuteChanged();
@@ -145,7 +147,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     private bool CanOpenSource() => !_disposed && SelectedCatalogSkill is { } item && CatalogSkills.Contains(item) && TryGetSourceUri(item.Entry, out _);
     private bool CanOpenLicenseSource() => !_disposed && SelectedCatalogSkill is { } item && CatalogSkills.Contains(item) && TryGetLicenseUri(item.Entry, out _);
 
-    public Task LoadAsync() => Task.WhenAll(RefreshInstalled(), RefreshCatalog());
+    public Task LoadAsync() => Task.WhenAll(RefreshInstalled(), RefreshCatalog(), RefreshSkillRuntimeStatus());
 
     [RelayCommand(CanExecute = nameof(CanRefreshCatalog))]
     private async Task RefreshCatalog()
@@ -428,5 +430,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         RefreshCatalogCommand.NotifyCanExecuteChanged();
         OpenSourceCommand.NotifyCanExecuteChanged();
         OpenLicenseSourceCommand.NotifyCanExecuteChanged();
+        InstallSkillRuntimesCommand.NotifyCanExecuteChanged();
+        RefreshSkillRuntimeStatusCommand.NotifyCanExecuteChanged();
     }
 }

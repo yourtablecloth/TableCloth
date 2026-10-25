@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 
 namespace TableCloth.ManagedAi.OpenAi;
 
@@ -39,7 +40,8 @@ public static class OpenAiCodexInvocationBuilder
             MaxStderrBytes = options.MaxStderrBytes, MaxLineBytes = options.MaxLineBytes };
     }
 
-    public static ProcessRunSpec Chat(ManagedRuntime runtime, string runDirectory, string prompt, ManagedAiOptions options, string? model = null)
+    public static ProcessRunSpec Chat(ManagedRuntime runtime, string runDirectory, string prompt, ManagedAiOptions options, string? model = null,
+        AiSkillExecutionBridge? skillExecution = null)
     {
         var spec = Command(runtime, runDirectory,
             ["--profile", ManagedAiPaths.SkillProfileName, "--search", "--ask-for-approval", "never", "--strict-config", "exec", "--json",
@@ -52,7 +54,34 @@ public static class OpenAiCodexInvocationBuilder
             spec.StartInfo.ArgumentList.Insert(0, model);
             spec.StartInfo.ArgumentList.Insert(0, "--model");
         }
+        if (skillExecution is not null)
+        {
+            if (skillExecution.SkillIds.Count != 1 || skillExecution.SkillIds[0] != "tablecloth-calculators" ||
+                !Path.IsPathFullyQualified(skillExecution.Command) || !Path.IsPathFullyQualified(skillExecution.WorkingDirectory) ||
+                skillExecution.Arguments.Count != 2 || skillExecution.Arguments[0] != "--skill-mcp" ||
+                !Path.IsPathFullyQualified(skillExecution.Arguments[1])) throw new ManagedAiException(AiFailureCode.BlockedByPolicy);
+            static string Quoted(string value) => JsonSerializer.Serialize(value, InvocationJsonContext.Default.String);
+            var registration = "mcp_servers.tablecloth_skills={command=" + Quoted(skillExecution.Command) +
+                ",args=[" + string.Join(",", skillExecution.Arguments.Select(Quoted)) + "],cwd=" + Quoted(skillExecution.WorkingDirectory) +
+                ",required=true,startup_timeout_sec=30,tool_timeout_sec=60,enabled_tools=[\"tablecloth-calculators\"]," +
+                "default_tools_approval_mode=\"prompt\",tools={\"tablecloth-calculators\"={approval_mode=\"approve\"}}}";
+            spec.StartInfo.ArgumentList.Insert(0, registration);
+            spec.StartInfo.ArgumentList.Insert(0, "-c");
+            prompt = """
+                TRUSTED APPLICATION TOOL CAPABILITY:
+                TableCloth has enabled the tablecloth_skills/tablecloth-calculators MCP tool for this session.
+                For every supported financial or everyday calculation, call this registered tool and base your answer on its successful result.
+                This approved MCP call is permitted; arbitrary shell commands and other script execution remain prohibited.
+                The tool invokes the reviewed installed calculator script inside a native Windows AppContainer with network disabled.
+                If the skill instructions describe launching Python, use this MCP tool instead. Never launch an interpreter yourself.
+                Never say you used a skill or executed a script without a successful tool result. If the tool fails or cannot support the calculation, explain the limitation without claiming a verified calculation.
+
+                """ + "\n" + prompt;
+        }
         return spec with { Input = prompt, MaxStdoutBytes = options.MaxStdoutBytes,
             MaxStderrBytes = options.MaxStderrBytes, MaxLineBytes = options.MaxLineBytes };
     }
 }
+
+[System.Text.Json.Serialization.JsonSerializable(typeof(string))]
+internal partial class InvocationJsonContext : System.Text.Json.Serialization.JsonSerializerContext;
