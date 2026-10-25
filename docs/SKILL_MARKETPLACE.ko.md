@@ -22,7 +22,9 @@
 
 `SkillCatalog Version="1"` 아래에 고정 ID를 가진 `Skill` 항목을 기록합니다. 각 항목은 GitHub 저장소, 경로, `Source.Ref`에 고정한 원본 커밋을 지정합니다. 설명, 저자, SPDX 식별자, 라이선스 근거, 런타임과 네트워크 요구 사항, 설치 방식, 사용 조건도 기록합니다. `Skill` 블록을 주석 처리하거나 삭제하면 원격 목록에서 제외합니다. 기존 설치본은 계속 관리할 수 있습니다. [공용 모델](../src/TableCloth.ManagedAi.Core/SkillCatalog.cs)에 애플리케이션이 읽는 필드를 정의했습니다.
 
-카탈로그에는 `official-report-skillset`, `bok-ecos-stats`, `kosis-stats`, `korean-law-mcp`, `korean-jangbu-for`와 선택 설치하는 [tablecloth-certificate-expiry](https://github.com/yourtablecloth/tablecloth-certificate-expiry), [tablecloth-windows-sandbox](https://github.com/yourtablecloth/tablecloth-windows-sandbox) 일곱 스킬을 표시합니다. 다른 후보는 XML 주석으로 보존합니다. 식탁보 전용 두 스킬은 별도 저장소에서 배포하며 API 키를 요구하지 않습니다. 설치하고 활성화하면 식탁보의 호스트 브리지가 제공한 로컬 보고서를 해석합니다. 한국은행의 sample 키 조회는 요청당 최대 10행으로 제한합니다. KOSIS와 법령 검색의 사용자 키 없는 경로는 외부 공유 서버에 의존하며 장부 기능은 별도 MCP와 하위 스킬 구성을 요구합니다. API 키 설정과 DPAPI 자격 증명 관리는 [다음 버전 이슈 #321](https://github.com/yourtablecloth/TableCloth/issues/321)에서 추적합니다.
+카탈로그에는 `official-report-skillset`, `bok-ecos-stats`, `kosis-stats`, `korean-law-mcp`, `korean-jangbu-for`와 선택 설치하는 [tablecloth-certificate-expiry](https://github.com/yourtablecloth/tablecloth-certificate-expiry), [tablecloth-windows-sandbox](https://github.com/yourtablecloth/tablecloth-windows-sandbox), [tablecloth-calculators](https://github.com/yourtablecloth/tablecloth-calculators) 여덟 스킬을 표시합니다. 다른 후보는 XML 주석으로 보존합니다. 인증서 만료와 Windows Sandbox 스킬은 API 키 없이 식탁보의 호스트 브리지가 제공한 로컬 보고서를 해석합니다. 한국은행의 sample 키 조회는 요청당 최대 10행으로 제한합니다. KOSIS와 법령 검색의 사용자 키 없는 경로는 외부 공유 서버에 의존하며 장부 기능은 별도 MCP와 하위 스킬 구성을 요구합니다. API 키 설정과 DPAPI 자격 증명 관리는 [다음 버전 이슈 #321](https://github.com/yourtablecloth/TableCloth/issues/321)에서 추적합니다.
+
+계산기 스킬은 Python 3.11 이상과 표준 라이브러리로 22개 연산을 제공하며 사용자 입력값만 사용합니다. API 키, 외부 데이터 조회나 추가 패키지를 요구하지 않으며 원본 저장소에 [저작권과 기여 기준](https://github.com/yourtablecloth/tablecloth-calculators/blob/main/docs/COPYRIGHT.ko.md)을 명시합니다. 실행하려면 설치한 Python 스크립트를 허용하는 호스트가 필요합니다. 현재 식탁보 프로필은 셸 도구를 비활성화하므로 런타임과 스킬을 설치해도 스크립트 실행 권한을 추가하지 않습니다. `Network="none"`은 스크립트의 조건이며 Codex 대화는 기존 온라인 연결을 사용합니다.
 
 ## 카탈로그 버전에 맞춘 설치와 업데이트
 
