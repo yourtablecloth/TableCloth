@@ -118,6 +118,8 @@ public sealed class SkillRuntimeManager : IManagedAiSkillRuntimeManager
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         { throw new ManagedAiException(AiFailureCode.ProviderTimeout); }
+        catch (PathTooLongException)
+        { throw new ManagedAiException(AiFailureCode.PathLengthUnsupported); }
         catch (Exception ex) when (ex is HttpRequestException or IOException)
         { throw new ManagedAiException(AiFailureCode.OfficialMetadataUnavailable); }
         finally

@@ -24,7 +24,8 @@ public enum AiFailureCode
     InvalidQuery, LiveSearchNotObserved, BrowserOpenFailed, NoPreviousVersion,
     SubscriptionUnavailable, ProviderNetworkUnavailable, ProviderConfigurationInvalid,
     ProviderRequestRejected, LoginFlowUnavailable, CatalogUnavailable, ModelListUnavailable, InvalidModel,
-    SkillInvalid, SkillAlreadyInstalled, SkillIsolationFailed, CertificateScanUnavailable
+    SkillInvalid, SkillAlreadyInstalled, SkillIsolationFailed, CertificateScanUnavailable,
+    PathLengthUnsupported
 }
 
 // Only fixed codes cross the diagnostics/UI boundary. Never attach provider output or inner exceptions.

@@ -377,7 +377,9 @@ public sealed partial class SkillMarketplaceTests
             using var culture = new UiCultureScope(cultureName);
             Application.Current!.RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light;
             var manager = new SkillManager { Items = [TrackedSkill()] };
-            using var model = new SkillMarketplaceWindowViewModel(manager, new Marketplace(manager), new Messages(), new SkillRuntimeManager { Active = RuntimeEnvironment("24.1.0", "3.13.1") });
+            using var model = new SkillMarketplaceWindowViewModel(manager, new Marketplace(manager), new Messages(),
+                new SkillRuntimeManager { Active = RuntimeEnvironment("24.1.0", "3.13.1") },
+                new SkillRuntimeDiagnostics { Result = new(WindowsLongPathPolicy.Disabled, LongPathSupport.Supported, LongPathSupport.Supported, LongPathSupport.Supported) });
             await model.LoadAsync();
             model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "available");
             model.SelectedInstalledSkill = model.InstalledSkills.Single();
@@ -416,6 +418,16 @@ public sealed partial class SkillMarketplaceTests
                 Assert.AreEqual("3.13.1", window.FindControl<TextBlock>("PythonRuntimeVersion")!.Text);
                 Assert.IsTrue(window.FindControl<Button>("SkillRuntimeInstall")!.IsEffectivelyEnabled);
                 Assert.IsTrue(window.FindControl<Button>("SkillRuntimeRefresh")!.IsEffectivelyEnabled);
+                Assert.AreEqual(cultureName == "ko-KR" ? "사용 안 함" : "Disabled", window.FindControl<TextBlock>("WindowsLongPathStatus")!.Text);
+                Assert.IsTrue(model.HasSkillRuntimeLimits);
+                Assert.IsFalse(model.HasSkillRuntimeUnknown);
+                var limits = window.FindControl<TextBlock>("SkillRuntimeLimits")!;
+                var limitsPosition = limits.TranslatePoint(new Point(0, 0), window);
+                var actionsPosition = window.FindControl<Button>("SkillRuntimeInstall")!.TranslatePoint(new Point(0, 0), window);
+                Assert.IsNotNull(limitsPosition);
+                Assert.IsNotNull(actionsPosition);
+                Assert.IsLessThanOrEqualTo(actionsPosition.Value.Y, limitsPosition.Value.Y + limits.Bounds.Height,
+                    "The nonblocking limit notice is outside the initial runtime viewport.");
                 Save(window, $"marketplace-{cultureName}-{width}-{(dark ? "dark" : "light")}-runtimes.png");
             }
             finally { window.Close(); }

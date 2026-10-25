@@ -64,12 +64,15 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         _skillRuntimeStatusCompletion?.Task ?? Task.CompletedTask);
 
     public SkillMarketplaceWindowViewModel(IManagedAiSkillManager manager, IManagedAiSkillMarketplace marketplace,
-        IAppMessageBox messages, IManagedAiSkillRuntimeManager? skillRuntimes = null)
+        IAppMessageBox messages, IManagedAiSkillRuntimeManager? skillRuntimes = null,
+        IManagedAiSkillRuntimeDiagnostics? skillRuntimeDiagnostics = null)
     {
         _manager = manager;
         _marketplace = marketplace;
         _messages = messages;
         _skillRuntimes = skillRuntimes;
+        _skillRuntimeDiagnostics = skillRuntimeDiagnostics;
+        if (skillRuntimeDiagnostics is null) SetUnknownSkillRuntimeDiagnostics();
         if (skillRuntimes is null) _skillRuntimeNotice = ManagedAiText.Select("실행 환경 관리 서비스를 사용할 수 없습니다.", "Runtime management is unavailable.");
         _token = _lifetime.Token;
         Categories.Add(new("", ManagedAiText.Select("모든 분야", "All categories")));

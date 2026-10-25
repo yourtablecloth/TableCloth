@@ -18,12 +18,15 @@ public sealed partial class SkillMarketplaceTests
             Active = RuntimeEnvironment("22.0.0", "3.12.0"),
             InstallGate = new(TaskCreationOptions.RunContinuationsAsynchronously)
         };
-        using var model = new SkillMarketplaceWindowViewModel(manager, new Marketplace(manager) { Failure = true }, new Messages(), runtime);
+        var diagnostics = new SkillRuntimeDiagnostics();
+        using var model = new SkillMarketplaceWindowViewModel(manager, new Marketplace(manager) { Failure = true }, new Messages(), runtime, diagnostics);
         await model.LoadAsync();
         model.SelectedInstalledSkill = model.InstalledSkills.Single();
         Assert.Contains("Could not load the remote catalog", model.CatalogNotice);
         Assert.AreEqual("22.0.0", model.NodeJsRuntimeVersion);
         Assert.AreEqual("3.12.0", model.PythonRuntimeVersion);
+        Assert.AreEqual(1, diagnostics.Checks);
+        Assert.IsFalse(model.HasSkillRuntimeUnknown);
         Assert.IsFalse(runtime.StatusCalledOnUiThread ?? true);
         var install = model.InstallSkillRuntimesCommand.ExecuteAsync(null);
         await runtime.InstallStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
@@ -40,6 +43,7 @@ public sealed partial class SkillMarketplaceTests
         Assert.AreEqual("24.1.0", model.NodeJsRuntimeVersion);
         Assert.AreEqual("3.13.1", model.PythonRuntimeVersion);
         Assert.AreEqual("Dedicated Node.js and Python installed.", model.SkillRuntimeNotice);
+        Assert.AreEqual(2, diagnostics.Checks);
         Assert.IsTrue(model.ToggleSkillCommand.CanExecute(null));
         Assert.IsTrue(model.RemoveSkillCommand.CanExecute(null));
         Assert.IsTrue(model.InstallSkillRuntimesCommand.CanExecute(null));

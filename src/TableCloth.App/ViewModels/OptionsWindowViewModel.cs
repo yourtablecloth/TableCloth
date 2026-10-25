@@ -61,7 +61,8 @@ public partial class OptionsWindowViewModel : ObservableObject
         TaskFactory taskFactory,
         IManagedAiSkillManager skillsManager,
         IManagedAiSkillMarketplace? skillMarketplace = null,
-        IManagedAiSkillRuntimeManager? skillRuntimes = null)
+        IManagedAiSkillRuntimeManager? skillRuntimes = null,
+        IManagedAiSkillRuntimeDiagnostics? skillRuntimeDiagnostics = null)
     {
         _preferencesManager = preferencesManager;
         _appRestartManager = appRestartManager;
@@ -71,6 +72,7 @@ public partial class OptionsWindowViewModel : ObservableObject
         _skillsManager = skillsManager;
         _skillMarketplace = skillMarketplace;
         _skillRuntimes = skillRuntimes;
+        _skillRuntimeDiagnostics = skillRuntimeDiagnostics;
 
         BuildCompatibilityOptions();
     }

@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
             AllowAutoRedirect = false, UseCookies = false, UseDefaultCredentials = false, Credentials = null
         }).RemoveAllLoggers();
         services.AddSingleton<IManagedAiSkillRuntimeManager, SkillRuntimeManager>();
+        services.AddSingleton<IManagedAiSkillRuntimeDiagnostics, SkillRuntimeDiagnostics>();
         services.AddSingleton<GithubSkillInstaller>();
         services.AddSingleton<IManagedAiSkillMarketplace, ManagedAiSkillMarketplace>();
         services.AddHttpClient(OpenAiReleaseMetadataClient.HttpClientName, client =>

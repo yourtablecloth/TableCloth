@@ -81,6 +81,8 @@ public static class SafeSkillRuntimeZip
                 if (written != entry.Length) throw Rejected();
             }
         }
+        catch (PathTooLongException)
+        { throw new ManagedAiException(AiFailureCode.PathLengthUnsupported); }
         catch (Exception ex) when (ex is InvalidDataException or IOException or ArgumentException)
         { throw Rejected(); }
     }

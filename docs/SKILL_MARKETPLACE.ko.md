@@ -38,15 +38,23 @@
 
 스킬은 `%LOCALAPPDATA%\TableCloth\ManagedAi\profiles\openai-codex\codex-home\skills`에 보관합니다. 기존 가져오기 기능과 작업 잠금이 변경 작업을 제어합니다. 마켓플레이스는 이 프로필을 관리합니다. 사용자 전역 Codex 프로필과 스킬은 관리 범위에 포함하지 않습니다. [스킬 관리자](../src/TableCloth.ManagedAi.OpenAi/Skills/OpenAiCodexSkillManager.cs)와 [관리 경로](../src/TableCloth.ManagedAi.Core/ManagedAiPaths.cs)에서 저장 범위를 확인할 수 있습니다.
 
-실행 환경 탭은 설치한 Node.js와 Python 버전을 표시하고 **실행 환경 설치/업데이트**, **설치 상태 새로 고침**을 제공합니다. Codex 설치 경로에서도 두 실행 환경을 함께 준비합니다. 애플리케이션은 Windows x64와 ARM64용 Node.js 24.22.1, npm과 npx 11.19.1, Python 3.14.9를 고정해 사용합니다. [Node.js](https://nodejs.org/en/download/archive/v24.22.1)와 [Python](https://www.python.org/downloads/release/python-3149/)의 공식 ZIP을 내려받으며 [실행 환경 manifest](../src/TableCloth.ManagedAi.OpenAi/Distribution/SkillRuntimeManifest.cs)에 버전과 SHA-256 해시를 지정합니다.
+실행 환경 탭은 설치한 Node.js와 Python 버전을 표시하고 **실행 환경 설치/업데이트**, **설치 및 환경 검사**를 제공합니다. Codex 설치 경로에서도 두 실행 환경을 함께 준비합니다. 애플리케이션은 Windows x64와 ARM64용 Node.js 24.22.1, npm과 npx 11.19.1, Python 3.14.9를 고정해 사용합니다. [Node.js](https://nodejs.org/en/download/archive/v24.22.1)와 [Python](https://www.python.org/downloads/release/python-3149/)의 공식 ZIP을 내려받으며 [실행 환경 manifest](../src/TableCloth.ManagedAi.OpenAi/Distribution/SkillRuntimeManifest.cs)에 버전과 SHA-256 해시를 지정합니다.
 
 실행 파일은 `%LOCALAPPDATA%\TableCloth\ManagedAi\runtimes\skill-tools\releases\<설치 ID>` 아래의 `node`, `python` 디렉터리에 보관합니다. 설치 관리자는 압축 파일의 경로와 크기, 해시, 실행 버전과 설치 기록을 검사합니다. 검증을 마치면 활성 버전 정보를 원자적으로 교체해 두 실행 환경을 함께 전환합니다. 교체에 실패하거나 취소하면 이전 활성 버전을 보존합니다. npm 캐시, 설정, 임시 파일과 자식 프로세스의 홈 디렉터리는 `%LOCALAPPDATA%\TableCloth\ManagedAi\profiles\skill-tools` 아래에서 관리합니다. 전용 실행 경로는 자식 프로세스에만 적용합니다. 식탁보는 전역 `PATH`, 레지스트리와 기존 Node.js 또는 Python 설치를 변경하지 않습니다.
 
 Python은 [임베디드 배포판](https://docs.python.org/3.14/using/windows.html#the-embeddable-package)의 기본 `python314._pth` 격리를 유지합니다. 이번 설치는 표준 라이브러리를 사용하는 스크립트를 지원하며 pip, ensurepip, venv와 외부 Python 패키지 관리를 제공하지 않습니다. 설치 관리자는 `python3` 명령을 사용하는 스크립트를 위해 원본과 바이트가 같은 `python3.exe` 사본을 제공합니다. 추가 Python 패키지를 사용하는 스킬에는 별도의 의존성 검증이 남습니다.
 
+## Windows 정책을 변경하지 않는 긴 경로 검사
+
+**설치 및 환경 검사**는 Windows 긴 경로 정책을 읽기 전용으로 조회하고 .NET 파일 I/O, Node.js와 Python을 각각 검사합니다. 짧은 경로에서 기본 동작을 확인한 뒤 애플리케이션의 전용 진단 폴더 아래에서 330자를 초과하는 경로로 임시 파일 생성, 읽기, 이름 변경, 다시 읽기와 삭제를 수행합니다. 화면은 **긴 경로 검사 통과**, **긴 경로 사용 제한**, **설치 안 함**, **확인 불가**를 구분합니다. 접근 권한 문제 등으로 검사를 마치지 못한 경우에는 긴 경로 제한으로 단정하지 않습니다. 제한이나 확인 불가 상태는 안내로 표시하며 설치, 카탈로그 조회와 로컬 스킬 관리를 차단하지 않습니다. [진단 계약](../src/TableCloth.ManagedAi.Core/SkillRuntimeDiagnostics.cs)에서 결과 범위를 확인할 수 있습니다.
+
+Windows 정책 변경 권한은 관리자나 조직 정책의 관리 범위에 속합니다. 식탁보는 레지스트리나 정책을 수정하지 않습니다. 최신 .NET은 긴 경로를 자체 처리하지만 Python의 일반 경로가 260자를 초과하면 Windows 긴 경로 지원 설정의 영향을 받습니다. 따라서 .NET의 압축 해제나 실행 환경의 버전 검사를 통과해도 자식 프로세스의 긴 경로 지원을 보장하지 않습니다. 실제 I/O 검사를 통과한 경우에도 외부 도구나 패키지에 따라 긴 경로 사용이 제한될 수 있습니다. [Windows 정책 조건](https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation), [.NET 경로 처리](https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats#skip-normalization), [Python 긴 경로 지원](https://docs.python.org/3.14/using/windows.html#removing-the-max-path-limitation)에서 각 실행 환경의 조건을 설명합니다.
+
 ## 자동 검증과 게시 경로의 구분
 
 자동 검증의 범위를 검토하겠습니다. 테스트는 검토 조건 없는 카탈로그 파싱, 다운로드 검증, 버전 추적, 교체 실패 시 복구, 제거와 뷰 모델 명령을 다룹니다. 실행 환경 테스트는 합성 ZIP과 프로세스 응답으로 무결성, 압축 해제 제한, 격리 설정과 두 실행 환경의 일괄 교체를 검사합니다. Avalonia 헤드리스 테스트는 실제 창을 생성합니다. 서비스의 사용자 자격 증명 연동이나 실제 MCP 연결은 이 테스트로 확인하지 않습니다. [스킬 테스트](../src/TableCloth.ManagedAi.Test/SkillMarketplaceTests.cs), [실행 환경 테스트](../src/TableCloth.ManagedAi.Test/SkillRuntimeTests.cs), [UI 테스트](../src/TableCloth.Test/SkillMarketplaceTests.cs)에 검증 항목을 기록했습니다.
+
+[CI 검사 도구](../tools/verify-skill-runtime-long-paths.ps1)는 일회용 GitHub 호스팅 Windows 러너에서 긴 경로 정책을 켠 경우와 끈 경우를 새 프로세스로 검사하고 `finally`에서 원래 정책을 복원합니다. 로컬과 자체 호스팅 러너에서는 실행을 거절합니다. 애플리케이션의 진단 기능은 정책을 읽기만 합니다. [진단 테스트](../src/TableCloth.ManagedAi.Test/SkillRuntimeDiagnosticsTests.cs)는 확인 불가, 접근 권한 오류, 취소와 임시 파일 정리도 검증합니다.
 
 k-dart의 서비스 호출에서는 명령 실행 권한과 API 키 연동 범위를 구분해 다루겠습니다. Node.js와 Python을 설치해도 DART 연동 성공을 뜻하지 않습니다. 이번 변경은 채팅의 명령 실행 정책과 API 키 전달 방식을 유지합니다. [전용 프로필](../src/TableCloth.ManagedAi.Windows/WindowsManagedAiProfile.cs), [호출 구성](../src/TableCloth.ManagedAi.OpenAi/Execution/OpenAiCodexInvocationBuilder.cs), [대화 지침](../src/TableCloth.ManagedAi.OpenAi/Execution/OpenAiChatPromptFactory.cs)이 실행 범위를 제한합니다. 필요한 명령을 허용하고 `API_K_DART`를 별도 자격 증명 경로로 제공하는 기능은 추가 구현과 검증 범위로 남습니다.
 

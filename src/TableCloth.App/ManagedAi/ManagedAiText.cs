@@ -28,12 +28,19 @@ public static class ManagedAiText
     public static string MarketplaceBrowse => Select("카탈로그 탐색", "Browse catalog");
     public static string MarketplaceInstalled => Select("설치된 스킬", "Installed skills");
     public static string MarketplaceRuntimes => Select("실행 환경", "Runtimes");
-    public static string SkillRuntimeTitle => Select("스킬용 전용 실행 환경", "Dedicated skill runtimes");
     public static string SkillRuntimeDescription => Select(
         "식탁보 AI 전용 Node.js와 Python을 설치하거나 업데이트합니다. API 키와 추가 패키지 설정은 스킬에 따라 다릅니다.",
         "Install or update Node.js and Python dedicated to TableCloth AI. API credentials and additional package settings depend on each skill.");
     public static string SkillRuntimeInstall => Select("실행 환경 설치/업데이트", "Install or update runtimes");
-    public static string SkillRuntimeRefresh => Select("설치 상태 새로 고침", "Refresh installation status");
+    public static string SkillRuntimeRefresh => Select("설치 및 환경 검사", "Check installation and environment");
+    public static string SkillRuntimePolicy => Select("Windows 긴 경로 정책", "Windows long-path policy");
+    public static string SkillRuntimeManagedCheck => Select(".NET 파일 검사", ".NET file check");
+    public static string SkillRuntimeLimits => Select(
+        "긴 경로를 사용하는 일부 스킬이 제한될 수 있습니다. 짧은 작업 경로를 사용하거나 관리자에게 Windows 긴 경로 지원 설정을 문의할 수 있습니다.",
+        "Some skills that use long file paths may be limited. Use a shorter working path or ask your administrator about Windows long-path support.");
+    public static string SkillRuntimeExternalLimits => Select(
+        "검사를 통과해도 외부 도구나 패키지에 따라 긴 경로 사용이 제한될 수 있습니다.",
+        "External tools or packages can still impose path limits even when these checks pass.");
     public static string MarketplaceSearch => Select("이름, 설명, 저자 검색", "Search name, description, author");
     public static string MarketplaceInstalledSearch => Select("설치된 스킬 검색", "Search installed skills");
     public static string MarketplaceInstall => Select("스킬 설치", "Install skill");

@@ -6,7 +6,7 @@ using TableCloth.ManagedAi.Windows;
 // Diagnostic host. Actual browser opening lives in the TableCloth AI Preview window.
 if (args.Length == 0 || args[0] is "help" or "--help")
 {
-    Console.WriteLine("TableCloth AI Preview diagnostics\nCommands: metadata, models, install --accept-download [version], status, login [--browser], logout, rollback, search --accept-usage, chat --accept-usage, skill-runtime-status, skill-runtime-install --accept-download, skill-runtime-smoke");
+    Console.WriteLine("TableCloth AI Preview diagnostics\nCommands: metadata, models, install --accept-download [version], status, login [--browser], logout, rollback, search --accept-usage, chat --accept-usage, skill-runtime-status, skill-runtime-install --accept-download, skill-runtime-smoke, skill-runtime-diagnose [--expect-enabled | --expect-disabled]");
     Console.WriteLine("Search/chat reads one message from stdin. Use the TableCloth AI chat window to open links in Windows Sandbox.");
     return 0;
 }
@@ -38,6 +38,20 @@ try
         case "skill-runtime-install" when args is ["skill-runtime-install", "--accept-download"]:
             var prepared = await provider.GetRequiredService<IManagedAiSkillRuntimeManager>().InstallAsync(null, token);
             Console.WriteLine($"Installed Node.js {prepared.NodeJs.Version}; Python {prepared.Python.Version}");
+            break;
+        case "skill-runtime-diagnose" when args.Length == 1 || args is ["skill-runtime-diagnose", "--expect-enabled" or "--expect-disabled"]:
+            var diagnostics = await provider.GetRequiredService<IManagedAiSkillRuntimeDiagnostics>().CheckAsync(token);
+            Console.WriteLine($"Windows long-path policy: {diagnostics.WindowsPolicy}");
+            Console.WriteLine($"Managed file I/O: {diagnostics.ManagedIo}; Node.js file I/O: {diagnostics.NodeJs}; Python file I/O: {diagnostics.Python}");
+            if (args.Length == 2)
+            {
+                var expectedPolicy = args[1] == "--expect-enabled" ? WindowsLongPathPolicy.Enabled : WindowsLongPathPolicy.Disabled;
+                var expectedPython = expectedPolicy == WindowsLongPathPolicy.Enabled ? LongPathSupport.Supported : LongPathSupport.Limited;
+                if (diagnostics.WindowsPolicy != expectedPolicy || diagnostics.ManagedIo != LongPathSupport.Supported ||
+                    diagnostics.NodeJs != LongPathSupport.Supported || diagnostics.Python != expectedPython)
+                    throw new ManagedAiException(AiFailureCode.ProviderConfigurationInvalid);
+            }
+            Console.WriteLine("Diagnostics completed. Windows policy was read without modification; no model or network call was made.");
             break;
         case "skill-runtime-smoke" when args.Length == 1:
             var environment = await provider.GetRequiredService<IManagedAiSkillRuntimeManager>().GetActiveAsync(token)

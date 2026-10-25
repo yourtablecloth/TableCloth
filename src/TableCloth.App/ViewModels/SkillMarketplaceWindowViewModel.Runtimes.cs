@@ -55,19 +55,34 @@ public partial class SkillMarketplaceWindowViewModel
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         _skillRuntimeStatusCompletion = completion;
         SkillRuntimeStatusBusy = true;
-        SkillRuntimeNotice = ManagedAiText.Select("전용 실행 환경의 설치 상태를 확인하고 있습니다.", "Checking the dedicated runtime installation.");
+        SkillRuntimeNotice = ManagedAiText.Select("전용 실행 환경의 설치 상태와 긴 경로 지원을 검사하고 있습니다.", "Checking the dedicated runtime installation and long-path support.");
+        try
+        {
+            var installation = ReadSkillRuntimeInstallationAsync();
+            await Task.WhenAll(installation, CheckSkillRuntimeDiagnosticsAsync());
+            if (await installation)
+                SkillRuntimeNotice = _skillRuntimeEnvironment is null
+                    ? ManagedAiText.Select("전용 Node.js와 Python을 아직 설치하지 않았습니다.", "Dedicated Node.js and Python are not installed yet.")
+                    : ManagedAiText.Select("전용 Node.js와 Python의 설치 버전을 확인했습니다.", "Dedicated Node.js and Python versions checked.");
+        }
+        finally { SkillRuntimeStatusBusy = false; completion.TrySetResult(); }
+    }
+
+    private async Task<bool> ReadSkillRuntimeInstallationAsync()
+    {
         try
         {
             _skillRuntimeEnvironment = await Task.Run(() => _skillRuntimes!.GetActiveAsync(_token), _token);
             _skillRuntimeStatusKnown = true;
             NotifySkillRuntimeVersions();
-            SkillRuntimeNotice = _skillRuntimeEnvironment is null
-                ? ManagedAiText.Select("전용 Node.js와 Python을 아직 설치하지 않았습니다.", "Dedicated Node.js and Python are not installed yet.")
-                : ManagedAiText.Select("전용 Node.js와 Python의 설치 버전을 확인했습니다.", "Dedicated Node.js and Python versions checked.");
+            return true;
         }
-        catch (OperationCanceledException) when (_token.IsCancellationRequested) { }
-        catch { SkillRuntimeNotice = ManagedAiText.Select("전용 실행 환경의 설치 상태를 확인하지 못했습니다.", "Could not check the dedicated runtime installation."); }
-        finally { SkillRuntimeStatusBusy = false; completion.TrySetResult(); }
+        catch (OperationCanceledException) when (_token.IsCancellationRequested) { return false; }
+        catch
+        {
+            SkillRuntimeNotice = ManagedAiText.Select("전용 실행 환경의 설치 상태를 확인하지 못했습니다.", "Could not check the dedicated runtime installation.");
+            return false;
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanInstallSkillRuntimes))]
@@ -97,6 +112,7 @@ public partial class SkillMarketplaceWindowViewModel
             _skillRuntimeEnvironment = await Task.Run(() => _skillRuntimes!.InstallAsync(progress, _token), _token);
             _skillRuntimeStatusKnown = true;
             NotifySkillRuntimeVersions();
+            await CheckSkillRuntimeDiagnosticsAsync();
             SkillRuntimeNotice = ManagedAiText.Select("전용 Node.js와 Python을 설치했습니다.", "Dedicated Node.js and Python installed.");
         }
         catch (OperationCanceledException) when (_token.IsCancellationRequested) { }
@@ -110,6 +126,7 @@ public partial class SkillMarketplaceWindowViewModel
                 AiFailureCode.OfficialMetadataUnavailable => ManagedAiText.Select("실행 환경 설치 파일을 내려받지 못했습니다. 연결 상태를 확인한 뒤 다시 시도할 수 있습니다.", "Could not download the runtime packages. Check the connection and try again."),
                 AiFailureCode.IntegrityMismatch or AiFailureCode.ArchiveRejected or AiFailureCode.RuntimeVersionMismatch => ManagedAiText.Select("실행 환경 설치 파일이 검증을 통과하지 못했습니다.", "The runtime packages failed verification."),
                 AiFailureCode.InvalidPath => ManagedAiText.Select("전용 실행 환경 폴더에 접근하지 못했습니다.", "Could not access the dedicated runtime folder."),
+                AiFailureCode.PathLengthUnsupported => ManagedAiText.Select("실행 환경 설치 경로가 현재 환경의 길이 제한을 넘었습니다.", "The runtime installation path exceeds the path-length limit in this environment."),
                 _ => ManagedAiText.Select("전용 실행 환경을 설치하지 못했습니다. 잠시 후 다시 시도할 수 있습니다.", "Could not install the dedicated runtimes. Try again shortly.")
             };
         }

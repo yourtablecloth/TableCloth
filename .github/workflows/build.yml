@@ -140,6 +140,7 @@ jobs:
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         dotnet run --project src/TableCloth.ManagedAi.Poc -c $env:Configuration --no-build -- skill-runtime-smoke --root $runtimeProbeRoot
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        ./tools/verify-skill-runtime-long-paths.ps1 -Configuration $env:Configuration -RuntimeRoot $runtimeProbeRoot
       env:
         Configuration: ${{ matrix.configuration }}
 
