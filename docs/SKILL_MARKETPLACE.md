@@ -2,6 +2,8 @@
 
 As of October 25, 2026, the marketplace implementation targets the TableCloth `develop` line. It reads a separate XML skill catalog from TableClothCatalog and manages the skills in TableCloth AI's dedicated Codex profile. This work does not change the published Preview release.
 
+The separate `poc/appcontainer-skill-runner` evaluation branch pins a six-entry experimental catalog and adds a standalone [AppContainer execution PoC](../tools/appcontainer-skill-poc/README.md). The production behavior described below retains the three-entry eligibility policy; the PoC does not connect its broker or runtimes to the chat window.
+
 The marketplace combines skill discovery, source and license information, installation, updates, and local skill management. Catalog entries have no listing or review states. An uncommented entry is offered for installation.
 
 This guide explains the window, catalog contract, installation and updates, local storage, and verification boundaries in that order. [한국어](SKILL_MARKETPLACE.ko.md)

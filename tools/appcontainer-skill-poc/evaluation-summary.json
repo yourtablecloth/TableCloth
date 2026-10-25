@@ -1,0 +1,309 @@
+{
+  "evaluatedUtc": "2026-10-25T21:19:01.2703595+09:00",
+  "os": "Microsoft Windows NT 10.0.26300.0",
+  "architecture": "X64",
+  "qualification": "PoC only; no production integration, real model inference, Windows 10 22H2 or ARM64 qualification.",
+  "sourceReportSha256": "5489b04ad12cbce500cfab5e41b904d113a00206e5fccd9829bce835fa48fdfa",
+  "sourceCodexReportSha256": "4c283d01b2d355407c0af708c8b389b1b9d44b024f82b8e3590aa8c57f06daeb",
+  "harness": {
+    "passed": 46,
+    "total": 46,
+    "offlineFakeExecutorChecks": 20,
+    "remainingEvaluationChecks": 26
+  },
+  "containedUpstreamUnitTests": {
+    "calculator": 28,
+    "bok": 19
+  },
+  "managedAiRegression": {
+    "passed": 197,
+    "failed": 0,
+    "skipped": 0,
+    "sourceTrxSha256": "c5497010048bb31d7d283bc4cb0ee6349f0b377b2815b99031b2c6f72065d14f"
+  },
+  "pythonIsolation": {
+    "outside_read": {
+      "allowed": false,
+      "winerror": null,
+      "errno": 13
+    },
+    "outside_write": {
+      "allowed": false,
+      "winerror": null,
+      "errno": 13
+    },
+    "network": {
+      "allowed": false,
+      "winerror": 10013,
+      "errno": 13
+    },
+    "child": {
+      "allowed": false,
+      "winerror": 1816
+    },
+    "inherited_secret": null,
+    "work_write": true
+  },
+  "nodeIsolation": {
+    "outside_read": {
+      "allowed": false,
+      "code": "EPERM"
+    },
+    "outside_write": {
+      "allowed": false,
+      "code": "EPERM"
+    },
+    "network": {
+      "allowed": false,
+      "code": "EACCES"
+    },
+    "child": {
+      "allowed": false,
+      "code": "UNKNOWN",
+      "errno": -4094
+    },
+    "inherited_secret": null,
+    "work_write": true
+  },
+  "nodeTwoProcessJobPositiveControl": {
+    "outside_read": {
+      "allowed": false,
+      "code": "EPERM"
+    },
+    "outside_write": {
+      "allowed": false,
+      "code": "EPERM"
+    },
+    "network": {
+      "allowed": false,
+      "code": "EACCES"
+    },
+    "child": {
+      "allowed": true,
+      "exit": 0
+    },
+    "inherited_secret": null,
+    "work_write": true
+  },
+  "publicApi": {
+    "bokSampleRows": 1,
+    "kosisProxyRows": 1,
+    "kosisQuery": "인구",
+    "utf8Validated": true,
+    "userCredentialsUsed": false,
+    "capability": "internetClient; no domain allowlist; fixed host-owned evaluation only",
+    "genericBrokerNetworkEnabled": false
+  },
+  "codex": {
+    "version": "codex-cli 0.156.1",
+    "success": true,
+    "shellTool": false,
+    "unifiedExec": false,
+    "approvalPolicy": "never",
+    "approvedMcpTool": "tablecloth_skill_poc/tablecloth-calculators",
+    "modelInference": false,
+    "authenticationAttempted": false,
+    "existingAuthenticationCopied": false,
+    "credentialHeaderPresent": false,
+    "shellWasAdvertised": false,
+    "responseRequests": 2,
+    "completedMcpEvent": true,
+    "finalAgentEvent": true,
+    "actualAppContainerResult": {
+      "status": "completed",
+      "exitCode": 0,
+      "stdout": "{\"ok\":true,\"operation\":\"discount.single\",\"result\":{\"original\":\"100.00\",\"discount\":\"20.00\",\"final\":\"80.00\"},\"assumptions\":[\"Money uses 2 decimal places and ROUND_HALF_UP.\",\"No tax or service-specific rules are applied.\",\"Discounts multiply sequentially; only the final price is rounded. Discount = rounded original - rounded final.\"]}\r\n",
+      "stderr": "",
+      "wasAppContainer": true,
+      "timedOut": false,
+      "outputLimited": false,
+      "failure": null
+    }
+  },
+  "checks": [
+    {
+      "name": "broker-offline.fixed-worker-request-and-cleanup",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.tool-input-cannot-add-command-code-or-path",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.duplicate-input-properties",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.oversized-tool-input",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.unknown-skill-never-executes",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.network-registration-never-executes",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.fixed-cli-has-no-model-arguments",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.node-fixture-has-fixed-main-option-and-numeric-input",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.changed-script-hash-is-rechecked",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.manifest-rejects-outside-script-path",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.manifest-rejects-outside-interpreter",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.alternate-data-stream-paths-rejected-before-io",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.manifest-rejects-incorrect-script-hash",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.manifest-rejects-duplicate-properties",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.worker-requires-appcontainer-evidence",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.worker-output-is-bounded",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.stdio-jsonrpc-and-tool-contract",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.stdio-oversize-ends-with-protocol-error",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.stdio-invalid-utf8-has-no-content-leak",
+      "passed": true
+    },
+    {
+      "name": "broker-offline.cancellation-awaits-fake-worker-and-cleans-work",
+      "passed": true
+    },
+    {
+      "name": "calculator.discount",
+      "passed": true
+    },
+    {
+      "name": "calculator.percent",
+      "passed": true
+    },
+    {
+      "name": "calculator.leap-date",
+      "passed": true
+    },
+    {
+      "name": "calculator.time-rollover",
+      "passed": true
+    },
+    {
+      "name": "calculator.bmi",
+      "passed": true
+    },
+    {
+      "name": "calculator.zero-rate-loan",
+      "passed": true
+    },
+    {
+      "name": "kosis.fixed-dry-run",
+      "passed": true
+    },
+    {
+      "name": "bok.broker-network-denied",
+      "passed": true
+    },
+    {
+      "name": "node.registered-script",
+      "passed": true
+    },
+    {
+      "name": "tablecloth-calculators.upstream-unit-tests-contained",
+      "passed": true
+    },
+    {
+      "name": "bok-ecos-stats.upstream-unit-tests-contained",
+      "passed": true
+    },
+    {
+      "name": "broker.no-arbitrary-code",
+      "passed": true
+    },
+    {
+      "name": "probe.host-positive-control",
+      "passed": true
+    },
+    {
+      "name": "python.isolation",
+      "passed": true
+    },
+    {
+      "name": "node.isolation",
+      "passed": true
+    },
+    {
+      "name": "python.utf8-roundtrip",
+      "passed": true
+    },
+    {
+      "name": "node.child-positive-control-two-process-job",
+      "passed": true
+    },
+    {
+      "name": "python.timeout",
+      "passed": true
+    },
+    {
+      "name": "python.output-bound",
+      "passed": true
+    },
+    {
+      "name": "python.memory-bound",
+      "passed": true
+    },
+    {
+      "name": "python.cancellation",
+      "passed": true
+    },
+    {
+      "name": "mcp.stdio-real-worker",
+      "passed": true
+    },
+    {
+      "name": "native.acl-restored",
+      "passed": true
+    },
+    {
+      "name": "native.workspace-cleaned",
+      "passed": true
+    },
+    {
+      "name": "bok-ecos-stats.public-api-evaluation",
+      "passed": true
+    },
+    {
+      "name": "kosis-stats.public-api-evaluation",
+      "passed": true
+    }
+  ]
+}

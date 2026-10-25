@@ -108,6 +108,7 @@ WinGet 등록소 반영에는 GitHub Release 게시 이후 시간이 더 걸릴 
 - [Avalonia와 Native AOT 전환 기록](docs/AVALONIA_AOT_MIGRATION.md)
 - [식탁보 AI Preview 구현 및 검증](docs/poc/managed-ai-runtime.md)
 - [스킬 마켓플레이스와 원격 카탈로그](docs/SKILL_MARKETPLACE.ko.md), [English](docs/SKILL_MARKETPLACE.md)
+- [AppContainer 스킬 스크립트 실행 PoC와 평가 결과](tools/appcontainer-skill-poc/README.ko.md), [English](tools/appcontainer-skill-poc/README.md)
 - [Windows Sandbox 내부 Codex CLI와 Computer Use 탐색 기록](docs/poc/codex-sandbox-computer-use.ko.md), [English](docs/poc/codex-sandbox-computer-use.md)
 - [Windows Sandbox RDP 호스팅 실험과 검증 기록](docs/poc/rdp-sandbox.ko.md), [English](docs/poc/rdp-sandbox.md)
 

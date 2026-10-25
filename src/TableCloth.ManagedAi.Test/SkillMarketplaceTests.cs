@@ -15,16 +15,27 @@ public sealed class SkillMarketplaceTests
     private const string Api = "https://api.github.com/repos/fixture/skills";
 
     [TestMethod]
-    public void RepositoryCatalogMatchesRuntimeParserWithoutReviewState()
+    public void PoCEvaluationCatalogMatchesRuntimeParserWithoutReviewState()
     {
         var entries = SkillCatalogClient.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Fixtures", "SkillCatalog.xml")));
         CollectionAssert.AreEquivalent(new[]
         {
-            "official-report-skillset", "tablecloth-certificate-expiry", "tablecloth-windows-sandbox"
+            "official-report-skillset", "tablecloth-certificate-expiry", "tablecloth-windows-sandbox",
+            "tablecloth-calculators", "bok-ecos-stats", "kosis-stats"
         }, entries.Select(x => x.Id).ToArray());
+        // CanInstall checks technical file-installation requirements, not successful skill execution.
         Assert.IsTrue(entries.All(x => x.CanInstall));
         Assert.IsTrue(entries.All(x => x.SourceRef.Length == 40));
-        Assert.IsTrue(entries.All(x => x.Network == "none"));
+        Assert.AreEqual(4, entries.Count(x => x.Network == "none"));
+        Assert.AreEqual(2, entries.Count(x => x.Network == "required"));
+        foreach (var id in new[] { "bok-ecos-stats", "kosis-stats" })
+        {
+            var entry = entries.Single(x => x.Id == id);
+            Assert.AreEqual("required", entry.Network);
+            Assert.AreEqual("https://github.com/NomaDamas/k-skill", entry.Repository);
+            Assert.AreEqual(id, entry.SourcePath);
+            Assert.AreEqual("0102e5133865f00886e37ac8cf39a49e2c7a3d39", entry.SourceRef);
+        }
     }
 
     [TestMethod]
