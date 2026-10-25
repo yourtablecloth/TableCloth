@@ -86,9 +86,55 @@ public sealed class ProviderTests
             Assert.HasCount(1, Directory.GetFileSystemEntries(directory!));
     }
 
+    [TestMethod]
+    public async Task ChatAttachesObservedActivitiesWithoutRetainingPayloadsOrLeakingAcrossTurns()
+    {
+        using var fixture = new InstallFixture();
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        var runner = new ResponseRunner("Fixture answer", fixture.Paths)
+        {
+            ActivityEvents =
+            [
+                JsonSerializer.Serialize(new { type = "item.completed", item = new
+                {
+                    type = "mcp_tool_call", id = "item_1", server = "fixture_server", tool = "fixture_tool", status = "completed",
+                    arguments = new { secret = "private argument" }, result = new { content = new[] { new { type = "text", text = "private result" } } }, error = (object?)null
+                } }),
+                JsonSerializer.Serialize(new { type = "item.completed", item = new
+                {
+                    type = "mcp_tool_call", id = "item_2", server = "unsafe/server", tool = "fixture_tool", status = "failed"
+                } })
+            ]
+        };
+        var profile = new WindowsManagedAiProfile(fixture.Paths);
+        var auth = new OpenAiCodexAuthManager(fixture.Paths, fixture.Installer, profile, runner);
+        var skills = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, profile, runner);
+        var provider = new OpenAiCodexProvider(fixture.Paths, fixture.Installer, auth, profile, runner, new(), new(fixture.Paths), skills);
+
+        var first = await provider.ChatAsync(new("fixture", []), null, CancellationToken.None);
+        Assert.AreEqual(new AiResponseActivity(AiResponseActivityKind.McpTool, "fixture_tool", AiResponseActivityOutcome.Completed,
+            "fixture_server"), first.Activities.Single());
+        Assert.IsTrue(first.ActivityEvidenceIncomplete);
+        Assert.DoesNotContain("private", JsonSerializer.Serialize(first));
+
+        runner.ActivityEvents = [];
+        var second = await provider.ChatAsync(new("followup", []), null, CancellationToken.None);
+        Assert.HasCount(0, second.Activities);
+        Assert.IsFalse(second.ActivityEvidenceIncomplete);
+        Assert.HasCount(1, first.Activities);
+        foreach (var log in Directory.GetFiles(fixture.Paths.Logs))
+        {
+            var text = File.ReadAllText(log);
+            Assert.DoesNotContain("private", text);
+            Assert.DoesNotContain("fixture_tool", text);
+            Assert.DoesNotContain("fixture_server", text);
+        }
+    }
+
     private sealed class ResponseRunner(string message, ManagedAiPaths paths) : IJsonlProcessRunner
     {
         public ProcessRunSpec? Invocation;
+        public IReadOnlyList<string> ActivityEvents { get; set; } = [];
         public string ExternalManifest => Path.Combine(paths.Root, "external", "SKILL.md");
         public Task<ProcessOutcome> RunAsync(ProcessRunSpec spec, Action<string> stdout, Action<string>? stderr, CancellationToken cancellationToken)
         {
@@ -112,6 +158,7 @@ public sealed class ProviderTests
             else
             {
                 Invocation = spec;
+                foreach (var activity in ActivityEvents) stdout(activity);
                 stdout("{\"type\":\"item.completed\",\"item\":{\"type\":\"web_search\"}}");
                 stdout(JsonSerializer.Serialize(new { type = "item.completed", item = new { type = "agent_message", text = message } }));
                 stdout("{\"type\":\"turn.completed\"}");

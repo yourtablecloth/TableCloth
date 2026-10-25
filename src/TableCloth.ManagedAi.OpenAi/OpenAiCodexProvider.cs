@@ -18,7 +18,11 @@ public sealed class OpenAiCodexProvider(ManagedAiPaths paths, IManagedRuntimeMan
     {
         if (request.Model is not null) AiModel.ValidateId(request.Model);
         return await RunAsync(OpenAiChatPromptFactory.Create(request), structured: false,
-            (parser, exitCode) => new AiChatResponse(parser.CompleteText(exitCode), DateTimeOffset.UtcNow, parser.SearchCalls, request.Model), progress, cancellationToken, request.Model);
+            (parser, exitCode) => new AiChatResponse(parser.CompleteText(exitCode), DateTimeOffset.UtcNow, parser.SearchCalls, request.Model)
+            {
+                Activities = parser.Activities,
+                ActivityEvidenceIncomplete = parser.ActivityEvidenceIncomplete
+            }, progress, cancellationToken, request.Model);
     }
 
     private async Task<T> RunAsync<T>(string prompt, bool structured, Func<CodexJsonlParser, int, T> complete,

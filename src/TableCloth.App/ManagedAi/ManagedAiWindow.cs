@@ -454,7 +454,8 @@ public sealed class ManagedAiWindow : Window
         return notice;
     }
 
-    private void AddMessage(string author, string content, bool user = false)
+    private void AddMessage(string author, string content, bool user = false,
+        AiChatResponse? response = null, IReadOnlyList<AiResponseActivity>? failedActivities = null)
     {
         var body = new StackPanel { Spacing = 8 };
         var heading = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 12 };
@@ -481,6 +482,10 @@ public sealed class ManagedAiWindow : Window
         body.Children.Add(heading);
         body.Children.Add(new ChatMarkdownView(content, async link =>
             await RunAsync(token => _session.OpenLinkAsync(link, token))));
+        if (response is not null)
+            body.Children.Add(ManagedAiResponseActivityView.Create(response.Activities, response.ActivityEvidenceIncomplete, responseCompleted: true));
+        else if (failedActivities is { Count: > 0 })
+            body.Children.Add(ManagedAiResponseActivityView.Create(failedActivities, evidenceIncomplete: true, responseCompleted: false));
         var bubble = new Border
         {
             Child = body, Padding = new Thickness(16, 12), CornerRadius = new CornerRadius(12), MaxWidth = 690,
@@ -515,6 +520,7 @@ public sealed class ManagedAiWindow : Window
         }
         var certificateLookup = _certificateSkillEnabled && CertificateExpiryIntent.Matches(text);
         var sandboxRequest = _sandboxSkillEnabled ? WindowsSandboxIntent.Parse(text) : null;
+        var localActivities = new List<AiResponseActivity>();
         await RunAsync(async token =>
         {
             if (certificateLookup && _messages.DisplayQuestion(
@@ -539,14 +545,17 @@ public sealed class ManagedAiWindow : Window
             {
                 _status.Text = L("로컬 인증서 만료일을 확인하고 있습니다.", "Checking local certificate expiry dates.");
                 if (_pendingStatus is not null) _pendingStatus.Text = _status.Text;
-                localReport = await RunBackendAsync(_certificateBridge.GetExpiryReportAsync, token);
+                localReport = await RunHostSkillAsync("tablecloth-certificate-expiry", _certificateBridge.GetExpiryReportAsync,
+                    _ => AiResponseActivityOutcome.Completed, token);
             }
             if (sandboxRequest is not null)
             {
                 _status.Text = sandboxRequest.SafeMode ? SafeModeText.Status :
                     L("Windows Sandbox 명령을 실행하고 있습니다.", "Running the Windows Sandbox command.");
                 if (_pendingStatus is not null) _pendingStatus.Text = _status.Text;
-                localSandboxReport = await RunBackendAsync(ct => _sandboxBridge.ExecuteAsync(sandboxRequest, ct), token);
+                localSandboxReport = await RunHostSkillAsync("tablecloth-windows-sandbox",
+                    ct => _sandboxBridge.ExecuteAsync(sandboxRequest, ct),
+                    report => ManagedAiResponseActivityView.SandboxOutcome(sandboxRequest, report), token);
             }
             var progress = Progress();
             AiChatResponse response;
@@ -561,12 +570,34 @@ public sealed class ManagedAiWindow : Window
                 throw;
             }
             RemovePending();
-            AddMessage($"{L("식탁보", "TableCloth")} / {response.Model ?? model.Id}", response.Text);
+            response = response with { Activities = localActivities.Concat(response.Activities).ToArray() };
+            AddMessage($"{L("식탁보", "TableCloth")} / {response.Model ?? model.Id}", response.Text, response: response);
             _status.Text = response.SearchCalls > 0
                 ? L($"응답을 완료했습니다. 웹 검색 {response.SearchCalls}회", $"Response complete. {response.SearchCalls} web searches.")
                 : L("응답을 완료했습니다.", "Response complete.");
-        }, errorInChat: true);
+        }, errorInChat: true, failureActivities: () => localActivities);
         _input.Focus();
+
+        async Task<string> RunHostSkillAsync(string id, Func<CancellationToken, Task<string>> execute,
+            Func<string, AiResponseActivityOutcome> outcome, CancellationToken token)
+        {
+            try
+            {
+                var report = await RunBackendAsync(execute, token);
+                localActivities.Add(new(AiResponseActivityKind.HostSkill, id, outcome(report)));
+                return report;
+            }
+            catch (OperationCanceledException)
+            {
+                localActivities.Add(new(AiResponseActivityKind.HostSkill, id, AiResponseActivityOutcome.Incomplete));
+                throw;
+            }
+            catch
+            {
+                localActivities.Add(new(AiResponseActivityKind.HostSkill, id, AiResponseActivityOutcome.Failed));
+                throw;
+            }
+        }
     }
 
     private void SanitizeInput()
@@ -606,7 +637,8 @@ public sealed class ManagedAiWindow : Window
         }
     }
 
-    private async Task RunAsync(Func<CancellationToken, Task> action, bool errorInChat = false, bool keepSettingsOpen = false)
+    private async Task RunAsync(Func<CancellationToken, Task> action, bool errorInChat = false, bool keepSettingsOpen = false,
+        Func<IReadOnlyList<AiResponseActivity>>? failureActivities = null)
     {
         if (_operation is not null) return;
         if (!keepSettingsOpen) _settingsOverlay.IsVisible = false;
@@ -645,7 +677,11 @@ public sealed class ManagedAiWindow : Window
             UpdateEnabled();
             if (_closing) Close();
         }
-        void ShowFailure(string message) { _status.Text = message; if (errorInChat) AddMessage(L("안내", "Notice"), message); }
+        void ShowFailure(string message)
+        {
+            _status.Text = message;
+            if (errorInChat) AddMessage(L("안내", "Notice"), message, failedActivities: failureActivities?.Invoke());
+        }
     }
 
     // Backend methods can perform synchronous filesystem and process setup before their first await.
