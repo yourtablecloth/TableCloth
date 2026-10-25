@@ -145,6 +145,29 @@
                                Foreground="{DynamicResource ControlSecondaryForeground}" />
                 </Grid>
             </TabItem>
+            <TabItem Header="{x:Static ai:ManagedAiText.MarketplaceRuntimes}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="12 20" Spacing="16" MaxWidth="660" HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static ai:ManagedAiText.SkillRuntimeTitle}" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Static ai:ManagedAiText.SkillRuntimeDescription}" TextWrapping="Wrap" />
+                        <Border BorderBrush="{DynamicResource OptionsListBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="16">
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="28" RowSpacing="14">
+                                <TextBlock Text="Node.js" FontWeight="SemiBold" />
+                                <TextBlock Grid.Column="1" x:Name="NodeJsRuntimeVersion" Text="{Binding NodeJsRuntimeVersion}" TextWrapping="Wrap" />
+                                <TextBlock Grid.Row="1" Text="Python" FontWeight="SemiBold" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" x:Name="PythonRuntimeVersion" Text="{Binding PythonRuntimeVersion}" TextWrapping="Wrap" />
+                            </Grid>
+                        </Border>
+                        <WrapPanel>
+                            <Button x:Name="SkillRuntimeInstall" Content="{x:Static ai:ManagedAiText.SkillRuntimeInstall}" Command="{Binding InstallSkillRuntimesCommand}" />
+                            <Button x:Name="SkillRuntimeRefresh" Content="{x:Static ai:ManagedAiText.SkillRuntimeRefresh}" Command="{Binding RefreshSkillRuntimeStatusCommand}" />
+                        </WrapPanel>
+                        <ProgressBar x:Name="SkillRuntimeProgress" IsIndeterminate="True" IsVisible="{Binding SkillRuntimeBusy}" Height="4" />
+                        <TextBlock x:Name="SkillRuntimeNotice" Text="{Binding SkillRuntimeNotice}" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource ControlSecondaryForeground}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
         </TabControl>
         <Button Grid.Row="2" Content="{x:Static ai:ManagedAiText.MarketplaceClose}" Click="CloseButton_Click"
                 HorizontalAlignment="Right" IsCancel="True" Margin="0" />

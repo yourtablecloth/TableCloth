@@ -27,6 +27,11 @@ public sealed class ManagedAiPaths
     public string Logs => Under("logs");
     public string Current => Under("runtimes", "openai-codex", "state", "current.json");
     public string Previous => Under("runtimes", "openai-codex", "state", "previous.json");
+    public string SkillRuntimeRoot => Under("runtimes", "skill-tools");
+    public string SkillRuntimeReleases => Under("runtimes", "skill-tools", "releases");
+    public string SkillRuntimeCurrent => Under("runtimes", "skill-tools", "current.json");
+    public string SkillRuntimeCache => Under("cache", "skill-tools");
+    public string SkillToolData => Under("profiles", "skill-tools");
 
     public string Under(params string[] components)
     {

@@ -2,13 +2,13 @@
 
 2026년 10월 25일 기준으로 이번 구현은 식탁보 `develop` 계열을 대상으로 합니다. 마켓플레이스는 TableClothCatalog의 별도 XML 스킬 카탈로그를 읽고 식탁보 AI 전용 Codex 프로필에 설치한 스킬을 관리합니다. 현재 공개한 Preview 릴리스에는 이번 변경을 포함하지 않습니다.
 
-마켓플레이스에서 스킬 검색, 출처와 라이선스 열람, 설치와 업데이트, 로컬 스킬 관리를 제공합니다. 카탈로그에는 공개 상태나 검토 상태를 두지 않습니다. 주석 밖에 있는 스킬 항목을 설치 대상으로 표시합니다.
+마켓플레이스에서 스킬 검색, 출처와 라이선스 열람, 설치와 업데이트, 로컬 스킬 관리, 전용 Node.js와 Python 설치를 제공합니다. 카탈로그에는 공개 상태나 검토 상태를 두지 않습니다. 주석 밖에 있는 스킬 항목을 설치 대상으로 표시합니다.
 
 이 문서에서는 창의 사용 경로부터 카탈로그 계약, 설치와 업데이트, 로컬 저장 범위, 검증 범위 순서로 살펴보겠습니다. [English](SKILL_MARKETPLACE.md)
 
 ## AI 설정에서 여는 마켓플레이스
 
-마켓플레이스의 진입 경로를 정리하겠습니다. **옵션 > AI 스킬 > 스킬 마켓플레이스 열기**를 선택하면 별도 창을 엽니다. 창에서 카탈로그와 설치된 스킬을 각각 조회할 수 있습니다. 검색으로 목록을 좁히고 카탈로그의 분야 필터로 스킬을 선택할 수 있습니다. 스킬을 선택하면 출처, 저자, 라이선스, 원본 버전과 사용 조건을 표시합니다.
+마켓플레이스의 진입 경로를 정리하겠습니다. **옵션 > AI 스킬 > 스킬 마켓플레이스 열기**를 선택하면 별도 창을 엽니다. 창에서 **카탈로그**, **설치된 스킬**, **실행 환경** 탭을 제공합니다. 검색으로 스킬 목록을 좁히고 카탈로그의 분야 필터로 스킬을 선택할 수 있습니다. 스킬을 선택하면 출처, 저자, 라이선스, 원본 버전과 사용 조건을 표시합니다.
 
 옵션 탭에는 짧은 사용 안내와 마켓플레이스 열기 버튼만 표시합니다. AI 창의 **OpenAI 계정 / 설정 > 전용 스킬 > 설치된 AI 스킬 관리**를 선택하면 설치된 스킬 탭을 바로 엽니다. 대화 상자를 닫으면 AI 창이 활성 스킬 수와 스킬 사용 상태를 다시 조회합니다.
 
@@ -28,9 +28,9 @@
 
 마켓플레이스는 설치 시 카탈로그 ID, 저장소, 경로와 원본 커밋을 보관합니다. 같은 출처의 `Source.Ref`가 달라지면 카탈로그와 설치된 스킬 화면에서 해당 버전으로 업데이트할 수 있습니다. 커밋 해시는 버전을 구분하며 시간상 선후 관계를 뜻하지 않습니다. 업데이트는 교체 파일을 임시 폴더에서 검증한 뒤 설치본에 반영합니다. 검증에 실패하거나 작업을 취소하면 기존 파일, 버전 정보와 사용 설정을 보존합니다. 같은 ID의 로컬 스킬 가져오기 항목은 마켓플레이스 업데이트로 덮어쓰지 않습니다.
 
-다만 스킬에 따라 API 키, OAuth 자격 증명, MCP 연결 또는 Node.js CLI를 사용합니다. 카탈로그의 사용 조건에 이러한 의존성을 기록합니다. 스킬 파일을 설치해도 서비스 자격 증명이나 실행 환경을 자동 구성하지 않습니다. 설치할 수 있는 `SKILL.md`가 없는 원본은 어댑터를 제공할 때까지 주석으로 보관합니다.
+다만 스킬에 따라 API 키, OAuth 자격 증명, MCP 연결 또는 추가 패키지를 사용합니다. 카탈로그의 사용 조건에 이러한 의존성을 기록합니다. 스킬 파일을 설치해도 서비스 자격 증명을 제공하거나 명령 실행을 허용하지 않습니다. 실행 환경 탭에서 아래에 설명한 전용 Node.js와 Python을 관리합니다. 설치할 수 있는 `SKILL.md`가 없는 원본은 어댑터를 제공할 때까지 주석으로 보관합니다.
 
-## 전용 프로필 안의 로컬 스킬 관리
+## 로컬 스킬과 전용 실행 환경 관리
 
 설치된 스킬 화면에서 폴더 가져오기, 카탈로그 버전으로 업데이트, 활성화와 비활성화, 확인 후 제거, 새로 고침, 스킬 폴더 열기를 제공합니다. 마켓플레이스에서 설치한 항목에는 설치 당시의 원본 버전을 표시합니다. 사용 설정은 이후 AI 작업에 적용합니다. 제거 시 해당 전용 폴더와 출처 정보를 함께 삭제합니다. 카탈로그에서 내린 스킬이나 원격 조회에 실패한 경우에도 제거할 수 있습니다.
 
@@ -38,9 +38,17 @@
 
 스킬은 `%LOCALAPPDATA%\TableCloth\ManagedAi\profiles\openai-codex\codex-home\skills`에 보관합니다. 기존 가져오기 기능과 작업 잠금이 변경 작업을 제어합니다. 마켓플레이스는 이 프로필을 관리합니다. 사용자 전역 Codex 프로필과 스킬은 관리 범위에 포함하지 않습니다. [스킬 관리자](../src/TableCloth.ManagedAi.OpenAi/Skills/OpenAiCodexSkillManager.cs)와 [관리 경로](../src/TableCloth.ManagedAi.Core/ManagedAiPaths.cs)에서 저장 범위를 확인할 수 있습니다.
 
+실행 환경 탭은 설치한 Node.js와 Python 버전을 표시하고 **실행 환경 설치/업데이트**, **설치 상태 새로 고침**을 제공합니다. Codex 설치 경로에서도 두 실행 환경을 함께 준비합니다. 애플리케이션은 Windows x64와 ARM64용 Node.js 24.22.1, npm과 npx 11.19.1, Python 3.14.9를 고정해 사용합니다. [Node.js](https://nodejs.org/en/download/archive/v24.22.1)와 [Python](https://www.python.org/downloads/release/python-3149/)의 공식 ZIP을 내려받으며 [실행 환경 manifest](../src/TableCloth.ManagedAi.OpenAi/Distribution/SkillRuntimeManifest.cs)에 버전과 SHA-256 해시를 지정합니다.
+
+실행 파일은 `%LOCALAPPDATA%\TableCloth\ManagedAi\runtimes\skill-tools\releases\<설치 ID>` 아래의 `node`, `python` 디렉터리에 보관합니다. 설치 관리자는 압축 파일의 경로와 크기, 해시, 실행 버전과 설치 기록을 검사합니다. 검증을 마치면 활성 버전 정보를 원자적으로 교체해 두 실행 환경을 함께 전환합니다. 교체에 실패하거나 취소하면 이전 활성 버전을 보존합니다. npm 캐시, 설정, 임시 파일과 자식 프로세스의 홈 디렉터리는 `%LOCALAPPDATA%\TableCloth\ManagedAi\profiles\skill-tools` 아래에서 관리합니다. 전용 실행 경로는 자식 프로세스에만 적용합니다. 식탁보는 전역 `PATH`, 레지스트리와 기존 Node.js 또는 Python 설치를 변경하지 않습니다.
+
+Python은 [임베디드 배포판](https://docs.python.org/3.14/using/windows.html#the-embeddable-package)의 기본 `python314._pth` 격리를 유지합니다. 이번 설치는 표준 라이브러리를 사용하는 스크립트를 지원하며 pip, ensurepip, venv와 외부 Python 패키지 관리를 제공하지 않습니다. 설치 관리자는 `python3` 명령을 사용하는 스크립트를 위해 원본과 바이트가 같은 `python3.exe` 사본을 제공합니다. 추가 Python 패키지를 사용하는 스킬에는 별도의 의존성 검증이 남습니다.
+
 ## 자동 검증과 게시 경로의 구분
 
-자동 검증의 범위를 검토하겠습니다. 테스트는 검토 조건 없는 카탈로그 파싱, 다운로드 검증, 버전 추적, 교체 실패 시 복구, 제거와 뷰 모델 명령을 다룹니다. Avalonia 헤드리스 테스트는 실제 창을 생성합니다. 테스트에는 합성 스킬과 HTTP 응답을 사용합니다. 서비스의 사용자 자격 증명 연동이나 실제 MCP 연결은 이 테스트로 확인하지 않습니다. [백엔드 테스트](../src/TableCloth.ManagedAi.Test/SkillMarketplaceTests.cs)와 [UI 테스트](../src/TableCloth.Test/SkillMarketplaceTests.cs)에 검증 항목을 기록했습니다.
+자동 검증의 범위를 검토하겠습니다. 테스트는 검토 조건 없는 카탈로그 파싱, 다운로드 검증, 버전 추적, 교체 실패 시 복구, 제거와 뷰 모델 명령을 다룹니다. 실행 환경 테스트는 합성 ZIP과 프로세스 응답으로 무결성, 압축 해제 제한, 격리 설정과 두 실행 환경의 일괄 교체를 검사합니다. Avalonia 헤드리스 테스트는 실제 창을 생성합니다. 서비스의 사용자 자격 증명 연동이나 실제 MCP 연결은 이 테스트로 확인하지 않습니다. [스킬 테스트](../src/TableCloth.ManagedAi.Test/SkillMarketplaceTests.cs), [실행 환경 테스트](../src/TableCloth.ManagedAi.Test/SkillRuntimeTests.cs), [UI 테스트](../src/TableCloth.Test/SkillMarketplaceTests.cs)에 검증 항목을 기록했습니다.
+
+k-dart의 서비스 호출에서는 명령 실행 권한과 API 키 연동 범위를 구분해 다루겠습니다. Node.js와 Python을 설치해도 DART 연동 성공을 뜻하지 않습니다. 이번 변경은 채팅의 명령 실행 정책과 API 키 전달 방식을 유지합니다. [전용 프로필](../src/TableCloth.ManagedAi.Windows/WindowsManagedAiProfile.cs), [호출 구성](../src/TableCloth.ManagedAi.OpenAi/Execution/OpenAiCodexInvocationBuilder.cs), [대화 지침](../src/TableCloth.ManagedAi.OpenAi/Execution/OpenAiChatPromptFactory.cs)이 실행 범위를 제한합니다. 필요한 명령을 허용하고 `API_K_DART`를 별도 자격 증명 경로로 제공하는 기능은 추가 구현과 검증 범위로 남습니다.
 
 카탈로그와 애플리케이션은 서로 다른 경로로 배포합니다. TableClothCatalog가 XML을 게시하면 원격 후보를 조회할 수 있습니다. 사용자는 이후 식탁보 빌드에서 마켓플레이스 창을 사용할 수 있습니다. 카탈로그 게시를 기다리는 동안에도 애플리케이션에서 설치된 스킬을 관리할 수 있습니다.
 

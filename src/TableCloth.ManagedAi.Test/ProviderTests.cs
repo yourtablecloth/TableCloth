@@ -53,6 +53,53 @@ public sealed class ProviderTests
         Assert.HasCount(0, Directory.GetDirectories(fixture.Paths.Under("runs")));
     }
 
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public async Task ProviderConnectsInstalledToolsWithoutInstallingDuringARequest(bool structured)
+    {
+        using var fixture = new InstallFixture();
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        using var tools = new ToolEnvironmentFixture();
+        // Place the fixtures in the same managed root that the provider owns.
+        var release = fixture.Paths.Under("runtimes", "skill-tools", "releases", "fixture");
+        Directory.CreateDirectory(release);
+        var node = Path.Combine(release, "node");
+        var python = Path.Combine(release, "python");
+        Directory.Move(tools.Environment.NodeJs.RootDirectory, node);
+        Directory.Move(tools.Environment.Python.RootDirectory, python);
+        var manager = new InstalledTools(new(new("24.22.1", node, Path.Combine(node, "node.exe")),
+            new("3.14.9", python, Path.Combine(python, "python.exe"))));
+        var runner = new ResponseRunner(structured ? ValidationTests.Response() : "Fixture answer", fixture.Paths);
+        var profile = new WindowsManagedAiProfile(fixture.Paths);
+        var auth = new OpenAiCodexAuthManager(fixture.Paths, fixture.Installer, profile, runner);
+        var skills = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, profile, runner);
+        var provider = new OpenAiCodexProvider(fixture.Paths, fixture.Installer, auth, profile, runner, new(), new(fixture.Paths), skills, manager);
+        if (structured) await provider.SearchAsync(new("fixture"), null, CancellationToken.None);
+        else await provider.ChatAsync(new("fixture", []), null, CancellationToken.None);
+        Assert.AreEqual(1, manager.Reads);
+        Assert.AreEqual(0, manager.Installs);
+        Assert.Contains(node, runner.Invocation!.StartInfo.Environment["PATH"]!);
+        Assert.AreEqual(Path.Combine(python, "python.exe"), runner.Invocation.StartInfo.Environment["KSKILL_PYTHON"]);
+        Assert.AreEqual(fixture.Paths.Profile, runner.Invocation.StartInfo.Environment["CODEX_HOME"]);
+    }
+
+    private sealed class InstalledTools(SkillRuntimeEnvironment environment) : IManagedAiSkillRuntimeManager
+    {
+        public int Reads;
+        public int Installs;
+        public Task<SkillRuntimeEnvironment?> GetActiveAsync(CancellationToken cancellationToken)
+        {
+            Reads++;
+            return Task.FromResult<SkillRuntimeEnvironment?>(environment);
+        }
+        public Task<SkillRuntimeEnvironment> InstallAsync(IProgress<AiProgress>? progress, CancellationToken cancellationToken)
+        {
+            Installs++;
+            throw new InvalidOperationException("A request cannot install tools.");
+        }
+    }
+
     private sealed class ResponseRunner(string message, ManagedAiPaths paths) : IJsonlProcessRunner
     {
         public ProcessRunSpec? Invocation;

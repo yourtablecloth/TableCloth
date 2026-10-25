@@ -27,6 +27,13 @@ public static class ManagedAiText
     public static string MarketplaceScope => Select("관리 범위: 식탁보 전용 스킬 폴더", "Scope: TableCloth dedicated skill folder");
     public static string MarketplaceBrowse => Select("카탈로그 탐색", "Browse catalog");
     public static string MarketplaceInstalled => Select("설치된 스킬", "Installed skills");
+    public static string MarketplaceRuntimes => Select("실행 환경", "Runtimes");
+    public static string SkillRuntimeTitle => Select("스킬용 전용 실행 환경", "Dedicated skill runtimes");
+    public static string SkillRuntimeDescription => Select(
+        "식탁보 AI 전용 Node.js와 Python을 설치하거나 업데이트합니다. API 키와 추가 패키지 설정은 스킬에 따라 다릅니다.",
+        "Install or update Node.js and Python dedicated to TableCloth AI. API credentials and additional package settings depend on each skill.");
+    public static string SkillRuntimeInstall => Select("실행 환경 설치/업데이트", "Install or update runtimes");
+    public static string SkillRuntimeRefresh => Select("설치 상태 새로 고침", "Refresh installation status");
     public static string MarketplaceSearch => Select("이름, 설명, 저자 검색", "Search name, description, author");
     public static string MarketplaceInstalledSearch => Select("설치된 스킬 검색", "Search installed skills");
     public static string MarketplaceInstall => Select("스킬 설치", "Install skill");

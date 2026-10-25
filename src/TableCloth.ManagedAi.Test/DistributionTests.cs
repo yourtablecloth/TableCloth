@@ -170,11 +170,11 @@ internal sealed class InstallFixture : IDisposable
     private readonly byte[] _archive = DistributionTests.CreateArchive(SafeCodexArchive.RequiredFiles.Select(x => (x, TarEntryType.RegularFile)).ToArray());
     private readonly TestHttpFactory _factory;
 
-    public InstallFixture()
+    public InstallFixture(IManagedAiSkillRuntimeManager? skillRuntimes = null)
     {
         Runner = new FakeVersionRunner(this);
         _factory = new TestHttpFactory(Respond);
-        Installer = new(Paths, new(_factory, new()), Runner, new FakeProfile(Paths), new());
+        Installer = new(Paths, new(_factory, new()), Runner, new FakeProfile(Paths), new(), skillRuntimes);
     }
     private byte[] Checksums() => Encoding.UTF8.GetBytes(string.Join('\n', new[] { "x86_64", "aarch64" }.Select(arch =>
         Hash(_archive) + "  codex-package-" + arch + "-pc-windows-msvc.tar.gz")) + "\n");

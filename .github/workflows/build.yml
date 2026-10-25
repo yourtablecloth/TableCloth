@@ -132,6 +132,17 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
+    - name: Verify dedicated Node.js and Python runtimes
+      shell: pwsh
+      run: |
+        $runtimeProbeRoot = Join-Path $env:GITHUB_WORKSPACE 'artifacts/skill-runtime-smoke'
+        dotnet run --project src/TableCloth.ManagedAi.Poc -c $env:Configuration -- skill-runtime-install --accept-download --root $runtimeProbeRoot
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        dotnet run --project src/TableCloth.ManagedAi.Poc -c $env:Configuration --no-build -- skill-runtime-smoke --root $runtimeProbeRoot
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      env:
+        Configuration: ${{ matrix.configuration }}
+
     # Build TableCloth.Core project
     - name: Build TableCloth.Core project
       run: dotnet build $env:TableCloth_Core_Project_Path -c:$env:Configuration

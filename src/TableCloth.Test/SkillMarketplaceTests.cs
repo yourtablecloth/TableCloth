@@ -13,7 +13,7 @@ using TableCloth.ViewModels;
 namespace TableCloth.Test;
 
 [TestClass, DoNotParallelize]
-public sealed class SkillMarketplaceTests
+public sealed partial class SkillMarketplaceTests
 {
     [TestMethod]
     public Task InvalidInstalledSkillCanBeDisabledAndRemovedButCannotBeEnabled() => OnUiThread(async () =>
@@ -377,7 +377,7 @@ public sealed class SkillMarketplaceTests
             using var culture = new UiCultureScope(cultureName);
             Application.Current!.RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light;
             var manager = new SkillManager { Items = [TrackedSkill()] };
-            using var model = new SkillMarketplaceWindowViewModel(manager, new Marketplace(manager), new Messages());
+            using var model = new SkillMarketplaceWindowViewModel(manager, new Marketplace(manager), new Messages(), new SkillRuntimeManager { Active = RuntimeEnvironment("24.1.0", "3.13.1") });
             await model.LoadAsync();
             model.SelectedCatalogSkill = model.CatalogSkills.Single(x => x.Id == "available");
             model.SelectedInstalledSkill = model.InstalledSkills.Single();
@@ -409,6 +409,14 @@ public sealed class SkillMarketplaceTests
                 Assert.Contains(new string('b', 40), window.FindControl<SelectableTextBlock>("InstalledCatalogRevision")!.Text!);
                 Assert.Contains(cultureName == "ko-KR" ? "활성 스킬" : "enabled", window.FindControl<TextBlock>("InstalledSummary")!.Text!);
                 Save(window, $"marketplace-{cultureName}-{width}-{(dark ? "dark" : "light")}-installed.png");
+                window.FindControl<TabControl>("MarketplaceTabs")!.SelectedIndex = 2;
+                await Task.Yield();
+                Dispatcher.UIThread.RunJobs();
+                Assert.AreEqual("24.1.0", window.FindControl<TextBlock>("NodeJsRuntimeVersion")!.Text);
+                Assert.AreEqual("3.13.1", window.FindControl<TextBlock>("PythonRuntimeVersion")!.Text);
+                Assert.IsTrue(window.FindControl<Button>("SkillRuntimeInstall")!.IsEffectivelyEnabled);
+                Assert.IsTrue(window.FindControl<Button>("SkillRuntimeRefresh")!.IsEffectivelyEnabled);
+                Save(window, $"marketplace-{cultureName}-{width}-{(dark ? "dark" : "light")}-runtimes.png");
             }
             finally { window.Close(); }
             return true;

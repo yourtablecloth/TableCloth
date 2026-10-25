@@ -60,13 +60,17 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     private bool _catalogAvailable;
     private TaskCompletionSource? _localCompletion;
 
-    internal Task WaitForLocalOperationAsync() => _localCompletion?.Task ?? Task.CompletedTask;
+    internal Task WaitForLocalOperationAsync() => Task.WhenAll(_localCompletion?.Task ?? Task.CompletedTask,
+        _skillRuntimeStatusCompletion?.Task ?? Task.CompletedTask);
 
-    public SkillMarketplaceWindowViewModel(IManagedAiSkillManager manager, IManagedAiSkillMarketplace marketplace, IAppMessageBox messages)
+    public SkillMarketplaceWindowViewModel(IManagedAiSkillManager manager, IManagedAiSkillMarketplace marketplace,
+        IAppMessageBox messages, IManagedAiSkillRuntimeManager? skillRuntimes = null)
     {
         _manager = manager;
         _marketplace = marketplace;
         _messages = messages;
+        _skillRuntimes = skillRuntimes;
+        if (skillRuntimes is null) _skillRuntimeNotice = ManagedAiText.Select("실행 환경 관리 서비스를 사용할 수 없습니다.", "Runtime management is unavailable.");
         _token = _lifetime.Token;
         Categories.Add(new("", ManagedAiText.Select("모든 분야", "All categories")));
         _selectedCategory = Categories[0];
@@ -132,6 +136,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         InstallSkillCommand.NotifyCanExecuteChanged();
         UpdateCatalogSkillCommand.NotifyCanExecuteChanged();
         UpdateInstalledSkillCommand.NotifyCanExecuteChanged();
+        InstallSkillRuntimesCommand.NotifyCanExecuteChanged();
     }
 
     private bool CanUseLocal() => !LocalBusy && !_disposed;
@@ -144,7 +149,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     private bool CanOpenSource() => !_disposed && SelectedCatalogSkill is { } item && CatalogSkills.Contains(item) && TryGetSourceUri(item.Entry, out _);
     private bool CanOpenLicenseSource() => !_disposed && SelectedCatalogSkill is { } item && CatalogSkills.Contains(item) && TryGetLicenseUri(item.Entry, out _);
 
-    public Task LoadAsync() => Task.WhenAll(RefreshInstalled(), RefreshCatalog());
+    public Task LoadAsync() => Task.WhenAll(RefreshInstalled(), RefreshCatalog(), RefreshSkillRuntimeStatus());
 
     [RelayCommand(CanExecute = nameof(CanRefreshCatalog))]
     private async Task RefreshCatalog()
@@ -427,5 +432,6 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         RefreshCatalogCommand.NotifyCanExecuteChanged();
         OpenSourceCommand.NotifyCanExecuteChanged();
         OpenLicenseSourceCommand.NotifyCanExecuteChanged();
+        RefreshSkillRuntimeStatusCommand.NotifyCanExecuteChanged();
     }
 }

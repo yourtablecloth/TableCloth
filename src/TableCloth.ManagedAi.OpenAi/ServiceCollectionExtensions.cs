@@ -21,6 +21,15 @@ public static class ServiceCollectionExtensions
             AllowAutoRedirect = false, UseCookies = false, UseDefaultCredentials = false, Credentials = null
         }).RemoveAllLoggers();
         services.AddSingleton<SkillCatalogClient>();
+        services.AddHttpClient(SkillRuntimeManager.HttpClientName, client =>
+        {
+            client.Timeout = Timeout.InfiniteTimeSpan;
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("TableCloth-SkillRuntimes/1.0");
+        }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+            AllowAutoRedirect = false, UseCookies = false, UseDefaultCredentials = false, Credentials = null
+        }).RemoveAllLoggers();
+        services.AddSingleton<IManagedAiSkillRuntimeManager, SkillRuntimeManager>();
         services.AddSingleton<GithubSkillInstaller>();
         services.AddSingleton<IManagedAiSkillMarketplace, ManagedAiSkillMarketplace>();
         services.AddHttpClient(OpenAiReleaseMetadataClient.HttpClientName, client =>
