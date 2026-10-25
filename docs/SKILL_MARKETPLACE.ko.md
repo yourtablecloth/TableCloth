@@ -2,7 +2,7 @@
 
 2026년 10월 25일 기준으로 이번 구현은 식탁보 `develop` 계열을 대상으로 합니다. 마켓플레이스는 TableClothCatalog의 별도 XML 스킬 카탈로그를 읽고 식탁보 AI 전용 Codex 프로필에 설치한 스킬을 관리합니다. 현재 공개한 Preview 릴리스에는 이번 변경을 포함하지 않습니다.
 
-별도 `poc/appcontainer-skill-runner` 평가 분기는 활성 항목 6개의 실험용 카탈로그와 독립 [AppContainer 실행 PoC](../tools/appcontainer-skill-poc/README.ko.md)를 포함합니다. 아래 제품 설명은 기존 3개 항목의 등재 정책을 다룹니다. PoC의 중계기와 런타임은 채팅 창에 연결하지 않습니다.
+`develop` 통합에는 평가 도구로 독립 [AppContainer 실행 PoC](../tools/appcontainer-skill-poc/README.ko.md)를 포함합니다. 공개 카탈로그는 실제 테스트를 위한 고정 스크립트 후보 3개를 포함해 총 6개를 제공합니다. PoC의 중계기와 런타임은 제품 채팅 창에 연결하지 않으므로 설치만으로 대화에서 해당 스크립트를 실행할 수는 없습니다.
 
 마켓플레이스에서 스킬 검색, 출처와 라이선스 열람, 설치와 업데이트, 로컬 스킬 관리를 제공합니다. 카탈로그에는 공개 상태나 검토 상태를 두지 않습니다. 주석 밖에 있는 스킬 항목을 설치 대상으로 표시합니다.
 
@@ -24,9 +24,9 @@
 
 `SkillCatalog Version="1"` 아래에 고정 ID를 가진 `Skill` 항목을 기록합니다. 각 항목은 GitHub 저장소, 경로, `Source.Ref`에 고정한 원본 커밋을 지정합니다. 설명, 저자, SPDX 식별자, 라이선스 근거, 런타임과 네트워크 요구 사항, 설치 방식, 사용 조건도 기록합니다. `Skill` 블록을 주석 처리하거나 삭제하면 원격 목록에서 제외합니다. 기존 설치본은 계속 관리할 수 있습니다. [공용 모델](../src/TableCloth.ManagedAi.Core/SkillCatalog.cs)에 애플리케이션이 읽는 필드를 정의했습니다.
 
-활성 카탈로그에는 `official-report-skillset`, [tablecloth-certificate-expiry](https://github.com/yourtablecloth/tablecloth-certificate-expiry), [tablecloth-windows-sandbox](https://github.com/yourtablecloth/tablecloth-windows-sandbox) 세 스킬을 표시합니다. 보고서 스킬은 초안 작성을 위한 지침과 참고 문서를 제공합니다. 나머지 두 스킬은 설치와 활성화 후 API 키 없이 식탁보의 호스트 브리지가 제공한 로컬 보고서를 해석합니다. 새 프로필에 이 스킬들을 자동으로 설치하지는 않습니다.
+활성 카탈로그에는 스킬 6개를 표시합니다. 그중 `official-report-skillset`, [tablecloth-certificate-expiry](https://github.com/yourtablecloth/tablecloth-certificate-expiry), [tablecloth-windows-sandbox](https://github.com/yourtablecloth/tablecloth-windows-sandbox)는 지침이나 기존 호스트 브리지를 사용합니다. 보고서 스킬은 초안 작성을 위한 지침과 참고 문서를 제공합니다. 나머지 두 스킬은 설치와 활성화 후 API 키 없이 식탁보의 호스트 브리지가 제공한 로컬 보고서를 해석합니다. 새 프로필에 이 스킬들을 자동으로 설치하지는 않습니다.
 
-`bok-ecos-stats`, `kosis-stats`, `tablecloth-calculators`는 스크립트 실행을 요구하므로 주석으로 보류합니다. `korean-jangbu-for`와 `korean-law-mcp`는 MCP 연결과 추가 설정을 요구하므로 주석으로 보류합니다. 이전에 보류한 다른 후보도 주석으로 보존합니다. 이 항목들은 이후 작업을 위해 원본 정보를 남기며 활성 카탈로그의 설치 대상으로 제공하지 않습니다. [스킬 제공 기준](https://github.com/yourtablecloth/TableClothCatalog/blob/main/docs/SKILL_ELIGIBILITY.ko.md)에서 현재 범위를 설명합니다. API 키 설정과 DPAPI 자격 증명 관리는 [다음 버전 이슈 #321](https://github.com/yourtablecloth/TableCloth/issues/321)에서 계속 추적합니다.
+`bok-ecos-stats`, `kosis-stats`, `tablecloth-calculators`는 고정 원본의 AppContainer 평가 후보로만 활성화합니다. 제품 대화는 이 스킬들이 요구하는 스크립트 실행을 지원하지 않습니다. `korean-jangbu-for`와 `korean-law-mcp`는 MCP 연결과 추가 설정을 요구하므로 주석으로 보류합니다. 이전에 보류한 다른 후보도 주석으로 보존하며 설치 대상으로 제공하지 않습니다. [스킬 제공 기준](https://github.com/yourtablecloth/TableClothCatalog/blob/main/docs/SKILL_ELIGIBILITY.ko.md)과 [AppContainer 평가 보고서](https://github.com/yourtablecloth/TableClothCatalog/blob/main/docs/APP_CONTAINER_POC.ko.md)에서 정확한 원본 버전과 평가 예외를 설명합니다. API 키 설정과 DPAPI 자격 증명 관리는 [다음 버전 이슈 #321](https://github.com/yourtablecloth/TableCloth/issues/321)에서 계속 추적합니다.
 
 ## 카탈로그 버전에 맞춘 설치와 업데이트
 
@@ -36,7 +36,7 @@
 
 마켓플레이스는 설치 시 카탈로그 ID, 저장소, 경로와 원본 커밋을 보관합니다. 같은 출처의 `Source.Ref`가 달라지면 카탈로그와 설치된 스킬 화면에서 해당 버전으로 업데이트할 수 있습니다. 커밋 해시는 버전을 구분하며 시간상 선후 관계를 뜻하지 않습니다. 업데이트는 교체 파일을 임시 폴더에서 검증한 뒤 설치본에 반영합니다. 검증에 실패하거나 작업을 취소하면 기존 파일, 버전 정보와 사용 설정을 보존합니다. 같은 ID의 로컬 스킬 가져오기 항목은 마켓플레이스 업데이트로 덮어쓰지 않습니다.
 
-다만 후보에 따라 API 키, OAuth 자격 증명, MCP 연결, 추가 패키지 또는 스크립트 실행을 요구합니다. 카탈로그의 사용 조건에 이러한 의존성을 기록합니다. 스킬 파일을 설치해도 서비스 자격 증명을 제공하거나 MCP 서버를 구성하거나 명령 실행을 허용하지 않습니다. 필수 실행 경로를 제공하지 못하는 후보는 [스킬 제공 기준](https://github.com/yourtablecloth/TableClothCatalog/blob/main/docs/SKILL_ELIGIBILITY.ko.md)에 따라 주석으로 보관합니다.
+다만 후보에 따라 API 키, OAuth 자격 증명, MCP 연결, 추가 패키지 또는 스크립트 실행을 요구합니다. 카탈로그의 사용 조건에 이러한 의존성을 기록합니다. 스킬 파일을 설치해도 서비스 자격 증명을 제공하거나 MCP 서버를 구성하거나 명령 실행을 허용하지 않습니다. [스킬 제공 기준](https://github.com/yourtablecloth/TableClothCatalog/blob/main/docs/SKILL_ELIGIBILITY.ko.md)은 평가용 고정 스크립트 3개를 제외하고 필수 실행 경로를 제공하지 못하는 후보를 주석으로 보관합니다. 평가 예외로 제품 호환성을 입증하지는 않습니다.
 
 ## 설치본의 로컬 관리 범위
 
@@ -46,7 +46,7 @@
 
 스킬은 `%LOCALAPPDATA%\TableCloth\ManagedAi\profiles\openai-codex\codex-home\skills`에 보관합니다. 기존 가져오기 기능과 작업 잠금이 변경 작업을 제어합니다. 마켓플레이스는 이 프로필을 관리합니다. 사용자 전역 Codex 프로필과 스킬은 관리 범위에 포함하지 않습니다. [스킬 관리자](../src/TableCloth.ManagedAi.OpenAi/Skills/OpenAiCodexSkillManager.cs)와 [관리 경로](../src/TableCloth.ManagedAi.Core/ManagedAiPaths.cs)에서 저장 범위를 확인할 수 있습니다.
 
-## 네이티브 Codex와 호스트 브리지의 실행 범위
+## 네이티브 Codex와 호스트 브리지 및 AppContainer 평가
 
 AI 사용 준비 과정에서는 대화와 검색에 사용하는 네이티브 Codex CLI를 설치합니다. Node.js와 Python은 설치하지 않습니다. 마켓플레이스에도 언어 런타임 설치, 버전 표시와 진단 기능을 제공하지 않습니다. [Codex 설치기](../src/TableCloth.ManagedAi.OpenAi/Distribution/OpenAiCodexPackageInstaller.cs)는 스킬 파일 설치기와 별도로 유지합니다.
 
@@ -54,11 +54,13 @@ AI 사용 준비 과정에서는 대화와 검색에 사용하는 네이티브 C
 
 인증서 만료와 Windows Sandbox 연동에서는 앱이 소유한 호스트 브리지를 사용합니다. [AI 창](../src/TableCloth.App/ManagedAi/ManagedAiWindow.cs)이 지원하는 사용자 요청을 인식하면 모델에 보고서를 보내기 전에 브리지를 실행합니다. 인증서 브리지는 사용자 동의를 받고 만료 건수만 전달합니다. Sandbox 브리지는 `list`, `start`, `stop`, `connect`, `ip`를 지원하며 종료 전에 사용자에게 확인합니다. 모델은 전달받은 보고서를 설명합니다. 두 연동은 Node.js나 Python에 의존하지 않습니다. `Network="none"`은 스킬 자체의 데이터 접근 조건을 나타내며 Codex 대화는 온라인 연결을 사용합니다.
 
+독립 [AppContainer PoC](../tools/appcontainer-skill-poc/README.ko.md)는 별도 평가 런타임을 준비하고 고정 Python과 Node 스크립트를 테스트 중계기로 제공합니다. 제품 설치기나 채팅 프로필과 연결하지 않고 별도로 실행합니다. [평가 결과](../tools/appcontainer-skill-poc/RESULTS.ko.md)는 격리 실행과 고정 응답을 사용한 Codex 및 MCP 연결을 실제 모델의 도구 선택과 구분합니다. 평가 도구를 `develop`에 병합해도 제품 채팅에 중계기를 등록하거나 마켓플레이스에 언어 런타임 설치 기능을 복원하지는 않습니다.
+
 ## 자동 검증과 게시 경로의 구분
 
 자동 검증의 범위를 검토하겠습니다. 테스트는 검토 조건 없는 카탈로그 파싱, 다운로드 검증, 버전 추적, 교체 실패 시 복구, 제거와 뷰 모델 명령을 다룹니다. 백엔드 테스트는 합성 응답으로 실패와 복구 경로를 검사합니다. Avalonia 헤드리스 테스트는 언어, 테마와 창 크기를 달리해 마켓플레이스의 두 탭을 검사합니다. [스킬 테스트](../src/TableCloth.ManagedAi.Test/SkillMarketplaceTests.cs)와 [UI 테스트](../src/TableCloth.Test/SkillMarketplaceTests.cs)에 검증 항목을 기록했습니다.
 
-테스트용 응답, 실제 저장소 다운로드와 네이티브 Codex 스킬 조회는 서로 다른 범위를 검증합니다. 테스트용 응답은 구현한 계약을 검사합니다. 실제 다운로드와 스킬 조회로는 설치 파일, 메타데이터와 활성 상태를 확인할 수 있습니다. 어느 결과도 모델의 스크립트 호출이나 외부 서비스, API 자격 증명, MCP 연결의 정상 동작을 입증하지 않습니다. 이 문서에서는 실제 서비스와 모델의 도구 실행을 검증한 것으로 안내하지 않습니다. 호스트 브리지도 로컬 CLI와 Windows 기능에 의존하므로 스킬 목록에 표시된 사실만으로 실제 호스트 작업의 성공을 판단하지 않습니다.
+테스트용 응답, 실제 저장소 다운로드와 네이티브 Codex 스킬 조회는 서로 다른 범위를 검증합니다. 테스트용 응답은 구현한 계약을 검사합니다. 실제 다운로드와 스킬 조회로는 설치 파일, 메타데이터와 활성 상태를 확인할 수 있습니다. 어느 결과도 모델의 스크립트 호출이나 외부 서비스, API 자격 증명, MCP 연결의 정상 동작을 입증하지 않습니다. 별도 [PoC 결과](../tools/appcontainer-skill-poc/RESULTS.ko.md)는 실측한 x64 호스트의 격리 실행, 고정 공개 서비스 표본 2개와 로컬 응답 모의 서버를 사용한 CLI 및 MCP 연결을 기록합니다. 실제 모델의 도구 선택, 제품 대화의 자동 스크립트 실행, Windows 10 22H2와 ARM64는 미검증으로 남깁니다. 호스트 브리지도 로컬 CLI와 Windows 기능에 의존하므로 스킬 목록에 표시된 사실만으로 실제 호스트 작업의 성공을 판단하지 않습니다.
 
 카탈로그와 애플리케이션은 서로 다른 경로로 배포합니다. TableClothCatalog가 XML을 게시하면 원격 후보를 조회할 수 있습니다. 사용자는 이후 식탁보 빌드에서 마켓플레이스 창을 사용할 수 있습니다. 카탈로그 게시를 기다리는 동안에도 애플리케이션에서 설치된 스킬을 관리할 수 있습니다.
 
