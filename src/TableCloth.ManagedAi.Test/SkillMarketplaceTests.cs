@@ -18,7 +18,10 @@ public sealed class SkillMarketplaceTests
     public void RepositoryCatalogMatchesRuntimeParserWithoutReviewState()
     {
         var entries = SkillCatalogClient.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Fixtures", "SkillCatalog.xml")));
-        Assert.HasCount(10, entries);
+        CollectionAssert.AreEquivalent(new[]
+        {
+            "bok-ecos-stats", "kosis-stats", "korean-jangbu-for", "korean-law-mcp", "official-report-skillset"
+        }, entries.Select(x => x.Id).ToArray());
         Assert.IsTrue(entries.All(x => x.CanInstall));
         Assert.IsTrue(entries.All(x => x.SourceRef.Length == 40));
         Assert.AreEqual("upstream", entries.Single(x => x.Id == "korean-law-mcp").InstallMode);

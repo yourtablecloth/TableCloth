@@ -20,6 +20,8 @@ The application reads `https://catalog.yourtablecloth.app/SkillCatalog.xml`. The
 
 `SkillCatalog Version="1"` contains `Skill` entries with stable IDs. Each entry identifies a GitHub repository, a path, and an immutable source commit in `Source.Ref`. Descriptions, authors, SPDX identifiers, license evidence, runtime and network requirements, install mode, and usage notes describe each skill. Commenting out or removing a `Skill` block withdraws it from the remote list. Installed copies remain manageable. See the [shared model](../src/TableCloth.ManagedAi.Core/SkillCatalog.cs).
 
+The initial listing contains five skills: `official-report-skillset`, `bok-ecos-stats`, `kosis-stats`, `korean-law-mcp`, and `korean-jangbu-for`. Other candidates remain in XML comments. BOK sample-key requests return at most 10 rows. Keyless KOSIS and law queries depend on external shared servers, while bookkeeping requires separate MCP and child-skill configuration. API-key settings and DPAPI credential management are tracked for the next version in [issue #321](https://github.com/yourtablecloth/TableCloth/issues/321).
+
 ## Installation and changes to the catalog revision
 
 Selecting an uninstalled skill enables installation without review approval. Installation rechecks the current catalog by skill ID. The source must identify an installable upstream skill at a fixed commit, and its license source must point to a file in the same repository at that commit. Technical validation still rejects invalid metadata or contents. Legacy review attributes from the earlier catalog are accepted for transition and do not grant or deny installation.
