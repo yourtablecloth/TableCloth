@@ -36,6 +36,9 @@ public static class UseTableClothExtensions
         builder.Services.AddManagedOpenAi();
         builder.Services.AddSingleton<IJsonlProcessRunner, JsonlProcessRunner>();
         builder.Services.AddSingleton<IManagedAiProfile, WindowsManagedAiProfile>();
+        builder.Services.AddSingleton<WindowsManagedAiScriptRuntimeManager>();
+        builder.Services.AddSingleton<IManagedAiScriptRuntimeManager>(service => service.GetRequiredService<WindowsManagedAiScriptRuntimeManager>());
+        builder.Services.AddSingleton<IManagedAiSkillExecution, WindowsManagedAiSkillExecution>();
         builder.Services.AddTransient<ITableClothBrowser, TableClothBrowserAdapter>();
         builder.Services.AddTransient<IManagedAiCatalogLauncher, ManagedAiCatalogLauncher>();
         builder.Services.AddTransient<IManagedAiCatalogChoice, ManagedAiCatalogChoice>();

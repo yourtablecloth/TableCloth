@@ -5,7 +5,10 @@ namespace TableCloth.AppContainerPoc;
 
 // This is a trusted, local evaluation registration file, never a model-supplied document.
 public sealed record EvaluationManifest(string OwnedRoot, string PythonExecutable, string PythonSha256,
-    string? NodeExecutable, string? NodeSha256, IReadOnlyList<SkillRegistration> Skills);
+    string? NodeExecutable, string? NodeSha256, IReadOnlyList<SkillRegistration> Skills,
+    IReadOnlyList<RuntimeFileRegistration>? RuntimeFiles = null);
+
+public sealed record RuntimeFileRegistration(string Path, string Sha256);
 
 public sealed record SkillRegistration(string SkillId, string Kind, string ScriptPath, string Sha256,
     IReadOnlyList<string> AllowedOperations, IReadOnlyList<string> FixedArguments, bool RequiresNetwork);
@@ -14,7 +17,7 @@ public sealed class BrokerValidationException(string message) : Exception(messag
 
 internal static class BrokerFiles
 {
-    internal const int MaximumManifestBytes = 131072;
+    internal const int MaximumManifestBytes = 1048576;
     internal const int MaximumInputBytes = 65536;
     internal static readonly string[] CalculatorOperations =
     [
@@ -34,7 +37,7 @@ internal static class BrokerFiles
         using var document = JsonDocument.Parse(bytes, new JsonDocumentOptions { MaxDepth = 16 });
         ValidateJson(document.RootElement);
         var root = document.RootElement;
-        ObjectFields(root, ["ownedRoot", "pythonExecutable", "pythonSha256", "nodeExecutable", "nodeSha256", "skills"]);
+        ObjectFields(root, ["ownedRoot", "pythonExecutable", "pythonSha256", "nodeExecutable", "nodeSha256", "skills", "runtimeFiles"]);
         var ownedRoot = Text(root, "ownedRoot", 240);
         if (!Path.IsPathFullyQualified(ownedRoot) || ownedRoot.StartsWith(@"\\", StringComparison.Ordinal)) throw Invalid();
         ownedRoot = Path.TrimEndingDirectorySeparator(Path.GetFullPath(ownedRoot));
@@ -80,11 +83,49 @@ internal static class BrokerFiles
             else if (operations.Count != 0 || arguments.Count == 0) throw Invalid();
             skills.Add(new(id, kind, script, hash, operations, arguments, network));
         }
-        // Validate executable and script content before advertising any registration.
+        var runtimeFiles = new List<RuntimeFileRegistration>();
+        if (root.TryGetProperty("runtimeFiles", out var dependencies))
+        {
+            if (dependencies.ValueKind != JsonValueKind.Array || dependencies.GetArrayLength() > 1024) throw Invalid();
+            var unique = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var dependency in dependencies.EnumerateArray())
+            {
+                ObjectFields(dependency, ["path", "sha256"]);
+                var dependencyPath = ResolveFile(ownedRoot, Text(dependency, "path", 240));
+                if (!unique.Add(dependencyPath)) throw Invalid();
+                runtimeFiles.Add(new(dependencyPath, Hash(dependency, "sha256")));
+            }
+        }
+        // Validate executable, dependencies and script content before advertising any registration.
         await using (await OpenVerifiedAsync(ownedRoot, python, pythonHash, token)) { }
         if (node is not null) { await using var ignored = await OpenVerifiedAsync(ownedRoot, node, nodeHash!, token); }
         foreach (var skill in skills) { await using var ignored = await OpenVerifiedAsync(ownedRoot, skill.ScriptPath, skill.Sha256, token); }
-        return new(ownedRoot, python, pythonHash, node, nodeHash, skills.AsReadOnly());
+        await using (await OpenRuntimeFilesAsync(ownedRoot, runtimeFiles, token)) { }
+        return new(ownedRoot, python, pythonHash, node, nodeHash, skills.AsReadOnly(), runtimeFiles.AsReadOnly());
+    }
+
+    internal static async Task<IAsyncDisposable> OpenRuntimeFilesAsync(string root,
+        IReadOnlyList<RuntimeFileRegistration>? files, CancellationToken token)
+    {
+        var handles = new RuntimeFileLocks();
+        try
+        {
+            if (files is not null)
+                foreach (var file in files) handles.Add(await OpenVerifiedAsync(root, file.Path, file.Sha256, token));
+            return handles;
+        }
+        catch { await handles.DisposeAsync(); throw; }
+    }
+
+    private sealed class RuntimeFileLocks : IAsyncDisposable
+    {
+        private readonly List<FileStream> _files = [];
+        internal void Add(FileStream file) => _files.Add(file);
+        public async ValueTask DisposeAsync()
+        {
+            foreach (var file in _files) await file.DisposeAsync();
+            _files.Clear();
+        }
     }
 
     internal static async Task<FileStream> OpenVerifiedAsync(string root, string path, string expectedHash, CancellationToken token)

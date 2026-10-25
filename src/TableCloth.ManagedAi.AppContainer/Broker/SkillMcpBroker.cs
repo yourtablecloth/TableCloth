@@ -102,8 +102,8 @@ public static class SkillMcpBroker
                             writer.WritePropertyName("tools"); writer.WriteStartObject(); writer.WriteBoolean("listChanged", false); writer.WriteEndObject();
                             writer.WriteEndObject();
                             writer.WritePropertyName("serverInfo"); writer.WriteStartObject();
-                            writer.WriteString("name", "tablecloth-appcontainer-skill-poc"); writer.WriteString("version", "0.1.0"); writer.WriteEndObject();
-                            writer.WriteString("instructions", "Evaluation only. Fixed registered scripts run through the native AppContainer runner. Network-required registrations are blocked. MCP itself does not provide isolation.");
+                            writer.WriteString("name", "tablecloth-appcontainer-skills"); writer.WriteString("version", "0.1.0"); writer.WriteEndObject();
+                            writer.WriteString("instructions", "Experimental fixed registered scripts run through the native AppContainer runner. Network-required registrations are blocked. MCP itself does not provide isolation.");
                             writer.WriteEndObject();
                         }, token);
                         initialized = true;

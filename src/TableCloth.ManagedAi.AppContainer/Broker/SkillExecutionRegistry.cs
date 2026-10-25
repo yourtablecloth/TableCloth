@@ -50,6 +50,7 @@ public sealed class SkillExecutionRegistry
             var executableHash = skill.Kind == "node-json-stdin" ? _manifest.NodeSha256! : _manifest.PythonSha256;
             await using var executableLock = await BrokerFiles.OpenVerifiedAsync(_manifest.OwnedRoot, executable, executableHash, token);
             await using var scriptLock = await BrokerFiles.OpenVerifiedAsync(_manifest.OwnedRoot, skill.ScriptPath, skill.Sha256, token);
+            await using var runtimeLocks = await BrokerFiles.OpenRuntimeFilesAsync(_manifest.OwnedRoot, _manifest.RuntimeFiles, token);
             var workRoot = Path.Combine(_manifest.OwnedRoot, "broker-work");
             BrokerFiles.RequireUnder(_manifest.OwnedRoot, workRoot);
             BrokerFiles.RejectReparsePoints(workRoot);

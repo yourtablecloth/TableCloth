@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-10-25T15:24:27.3693254+00:00",
+  "scope": "Preview 7 preparation: fresh app-owned Windows x64 runtime installation, real AppContainer version and long-path probes, and real-model calculator execution through the DI-resolved production OpenAiCodexProvider.ChatAsync.",
+  "freshRuntimeInstallationObservedAtUtc": "2026-10-25T15:08:54.7346287+00:00",
+  "localRecords": [
+    {
+      "path": "Artifacts/runtime-preview7-check/evidence.json",
+      "sha256": "2a6b964bec2ee146c84a06dc4954913517661823ff233407e2ff1d1b3740a1a5"
+    },
+    {
+      "path": "Artifacts/runtime-preview7-check/owned/skill-execution/current-runtimes.json",
+      "sha256": "d553378750717c848bbcd6e6f7e683a1dfd25a8f4e956c1656dc2a09028f6305"
+    }
+  ],
+  "architecture": "x64",
+  "python": {
+    "source": "https://www.python.org/ftp/python/3.14.9/python-3.14.9-embeddable-amd64.zip",
+    "officialMetadata": "https://www.python.org/ftp/python/3.14.9/windows-3.14.9.json",
+    "archiveSha256": "f0c8bd86db7ce6336a9686f6fd0c3b71a5a2fac57d1dddc5a8d447e4688ab2dc",
+    "installedVersion": "3.14.9",
+    "appContainerRequired": true,
+    "longPathReadWriteOver320Characters": true
+  },
+  "node": {
+    "source": "https://nodejs.org/dist/v24.22.1/node-v24.22.1-win-x64.zip",
+    "officialMetadata": "https://nodejs.org/dist/v24.22.1/SHASUMS256.txt",
+    "archiveSha256": "d2046d28c2c3dcd211ac5145c0bf30e2047ef9dfb306693c8c6e2eccd8b95fa5",
+    "installedVersion": "24.22.1",
+    "appContainerRequired": true,
+    "longPathReadWriteOver320Characters": true,
+    "packageManagersInstalled": false,
+    "marketplaceAdapterRegistered": false
+  },
+  "policy": {
+    "shellTool": false,
+    "unifiedExec": false,
+    "codexSandbox": "read-only",
+    "approvalPolicy": "never",
+    "calculatorMcpApproval": "approve",
+    "workerNetwork": false,
+    "runtimeDependenciesVerifiedAgainstPinnedArchive": true
+  },
+  "focusedRuntimeUnitTests": { "passed": 19, "failed": 0, "skipped": 0 },
+  "productProviderIntegration": {
+    "observedAtUtc": "2026-10-25T15:24:27.3693254+00:00",
+    "provider": "actual DI-resolved OpenAiCodexProvider.ChatAsync",
+    "cliVersion": "0.156.1",
+    "appOwnedCli": true,
+    "appOwnedCodexProfile": true,
+    "model": "gpt-6-luna",
+    "realModelInference": true,
+    "mockServer": false,
+    "brokerHost": "current TableCloth.exe --skill-mcp",
+    "manualActivationReceiptRequired": false,
+    "server": "tablecloth_skills",
+    "tool": "tablecloth-calculators",
+    "arguments": { "operation": "discount.single", "price": 1000000, "rate_percent": 10 },
+    "completedMcpCalls": 1,
+    "completedCommandExecutionCalls": 0,
+    "completedTurn": true,
+    "worker": {
+      "status": "completed",
+      "wasAppContainer": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "outputLimited": false,
+      "failure": null,
+      "scriptOutput": {
+        "ok": true,
+        "operation": "discount.single",
+        "result": { "original": "1000000.00", "discount": "100000.00", "final": "900000.00" }
+      }
+    },
+    "providerResponse": {
+      "discount": 100000,
+      "final": 900000,
+      "attributedTool": "tablecloth-calculators/discount.single",
+      "searchCalls": 0
+    },
+    "runtimeStatus": {
+      "python": { "installed": true, "version": "3.14.9", "longPathsSupported": true, "failure": null },
+      "node": { "installed": true, "version": "24.22.1", "longPathsSupported": true, "failure": null }
+    },
+    "localRecords": [
+      {
+        "path": "Artifacts/release-v1.22.0-preview.7/product-routing/provider.events.jsonl",
+        "sha256": "3e624aa3515f750a09888d4ae729916a7401fa6d1361ea46e7581fc55204fc6f"
+      },
+      {
+        "path": "Artifacts/release-v1.22.0-preview.7/product-routing/provider.invocation.json",
+        "sha256": "f447a71a32d622cf9eda521085471438778d822c3335562f8ae6c439804456d4"
+      },
+      {
+        "path": "Artifacts/release-v1.22.0-preview.7/product-routing/provider.response.json",
+        "sha256": "72ee69428918577628462fdbabb33f329fd323ed3d70368733f82d85ef6c3a90"
+      },
+      {
+        "path": "Artifacts/release-v1.22.0-preview.7/product-routing/runtime-status.json",
+        "sha256": "c11a3bad7f55623b16b6c1be3e365335c163abd8c546b3910f22fcabe9cbc74d"
+      }
+    ]
+  },
+  "releaseConfigurationTests": {
+    "configuration": "Release",
+    "managedAi": { "passed": 219, "failed": 0, "skipped": 0 },
+    "tableCloth": { "passed": 334, "failed": 0, "skipped": 0 },
+    "spork": { "passed": 43, "failed": 0, "skipped": 0 }
+  },
+  "qualificationLimits": [
+    "Actual native worker execution covers Windows x64 on this development machine.",
+    "ARM64 package URLs and official hashes were verified; ARM64 execution and Windows 10 22H2 execution are not qualified by this evidence.",
+    "The observations came from the preparation working tree, not a final signed installer.",
+    "The product-provider run establishes real model routing through the current framework-dependent product executable; it does not establish automated GUI interaction, final signed-package behavior, signing or publication.",
+    "The historical manual-activation experiment in appcontainer-product-integration-evidence.json does not qualify this runtime installer."
+  ]
+}

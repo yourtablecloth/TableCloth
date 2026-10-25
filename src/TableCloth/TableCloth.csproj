@@ -131,6 +131,7 @@
 	  <ProjectReference Include="..\Spork.Sandbox\Spork.Sandbox.csproj" />
 	  <ProjectReference Include="..\TableCloth.App\TableCloth.App.csproj" />
 	  <ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+	  <ProjectReference Include="..\TableCloth.ManagedAi.AppContainer\TableCloth.ManagedAi.AppContainer.csproj" />
 	  <ProjectReference Include="..\TableCloth.Cli\TableCloth.Cli.csproj" ReferenceOutputAssembly="false"
 	                    Condition="'$(RuntimeIdentifier)' == ''" />
 	</ItemGroup>

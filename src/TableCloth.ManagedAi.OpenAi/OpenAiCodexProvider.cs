@@ -5,7 +5,8 @@ namespace TableCloth.ManagedAi.OpenAi;
 
 public sealed class OpenAiCodexProvider(ManagedAiPaths paths, IManagedRuntimeManager runtimes,
     OpenAiCodexAuthManager authentication, IManagedAiProfile profile, IJsonlProcessRunner runner,
-    ManagedAiOptions options, DiagnosticsSink diagnostics, OpenAiCodexSkillManager skills) : IManagedAiProvider, IManagedAiChatProvider
+    ManagedAiOptions options, DiagnosticsSink diagnostics, OpenAiCodexSkillManager skills,
+    IManagedAiSkillExecution? skillExecution = null) : IManagedAiProvider, IManagedAiChatProvider
 {
     public async Task<AiSearchResponse> SearchAsync(AiSearchRequest request, IProgress<AiProgress>? progress,
         CancellationToken cancellationToken)
@@ -51,7 +52,9 @@ public sealed class OpenAiCodexProvider(ManagedAiPaths paths, IManagedRuntimeMan
         var notice = NoticeAsync();
         try
         {
-            await skills.SynchronizeAsync(runtime, runDirectory, cancellationToken);
+            var availableSkills = await skills.SynchronizeAsync(runtime, runDirectory, cancellationToken);
+            using var bridge = !structured && skillExecution is not null
+                ? await skillExecution.PrepareAsync(availableSkills, runDirectory, cancellationToken) : null;
             var schema = Path.Combine(runDirectory, "search-result.schema.json");
             if (structured)
             {
@@ -62,7 +65,7 @@ public sealed class OpenAiCodexProvider(ManagedAiPaths paths, IManagedRuntimeMan
             }
             progress?.Report(new("Thinking"));
             var invocation = structured ? OpenAiCodexInvocationBuilder.Search(runtime, runDirectory, schema, prompt, options)
-                : OpenAiCodexInvocationBuilder.Chat(runtime, runDirectory, prompt, options, model);
+                : OpenAiCodexInvocationBuilder.Chat(runtime, runDirectory, prompt, options, model, bridge);
             outcome = await runner.RunAsync(invocation, line =>
             {
                 var before = parser.SearchCalls;

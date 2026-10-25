@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "evidenceScope": "Historical manual-activation local experiment on October 25, 2026. Retained source hashes and results describe that preliminary working tree, not the final Preview 7 runtime installer or release qualification.",
+  "observedAtUtc": "2026-10-25T14:50:08.3507960+00:00",
+  "source": {
+    "branch": "feature/appcontainer-product-integration",
+    "baseHead": "2bc0e3dd623e5b3bc4d602c5882a91bc97af3ac3",
+    "workingTreeChanged": true,
+    "qualification": "Execution used the uncommitted product-integration working tree. The recorded Git HEAD identifies the base, not a commit containing this implementation.",
+    "files": [
+      {
+        "path": "src/TableCloth.ManagedAi.Core/SkillExecution.cs",
+        "sha256": "f787d2eab55fcab8c78c87ed0ca9f1af728950cc10f6342ffac41155536b1c57"
+      },
+      {
+        "path": "src/TableCloth.ManagedAi.Windows/WindowsManagedAiSkillExecution.cs",
+        "sha256": "a6b61fb043d9e711fd95506e61b5aebfaba06cc874b596fcb80d7058bee54170"
+      },
+      {
+        "path": "src/TableCloth.ManagedAi.OpenAi/Execution/OpenAiCodexInvocationBuilder.cs",
+        "sha256": "584a583da80b6526c8bf47992eaf3878676570964c23595639976857f546e95c"
+      },
+      {
+        "path": "src/TableCloth.ManagedAi.OpenAi/OpenAiCodexProvider.cs",
+        "sha256": "f003f11ab5b74ec262b46086ba2a0e8cc7ad82b7c9424a7fc9289a5299c188f0"
+      },
+      {
+        "path": "src/TableCloth.ManagedAi.AppContainer/Native/AppContainerProcessRunner.cs",
+        "sha256": "5709e877b42478d2b4cc7ac66b55728a4547d6ce067f605a2f710ff176067be1"
+      },
+      {
+        "path": "tools/appcontainer-skill-poc/Enable-ProductSkillExecution.ps1",
+        "sha256": "1cb6dba1347edd53ea58f355aa47213a0737906ac6db61877b3a1c1fc8e92347"
+      },
+      {
+        "path": "src/TableCloth.ManagedAi.Test/SkillExecutionBridgeTests.cs",
+        "sha256": "c09fe336cdfc6b8384336783bea3227378804c0606e02e2859cc9794052c0a81"
+      },
+      {
+        "path": "src/TableCloth.App/DependencyInjection/UseTableClothExtensions.cs",
+        "sha256": "de4027fc67b629bfc44b948575472a506b10657db4062434c39f0a2c42751871"
+      }
+    ]
+  },
+  "cli": {
+    "version": "0.156.1",
+    "model": "gpt-6-luna",
+    "target": "x86_64-pc-windows-msvc",
+    "sha256": "70bcb05f9bf1a4e7306edd0cd1b57d02af3267ad02a34b26f45c8c4bb20a3301",
+    "dedicatedProductRuntime": true,
+    "dedicatedProductProfile": true,
+    "realModelInference": true,
+    "independentEphemeralSessions": true
+  },
+  "policy": {
+    "shellTool": false,
+    "unifiedExec": false,
+    "codexSandbox": "read-only",
+    "approvalPolicy": "never",
+    "calculatorMcpApproval": "approve",
+    "workerNetwork": false,
+    "globalConfigurationChanged": false
+  },
+  "preservation": {
+    "productConfigUnchanged": true,
+    "skillOverlayUnchanged": true,
+    "installedSkillFilesUnchanged": true,
+    "qualification": "Unchanged-file comparisons apply to the three independent invocation-builder sessions."
+  },
+  "baseline": {
+    "completedSessions": 2,
+    "cases": [
+      {
+        "id": "01-original",
+        "cliExitCode": 0,
+        "completedTurn": true,
+        "completedExecutionCalls": 0
+      },
+      {
+        "id": "02-explicit-script",
+        "cliExitCode": 0,
+        "completedTurn": true,
+        "completedExecutionCalls": 0
+      }
+    ],
+    "qualification": "CLI event logs contained zero command or MCP execution calls. Model attribution text did not establish script execution."
+  },
+  "bridgeSessions": [
+    {
+      "id": "01-original",
+      "startedUtc": "2026-10-25T14:49:38.1925175+00:00",
+      "finishedUtc": "2026-10-25T14:49:52.5456784+00:00",
+      "cliExitCode": 0,
+      "completedTurn": true,
+      "completedMcpCalls": 1,
+      "server": "tablecloth_skills",
+      "tool": "tablecloth-calculators",
+      "arguments": {
+        "operation": "discount.single",
+        "price": 1000000,
+        "rate_percent": 10
+      },
+      "execution": {
+        "status": "completed",
+        "exitCode": 0,
+        "wasAppContainer": true,
+        "timedOut": false,
+        "outputLimited": false,
+        "failure": null
+      },
+      "calculatorResult": {
+        "original": "1000000.00",
+        "discount": "100000.00",
+        "final": "900000.00"
+      }
+    },
+    {
+      "id": "02-explicit-script",
+      "startedUtc": "2026-10-25T14:49:52.5594692+00:00",
+      "finishedUtc": "2026-10-25T14:49:59.7804927+00:00",
+      "cliExitCode": 0,
+      "completedTurn": true,
+      "completedMcpCalls": 1,
+      "server": "tablecloth_skills",
+      "tool": "tablecloth-calculators",
+      "arguments": {
+        "operation": "discount.single",
+        "price": 1000000,
+        "rate_percent": 10
+      },
+      "execution": {
+        "status": "completed",
+        "exitCode": 0,
+        "wasAppContainer": true,
+        "timedOut": false,
+        "outputLimited": false,
+        "failure": null
+      },
+      "calculatorResult": {
+        "original": "1000000.00",
+        "discount": "100000.00",
+        "final": "900000.00"
+      }
+    },
+    {
+      "id": "03-bmi",
+      "startedUtc": "2026-10-25T14:49:59.7832096+00:00",
+      "finishedUtc": "2026-10-25T14:50:08.3446828+00:00",
+      "cliExitCode": 0,
+      "completedTurn": true,
+      "completedMcpCalls": 1,
+      "server": "tablecloth_skills",
+      "tool": "tablecloth-calculators",
+      "arguments": {
+        "operation": "bmi",
+        "weight_kg": 80,
+        "height_cm": 171
+      },
+      "execution": {
+        "status": "completed",
+        "exitCode": 0,
+        "wasAppContainer": true,
+        "timedOut": false,
+        "outputLimited": false,
+        "failure": null
+      },
+      "calculatorResult": {
+        "bmi": "27.36"
+      }
+    }
+  ],
+  "tests": {
+    "suite": "TableCloth.ManagedAi.Test",
+    "configuration": "Debug",
+    "passed": 214,
+    "failed": 0,
+    "skipped": 0,
+    "newBridgePolicyTests": 17,
+    "qualification": "Unit and regression tests are separate from native worker execution and real model sessions."
+  },
+  "localEvidenceFiles": [
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-appcontainer-verified/summary.json",
+      "sha256": "43db814a1518595709c631e867a0b426bdcff2d8e973f0daf59e672e8e374ca2"
+    },
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-appcontainer-verified/preflight.json",
+      "sha256": "579ef27d8c789dffe4af94ba64cccff2f34582a99eec3d70fc745c39cafeb528"
+    },
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-appcontainer-verified/config.snapshot.toml",
+      "sha256": "75622f8f4386c9a74b2faac96bb0c5b02206af62551950633301907811d453f4"
+    },
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-appcontainer-verified/skill-overlay.snapshot.toml",
+      "sha256": "f17dbac9d424898e3a0a3308e9fb25fdfad5c371708babf5b5894c8cf95be341"
+    },
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-appcontainer-verified/01-original.events.jsonl",
+      "sha256": "054258e53f69478ea800b22b61ac324e904c049994715402207c0518f8771d53"
+    },
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-appcontainer-verified/01-original.invocation.json",
+      "sha256": "f5612a95ffb6a1af5f39d36f3dbb706954a19d13df4a3261242a8b8bb6560b14"
+    },
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-appcontainer-verified/02-explicit-script.events.jsonl",
+      "sha256": "06a1450afec9ca1d3f92a06406a3a080c3cfca8cb377dc35af93efbdbf08c3fc"
+    },
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-appcontainer-verified/02-explicit-script.invocation.json",
+      "sha256": "f5612a95ffb6a1af5f39d36f3dbb706954a19d13df4a3261242a8b8bb6560b14"
+    },
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-appcontainer-verified/03-bmi.events.jsonl",
+      "sha256": "763cad9a39723f68872d4cca7403c45923bad15fd7738af68bc4d5bdc034481c"
+    },
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-appcontainer-verified/03-bmi.invocation.json",
+      "sha256": "f5612a95ffb6a1af5f39d36f3dbb706954a19d13df4a3261242a8b8bb6560b14"
+    },
+    {
+      "path": "Artifacts/appcontainer-product-provider-probe/results/provider.events.jsonl",
+      "sha256": "9c99ec724c6282f1de1b1783910824ed24c4cf2feb43450c41583986da6983ec"
+    },
+    {
+      "path": "Artifacts/appcontainer-product-provider-probe/results/provider.invocation.json",
+      "sha256": "a1228c610cbbe8032d0ee01ee804ec99bc7a8b96a576ab4cc6bc8067a2fe43e5"
+    },
+    {
+      "path": "Artifacts/appcontainer-product-provider-probe/results/provider.response.json",
+      "sha256": "11d14f1361178c6b4dbc2fbeab87802900f885819e598c5989c3af2b4ab313d3"
+    },
+    {
+      "path": "Artifacts/appcontainer-skill-poc/evaluation.json",
+      "sha256": "4bf1009d6a1256d6cb305967a46a604d1ac43fb270a3712c82fb3434f19d95ca"
+    },
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-dedicated-cli/summary.json",
+      "sha256": "726f0e8cd36bbdf94c3ea0f9e566aedf88af5b68b6ba955e7a81fdd1b5315b76"
+    },
+    {
+      "path": "Artifacts/skill-execution-verification/20261025-dedicated-cli/event-audit.json",
+      "sha256": "30435cff69653c6e23ceff449bd1f3b3258ae121de12771b964be76af3665754"
+    }
+  ],
+  "limits": [
+    "No replay of the original GUI conversation or GUI automation.",
+    "Windows 10 22H2 and ARM64 are not qualified.",
+    "Installer packaging, runtime UI and complete dependency integrity are not qualified.",
+    "Only six reviewed calculator operations are registered; no Node.js product tool is registered."
+  ],
+  "providerSession": {
+    "id": "04-product-provider",
+    "completedAtUtc": "2026-10-25T14:52:36.3955102+00:00",
+    "entryPoint": "DI-resolved OpenAiCodexProvider.ChatAsync",
+    "realModelInference": true,
+    "completedTurn": true,
+    "completedMcpCalls": 1,
+    "server": "tablecloth_skills",
+    "tool": "tablecloth-calculators",
+    "arguments": {
+      "operation": "percent.part",
+      "total": 1000000,
+      "rate_percent": 10
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "wasAppContainer": true,
+      "timedOut": false,
+      "outputLimited": false,
+      "failure": null
+    },
+    "calculatorResult": {
+      "value": "100000"
+    },
+    "finalAnswerAmounts": {
+      "discountKrw": 100000,
+      "finalKrw": 900000
+    },
+    "qualification": "The script computed the percentage amount 100000. The model used that amount to state the final discounted price 900000; this call did not execute discount.single."
+  },
+  "localHarness": {
+    "observedAtUtc": "2026-10-25T14:53:35.1360957+00:00",
+    "os": "Microsoft Windows NT 10.0.26300.0",
+    "architecture": "X64",
+    "passed": 44,
+    "total": 44,
+    "offlineBrokerChecks": 20,
+    "remainingLocalChecks": 24,
+    "publicApiEvaluation": false,
+    "containedUpstreamCalculatorTests": 28,
+    "containedUpstreamBokTests": 19,
+    "qualification": "The 44 checks include 20 injected-executor broker checks. The two upstream test suites execute inside AppContainer and are evidence within the harness, not an additional native-security check count. This fresh run excludes the two earlier public-API checks."
+  }
+}

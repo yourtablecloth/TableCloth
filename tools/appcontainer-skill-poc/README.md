@@ -2,7 +2,9 @@
 
 [한국어](README.ko.md)
 
-As of October 25, 2026, this branch evaluates fixed Python and Node.js scripts in ordinary Windows AppContainer processes. Production TableCloth chat retains `shell_tool=false` and does not automatically enable this broker or reinstall the removed runtime feature.
+This directory preserves the standalone evaluation of fixed Python and Node.js scripts in ordinary Windows AppContainer processes. Its commands and measurements describe the original PoC; product chat retains `shell_tool=false` and uses the shared native runner through its reviewed adapter.
+
+Preview 7 preparation connects one reviewed Python calculator through the current `TableCloth.exe --skill-mcp`, automatically prepares pinned x64 or ARM64 Python and Node.js packages, and restores runtime versions and isolated long-path diagnostics in the marketplace. It requires no manual activation receipt or copied host. See [product integration and evidence](../../docs/poc/appcontainer-product-integration.md) for supported operations, runtime integrity and qualification limits. Node.js has no product marketplace adapter. The standalone measurements below remain historical PoC results.
 
 The experiment covers a native worker, a fixed-script MCP broker, pinned skill fixtures and an evaluation-only catalog. It separates offline broker checks, actual contained execution, service access and Codex routing.
 
@@ -60,7 +62,7 @@ The [evaluation report](RESULTS.md) records the final measurements and failures.
 
 ## Product integration and remaining qualification
 
-The prototype is not connected to the TableCloth chat window or its installer. Its local manifest is trusted host configuration; a remote marketplace XML entry cannot add a script registration. Production adoption would add a reviewed registration schema, dependency integrity, update/removal rules, qualified crash recovery, broker packaging, user-visible execution consent and target-OS qualification.
+The original standalone prototype was not connected to the TableCloth chat window or its installer. The [current product adapter](../../docs/poc/appcontainer-product-integration.md) automatically installs dedicated pinned runtimes, verifies all installed dependencies against the official archives, records `runtimeFiles` hashes and keeps verified files locked during execution. The current product executable hosts the broker; the earlier `Enable-ProductSkillExecution.ps1` activation procedure is historical. A remote marketplace XML entry cannot add a script registration. Additional adapters, network policies, forced power-loss recovery and target-OS execution qualification remain separate work.
 
 The PoC journals original DACLs and mandatory labels before grants, serializes ACL changes across processes with an owned-file lease, and blocks execution while a recovery journal remains. `recover-acl <owned-root>` replays owned-file identities and restores those descriptors before clearing a journal. Recovery was exercised during diagnosis; forced power-loss recovery has not been qualified. Restoration compares DACLs and actual mandatory-label ACEs because Windows can retain empty-SACL control flags after removing a Low label.
 

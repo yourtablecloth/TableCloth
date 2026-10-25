@@ -72,7 +72,7 @@ git tag $tag
 git push origin $tag
 ```
 
-현재 CI는 태그와 버전 파일을 비교하지만 브랜치 소속을 강제하지 않습니다. 위 브랜치 검사를 생략하지 않습니다.
+현재 CI는 태그와 버전 파일을 비교합니다. Preview CI는 태그 커밋의 `origin/develop` 포함 여부도 검사합니다. Retail CI는 `origin/main` HEAD와의 일치를 자동 검사하지 않으므로 릴리스 담당자가 위 조건을 직접 확인합니다.
 
 ## CI Draft와 게시 산출물
 

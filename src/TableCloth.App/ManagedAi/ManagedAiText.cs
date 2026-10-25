@@ -27,6 +27,21 @@ public static class ManagedAiText
     public static string MarketplaceScope => Select("관리 범위: 식탁보 전용 스킬 폴더", "Scope: TableCloth dedicated skill folder");
     public static string MarketplaceBrowse => Select("카탈로그 탐색", "Browse catalog");
     public static string MarketplaceInstalled => Select("설치된 스킬", "Installed skills");
+    public static string MarketplaceRuntimes => Select("실행 환경", "Runtimes");
+    public static string SkillRuntimeDescription => Select(
+        "스킬의 스크립트에 사용하는 식탁보 전용 Python과 Node.js의 설치 버전과 긴 경로 지원을 확인합니다.",
+        "Check the installed versions and long-path support of Python and Node.js dedicated to skill scripts in TableCloth.");
+    public static string SkillRuntimeInstall => Select("실행 환경 설치/복구", "Install or repair runtimes");
+    public static string SkillRuntimeRefresh => Select("설치 및 환경 검사", "Check installation and environment");
+    public static string SkillRuntimeVersion => Select("설치 버전", "Installed version");
+    public static string SkillRuntimeLongPath => Select("260자 초과 경로 검사", "Paths longer than 260 characters");
+    public static string SkillRuntimeWarningTitle => Select("기능 제한 가능성", "Possible feature limitations");
+    public static string SkillRuntimeLongPathDescription => Select(
+        "AppContainer 격리 환경 안에서 260자를 넘는 경로의 파일 읽기와 쓰기를 검사합니다. 검사 결과는 현재 실행 환경에 적용하며 스킬이 사용하는 추가 라이브러리에 따라 다른 제한이 있을 수 있습니다.",
+        "The check reads and writes files at paths longer than 260 characters inside AppContainer isolation. Results apply to the current runtime; additional libraries used by a skill can have other limits.");
+    public static string SkillRuntimeScope => Select(
+        "식탁보 전용 실행 환경만 관리합니다. 시스템에 설치된 Python과 Node.js 및 Windows 설정은 변경하지 않습니다. 스크립트 실행은 식탁보에서 지원하는 스킬에 한해 제공합니다.",
+        "Only TableCloth's dedicated runtimes are managed. System Python, Node.js, and Windows settings remain unchanged. Script execution is available for skills supported by TableCloth.");
     public static string MarketplaceSearch => Select("이름, 설명, 저자 검색", "Search name, description, author");
     public static string MarketplaceInstalledSearch => Select("설치된 스킬 검색", "Search installed skills");
     public static string MarketplaceInstall => Select("스킬 설치", "Install skill");

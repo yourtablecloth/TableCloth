@@ -37,6 +37,19 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        // The app-owned MCP subprocess must not initialize the GUI, updater or application logging.
+        // Script isolation and registration validation are enforced by the shared native broker.
+        if (args is ["--skill-mcp", var manifest])
+        {
+            try
+            {
+                return TableCloth.AppContainerPoc.SkillMcpBroker.RunAsync(manifest,
+                    System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+            }
+            catch { return 2; }
+        }
+        if (args is ["--skill-mcp", ..]) return 2;
+
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             ShowFatalError(e.ExceptionObject?.ToString() ?? "Unknown Error");
 
