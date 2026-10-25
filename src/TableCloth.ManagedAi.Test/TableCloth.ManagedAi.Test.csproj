@@ -7,6 +7,7 @@
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="../../external/TableClothCatalog/docs/SkillCatalog.xml" Link="Fixtures/SkillCatalog.xml" CopyToOutputDirectory="PreserveNewest" />
     <ProjectReference Include="../TableCloth.ManagedAi.OpenAi/TableCloth.ManagedAi.OpenAi.csproj" />
     <ProjectReference Include="../TableCloth.ManagedAi.Windows/TableCloth.ManagedAi.Windows.csproj" />
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="18.0.1" />

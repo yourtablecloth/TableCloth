@@ -9,6 +9,20 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(_ => paths ?? ManagedAiPaths.ForCurrentUser()).AddSingleton<ManagedAiOptions>();
         services.AddSingleton<OpenAiCodexSkillManager>();
         services.AddSingleton<IManagedAiSkillManager>(service => service.GetRequiredService<OpenAiCodexSkillManager>());
+        services.AddSingleton<IManagedAiCatalogSkillStore>(service => service.GetRequiredService<OpenAiCodexSkillManager>());
+        services.AddHttpClient(SkillCatalogClient.HttpClientName, client =>
+        {
+            client.Timeout = Timeout.InfiniteTimeSpan;
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("TableCloth-SkillMarketplace/1.0");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
+            client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
+        }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+            AllowAutoRedirect = false, UseCookies = false, UseDefaultCredentials = false, Credentials = null
+        }).RemoveAllLoggers();
+        services.AddSingleton<SkillCatalogClient>();
+        services.AddSingleton<GithubSkillInstaller>();
+        services.AddSingleton<IManagedAiSkillMarketplace, ManagedAiSkillMarketplace>();
         services.AddHttpClient(OpenAiReleaseMetadataClient.HttpClientName, client =>
         {
             client.Timeout = Timeout.InfiniteTimeSpan;

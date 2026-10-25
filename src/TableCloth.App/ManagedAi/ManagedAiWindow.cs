@@ -5,21 +5,22 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TableCloth.Components;
+using TableCloth.Controls;
+using TableCloth.Dialogs;
 using TableCloth.ManagedAi.OpenAi;
 using TableCloth.ManagedAi.Windows;
 using TableCloth.Models;
 using TableCloth.Resources;
 using TableCloth.Theme.Controls;
+using TableCloth.ViewModels;
 
 namespace TableCloth.ManagedAi;
 
@@ -35,6 +36,14 @@ public sealed class ManagedAiWindow : Window
     private readonly IAppMessageBox _messages;
     private readonly IManagedAiModelCatalog _modelCatalog;
     private readonly IManagedAiSkillManager _skills;
+    private readonly IManagedAiSkillMarketplace? _skillMarketplace;
+    private readonly Button _openSkillMarketplace;
+    private readonly Button _browseSkills = new()
+    {
+        Padding = new Thickness(0), Margin = new Thickness(0),
+        HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Left
+    };
+    private SkillMarketplaceWindow? _skillMarketplaceWindow;
     private readonly IManagedAiCertificateBridge _certificateBridge;
     private readonly IManagedAiSandboxBridge _sandboxBridge;
     private readonly IPreferencesManager _preferences;
@@ -72,10 +81,6 @@ public sealed class ManagedAiWindow : Window
     private readonly TextBlock _modelHint = Text(L("크레딧 단가 확인 전", "Credit rates pending"));
     private readonly TextBlock _skillCount = Text(L("활성 스킬을 확인하고 있습니다.", "Checking enabled skills."));
     private readonly TextBlock _preferenceNotice = new() { IsVisible = false, TextWrapping = TextWrapping.Wrap, FontSize = 12 };
-    private readonly StackPanel _skillList = new() { Spacing = 8 };
-    private readonly TextBlock _skillStatus = Text(L("전용 스킬을 불러오면 여기에 표시합니다.", "Dedicated skills appear here after loading."));
-    private readonly List<Button> _skillActions = [];
-    private bool _skillsLoaded;
     private bool _certificateSkillEnabled;
     private bool _sandboxSkillEnabled;
     private readonly ProgressRing _busyBar = new() { IsIndeterminate = true, Width = 24, Height = 24,
@@ -104,10 +109,11 @@ public sealed class ManagedAiWindow : Window
     public ManagedAiWindow(ManagedAiChatSession session, IManagedRuntimeManager runtimes,
         IProviderAuthentication authentication, IAppMessageBox messages, IManagedAiModelCatalog modelCatalog,
         IManagedAiSkillManager skills, IPreferencesManager preferences,
-        IManagedAiCertificateBridge? certificateBridge = null, IManagedAiSandboxBridge? sandboxBridge = null)
+        IManagedAiCertificateBridge? certificateBridge = null, IManagedAiSandboxBridge? sandboxBridge = null,
+        IManagedAiSkillMarketplace? skillMarketplace = null)
     {
         _session = session; _runtimes = runtimes; _authentication = authentication; _messages = messages; _modelCatalog = modelCatalog;
-        _skills = skills; _preferences = preferences;
+        _skills = skills; _preferences = preferences; _skillMarketplace = skillMarketplace;
         _certificateBridge = certificateBridge ?? new ManagedAiCertificateBridge(new JsonlProcessRunner());
         _sandboxBridge = sandboxBridge ?? new ManagedAiSandboxBridge(new SandboxCliProcessRunner());
         _clientContext = new(typeof(ManagedAiWindow).Assembly.GetName().Version,
@@ -187,7 +193,7 @@ public sealed class ManagedAiWindow : Window
         var dismiss = new Border { Background = Brushes.Transparent };
         dismiss.PointerPressed += (_, e) => { CloseSettings(); e.Handled = true; };
         _settingsOverlay.Children.Add(dismiss);
-        var settings = new StackPanel { Spacing = 10 };
+        var settings = new StackPanel { Spacing = 8 };
         var settingsHeading = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
         settingsHeading.Children.Add(new TextBlock { Text = L("OpenAI 계정", "OpenAI account"), FontSize = 18, FontWeight = FontWeight.SemiBold });
         var closeSettings = new Button { Content = L("닫기", "Close"), Padding = new Thickness(8, 3) };
@@ -210,27 +216,39 @@ public sealed class ManagedAiWindow : Window
         settings.Children.Add(SettingsButton(L("기기 코드로 로그인", "Sign in with device code"), "ManagedAiDeviceLogin", async token =>
         { if (await EnsureRuntimeAsync(token)) await LoginAsync(AiLoginMethod.DeviceCode, token); }));
         settings.Children.Add(SettingsButton(L("이전 런타임 버전 복원", "Restore previous runtime"), "ManagedAiRollback", async token =>
-        { await RunBackendAsync(_runtimes.RollbackAsync, token); _skillsLoaded = false; await RefreshStatusAsync(token); }));
+        { await RunBackendAsync(_runtimes.RollbackAsync, token); await RefreshStatusAsync(token); }));
         settings.Children.Add(new TextBlock { Text = L("전용 스킬", "Dedicated skills"), FontWeight = FontWeight.SemiBold, Margin = new Thickness(0, 8, 0, 0) });
-        settings.Children.Add(Text(L("이 백엔드의 전용 폴더에 있는 활성 스킬을 대화에 제공합니다. 런타임을 다시 설치해도 스킬과 사용 설정을 보존합니다.",
-            "Enabled skills in this backend's dedicated folder are available to chats. Reinstalling the runtime preserves the skills and their enabled states.")));
-        settings.Children.Add(SettingsButton(L("폴더에서 스킬 가져오기", "Import skill from folder"), "ManagedAiSkillImport", ImportSkillAsync, keepSettingsOpen: true));
-        settings.Children.Add(SettingsButton(L("스킬 다시 불러오기", "Reload skills"), "ManagedAiSkillRefresh", RefreshSkillsAsync, keepSettingsOpen: true));
-        settings.Children.Add(SettingsButton(L("전용 스킬 폴더 열기", "Open dedicated skill folder"), "ManagedAiSkillFolder", OpenSkillFolderAsync, keepSettingsOpen: true));
-        settings.Children.Add(_skillStatus);
-        settings.Children.Add(_skillList);
+        settings.Children.Add(Text(L("스킬 마켓플레이스에서 설치된 AI 스킬을 관리할 수 있습니다.",
+            "Manage installed AI skills in the skill marketplace.")));
+        _openSkillMarketplace = new Button
+        {
+            Content = L("설치된 AI 스킬 관리", "Manage installed AI skills"),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Left
+        };
+        AutomationProperties.SetAutomationId(_openSkillMarketplace, "ManagedAiSkillMarketplace");
+        _openSkillMarketplace.Click += async (_, _) => await OpenSkillMarketplaceAsync();
+        settings.Children.Add(_openSkillMarketplace);
+        var browseSkillsText = L("더 많은 기능은 스킬 설정 창에서 새 스킬을 받아 활용할 수 있습니다.",
+            "Get new skills from skill settings to use more features.");
+        _browseSkills.Content = Text(browseSkillsText);
+        _browseSkills.Classes.Add("link");
+        AutomationProperties.SetAutomationId(_browseSkills, "ManagedAiBrowseSkills");
+        AutomationProperties.SetName(_browseSkills, browseSkillsText);
+        AutomationProperties.SetHelpText(_browseSkills, L("스킬 카탈로그를 열어 새 스킬을 설치합니다.",
+            "Open the skill catalog to install new skills."));
+        _browseSkills.Click += async (_, _) => await OpenSkillMarketplaceAsync(SkillMarketplaceTab.Catalog);
         _settingsPanel.Child = new ScrollViewer { Content = settings, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
         _settingsPanel.Bind(Border.BackgroundProperty, _settingsPanel.GetResourceObservable("SolidBackgroundFillColorBaseBrush"));
         _settingsPanel.Bind(Border.BorderBrushProperty, _settingsPanel.GetResourceObservable("ControlStrokeColorDefaultBrush"));
         _settingsOverlay.Children.Add(_settingsPanel);
         KeyboardNavigation.SetTabNavigation(_settingsOverlay, KeyboardNavigationMode.Cycle);
-        _manage.Click += async (_, _) =>
+        _manage.Click += (_, _) =>
         {
             _settingsOverlay.IsVisible = !_settingsOverlay.IsVisible;
             if (_settingsOverlay.IsVisible)
             {
                 (_loggedIn ? _signOut : _signIn).Focus();
-                if (!_skillsLoaded) await RunAsync(RefreshSkillsAsync, keepSettingsOpen: true);
             }
         };
         Grid.SetRowSpan(_settingsOverlay, 3); root.Children.Add(_settingsOverlay);
@@ -249,8 +267,6 @@ public sealed class ManagedAiWindow : Window
         AutomationProperties.SetAutomationId(_account, "ManagedAiRuntimeStatus");
         AutomationProperties.SetAutomationId(_skillCount, "ManagedAiActiveSkillCount");
         AutomationProperties.SetAutomationId(_preferenceNotice, "ManagedAiPreferenceNotice");
-        AutomationProperties.SetAutomationId(_skillStatus, "ManagedAiSkillStatus");
-        AutomationProperties.SetAutomationId(_skillList, "ManagedAiSkillList");
         AutomationProperties.SetAutomationId(_cancel, "ManagedAiCancel");
         AutomationProperties.SetAutomationId(_manage, "ManagedAiManage");
         AutomationProperties.SetAutomationId(_settingsOverlay, "ManagedAiSettings");
@@ -328,98 +344,36 @@ public sealed class ManagedAiWindow : Window
         _actions.Add(button); return button;
     }
 
-    private async Task ImportSkillAsync(CancellationToken token)
+    internal async Task OpenSkillMarketplaceAsync(SkillMarketplaceTab initialTab = SkillMarketplaceTab.Installed)
     {
-        var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        if (_skillMarketplace is null || _operation is not null || _skillMarketplaceWindow is not null) return;
+        CloseSettings();
+        using var viewModel = new SkillMarketplaceWindowViewModel(_skills, _skillMarketplace, _messages);
+        var window = new SkillMarketplaceWindow(viewModel, initialTab);
+        _skillMarketplaceWindow = window;
+        WindowChrome.RemoveMinimizeBox(window);
+        try { await window.ShowDialog(this); }
+        catch
         {
-            Title = L("SKILL.md가 들어 있는 스킬 폴더 선택", "Select a skill folder containing SKILL.md"),
-            AllowMultiple = false
-        });
-        token.ThrowIfCancellationRequested();
-        var source = folders.Count > 0 ? folders[0].TryGetLocalPath() : null;
-        if (string.IsNullOrWhiteSpace(source))
-        {
-            _skillStatus.Text = L("스킬 가져오기를 취소했습니다.", "Skill import canceled.");
+            _status.Text = L("스킬 마켓플레이스를 열지 못했습니다. 다시 시도할 수 있습니다.",
+                "Could not open the skill marketplace. Try again.");
             return;
         }
-        _skillStatus.Text = L("스킬 폴더를 검사하고 전용 저장소로 복사하고 있습니다.", "Checking the skill folder and copying it to dedicated storage.");
-        RenderSkills(await RunBackendAsync(ct => _skills.ImportAsync(source, ct), token));
-        _skillsLoaded = true;
-        _skillStatus.Text = L("스킬을 가져왔습니다. 다음 메시지부터 사용할 수 있습니다.", "Skill imported. It is available from the next message.");
+        finally { _skillMarketplaceWindow = null; }
+        if (IsVisible) await RunAsync(async token =>
+        {
+            await viewModel.WaitForLocalOperationAsync().WaitAsync(token);
+            await RefreshSkillsAsync(token);
+        });
     }
 
     private async Task RefreshSkillsAsync(CancellationToken token)
     {
-        _skillStatus.Text = L("전용 스킬과 격리 설정을 확인하고 있습니다.", "Checking dedicated skills and isolation settings.");
         var skills = await RunBackendAsync(_skills.ListAsync, token);
-        RenderSkills(skills);
-        _skillsLoaded = true;
-        _skillStatus.Text = skills.Count == 0
-            ? L("가져온 전용 스킬이 없습니다.", "No dedicated skills are installed.")
-            : L($"전용 스킬 {skills.Count}개를 불러왔습니다.", $"Loaded {skills.Count} dedicated skills.");
-    }
-
-    private Task OpenSkillFolderAsync(CancellationToken token)
-    {
-        token.ThrowIfCancellationRequested();
-        try
-        {
-            Directory.CreateDirectory(_skills.StorageDirectory);
-            Process.Start(new ProcessStartInfo(_skills.StorageDirectory) { UseShellExecute = true })?.Dispose();
-            _skillStatus.Text = L("전용 스킬 폴더를 열었습니다. 폴더를 수정한 뒤 스킬 다시 불러오기를 선택할 수 있습니다.",
-                "Opened the dedicated skill folder. After editing it, choose Reload skills.");
-            return Task.CompletedTask;
-        }
-        catch { throw new ManagedAiException(AiFailureCode.SkillInvalid); }
-    }
-
-    private void RenderSkills(IReadOnlyList<AiSkill> skills)
-    {
-        _certificateSkillEnabled = skills.Any(skill => skill.Id == "tablecloth-certificate-expiry" && skill.Enabled);
-        _sandboxSkillEnabled = skills.Any(skill => skill.Id == "tablecloth-windows-sandbox" && skill.Enabled);
-        _skillCount.Text = L($"활성 스킬 {skills.Count(skill => skill.Enabled)}개 (보유 {skills.Count}개)",
-            $"{skills.Count(skill => skill.Enabled)} enabled skills ({skills.Count} installed)");
-        foreach (var action in _skillActions) _actions.Remove(action);
-        _skillActions.Clear();
-        _skillList.Children.Clear();
-        foreach (var skill in skills)
-        {
-            var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto"), ColumnSpacing = 10 };
-            var summary = new StackPanel { Spacing = 2 };
-            summary.Children.Add(new TextBlock { Text = skill.Name, FontWeight = FontWeight.SemiBold, TextWrapping = TextWrapping.Wrap });
-            summary.Children.Add(Text(skill.Description));
-            row.Children.Add(summary);
-            var toggle = new Button { Content = skill.Enabled ? L("사용 중", "Enabled") : L("사용 안 함", "Disabled"), MinWidth = 86,
-                VerticalAlignment = VerticalAlignment.Center };
-            if (skill.Enabled) toggle.Classes.Add("accent");
-            AutomationProperties.SetAutomationId(toggle, "ManagedAiSkillToggle_" + skill.Id);
-            toggle.Click += async (_, _) => await RunAsync(async token =>
-            {
-                var updated = await RunBackendAsync(ct => _skills.SetEnabledAsync(skill.Id, !skill.Enabled, ct), token);
-                RenderSkills(updated);
-                _skillStatus.Text = !skill.Enabled
-                    ? L($"{skill.Name} 스킬을 사용하도록 설정했습니다.", $"Enabled the {skill.Name} skill.")
-                    : L($"{skill.Name} 스킬을 사용하지 않도록 설정했습니다.", $"Disabled the {skill.Name} skill.");
-            }, keepSettingsOpen: true);
-            Grid.SetColumn(toggle, 1); row.Children.Add(toggle);
-            var remove = new Button { Content = L("제거", "Remove"), MinWidth = 58, VerticalAlignment = VerticalAlignment.Center };
-            AutomationProperties.SetAutomationId(remove, "ManagedAiSkillRemove_" + skill.Id);
-            remove.Click += async (_, _) =>
-            {
-                if (_messages.DisplayQuestion(L($"{skill.Name} 스킬과 전용 폴더의 파일을 삭제하시겠습니까?",
-                    $"Delete the {skill.Name} skill and its files from the dedicated folder?"),
-                    AppMessageBoxButton.YesNo, AppMessageBoxResult.No) != AppMessageBoxResult.Yes) return;
-                await RunAsync(async token =>
-                {
-                    RenderSkills(await RunBackendAsync(ct => _skills.RemoveAsync(skill.Id, ct), token));
-                    _skillStatus.Text = L($"{skill.Name} 스킬을 제거했습니다.", $"Removed the {skill.Name} skill.");
-                }, keepSettingsOpen: true);
-            };
-            Grid.SetColumn(remove, 2); row.Children.Add(remove);
-            _skillList.Children.Add(row);
-            _skillActions.Add(toggle); _actions.Add(toggle);
-            _skillActions.Add(remove); _actions.Add(remove);
-        }
+        _certificateSkillEnabled = skills.Any(skill => skill.Id == "tablecloth-certificate-expiry" && skill.Enabled && skill.IsValid);
+        _sandboxSkillEnabled = skills.Any(skill => skill.Id == "tablecloth-windows-sandbox" && skill.Enabled && skill.IsValid);
+        _skillCount.Text = L($"활성 스킬 {skills.Count(skill => skill.Enabled && skill.IsValid)}개 (보유 {skills.Count}개)",
+            $"{skills.Count(skill => skill.Enabled && skill.IsValid)} enabled skills ({skills.Count} installed)");
     }
 
     private void AddWelcome()
@@ -429,7 +383,8 @@ public sealed class ManagedAiWindow : Window
         _starters.Children.Add(new TextBlock { Text = L("이런 질문으로 시작할 수 있습니다", "Try one of these questions"), FontSize = 16, FontWeight = FontWeight.SemiBold });
         _starters.Children.Add(Text(L("카드를 누르면 예시 질문을 바로 전송합니다.",
             "Choose a card to send its sample question immediately.")));
-        var choices = new UniformGrid { Columns = 2 };
+        _starters.Children.Add(_browseSkills);
+        var choices = new UniformGrid { Columns = 3 };
         var bank = StarterBankExamples[Random.Shared.Next(StarterBankExamples.Length)];
         AddStarter(L("서비스 찾기", "Find a service"),
             L($"{bank.Korean} 인터넷뱅킹 공식 사이트를 찾아 링크와 이용 준비 사항을 알려 주세요.",
@@ -438,15 +393,11 @@ public sealed class ManagedAiWindow : Window
               $"Tell me the name of the service you want to find. For example: {bank.English}"));
         AddStarter(L("공공서비스 찾기", "Find a public service"),
             L("주민등록등본을 온라인으로 발급받을 수 있는 공식 사이트와 이용 절차를 알려 주세요.",
-              "Find the official website for getting a Korean resident registration certificate online and explain the steps."));
+              "Find the official website for getting a Korean resident registration certificate online and explain the steps."),
+            L("민원과 공공서비스의 공식 사이트와 이용 절차를 찾습니다.",
+              "Find official public-service websites and how to use them."));
         AddStarter(L("세금 신고 사이트 찾기", "Find a tax filing site"),
             L("세금 신고에 사용할 공식 사이트를 찾아 링크를 알려 주세요.", "Find the official tax filing website and provide its link."));
-        AddStarter(L("식탁보 사용법", "Using TableCloth"),
-            L("식탁보에서 웹사이트를 열고 필요한 소프트웨어를 설치하는 방법을 알려 주세요.",
-              "Explain how to open a website in TableCloth and install its required software."));
-        AddStarter(L("인증서 만료 확인", "Check certificate expiry"),
-            L("이 컴퓨터에서 30일 안에 만료되는 공동인증서가 있는지 확인해 주세요.",
-              "Check whether any digital certificates on this computer expire within 30 days."));
         _starters.Children.Add(choices);
         _transcript.Children.Add(_starters);
         Dispatcher.UIThread.Post(() => _scroll.ScrollToHome(), DispatcherPriority.Loaded);
@@ -709,6 +660,8 @@ public sealed class ManagedAiWindow : Window
     {
         foreach (var action in _actions) action.IsEnabled = _operation is null;
         foreach (var starter in _starterButtons) starter.IsEnabled = _operation is null;
+        _openSkillMarketplace.IsEnabled = _operation is null && _skillMarketplace is not null;
+        _browseSkills.IsEnabled = _openSkillMarketplace.IsEnabled;
         _signIn.IsVisible = !_loggedIn;
         _signIn.Content = _runtimeInstalled ? L("OpenAI 로그인", "Sign in to OpenAI") : L("설치하고 로그인", "Install and sign in");
         _signOut.IsVisible = _loggedIn;
@@ -908,7 +861,7 @@ public sealed class ManagedAiWindow : Window
         if (!ConfirmInstall()) { _status.Text = L("설치를 취소했습니다.", "Installation canceled."); return false; }
         var progress = Progress();
         var runtime = await RunBackendAsync(ct => _runtimes.InstallAsync(null, progress, ct), token);
-        _runtimeInstalled = true; _skillsLoaded = false;
+        _runtimeInstalled = true;
         _runtimeVersion = runtime.Coordinate.Version;
         UpdateRuntimeStatus();
         return true;
@@ -922,7 +875,6 @@ public sealed class ManagedAiWindow : Window
         { _status.Text = L("설치를 취소했습니다.", "Installation canceled."); return; }
         var progress = Progress();
         await RunBackendAsync(ct => _runtimes.InstallAsync(null, progress, ct), token);
-        _skillsLoaded = false;
         await RefreshStatusAsync(token); _status.Text = L("런타임 설치를 완료했습니다.", "Runtime installation complete.");
     }
     private async Task LoginAsync(AiLoginMethod method, CancellationToken token)

@@ -14,7 +14,8 @@ if (args.Length == 0 || args[0] is "help" or "--help")
 using var cancellation = new CancellationTokenSource();
 Console.CancelKeyPress += (_, e) => { e.Cancel = true; cancellation.Cancel(); };
 var services = new ServiceCollection();
-services.AddManagedOpenAi(ManagedAiPaths.ForCurrentUser());
+var diagnosticPaths = ManagedAiPaths.ForCurrentUser();
+services.AddManagedOpenAi(diagnosticPaths);
 services.AddSingleton<IManagedAiProfile, WindowsManagedAiProfile>();
 services.AddSingleton<IJsonlProcessRunner, JsonlProcessRunner>();
 await using var provider = services.BuildServiceProvider();

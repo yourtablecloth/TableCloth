@@ -42,7 +42,7 @@ AI 대화에는 실행 중인 식탁보의 버전, 공식 홈페이지, Windows 
 
 일반 설정 창의 `AI 스킬` 탭에서 전용 Codex 스킬을 조회하고 추가, 활성화, 비활성화, 제거할 수 있습니다. AI 대화 창에도 활성 스킬 수를 표시하고 스킬 관리 기능을 제공합니다. TableCloth는 전용 프로필 밖에서 Codex가 찾은 사용자 및 프로젝트 스킬을 대화 실행 전에 끕니다. 스킬 파일과 사용 설정은 Codex 런타임 릴리스 폴더와 분리하므로 런타임 업데이트나 재설치 후에도 유지합니다.
 
-내장 `tablecloth-certificate-expiry` 스킬은 공동인증서 만료일 질문을 처리합니다. 사용자가 조회에 동의하면 호스트의 `TableClothCli.exe`가 기본 NPKI 폴더에서 공개 인증서의 만료 여부를 확인합니다. AI에는 만료된 인증서 수, 향후 30일 안에 만료되는 인증서 수와 조회 완료 여부만 전달합니다. 인증서 이름, 발급자, 일련번호, 파일 경로, 공개 인증서의 내용, 개인키와 Catalog 정보는 전달하지 않습니다. 식탁보 AI는 개별 인증서의 세부 정보나 스크린샷을 직접 확인할 수 없습니다.
+[tablecloth-certificate-expiry](https://github.com/yourtablecloth/tablecloth-certificate-expiry) 스킬은 공동인증서 만료일 질문을 처리하며 스킬 마켓플레이스에서 선택해 설치합니다. 새 전용 프로필에는 스킬을 자동 설치하지 않습니다. 사용자가 조회에 동의하면 호스트의 `TableClothCli.exe`가 기본 NPKI 폴더에서 공개 인증서의 만료 여부를 확인합니다. AI에는 만료된 인증서 수, 향후 30일 안에 만료되는 인증서 수와 조회 완료 여부만 전달합니다. 인증서 이름, 발급자, 일련번호, 파일 경로, 공개 인증서의 내용, 개인키와 Catalog 정보는 전달하지 않습니다. 식탁보 AI는 개별 인증서의 세부 정보나 스크린샷을 직접 확인할 수 없습니다.
 
 AI 창은 민감 개인정보, 공동인증서 파일과 스크린샷을 입력하거나 링크로 공유하지 말라는 안내를 새 대화의 시작 화면에만 표시합니다. 텍스트 입력에서는 일부 국내 전화번호, 주민등록번호와 주소 형식을 자동으로 가립니다. 정규표현식 기반 필터가 모든 개인정보를 찾아내지는 못합니다. 인식 가능한 인증서 세부 정보와 인증서 스크린샷 링크는 전송 전에 거부합니다. AI 창에는 파일 첨부 기능이 없습니다. 자세한 사용 범위는 [홈페이지의 식탁보 AI 안내](https://yourtablecloth.app/docs/managed-ai)와 [개인정보 처리방침](https://yourtablecloth.app/docs/privacy)에서 확인할 수 있습니다.
 
@@ -107,6 +107,8 @@ WinGet 등록소 반영에는 GitHub Release 게시 이후 시간이 더 걸릴 
 - [업데이트 채널 문제 해결](docs/TROUBLESHOOTING_UPDATE_CHANNEL.md)
 - [Avalonia와 Native AOT 전환 기록](docs/AVALONIA_AOT_MIGRATION.md)
 - [식탁보 AI Preview 구현 및 검증](docs/poc/managed-ai-runtime.md)
+- [스킬 마켓플레이스와 원격 카탈로그](docs/SKILL_MARKETPLACE.ko.md), [English](docs/SKILL_MARKETPLACE.md)
+- [AppContainer 스킬 스크립트 실행 PoC와 평가 결과](tools/appcontainer-skill-poc/README.ko.md), [English](tools/appcontainer-skill-poc/README.md)
 - [Windows Sandbox 내부 Codex CLI와 Computer Use 탐색 기록](docs/poc/codex-sandbox-computer-use.ko.md), [English](docs/poc/codex-sandbox-computer-use.md)
 - [Windows Sandbox RDP 호스팅 실험과 검증 기록](docs/poc/rdp-sandbox.ko.md), [English](docs/poc/rdp-sandbox.md)
 

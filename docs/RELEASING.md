@@ -175,7 +175,7 @@ if ($mismatch) { throw ($mismatch -join [Environment]::NewLine) }
 
 최종 검증에서는 Draft의 모든 `.exe` 자산을 다시 내려받아 Authenticode 상태가 `Valid`인지 확인합니다. Portable ZIP 내부의 `TableCloth.exe`, `TableClothCli.exe`, `Spork.exe`도 풀어서 같은 검사를 수행합니다. x64와 arm64 자산과 Velopack 채널 메타데이터를 확인하고 Retail에서는 SBOM도 확인합니다.
 
-NativeAOT 설치본에서는 한국어 Windows의 기본 화면과 AI 대화창이 한국어인지 확인합니다. 영어 UI 환경에서는 AI 대화창, 링크 선택창, 스킬 설정창을 영어로 표시하는지 살펴봅니다. 기존 Codex 전용 프로필을 유지한 채 두 내장 스킬을 다시 불러오고 `BlockedByPolicy`가 발생하지 않는지도 확인합니다.
+NativeAOT 설치본에서는 한국어 Windows의 기본 화면과 AI 대화창이 한국어인지 확인합니다. 영어 UI 환경에서는 AI 대화창, 링크 선택창, 스킬 설정창을 영어로 표시하는지 살펴봅니다. 새 전용 프로필에는 스킬을 자동 설치하지 않으며 첫 화면에는 기본 카드 세 개와 스킬 카탈로그 안내 링크를 표시하는지 확인합니다. 마켓플레이스에서 `tablecloth-certificate-expiry`와 `tablecloth-windows-sandbox`를 선택해 설치한 뒤 활성화와 제거를 확인하고 `BlockedByPolicy`가 발생하지 않는지도 확인합니다. 기존 프로필의 사용자 설치 파일과 활성 설정은 유지합니다.
 
 서명 검증이나 자산 대조가 하나라도 실패하면 Draft를 유지합니다. CI 미서명 자산을 남겨 둔 채 일부 파일만 게시하지 않습니다.
 
