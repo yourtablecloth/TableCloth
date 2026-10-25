@@ -236,8 +236,15 @@ public sealed class SkillRuntimeDiagnostics : IManagedAiSkillRuntimeDiagnostics
                 probe(sys.argv[2])
                 result = 'TABLECLOTH_LONGPATH_SUPPORTED'
             except OSError as error:
-                if getattr(error, 'winerror', None) == 206 or error.errno == errno.ENAMETOOLONG:
+                winerror = getattr(error, 'winerror', None)
+                if winerror == 206 or error.errno == errno.ENAMETOOLONG:
                     result = 'TABLECLOTH_LONGPATH_LIMITED'
+                elif winerror in (3, 123):
+                    try:
+                        probe('\\\\?\\' + sys.argv[2] + '-extended')
+                        result = 'TABLECLOTH_LONGPATH_LIMITED'
+                    except Exception:
+                        pass
         except Exception:
             pass
         print(result)
