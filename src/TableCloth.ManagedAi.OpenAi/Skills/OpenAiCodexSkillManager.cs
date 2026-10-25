@@ -2,7 +2,6 @@ using System.Text;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Security.Cryptography;
 
 namespace TableCloth.ManagedAi.OpenAi;
 
@@ -26,7 +25,6 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
     {
         using var lease = paths.AcquireOperation();
         profile.Prepare();
-        EnsureBundledSkills();
         return await ListCoreAsync(cancellationToken);
     }
 
@@ -44,7 +42,6 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
     {
         using var lease = paths.AcquireOperation();
         profile.Prepare();
-        EnsureBundledSkills();
         var destination = await ImportCoreAsync(sourceDirectory, cancellationToken);
         try
         {
@@ -69,7 +66,6 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
             throw new ManagedAiException(AiFailureCode.SkillInvalid);
         using var lease = paths.AcquireOperation();
         profile.Prepare();
-        EnsureBundledSkills();
         var destination = paths.Under("profiles", "openai-codex", "codex-home", "skills", source.CatalogId);
         var exists = Directory.Exists(destination) || File.Exists(destination);
         if (expectedSource is null && exists) throw new ManagedAiException(AiFailureCode.SkillAlreadyInstalled);
@@ -126,7 +122,6 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
         ValidateId(id);
         using var lease = paths.AcquireOperation();
         profile.Prepare();
-        EnsureBundledSkills();
         if (!File.Exists(Path.Combine(paths.Skills, id, "SKILL.md"))) throw new ManagedAiException(AiFailureCode.SkillInvalid);
         if (enabled && (await ListCoreAsync(cancellationToken)).SingleOrDefault(x =>
             string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase)) is not { IsValid: true })
@@ -142,7 +137,6 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
         ValidateId(id);
         using var lease = paths.AcquireOperation();
         profile.Prepare();
-        EnsureBundledSkills();
         cancellationToken.ThrowIfCancellationRequested();
         var directory = Path.Combine(paths.Skills, id);
         if (!Directory.Exists(directory) || !File.Exists(Path.Combine(directory, "SKILL.md")))
@@ -199,7 +193,6 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
     private async Task<IReadOnlyList<AiSkill>> DiscoverAsync(ManagedRuntime runtime, string workingDirectory,
         bool allowInvalidSkills, CancellationToken cancellationToken)
     {
-        EnsureBundledSkills();
         Directory.CreateDirectory(paths.Skills);
         var exchange = new CodexSkillListExchange();
         var spec = OpenAiCodexInvocationBuilder.Command(runtime, workingDirectory,
@@ -240,56 +233,6 @@ public sealed class OpenAiCodexSkillManager(ManagedAiPaths paths, IManagedRuntim
         }
         WriteSkillConfiguration(catalog.Skills, state, invalid.Values);
         return managed.OrderBy(x => x.Name, StringComparer.CurrentCultureIgnoreCase).ToArray();
-    }
-
-    private void EnsureBundledSkills()
-    {
-        EnsureBundledSkill("tablecloth-certificate-expiry", "certificate-expiry-skill.installed",
-            "TableCloth.ManagedAi.OpenAi.Bundled.CertificateExpirySkill");
-        UpgradeBundledCertificateSkill();
-        EnsureBundledSkill("tablecloth-windows-sandbox", "windows-sandbox-skill.installed",
-            "TableCloth.ManagedAi.OpenAi.Bundled.WindowsSandboxSkill");
-    }
-
-    private void EnsureBundledSkill(string id, string markerName, string resourceName)
-    {
-        var marker = paths.Under("profiles", "openai-codex", markerName);
-        if (File.Exists(marker)) return;
-        var destination = Path.Combine(paths.Skills, id);
-        ManagedAiPaths.RejectReparsePoints(destination);
-        if (!Directory.Exists(destination))
-            Directory.CreateDirectory(destination);
-        var manifest = Path.Combine(destination, "SKILL.md");
-        if (!File.Exists(manifest))
-        {
-            using var source = typeof(OpenAiCodexSkillManager).Assembly.GetManifestResourceStream(resourceName)
-                ?? throw new ManagedAiException(AiFailureCode.SkillInvalid);
-            using var target = new FileStream(manifest, FileMode.CreateNew, FileAccess.Write, FileShare.None);
-            source.CopyTo(target);
-        }
-        File.WriteAllText(marker, "1", new UTF8Encoding(false));
-    }
-
-    private void UpgradeBundledCertificateSkill()
-    {
-        const string priorLfHash = "C08D90D73961A2134E684641D7A40638A94FC584B5555D854F4B8FB4D81E3182";
-        const string priorCrlfHash = "0ABDAE1744AF5F66E45B39FB2FE829EE13869BA37062FB9C7ECC958D1CC118FE";
-        var manifest = Path.Combine(paths.Skills, "tablecloth-certificate-expiry", "SKILL.md");
-        if (!File.Exists(manifest)) return;
-        ManagedAiPaths.RejectReparsePoints(manifest);
-        var currentHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(manifest)));
-        if (currentHash is not (priorLfHash or priorCrlfHash)) return;
-        using var source = typeof(OpenAiCodexSkillManager).Assembly.GetManifestResourceStream(
-            "TableCloth.ManagedAi.OpenAi.Bundled.CertificateExpirySkill")
-            ?? throw new ManagedAiException(AiFailureCode.SkillInvalid);
-        var staging = manifest + ".update-" + Guid.NewGuid().ToString("N");
-        try
-        {
-            using (var target = new FileStream(staging, FileMode.CreateNew, FileAccess.Write, FileShare.None))
-                source.CopyTo(target);
-            File.Move(staging, manifest, overwrite: true);
-        }
-        finally { if (File.Exists(staging)) File.Delete(staging); }
     }
 
     private async Task<string> ImportCoreAsync(string sourceDirectory, CancellationToken cancellationToken)

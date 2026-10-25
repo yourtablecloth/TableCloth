@@ -8,6 +8,132 @@ namespace TableCloth.ManagedAi.Test;
 public sealed class SkillTests
 {
     [TestMethod]
+    public async Task NewProfileStaysEmptyBeforeAndAfterRuntimeInstallationAndChatSynchronization()
+    {
+        using var fixture = new InstallFixture();
+        var runner = new SkillRunner(fixture.Paths);
+        var profile = new SkillProfile(fixture.Paths);
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, profile, runner);
+        Assert.IsEmpty(await manager.ListAsync(CancellationToken.None));
+        Assert.IsNull(runner.Invocation);
+
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        Assert.IsEmpty(await manager.ListAsync(CancellationToken.None));
+        Assert.IsNotNull(runner.Invocation);
+        var runtime = await fixture.Installer.GetActiveAsync(CancellationToken.None);
+        Assert.IsNotNull(runtime);
+        var working = fixture.Paths.Under("runs", "empty-profile");
+        Directory.CreateDirectory(working);
+        using (fixture.Paths.AcquireOperation())
+            Assert.IsEmpty(await manager.SynchronizeAsync(runtime, working, CancellationToken.None));
+
+        manager = new(fixture.Paths, fixture.Installer, profile, runner);
+        Assert.IsEmpty(await manager.ListAsync(CancellationToken.None));
+        Assert.IsEmpty(Directory.EnumerateFileSystemEntries(fixture.Paths.Skills));
+        Assert.IsFalse(File.Exists(fixture.Paths.Under("profiles", "openai-codex", "certificate-expiry-skill.installed")));
+        Assert.IsFalse(File.Exists(fixture.Paths.Under("profiles", "openai-codex", "windows-sandbox-skill.installed")));
+    }
+
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public async Task ExistingFormerDefaultSkillsAndTheirDisabledPreferenceArePreserved(bool legacyMarkers)
+    {
+        using var fixture = new InstallFixture();
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        foreach (var id in new[] { "tablecloth-certificate-expiry", "tablecloth-windows-sandbox" })
+        {
+            var directory = CreateSkill(fixture.Paths.Skills, id);
+            File.AppendAllText(Path.Combine(directory, "SKILL.md"), "User-maintained instructions.\r\n");
+            Directory.CreateDirectory(Path.Combine(directory, "references"));
+            File.WriteAllBytes(Path.Combine(directory, "references", "user-data.bin"), [0, 1, 2, 255]);
+        }
+        var markers = new[] { "certificate-expiry-skill.installed", "windows-sandbox-skill.installed" }
+            .Select(name => fixture.Paths.Under("profiles", "openai-codex", name)).ToArray();
+        if (legacyMarkers) foreach (var marker in markers) File.WriteAllText(marker, "legacy marker");
+        var original = Directory.GetFiles(fixture.Paths.Skills, "*", SearchOption.AllDirectories)
+            .ToDictionary(path => Path.GetRelativePath(fixture.Paths.Skills, path), File.ReadAllBytes);
+        var runner = new SkillRunner(fixture.Paths);
+        var profile = new SkillProfile(fixture.Paths);
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, profile, runner);
+
+        Assert.HasCount(2, await manager.ListAsync(CancellationToken.None));
+        await manager.SetEnabledAsync("tablecloth-certificate-expiry", false, CancellationToken.None);
+        manager = new(fixture.Paths, fixture.Installer, profile, runner);
+        var installed = await manager.ListAsync(CancellationToken.None);
+        Assert.HasCount(2, installed);
+        Assert.IsFalse(installed.Single(skill => skill.Id == "tablecloth-certificate-expiry").Enabled);
+        Assert.IsTrue(installed.Single(skill => skill.Id == "tablecloth-windows-sandbox").Enabled);
+        foreach (var file in original)
+            CollectionAssert.AreEqual(file.Value, File.ReadAllBytes(Path.Combine(fixture.Paths.Skills, file.Key)));
+        Assert.HasCount(original.Count, Directory.GetFiles(fixture.Paths.Skills, "*", SearchOption.AllDirectories));
+        foreach (var marker in markers)
+        {
+            if (legacyMarkers) Assert.AreEqual("legacy marker", File.ReadAllText(marker));
+            else Assert.IsFalse(File.Exists(marker));
+        }
+    }
+
+    [TestMethod]
+    [DataRow("tablecloth-certificate-expiry")]
+    [DataRow("tablecloth-windows-sandbox")]
+    public async Task FormerDefaultSkillCanBeImportedEnabledAndRemovedWithoutReappearing(string id)
+    {
+        using var fixture = new InstallFixture();
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        var source = CreateSkill(fixture.Paths.Under("cache", "local-source"), id);
+        var runner = new SkillRunner(fixture.Paths);
+        var profile = new SkillProfile(fixture.Paths);
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, profile, runner);
+        Assert.IsEmpty(await manager.ListAsync(CancellationToken.None));
+        var installed = (await manager.ImportAsync(source, CancellationToken.None)).Single();
+        Assert.AreEqual(id, installed.Id);
+        Assert.IsTrue(installed.Enabled);
+        Assert.IsNull(installed.Source);
+        Assert.IsFalse((await manager.SetEnabledAsync(id, false, CancellationToken.None)).Single().Enabled);
+        Assert.IsTrue((await manager.SetEnabledAsync(id, true, CancellationToken.None)).Single().Enabled);
+        Assert.IsEmpty(await manager.RemoveAsync(id, CancellationToken.None));
+        Assert.IsFalse(Directory.Exists(installed.Directory));
+        Assert.AreEqual(AiFailureCode.SkillInvalid,
+            (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.SetEnabledAsync(id, true, CancellationToken.None))).Code);
+
+        var runtime = await fixture.Installer.GetActiveAsync(CancellationToken.None);
+        Assert.IsNotNull(runtime);
+        var working = fixture.Paths.Under("runs", "removed-skill");
+        Directory.CreateDirectory(working);
+        using (fixture.Paths.AcquireOperation())
+            Assert.IsEmpty(await manager.SynchronizeAsync(runtime, working, CancellationToken.None));
+        manager = new(fixture.Paths, fixture.Installer, profile, runner);
+        Assert.IsEmpty(await manager.ListAsync(CancellationToken.None));
+        Assert.AreEqual(id, (await manager.ImportAsync(source, CancellationToken.None)).Single().Id);
+        Assert.IsEmpty(await manager.RemoveAsync(id, CancellationToken.None));
+    }
+
+    [TestMethod]
+    [DataRow("tablecloth-certificate-expiry")]
+    [DataRow("tablecloth-windows-sandbox")]
+    public async Task FormerDefaultSkillUsesOrdinaryCatalogInstallationAndRemoval(string id)
+    {
+        using var fixture = new InstallFixture();
+        await fixture.Installer.InstallAsync(null, null, CancellationToken.None);
+        var source = CreateSkill(fixture.Paths.Under("cache", "catalog-source"), id);
+        var provenance = CatalogSource() with { CatalogId = id };
+        var runner = new SkillRunner(fixture.Paths);
+        var profile = new SkillProfile(fixture.Paths);
+        var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, profile, runner);
+        var installed = (await manager.StoreCatalogAsync(source, provenance, null, CancellationToken.None)).Single();
+        Assert.AreEqual(id, installed.Id);
+        Assert.AreEqual(provenance, installed.Source);
+        Assert.IsTrue(installed.Enabled);
+        Assert.IsEmpty(await manager.RemoveAsync(id, CancellationToken.None));
+        manager = new(fixture.Paths, fixture.Installer, profile, runner);
+        Assert.IsEmpty(await manager.ListAsync(CancellationToken.None));
+        Assert.IsFalse(Directory.Exists(installed.Directory));
+        Assert.AreEqual(provenance, (await manager.StoreCatalogAsync(source, provenance, null, CancellationToken.None)).Single().Source);
+        Assert.IsEmpty(await manager.RemoveAsync(id, CancellationToken.None));
+    }
+
+    [TestMethod]
     public void NativeExchangeReadsMetadataWithoutStartingATurn()
     {
         var exchange = new CodexSkillListExchange();
@@ -40,10 +166,8 @@ public sealed class SkillTests
         var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, profile, runner);
 
         var skills = await manager.ListAsync(CancellationToken.None);
-        Assert.HasCount(3, skills);
+        Assert.HasCount(1, skills);
         Assert.IsTrue(skills.Single(x => x.Id == "owned-skill").Enabled);
-        Assert.IsTrue(skills.Single(x => x.Id == "tablecloth-certificate-expiry").Enabled);
-        Assert.IsTrue(skills.Single(x => x.Id == "tablecloth-windows-sandbox").Enabled);
         Assert.IsFalse(Directory.Exists(runner.Invocation!.StartInfo.WorkingDirectory));
         CollectionAssert.AreEqual(new[] { "--strict-config", "app-server", "--listen", "stdio://" },
             runner.Invocation.StartInfo.ArgumentList.ToArray());
@@ -63,7 +187,7 @@ public sealed class SkillTests
         Assert.IsTrue(File.Exists(Path.Combine(managedDirectory, "SKILL.md")));
         Assert.IsTrue(File.Exists(fixture.Paths.SkillState));
         Assert.IsFalse((await manager.ListAsync(CancellationToken.None)).Single(x => x.Id == "owned-skill").Enabled);
-        Assert.HasCount(2, await manager.RemoveAsync("owned-skill", CancellationToken.None));
+        Assert.IsEmpty(await manager.RemoveAsync("owned-skill", CancellationToken.None));
         Assert.IsFalse(Directory.Exists(managedDirectory));
         Assert.IsTrue(File.Exists(runner.ExternalManifest));
     }
@@ -87,11 +211,9 @@ public sealed class SkillTests
             Assert.AreEqual("guide", File.ReadAllText(Path.Combine(fixture.Paths.Skills, "imported-skill", "references", "guide.md")));
             var duplicate = await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.ImportAsync(source, CancellationToken.None));
             Assert.AreEqual(AiFailureCode.SkillAlreadyInstalled, duplicate.Code);
-            Assert.HasCount(2, await manager.RemoveAsync("imported-skill", CancellationToken.None));
+            Assert.IsEmpty(await manager.RemoveAsync("imported-skill", CancellationToken.None));
             Assert.IsFalse(Directory.Exists(Path.Combine(fixture.Paths.Skills, "imported-skill")));
-            Assert.HasCount(1, await manager.RemoveAsync("tablecloth-certificate-expiry", CancellationToken.None));
-            Assert.HasCount(0, await manager.RemoveAsync("tablecloth-windows-sandbox", CancellationToken.None));
-            Assert.HasCount(0, await manager.ListAsync(CancellationToken.None));
+            Assert.IsEmpty(await manager.ListAsync(CancellationToken.None));
         }
         finally { if (Directory.Exists(sourceRoot)) Directory.Delete(sourceRoot, recursive: true); }
     }
@@ -108,7 +230,7 @@ public sealed class SkillTests
         var manager = new OpenAiCodexSkillManager(fixture.Paths, fixture.Installer, new SkillProfile(fixture.Paths), runner);
 
         var skills = await manager.ListAsync(CancellationToken.None);
-        Assert.HasCount(4, skills);
+        Assert.HasCount(2, skills);
         Assert.AreEqual("Managed skill.", skills.Single(x => x.Id == "normal-skill").Description);
         Assert.IsTrue(skills.Single(x => x.Id == "normal-skill").IsValid);
         var broken = skills.Single(x => x.Id == "broken-skill");
@@ -137,11 +259,11 @@ public sealed class SkillTests
                 (await Assert.ThrowsExactlyAsync<ManagedAiException>(() => manager.SynchronizeAsync(runtime, working, CancellationToken.None))).Code);
 
         skills = await manager.RemoveAsync("broken-skill", CancellationToken.None);
-        Assert.HasCount(3, skills);
+        Assert.HasCount(1, skills);
         Assert.IsTrue(skills.All(x => x.IsValid));
         Assert.IsFalse(Directory.Exists(broken.Directory));
         using (fixture.Paths.AcquireOperation())
-            Assert.HasCount(3, await manager.SynchronizeAsync(runtime, working, CancellationToken.None));
+            Assert.HasCount(1, await manager.SynchronizeAsync(runtime, working, CancellationToken.None));
     }
 
     [TestMethod]
