@@ -12,6 +12,8 @@ Open **Options > AI skills > Open skill marketplace**. The marketplace provides 
 
 The Options tab contains a short guide and the marketplace entry. In the AI window, **OpenAI account / settings > Dedicated skills > Manage installed AI skills** opens the installed-skill view directly. Closing that dialog refreshes the AI window's enabled-skill count and skill availability.
 
+The first-message view shows three cards: finding a service, finding a public service, and finding a tax filing site. A link for more features opens the marketplace's Catalog tab to discover and install skills. New profiles start without preinstalled skills; existing installations remain manageable.
+
 Catalog loading and local management use separate operation states. A failed catalog request leaves installed-skill management available. The [window](../src/TableCloth.App/Dialogs/SkillMarketplaceWindow.axaml) and [view model](../src/TableCloth.App/ViewModels/SkillMarketplaceWindowViewModel.cs) own this behavior.
 
 ## A separate versioned XML catalog
@@ -20,7 +22,7 @@ The application reads `https://catalog.yourtablecloth.app/SkillCatalog.xml`. The
 
 `SkillCatalog Version="1"` contains `Skill` entries with stable IDs. Each entry identifies a GitHub repository, a path, and an immutable source commit in `Source.Ref`. Descriptions, authors, SPDX identifiers, license evidence, runtime and network requirements, install mode, and usage notes describe each skill. Commenting out or removing a `Skill` block withdraws it from the remote list. Installed copies remain manageable. See the [shared model](../src/TableCloth.ManagedAi.Core/SkillCatalog.cs).
 
-The initial listing contains five skills: `official-report-skillset`, `bok-ecos-stats`, `kosis-stats`, `korean-law-mcp`, and `korean-jangbu-for`. Other candidates remain in XML comments. BOK sample-key requests return at most 10 rows. Keyless KOSIS and law queries depend on external shared servers, while bookkeeping requires separate MCP and child-skill configuration. API-key settings and DPAPI credential management are tracked for the next version in [issue #321](https://github.com/yourtablecloth/TableCloth/issues/321).
+The catalog lists seven skills: `official-report-skillset`, `bok-ecos-stats`, `kosis-stats`, `korean-law-mcp`, `korean-jangbu-for`, and the optional [tablecloth-certificate-expiry](https://github.com/yourtablecloth/tablecloth-certificate-expiry) and [tablecloth-windows-sandbox](https://github.com/yourtablecloth/tablecloth-windows-sandbox). Other candidates remain in XML comments. The two TableCloth skills are distributed in separate repositories, require no API keys, and interpret local reports supplied by TableCloth's host bridge after installation and activation. BOK sample-key requests return at most 10 rows. Keyless KOSIS and law queries depend on external shared servers, while bookkeeping requires separate MCP and child-skill configuration. API-key settings and DPAPI credential management are tracked for the next version in [issue #321](https://github.com/yourtablecloth/TableCloth/issues/321).
 
 ## Installation and changes to the catalog revision
 

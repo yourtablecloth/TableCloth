@@ -12,6 +12,8 @@
 
 옵션 탭에는 짧은 사용 안내와 마켓플레이스 열기 버튼만 표시합니다. AI 창의 **OpenAI 계정 / 설정 > 전용 스킬 > 설치된 AI 스킬 관리**를 선택하면 설치된 스킬 탭을 바로 엽니다. 대화 상자를 닫으면 AI 창이 활성 스킬 수와 스킬 사용 상태를 다시 조회합니다.
 
+첫 메시지 화면에는 서비스 찾기, 공공서비스 찾기와 세금 신고 사이트 찾기 카드 세 개를 표시합니다. 더 많은 기능을 안내하는 링크는 마켓플레이스의 카탈로그 탭을 열어 새 스킬을 선택하고 설치할 수 있도록 연결합니다. 기본 구성에는 스킬을 포함하지 않으며 기존 설치본은 계속 관리할 수 있습니다.
+
 이어서 카탈로그 조회와 로컬 작업의 관계를 짚어보겠습니다. 두 작업은 진행 상태를 각각 관리합니다. 카탈로그 요청에 실패해도 설치된 스킬을 관리할 수 있습니다. [창](../src/TableCloth.App/Dialogs/SkillMarketplaceWindow.axaml)과 [뷰 모델](../src/TableCloth.App/ViewModels/SkillMarketplaceWindowViewModel.cs)이 이 동작을 구현합니다.
 
 ## 버전을 지정하는 별도 XML 카탈로그
@@ -20,7 +22,7 @@
 
 `SkillCatalog Version="1"` 아래에 고정 ID를 가진 `Skill` 항목을 기록합니다. 각 항목은 GitHub 저장소, 경로, `Source.Ref`에 고정한 원본 커밋을 지정합니다. 설명, 저자, SPDX 식별자, 라이선스 근거, 런타임과 네트워크 요구 사항, 설치 방식, 사용 조건도 기록합니다. `Skill` 블록을 주석 처리하거나 삭제하면 원격 목록에서 제외합니다. 기존 설치본은 계속 관리할 수 있습니다. [공용 모델](../src/TableCloth.ManagedAi.Core/SkillCatalog.cs)에 애플리케이션이 읽는 필드를 정의했습니다.
 
-초기 목록에는 `official-report-skillset`, `bok-ecos-stats`, `kosis-stats`, `korean-law-mcp`, `korean-jangbu-for` 다섯 스킬을 표시합니다. 나머지 후보는 XML 주석으로 보존합니다. 한국은행의 sample 키 조회는 요청당 최대 10행으로 제한합니다. KOSIS와 법령 검색의 사용자 키 없는 경로는 외부 공유 서버에 의존하며 장부 기능은 별도 MCP와 하위 스킬 구성을 요구합니다. API 키 설정과 DPAPI 자격 증명 관리는 [다음 버전 이슈 #321](https://github.com/yourtablecloth/TableCloth/issues/321)에서 추적합니다.
+카탈로그에는 `official-report-skillset`, `bok-ecos-stats`, `kosis-stats`, `korean-law-mcp`, `korean-jangbu-for`와 선택 설치하는 [tablecloth-certificate-expiry](https://github.com/yourtablecloth/tablecloth-certificate-expiry), [tablecloth-windows-sandbox](https://github.com/yourtablecloth/tablecloth-windows-sandbox) 일곱 스킬을 표시합니다. 다른 후보는 XML 주석으로 보존합니다. 식탁보 전용 두 스킬은 별도 저장소에서 배포하며 API 키를 요구하지 않습니다. 설치하고 활성화하면 식탁보의 호스트 브리지가 제공한 로컬 보고서를 해석합니다. 한국은행의 sample 키 조회는 요청당 최대 10행으로 제한합니다. KOSIS와 법령 검색의 사용자 키 없는 경로는 외부 공유 서버에 의존하며 장부 기능은 별도 MCP와 하위 스킬 구성을 요구합니다. API 키 설정과 DPAPI 자격 증명 관리는 [다음 버전 이슈 #321](https://github.com/yourtablecloth/TableCloth/issues/321)에서 추적합니다.
 
 ## 카탈로그 버전에 맞춘 설치와 업데이트
 

@@ -125,18 +125,22 @@ public sealed class ManagedAiWindowTests
     }
 
     [TestMethod]
-    [DataRow("en-US", false, 840)]
-    [DataRow("en-US", true, 840)]
-    [DataRow("ko-KR", false, 840)]
-    [DataRow("ko-KR", true, 840)]
-    [DataRow("en-US", false, 640)]
-    [DataRow("en-US", true, 640)]
-    [DataRow("ko-KR", false, 640)]
-    [DataRow("ko-KR", true, 640)]
-    public async Task CompactSummaryAndWelcomeFitWithinTheAiWindow(string culture, bool dark, int width)
+    [DataRow("en-US", false, 840, 640)]
+    [DataRow("en-US", true, 840, 640)]
+    [DataRow("ko-KR", false, 840, 640)]
+    [DataRow("ko-KR", true, 840, 640)]
+    [DataRow("en-US", false, 640, 640)]
+    [DataRow("en-US", true, 640, 640)]
+    [DataRow("ko-KR", false, 640, 640)]
+    [DataRow("ko-KR", true, 640, 640)]
+    [DataRow("en-US", false, 640, 540)]
+    [DataRow("en-US", true, 640, 540)]
+    [DataRow("ko-KR", false, 640, 540)]
+    [DataRow("ko-KR", true, 640, 540)]
+    public async Task CompactSummaryAndWelcomeFitWithinTheAiWindow(string culture, bool dark, int width, int height)
     {
         var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts",
-            $"chat-compact-{culture}-{width}-{(dark ? "dark" : "light")}.png");
+            $"chat-welcome-{culture}-{width}x{height}-{(dark ? "dark" : "light")}.png");
         var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
         {
@@ -147,9 +151,10 @@ public sealed class ManagedAiWindowTests
                 new("gpt-6-luna", "Luna") { TokenCost = new(2.5m, .25m, 12.5m, today) }];
             var window = fixture.Create(CultureInfo.GetCultureInfo(culture));
             window.Width = width;
+            window.Height = height;
             try
             {
-                Assert.AreEqual(640d, window.Height);
+                Assert.AreEqual((double)height, window.Height);
                 var caption = culture == "ko-KR" ? "식탁보 AI" : "TableCloth AI";
                 Assert.AreEqual(caption, window.Title);
                 window.Show(); await Ready(window);
@@ -190,6 +195,17 @@ public sealed class ManagedAiWindowTests
                 var notice = Find<Border>(window, "ManagedAiPrivacyNotice");
                 Assert.IsTrue(notice.GetVisualAncestors().Contains(Find<StackPanel>(window, "ManagedAiStarters")));
                 VisibleBounds(window, notice);
+                var starters = Controls(window).OfType<Button>().Where(x => x.Classes.Contains("chat-starter")).ToArray();
+                CollectionAssert.AreEqual(culture == "ko-KR"
+                    ? new[] { "서비스 찾기", "공공서비스 찾기", "세금 신고 사이트 찾기" }
+                    : new[] { "Find a service", "Find a public service", "Find a tax filing site" },
+                    starters.Select(x => ((StackPanel)x.Content!).Children.OfType<TextBlock>().First().Text).ToArray());
+                foreach (var starter in starters) VisibleBounds(window, starter);
+                var browseSkills = Find<Button>(window, "ManagedAiBrowseSkills");
+                Assert.IsTrue(browseSkills.Classes.Contains("link"));
+                Assert.AreEqual(culture == "ko-KR" ? "더 많은 기능은 스킬 설정 창에서 새 스킬을 받아 활용할 수 있습니다."
+                    : "Get new skills from skill settings to use more features.", AutomationProperties.GetName(browseSkills));
+                VisibleBounds(window, browseSkills);
                 SaveFrame(window, screenshot);
             }
             finally { window.Close(); }
@@ -610,7 +626,7 @@ public sealed class ManagedAiWindowTests
             {
                 window.Show(); await Ready(window);
                 var starters = Controls(window).OfType<Button>().Where(x => x.Classes.Contains("chat-starter")).ToArray();
-                Assert.HasCount(5, starters);
+                Assert.HasCount(3, starters);
                 Assert.HasCount(1, Find<StackPanel>(window, "ManagedAiChatTranscript").Children);
                 Assert.IsTrue(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
                 var bankNames = new[] { "KB국민은행", "신한은행", "하나은행", "우리은행", "NH농협은행" };
@@ -639,7 +655,7 @@ public sealed class ManagedAiWindowTests
                 Assert.IsTrue(Find<StackPanel>(window, "ManagedAiStarters").IsVisible);
                 Assert.IsTrue(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
                 Assert.HasCount(1, Find<StackPanel>(window, "ManagedAiChatTranscript").Children);
-                Assert.HasCount(5, Controls(window).OfType<Button>().Where(x => x.Classes.Contains("chat-starter")).ToArray());
+                Assert.HasCount(3, Controls(window).OfType<Button>().Where(x => x.Classes.Contains("chat-starter")).ToArray());
                 Assert.HasCount(0, fixture.Session!.History);
             }
             finally { window.Close(); }
@@ -830,7 +846,7 @@ public sealed class ManagedAiWindowTests
     }
 
     [TestMethod]
-    public async Task CertificateStarterRetriesTransientRuntimeContention()
+    public async Task CertificateInputRetriesTransientRuntimeContention()
     {
         var headless = HeadlessTestSession.Shared;
         await headless.Dispatch<bool>(async () =>
@@ -842,9 +858,9 @@ public sealed class ManagedAiWindowTests
             try
             {
                 window.Show(); await Ready(window);
-                var starter = Controls(window).OfType<Button>().Single(x =>
-                    AutomationProperties.GetName(x)?.Contains("인증서 만료 확인", StringComparison.Ordinal) == true);
-                Click(window, starter);
+                var input = Find<TextBox>(window, "ManagedAiChatInput");
+                input.Text = "이 컴퓨터에서 30일 안에 만료되는 공동인증서가 있는지 확인해 주세요.";
+                Click(window, Find<Button>(window, "ManagedAiChatSend"));
                 await Until(() => fixture.Chat.Requests.Count == 1);
                 Assert.AreEqual(2, fixture.Chat.Attempts);
                 Assert.AreEqual(1, fixture.Certificates.Calls);
@@ -1008,6 +1024,64 @@ public sealed class ManagedAiWindowTests
                 Assert.HasCount(0, fixture.Session!.History);
             }
             finally { window.Close(); }
+            return true;
+        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
+    }
+
+    [TestMethod]
+    [DataRow("ko-KR", false, PhysicalKey.Enter)]
+    [DataRow("en-US", true, PhysicalKey.Space)]
+    public async Task WelcomeSkillLinkOpensCatalogAndInstallsThroughKeyboard(string culture, bool dark, PhysicalKey activationKey)
+    {
+        await HeadlessTestSession.Shared.Dispatch<bool>(async () =>
+        {
+            Application.Current!.RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light;
+            var fixture = new Fixture();
+            var revision = new string('a', 40);
+            var entry = new SkillCatalogEntry("fixture-report", "Documents", "Report skill", "Local report instructions.",
+                "https://github.com/fixture/skills", "report", revision, "Fixture", "MIT", "upstream", "none", "")
+                { LicenseSource = $"https://github.com/fixture/skills/blob/{revision}/LICENSE" };
+            fixture.Marketplace.Items = [entry];
+            fixture.Marketplace.Skills = fixture.Skills;
+            var window = fixture.Create(CultureInfo.GetCultureInfo(culture));
+            SkillMarketplaceWindow? child = null;
+            try
+            {
+                window.Show(); await Ready(window);
+                var input = Find<TextBox>(window, "ManagedAiChatInput");
+                input.Text = "Draft";
+                var link = Find<Button>(window, "ManagedAiBrowseSkills");
+                Assert.IsTrue(Find<Button>(window, "ManagedAiManage").Focus(NavigationMethod.Tab));
+                for (var i = 0; i < 8 && !link.IsFocused; i++)
+                {
+                    window.KeyPressQwerty(PhysicalKey.Tab, RawInputModifiers.None);
+                    window.KeyReleaseQwerty(PhysicalKey.Tab, RawInputModifiers.None);
+                }
+                Assert.IsTrue(link.IsFocused, "The welcome link must participate in keyboard navigation.");
+                window.KeyPressQwerty(activationKey, RawInputModifiers.None);
+                window.KeyReleaseQwerty(activationKey, RawInputModifiers.None);
+                await Until(() => window.OwnedWindows.OfType<SkillMarketplaceWindow>().Any());
+                child = window.OwnedWindows.OfType<SkillMarketplaceWindow>().Single();
+                Assert.AreSame(window, child.Owner);
+                Assert.AreEqual(0, child.FindControl<TabControl>("MarketplaceTabs")!.SelectedIndex);
+                var model = (SkillMarketplaceWindowViewModel)child.DataContext!;
+                await Until(() => model.CatalogSkills.Count == 1 && !model.LocalBusy && !model.CatalogBusy);
+                model.SelectedCatalogSkill = model.CatalogSkills.Single();
+                var install = child.FindControl<Button>("CatalogInstall")!;
+                Assert.IsTrue(install.IsEffectivelyEnabled);
+                Click(child, install);
+                await Until(() => model.InstalledSkills.Count == 1 && !model.LocalBusy && !model.CatalogBusy);
+                CollectionAssert.AreEqual(new[] { entry.Id }, fixture.Marketplace.InstalledIds);
+                Assert.IsTrue(fixture.Skills.Items.Single().Enabled);
+                child.Close();
+                await Until(() => Find<TextBlock>(window, "ManagedAiActiveSkillCount").Text!
+                    .Contains(culture == "ko-KR" ? "활성 스킬 1개" : "1 enabled skills"));
+                await Ready(window);
+                Assert.AreEqual("Draft", input.Text);
+                Assert.HasCount(0, fixture.Chat.Requests);
+                Assert.IsTrue(link.IsEnabled);
+            }
+            finally { child?.Close(); window.Close(); }
             return true;
         }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
     }
@@ -1289,10 +1363,21 @@ public sealed class ManagedAiWindowTests
     }
     private sealed class Marketplace : IManagedAiSkillMarketplace
     {
+        public IReadOnlyList<SkillCatalogEntry>? Items;
+        public Skills? Skills;
+        public readonly List<string> InstalledIds = [];
         public Task<IReadOnlyList<SkillCatalogEntry>> ListAsync(CancellationToken token)
-            => throw new ManagedAiException(AiFailureCode.CatalogUnavailable);
+            => Items is not null ? Task.FromResult(Items) : throw new ManagedAiException(AiFailureCode.CatalogUnavailable);
         public Task<IReadOnlyList<AiSkill>> InstallAsync(string id, CancellationToken token)
-            => throw new AssertFailedException("Unexpected remote skill install");
+        {
+            if (Skills is null || Items is null) throw new AssertFailedException("Unexpected remote skill install");
+            var entry = Items.Single(x => x.Id == id);
+            Skills.Items = Skills.Items.Append(new AiSkill(id, entry.DisplayName, entry.Description,
+                Path.Combine(Skills.StorageDirectory, id), true)
+                { Source = new(id, entry.Repository, entry.SourcePath, entry.SourceRef) }).ToArray();
+            InstalledIds.Add(id);
+            return Task.FromResult(Skills.Items);
+        }
         public Task<IReadOnlyList<AiSkill>> UpdateAsync(string id, CancellationToken token)
             => throw new AssertFailedException("Unexpected remote skill update");
     }

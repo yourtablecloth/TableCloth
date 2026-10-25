@@ -20,7 +20,8 @@ public sealed class SkillMarketplaceTests
         var entries = SkillCatalogClient.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Fixtures", "SkillCatalog.xml")));
         CollectionAssert.AreEquivalent(new[]
         {
-            "bok-ecos-stats", "kosis-stats", "korean-jangbu-for", "korean-law-mcp", "official-report-skillset"
+            "bok-ecos-stats", "kosis-stats", "korean-jangbu-for", "korean-law-mcp", "official-report-skillset",
+            "tablecloth-certificate-expiry", "tablecloth-windows-sandbox"
         }, entries.Select(x => x.Id).ToArray());
         Assert.IsTrue(entries.All(x => x.CanInstall));
         Assert.IsTrue(entries.All(x => x.SourceRef.Length == 40));

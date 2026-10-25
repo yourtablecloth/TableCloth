@@ -40,6 +40,11 @@ public sealed class ManagedAiWindow : Window
     private readonly IManagedAiSkillRuntimeManager? _skillRuntimes;
     private readonly IManagedAiSkillRuntimeDiagnostics? _skillRuntimeDiagnostics;
     private readonly Button _openSkillMarketplace;
+    private readonly Button _browseSkills = new()
+    {
+        Padding = new Thickness(0), Margin = new Thickness(0),
+        HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Left
+    };
     private SkillMarketplaceWindow? _skillMarketplaceWindow;
     private readonly IManagedAiCertificateBridge _certificateBridge;
     private readonly IManagedAiSandboxBridge _sandboxBridge;
@@ -230,6 +235,15 @@ public sealed class ManagedAiWindow : Window
         AutomationProperties.SetAutomationId(_openSkillMarketplace, "ManagedAiSkillMarketplace");
         _openSkillMarketplace.Click += async (_, _) => await OpenSkillMarketplaceAsync();
         settings.Children.Add(_openSkillMarketplace);
+        var browseSkillsText = L("더 많은 기능은 스킬 설정 창에서 새 스킬을 받아 활용할 수 있습니다.",
+            "Get new skills from skill settings to use more features.");
+        _browseSkills.Content = Text(browseSkillsText);
+        _browseSkills.Classes.Add("link");
+        AutomationProperties.SetAutomationId(_browseSkills, "ManagedAiBrowseSkills");
+        AutomationProperties.SetName(_browseSkills, browseSkillsText);
+        AutomationProperties.SetHelpText(_browseSkills, L("스킬 카탈로그를 열어 새 스킬을 설치합니다.",
+            "Open the skill catalog to install new skills."));
+        _browseSkills.Click += async (_, _) => await OpenSkillMarketplaceAsync(SkillMarketplaceTab.Catalog);
         _settingsPanel.Child = new ScrollViewer { Content = settings, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
         _settingsPanel.Bind(Border.BackgroundProperty, _settingsPanel.GetResourceObservable("SolidBackgroundFillColorBaseBrush"));
         _settingsPanel.Bind(Border.BorderBrushProperty, _settingsPanel.GetResourceObservable("ControlStrokeColorDefaultBrush"));
@@ -336,12 +350,12 @@ public sealed class ManagedAiWindow : Window
         _actions.Add(button); return button;
     }
 
-    internal async Task OpenSkillMarketplaceAsync()
+    internal async Task OpenSkillMarketplaceAsync(SkillMarketplaceTab initialTab = SkillMarketplaceTab.Installed)
     {
         if (_skillMarketplace is null || _operation is not null || _skillMarketplaceWindow is not null) return;
         CloseSettings();
         using var viewModel = new SkillMarketplaceWindowViewModel(_skills, _skillMarketplace, _messages, _skillRuntimes, _skillRuntimeDiagnostics);
-        var window = new SkillMarketplaceWindow(viewModel, SkillMarketplaceTab.Installed);
+        var window = new SkillMarketplaceWindow(viewModel, initialTab);
         _skillMarketplaceWindow = window;
         WindowChrome.RemoveMinimizeBox(window);
         try { await window.ShowDialog(this); }
@@ -375,7 +389,8 @@ public sealed class ManagedAiWindow : Window
         _starters.Children.Add(new TextBlock { Text = L("이런 질문으로 시작할 수 있습니다", "Try one of these questions"), FontSize = 16, FontWeight = FontWeight.SemiBold });
         _starters.Children.Add(Text(L("카드를 누르면 예시 질문을 바로 전송합니다.",
             "Choose a card to send its sample question immediately.")));
-        var choices = new UniformGrid { Columns = 2 };
+        _starters.Children.Add(_browseSkills);
+        var choices = new UniformGrid { Columns = 3 };
         var bank = StarterBankExamples[Random.Shared.Next(StarterBankExamples.Length)];
         AddStarter(L("서비스 찾기", "Find a service"),
             L($"{bank.Korean} 인터넷뱅킹 공식 사이트를 찾아 링크와 이용 준비 사항을 알려 주세요.",
@@ -384,15 +399,11 @@ public sealed class ManagedAiWindow : Window
               $"Tell me the name of the service you want to find. For example: {bank.English}"));
         AddStarter(L("공공서비스 찾기", "Find a public service"),
             L("주민등록등본을 온라인으로 발급받을 수 있는 공식 사이트와 이용 절차를 알려 주세요.",
-              "Find the official website for getting a Korean resident registration certificate online and explain the steps."));
+              "Find the official website for getting a Korean resident registration certificate online and explain the steps."),
+            L("민원과 공공서비스의 공식 사이트와 이용 절차를 찾습니다.",
+              "Find official public-service websites and how to use them."));
         AddStarter(L("세금 신고 사이트 찾기", "Find a tax filing site"),
             L("세금 신고에 사용할 공식 사이트를 찾아 링크를 알려 주세요.", "Find the official tax filing website and provide its link."));
-        AddStarter(L("식탁보 사용법", "Using TableCloth"),
-            L("식탁보에서 웹사이트를 열고 필요한 소프트웨어를 설치하는 방법을 알려 주세요.",
-              "Explain how to open a website in TableCloth and install its required software."));
-        AddStarter(L("인증서 만료 확인", "Check certificate expiry"),
-            L("이 컴퓨터에서 30일 안에 만료되는 공동인증서가 있는지 확인해 주세요.",
-              "Check whether any digital certificates on this computer expire within 30 days."));
         _starters.Children.Add(choices);
         _transcript.Children.Add(_starters);
         Dispatcher.UIThread.Post(() => _scroll.ScrollToHome(), DispatcherPriority.Loaded);
@@ -656,6 +667,7 @@ public sealed class ManagedAiWindow : Window
         foreach (var action in _actions) action.IsEnabled = _operation is null;
         foreach (var starter in _starterButtons) starter.IsEnabled = _operation is null;
         _openSkillMarketplace.IsEnabled = _operation is null && _skillMarketplace is not null;
+        _browseSkills.IsEnabled = _openSkillMarketplace.IsEnabled;
         _signIn.IsVisible = !_loggedIn;
         _signIn.Content = _runtimeInstalled ? L("OpenAI 로그인", "Sign in to OpenAI") : L("설치하고 로그인", "Install and sign in");
         _signOut.IsVisible = _loggedIn;
