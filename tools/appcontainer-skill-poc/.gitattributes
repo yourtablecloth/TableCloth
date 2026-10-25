@@ -1,0 +1,2 @@
+# Keep pinned upstream fixtures byte-identical across Windows checkouts.
+skills/** -text
