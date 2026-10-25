@@ -24,9 +24,10 @@ public sealed class WindowsManagedAiSkillExecution(ManagedAiPaths paths,
             if (!Path.GetFullPath(installed.Directory).Equals(expectedSkill, StringComparison.OrdinalIgnoreCase)) throw Blocked();
             ManagedAiPaths.RejectReparsePoints(runDirectory);
             var root = paths.Under("skill-execution");
-            var host = hostExecutable ?? Environment.ProcessPath;
+            var host = hostExecutable ?? ResolveHostExecutable(Environment.ProcessPath, AppContext.BaseDirectory);
             if (host is null || !Path.IsPathFullyQualified(host) ||
-                !Path.GetFileName(host).Equals("TableCloth.exe", StringComparison.OrdinalIgnoreCase) || !File.Exists(host)) throw Blocked();
+                !Path.GetFileName(host).Equals("TableCloth.exe", StringComparison.OrdinalIgnoreCase) || !File.Exists(host))
+                throw new ManagedAiException(AiFailureCode.SkillExecutionHostUnavailable);
             ManagedAiPaths.RejectReparsePoints(host);
             var source = Path.Combine(expectedSkill, "scripts", "calculate.py");
             ManagedAiPaths.RejectReparsePoints(source);
@@ -91,6 +92,15 @@ public sealed class WindowsManagedAiSkillExecution(ManagedAiPaths paths,
                 try { ManagedAiPaths.RejectReparsePoints(pendingManifest); File.Delete(pendingManifest); }
                 catch (Exception error) when (error is IOException or UnauthorizedAccessException or ManagedAiException) { }
         }
+    }
+
+    internal static string? ResolveHostExecutable(string? processPath, string applicationDirectory)
+    {
+        // Framework-dependent launches run as dotnet.exe. Only the fixed apphost beside
+        // the product payload can serve MCP; never search PATH or launch dotnet/shell tools.
+        if (processPath is not null && Path.GetFileName(processPath).Equals("dotnet.exe", StringComparison.OrdinalIgnoreCase))
+            return Path.IsPathFullyQualified(applicationDirectory) ? Path.Combine(applicationDirectory, "TableCloth.exe") : null;
+        return processPath;
     }
 
     private static ManagedAiException Blocked() => new(AiFailureCode.BlockedByPolicy);

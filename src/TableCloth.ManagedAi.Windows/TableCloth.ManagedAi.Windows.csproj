@@ -7,6 +7,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="TableCloth.ManagedAi.Test" />
     <ProjectReference Include="../TableCloth.ManagedAi.Core/TableCloth.ManagedAi.Core.csproj" />
     <ProjectReference Include="../TableCloth.ManagedAi.AppContainer/TableCloth.ManagedAi.AppContainer.csproj" />
   </ItemGroup>

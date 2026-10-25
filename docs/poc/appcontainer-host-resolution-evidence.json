@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "observedAtUtc": "2026-10-25T22:25:44.1152979+00:00",
+  "scope": "Fixed apphost resolution for dotnet-hosted TableCloth launches; the reported GUI launch mode is not confirmed.",
+  "before": {
+    "process": "dotnet.exe",
+    "failure": "BlockedByPolicy",
+    "modelStarted": false
+  },
+  "after": {
+    "process": "dotnet.exe",
+    "bridge": "fixed TableCloth.exe in AppContext.BaseDirectory",
+    "hostOverride": false,
+    "cliVersion": "0.156.1",
+    "model": "gpt-6-sol",
+    "tool": "tablecloth-calculators",
+    "operation": "bmi",
+    "wasAppContainer": true,
+    "exitCode": 0,
+    "bmi": "28.03",
+    "completedTurn": true
+  },
+  "policy": {
+    "shellTool": false,
+    "unifiedExec": false,
+    "pathLookup": false,
+    "workingDirectoryLookup": false,
+    "reparseChecksRetained": true,
+    "scriptHashChecksRetained": true
+  },
+  "managedAiTests": {
+    "passed": 228,
+    "failed": 0,
+    "skipped": 0
+  },
+  "productDebugBuild": "passed",
+  "localRecord": {
+    "path": "Artifacts/preview7-error-diagnosis/native-prepare-probe/bin/Debug/net11.0-windows10.0.18362.0/provider.events.jsonl",
+    "sha256": "f61200db506d63c31f8f56011b84ea16d9388c44c1bb455644020858ebbff1c4"
+  },
+  "qualificationLimits": [
+    "The screenshot launch method has not been confirmed; this independently reproduces and fixes the dotnet-hosted launch defect.",
+    "Preview 7 artifacts are unchanged and do not include this subsequent fix.",
+    "No new signed release, ARM64 native worker execution, Windows 10 device execution or GUI automation is qualified by this record."
+  ]
+}

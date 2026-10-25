@@ -982,6 +982,8 @@ public sealed class ManagedAiWindow : Window
             "A skill folder with this name already exists. Check the dedicated skill folder."),
         AiFailureCode.SkillIsolationFailed => L("전용 스킬 격리를 적용하지 못해 요청을 중지했습니다. 스킬을 다시 불러온 후 재시도할 수 있습니다.",
             "Could not isolate dedicated skills, so the request was stopped. Reload skills and retry."),
+        AiFailureCode.SkillExecutionHostUnavailable => L("스킬 실행 중계기로 사용할 TableCloth.exe를 찾지 못했습니다. 식탁보 실행 폴더의 TableCloth.exe로 시작하거나 설치 파일로 복구할 수 있습니다.",
+            "Could not find TableCloth.exe for the skill execution bridge. Start TableCloth.exe from the application folder or repair the installation."),
         AiFailureCode.CertificateScanUnavailable => L("인증서 조회 도구를 실행하지 못했습니다. TableClothCli 설치 상태를 확인한 후 다시 시도할 수 있습니다.",
             "Could not run the certificate scanner. Check the TableClothCli installation and retry."),
         _ => L($"요청을 완료하지 못했습니다. 오류 코드: {code}", $"Could not complete the request. Error code: {code}")
