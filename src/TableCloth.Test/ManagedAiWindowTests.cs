@@ -654,7 +654,6 @@ public sealed class ManagedAiWindowTests
                 await Ready(window);
                 Assert.IsTrue(Find<StackPanel>(window, "ManagedAiStarters").IsVisible);
                 Assert.IsTrue(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
-                Assert.IsFalse(Controls(window).Any(x => AutomationProperties.GetAutomationId(x) == "ManagedAiResponseActivity"));
                 Assert.HasCount(1, Find<StackPanel>(window, "ManagedAiChatTranscript").Children);
                 Assert.HasCount(3, Controls(window).OfType<Button>().Where(x => x.Classes.Contains("chat-starter")).ToArray());
                 Assert.HasCount(0, fixture.Session!.History);
@@ -771,7 +770,6 @@ public sealed class ManagedAiWindowTests
                 Assert.Contains("만료일", input.Text!);
                 Assert.IsTrue(Find<StackPanel>(window, "ManagedAiStarters").IsVisible);
                 Assert.IsTrue(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
-                Assert.IsFalse(Controls(window).Any(x => AutomationProperties.GetAutomationId(x) == "ManagedAiResponseActivity"));
 
                 fixture.Messages.Answer = AppMessageBoxResult.Yes;
                 Click(window, Find<Button>(window, "ManagedAiChatSend"));
@@ -782,7 +780,6 @@ public sealed class ManagedAiWindowTests
                 fixture.Chat.Complete("만료 예정 인증서가 있습니다.");
                 await Ready(window);
                 Assert.IsFalse(Find<Border>(window, "ManagedAiPrivacyNotice").IsEffectivelyVisible);
-                Assert.Contains("tablecloth-certificate-expiry: 앱 처리 완료", Find<TextBlock>(window, "ManagedAiResponseActivityItem").Text!);
             }
             finally { window.Close(); }
             return true;
@@ -897,207 +894,6 @@ public sealed class ManagedAiWindowTests
                 Assert.AreEqual(Sandbox.Report, fixture.Chat.Requests[0].LocalWindowsSandboxReport);
                 fixture.Chat.Complete("실행 중인 Sandbox가 없습니다.");
                 await Ready(window);
-                Assert.Contains("tablecloth-windows-sandbox: 앱 처리 완료", Find<TextBlock>(window, "ManagedAiResponseActivityItem").Text!);
-            }
-            finally { window.Close(); }
-            return true;
-        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
-    }
-
-    [TestMethod]
-    [DataRow("ko-KR", false)]
-    [DataRow("en-US", true)]
-    public async Task ResponseActivityUsesExecutionEvidenceAndDoesNotInheritEarlierRecords(string culture, bool dark)
-    {
-        var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts", $"chat-response-activity-{culture}.png");
-        await HeadlessTestSession.Shared.Dispatch<bool>(async () =>
-        {
-            Application.Current!.RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light;
-            var korean = culture == "ko-KR";
-            var fixture = new Fixture();
-            fixture.Skills.Items = [new("tablecloth-certificate-expiry", "Certificate expiry", "Local expiry", "fixture", true),
-                new("tablecloth-calculators", "Calculators", "Calculations", "fixture", true)];
-            var window = fixture.Create(CultureInfo.GetCultureInfo(culture));
-            window.Width = 640; window.Height = 640;
-            try
-            {
-                window.Show(); await Ready(window);
-                var input = Find<TextBox>(window, "ManagedAiChatInput");
-                input.Text = "Please explain percentages.";
-                Click(window, Find<Button>(window, "ManagedAiChatSend"));
-                await Until(() => fixture.Chat.Requests.Count == 1);
-                // A model assertion and an enabled skill are not runtime evidence.
-                fixture.Chat.Complete("I used tablecloth-calculators to produce this answer.");
-                await Ready(window);
-                var firstFooter = Find<StackPanel>(window, "ManagedAiResponseActivity");
-                Assert.IsTrue(firstFooter.GetVisualDescendants().OfType<TextBlock>().Any(x =>
-                    x.Text == (korean ? "확인된 스킬 실행 기록이 없습니다." : "No skill execution was confirmed.")));
-                Assert.IsFalse(Controls(window).Any(x => AutomationProperties.GetAutomationId(x) == "ManagedAiResponseActivityItem"));
-
-                input.Text = "Please check certificate expiry.";
-                Click(window, Find<Button>(window, "ManagedAiChatSend"));
-                await Until(() => fixture.Chat.Requests.Count == 2);
-                const string markdown = "The certificate scan finished.";
-                fixture.Chat.Complete(new AiChatResponse(markdown, DateTimeOffset.UtcNow, 0, "fixture-default")
-                {
-                    Activities = [
-                        new(AiResponseActivityKind.McpTool, "calculator", AiResponseActivityOutcome.Completed, "local_broker"),
-                        new(AiResponseActivityKind.McpTool, "failed_tool", AiResponseActivityOutcome.Failed, "local_broker"),
-                        new(AiResponseActivityKind.McpTool, "pending_tool", AiResponseActivityOutcome.Incomplete, "local_broker")],
-                    ActivityEvidenceIncomplete = true
-                });
-                await Ready(window);
-                var footers = Controls(window).OfType<StackPanel>()
-                    .Where(x => AutomationProperties.GetAutomationId(x) == "ManagedAiResponseActivity").ToArray();
-                Assert.HasCount(2, footers);
-                var footer = footers[^1];
-                Assert.AreEqual(korean ? "스킬 및 도구 기록" : "Skill and tool activity",
-                    footer.GetVisualDescendants().OfType<TextBlock>().First().Text);
-                var disclosure = Find<Button>(window, "ManagedAiResponseActivityDetails");
-                Assert.IsFalse(Find<StackPanel>(window, "ManagedAiResponseActivityItems").IsVisible);
-                SaveFrame(window, screenshot);
-                disclosure.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                Dispatcher.UIThread.RunJobs();
-                var rows = footer.GetVisualDescendants().OfType<TextBlock>()
-                    .Where(x => AutomationProperties.GetAutomationId(x) == "ManagedAiResponseActivityItem").Select(x => x.Text!).ToArray();
-                Assert.HasCount(4, rows);
-                Assert.Contains(korean ? "앱 처리 완료" : "App operation completed", rows[0]);
-                Assert.Contains(korean ? "MCP 응답 수신" : "MCP response received", rows[1]);
-                Assert.Contains(korean ? "MCP 호출 실패" : "MCP call failed", rows[2]);
-                Assert.Contains(korean ? "완료 확인 불가" : "Completion unconfirmed", rows[3]);
-                Assert.IsTrue(footer.GetVisualDescendants().OfType<TextBlock>().Any(x =>
-                    x.Text?.Contains(korean ? "일부 처리 기록" : "Some activity records") == true));
-                Assert.IsFalse(rows.Any(x => x.Contains(Certificates.Report)));
-                var copy = Controls(window).OfType<Button>().Last(x => x.Classes.Contains("chat-copy"));
-                copy.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                await Until(() => copy.Content as string == (korean ? "복사 완료" : "Copied"));
-                Assert.AreEqual(markdown, await window.Clipboard!.TryGetTextAsync());
-
-                input.Text = "Please explain a date calculation.";
-                Find<Button>(window, "ManagedAiChatSend").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                await Until(() => fixture.Chat.Requests.Count == 3);
-                fixture.Chat.Complete("No tool was needed for this explanation.");
-                await Ready(window);
-                var latest = Controls(window).OfType<StackPanel>()
-                    .Last(x => AutomationProperties.GetAutomationId(x) == "ManagedAiResponseActivity");
-                Assert.IsFalse(latest.GetVisualDescendants().OfType<Control>().Any(x =>
-                    AutomationProperties.GetAutomationId(x) == "ManagedAiResponseActivityItem"));
-                Assert.AreEqual(1, fixture.Certificates.Calls);
-            }
-            finally { window.Close(); }
-            return true;
-        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
-        TestContext.AddResultFile(screenshot);
-    }
-
-    [TestMethod]
-    [DataRow("failed", 1, AiResponseActivityOutcome.Failed)]
-    [DataRow("unavailable", null, AiResponseActivityOutcome.Failed)]
-    [DataRow("list-failed", 1, AiResponseActivityOutcome.Failed)]
-    [DataRow("no-running-sandbox", 0, AiResponseActivityOutcome.Incomplete)]
-    [DataRow("id-required", 0, AiResponseActivityOutcome.Incomplete)]
-    [DataRow("unrecognized-list", 0, AiResponseActivityOutcome.Incomplete)]
-    [DataRow("succeeded", 1, AiResponseActivityOutcome.Incomplete)]
-    public void SandboxActivityDistinguishesUnexecutedActions(string status, int? exitCode, AiResponseActivityOutcome outcome)
-    {
-        var report = JsonSerializer.Serialize(new { Action = "stop", Status = status, ExitCode = exitCode,
-            Output = "private output", Id = "private identifier" });
-        Assert.AreEqual(outcome, ManagedAiResponseActivityView.SandboxOutcome(new(SandboxCliAction.Stop), report));
-        Assert.AreEqual(AiResponseActivityOutcome.Incomplete,
-            ManagedAiResponseActivityView.SandboxOutcome(new(SandboxCliAction.List), report));
-    }
-
-    [TestMethod]
-    [DataRow("failed", 1, "앱 처리 실패")]
-    [DataRow("id-required", 0, "완료 확인 불가")]
-    public async Task SandboxFailureActivityDoesNotClaimActionCompleted(string status, int exitCode, string expected)
-    {
-        await HeadlessTestSession.Shared.Dispatch<bool>(async () =>
-        {
-            var fixture = new Fixture();
-            fixture.Skills.Items = [new("tablecloth-windows-sandbox", "Windows Sandbox", "CLI control", "fixture", true)];
-            fixture.Sandbox.Result = JsonSerializer.Serialize(new { Action = "list", Status = status, ExitCode = exitCode, Output = "private output" });
-            var window = fixture.Create();
-            try
-            {
-                window.Show(); await Ready(window);
-                Find<TextBox>(window, "ManagedAiChatInput").Text = "Windows Sandbox 상태를 알려 주세요.";
-                Click(window, Find<Button>(window, "ManagedAiChatSend"));
-                await Until(() => fixture.Chat.Requests.Count == 1);
-                fixture.Chat.Complete("명령을 완료하지 못했습니다.");
-                await Ready(window);
-                var row = Find<TextBlock>(window, "ManagedAiResponseActivityItem").Text!;
-                Assert.Contains(expected, row);
-                Assert.DoesNotContain("앱 처리 완료", row);
-                Assert.DoesNotContain("private output", row);
-            }
-            finally { window.Close(); }
-            return true;
-        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
-    }
-
-    [TestMethod]
-    [DataRow(false)]
-    [DataRow(true)]
-    public async Task FailedResponseRetainsOnlyItsOwnHostActivity(bool bridgeFails)
-    {
-        await HeadlessTestSession.Shared.Dispatch<bool>(async () =>
-        {
-            var fixture = new Fixture();
-            fixture.Skills.Items = [new("tablecloth-certificate-expiry", "Certificate expiry", "Local expiry", "fixture", true)];
-            fixture.Certificates.Fail = bridgeFails;
-            var window = fixture.Create();
-            try
-            {
-                window.Show(); await Ready(window);
-                var input = Find<TextBox>(window, "ManagedAiChatInput");
-                input.Text = "인증서 만료일을 알려 주세요.";
-                Click(window, Find<Button>(window, "ManagedAiChatSend"));
-                if (!bridgeFails)
-                {
-                    await Until(() => fixture.Chat.Requests.Count == 1);
-                    fixture.Chat.Fail(AiFailureCode.ProviderFailed);
-                }
-                await Ready(window);
-                var row = Find<TextBlock>(window, "ManagedAiResponseActivityItem").Text!;
-                Assert.Contains(bridgeFails ? "앱 처리 실패" : "앱 처리 완료", row);
-                Assert.IsTrue(Find<StackPanel>(window, "ManagedAiResponseActivity")
-                    .GetVisualDescendants().OfType<TextBlock>().Any(x => x.Text?.Contains("응답을 완료하지 못했습니다.") == true));
-                Assert.HasCount(0, fixture.Session!.History);
-                input.Text = "일반적인 도움말을 알려 주세요.";
-                Click(window, Find<Button>(window, "ManagedAiChatSend"));
-                await Until(() => fixture.Chat.Requests.Count == (bridgeFails ? 1 : 2));
-                fixture.Chat.Complete("도움말입니다.");
-                await Ready(window);
-                var latest = Controls(window).OfType<StackPanel>()
-                    .Last(x => AutomationProperties.GetAutomationId(x) == "ManagedAiResponseActivity");
-                Assert.IsFalse(latest.GetVisualDescendants().OfType<Control>().Any(x =>
-                    AutomationProperties.GetAutomationId(x) == "ManagedAiResponseActivityItem"));
-            }
-            finally { window.Close(); }
-            return true;
-        }, CancellationToken.None).ContinueWith(task => task.GetAwaiter().GetResult(), TaskScheduler.Default);
-    }
-
-    [TestMethod]
-    public async Task CanceledHostOperationShowsUnconfirmedCompletionWithoutModelTurn()
-    {
-        await HeadlessTestSession.Shared.Dispatch<bool>(async () =>
-        {
-            var fixture = new Fixture();
-            fixture.Skills.Items = [new("tablecloth-certificate-expiry", "Certificate expiry", "Local expiry", "fixture", true)];
-            fixture.Certificates.Completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
-            var window = fixture.Create();
-            try
-            {
-                window.Show(); await Ready(window);
-                Find<TextBox>(window, "ManagedAiChatInput").Text = "인증서 만료일을 알려 주세요.";
-                Click(window, Find<Button>(window, "ManagedAiChatSend"));
-                await Until(() => fixture.Certificates.Calls == 1);
-                Click(window, Find<Button>(window, "ManagedAiCancel"));
-                await Ready(window);
-                Assert.Contains("완료 확인 불가", Find<TextBlock>(window, "ManagedAiResponseActivityItem").Text!);
-                Assert.HasCount(0, fixture.Chat.Requests);
             }
             finally { window.Close(); }
             return true;
@@ -1600,31 +1396,22 @@ public sealed class ManagedAiWindowTests
             _response = new(TaskCreationOptions.RunContinuationsAsynchronously);
             return _response.Task.WaitAsync(token);
         }
-        public void Complete(string message) => Complete(new AiChatResponse(message, DateTimeOffset.UtcNow, 2, Requests[^1].Model));
-        public void Complete(AiChatResponse response) => _response!.SetResult(response);
+        public void Complete(string message) => _response!.SetResult(new(message, DateTimeOffset.UtcNow, 2, Requests[^1].Model));
         public void Fail(AiFailureCode code) => _response!.SetException(new ManagedAiException(code));
     }
     private sealed class Certificates : IManagedAiCertificateBridge
     {
         public const string Report = "{\"rootFound\":true,\"withinDays\":30,\"expiredCount\":0,\"expiringCount\":0,\"scanIncomplete\":false}";
         public int Calls;
-        public bool Fail;
-        public TaskCompletionSource? Completion;
-        public async Task<string> GetExpiryReportAsync(CancellationToken cancellationToken)
-        {
-            Calls++;
-            if (Completion is not null) await Completion.Task.WaitAsync(cancellationToken);
-            if (Fail) throw new ManagedAiException(AiFailureCode.CertificateScanUnavailable);
-            return Report;
-        }
+        public Task<string> GetExpiryReportAsync(CancellationToken cancellationToken)
+        { Calls++; return Task.FromResult(Report); }
     }
     private sealed class Sandbox : IManagedAiSandboxBridge
     {
         public const string Report = """{"Action":"list","Status":"succeeded","ExitCode":0,"Output":"{}"}""";
         public SandboxCliRequest? Request;
-        public string Result = Report;
         public Task<string> ExecuteAsync(SandboxCliRequest request, CancellationToken cancellationToken)
-        { Request = request; return Task.FromResult(Result); }
+        { Request = request; return Task.FromResult(Report); }
     }
     private sealed class Browser : ITableClothBrowser
     {

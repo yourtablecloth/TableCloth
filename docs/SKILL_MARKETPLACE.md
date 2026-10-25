@@ -46,13 +46,7 @@ A malformed `SKILL.md` remains visible with an invalid-manifest state. It can be
 
 Skills remain under `%LOCALAPPDATA%\TableCloth\ManagedAi\profiles\openai-codex\codex-home\skills`. TableCloth's existing importer and operation lock continue to control mutations. The marketplace manages this profile; the user's global Codex profile and skills remain outside its scope. See [the skill manager](../src/TableCloth.ManagedAi.OpenAi/Skills/OpenAiCodexSkillManager.cs) and [managed paths](../src/TableCloth.ManagedAi.Core/ManagedAiPaths.cs).
 
-## Response activity and execution boundaries
-
-Each assistant answer includes **Skill and tool activity** beneath its text. Host entries identify the skill whose application bridge ran and distinguish completed, failed, and unconfirmed operations. MCP entries identify the server and tool reported by Codex. **MCP response received** confirms a tool response, without claiming that a script succeeded or that the tool belongs to a particular skill. The [AI window](../src/TableCloth.App/ManagedAi/ManagedAiWindow.cs) keeps these records with the individual answer. Copying a message copies its original Markdown only.
-
-The footer also explains the limit of this evidence: it cannot confirm whether the model consulted skill instructions or reflected a result in its answer. Codex 0.156.1's [`exec --json` item contract](https://github.com/openai/codex/blob/b412ff32c417f855c2b2d1581b77058eed87c84b/codex-rs/exec/src/exec_events.rs#L98) exposes MCP calls but has no skill-selection or instruction-read event. An empty record therefore means no skill execution was confirmed, rather than proof that no skill was used. Installed state, a skill name in the question, and the model's own usage claim do not create evidence. Instruction-only skills can still affect an answer without producing an activity entry.
-
-Activity metadata contains bounded tool identities and fixed outcomes. It excludes arguments, command lines, local paths, tool results, and raw errors. Unsupported, conflicting, or excess MCP metadata produces an incomplete-evidence notice. Records remain in the current window's memory, do not enter the content-free diagnostic log, and do not carry over into the next answer. See the [JSONL parser](../src/TableCloth.ManagedAi.OpenAi/Parsing/CodexJsonlParser.cs).
+## Native Codex and host-bridge execution boundaries
 
 AI setup installs the native Codex CLI used for chat and search. It does not install Node.js or Python. The marketplace has no language-runtime installation, version, or diagnostic controls. The [Codex installer](../src/TableCloth.ManagedAi.OpenAi/Distribution/OpenAiCodexPackageInstaller.cs) remains separate from the skill-file installer.
 
@@ -62,7 +56,7 @@ The certificate-expiry and Windows Sandbox integrations use application-owned ho
 
 ## Verification and publication boundaries
 
-Automated checks cover catalog parsing without review gates, download validation, revision tracking, replacement rollback, removal, and view-model actions. Backend fixtures use synthetic responses to exercise failure and recovery paths. Headless Avalonia checks exercise the two marketplace tabs across languages, themes, and window sizes. See [skill tests](../src/TableCloth.ManagedAi.Test/SkillMarketplaceTests.cs) and [UI tests](../src/TableCloth.Test/SkillMarketplaceTests.cs). Activity checks cover MCP lifecycle deduplication and failures, bounded metadata, host-operation outcomes, per-answer isolation, and model usage claims that have no execution evidence. See the [parser tests](../src/TableCloth.ManagedAi.Test) and [chat UI tests](../src/TableCloth.Test/ManagedAiWindowTests.cs).
+Automated checks cover catalog parsing without review gates, download validation, revision tracking, replacement rollback, removal, and view-model actions. Backend fixtures use synthetic responses to exercise failure and recovery paths. Headless Avalonia checks exercise the two marketplace tabs across languages, themes, and window sizes. See [skill tests](../src/TableCloth.ManagedAi.Test/SkillMarketplaceTests.cs) and [UI tests](../src/TableCloth.Test/SkillMarketplaceTests.cs).
 
 Fixture results, downloads from real repositories, and native Codex skill discovery establish different properties. Fixtures check the implemented contracts. Real downloads and discovery can confirm installed files, metadata, and enabled state. Neither establishes that the model invoked a script or that an external service, API credential, or MCP connection works. Actual service and model-tool execution remain unverified in this guide. The host bridges also depend on the local CLI and Windows capabilities; a skill listing alone does not establish successful host execution.
 

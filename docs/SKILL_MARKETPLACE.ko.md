@@ -46,13 +46,7 @@
 
 스킬은 `%LOCALAPPDATA%\TableCloth\ManagedAi\profiles\openai-codex\codex-home\skills`에 보관합니다. 기존 가져오기 기능과 작업 잠금이 변경 작업을 제어합니다. 마켓플레이스는 이 프로필을 관리합니다. 사용자 전역 Codex 프로필과 스킬은 관리 범위에 포함하지 않습니다. [스킬 관리자](../src/TableCloth.ManagedAi.OpenAi/Skills/OpenAiCodexSkillManager.cs)와 [관리 경로](../src/TableCloth.ManagedAi.Core/ManagedAiPaths.cs)에서 저장 범위를 확인할 수 있습니다.
 
-## 응답별 처리 기록과 실행 범위
-
-각 응답 아래에 **스킬 및 도구 기록**을 표시합니다. 호스트 항목은 앱이 연동한 스킬 이름과 처리 완료, 실패 또는 완료 여부 미확인 상태를 표시합니다. MCP 항목은 Codex가 보고한 서버와 도구를 표시합니다. **MCP 응답 수신**은 도구 응답을 받았다는 뜻이며 스크립트의 성공이나 특정 스킬과의 연결을 입증하지 않습니다. [AI 창](../src/TableCloth.App/ManagedAi/ManagedAiWindow.cs)은 개별 응답에 해당 기록을 연결합니다. 메시지 복사 버튼은 응답의 마크다운 원문만 복사합니다.
-
-처리 기록으로 모델의 스킬 지침 참조 여부나 응답 반영 여부까지 확인하지는 못합니다. Codex 0.156.1의 [`exec --json` 항목 계약](https://github.com/openai/codex/blob/b412ff32c417f855c2b2d1581b77058eed87c84b/codex-rs/exec/src/exec_events.rs#L98)은 MCP 호출을 제공하지만 스킬 선택이나 지침 읽기 이벤트는 제공하지 않습니다. 따라서 기록이 없으면 확인된 스킬 실행 기록이 없다고 안내합니다. 스킬 미사용을 뜻하지는 않습니다. 설치 상태, 질문의 스킬 이름이나 모델이 작성한 사용 주장은 확인 근거에 포함하지 않습니다. 지침만 제공하는 스킬은 처리 기록 없이도 응답에 영향을 줄 수 있습니다.
-
-처리 메타데이터는 길이와 개수를 제한한 도구 식별자와 고정한 결과 구분만 보관합니다. 인수, 명령줄, 로컬 경로, 도구 결과와 오류 원문은 포함하지 않습니다. 일부 기록을 해석하거나 보관하지 못하면 기록이 불완전하다고 안내합니다. 앱은 현재 창의 메모리에서 기록을 관리하며 진단 로그나 다음 응답에 복사하지 않습니다. [JSONL 파서](../src/TableCloth.ManagedAi.OpenAi/Parsing/CodexJsonlParser.cs)에서 수집 범위를 확인할 수 있습니다.
+## 네이티브 Codex와 호스트 브리지의 실행 범위
 
 AI 사용 준비 과정에서는 대화와 검색에 사용하는 네이티브 Codex CLI를 설치합니다. Node.js와 Python은 설치하지 않습니다. 마켓플레이스에도 언어 런타임 설치, 버전 표시와 진단 기능을 제공하지 않습니다. [Codex 설치기](../src/TableCloth.ManagedAi.OpenAi/Distribution/OpenAiCodexPackageInstaller.cs)는 스킬 파일 설치기와 별도로 유지합니다.
 
@@ -62,7 +56,7 @@ AI 사용 준비 과정에서는 대화와 검색에 사용하는 네이티브 C
 
 ## 자동 검증과 게시 경로의 구분
 
-자동 검증의 범위를 검토하겠습니다. 테스트는 검토 조건 없는 카탈로그 파싱, 다운로드 검증, 버전 추적, 교체 실패 시 복구, 제거와 뷰 모델 명령을 다룹니다. 백엔드 테스트는 합성 응답으로 실패와 복구 경로를 검사합니다. Avalonia 헤드리스 테스트는 언어, 테마와 창 크기를 달리해 마켓플레이스의 두 탭을 검사합니다. [스킬 테스트](../src/TableCloth.ManagedAi.Test/SkillMarketplaceTests.cs)와 [UI 테스트](../src/TableCloth.Test/SkillMarketplaceTests.cs)에 검증 항목을 기록했습니다. 처리 기록 검증은 MCP 이벤트 중복과 실패, 메타데이터 제한, 호스트 처리 결과, 응답 간 기록 분리와 실행 근거 없는 모델의 사용 주장을 다룹니다. [파서 테스트](../src/TableCloth.ManagedAi.Test)와 [대화 UI 테스트](../src/TableCloth.Test/ManagedAiWindowTests.cs)에서 사례를 확인할 수 있습니다.
+자동 검증의 범위를 검토하겠습니다. 테스트는 검토 조건 없는 카탈로그 파싱, 다운로드 검증, 버전 추적, 교체 실패 시 복구, 제거와 뷰 모델 명령을 다룹니다. 백엔드 테스트는 합성 응답으로 실패와 복구 경로를 검사합니다. Avalonia 헤드리스 테스트는 언어, 테마와 창 크기를 달리해 마켓플레이스의 두 탭을 검사합니다. [스킬 테스트](../src/TableCloth.ManagedAi.Test/SkillMarketplaceTests.cs)와 [UI 테스트](../src/TableCloth.Test/SkillMarketplaceTests.cs)에 검증 항목을 기록했습니다.
 
 테스트용 응답, 실제 저장소 다운로드와 네이티브 Codex 스킬 조회는 서로 다른 범위를 검증합니다. 테스트용 응답은 구현한 계약을 검사합니다. 실제 다운로드와 스킬 조회로는 설치 파일, 메타데이터와 활성 상태를 확인할 수 있습니다. 어느 결과도 모델의 스크립트 호출이나 외부 서비스, API 자격 증명, MCP 연결의 정상 동작을 입증하지 않습니다. 이 문서에서는 실제 서비스와 모델의 도구 실행을 검증한 것으로 안내하지 않습니다. 호스트 브리지도 로컬 CLI와 Windows 기능에 의존하므로 스킬 목록에 표시된 사실만으로 실제 호스트 작업의 성공을 판단하지 않습니다.
 

@@ -49,15 +49,7 @@ public sealed record AiClientContext(Version? InstalledVersion, Uri OfficialHome
 public sealed record AiChatRequest(string Message, IReadOnlyList<AiChatMessage> History, string? Model = null,
     string? LocalCertificateReport = null, string? LocalWindowsSandboxReport = null,
     AiClientContext? ClientContext = null);
-public enum AiResponseActivityKind { HostSkill, McpTool }
-public enum AiResponseActivityOutcome { Completed, Failed, Incomplete }
-public sealed record AiResponseActivity(AiResponseActivityKind Kind, string Name,
-    AiResponseActivityOutcome Outcome, string? Server = null);
-public sealed record AiChatResponse(string Text, DateTimeOffset RetrievedAtUtc, int SearchCalls, string? Model = null)
-{
-    public IReadOnlyList<AiResponseActivity> Activities { get; init; } = [];
-    public bool ActivityEvidenceIncomplete { get; init; }
-}
+public sealed record AiChatResponse(string Text, DateTimeOffset RetrievedAtUtc, int SearchCalls, string? Model = null);
 public sealed record AiModel(string Id, string DisplayName, bool IsDefault = false)
 {
     public AiModelTokenCost? TokenCost { get; init; }
