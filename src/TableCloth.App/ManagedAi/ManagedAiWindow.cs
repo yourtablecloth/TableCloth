@@ -37,8 +37,6 @@ public sealed class ManagedAiWindow : Window
     private readonly IManagedAiModelCatalog _modelCatalog;
     private readonly IManagedAiSkillManager _skills;
     private readonly IManagedAiSkillMarketplace? _skillMarketplace;
-    private readonly IManagedAiSkillRuntimeManager? _skillRuntimes;
-    private readonly IManagedAiSkillRuntimeDiagnostics? _skillRuntimeDiagnostics;
     private readonly Button _openSkillMarketplace;
     private readonly Button _browseSkills = new()
     {
@@ -112,14 +110,10 @@ public sealed class ManagedAiWindow : Window
         IProviderAuthentication authentication, IAppMessageBox messages, IManagedAiModelCatalog modelCatalog,
         IManagedAiSkillManager skills, IPreferencesManager preferences,
         IManagedAiCertificateBridge? certificateBridge = null, IManagedAiSandboxBridge? sandboxBridge = null,
-        IManagedAiSkillMarketplace? skillMarketplace = null,
-        IManagedAiSkillRuntimeManager? skillRuntimes = null,
-        IManagedAiSkillRuntimeDiagnostics? skillRuntimeDiagnostics = null)
+        IManagedAiSkillMarketplace? skillMarketplace = null)
     {
         _session = session; _runtimes = runtimes; _authentication = authentication; _messages = messages; _modelCatalog = modelCatalog;
         _skills = skills; _preferences = preferences; _skillMarketplace = skillMarketplace;
-        _skillRuntimes = skillRuntimes;
-        _skillRuntimeDiagnostics = skillRuntimeDiagnostics;
         _certificateBridge = certificateBridge ?? new ManagedAiCertificateBridge(new JsonlProcessRunner());
         _sandboxBridge = sandboxBridge ?? new ManagedAiSandboxBridge(new SandboxCliProcessRunner());
         _clientContext = new(typeof(ManagedAiWindow).Assembly.GetName().Version,
@@ -354,7 +348,7 @@ public sealed class ManagedAiWindow : Window
     {
         if (_skillMarketplace is null || _operation is not null || _skillMarketplaceWindow is not null) return;
         CloseSettings();
-        using var viewModel = new SkillMarketplaceWindowViewModel(_skills, _skillMarketplace, _messages, _skillRuntimes, _skillRuntimeDiagnostics);
+        using var viewModel = new SkillMarketplaceWindowViewModel(_skills, _skillMarketplace, _messages);
         var window = new SkillMarketplaceWindow(viewModel, initialTab);
         _skillMarketplaceWindow = window;
         WindowChrome.RemoveMinimizeBox(window);
@@ -929,11 +923,6 @@ public sealed class ManagedAiWindow : Window
             if (_operation != operation || operation is null) return;
             var text = update.Stage switch
             {
-                "SkillRuntimeDownloadingNode" => L("전용 Node.js를 내려받고 있습니다.", "Downloading dedicated Node.js."),
-                "SkillRuntimeDownloadingPython" => L("전용 Python을 내려받고 있습니다.", "Downloading dedicated Python."),
-                "SkillRuntimeExtracting" => L("전용 실행 환경의 압축을 풀고 있습니다.", "Extracting the dedicated runtimes."),
-                "SkillRuntimeVerifying" => L("전용 실행 환경의 파일과 버전을 검증하고 있습니다.", "Verifying dedicated runtime files and versions."),
-                "SkillRuntimeActivating" => L("전용 실행 환경의 설치를 마무리하고 있습니다.", "Completing the dedicated runtime installation."),
                 "ResolvingRelease" => L("공식 릴리스를 확인하고 있습니다.", "Checking the official release."),
                 "VerifyingChecksums" => L("체크섬을 검증하고 있습니다.", "Verifying checksums."),
                 "Downloading" => L("런타임을 내려받고 있습니다.", "Downloading the runtime."),
@@ -971,8 +960,6 @@ public sealed class ManagedAiWindow : Window
             "The selected model is unavailable. Refresh the model list in OpenAI account / settings and choose again."),
         AiFailureCode.RuntimeBusy => L("식탁보 전용 Codex 환경을 사용하는 작업이 진행 중입니다.",
             "An operation is using TableCloth's dedicated Codex environment."),
-        AiFailureCode.PathLengthUnsupported => L("파일 경로가 너무 길어 작업을 완료하지 못했습니다. 스킬 마켓플레이스의 실행 환경 탭에서 긴 경로 지원을 검사할 수 있습니다.",
-            "A file path is too long to complete the operation. Check long-path support in the marketplace's Runtimes tab."),
         AiFailureCode.ProviderTimeout => L("제한 시간을 초과해 요청을 종료했습니다. 메시지를 다시 보내 재시도할 수 있습니다.", "The request timed out. Send the message again to retry."),
         AiFailureCode.NoPreviousVersion => L("복원할 이전 버전이 없습니다.", "No previous runtime version is available."),
         AiFailureCode.InvalidQuery => L("메시지가 비어 있거나 너무 깁니다. 4,000자 이내의 메시지를 입력할 수 있습니다.", "Enter a message of up to 4,000 characters."),

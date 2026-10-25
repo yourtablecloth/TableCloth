@@ -10,8 +10,7 @@ public sealed record RuntimeState(string Version, string Target, string PackageS
 internal partial class RuntimeJsonContext : JsonSerializerContext;
 
 public sealed class OpenAiCodexPackageInstaller(ManagedAiPaths paths, OpenAiReleaseMetadataClient metadata,
-    IJsonlProcessRunner runner, IManagedAiProfile profile, ManagedAiOptions options,
-    IManagedAiSkillRuntimeManager? skillRuntimes = null) : IManagedRuntimeManager
+    IJsonlProcessRunner runner, IManagedAiProfile profile, ManagedAiOptions options) : IManagedRuntimeManager
 {
     public Task<ManagedRuntime?> GetActiveAsync(CancellationToken cancellationToken)
     {
@@ -21,8 +20,6 @@ public sealed class OpenAiCodexPackageInstaller(ManagedAiPaths paths, OpenAiRele
 
     public async Task<ManagedRuntime> InstallAsync(string? version, IProgress<AiProgress>? progress, CancellationToken token)
     {
-        // Each installer owns its lease; prepare the companion runtimes before entering the Codex lease.
-        if (skillRuntimes is not null) await skillRuntimes.InstallAsync(progress, token);
         using var lease = paths.AcquireOperation();
         profile.Prepare();
         progress?.Report(new("ResolvingRelease"));

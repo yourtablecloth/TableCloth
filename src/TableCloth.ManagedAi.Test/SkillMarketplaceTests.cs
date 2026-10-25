@@ -20,17 +20,11 @@ public sealed class SkillMarketplaceTests
         var entries = SkillCatalogClient.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Fixtures", "SkillCatalog.xml")));
         CollectionAssert.AreEquivalent(new[]
         {
-            "bok-ecos-stats", "kosis-stats", "korean-jangbu-for", "korean-law-mcp", "official-report-skillset",
-            "tablecloth-certificate-expiry", "tablecloth-windows-sandbox", "tablecloth-calculators"
+            "official-report-skillset", "tablecloth-certificate-expiry", "tablecloth-windows-sandbox"
         }, entries.Select(x => x.Id).ToArray());
         Assert.IsTrue(entries.All(x => x.CanInstall));
         Assert.IsTrue(entries.All(x => x.SourceRef.Length == 40));
-        Assert.AreEqual("upstream", entries.Single(x => x.Id == "korean-law-mcp").InstallMode);
-        var calculators = entries.Single(x => x.Id == "tablecloth-calculators");
-        Assert.AreEqual("https://github.com/yourtablecloth/tablecloth-calculators", calculators.Repository);
-        Assert.AreEqual(".", calculators.SourcePath);
-        Assert.AreEqual("none", calculators.Network);
-        Assert.AreEqual("AGPL-3.0-only", calculators.LicenseSpdx);
+        Assert.IsTrue(entries.All(x => x.Network == "none"));
     }
 
     [TestMethod]

@@ -145,39 +145,6 @@
                                Foreground="{DynamicResource ControlSecondaryForeground}" />
                 </Grid>
             </TabItem>
-            <TabItem Header="{x:Static ai:ManagedAiText.MarketplaceRuntimes}">
-                <Grid Margin="12 16" RowDefinitions="*,Auto,Auto,Auto" RowSpacing="10">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <StackPanel Spacing="10" MaxWidth="660" HorizontalAlignment="Left">
-                            <TextBlock Text="{x:Static ai:ManagedAiText.SkillRuntimeDescription}" TextWrapping="Wrap" FontSize="12" />
-                            <Border BorderBrush="{DynamicResource OptionsListBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="10">
-                                <Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="18" RowSpacing="8">
-                                    <TextBlock Grid.ColumnSpan="2" Text="{x:Static ai:ManagedAiText.SkillRuntimePolicy}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                    <TextBlock Grid.Column="2" x:Name="WindowsLongPathStatus" Text="{Binding WindowsLongPathStatus}" TextWrapping="Wrap" />
-                                    <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{x:Static ai:ManagedAiText.SkillRuntimeManagedCheck}" FontWeight="SemiBold" />
-                                    <TextBlock Grid.Row="1" Grid.Column="2" x:Name="ManagedLongPathStatus" Text="{Binding ManagedLongPathStatus}" TextWrapping="Wrap" />
-                                    <TextBlock Grid.Row="2" Text="Node.js" FontWeight="SemiBold" />
-                                    <TextBlock Grid.Row="2" Grid.Column="1" x:Name="NodeJsRuntimeVersion" Text="{Binding NodeJsRuntimeVersion}" TextWrapping="Wrap" />
-                                    <TextBlock Grid.Row="2" Grid.Column="2" x:Name="NodeJsLongPathStatus" Text="{Binding NodeJsLongPathStatus}" TextWrapping="Wrap" />
-                                    <TextBlock Grid.Row="3" Text="Python" FontWeight="SemiBold" />
-                                    <TextBlock Grid.Row="3" Grid.Column="1" x:Name="PythonRuntimeVersion" Text="{Binding PythonRuntimeVersion}" TextWrapping="Wrap" />
-                                    <TextBlock Grid.Row="3" Grid.Column="2" x:Name="PythonLongPathStatus" Text="{Binding PythonLongPathStatus}" TextWrapping="Wrap" />
-                                </Grid>
-                            </Border>
-                            <TextBlock x:Name="SkillRuntimeLimits" Text="{x:Static ai:ManagedAiText.SkillRuntimeLimits}" TextWrapping="Wrap" IsVisible="{Binding HasSkillRuntimeLimits}" />
-                            <TextBlock x:Name="SkillRuntimeUnknown" Text="{Binding SkillRuntimeUnknownDescription}" TextWrapping="Wrap" IsVisible="{Binding HasSkillRuntimeUnknown}" />
-                            <TextBlock x:Name="SkillRuntimeExternalLimits" Text="{x:Static ai:ManagedAiText.SkillRuntimeExternalLimits}" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource ControlSecondaryForeground}" />
-                        </StackPanel>
-                    </ScrollViewer>
-                    <WrapPanel Grid.Row="1">
-                        <Button x:Name="SkillRuntimeInstall" Content="{x:Static ai:ManagedAiText.SkillRuntimeInstall}" Command="{Binding InstallSkillRuntimesCommand}" />
-                        <Button x:Name="SkillRuntimeRefresh" Content="{x:Static ai:ManagedAiText.SkillRuntimeRefresh}" Command="{Binding RefreshSkillRuntimeStatusCommand}" />
-                    </WrapPanel>
-                    <ProgressBar Grid.Row="2" x:Name="SkillRuntimeProgress" IsIndeterminate="True" IsVisible="{Binding SkillRuntimeBusy}" Height="4" />
-                    <TextBlock Grid.Row="3" x:Name="SkillRuntimeNotice" Text="{Binding SkillRuntimeNotice}" TextWrapping="Wrap"
-                               Foreground="{DynamicResource ControlSecondaryForeground}" />
-                </Grid>
-            </TabItem>
         </TabControl>
         <Button Grid.Row="2" Content="{x:Static ai:ManagedAiText.MarketplaceClose}" Click="CloseButton_Click"
                 HorizontalAlignment="Right" IsCancel="True" Margin="0" />
