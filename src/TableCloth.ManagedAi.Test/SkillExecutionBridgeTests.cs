@@ -19,7 +19,9 @@ public sealed class SkillExecutionBridgeTests
         Directory.CreateDirectory(run);
         IReadOnlyList<AiSkill> skills = state == "missing" ? [] :
             [Calculator(fixture.Paths) with { Enabled = state != "disabled", IsValid = state != "invalid" }];
-        var bridge = await new WindowsManagedAiSkillExecution(fixture.Paths).PrepareAsync(skills, run, CancellationToken.None);
+        var bridge = await new WindowsManagedAiSkillExecution(fixture.Paths,
+            new WindowsManagedAiScriptRuntimeManager(fixture.Paths), fixture.Paths.Under("TableCloth.exe"))
+            .PrepareAsync(skills, run, CancellationToken.None);
         Assert.IsNull(bridge);
         Assert.IsFalse(Directory.Exists(fixture.Paths.Under("skill-execution")));
     }
@@ -39,98 +41,50 @@ public sealed class SkillExecutionBridgeTests
         if (change == "changed") File.AppendAllText(script, "\n# changed");
         else File.Delete(script);
         var error = await Assert.ThrowsExactlyAsync<ManagedAiException>(() =>
-            new WindowsManagedAiSkillExecution(fixture.Paths, hostExecutable: host).PrepareAsync([calculator], run, CancellationToken.None));
+            new WindowsManagedAiSkillExecution(fixture.Paths,
+                new WindowsManagedAiScriptRuntimeManager(fixture.Paths), host)
+                .PrepareAsync([calculator], run, CancellationToken.None));
         Assert.AreEqual(AiFailureCode.BlockedByPolicy, error.Code);
         Assert.IsFalse(Directory.Exists(fixture.Paths.Under("skill-execution")));
     }
 
     [TestMethod]
-    [DataRow("dotnet.exe")]
-    [DataRow("DOTNET.EXE")]
-    public void DotnetHostResolvesOnlyTheFixedExecutableInTheApplicationBaseDirectory(string hostName)
-    {
-        using var fixture = new InstallFixture();
-        var dotnet = fixture.Paths.Under("dotnet-location", hostName);
-        var applicationBase = fixture.Paths.Under("application with spaces");
-        var appHost = Path.Combine(applicationBase, "TableCloth.exe");
-        var unrelatedHost = fixture.Paths.Under("unrelated-location", "TableCloth.exe");
-        Directory.CreateDirectory(applicationBase);
-        Directory.CreateDirectory(Path.GetDirectoryName(unrelatedHost)!);
-        File.WriteAllText(appHost, "application host, never executed");
-        File.WriteAllText(unrelatedHost, "unrelated host, never executed");
-
-        var resolved = WindowsManagedAiSkillExecution.ResolveHostExecutable(dotnet, applicationBase);
-
-        Assert.IsNotNull(resolved);
-        Assert.AreEqual(appHost, resolved);
-        Assert.AreNotEqual(unrelatedHost, resolved);
-        Assert.AreNotEqual(Path.Combine(Path.GetDirectoryName(dotnet)!, "TableCloth.exe"), resolved);
-        Assert.IsTrue(Path.IsPathFullyQualified(resolved));
-    }
-
-    [TestMethod]
-    public void NativeHostPreservesItsActualExecutableEvenWhenAnotherApplicationBaseContainsAHost()
-    {
-        using var fixture = new InstallFixture();
-        var nativeHost = fixture.Paths.Under("native-install", "TableCloth.exe");
-        var otherApplicationBase = fixture.Paths.Under("different-application");
-        Directory.CreateDirectory(otherApplicationBase);
-        File.WriteAllText(Path.Combine(otherApplicationBase, "TableCloth.exe"), "unrelated host, never executed");
-
-        var resolved = WindowsManagedAiSkillExecution.ResolveHostExecutable(nativeHost, otherApplicationBase);
-
-        Assert.AreEqual(nativeHost, resolved);
-    }
-
-    [TestMethod]
+    [DataRow("missing")]
+    [DataRow("relative")]
     [DataRow("unknown.exe")]
+    [DataRow("dotnet.exe")]
     [DataRow("python.exe")]
-    public void UnknownHostDoesNotRedirectToAnAvailableApplicationHost(string hostName)
+    [DataRow("empty")]
+    [DataRow("null")]
+    public async Task InvalidInjectedHostFailsWithoutFallingBackToAnotherExecutableOrDownloadingRuntimes(string state)
     {
         using var fixture = new InstallFixture();
-        var unknown = fixture.Paths.Under(hostName);
-        var applicationBase = fixture.Paths.Under("application");
-        Directory.CreateDirectory(applicationBase);
-        File.WriteAllText(Path.Combine(applicationBase, "TableCloth.exe"), "application host, never executed");
-
-        var resolved = WindowsManagedAiSkillExecution.ResolveHostExecutable(unknown, applicationBase);
-
-        Assert.AreEqual(unknown, resolved);
-    }
-
-    [TestMethod]
-    public async Task MissingExplicitApplicationHostFailsWithoutSearchingForAnotherExecutableOrDownloadingRuntimes()
-    {
-        using var fixture = new InstallFixture();
-        var run = fixture.Paths.Under("runs", "missing-host-test");
+        var run = fixture.Paths.Under("runs", "invalid-host-test");
         Directory.CreateDirectory(run);
         var calculator = InstallCalculator(fixture.Paths);
-        var missingHost = WindowsManagedAiSkillExecution.ResolveHostExecutable(
-            fixture.Paths.Under("dotnet.exe"), fixture.Paths.Under("missing-application"));
-        Assert.IsNotNull(missingHost);
+        var injectedHost = state switch
+        {
+            "missing" => fixture.Paths.Under("missing-application", "TableCloth.exe"),
+            "relative" => "TableCloth.exe",
+            "empty" => "",
+            "null" => null!,
+            _ => fixture.Paths.Under(state)
+        };
+        if (state is "unknown.exe" or "dotnet.exe" or "python.exe")
+            File.WriteAllText(injectedHost, "unapproved host, never executed");
+        // Even an available app host cannot repair an invalid dependency supplied by DI.
         var otherHost = fixture.Paths.Under("TableCloth.exe");
         File.WriteAllText(otherHost, "another host, never executed");
 
         var error = await Assert.ThrowsExactlyAsync<ManagedAiException>(() =>
-            new WindowsManagedAiSkillExecution(fixture.Paths, hostExecutable: missingHost)
+            new WindowsManagedAiSkillExecution(fixture.Paths,
+                new WindowsManagedAiScriptRuntimeManager(fixture.Paths), injectedHost)
                 .PrepareAsync([calculator], run, CancellationToken.None));
 
         Assert.AreEqual(AiFailureCode.SkillExecutionHostUnavailable, error.Code);
         Assert.IsFalse(Directory.Exists(fixture.Paths.Under("skill-execution")));
-    }
-
-    [TestMethod]
-    [DataRow("application")]
-    [DataRow(".")]
-    [DataRow("")]
-    public void DotnetHostRejectsARelativeApplicationBaseInsteadOfUsingTheWorkingDirectory(string applicationBase)
-    {
-        using var fixture = new InstallFixture();
-        var dotnet = fixture.Paths.Under("dotnet.exe");
-
-        var resolved = WindowsManagedAiSkillExecution.ResolveHostExecutable(dotnet, applicationBase);
-
-        Assert.IsNull(resolved);
+        Assert.IsEmpty(Directory.GetFileSystemEntries(run));
+        Assert.AreEqual("another host, never executed", File.ReadAllText(otherHost));
     }
 
     [TestMethod]
