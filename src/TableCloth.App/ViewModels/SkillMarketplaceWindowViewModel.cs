@@ -87,12 +87,17 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     [ObservableProperty] private bool _localBusy;
     [ObservableProperty] private string _catalogNotice = string.Empty;
     [ObservableProperty] private string _localNotice = string.Empty;
+    [ObservableProperty] private string _localActivityText = string.Empty;
 
     public bool HasSelectedCatalogSkill => SelectedCatalogSkill is not null;
     public bool HasSelectedInstalledSkill => SelectedInstalledSkill is not null;
-    public bool CatalogEmpty => CatalogSkills.Count == 0;
-    public bool InstalledEmpty => InstalledSkills.Count == 0;
-    public string CatalogSummary => ManagedAiText.Select($"후보 {_catalog.Count}개, 표시 {CatalogSkills.Count}개", $"{_catalog.Count} candidates, {CatalogSkills.Count} shown");
+    public bool IsBusy => CatalogBusy || LocalBusy || SkillRuntimeBusy;
+    public bool HasLocalActivity => LocalBusy && LocalActivityText.Length > 0;
+    public string CatalogActivityText => ManagedAiText.Select("스킬 카탈로그를 불러오고 있습니다.", "Loading the skill catalog.");
+    public bool CatalogEmpty => !CatalogBusy && CatalogSkills.Count == 0;
+    public bool InstalledEmpty => !LocalBusy && InstalledSkills.Count == 0;
+    public string CatalogSummary => CatalogBusy ? CatalogActivityText
+        : ManagedAiText.Select($"후보 {_catalog.Count}개, 표시 {CatalogSkills.Count}개", $"{_catalog.Count} candidates, {CatalogSkills.Count} shown");
     public string InstalledSummary => ManagedAiText.Select($"보유 스킬 {_installed.Count}개, 활성 스킬 {_installed.Count(x => x.Enabled)}개, 표시 {InstalledSkills.Count}개",
         $"{_installed.Count} installed, {_installed.Count(x => x.Enabled)} enabled, {InstalledSkills.Count} shown");
     public string ToggleLabel => SelectedInstalledSkill?.Enabled == true ? ManagedAiText.Select("비활성화", "Disable") : ManagedAiText.Select("활성화", "Enable");
@@ -114,9 +119,19 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         OnPropertyChanged(nameof(ToggleLabel));
         NotifyLocalCommands();
     }
-    partial void OnLocalBusyChanged(bool value) => NotifyLocalCommands();
+    partial void OnLocalActivityTextChanged(string value) => OnPropertyChanged(nameof(HasLocalActivity));
+    partial void OnLocalBusyChanged(bool value)
+    {
+        NotifyLocalCommands();
+        OnPropertyChanged(nameof(IsBusy));
+        OnPropertyChanged(nameof(HasLocalActivity));
+        OnPropertyChanged(nameof(InstalledEmpty));
+    }
     partial void OnCatalogBusyChanged(bool value)
     {
+        OnPropertyChanged(nameof(IsBusy));
+        OnPropertyChanged(nameof(CatalogEmpty));
+        OnPropertyChanged(nameof(CatalogSummary));
         RefreshCatalogCommand.NotifyCanExecuteChanged();
         InstallSkillCommand.NotifyCanExecuteChanged();
         UpdateCatalogSkillCommand.NotifyCanExecuteChanged();
@@ -183,54 +198,63 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     }
 
     [RelayCommand(CanExecute = nameof(CanUseLocal))]
-    private Task RefreshInstalled() => RunLocalAsync(() => _manager.ListAsync(_token), ManagedAiText.Select("설치된 스킬을 새로 불러왔습니다.", "Installed skills refreshed."));
+    private Task RefreshInstalled() => RunLocalAsync(() => _manager.ListAsync(_token),
+        ManagedAiText.Select("설치된 스킬을 불러오고 있습니다.", "Loading installed skills."),
+        ManagedAiText.Select("설치된 스킬을 새로 불러왔습니다.", "Installed skills refreshed."));
 
     [RelayCommand(CanExecute = nameof(CanUseLocal))]
     private async Task ImportSkill()
     {
         if (!CanUseLocal() || PickFolderAsync is null) return;
+        LocalActivityText = ManagedAiText.Select("가져올 스킬 폴더를 선택하고 있습니다.", "Selecting a skill folder to import.");
         LocalBusy = true;
         string? source;
         try { source = await PickFolderAsync(); }
         catch { LocalNotice = ManagedAiText.Select("스킬 폴더를 선택하지 못했습니다.", "Could not select a skill folder."); return; }
-        finally { LocalBusy = false; }
+        finally { LocalBusy = false; LocalActivityText = string.Empty; }
         if (!string.IsNullOrWhiteSpace(source)) await ImportFromDirectoryAsync(source);
     }
 
     public Task ImportFromDirectoryAsync(string source) => RunLocalAsync(() => _manager.ImportAsync(source, _token),
+        ManagedAiText.Select("스킬을 전용 폴더로 가져오고 있습니다.", "Importing the skill into the dedicated folder."),
         ManagedAiText.Select("스킬을 전용 폴더로 가져왔습니다.", "Skill imported into the dedicated folder."));
 
     [RelayCommand(CanExecute = nameof(CanInstall))]
     private Task InstallSkill()
     {
         if (!CanInstall()) return Task.CompletedTask;
-        var id = SelectedCatalogSkill!.Id;
-        return RunMarketplaceActionAsync(() => _marketplace.InstallAsync(id, _token), ManagedAiText.Select("스킬을 설치했습니다.", "Skill installed."), true);
+        var selected = SelectedCatalogSkill!;
+        return RunMarketplaceActionAsync(() => _marketplace.InstallAsync(selected.Id, _token),
+            ManagedAiText.Select($"{selected.Name} 스킬을 설치하고 있습니다.", $"Installing {selected.Name}."),
+            ManagedAiText.Select("스킬을 설치했습니다.", "Skill installed."), true);
     }
 
     [RelayCommand(CanExecute = nameof(CanUpdateCatalog))]
     private Task UpdateCatalogSkill()
     {
         if (!CanUpdateCatalog()) return Task.CompletedTask;
-        return UpdateAsync(SelectedCatalogSkill!.Id, true);
+        var selected = SelectedCatalogSkill!;
+        return UpdateAsync(selected.Id, selected.Name, true);
     }
 
     [RelayCommand(CanExecute = nameof(CanUpdateInstalled))]
     private Task UpdateInstalledSkill()
     {
         if (!CanUpdateInstalled()) return Task.CompletedTask;
-        return UpdateAsync(SelectedInstalledSkill!.Id);
+        var selected = SelectedInstalledSkill!;
+        return UpdateAsync(selected.Id, selected.Name);
     }
 
-    private Task UpdateAsync(string id, bool fromCatalog = false)
+    private Task UpdateAsync(string id, string name, bool fromCatalog = false)
     {
         var success = ManagedAiText.Select("스킬 파일을 카탈로그의 커밋으로 업데이트했습니다.", "Skill files updated to the catalog commit.");
-        return RunMarketplaceActionAsync(() => _marketplace.UpdateAsync(id, _token), success, fromCatalog);
+        return RunMarketplaceActionAsync(() => _marketplace.UpdateAsync(id, _token),
+            ManagedAiText.Select($"{name} 스킬을 업데이트하고 있습니다.", $"Updating {name}."), success, fromCatalog);
     }
 
-    private async Task RunMarketplaceActionAsync(Func<Task<IReadOnlyList<AiSkill>>> action, string success, bool fromCatalog)
+    private async Task RunMarketplaceActionAsync(Func<Task<IReadOnlyList<AiSkill>>> action, string activity, string success, bool fromCatalog)
     {
-        if (await RunLocalAsync(action, success))
+        if (await RunLocalAsync(action, activity, success))
         {
             await RefreshCatalog();
             LocalNotice = _catalogAvailable ? success : success + " " + CatalogNotice;
@@ -244,6 +268,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
         if (!CanToggleSelected()) return Task.CompletedTask;
         var selected = SelectedInstalledSkill!;
         return RunLocalAsync(() => _manager.SetEnabledAsync(selected.Id, !selected.Enabled, _token),
+            ManagedAiText.Select($"{selected.Name} 스킬 사용 설정을 변경하고 있습니다.", $"Updating the enabled state of {selected.Name}."),
             ManagedAiText.Select("스킬 사용 설정을 변경했습니다. 다음 대화부터 적용합니다.", "Skill state updated. The next chat uses this setting."));
     }
 
@@ -257,17 +282,20 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
             return Task.CompletedTask;
         // A modal confirmation can run a nested UI loop. Recheck the captured selection before mutation.
         if (!CanUseSelectedLocal() || !ReferenceEquals(selected, SelectedInstalledSkill)) return Task.CompletedTask;
-        return RunLocalAsync(() => _manager.RemoveAsync(selected.Id, _token), ManagedAiText.Select("스킬을 제거했습니다.", "Skill removed."));
+        return RunLocalAsync(() => _manager.RemoveAsync(selected.Id, _token),
+            ManagedAiText.Select($"{selected.Name} 스킬을 제거하고 있습니다.", $"Removing {selected.Name}."),
+            ManagedAiText.Select("스킬을 제거했습니다.", "Skill removed."));
     }
 
-    private async Task<bool> RunLocalAsync(Func<Task<IReadOnlyList<AiSkill>>> action, string success)
+    private async Task<bool> RunLocalAsync(Func<Task<IReadOnlyList<AiSkill>>> action, string activity, string success)
     {
         if (!CanUseLocal()) return false;
         var succeeded = false;
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         _localCompletion = completion;
+        LocalActivityText = activity;
         LocalBusy = true;
-        LocalNotice = ManagedAiText.Select("전용 스킬을 확인하고 있습니다.", "Checking dedicated skills.");
+        LocalNotice = activity;
         try
         {
             _installed = await Task.Run(action, _token);
@@ -290,7 +318,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
             };
         }
         catch { LocalNotice = ManagedAiText.Select("스킬 작업을 완료하지 못했습니다. 잠시 후 다시 시도할 수 있습니다.", "Could not complete the skill operation. Try again shortly."); }
-        finally { LocalBusy = false; completion.TrySetResult(); }
+        finally { LocalBusy = false; LocalActivityText = string.Empty; completion.TrySetResult(); }
         return succeeded;
     }
 
