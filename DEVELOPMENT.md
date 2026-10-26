@@ -87,6 +87,14 @@ TableClothCli.exe catalog services --query 은행 --limit 20
 
 [AI Preview 구현 및 검증 보고서](docs/poc/managed-ai-runtime.md)는 현재 기능, 테스트 증거와 남은 실기기 검증을 설명합니다. [원본 PoC 설계](docs/poc/managed-ai-runtime-design.ko.md)는 구현 전 가설과 승인 조건을 기록한 자료이므로 원래 명칭을 유지합니다.
 
+## DI를 통한 서비스 구성과 환경 경로 주입
+
+서비스 구성은 [앱의 DI 등록부](src/TableCloth.App/DependencyInjection/UseTableClothExtensions.cs)에서 관리합니다. 서비스는 생성자로 필수 의존성을 받고 등록부가 구현체와 수명을 선택합니다. 소비 서비스가 누락된 의존성 대신 다른 서비스를 직접 생성하거나 환경별 경로를 다시 추론하는 방식은 사용하지 않습니다. 순수 계산 함수와 값 객체까지 DI에 등록하지는 않습니다.
+
+Windows AI 서비스는 [전용 등록 함수](src/TableCloth.App/DependencyInjection/ManagedAiWindowsServiceCollectionExtensions.cs)로 묶습니다. 등록부는 `ISharedLocations.ExecutableFilePath`를 스킬 실행 서비스에 전달하고 같은 런타임 관리자 인스턴스를 구체 형식과 인터페이스에 연결합니다. 실행 파일 선택은 [SharedLocations](src/TableCloth.App/Components/Implementations/SharedLocations.cs)가 담당하므로 Windows 서비스 라이브러리가 앱 프로젝트를 참조하지 않습니다.
+
+주입받은 경로도 실행 서비스에서 검증합니다. 절대 경로, 제품 실행 파일명, 파일 존재 여부와 reparse point 검사를 유지하며 스크립트 해시 검증과 AppContainer 정책도 그대로 적용합니다. [DI 구성 테스트](src/TableCloth.Test/ManagedAiDependencyInjectionTests.cs)는 임시 경로와 대체 `ISharedLocations`를 사용하여 잘못된 경로의 차단, 대체 경로 탐색 방지와 singleton 수명을 검사합니다.
+
 ## 빌드와 Native AOT 게시
 
 개발 빌드는 AnyCPU framework-dependent 출력으로 만듭니다.
