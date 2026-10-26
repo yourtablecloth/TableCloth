@@ -2,6 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:TableCloth.ViewModels"
         xmlns:ai="using:TableCloth.ManagedAi"
+        xmlns:automation="using:Avalonia.Automation"
+        xmlns:ui="using:TableCloth.Theme.Controls"
         x:Class="TableCloth.Dialogs.SkillMarketplaceWindow"
         x:DataType="vm:SkillMarketplaceWindowViewModel"
         Title="{x:Static ai:ManagedAiText.MarketplaceTitle}"
@@ -22,6 +24,26 @@
             <TextBlock Text="{x:Static ai:ManagedAiText.MarketplaceDescription}" TextWrapping="Wrap" />
             <TextBlock Text="{x:Static ai:ManagedAiText.MarketplaceScope}" FontSize="11"
                        Foreground="{DynamicResource ControlSecondaryForeground}" />
+            <Border x:Name="MarketplaceActivity" IsVisible="{Binding IsBusy}" Margin="0 7 0 0"
+                    Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                    BorderBrush="{DynamicResource OptionsListBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="12 10">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <ui:ProgressRing x:Name="MarketplaceProgress" IsIndeterminate="True" IsActive="{Binding IsBusy}"
+                                     Width="24" Height="24" VerticalAlignment="Center"
+                                     automation:AutomationProperties.Name="{x:Static ai:ManagedAiText.MarketplaceTitle}" />
+                    <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+                        <TextBlock x:Name="CatalogActivity" Text="{Binding CatalogActivityText}" IsVisible="{Binding CatalogBusy}"
+                                   TextWrapping="Wrap" FontSize="12" automation:AutomationProperties.LiveSetting="Polite"
+                                   automation:AutomationProperties.Name="{Binding CatalogActivityText}" />
+                        <TextBlock x:Name="LocalActivity" Text="{Binding LocalActivityText}" IsVisible="{Binding HasLocalActivity}"
+                                   TextWrapping="Wrap" FontSize="12" automation:AutomationProperties.LiveSetting="Polite"
+                                   automation:AutomationProperties.Name="{Binding LocalActivityText}" />
+                        <TextBlock x:Name="RuntimeActivity" Text="{Binding SkillRuntimeNotice}" IsVisible="{Binding SkillRuntimeBusy}"
+                                   TextWrapping="Wrap" FontSize="12" automation:AutomationProperties.LiveSetting="Polite"
+                                   automation:AutomationProperties.Name="{Binding SkillRuntimeNotice}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
         </StackPanel>
         <TabControl Grid.Row="1" x:Name="MarketplaceTabs">
             <TabItem Header="{x:Static ai:ManagedAiText.MarketplaceBrowse}">
@@ -86,7 +108,7 @@
                             </WrapPanel>
                         </Grid>
                     </Grid>
-                    <TextBlock Grid.Row="3" x:Name="CatalogNotice" Text="{Binding CatalogNotice}" TextWrapping="Wrap" FontSize="12"
+                    <TextBlock Grid.Row="3" x:Name="CatalogNotice" Text="{Binding CatalogNotice}" TextWrapping="Wrap" FontSize="12" IsVisible="{Binding !CatalogBusy}"
                                Foreground="{DynamicResource ControlSecondaryForeground}" />
                 </Grid>
             </TabItem>
@@ -141,12 +163,12 @@
                         <Button x:Name="InstalledRefresh" Content="{x:Static ai:ManagedAiText.SkillsRefresh}" Command="{Binding RefreshInstalledCommand}" />
                         <Button x:Name="InstalledRootFolder" Content="{x:Static ai:ManagedAiText.SkillsOpenFolder}" Command="{Binding OpenRootFolderCommand}" />
                     </WrapPanel>
-                    <TextBlock Grid.Row="4" x:Name="InstalledNotice" Text="{Binding LocalNotice}" TextWrapping="Wrap" FontSize="12"
+                    <TextBlock Grid.Row="4" x:Name="InstalledNotice" Text="{Binding LocalNotice}" TextWrapping="Wrap" FontSize="12" IsVisible="{Binding !HasLocalActivity}"
                                Foreground="{DynamicResource ControlSecondaryForeground}" />
                 </Grid>
             </TabItem>
             <TabItem Header="{x:Static ai:ManagedAiText.MarketplaceRuntimes}">
-                <Grid Margin="12 16" RowDefinitions="*,Auto,Auto,Auto" RowSpacing="10">
+                <Grid Margin="12 16" RowDefinitions="*,Auto,Auto" RowSpacing="10">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel Spacing="14" MaxWidth="680" HorizontalAlignment="Left">
                             <TextBlock Text="{x:Static ai:ManagedAiText.SkillRuntimeDescription}" TextWrapping="Wrap" />
@@ -179,8 +201,7 @@
                         <Button x:Name="SkillRuntimeInstall" Content="{x:Static ai:ManagedAiText.SkillRuntimeInstall}" Command="{Binding InstallSkillRuntimesCommand}" />
                         <Button x:Name="SkillRuntimeRefresh" Content="{x:Static ai:ManagedAiText.SkillRuntimeRefresh}" Command="{Binding RefreshSkillRuntimeStatusCommand}" />
                     </WrapPanel>
-                    <ProgressBar Grid.Row="2" x:Name="SkillRuntimeProgress" IsIndeterminate="True" IsVisible="{Binding SkillRuntimeBusy}" Height="4" />
-                    <TextBlock Grid.Row="3" x:Name="SkillRuntimeNotice" Text="{Binding SkillRuntimeNotice}" TextWrapping="Wrap"
+                    <TextBlock Grid.Row="2" x:Name="SkillRuntimeNotice" Text="{Binding SkillRuntimeNotice}" TextWrapping="Wrap" IsVisible="{Binding !SkillRuntimeBusy}"
                                Foreground="{DynamicResource ControlSecondaryForeground}" />
                 </Grid>
             </TabItem>

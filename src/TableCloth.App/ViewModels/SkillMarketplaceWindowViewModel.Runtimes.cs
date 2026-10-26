@@ -47,6 +47,7 @@ public partial class SkillMarketplaceWindowViewModel
 
     partial void OnSkillRuntimeBusyChanged(bool value)
     {
+        OnPropertyChanged(nameof(IsBusy));
         InstallSkillRuntimesCommand.NotifyCanExecuteChanged();
         RefreshSkillRuntimeStatusCommand.NotifyCanExecuteChanged();
     }
