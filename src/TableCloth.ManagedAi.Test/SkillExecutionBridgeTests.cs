@@ -19,7 +19,7 @@ public sealed class SkillExecutionBridgeTests
         IReadOnlyList<AiSkill> skills = state == "missing" ? [] :
             [Calculator(fixture.Paths) with { Enabled = state != "disabled", IsValid = state != "invalid" }];
         var bridge = await new WindowsManagedAiSkillExecution(fixture.Paths,
-            new WindowsManagedAiScriptRuntimeManager(fixture.Paths), fixture.Paths.Under("TableCloth.exe"))
+            new WindowsManagedAiScriptRuntimeManager(fixture.Paths, fixture.RuntimeClients), fixture.Paths.Under("TableCloth.exe"))
             .PrepareAsync(skills, run, CancellationToken.None);
         Assert.IsNull(bridge);
         Assert.IsFalse(Directory.Exists(fixture.Paths.Under("skill-execution")));
@@ -38,7 +38,7 @@ public sealed class SkillExecutionBridgeTests
         File.Delete(script);
         var bridge = await
             new WindowsManagedAiSkillExecution(fixture.Paths,
-                new WindowsManagedAiScriptRuntimeManager(fixture.Paths), host)
+                new WindowsManagedAiScriptRuntimeManager(fixture.Paths, fixture.RuntimeClients), host)
                 .PrepareAsync([calculator], run, CancellationToken.None);
         Assert.IsNull(bridge);
         Assert.IsFalse(Directory.Exists(fixture.Paths.Under("skill-execution")));
@@ -74,7 +74,7 @@ public sealed class SkillExecutionBridgeTests
 
         var error = await Assert.ThrowsExactlyAsync<ManagedAiException>(() =>
             new WindowsManagedAiSkillExecution(fixture.Paths,
-                new WindowsManagedAiScriptRuntimeManager(fixture.Paths), injectedHost)
+                new WindowsManagedAiScriptRuntimeManager(fixture.Paths, fixture.RuntimeClients), injectedHost)
                 .PrepareAsync([calculator], run, CancellationToken.None));
 
         Assert.AreEqual(AiFailureCode.SkillExecutionHostUnavailable, error.Code);
@@ -87,7 +87,7 @@ public sealed class SkillExecutionBridgeTests
     public async Task UnavailableRuntimeStatusDoesNotRunGlobalInterpretersOrChangeTheProfile()
     {
         using var fixture = new InstallFixture();
-        var status = await new WindowsManagedAiScriptRuntimeManager(fixture.Paths).GetStatusAsync(CancellationToken.None);
+        var status = await new WindowsManagedAiScriptRuntimeManager(fixture.Paths, fixture.RuntimeClients).GetStatusAsync(CancellationToken.None);
         Assert.IsFalse(status.Python.Installed);
         Assert.IsFalse(status.Node.Installed);
         Assert.IsNull(status.LongPaths.PythonSupported);

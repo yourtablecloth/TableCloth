@@ -10,6 +10,39 @@ namespace TableCloth.ManagedAi.Test;
 public sealed class WindowsSkillRegistrationTests
 {
     [TestMethod]
+    public async Task NetworkCompatibilityIsSnapshottedFromInjectedSettingsForEachRequest()
+    {
+        using var fixture = new RegistrationFixture();
+        var skill = fixture.InstallUpstream("bok-ecos-stats");
+        var settings = new MutableNetworkSettings();
+        var execution = fixture.Execution(networkSettings: settings);
+        using var first = await execution.PrepareAsync([skill], fixture.Run, CancellationToken.None);
+        settings.Enabled = true;
+        using var second = await execution.PrepareAsync([skill], fixture.Run, CancellationToken.None);
+        Assert.IsNotNull(first);
+        Assert.IsNotNull(second);
+        using var firstManifest = JsonDocument.Parse(File.ReadAllText(first.Arguments[1]));
+        using var secondManifest = JsonDocument.Parse(File.ReadAllText(second.Arguments[1]));
+        Assert.IsFalse(firstManifest.RootElement.GetProperty("useSystemProxy").GetBoolean());
+        Assert.IsTrue(secondManifest.RootElement.GetProperty("useSystemProxy").GetBoolean());
+        Assert.AreEqual(2, settings.Reads);
+        // Enabling compatibility never grants a network route to an unreviewed package.
+        Assert.IsFalse((await SkillExecutionRegistry.LoadAsync(second.Arguments[1], CancellationToken.None)).Skills.Single().RequiresNetwork);
+    }
+
+    private sealed class MutableNetworkSettings : IManagedAiNetworkSettings
+    {
+        internal bool Enabled;
+        internal int Reads;
+        public Task<AiNetworkSettings> GetAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Reads++;
+            return Task.FromResult(new AiNetworkSettings(Enabled));
+        }
+    }
+
+    [TestMethod]
     public async Task BokWithoutCalculatorRegistersItsActualInstalledPythonEntryPoint()
     {
         using var fixture = new RegistrationFixture();
@@ -340,8 +373,9 @@ public sealed class WindowsSkillRegistrationTests
             Host = Paths.Under("TableCloth.exe");
             File.WriteAllBytes(Host, [0x54, 0x43, 0x48, 0x00]);
         }
-        internal WindowsManagedAiSkillExecution Execution(IManagedAiSkillMarketplace? marketplace = null)
-            => new(Paths, Runtime, Host, marketplace);
+        internal WindowsManagedAiSkillExecution Execution(IManagedAiSkillMarketplace? marketplace = null,
+            IManagedAiNetworkSettings? networkSettings = null)
+            => new(Paths, Runtime, Host, marketplace, networkSettings);
         internal AiSkill Install(string id, Dictionary<string, string> files)
         {
             var directory = Paths.Under("profiles", "openai-codex", "codex-home", "skills", id);

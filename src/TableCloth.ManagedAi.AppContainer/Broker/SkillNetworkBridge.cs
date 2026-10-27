@@ -1,9 +1,16 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 
 namespace TableCloth.AppContainerPoc;
+
+// These hooks belong only to deterministic transport tests. Neither the registration
+// manifest nor the MCP protocol can supply a proxy, DNS result or certificate policy.
+internal sealed record SkillNetworkTransportTestOptions(IWebProxy? Proxy = null,
+    Func<string, CancellationToken, Task<IPAddress[]>>? Resolve = null,
+    X509ChainPolicy? CertificateChainPolicy = null);
 
 // The worker retains NO network capability. Only these public read-only API requests can be
 // performed by the host. This is not a general HTTP proxy or permission to access other hosts.
@@ -17,18 +24,25 @@ internal sealed class SkillNetworkBridge : IAsyncDisposable
     private readonly FileStream _response;
     private readonly HttpClient _client;
     private readonly Func<Uri, CancellationToken, Task<Reply>>? _fetch;
+    private readonly Func<string, CancellationToken, Task<IPAddress[]>> _resolve;
+    private readonly FixedSkillProxy? _proxy;
     internal string DirectoryPath { get; }
 
     internal sealed record Reply(int Status, IReadOnlyDictionary<string, string> Headers, byte[] Body);
     private sealed record RpcResponse(int Id, Reply? Reply, string? Error);
 
     internal SkillNetworkBridge(string workDirectory, IReadOnlyList<string> hosts,
-        Func<Uri, CancellationToken, Task<Reply>>? fetch = null)
+        Func<Uri, CancellationToken, Task<Reply>>? fetch = null, bool useSystemProxy = false,
+        SkillNetworkTransportTestOptions? transportTestOptions = null)
     {
         if (hosts.Count is < 1 or > 2 || hosts.Any(x => !KnownHosts.Contains(x, StringComparer.Ordinal)))
             throw BrokerFiles.Invalid();
-        _hosts = hosts;
+        _hosts = hosts.ToArray();
         _fetch = fetch; // Offline test seam, never a manifest or MCP property.
+        _resolve = transportTestOptions?.Resolve ?? ((host, token) => Dns.GetHostAddressesAsync(host, token));
+        // Resolve OS/administrator proxy selection once, before any worker executes.
+        // No credentials or mutable IWebProxy implementation cross this boundary.
+        _proxy = useSystemProxy ? FixedSkillProxy.Snapshot(_hosts, transportTestOptions?.Proxy ?? HttpClient.DefaultProxy) : null;
         DirectoryPath = Path.Combine(workDirectory, "network");
         BrokerFiles.RequireUnder(workDirectory, DirectoryPath);
         BrokerFiles.RejectReparsePoints(DirectoryPath);
@@ -42,16 +56,24 @@ internal sealed class SkillNetworkBridge : IAsyncDisposable
         try { _response = new(Path.Combine(DirectoryPath, "response.json"), FileMode.CreateNew, FileAccess.ReadWrite,
             FileShare.ReadWrite, bufferSize: 1, FileOptions.Asynchronous); }
         catch { _request.Dispose(); throw; }
-        _client = new(new SocketsHttpHandler
+        var handler = new SocketsHttpHandler
         {
             AllowAutoRedirect = false,
-            UseProxy = false,
+            UseProxy = _proxy is not null,
+            Proxy = _proxy,
+            Credentials = null,
+            DefaultProxyCredentials = null,
             UseCookies = false,
             AutomaticDecompression = DecompressionMethods.All,
             ConnectTimeout = TimeSpan.FromSeconds(5),
             MaxResponseHeadersLength = 16,
-            ConnectCallback = ConnectPublicAsync
-        }) { Timeout = Timeout.InfiniteTimeSpan };
+            ConnectCallback = ConnectAsync
+        };
+        // Production leaves TLS defaults intact and uses the Windows trust store.
+        // Tests use an in-memory CA without installing certificates on the host.
+        if (transportTestOptions?.CertificateChainPolicy is { } chainPolicy)
+            handler.SslOptions.CertificateChainPolicy = chainPolicy;
+        _client = new(handler) { Timeout = Timeout.InfiniteTimeSpan };
     }
 
     internal async Task RunAsync(CancellationToken token)
@@ -156,11 +178,14 @@ internal sealed class SkillNetworkBridge : IAsyncDisposable
         return buffer.ToArray();
     }
 
-    private async Task<Reply> FetchAsync(Uri uri, CancellationToken token)
+    internal async Task<Reply> FetchAsync(Uri uri, CancellationToken token)
     {
         for (var redirect = 0; redirect < 4; redirect++)
         {
             if (!TryValidateUrl(uri.AbsoluteUri, _hosts, out uri)) throw BrokerFiles.Invalid();
+            // Proxies resolve destinations independently. Keep the same host-side public
+            // DNS policy on every request and redirect, even when a tunnel is reused.
+            await ResolvePublicAsync(uri.IdnHost, token);
             using var message = new HttpRequestMessage(HttpMethod.Get, uri);
             message.Headers.UserAgent.ParseAdd("TableCloth-Skill-Bridge/1.0");
             using var response = await _client.SendAsync(message, HttpCompletionOption.ResponseHeadersRead, token);
@@ -208,22 +233,93 @@ internal sealed class SkillNetworkBridge : IAsyncDisposable
         return true;
     }
 
-    private async ValueTask<Stream> ConnectPublicAsync(SocketsHttpConnectionContext context, CancellationToken token)
+    private async Task<IPAddress[]> ResolvePublicAsync(string host, CancellationToken token)
     {
-        if (context.DnsEndPoint.Port != 443 || !_hosts.Contains(context.DnsEndPoint.Host, StringComparer.Ordinal)) throw BrokerFiles.Invalid();
-        var addresses = await Dns.GetHostAddressesAsync(context.DnsEndPoint.Host, token);
+        var addresses = await _resolve(host, token);
         if (addresses.Length == 0 || addresses.Any(x => !IsPublicAddress(x))) throw BrokerFiles.Invalid();
+        return addresses;
+    }
+
+    private async ValueTask<Stream> ConnectAsync(SocketsHttpConnectionContext context, CancellationToken token)
+    {
+        var endpoint = context.DnsEndPoint;
+        var proxyOrigin = _proxy?.TunnelOrigin(context.InitialRequestMessage, endpoint.Host, endpoint.Port);
+        IPAddress[] addresses;
+        if (proxyOrigin is not null)
+        {
+            // The trusted host proxy alone may use private or loopback addresses.
+            // A worker-provided URL can never select this endpoint or its port.
+            await ResolvePublicAsync(proxyOrigin, token);
+            addresses = await _resolve(endpoint.Host, token);
+            if (addresses.Length == 0) throw BrokerFiles.Invalid();
+        }
+        else
+        {
+            if (context.InitialRequestMessage.Method != HttpMethod.Get || endpoint.Port != 443 ||
+                !_hosts.Contains(endpoint.Host, StringComparer.Ordinal)) throw BrokerFiles.Invalid();
+            addresses = await ResolvePublicAsync(endpoint.Host, token);
+        }
         foreach (var address in addresses)
         {
             var socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
             try
             {
-                await socket.ConnectAsync(new IPEndPoint(address, 443), token);
+                await socket.ConnectAsync(new IPEndPoint(address, endpoint.Port), token);
                 return new NetworkStream(socket, ownsSocket: true);
             }
             catch { socket.Dispose(); if (token.IsCancellationRequested) throw; }
         }
         throw new IOException("The reviewed public API is unavailable.");
+    }
+
+    private sealed class FixedSkillProxy(IReadOnlyDictionary<string, Uri?> routes) : IWebProxy
+    {
+        internal static FixedSkillProxy Snapshot(IReadOnlyList<string> hosts, IWebProxy source)
+        {
+            var selected = new Dictionary<string, Uri?>(StringComparer.Ordinal);
+            foreach (var host in hosts)
+            {
+                var origin = new Uri("https://" + host + "/");
+                if (source.IsBypassed(origin)) { selected.Add(host, null); continue; }
+                var candidate = source.GetProxy(origin);
+                if (candidate is null) { selected.Add(host, null); continue; }
+                if (!candidate.IsAbsoluteUri || candidate.Scheme is not ("http" or "https") ||
+                    candidate.UserInfo.Length != 0 || candidate.AbsolutePath != "/" ||
+                    candidate.Query.Length != 0 || candidate.Fragment.Length != 0 ||
+                    candidate.Port is < 1 or > 65535 || candidate.HostNameType is not
+                        (UriHostNameType.Dns or UriHostNameType.IPv4 or UriHostNameType.IPv6)) throw BrokerFiles.Invalid();
+                if (candidate == origin) { selected.Add(host, null); continue; }
+                // Keep only endpoint data. Never use source.Credentials or OS credentials.
+                selected.Add(host, new Uri(candidate.GetLeftPart(UriPartial.Authority)));
+            }
+            return new(selected);
+        }
+
+        public ICredentials? Credentials
+        {
+            get => null;
+            set { if (value is not null) throw BrokerFiles.Invalid(); }
+        }
+
+        public Uri? GetProxy(Uri destination) => Route(destination) ?? destination;
+        public bool IsBypassed(Uri host) => Route(host) is null;
+
+        private Uri? Route(Uri destination)
+        {
+            if (destination.Scheme != "https" || destination.Port != 443 ||
+                !routes.TryGetValue(destination.IdnHost, out var selected)) throw BrokerFiles.Invalid();
+            return selected;
+        }
+
+        internal string? TunnelOrigin(HttpRequestMessage request, string host, int port)
+        {
+            if (request.Method != HttpMethod.Connect) return null;
+            foreach (var route in routes)
+                if (route.Value is { } proxy && proxy.Port == port &&
+                    proxy.IdnHost.Equals(host, StringComparison.OrdinalIgnoreCase) &&
+                    request.RequestUri == proxy && request.Headers.Host == route.Key + ":443") return route.Key;
+            return null;
+        }
     }
 
     internal static bool IsPublicAddress(IPAddress address)

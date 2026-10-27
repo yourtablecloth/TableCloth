@@ -53,6 +53,14 @@
 
 모든 작업자는 `AllowNetwork=false`로 실행하며 `internetClient` 권한을 받지 않습니다. BOK와 KOSIS는 공개 서비스의 허용 목적지와 요청 범위를 검사하는 호스트 HTTPS 프록시를 사용합니다. 카탈로그의 `Network="required"` 선언만으로 임의의 네트워크 접근을 허용하거나 목적지를 추가하거나 자격 증명을 제공하지 않습니다. 로컬 가져오기 항목이나 다른 스크립트가 `SKILL.md`에 네트워크를 언급한 것만으로 인터넷에 접근할 수는 없습니다.
 
+### 호스트 네트워크 경로를 사용하는 ZScaler 호환성
+
+ZScaler 설정은 샌드박스와 AI 스킬에 서로 다른 경로로 적용합니다. **옵션 > 호환성 > 샌드박스와 AI 스킬의 ZScaler 호환성 지원**을 켜면 Windows Sandbox는 다음 실행 때 호스트의 ZScaler 루트 인증서를 전달받습니다. 호스트에 인증서가 없으면 전파를 건너뛰며 무설치 식탁보에서는 이 전파 경로를 지원하지 않습니다. 관리형 AI는 새 AI 요청마다 같은 설정을 읽고 허용된 스킬 HTTPS 중계기에 Windows 시스템 프록시 사용을 허용합니다. 설정이 없거나 꺼져 있으면 중계기는 공개 목적지에 직접 연결하는 기존 경로를 유지합니다. [설정 어댑터](../src/TableCloth.App/Components/Implementations/ManagedAiNetworkSettings.cs)와 [스크립트 실행 브리지](../src/TableCloth.ManagedAi.Windows/WindowsManagedAiSkillExecution.cs)가 이 경로를 구성합니다.
+
+이어서 호스트와 작업자의 TLS 처리를 구분하겠습니다. 호스트의 .NET HTTP 전송은 Windows 인증서 신뢰를 사용합니다. 인증서 검증을 생략하거나 Python과 Node.js에 루트 인증서 묶음을 전달하지 않습니다. 런타임 다운로드는 호스트의 기존 Windows 인증서 신뢰와 기본 프록시 동작을 유지하므로 전용 인터프리터에 별도 CA 묶음을 설정하지 않습니다. [HttpClient.DefaultProxy](https://learn.microsoft.com/dotnet/api/system.net.http.httpclient.defaultproxy)는 호스트의 프록시 환경 설정을 우선 사용하고 해당 설정이 없으면 Windows 사용자 프록시 설정을 사용합니다. 작업자는 계속 `AllowNetwork=false`로 실행하며 지원하는 공공서비스 요청만 제한된 호스트 중계기로 전달합니다. 시스템 인터프리터 설정과 전역 환경 변수, 시스템 인증서 저장소는 변경하지 않습니다.
+
+다만 시스템 프록시를 사용해도 중계기는 원본 공개 목적지를 검사합니다. 원본 도메인이 사설 주소나 다른 차단 주소로 해석되면 연결을 거절합니다. 사내 프록시를 사용할 수 있다는 사실만으로 사설 원본 주소를 허용하지 않습니다. 앱은 프록시 자격 증명을 제공하지 않으므로 인증이 필요한 프록시는 HTTP 407로 실패할 수 있습니다. TLS 검증 오류와 목적지 차단, 지원하지 않는 조직 정책도 오류로 처리합니다. 이 동작만으로 모든 ZScaler 배포 환경의 작동을 입증하거나 다른 스크립트에 임의의 네트워크 접근을 제공하지는 않습니다.
+
 [전용 프로필](../src/TableCloth.ManagedAi.Windows/WindowsManagedAiProfile.cs)은 `shell_tool=false`와 `unified_exec=false`를 유지합니다. Codex는 `read-only` 샌드박스와 `never` 승인 정책을 유지하며 패키지 스크립트는 앱이 관리하는 MCP 경로로 실행합니다. 앱은 `pip`, `npm`, `npx`로 임의 의존성을 설치하거나 외부 MCP 서버를 자동 구성하거나 지원하지 않는 네이티브 의존성을 제공하지 않습니다.
 
 카탈로그에서 설치한 스킬에는 [공개 문서 컨텍스트](../src/TableCloth.ManagedAi.OpenAi/Execution/InstalledSkillPromptContext.cs)를 제공합니다. 기록한 커밋의 `raw.githubusercontent.com`에서 `SKILL.md`, `instruction.md`와 링크한 `references/*.md` 파일을 최대 네 개 조회합니다. 인증 정보를 보내거나 리다이렉트를 따르지 않으며 공개 원본 URL을 기준으로 세션 메모리에 캐시합니다. 파일당 32 KiB와 전체 JSON 컨텍스트 128 KiB를 제한으로 적용합니다. 조회할 수 없거나 크기를 초과한 문서는 생략 상태로 알리고 컨텍스트를 잘랐을 때에도 표시합니다. 로컬 가져오기 항목은 ID만 제공하며 이 경로로 설치 문서의 본문을 읽거나 전달하지 않습니다. 공개 지침을 제공하므로 `npx` 로더를 실행하지 않고도 해당 지침을 사용할 수 있습니다.

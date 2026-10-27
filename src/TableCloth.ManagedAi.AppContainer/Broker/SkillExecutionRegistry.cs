@@ -232,7 +232,8 @@ require('node:module').runMain(tcEntry);
             BrokerFiles.RequireUnder(_manifest.OwnedRoot, work);
             Directory.CreateDirectory(work);
             BrokerFiles.RejectReparsePoints(work);
-            await using var networkBridge = networkEnabled ? new SkillNetworkBridge(work, skill.NetworkHosts!) : null;
+            await using var networkBridge = networkEnabled
+                ? new SkillNetworkBridge(work, skill.NetworkHosts!, useSystemProxy: _manifest.UseSystemProxy) : null;
             var arguments = new List<string>();
             if (node)
             {

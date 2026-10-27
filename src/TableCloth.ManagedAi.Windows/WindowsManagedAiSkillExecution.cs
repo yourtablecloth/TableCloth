@@ -9,7 +9,7 @@ namespace TableCloth.ManagedAi.Windows;
 // Native workers have no network capability. Public API access uses the bounded host transport.
 public sealed class WindowsManagedAiSkillExecution(ManagedAiPaths paths,
     IManagedAiScriptExecutionRuntime runtimeManager, string hostExecutable,
-    IManagedAiSkillMarketplace? marketplace = null) : IManagedAiSkillExecution
+    IManagedAiSkillMarketplace? marketplace = null, IManagedAiNetworkSettings? networkSettings = null) : IManagedAiSkillExecution
 {
     public const string CalculatorSha256 = "279b627d4350b8895717a6ac3597a6e87cab7a9882004d639251ebbee3e7c947";
     public const string CalculatorId = "tablecloth-calculators";
@@ -124,11 +124,14 @@ public sealed class WindowsManagedAiSkillExecution(ManagedAiPaths paths,
                 }
             }
             if (registrations.Count == 0) return null;
+            var networkPolicy = await (networkSettings ?? new DefaultManagedAiNetworkSettings()).GetAsync(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             manifest = paths.Under("skill-execution", "manifest-" + Guid.NewGuid().ToString("N") + ".json");
             using (var file = new FileStream(manifest, FileMode.CreateNew, FileAccess.Write, FileShare.None))
             using (var writer = new Utf8JsonWriter(file))
             {
                 writer.WriteStartObject(); writer.WriteString("ownedRoot", root);
+                writer.WriteBoolean("useSystemProxy", networkPolicy.UseSystemProxyForSkills);
                 writer.WriteString("pythonExecutable", runtimeManager.PythonExecutable);
                 writer.WriteString("pythonSha256", runtimeFiles.Single(x => x.Path == runtimeManager.PythonExecutable).Sha256);
                 writer.WriteString("nodeExecutable", runtimeManager.NodeExecutable);

@@ -110,13 +110,15 @@ namespace TableCloth.Models.Configuration
         public bool EnableSandboxPublicDnsFallback { get; set; } = true;
 
         /// <summary>
-        /// 호스트에 설치된 ZScaler 루트 인증서를 샌드박스 안으로 전파할지 여부입니다.
-        /// ZScaler 같은 엔드포인트 통제(SSL 검사) 환경에서는 호스트가 신뢰하는 ZScaler 루트 인증서가
-        /// 샌드박스로 자동 전파되지 않아 샌드박스 내부의 HTTPS 연결이 모두 차단됩니다. 이 옵션을 켜면
+        /// ZScaler 환경을 위한 샌드박스 인증서 전파와 AI 스킬의 호스트 시스템 프록시 사용을 제어합니다.
+        /// ZScaler 같은 SSL 검사 환경에서는 호스트가 신뢰하는 루트 인증서를 샌드박스가 신뢰하지 않아
+        /// HTTPS 연결에 실패할 수 있습니다. 이 옵션을 켜면
         /// 호스트의 <c>LocalMachine\Root</c> 저장소에서 Subject에 "Zscaler"가 포함된 루트 인증서를 찾아
-        /// 샌드박스로 전달하고, 샌드박스 부팅 시 사용자 신뢰 루트 저장소에 등록하여 인터넷 연결을 복원합니다
-        /// (이슈 #292). 기본값은 꺼짐이며, 호스트에 해당 인증서가 없으면 켜져 있어도 자동으로 건너뜁니다.
-        /// <b>이 옵션은 무설치(포터블) 식탁보에서는 지원되지 않습니다.</b>
+        /// 샌드박스로 전달하고 부팅 시 사용자 신뢰 루트 저장소에 등록합니다(이슈 #292).
+        /// 해당 인증서가 없으면 샌드박스 전파를 건너뛰며 무설치(포터블)에서는 이 전파 경로를 지원하지 않습니다.
+        /// AI 스킬은 다음 AI 요청부터 허용된 호스트 HTTPS 경로에서 Windows 시스템 프록시를 사용합니다.
+        /// TLS는 Windows의 인증서 신뢰를 따르며 Python과 Node.js AppContainer 작업자는 직접 네트워크를 사용하지 않습니다.
+        /// 인증서 검증을 생략하거나 프록시 자격 증명을 전달하지 않습니다. 기본값은 꺼짐입니다.
         /// </summary>
         public bool EnableZScalerRootCertPropagation { get; set; } = false;
 

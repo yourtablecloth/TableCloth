@@ -16,8 +16,9 @@ public interface IManagedAiScriptExecutionRuntime : IManagedAiScriptRuntimeManag
 }
 
 /// <summary>App-owned, pinned workers. No global PATH, package manager, registry or shell configuration is changed.</summary>
-public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths) : IManagedAiScriptExecutionRuntime
+public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths, IHttpClientFactory clients) : IManagedAiScriptExecutionRuntime
 {
+    public const string DownloadHttpClientName = "TableCloth.ManagedAi.ScriptRuntimeDownload";
     private static readonly SemaphoreSlim Gate = new(1, 1);
     private const long MaximumArchiveBytes = 128L * 1024 * 1024;
     private readonly ScriptRuntimePackages _packages = ScriptRuntimePackages.ForArchitecture(RuntimeInformation.OSArchitecture);
@@ -112,7 +113,7 @@ public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths) :
             var partial = paths.Under("skill-execution", "archives", Guid.NewGuid().ToString("N") + ".zip");
             try
             {
-                using var client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromMinutes(5) };
+                using var client = clients.CreateClient(DownloadHttpClientName);
                 using var response = await client.GetAsync(package.Url, HttpCompletionOption.ResponseHeadersRead, token);
                 response.EnsureSuccessStatusCode();
                 if (response.Content.Headers.ContentLength is > MaximumArchiveBytes) throw new ManagedAiException(AiFailureCode.ArchiveRejected);

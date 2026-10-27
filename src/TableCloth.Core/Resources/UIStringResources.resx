@@ -1003,10 +1003,10 @@ Create it and open it now?</value>
     <value>When the sandbox's DNS can't resolve host names, temporarily switch its network adapters to public DNS (8.8.8.8 / 1.1.1.1). Working DNS — including corporate internal resolvers — is left untouched; the fallback kicks in only when name resolution actually fails. Turn this off if your network policy forbids public DNS. Takes effect on the next sandbox launch.</value>
   </data>
   <data name="Option_EnableZScalerRootCertPropagationCheckbox" xml:space="preserve">
-    <value>Propagate the host's ZScaler root certificate into the sandbox</value>
+    <value>ZScaler compatibility for Sandbox and AI skills</value>
   </data>
   <data name="Option_EnableZScalerRootCertPropagationCheckbox_Description" xml:space="preserve">
-    <value>In endpoint-control environments that inspect SSL (such as ZScaler), the host's ZScaler root certificate is not automatically trusted inside the sandbox, so the sandbox's HTTPS connections are blocked. Enable this to copy the ZScaler root certificate from the host into the sandbox and register it in the user trust store, restoring internet access. If the host has no such certificate this option does nothing. This option is not supported in portable (no-install) TableCloth. Takes effect on the next sandbox launch.</value>
+    <value>Copies the host's ZScaler root certificates into the next Windows Sandbox session when present. Certificate propagation is unavailable in portable TableCloth. For AI skills, enables the Windows system proxy for allowed host HTTPS requests starting with the next AI request; TLS follows Windows certificate trust. Python and Node.js workers keep direct network access disabled. Proxy authentication and organization policies can still prevent a connection.</value>
   </data>
   <data name="Option_Compatibility_SearchPlaceholder" xml:space="preserve">
     <value>Search settings (name or description)</value>

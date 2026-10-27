@@ -6,7 +6,7 @@ namespace TableCloth.AppContainerPoc;
 // This is a trusted, local evaluation registration file, never a model-supplied document.
 public sealed record EvaluationManifest(string OwnedRoot, string PythonExecutable, string PythonSha256,
     string? NodeExecutable, string? NodeSha256, IReadOnlyList<SkillRegistration> Skills,
-    IReadOnlyList<RuntimeFileRegistration>? RuntimeFiles = null);
+    IReadOnlyList<RuntimeFileRegistration>? RuntimeFiles = null, bool UseSystemProxy = false);
 
 public sealed record RuntimeFileRegistration(string Path, string Sha256);
 
@@ -39,7 +39,13 @@ internal static class BrokerFiles
         using var document = JsonDocument.Parse(bytes, new JsonDocumentOptions { MaxDepth = 16 });
         ValidateJson(document.RootElement, maximumNodes: 32768);
         var root = document.RootElement;
-        ObjectFields(root, ["ownedRoot", "pythonExecutable", "pythonSha256", "nodeExecutable", "nodeSha256", "skills", "runtimeFiles"]);
+        ObjectFields(root, ["ownedRoot", "pythonExecutable", "pythonSha256", "nodeExecutable", "nodeSha256", "skills", "runtimeFiles", "useSystemProxy"]);
+        var useSystemProxy = false;
+        if (root.TryGetProperty("useSystemProxy", out var proxyValue))
+        {
+            if (proxyValue.ValueKind is not (JsonValueKind.True or JsonValueKind.False)) throw Invalid();
+            useSystemProxy = proxyValue.GetBoolean();
+        }
         var ownedRoot = Text(root, "ownedRoot", 240);
         if (!Path.IsPathFullyQualified(ownedRoot) || ownedRoot.StartsWith(@"\\", StringComparison.Ordinal)) throw Invalid();
         ownedRoot = Path.TrimEndingDirectorySeparator(Path.GetFullPath(ownedRoot));
@@ -144,7 +150,7 @@ internal static class BrokerFiles
             await using var package = await OpenPackageFilesAsync(ownedRoot, skill, token);
         }
         await using (await OpenRuntimeFilesAsync(ownedRoot, runtimeFiles, token)) { }
-        return new(ownedRoot, python, pythonHash, node, nodeHash, skills.AsReadOnly(), runtimeFiles.AsReadOnly());
+        return new(ownedRoot, python, pythonHash, node, nodeHash, skills.AsReadOnly(), runtimeFiles.AsReadOnly(), useSystemProxy);
     }
 
     internal static async Task<IAsyncDisposable> OpenPackageFilesAsync(string root, SkillRegistration skill, CancellationToken token)

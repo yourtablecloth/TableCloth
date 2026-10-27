@@ -363,7 +363,8 @@ public partial class OptionsWindowViewModel : ObservableObject
     [ObservableProperty]
     private bool _enableSandboxPublicDnsFallback = true;
 
-    // ZScaler 루트 인증서 전파(이슈 #292). 기본 꺼짐 — SSL 검사(ZScaler) 환경에서만 켠다. 무설치 미지원.
+    // ZScaler compatibility: Sandbox certificate propagation and AI skill host system proxy; disabled by default.
+    // Only Sandbox certificate propagation is unavailable in portable mode. AI applies changes on its next request.
     [ObservableProperty]
     private bool _enableZScalerRootCertPropagation;
 

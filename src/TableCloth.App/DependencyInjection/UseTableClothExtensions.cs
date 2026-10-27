@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -33,6 +34,7 @@ public static class UseTableClothExtensions
         builder.Services.AddLogging();
 
         builder.Services.AddManagedOpenAi();
+        builder.Services.Replace(ServiceDescriptor.Singleton<IManagedAiNetworkSettings, ManagedAiNetworkSettings>());
         builder.Services.AddManagedAiWindows();
         builder.Services.AddTransient<ITableClothBrowser, TableClothBrowserAdapter>();
         builder.Services.AddTransient<IManagedAiCatalogLauncher, ManagedAiCatalogLauncher>();
