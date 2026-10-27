@@ -1,4 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 using TableCloth.App.DependencyInjection;
 using TableCloth.Components;
 using TableCloth.ManagedAi;
@@ -18,9 +21,13 @@ public sealed class ManagedAiDependencyInjectionTests
 
         var concrete = services.GetRequiredService<WindowsManagedAiScriptRuntimeManager>();
         var contract = services.GetRequiredService<IManagedAiScriptRuntimeManager>();
+        var executionRuntime = services.GetRequiredService<IManagedAiScriptExecutionRuntime>();
         Assert.AreSame(concrete, contract);
+        Assert.AreSame(concrete, executionRuntime);
         Assert.AreSame(concrete, services.GetRequiredService<WindowsManagedAiScriptRuntimeManager>());
         Assert.AreSame(contract, services.GetRequiredService<IManagedAiScriptRuntimeManager>());
+        Assert.AreSame(executionRuntime, services.GetRequiredService<IManagedAiScriptExecutionRuntime>());
+        Assert.IsNull(services.GetService<IManagedAiSkillMarketplace>(), "The optional marketplace is not needed to compose the Windows runtime services.");
         var execution = services.GetRequiredService<IManagedAiSkillExecution>();
         Assert.AreSame(execution, services.GetRequiredService<IManagedAiSkillExecution>());
         Assert.AreSame(services.GetRequiredService<IJsonlProcessRunner>(), services.GetRequiredService<IJsonlProcessRunner>());
@@ -50,19 +57,22 @@ public sealed class ManagedAiDependencyInjectionTests
         };
         if (scenario == "other-name") File.WriteAllText(host, "Fixture executable, never executed.");
         var locations = new Locations(host);
-        using var services = Compose(fixture.Paths, locations);
+        var runtime = new FixtureScriptRuntime(fixture.Paths);
+        using var services = Compose(fixture.Paths, locations, runtime);
         var execution = services.GetRequiredService<IManagedAiSkillExecution>();
 
         var error = await Assert.ThrowsExactlyAsync<ManagedAiException>(() =>
             execution.PrepareAsync([fixture.Calculator], fixture.RunDirectory, CancellationToken.None));
 
         Assert.AreEqual(AiFailureCode.SkillExecutionHostUnavailable, error.Code);
+        Assert.AreEqual(0, runtime.EnsureCalls);
+        Assert.AreEqual(0, runtime.VerifiedFilesCalls);
         Assert.AreEqual(1, locations.ExecutableReads);
         Assert.IsFalse(Directory.Exists(fixture.Paths.Under("skill-execution")));
     }
 
     [TestMethod]
-    public async Task SingletonExecutionCapturesInjectedHostOnceAndReachesScriptValidationWithoutRuntimeDownload()
+    public async Task SingletonExecutionCapturesInjectedHostOnceAndRegistersUpdatedScriptsThroughTheInjectedRuntime()
     {
         using var fixture = new Fixture();
         var host = fixture.Paths.Under("injected-host", "TableCloth.exe");
@@ -70,24 +80,47 @@ public sealed class ManagedAiDependencyInjectionTests
         File.WriteAllText(host, "Fixture apphost, never executed.");
         var script = Path.Combine(fixture.Calculator.Directory, "scripts", "calculate.py");
         Directory.CreateDirectory(Path.GetDirectoryName(script)!);
-        File.WriteAllText(script, "# Deliberately unreviewed fixture script.");
+        File.WriteAllText(script, "# First installed fixture version; never executed.", new UTF8Encoding(false));
         var locations = new Locations(host);
-        using var services = Compose(fixture.Paths, locations);
+        var runtime = new FixtureScriptRuntime(fixture.Paths);
+        using var services = Compose(fixture.Paths, locations, runtime);
         var execution = services.GetRequiredService<IManagedAiSkillExecution>();
 
-        var first = await Assert.ThrowsExactlyAsync<ManagedAiException>(() =>
-            execution.PrepareAsync([fixture.Calculator], fixture.RunDirectory, CancellationToken.None));
-        Assert.AreEqual(AiFailureCode.BlockedByPolicy, first.Code);
+        using var first = await execution.PrepareAsync([fixture.Calculator], fixture.RunDirectory, CancellationToken.None);
+        Assert.IsNotNull(first);
+        var firstHash = Hash(script);
+        var firstManifest = JsonDocument.Parse(File.ReadAllText(first.Arguments[1]));
+        using (firstManifest)
+        {
+            var registration = firstManifest.RootElement.GetProperty("skills")[0];
+            Assert.AreEqual("python-script", registration.GetProperty("kind").GetString());
+            Assert.AreEqual(firstHash, registration.GetProperty("sha256").GetString());
+        }
 
         locations.Host = "relative/TableCloth.exe";
+        File.WriteAllText(script, "# Updated installed fixture version; never executed.", new UTF8Encoding(false));
         var again = services.GetRequiredService<IManagedAiSkillExecution>();
-        var second = await Assert.ThrowsExactlyAsync<ManagedAiException>(() =>
-            again.PrepareAsync([fixture.Calculator], fixture.RunDirectory, CancellationToken.None));
+        using var second = await again.PrepareAsync([fixture.Calculator], fixture.RunDirectory, CancellationToken.None);
 
+        Assert.IsNotNull(second);
         Assert.AreSame(execution, again);
-        Assert.AreEqual(AiFailureCode.BlockedByPolicy, second.Code);
+        Assert.AreSame(runtime, services.GetRequiredService<IManagedAiScriptExecutionRuntime>());
+        Assert.AreEqual(host, first.Command);
+        Assert.AreEqual(host, second.Command);
+        Assert.AreNotEqual(first.SnapshotDirectory, second.SnapshotDirectory);
+        using var secondManifest = JsonDocument.Parse(File.ReadAllText(second.Arguments[1]));
+        var secondRegistration = secondManifest.RootElement.GetProperty("skills")[0];
+        Assert.AreEqual(Hash(script), secondRegistration.GetProperty("sha256").GetString());
+        Assert.AreNotEqual(firstHash, secondRegistration.GetProperty("sha256").GetString());
+        Assert.AreNotEqual(WindowsManagedAiSkillExecution.CalculatorSha256, secondRegistration.GetProperty("sha256").GetString());
         Assert.AreEqual(1, locations.ExecutableReads);
-        Assert.IsFalse(Directory.Exists(fixture.Paths.Under("skill-execution")));
+        Assert.AreEqual(2, runtime.EnsureCalls);
+        Assert.AreEqual(2, runtime.VerifiedFilesCalls);
+        first.Dispose();
+        Assert.IsFalse(File.Exists(first.Arguments[1]));
+        Assert.IsFalse(Directory.Exists(first.SnapshotDirectory));
+        Assert.IsTrue(File.Exists(second.Arguments[1]));
+        Assert.IsTrue(File.Exists(script));
     }
 
     [TestMethod]
@@ -103,14 +136,18 @@ public sealed class ManagedAiDependencyInjectionTests
         Assert.IsFalse(Directory.Exists(fixture.Paths.Under("skill-execution")));
     }
 
-    private static ServiceProvider Compose(ManagedAiPaths paths, ISharedLocations locations)
+    private static ServiceProvider Compose(ManagedAiPaths paths, ISharedLocations locations,
+        IManagedAiScriptExecutionRuntime? runtime = null)
     {
         var services = new ServiceCollection();
         services.AddSingleton(paths);
         services.AddSingleton(locations);
         services.AddManagedAiWindows();
+        if (runtime is not null) services.AddSingleton<IManagedAiScriptExecutionRuntime>(runtime);
         return services.BuildServiceProvider();
     }
+
+    private static string Hash(string path) => Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(path)));
 
     private sealed class Fixture : IDisposable
     {
@@ -121,6 +158,9 @@ public sealed class ManagedAiDependencyInjectionTests
             Directory.CreateDirectory(RunDirectory);
             Calculator = new("tablecloth-calculators", "Calculator fixture", "Never executed",
                 Paths.Under("profiles", "openai-codex", "codex-home", "skills", "tablecloth-calculators"), true);
+            var script = Path.Combine(Calculator.Directory, "scripts", "calculate.py");
+            Directory.CreateDirectory(Path.GetDirectoryName(script)!);
+            File.WriteAllText(script, "# Synthetic installed entry point, never executed.", new UTF8Encoding(false));
         }
 
         public ManagedAiPaths Paths { get; }
@@ -130,6 +170,36 @@ public sealed class ManagedAiDependencyInjectionTests
         {
             if (Directory.Exists(Paths.Root)) Directory.Delete(Paths.Root, recursive: true);
         }
+    }
+
+    // Four-byte fixture executables provide verifiable files only. No test launches them
+    // or resolves the real dedicated runtime manager's download/probe methods.
+    private sealed class FixtureScriptRuntime(ManagedAiPaths paths) : IManagedAiScriptExecutionRuntime
+    {
+        public int EnsureCalls;
+        public int VerifiedFilesCalls;
+        public string PythonExecutable => paths.Under("skill-execution", "runtimes", "python", "python.exe");
+        public string NodeExecutable => paths.Under("skill-execution", "runtimes", "node", "node.exe");
+        public Task<AiScriptRuntimeStatus> GetStatusAsync(CancellationToken token) => Task.FromResult(Status());
+        public Task<AiScriptRuntimeStatus> EnsureInstalledAsync(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            EnsureCalls++;
+            foreach (var file in new[] { PythonExecutable, NodeExecutable })
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+                File.WriteAllBytes(file, [0x54, 0x43, 0x44, 0x00]);
+            }
+            return Task.FromResult(Status());
+        }
+        public Task<IReadOnlyList<ScriptRuntimeFile>> GetVerifiedFilesAsync(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            VerifiedFilesCalls++;
+            return Task.FromResult<IReadOnlyList<ScriptRuntimeFile>>([new(PythonExecutable, Hash(PythonExecutable)), new(NodeExecutable, Hash(NodeExecutable))]);
+        }
+        private static AiScriptRuntimeStatus Status() => new(new("Python", "fixture", "fixture", true, null),
+            new("Node.js", "fixture", "fixture", true, null), new(null, null, null));
     }
 
     private sealed class Locations(string host) : ISharedLocations

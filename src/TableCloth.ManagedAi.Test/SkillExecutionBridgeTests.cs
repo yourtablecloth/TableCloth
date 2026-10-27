@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using System.Text.Json;
 using TableCloth.ManagedAi.OpenAi;
 using TableCloth.ManagedAi.Windows;
@@ -20,16 +19,14 @@ public sealed class SkillExecutionBridgeTests
         IReadOnlyList<AiSkill> skills = state == "missing" ? [] :
             [Calculator(fixture.Paths) with { Enabled = state != "disabled", IsValid = state != "invalid" }];
         var bridge = await new WindowsManagedAiSkillExecution(fixture.Paths,
-            new WindowsManagedAiScriptRuntimeManager(fixture.Paths), fixture.Paths.Under("TableCloth.exe"))
+            new WindowsManagedAiScriptRuntimeManager(fixture.Paths, fixture.RuntimeClients), fixture.Paths.Under("TableCloth.exe"))
             .PrepareAsync(skills, run, CancellationToken.None);
         Assert.IsNull(bridge);
         Assert.IsFalse(Directory.Exists(fixture.Paths.Under("skill-execution")));
     }
 
     [TestMethod]
-    [DataRow("changed")]
-    [DataRow("removed")]
-    public async Task ChangedScriptFailsClosedBeforeAnyRuntimeDownload(string change)
+    public async Task RemovedScriptDoesNotExposeAToolOrDownloadRuntimes()
     {
         using var fixture = new InstallFixture();
         var run = fixture.Paths.Under("runs", "bridge-test");
@@ -38,13 +35,12 @@ public sealed class SkillExecutionBridgeTests
         var host = fixture.Paths.Under("TableCloth.exe");
         File.WriteAllText(host, "test host, never executed");
         var script = Path.Combine(calculator.Directory, "scripts", "calculate.py");
-        if (change == "changed") File.AppendAllText(script, "\n# changed");
-        else File.Delete(script);
-        var error = await Assert.ThrowsExactlyAsync<ManagedAiException>(() =>
+        File.Delete(script);
+        var bridge = await
             new WindowsManagedAiSkillExecution(fixture.Paths,
-                new WindowsManagedAiScriptRuntimeManager(fixture.Paths), host)
-                .PrepareAsync([calculator], run, CancellationToken.None));
-        Assert.AreEqual(AiFailureCode.BlockedByPolicy, error.Code);
+                new WindowsManagedAiScriptRuntimeManager(fixture.Paths, fixture.RuntimeClients), host)
+                .PrepareAsync([calculator], run, CancellationToken.None);
+        Assert.IsNull(bridge);
         Assert.IsFalse(Directory.Exists(fixture.Paths.Under("skill-execution")));
     }
 
@@ -78,7 +74,7 @@ public sealed class SkillExecutionBridgeTests
 
         var error = await Assert.ThrowsExactlyAsync<ManagedAiException>(() =>
             new WindowsManagedAiSkillExecution(fixture.Paths,
-                new WindowsManagedAiScriptRuntimeManager(fixture.Paths), injectedHost)
+                new WindowsManagedAiScriptRuntimeManager(fixture.Paths, fixture.RuntimeClients), injectedHost)
                 .PrepareAsync([calculator], run, CancellationToken.None));
 
         Assert.AreEqual(AiFailureCode.SkillExecutionHostUnavailable, error.Code);
@@ -91,7 +87,7 @@ public sealed class SkillExecutionBridgeTests
     public async Task UnavailableRuntimeStatusDoesNotRunGlobalInterpretersOrChangeTheProfile()
     {
         using var fixture = new InstallFixture();
-        var status = await new WindowsManagedAiScriptRuntimeManager(fixture.Paths).GetStatusAsync(CancellationToken.None);
+        var status = await new WindowsManagedAiScriptRuntimeManager(fixture.Paths, fixture.RuntimeClients).GetStatusAsync(CancellationToken.None);
         Assert.IsFalse(status.Python.Installed);
         Assert.IsFalse(status.Node.Installed);
         Assert.IsNull(status.LongPaths.PythonSupported);
@@ -143,7 +139,7 @@ public sealed class SkillExecutionBridgeTests
         Assert.IsFalse(overrides.Any(value => value.Contains("enabled_tools", StringComparison.Ordinal) &&
             value.Contains("*", StringComparison.Ordinal)));
         Assert.Contains("Calculate.", spec.Input!);
-        Assert.Contains("tablecloth-calculators", spec.Input!);
+        Assert.Contains("explicitly listed tablecloth_skills MCP tools", spec.Input!);
         Assert.Contains("Never say you used a skill or executed a script without a successful tool result", spec.Input!);
         AssertPolicy(spec);
     }
@@ -152,19 +148,52 @@ public sealed class SkillExecutionBridgeTests
     [DataRow("relative-command")]
     [DataRow("relative-manifest")]
     [DataRow("other-command")]
-    [DataRow("extra-tool")]
-    public void ArbitraryBridgeCommandsAndToolsAreRejected(string change)
+    [DataRow("slash-tool")]
+    [DataRow("control-tool")]
+    [DataRow("duplicate-tool")]
+    [DataRow("empty-tools")]
+    [DataRow("relative-working-directory")]
+    public void MalformedBridgeCommandsAndToolNamesAreRejected(string change)
     {
         using var fixture = new InstallFixture();
         var command = change == "relative-command" ? "TableCloth.exe" : fixture.Paths.Under("TableCloth.exe");
         var manifest = change == "relative-manifest" ? "manifest.json" : fixture.Paths.Under("manifest.json");
+        IReadOnlyList<string> tools = change switch
+        {
+            "slash-tool" => ["tablecloth-calculators", "arbitrary/tool"],
+            "control-tool" => ["tool\nname"],
+            "duplicate-tool" => ["tool", "TOOL"],
+            "empty-tools" => [],
+            _ => ["tablecloth-calculators"]
+        };
         var bridge = new AiSkillExecutionBridge(command,
-            [change == "other-command" ? "--run-arbitrary-script" : "--skill-mcp", manifest], fixture.Paths.Root,
-            change == "extra-tool" ? ["tablecloth-calculators", "arbitrary-tool"] : ["tablecloth-calculators"]);
+            [change == "other-command" ? "--run-arbitrary-script" : "--skill-mcp", manifest],
+            change == "relative-working-directory" ? "relative" : fixture.Paths.Root, tools);
 
         Assert.AreEqual(AiFailureCode.BlockedByPolicy,
             Assert.ThrowsExactly<ManagedAiException>(() => OpenAiCodexInvocationBuilder.Chat(
                 Runtime(fixture.Paths), fixture.Paths.Root, "Calculate.", new(), skillExecution: bridge)).Code);
+    }
+
+    [TestMethod]
+    public void MultipleExplicitSkillToolsAreRegisteredWithoutShellOrWildcardApproval()
+    {
+        using var fixture = new InstallFixture();
+        string[] tools = ["bok-ecos-stats", "kosis-stats", "tablecloth-calculators", "local-node-skill"];
+        var bridge = new AiSkillExecutionBridge(fixture.Paths.Under("TableCloth.exe"),
+            ["--skill-mcp", fixture.Paths.Under("manifest.json")], fixture.Paths.Root, tools);
+        var spec = OpenAiCodexInvocationBuilder.Chat(Runtime(fixture.Paths), fixture.Paths.Root,
+            "Run an installed skill.", new(), skillExecution: bridge);
+        var registration = spec.StartInfo.ArgumentList.Single(value => value.StartsWith("mcp_servers.", StringComparison.Ordinal));
+
+        Assert.Contains("enabled_tools=[" + string.Join(',', tools.Select(tool => JsonSerializer.Serialize(tool))) + "]", registration);
+        foreach (var tool in tools) Assert.Contains(JsonSerializer.Serialize(tool) + "={approval_mode=\"approve\"}", registration);
+        Assert.DoesNotContain("*", registration);
+        Assert.DoesNotContain("shell_tool=true", registration);
+        Assert.DoesNotContain("unified_exec=true", registration);
+        Assert.Contains("Python or Node.js script", spec.Input!);
+        Assert.Contains("worker has no network capability", spec.Input!);
+        AssertPolicy(spec);
     }
 
     private static void AssertPolicy(ProcessRunSpec spec)

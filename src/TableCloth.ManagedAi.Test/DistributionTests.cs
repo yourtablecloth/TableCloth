@@ -169,6 +169,7 @@ internal sealed class InstallFixture : IDisposable
     public readonly OpenAiCodexPackageInstaller Installer;
     private readonly byte[] _archive = DistributionTests.CreateArchive(SafeCodexArchive.RequiredFiles.Select(x => (x, TarEntryType.RegularFile)).ToArray());
     private readonly TestHttpFactory _factory;
+    internal IHttpClientFactory RuntimeClients => _factory;
 
     public InstallFixture()
     {

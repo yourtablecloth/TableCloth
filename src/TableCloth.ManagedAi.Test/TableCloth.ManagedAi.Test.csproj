@@ -7,6 +7,7 @@
     <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../tools/managed-skill-smoke/EvidenceVerifier.cs" Link="Diagnostics/EvidenceVerifier.cs" />
     <Content Include="../../external/TableClothCatalog/docs/SkillCatalog.xml" Link="Fixtures/SkillCatalog.xml" CopyToOutputDirectory="PreserveNewest" />
     <ProjectReference Include="../TableCloth.ManagedAi.OpenAi/TableCloth.ManagedAi.OpenAi.csproj" />
     <ProjectReference Include="../TableCloth.ManagedAi.Windows/TableCloth.ManagedAi.Windows.csproj" />

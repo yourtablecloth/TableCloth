@@ -34,7 +34,7 @@ public sealed record SkillSettingsItem(AiSkill Skill, SkillCatalogEntry? Catalog
             "The catalog commit differs from the installed commit. Updating replaces skill files and keeps the enabled state.")
         : ManagedAiText.Select("설치한 커밋이 현재 카탈로그의 커밋과 일치합니다.", "The installed commit matches the current catalog commit.");
     public string StateLabel => !IsValid ? ManagedAiText.Select("SKILL.md 확인 필요", "Invalid SKILL.md")
-        : Enabled ? ManagedAiText.Select("사용 중", "Enabled") : ManagedAiText.Select("사용 안 함", "Disabled");
+        : Enabled ? ManagedAiText.Select("활성화됨", "Enabled") : ManagedAiText.Select("사용 안 함", "Disabled");
 
     internal static bool SourceMatches(AiSkill skill, SkillCatalogEntry entry) => skill.Source is { } source
         && string.Equals(source.CatalogId, entry.Id, StringComparison.OrdinalIgnoreCase)

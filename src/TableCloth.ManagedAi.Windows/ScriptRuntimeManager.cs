@@ -8,9 +8,17 @@ namespace TableCloth.ManagedAi.Windows;
 
 public sealed record ScriptRuntimeFile(string Path, string Sha256);
 
-/// <summary>App-owned, pinned workers. No global PATH, package manager, registry or shell configuration is changed.</summary>
-public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths) : IManagedAiScriptRuntimeManager
+public interface IManagedAiScriptExecutionRuntime : IManagedAiScriptRuntimeManager
 {
+    string PythonExecutable { get; }
+    string NodeExecutable { get; }
+    Task<IReadOnlyList<ScriptRuntimeFile>> GetVerifiedFilesAsync(CancellationToken token);
+}
+
+/// <summary>App-owned, pinned workers. No global PATH, package manager, registry or shell configuration is changed.</summary>
+public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths, IHttpClientFactory clients) : IManagedAiScriptExecutionRuntime
+{
+    public const string DownloadHttpClientName = "TableCloth.ManagedAi.ScriptRuntimeDownload";
     private static readonly SemaphoreSlim Gate = new(1, 1);
     private const long MaximumArchiveBytes = 128L * 1024 * 1024;
     private readonly ScriptRuntimePackages _packages = ScriptRuntimePackages.ForArchitecture(RuntimeInformation.OSArchitecture);
@@ -21,8 +29,8 @@ public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths) :
     public Task<AiScriptRuntimeStatus> EnsureInstalledAsync(CancellationToken cancellationToken)
         => RunAsync(install: true, cancellationToken);
 
-    internal string PythonExecutable => Path.Combine(RuntimeDirectory(_packages.Python), "python.exe");
-    internal string NodeExecutable => Path.Combine(RuntimeDirectory(_packages.Node), "node.exe");
+    public string PythonExecutable => Path.Combine(RuntimeDirectory(_packages.Python), "python.exe");
+    public string NodeExecutable => Path.Combine(RuntimeDirectory(_packages.Node), "node.exe");
 
     private async Task<AiScriptRuntimeStatus> RunAsync(bool install, CancellationToken token)
     {
@@ -105,7 +113,7 @@ public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths) :
             var partial = paths.Under("skill-execution", "archives", Guid.NewGuid().ToString("N") + ".zip");
             try
             {
-                using var client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromMinutes(5) };
+                using var client = clients.CreateClient(DownloadHttpClientName);
                 using var response = await client.GetAsync(package.Url, HttpCompletionOption.ResponseHeadersRead, token);
                 response.EnsureSuccessStatusCode();
                 if (response.Content.Headers.ContentLength is > MaximumArchiveBytes) throw new ManagedAiException(AiFailureCode.ArchiveRejected);
@@ -211,7 +219,7 @@ public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths) :
         return files.AsReadOnly();
     }
 
-    internal async Task<IReadOnlyList<ScriptRuntimeFile>> GetVerifiedFilesAsync(CancellationToken token)
+    public async Task<IReadOnlyList<ScriptRuntimeFile>> GetVerifiedFilesAsync(CancellationToken token)
     {
         var python = await ValidatePackageAsync(_packages.Python, token);
         var node = await ValidatePackageAsync(_packages.Node, token);

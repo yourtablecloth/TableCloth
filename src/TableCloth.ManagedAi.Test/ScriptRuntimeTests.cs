@@ -8,6 +8,45 @@ namespace TableCloth.ManagedAi.Test;
 public sealed class ScriptRuntimeTests
 {
     [TestMethod]
+    public async Task RuntimeDownloadsUseInjectedHostTransportAndRejectUnpinnedArchiveBytes()
+    {
+        using var fixture = new InstallFixture();
+        var clients = new RuntimeDownloadClients();
+        var status = await new WindowsManagedAiScriptRuntimeManager(fixture.Paths, clients)
+            .EnsureInstalledAsync(CancellationToken.None);
+        Assert.IsFalse(status.Python.Installed);
+        Assert.IsFalse(status.Node.Installed);
+        Assert.AreEqual("IntegrityMismatch", status.Python.Failure);
+        Assert.AreEqual("IntegrityMismatch", status.Node.Failure);
+        CollectionAssert.AreEqual(new[] { WindowsManagedAiScriptRuntimeManager.DownloadHttpClientName,
+            WindowsManagedAiScriptRuntimeManager.DownloadHttpClientName }, clients.Names.ToArray());
+        Assert.HasCount(2, clients.Requests);
+        CollectionAssert.AreEquivalent(new[] { "www.python.org", "nodejs.org" }, clients.Requests.Select(uri => uri.Host).ToArray());
+        Assert.IsTrue(clients.Requests.All(uri => uri.Scheme == "https"));
+        Assert.IsFalse(File.Exists(Path.Combine(fixture.Paths.Root, "skill-execution", "current-runtimes.json")));
+    }
+
+    private sealed class RuntimeDownloadClients : IHttpClientFactory
+    {
+        internal List<string> Names { get; } = [];
+        internal List<Uri> Requests { get; } = [];
+        public HttpClient CreateClient(string name)
+        {
+            Names.Add(name);
+            return new(new Handler(Requests));
+        }
+        private sealed class Handler(List<Uri> requests) : HttpMessageHandler
+        {
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                requests.Add(request.RequestUri!);
+                return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                    { Content = new ByteArrayContent([1, 2, 3]) });
+            }
+        }
+    }
+
+    [TestMethod]
     public async Task InvalidPendingAclJournalBlocksRepairBeforeDownloadingAndPreservesRecoveryEvidence()
     {
         using var fixture = new InstallFixture();
@@ -16,7 +55,7 @@ public sealed class ScriptRuntimeTests
         var journal = Path.Combine(root, ".acl-journal-invalid.json");
         File.WriteAllText(journal, "{}");
 
-        var status = await new WindowsManagedAiScriptRuntimeManager(fixture.Paths).EnsureInstalledAsync(CancellationToken.None);
+        var status = await new WindowsManagedAiScriptRuntimeManager(fixture.Paths, fixture.RuntimeClients).EnsureInstalledAsync(CancellationToken.None);
 
         Assert.IsFalse(status.Python.Installed);
         Assert.IsFalse(status.Node.Installed);

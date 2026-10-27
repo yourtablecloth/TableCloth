@@ -6,7 +6,7 @@ namespace TableCloth.ManagedAi.OpenAi;
 public sealed class OpenAiCodexProvider(ManagedAiPaths paths, IManagedRuntimeManager runtimes,
     OpenAiCodexAuthManager authentication, IManagedAiProfile profile, IJsonlProcessRunner runner,
     ManagedAiOptions options, DiagnosticsSink diagnostics, OpenAiCodexSkillManager skills,
-    IManagedAiSkillExecution? skillExecution = null) : IManagedAiProvider, IManagedAiChatProvider
+    IManagedAiSkillExecution? skillExecution = null, IHttpClientFactory? publicDocumentClients = null) : IManagedAiProvider, IManagedAiChatProvider
 {
     public async Task<AiSearchResponse> SearchAsync(AiSearchRequest request, IProgress<AiProgress>? progress,
         CancellationToken cancellationToken)
@@ -64,8 +64,11 @@ public sealed class OpenAiCodexProvider(ManagedAiPaths paths, IManagedRuntimeMan
                 await source.CopyToAsync(destination, cancellationToken);
             }
             progress?.Report(new("Thinking"));
+            var chatPrompt = prompt;
+            if (!structured && publicDocumentClients is not null)
+                chatPrompt += "\n\n" + await InstalledSkillPromptContext.CreateAsync(availableSkills, publicDocumentClients, cancellationToken);
             var invocation = structured ? OpenAiCodexInvocationBuilder.Search(runtime, runDirectory, schema, prompt, options)
-                : OpenAiCodexInvocationBuilder.Chat(runtime, runDirectory, prompt, options, model, bridge);
+                : OpenAiCodexInvocationBuilder.Chat(runtime, runDirectory, chatPrompt, options, model, bridge);
             outcome = await runner.RunAsync(invocation, line =>
             {
                 var before = parser.SearchCalls;

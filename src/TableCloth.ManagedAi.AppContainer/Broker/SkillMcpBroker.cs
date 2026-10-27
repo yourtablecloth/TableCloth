@@ -103,7 +103,7 @@ public static class SkillMcpBroker
                             writer.WriteEndObject();
                             writer.WritePropertyName("serverInfo"); writer.WriteStartObject();
                             writer.WriteString("name", "tablecloth-appcontainer-skills"); writer.WriteString("version", "0.1.0"); writer.WriteEndObject();
-                            writer.WriteString("instructions", "Experimental fixed registered scripts run through the native AppContainer runner. Network-required registrations are blocked. MCP itself does not provide isolation.");
+                            writer.WriteString("instructions", "Registered installed Python and Node.js script entries run through the native AppContainer runner with bounded argv, stdin and output. Each tool fixes its interpreter, script and read-only package; its writable working directory is temporary. Workers have no network capability. Registered public APIs may use an application GET bridge restricted to reviewed HTTPS hosts and routes, with credential headers and private addresses blocked. Python urllib.request.urlopen and Node.js fetch/http(s).get/request use this transport; other HTTP libraries do not gain network access. Other network-required registrations are blocked. MCP itself does not provide isolation.");
                             writer.WriteEndObject();
                         }, token);
                         initialized = true;
@@ -151,11 +151,22 @@ public static class SkillMcpBroker
         {
             writer.WriteStartObject();
             writer.WriteString("name", skill.SkillId);
-            var description = skill.Kind == "python-json-stdin" ? "Run the registered deterministic calculator with one JSON operation. Six examples: percent.part {total,rate_percent}; discount.single {price,rate_percent}; loan {principal,annual_rate_percent,periods,periods_per_year,method}; date.add {date,years?,months?,days?}; time.convert {datetime,from_offset,to_offset}; bmi {weight_kg,height_cm}. Dates use YYYY-MM-DD; datetimes use YYYY-MM-DDTHH:MM; offsets use +/-HH:MM. All rates are user-supplied percentages, with taxes and fees excluded. BMI returns a number without medical classification."
+            var generic = skill.Kind is "python-script" or "node-script";
+            var description = generic ? (skill.Description ?? "Run the registered installed script entry.") +
+                    " Pass only this script's command-line arguments and optional UTF-8 stdin; interpreter flags, shell commands and replacement scripts are not accepted. The current directory is a temporary writable directory, separate from the read-only installed package."
+                : skill.Kind == "python-json-stdin" ? "Run the registered deterministic calculator with one JSON operation. Six examples: percent.part {total,rate_percent}; discount.single {price,rate_percent}; loan {principal,annual_rate_percent,periods,periods_per_year,method}; date.add {date,years?,months?,days?}; time.convert {datetime,from_offset,to_offset}; bmi {weight_kg,height_cm}. Dates use YYYY-MM-DD; datetimes use YYYY-MM-DDTHH:MM; offsets use +/-HH:MM. All rates are user-supplied percentages, with taxes and fees excluded. BMI returns a number without medical classification."
                 : skill.Kind == "python-cli-fixed" ? "Run a reviewed script with manifest-fixed arguments; input must be an empty object."
                 : "Run the registered Node.js JSON-stdin evaluation fixture.";
-            if (skill.RequiresNetwork) description += " BLOCKED: this registration requires network access, which this broker never grants.";
+            if (skill.RequiresNetwork) description += generic && skill.NetworkHosts is { Count: > 0 }
+                ? " This script uses a bounded public HTTPS GET bridge for " + string.Join(", ", skill.NetworkHosts) + "; the AppContainer itself has no network capability."
+                : " BLOCKED: this registration requires a bounded network transport that is not configured.";
             writer.WriteString("description", description);
+            if (generic)
+            {
+                WriteScriptInputSchema(writer);
+                writer.WriteEndObject();
+                continue;
+            }
             writer.WritePropertyName("inputSchema"); writer.WriteStartObject(); writer.WriteString("type", "object");
             writer.WritePropertyName("properties"); writer.WriteStartObject();
             if (skill.AllowedOperations.Count != 0)
@@ -178,6 +189,21 @@ public static class SkillMcpBroker
             writer.WriteEndObject();
         }
         writer.WriteEndArray(); writer.WriteEndObject();
+    }
+
+    private static void WriteScriptInputSchema(Utf8JsonWriter writer)
+    {
+        writer.WritePropertyName("inputSchema"); writer.WriteStartObject(); writer.WriteString("type", "object");
+        writer.WritePropertyName("properties"); writer.WriteStartObject();
+        writer.WritePropertyName("arguments"); writer.WriteStartObject(); writer.WriteString("type", "array");
+        writer.WriteNumber("maxItems", 64);
+        writer.WriteString("description", "Only arguments for the fixed registered script. For a command-line helper, use its documented subcommand and flags; do not include python, node, npx, the script path or shell syntax.");
+        writer.WritePropertyName("items"); writer.WriteStartObject(); writer.WriteString("type", "string");
+        writer.WriteNumber("maxLength", 4096); writer.WriteEndObject(); writer.WriteEndObject();
+        writer.WritePropertyName("stdin"); writer.WriteStartObject(); writer.WriteString("type", "string");
+        writer.WriteNumber("maxLength", BrokerFiles.MaximumInputBytes);
+        writer.WriteString("description", "Optional UTF-8 standard input, at most 64 KiB. For JSON-stdin scripts pass the serialized JSON operation here; include a newline if the script expects one.");
+        writer.WriteEndObject(); writer.WriteEndObject(); writer.WriteBoolean("additionalProperties", false); writer.WriteEndObject();
     }
 
     private static void WriteCalculatorProperties(Utf8JsonWriter writer)
