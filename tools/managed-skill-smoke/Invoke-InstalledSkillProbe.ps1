@@ -33,6 +33,31 @@ function Assert-ChildPath([string]$Root, [string]$Path) {
 
 function Get-Sha256([string]$Path) { return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() }
 
+function Assert-SidecarRelativePath([string]$RelativePath) {
+    $segments = $RelativePath.Replace('\', '/').Split('/')
+    if ($segments | Where-Object { $_ -in @('', '.', '..') }) { throw 'The diagnostic relative path contains an invalid segment.' }
+    $isDll = [System.IO.Path]::GetExtension($segments[-1]) -ieq '.dll'
+    $topLevel = $segments.Count -eq 1 -and ($isDll -or
+        $segments[0] -cin @('AllSkillsProbe.deps.json', 'AllSkillsProbe.runtimeconfig.json'))
+    $windowsRuntime = $segments.Count -ge 3 -and $segments[0] -ceq 'runtimes' -and
+        $segments[1] -cin @('win', 'win-x64', 'win-arm64', 'win-x86') -and $isDll
+    if (-not ($topLevel -or $windowsRuntime)) { throw 'The diagnostic file is outside the top-level/Windows runtime DLL whitelist.' }
+}
+
+function New-SidecarParentDirectories([string]$ParentPath) {
+    if ($ParentPath.Equals($InstalledDirectory, [System.StringComparison]::OrdinalIgnoreCase)) { return }
+    $pending = [System.Collections.Generic.Stack[string]]::new()
+    for ($current = (Assert-ChildPath $InstalledDirectory $ParentPath); -not (Test-Path -LiteralPath $current); $current = [System.IO.Path]::GetDirectoryName($current)) {
+        $null = Assert-ChildPath $InstalledDirectory $current
+        $pending.Push($current)
+    }
+    while ($pending.Count -gt 0) {
+        $directory = $pending.Pop()
+        New-Item -ItemType Directory -Path $directory -ErrorAction Stop | Out-Null
+        $createdSidecarDirectories.Add($directory)
+    }
+}
+
 function Write-Json([string]$Path, [object]$Value) {
     [System.IO.File]::WriteAllText($Path, (ConvertTo-Json -InputObject $Value -Depth 20), $utf8)
 }
@@ -164,6 +189,15 @@ $sidecarSources = @(Get-ChildItem -LiteralPath $ProbeDirectory -File -Filter '*.
     (Get-Item -LiteralPath (Join-Path $ProbeDirectory 'AllSkillsProbe.runtimeconfig.json'))
 )
 if (-not ($sidecarSources.Name -contains 'AllSkillsProbe.dll')) { throw 'The built AllSkillsProbe.dll was not found.' }
+foreach ($rid in @('win', 'win-x64', 'win-arm64', 'win-x86')) {
+    $runtimeDirectory = Assert-ChildPath $ProbeDirectory (Join-Path $ProbeDirectory "runtimes/$rid")
+    if (-not (Test-Path -LiteralPath $runtimeDirectory)) { continue }
+    foreach ($runtimeFile in @(Get-FileManifest $runtimeDirectory)) {
+        if ([System.IO.Path]::GetExtension($runtimeFile.path) -ieq '.dll') {
+            $sidecarSources += Get-Item -LiteralPath (Assert-ChildPath $runtimeDirectory (Join-Path $runtimeDirectory $runtimeFile.path))
+        }
+    }
+}
 foreach ($source in $sidecarSources) { $null = Assert-ChildPath $ProbeDirectory $source.FullName }
 $before = @(Get-FileManifest $InstalledDirectory)
 [System.IO.Directory]::CreateDirectory($EvidenceDirectory) | Out-Null
@@ -175,6 +209,7 @@ Write-Json (Join-Path $EvidenceDirectory 'installed-product.json') ([pscustomobj
     nativeAotProvenance = 'Supplied package/build hash; absence of a CLR header alone does not distinguish NativeAOT from a managed apphost.'
 })
 $createdSidecars = [System.Collections.Generic.List[object]]::new()
+$createdSidecarDirectories = [System.Collections.Generic.List[string]]::new()
 $problems = [System.Collections.Generic.List[string]]::new()
 $probeExit = $null
 $verifyExit = $null
@@ -188,16 +223,20 @@ try {
     New-Item -ItemType Directory -Path $ownedEvidenceRoot -ErrorAction Stop | Out-Null
     $ownsEvidenceRoot = $true
     foreach ($source in $sidecarSources) {
-        $destination = Assert-ChildPath $InstalledDirectory (Join-Path $InstalledDirectory $source.Name)
+        $relative = [System.IO.Path]::GetRelativePath($ProbeDirectory, $source.FullName)
+        Assert-SidecarRelativePath $relative
+        $destination = Assert-ChildPath $InstalledDirectory (Join-Path $InstalledDirectory $relative)
         $hash = Get-Sha256 $source.FullName
         if (Test-Path -LiteralPath $destination) {
-            if ((Get-Sha256 $destination) -cne $hash) { throw "An existing installation file differs from the diagnostic dependency: $($source.Name)" }
+            if ((Get-Sha256 $destination) -cne $hash) { throw "An existing installation file differs from the diagnostic dependency: $relative" }
             continue
         }
+        New-SidecarParentDirectories ([System.IO.Path]::GetDirectoryName($destination))
         [System.IO.File]::Copy($source.FullName, $destination, $false)
-        $createdSidecars.Add([pscustomobject]@{ path = $destination; sha256 = $hash })
+        $createdSidecars.Add([pscustomobject]@{ path = $destination; relativePath = $relative; sha256 = $hash })
     }
     Write-Json (Join-Path $EvidenceDirectory 'sidecars.created.json') $createdSidecars.ToArray()
+    Write-Json (Join-Path $EvidenceDirectory 'sidecar-directories.created.json') $createdSidecarDirectories.ToArray()
     $probeDll = Assert-ChildPath $InstalledDirectory (Join-Path $InstalledDirectory 'AllSkillsProbe.dll')
     $probeExit = Invoke-Dotnet -Arguments @($probeDll, '--discover', '--direct', '--calculator-cases', $dataset,
         '--chat', 'all', '--model', 'gpt-6-luna', '--nativepath', $product) -Label 'probe'
@@ -246,17 +285,27 @@ finally {
     foreach ($sidecar in $createdSidecars) {
         try {
             $cleanupFile = Assert-ChildPath $InstalledDirectory $sidecar.path
-            if ([System.IO.Path]::GetDirectoryName($cleanupFile) -ine $InstalledDirectory) { throw 'Sidecar cleanup is limited to tracked top-level files.' }
-            $leaf = [System.IO.Path]::GetFileName($cleanupFile)
-            if ([System.IO.Path]::GetExtension($leaf) -ine '.dll' -and
-                $leaf -cnotin @('AllSkillsProbe.deps.json', 'AllSkillsProbe.runtimeconfig.json')) {
-                throw 'Sidecar cleanup is limited to the diagnostic DLL and launch-file whitelist.'
-            }
+            $relative = [System.IO.Path]::GetRelativePath($InstalledDirectory, $cleanupFile)
+            Assert-SidecarRelativePath $relative
+            if ($relative -cne $sidecar.relativePath) { throw 'The tracked sidecar relative path changed.' }
             if (-not (Test-Path -LiteralPath $cleanupFile -PathType Leaf)) { throw 'A tracked sidecar disappeared before cleanup.' }
             if ((Get-Sha256 $cleanupFile) -cne $sidecar.sha256) { throw 'A tracked sidecar changed; refusing to delete it.' }
             Remove-Item -LiteralPath $cleanupFile -Force
         }
         catch { $problems.Add('Sidecar cleanup failed: ' + $_.Exception.Message) }
+    }
+    for ($index = $createdSidecarDirectories.Count - 1; $index -ge 0; $index--) {
+        try {
+            $directory = Assert-ChildPath $InstalledDirectory $createdSidecarDirectories[$index]
+            $segments = [System.IO.Path]::GetRelativePath($InstalledDirectory, $directory).Replace('\', '/').Split('/')
+            if ($segments[0] -cne 'runtimes' -or ($segments.Count -gt 1 -and $segments[1] -cnotin @('win', 'win-x64', 'win-arm64', 'win-x86'))) {
+                throw 'Sidecar directory cleanup is limited to tracked Windows runtime directories.'
+            }
+            if (-not (Test-Path -LiteralPath $directory -PathType Container)) { throw 'A tracked sidecar directory disappeared before cleanup.' }
+            if (@(Get-ChildItem -LiteralPath $directory -Force).Count -ne 0) { throw 'A tracked sidecar directory is not empty; refusing to remove it.' }
+            Remove-Item -LiteralPath $directory -Force
+        }
+        catch { $problems.Add('Sidecar directory cleanup failed: ' + $_.Exception.Message) }
     }
     try {
         $after = @(Get-FileManifest $InstalledDirectory)
@@ -271,7 +320,8 @@ finally {
         probeExitCode = $probeExit; verificationExitCode = $verifyExit; outputPreserved = $outputPreserved
         originalPackageFilesUnchanged = $originalFilesUnchanged; originalPackageFileCount = $before.Count
         updateSafeDataRootVerified = $updateSafeDataRootVerified
-        temporarySidecarsCreated = $createdSidecars.Count; evidenceDirectory = $EvidenceDirectory; failures = $problems.ToArray()
+        temporarySidecarsCreated = $createdSidecars.Count; temporarySidecarDirectoriesCreated = $createdSidecarDirectories.Count
+        evidenceDirectory = $EvidenceDirectory; failures = $problems.ToArray()
         scope = 'Managed diagnostic parent using the actual installed NativeAOT MCP child; this does not qualify the AOT GUI parent.'
     }
     Write-Json (Join-Path $EvidenceDirectory 'installed-probe.summary.json') $summary
