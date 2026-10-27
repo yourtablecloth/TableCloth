@@ -11,13 +11,15 @@ public sealed record EvaluationManifest(string OwnedRoot, string PythonExecutabl
 public sealed record RuntimeFileRegistration(string Path, string Sha256);
 
 public sealed record SkillRegistration(string SkillId, string Kind, string ScriptPath, string Sha256,
-    IReadOnlyList<string> AllowedOperations, IReadOnlyList<string> FixedArguments, bool RequiresNetwork);
+    IReadOnlyList<string> AllowedOperations, IReadOnlyList<string> FixedArguments, bool RequiresNetwork,
+    string? PackageRoot = null, IReadOnlyList<RuntimeFileRegistration>? PackageFiles = null,
+    string? Description = null, IReadOnlyList<string>? NetworkHosts = null);
 
 public sealed class BrokerValidationException(string message) : Exception(message);
 
 internal static class BrokerFiles
 {
-    internal const int MaximumManifestBytes = 1048576;
+    internal const int MaximumManifestBytes = 4194304;
     internal const int MaximumInputBytes = 65536;
     internal static readonly string[] CalculatorOperations =
     [
@@ -35,7 +37,7 @@ internal static class BrokerFiles
         RejectReparsePoints(path);
         var bytes = await ReadBoundedAsync(path, MaximumManifestBytes, token);
         using var document = JsonDocument.Parse(bytes, new JsonDocumentOptions { MaxDepth = 16 });
-        ValidateJson(document.RootElement);
+        ValidateJson(document.RootElement, maximumNodes: 32768);
         var root = document.RootElement;
         ObjectFields(root, ["ownedRoot", "pythonExecutable", "pythonSha256", "nodeExecutable", "nodeSha256", "skills", "runtimeFiles"]);
         var ownedRoot = Text(root, "ownedRoot", 240);
@@ -51,27 +53,63 @@ internal static class BrokerFiles
         string? nodeHash = OptionalText(root, "nodeSha256", 64);
         if ((node is null) != (nodeHash is null)) throw Invalid();
         if (node is not null) { node = ResolveFile(ownedRoot, node); ValidateHash(nodeHash!); }
-        if (!root.TryGetProperty("skills", out var list) || list.ValueKind != JsonValueKind.Array || list.GetArrayLength() is < 1 or > 16) throw Invalid();
+        if (!root.TryGetProperty("skills", out var list) || list.ValueKind != JsonValueKind.Array || list.GetArrayLength() is < 1 or > 128) throw Invalid();
         var skills = new List<SkillRegistration>();
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var packageFileCount = 0;
         foreach (var item in list.EnumerateArray())
         {
-            ObjectFields(item, ["skillId", "kind", "scriptPath", "sha256", "allowedOperations", "fixedArguments", "requiresNetwork"]);
+            ObjectFields(item, ["skillId", "kind", "scriptPath", "sha256", "allowedOperations", "fixedArguments", "requiresNetwork", "packageRoot", "packageFiles", "description", "networkHosts"]);
             var id = Text(item, "skillId", 64);
             if (!names.Add(id) || id.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not ('-' or '_')) || !char.IsAsciiLetterOrDigit(id[0])) throw Invalid();
             var kind = Text(item, "kind", 32);
-            if (kind is not ("python-json-stdin" or "node-json-stdin" or "python-cli-fixed")) throw Invalid();
+            if (kind is not ("python-json-stdin" or "node-json-stdin" or "python-cli-fixed" or "python-script" or "node-script")) throw Invalid();
             var script = ResolveFile(ownedRoot, Text(item, "scriptPath", 240));
             var hash = Hash(item, "sha256");
             var operations = Strings(item, "allowedOperations", 32, 64);
             var arguments = Strings(item, "fixedArguments", 32, 256, unique: false);
+            var packageRoot = OptionalText(item, "packageRoot", 240);
+            var description = OptionalText(item, "description", 4096);
+            var networkHosts = Strings(item, "networkHosts", 2, 128);
+            if (networkHosts.Any(x => !SkillNetworkBridge.KnownHosts.Contains(x, StringComparer.Ordinal))) throw Invalid();
+            IReadOnlyList<RuntimeFileRegistration>? packageFiles = null;
             var network = false;
             if (item.TryGetProperty("requiresNetwork", out var networkValue))
             {
                 if (networkValue.ValueKind is not (JsonValueKind.True or JsonValueKind.False)) throw Invalid();
                 network = networkValue.GetBoolean();
             }
-            if (kind == "python-json-stdin")
+            if (kind is "python-script" or "node-script")
+            {
+                if (arguments.Count != 0 || operations.Count != 0 || packageRoot is null ||
+                    kind == "node-script" && node is null) throw Invalid();
+                packageRoot = Path.GetFullPath(packageRoot, ownedRoot);
+                RequireUnder(ownedRoot, packageRoot);
+                RejectReparsePoints(packageRoot);
+                if (!Directory.Exists(packageRoot)) throw Invalid();
+                RequireUnder(packageRoot, script);
+                var extension = Path.GetExtension(script);
+                if (kind == "python-script" ? !extension.Equals(".py", StringComparison.OrdinalIgnoreCase) :
+                    !new[] { ".js", ".cjs", ".mjs" }.Contains(extension, StringComparer.OrdinalIgnoreCase)) throw Invalid();
+                if (!item.TryGetProperty("packageFiles", out var fileList) || fileList.ValueKind != JsonValueKind.Array ||
+                    fileList.GetArrayLength() is < 1 or > 256 || (packageFileCount += fileList.GetArrayLength()) > 4096) throw Invalid();
+                var files = new List<RuntimeFileRegistration>();
+                var uniqueFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var file in fileList.EnumerateArray())
+                {
+                    ObjectFields(file, ["path", "sha256"]);
+                    var filePath = ResolveFile(ownedRoot, Text(file, "path", 240));
+                    RequireUnder(packageRoot, filePath);
+                    if (!uniqueFiles.Add(filePath)) throw Invalid();
+                    files.Add(new(filePath, Hash(file, "sha256")));
+                }
+                if (!files.Any(x => x.Path.Equals(script, StringComparison.OrdinalIgnoreCase) &&
+                    x.Sha256.Equals(hash, StringComparison.OrdinalIgnoreCase))) throw Invalid();
+                packageFiles = files.AsReadOnly();
+                ValidatePackageContents(packageRoot, packageFiles);
+            }
+            else if (packageRoot is not null || item.TryGetProperty("packageFiles", out _) || description is not null) throw Invalid();
+            else if (kind == "python-json-stdin")
             {
                 if (arguments.Count != 0 || operations.Any(x => !CalculatorOperations.Contains(x, StringComparer.Ordinal))) throw Invalid();
                 if (operations.Count == 0) operations = Array.AsReadOnly(CalculatorOperations);
@@ -81,7 +119,8 @@ internal static class BrokerFiles
                 if (node is null || arguments.Count != 0 || operations.Count != 0) throw Invalid();
             }
             else if (operations.Count != 0 || arguments.Count == 0) throw Invalid();
-            skills.Add(new(id, kind, script, hash, operations, arguments, network));
+            if (networkHosts.Count != 0 && (!network || kind is not ("python-script" or "node-script"))) throw Invalid();
+            skills.Add(new(id, kind, script, hash, operations, arguments, network, packageRoot, packageFiles, description, networkHosts));
         }
         var runtimeFiles = new List<RuntimeFileRegistration>();
         if (root.TryGetProperty("runtimeFiles", out var dependencies))
@@ -99,9 +138,48 @@ internal static class BrokerFiles
         // Validate executable, dependencies and script content before advertising any registration.
         await using (await OpenVerifiedAsync(ownedRoot, python, pythonHash, token)) { }
         if (node is not null) { await using var ignored = await OpenVerifiedAsync(ownedRoot, node, nodeHash!, token); }
-        foreach (var skill in skills) { await using var ignored = await OpenVerifiedAsync(ownedRoot, skill.ScriptPath, skill.Sha256, token); }
+        foreach (var skill in skills)
+        {
+            await using var ignored = await OpenVerifiedAsync(ownedRoot, skill.ScriptPath, skill.Sha256, token);
+            await using var package = await OpenPackageFilesAsync(ownedRoot, skill, token);
+        }
         await using (await OpenRuntimeFilesAsync(ownedRoot, runtimeFiles, token)) { }
         return new(ownedRoot, python, pythonHash, node, nodeHash, skills.AsReadOnly(), runtimeFiles.AsReadOnly());
+    }
+
+    internal static async Task<IAsyncDisposable> OpenPackageFilesAsync(string root, SkillRegistration skill, CancellationToken token)
+    {
+        if (skill.PackageRoot is not null) ValidatePackageContents(skill.PackageRoot, skill.PackageFiles!);
+        var handles = new RuntimeFileLocks();
+        try
+        {
+            if (skill.PackageFiles is not null)
+                foreach (var file in skill.PackageFiles)
+                    handles.Add(await OpenVerifiedAsync(root, file.Path, file.Sha256, token, allowEmpty: true));
+            return handles;
+        }
+        catch { await handles.DisposeAsync(); throw; }
+    }
+
+    private static void ValidatePackageContents(string root, IReadOnlyList<RuntimeFileRegistration> files)
+    {
+        var expected = new HashSet<string>(files.Select(x => x.Path), StringComparer.OrdinalIgnoreCase);
+        var pending = new Stack<string>();
+        pending.Push(root);
+        var entries = 0;
+        while (pending.TryPop(out var current))
+        {
+            RejectReparsePoints(current);
+            foreach (var entry in Directory.EnumerateFileSystemEntries(current))
+            {
+                if (++entries > 1024) throw Invalid();
+                RequireUnder(root, entry);
+                RejectReparsePoints(entry);
+                if (Directory.Exists(entry)) pending.Push(entry);
+                else if (!expected.Remove(entry)) throw Invalid();
+            }
+        }
+        if (expected.Count != 0) throw Invalid();
     }
 
     internal static async Task<IAsyncDisposable> OpenRuntimeFilesAsync(string root,
@@ -128,7 +206,8 @@ internal static class BrokerFiles
         }
     }
 
-    internal static async Task<FileStream> OpenVerifiedAsync(string root, string path, string expectedHash, CancellationToken token)
+    internal static async Task<FileStream> OpenVerifiedAsync(string root, string path, string expectedHash, CancellationToken token,
+        bool allowEmpty = false)
     {
         RequireUnder(root, path);
         RejectReparsePoints(path);
@@ -136,7 +215,7 @@ internal static class BrokerFiles
         var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, FileOptions.Asynchronous);
         try
         {
-            if (file.Length is <= 0 or > 268435456) throw Invalid();
+            if (file.Length < (allowEmpty ? 0 : 1) || file.Length > 268435456) throw Invalid();
             var hash = await SHA256.HashDataAsync(file, token);
             if (!Convert.ToHexString(hash).Equals(expectedHash, StringComparison.OrdinalIgnoreCase)) throw Invalid();
             file.Position = 0;
@@ -175,9 +254,9 @@ internal static class BrokerFiles
             if ((File.Exists(current) || Directory.Exists(current)) && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0) throw Invalid();
     }
 
-    internal static void ValidateJson(JsonElement value)
+    internal static void ValidateJson(JsonElement value, int maximumNodes = 8192)
     {
-        var budget = 8192;
+        var budget = maximumNodes;
         Visit(value, ref budget);
     }
 

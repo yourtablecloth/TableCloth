@@ -4,6 +4,8 @@ namespace TableCloth.ManagedAi;
 public sealed record AiSkillExecutionBridge(string Command, IReadOnlyList<string> Arguments,
     string WorkingDirectory, IReadOnlyList<string> SkillIds) : IDisposable
 {
+    public string? SnapshotDirectory { get; init; }
+
     public void Dispose()
     {
         // Dispose only the per-invocation manifest created by the application.
@@ -17,6 +19,28 @@ public sealed record AiSkillExecutionBridge(string Command, IReadOnlyList<string
             !Guid.TryParseExact(name[9..^5], "N", out _)) return;
         try { ManagedAiPaths.RejectReparsePoints(file); File.Delete(file); }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or ManagedAiException) { }
+        if (SnapshotDirectory is { } snapshot)
+        {
+            var parent = Path.Combine(Path.GetFullPath(WorkingDirectory), "snapshots");
+            var full = Path.GetFullPath(snapshot);
+            if (!string.Equals(Path.GetDirectoryName(full), parent, StringComparison.OrdinalIgnoreCase) ||
+                !Guid.TryParseExact(Path.GetFileName(full), "N", out _)) return;
+            try
+            {
+                ManagedAiPaths.RejectReparsePoints(full);
+                if (!Directory.Exists(full)) return;
+                var pending = new Stack<string>(); pending.Push(full); var count = 0;
+                while (pending.TryPop(out var directory))
+                    foreach (var child in Directory.EnumerateFileSystemEntries(directory))
+                    {
+                        if (++count > 5000) return;
+                        ManagedAiPaths.RejectReparsePoints(child);
+                        if (Directory.Exists(child)) pending.Push(child);
+                    }
+                Directory.Delete(full, recursive: true);
+            }
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException or ManagedAiException) { }
+        }
     }
 }
 

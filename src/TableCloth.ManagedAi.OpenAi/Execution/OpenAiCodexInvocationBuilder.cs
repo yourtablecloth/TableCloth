@@ -56,25 +56,34 @@ public static class OpenAiCodexInvocationBuilder
         }
         if (skillExecution is not null)
         {
-            if (skillExecution.SkillIds.Count != 1 || skillExecution.SkillIds[0] != "tablecloth-calculators" ||
+            if (skillExecution.SkillIds.Count is < 1 or > 128 ||
+                skillExecution.SkillIds.Distinct(StringComparer.OrdinalIgnoreCase).Count() != skillExecution.SkillIds.Count ||
+                skillExecution.SkillIds.Any(id => id.Length is < 1 or > 64 || !char.IsAsciiLetterOrDigit(id[0]) ||
+                    id.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not ('-' or '_'))) ||
                 !Path.IsPathFullyQualified(skillExecution.Command) || !Path.IsPathFullyQualified(skillExecution.WorkingDirectory) ||
                 skillExecution.Arguments.Count != 2 || skillExecution.Arguments[0] != "--skill-mcp" ||
                 !Path.IsPathFullyQualified(skillExecution.Arguments[1])) throw new ManagedAiException(AiFailureCode.BlockedByPolicy);
             static string Quoted(string value) => JsonSerializer.Serialize(value, InvocationJsonContext.Default.String);
             var registration = "mcp_servers.tablecloth_skills={command=" + Quoted(skillExecution.Command) +
                 ",args=[" + string.Join(",", skillExecution.Arguments.Select(Quoted)) + "],cwd=" + Quoted(skillExecution.WorkingDirectory) +
-                ",required=true,startup_timeout_sec=30,tool_timeout_sec=60,enabled_tools=[\"tablecloth-calculators\"]," +
-                "default_tools_approval_mode=\"prompt\",tools={\"tablecloth-calculators\"={approval_mode=\"approve\"}}}";
+                ",required=true,startup_timeout_sec=30,tool_timeout_sec=90,enabled_tools=[" +
+                string.Join(",", skillExecution.SkillIds.Select(Quoted)) + "]," +
+                "default_tools_approval_mode=\"prompt\",tools={" + string.Join(",", skillExecution.SkillIds.Select(
+                    id => Quoted(id) + "={approval_mode=\"approve\"}")) + "}}";
             spec.StartInfo.ArgumentList.Insert(0, registration);
             spec.StartInfo.ArgumentList.Insert(0, "-c");
             prompt = """
                 TRUSTED APPLICATION TOOL CAPABILITY:
-                TableCloth has enabled the tablecloth_skills/tablecloth-calculators MCP tool for this session.
-                For every supported financial or everyday calculation, call this registered tool and base your answer on its successful result.
+                TableCloth has enabled the explicitly listed tablecloth_skills MCP tools for installed scripts in this session.
+                When the user requests an installed skill's scripted operation, call its registered tool and base your answer on its successful result.
                 This approved MCP call is permitted; arbitrary shell commands and other script execution remain prohibited.
-                The tool invokes the reviewed installed calculator script inside a native Windows AppContainer with network disabled.
-                If the skill instructions describe launching Python, use this MCP tool instead. Never launch an interpreter yourself.
-                Never say you used a skill or executed a script without a successful tool result. If the tool fails or cannot support the calculation, explain the limitation without claiming a verified calculation.
+                Each tool invokes a fixed installed Python or Node.js script inside a native Windows AppContainer. The worker has no network capability.
+                Only reviewed public HTTPS GET routes can be requested through the host's bounded transport by eligible network-dependent tools.
+                Generic tools take script CLI arguments in the arguments array and optional standard input in the stdin string. Read the tool description for its fixed entry point.
+                Replace skill instructions invoking Python, Node.js, npx exec, or KSKILL_PYTHON with the matching registered MCP tool. Never launch an interpreter or package manager yourself.
+                Public pinned instructions are supplied by the application when available. Do not execute npx instruct/files/read/update to load them.
+                Instruction-only skills guide the answer without an interpreter; host certificate and Sandbox reports retain their existing application consent flow.
+                Never say you used a skill or executed a script without a successful tool result. If a tool fails, report that failure and never label model arithmetic or web search as verified script execution.
 
                 """ + "\n" + prompt;
         }

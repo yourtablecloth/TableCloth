@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>AllSkillsProbe</AssemblyName>
+    <TargetFramework>net11.0-windows10.0.18362.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ManagedSkillProductHostProject>$(MSBuildThisFileDirectory)../../src/TableCloth/TableCloth.csproj</ManagedSkillProductHostProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/TableCloth.App/TableCloth.App.csproj" />
+    <ProjectReference Include="$(ManagedSkillProductHostProject)" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <Target Name="CopyManagedSkillProductHost" AfterTargets="Build"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <MSBuild Projects="$(ManagedSkillProductHostProject)" Targets="GetTargetPath" BuildInParallel="false"
+             Properties="Configuration=$(Configuration);Platform=$(Platform);TargetFramework=$(TargetFramework)">
+      <Output TaskParameter="TargetOutputs" ItemName="_ManagedSkillProductHostTarget" />
+    </MSBuild>
+    <Error Condition="'@(_ManagedSkillProductHostTarget->Count())' != '1'"
+           Text="The product host project must resolve exactly one target path." />
+    <PropertyGroup>
+      <_ManagedSkillProductHostOutput>@(_ManagedSkillProductHostTarget->'%(RootDir)%(Directory)')</_ManagedSkillProductHostOutput>
+    </PropertyGroup>
+    <ItemGroup>
+      <_ManagedSkillProductHostFiles Include="$(_ManagedSkillProductHostOutput)TableCloth.exe" />
+      <_ManagedSkillProductHostFiles Include="$(_ManagedSkillProductHostOutput)TableCloth.dll" />
+      <_ManagedSkillProductHostFiles Include="$(_ManagedSkillProductHostOutput)TableCloth.deps.json" />
+      <_ManagedSkillProductHostFiles Include="$(_ManagedSkillProductHostOutput)TableCloth.runtimeconfig.json" />
+    </ItemGroup>
+    <Error Condition="!Exists('%(_ManagedSkillProductHostFiles.Identity)')"
+           Text="The built product host file '%(_ManagedSkillProductHostFiles.Identity)' was not found." />
+    <Copy SourceFiles="@(_ManagedSkillProductHostFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

@@ -8,8 +8,15 @@ namespace TableCloth.ManagedAi.Windows;
 
 public sealed record ScriptRuntimeFile(string Path, string Sha256);
 
+public interface IManagedAiScriptExecutionRuntime : IManagedAiScriptRuntimeManager
+{
+    string PythonExecutable { get; }
+    string NodeExecutable { get; }
+    Task<IReadOnlyList<ScriptRuntimeFile>> GetVerifiedFilesAsync(CancellationToken token);
+}
+
 /// <summary>App-owned, pinned workers. No global PATH, package manager, registry or shell configuration is changed.</summary>
-public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths) : IManagedAiScriptRuntimeManager
+public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths) : IManagedAiScriptExecutionRuntime
 {
     private static readonly SemaphoreSlim Gate = new(1, 1);
     private const long MaximumArchiveBytes = 128L * 1024 * 1024;
@@ -21,8 +28,8 @@ public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths) :
     public Task<AiScriptRuntimeStatus> EnsureInstalledAsync(CancellationToken cancellationToken)
         => RunAsync(install: true, cancellationToken);
 
-    internal string PythonExecutable => Path.Combine(RuntimeDirectory(_packages.Python), "python.exe");
-    internal string NodeExecutable => Path.Combine(RuntimeDirectory(_packages.Node), "node.exe");
+    public string PythonExecutable => Path.Combine(RuntimeDirectory(_packages.Python), "python.exe");
+    public string NodeExecutable => Path.Combine(RuntimeDirectory(_packages.Node), "node.exe");
 
     private async Task<AiScriptRuntimeStatus> RunAsync(bool install, CancellationToken token)
     {
@@ -211,7 +218,7 @@ public sealed class WindowsManagedAiScriptRuntimeManager(ManagedAiPaths paths) :
         return files.AsReadOnly();
     }
 
-    internal async Task<IReadOnlyList<ScriptRuntimeFile>> GetVerifiedFilesAsync(CancellationToken token)
+    public async Task<IReadOnlyList<ScriptRuntimeFile>> GetVerifiedFilesAsync(CancellationToken token)
     {
         var python = await ValidatePackageAsync(_packages.Python, token);
         var node = await ValidatePackageAsync(_packages.Node, token);

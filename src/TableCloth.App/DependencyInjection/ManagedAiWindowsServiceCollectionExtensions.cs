@@ -14,10 +14,13 @@ internal static class ManagedAiWindowsServiceCollectionExtensions
         services.AddSingleton<WindowsManagedAiScriptRuntimeManager>();
         services.AddSingleton<IManagedAiScriptRuntimeManager>(service =>
             service.GetRequiredService<WindowsManagedAiScriptRuntimeManager>());
+        services.AddSingleton<IManagedAiScriptExecutionRuntime>(service =>
+            service.GetRequiredService<WindowsManagedAiScriptRuntimeManager>());
         services.AddSingleton<IManagedAiSkillExecution>(service => new WindowsManagedAiSkillExecution(
             service.GetRequiredService<ManagedAiPaths>(),
-            service.GetRequiredService<WindowsManagedAiScriptRuntimeManager>(),
-            service.GetRequiredService<ISharedLocations>().ExecutableFilePath));
+            service.GetRequiredService<IManagedAiScriptExecutionRuntime>(),
+            service.GetRequiredService<ISharedLocations>().ExecutableFilePath,
+            service.GetService<IManagedAiSkillMarketplace>()));
         return services;
     }
 }
