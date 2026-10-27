@@ -18,11 +18,41 @@ public sealed class SkillEvidenceVerifierTests
         var report = EvidenceVerifier.Verify(fixture.Root, EvidenceFixture.ProductHash);
 
         Assert.IsTrue(report.Passed, string.Join(",", report.Failures));
+        Assert.AreEqual("update-safe-data-root", report.RuntimeStorageLayout);
+        Assert.IsFalse(report.HistoricalStorageLayout);
         Assert.IsTrue(report.EvidenceFiles.Any(x => x.File == "bok-ecos-stats.provider.events.jsonl" && x.Sha256.Length == 64));
         Assert.Contains("malicious producer", report.VerificationBoundary);
         Assert.IsTrue(report.EvidenceFiles.All(x => !Path.IsPathFullyQualified(x.File)));
         // The fixture invents observer records to exercise the offline parser. It does not prove
         // an actual process or token existed; only the live independent observer can supply that.
+    }
+
+    [TestMethod]
+    public void LegacyStorageBundleRemainsReadableOnlyAsExplicitlyHistoricalEvidence()
+    {
+        using var fixture = new EvidenceFixture("TableCloth");
+
+        var report = EvidenceVerifier.Verify(fixture.Root, EvidenceFixture.ProductHash);
+
+        Assert.IsTrue(report.Passed, string.Join(",", report.Failures));
+        Assert.AreEqual("legacy-installation-root", report.RuntimeStorageLayout);
+        Assert.IsTrue(report.HistoricalStorageLayout);
+        Assert.Contains("Historical offline evidence", report.RuntimeStorageBoundary);
+    }
+
+    [TestMethod]
+    [DataRow("OtherApplication")]
+    [DataRow("FakeTableCloth")]
+    [DataRow("FakeTableCloth.Data")]
+    public void UnrelatedOrSuffixOnlyApplicationDirectoriesAreRejected(string applicationDirectory)
+    {
+        using var fixture = new EvidenceFixture(applicationDirectory);
+
+        var report = EvidenceVerifier.Verify(fixture.Root);
+
+        Assert.IsFalse(report.Passed);
+        Assert.AreEqual("unrecognized", report.RuntimeStorageLayout);
+        Assert.Contains("owned-runtime-root", report.Failures);
     }
 
     [TestMethod]
@@ -171,12 +201,14 @@ public sealed class SkillEvidenceVerifierTests
         private static readonly string[] Ids = ["bok-ecos-stats", "kosis-stats", "official-report-skillset", "tablecloth-certificate-expiry", "tablecloth-windows-sandbox", "tablecloth-calculators"];
         internal string Root { get; } = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TableClothEvidenceSynthetic-" + Guid.NewGuid().ToString("N"));
         internal string ProductPath => System.IO.Path.Combine(Root, "synthetic-product", "TableCloth.exe");
-        private string Owned => System.IO.Path.Combine(Root, "synthetic-local-appdata", "TableCloth", "ManagedAi", "skill-execution");
+        private readonly string _applicationDirectory;
+        private string Owned => System.IO.Path.Combine(Root, "synthetic-local-appdata", _applicationDirectory, "ManagedAi", "skill-execution");
         private string Python => System.IO.Path.Combine(Owned, "runtimes", "py-synthetic", "python.exe");
         private string Node => System.IO.Path.Combine(Owned, "runtimes", "node-synthetic", "node.exe");
 
-        internal EvidenceFixture()
+        internal EvidenceFixture(string applicationDirectory = "TableCloth.Data")
         {
+            _applicationDirectory = applicationDirectory;
             Directory.CreateDirectory(Root);
             Write("runtime-seed-manifest.json", new { ownedRoot = Owned, pythonExecutable = Python, pythonSha256 = PythonHash, nodeExecutable = Node, nodeSha256 = NodeHash,
                 runtimeFiles = new[] { new { path = Python, sha256 = PythonHash }, new { path = Node, sha256 = NodeHash } } });

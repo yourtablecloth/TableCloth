@@ -48,9 +48,9 @@ if (-not (Test-Path -LiteralPath $HostExecutable -PathType Leaf) -or [System.IO.
 }
 $seed = Get-Content -LiteralPath $SeedManifest -Raw | ConvertFrom-Json
 $ownedRoot = Assert-LocalPath ([string]$seed.ownedRoot)
-$expectedRoot = [System.IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'TableCloth\ManagedAi\skill-execution'))
+$expectedRoot = [System.IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'TableCloth.Data\ManagedAi\skill-execution'))
 if (-not $ownedRoot.Equals($expectedRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
-    throw 'Seed ownedRoot must be the installed TableCloth skill-execution directory.'
+    throw 'Live fixture seed ownedRoot must use TableCloth.Data\ManagedAi\skill-execution outside the installer-owned directory. Legacy seeds are offline historical evidence only.'
 }
 foreach ($runtime in @($seed.runtimeFiles) + @(
     [pscustomobject]@{ path = $seed.pythonExecutable; sha256 = $seed.pythonSha256 },

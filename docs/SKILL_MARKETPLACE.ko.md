@@ -41,7 +41,9 @@
 
 설치된 스킬 탭은 폴더 가져오기, 업데이트, 활성화와 비활성화, 확인 후 제거, 새로 고침과 폴더 열기를 제공합니다. 활성화 표시는 다음 대화에 지침을 제공할지 나타내며 실행 결과를 뜻하지 않습니다. 잘못된 `SKILL.md`도 검사, 비활성화나 제거를 위해 목록에 표시하며 활성화는 허용하지 않습니다. [스킬 관리자](../src/TableCloth.ManagedAi.OpenAi/Skills/OpenAiCodexSkillManager.cs)에서 이 동작을 구현합니다.
 
-스킬은 `%LOCALAPPDATA%\TableCloth\ManagedAi\profiles\openai-codex\codex-home\skills`에 보관하고 대화는 별도 `%LOCALAPPDATA%\TableCloth\ManagedAi\runs\<GUID>` 폴더를 사용합니다. 두 폴더는 서로 다른 역할을 맡습니다. 앱은 대화 작업 폴더에 의존하지 않고 설치한 진입점을 찾아 중계기에 등록합니다. 사용자 전역 Codex 프로필은 마켓플레이스 관리 범위에 포함하지 않습니다.
+스킬은 `%LOCALAPPDATA%\TableCloth.Data\ManagedAi\profiles\openai-codex\codex-home\skills`에 보관하고 대화는 별도 `%LOCALAPPDATA%\TableCloth.Data\ManagedAi\runs\<GUID>` 폴더를 사용합니다. 두 폴더는 서로 다른 역할을 맡습니다. 앱은 대화 작업 폴더에 의존하지 않고 설치한 진입점을 찾아 중계기에 등록합니다. 사용자 전역 Codex 프로필은 마켓플레이스 관리 범위에 포함하지 않습니다.
+
+전용 AI 데이터는 Velopack의 프로그램 설치 루트인 `%LOCALAPPDATA%\TableCloth` 밖에 보존합니다. Setup의 덮어쓰기 설치는 이전 설치 루트 전체를 교체하므로 그 안에 사용자 데이터를 두면 재설치로 잃을 수 있습니다. 기존 `TableCloth\ManagedAi`가 남아 있다면 앱은 소유권 표식과 파일 소유자, 사용 중 잠금과 재분석 지점을 검사한 뒤 새 경로로 이동합니다. 양쪽에 데이터가 있으면 자동 병합이나 덮어쓰기를 하지 않습니다. 이전 경로를 사용하는 버전에서 Setup을 다시 실행할 때에는 새 앱의 데이터 이전을 먼저 마친 상태로 진행할 수 있습니다. Setup이 이미 삭제한 프로필과 인증정보는 앱 시작 시 이전 기능으로 복구할 수 없습니다.
 
 ## MCP 연결과 AppContainer 실행 경계
 

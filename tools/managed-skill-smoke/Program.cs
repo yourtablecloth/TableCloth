@@ -61,6 +61,7 @@ try
         options.NodeFixture,
         options.ChatSkill,
         options.InstallCatalog,
+        options.InstallRuntimeVersion,
         options.CalculatorCases,
         authenticationCopied = false,
         globalConfigurationChanged = false,
@@ -83,6 +84,14 @@ try
         explicitNativePathMatched = options.NativePath is not null,
         note = "Native/AOT provenance is supplied by the caller's chosen build, not inferred from this managed parent's framework."
     });
+    if (options.InstallRuntimeVersion is not null)
+    {
+        stage = "explicit-app-owned-runtime-install";
+        var installedRuntime = await services.GetRequiredService<IManagedRuntimeManager>().InstallAsync(
+            options.InstallRuntimeVersion, null, token);
+        log.Record("explicit-app-owned-runtime-installed", new { version = installedRuntime.Coordinate.Version,
+            executable = installedRuntime.EntryPoint, profile = installedRuntime.ProfileDirectory });
+    }
     stage = "native-skill-discovery";
     var skills = await manager.ListAsync(token);
     WriteSkills(log, "installed-before", skills);
@@ -482,12 +491,12 @@ static async Task<string> HashFileAsync(string path, CancellationToken token)
 static Task SaveJsonAsync(string path, object value, CancellationToken token)
     => File.WriteAllTextAsync(path, JsonSerializer.Serialize(value, new JsonSerializerOptions { WriteIndented = true }), new UTF8Encoding(false), token);
 
-sealed record ProbeOptions(bool Discover, bool Direct, bool NodeFixture, bool InstallCatalog, string? ChatSkill, string Model, string? NativePath, string? CalculatorCases)
+sealed record ProbeOptions(bool Discover, bool Direct, bool NodeFixture, bool InstallCatalog, string? ChatSkill, string Model, string? NativePath, string? CalculatorCases, string? InstallRuntimeVersion)
 {
     internal static ProbeOptions Parse(string[] input)
     {
         bool discover = false, direct = false, node = false, install = false;
-        string? chat = null, native = null, calculatorCases = null;
+        string? chat = null, native = null, calculatorCases = null, installRuntime = null;
         var model = "gpt-6-luna";
         for (var index = 0; index < input.Length; index++)
         {
@@ -498,6 +507,7 @@ sealed record ProbeOptions(bool Discover, bool Direct, bool NodeFixture, bool In
                 case "--direct": direct = true; break;
                 case "--node-fixture": node = true; break;
                 case "--install-catalog": install = true; break;
+                case "--install-runtime": installRuntime = Next(); break;
                 case "--chat": chat = Next(); break;
                 case "--model": model = Next(); break;
                 case "--nativepath" or "--native-path": native = Next(); break;
@@ -509,7 +519,8 @@ sealed record ProbeOptions(bool Discover, bool Direct, bool NodeFixture, bool In
         if (calculatorCases is not null && (!direct || !Path.IsPathFullyQualified(calculatorCases)))
             throw new ArgumentException("--calculator-cases requires --direct and an absolute JSON dataset path.");
         AiModel.ValidateId(model);
-        return new(discover || !direct && !node && chat is null, direct, node, install, chat, model, native, calculatorCases);
+        if (installRuntime is not null) OpenAiReleaseMetadataClient.ValidateVersion(installRuntime);
+        return new(discover || !direct && !node && chat is null, direct, node, install, chat, model, native, calculatorCases, installRuntime);
     }
 }
 

@@ -11,8 +11,7 @@ public sealed class ManagedAiPaths
         RejectReparsePoints(Root);
     }
 
-    public static ManagedAiPaths ForCurrentUser() => new(Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TableCloth", "ManagedAi"));
+    public static ManagedAiPaths ForCurrentUser() => ManagedAiStorageMigration.ForCurrentUser();
 
     public string Root { get; }
     public string RuntimeRoot => Under("runtimes", "openai-codex");

@@ -13,6 +13,11 @@ public sealed record VerificationReport(bool Passed, IReadOnlyList<string> Check
 {
     public string? ExpectedProductSha256 { get; init; }
     public bool ProductHashExternallyAnchored => ExpectedProductSha256 is not null;
+    public string RuntimeStorageLayout { get; init; } = "unrecognized";
+    public bool HistoricalStorageLayout => RuntimeStorageLayout == "legacy-installation-root";
+    public string RuntimeStorageBoundary => HistoricalStorageLayout
+        ? "Historical offline evidence from the former installation-owned data location; this does not qualify the current update-safe storage configuration."
+        : "Current live checks require TableCloth.Data/ManagedAi outside the installer-owned TableCloth directory.";
     public string VerificationBoundary => "Offline consistency verification cannot cryptographically attest files from a malicious producer. Run the independent Win32 process/token observer during live execution; JSON wasAppContainer or model self-report alone is insufficient.";
 }
 
@@ -31,6 +36,7 @@ public static class EvidenceVerifier
         var checks = new List<string>();
         var failures = new List<string>();
         var digests = new List<EvidenceFileDigest>();
+        var storageLayout = "unrecognized";
         void Check(string name, bool passed) { checks.Add(name); if (!passed) failures.Add(name); }
         try
         {
@@ -43,7 +49,11 @@ public static class EvidenceVerifier
             Check("product-hash-anchor", expectedProductSha256 is null || ValidHash(expectedProductSha256) && productHash.Equals(expectedProductSha256, StringComparison.OrdinalIgnoreCase));
             var seed = Parse(Required(files, "runtime-seed-manifest.json"));
             var owned = LocalPath(Text(seed, "ownedRoot"));
-            Check("owned-runtime-root", owned.EndsWith(Path.Combine("TableCloth", "ManagedAi", "skill-execution"), StringComparison.OrdinalIgnoreCase));
+            // The read-only verifier can review older bundles, but reports their unsafe historical
+            // storage layout explicitly. Live fixtures accept only the new update-safe data root.
+            if (HasStorageSuffix(owned, "TableCloth.Data")) storageLayout = "update-safe-data-root";
+            else if (HasStorageSuffix(owned, "TableCloth")) storageLayout = "legacy-installation-root";
+            Check("owned-runtime-root", storageLayout != "unrecognized");
             var python = LocalPath(Text(seed, "pythonExecutable"));
             var pythonHash = Text(seed, "pythonSha256");
             var node = LocalPath(Text(seed, "nodeExecutable"));
@@ -91,7 +101,7 @@ public static class EvidenceVerifier
         }
         catch (Exception error) when (Expected(error)) { Check("bundle-readable-and-valid", false); }
         return new(failures.Count == 0, checks.AsReadOnly(), failures.AsReadOnly(), digests.AsReadOnly())
-            { ExpectedProductSha256 = expectedProductSha256 };
+            { ExpectedProductSha256 = expectedProductSha256, RuntimeStorageLayout = storageLayout };
     }
 
     public static bool IsValidKosisSearchData(string stdout)
@@ -317,6 +327,8 @@ public static class EvidenceVerifier
     private static decimal? Decimal(JsonElement value) => value.ValueKind == JsonValueKind.Number && value.TryGetDecimal(out var number) ? number : value.ValueKind == JsonValueKind.String && decimal.TryParse(value.GetString(), NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed) ? parsed : null;
     private static DateTimeOffset Timestamp(JsonElement value, string name) => DateTimeOffset.Parse(Text(value, name), CultureInfo.InvariantCulture, DateTimeStyles.None);
     private static bool ValidHash(string value) => value.Length == 64 && value.All(char.IsAsciiHexDigit);
+    private static bool HasStorageSuffix(string ownedRoot, string applicationDirectory) => ownedRoot.EndsWith(
+        Path.DirectorySeparatorChar + Path.Combine(applicationDirectory, "ManagedAi", "skill-execution"), StringComparison.OrdinalIgnoreCase);
     private static string LocalPath(string value)
     {
         if (!Path.IsPathFullyQualified(value) || value.StartsWith("\\\\", StringComparison.Ordinal) || value.AsSpan(2).Contains(':')) throw new IOException("Only local absolute paths are accepted.");

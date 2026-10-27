@@ -41,7 +41,9 @@ Marketplace installations record the catalog ID, repository, source path and com
 
 The installed tab supports folder import, updates, enable and disable actions, removal with confirmation, refresh and opening folders. The enabled label controls whether the next chat receives the skill's instructions; it does not report execution. Invalid `SKILL.md` entries remain visible for inspection, disabling or removal and cannot be enabled. See the [skill manager](../src/TableCloth.ManagedAi.OpenAi/Skills/OpenAiCodexSkillManager.cs).
 
-Skills reside under `%LOCALAPPDATA%\TableCloth\ManagedAi\profiles\openai-codex\codex-home\skills`. Chats use separate `%LOCALAPPDATA%\TableCloth\ManagedAi\runs\<GUID>` directories. These different locations are expected: the application discovers installed entry points and registers them independently of the chat working directory. The global Codex profile remains outside marketplace management.
+Skills reside under `%LOCALAPPDATA%\TableCloth.Data\ManagedAi\profiles\openai-codex\codex-home\skills`. Chats use separate `%LOCALAPPDATA%\TableCloth.Data\ManagedAi\runs\<GUID>` directories. These different locations are expected: the application discovers installed entry points and registers them independently of the chat working directory. The global Codex profile remains outside marketplace management.
+
+Dedicated AI data stays outside Velopack's `%LOCALAPPDATA%\TableCloth` installation root. Overwrite installation through Setup replaces that entire root, which can remove user data stored beneath it. When legacy `TableCloth\ManagedAi` still exists, the application checks its ownership marker, file ownership, active-operation locks and reparse points before moving it to the data directory. It never silently merges or overwrites two populated roots. Migrate existing data with the new application before rerunning Setup from a version that used the legacy location. Startup migration cannot recover profiles or credentials already deleted by Setup.
 
 ## MCP routing and the AppContainer boundary
 
