@@ -55,12 +55,31 @@ dotnet tools/managed-skill-smoke/bin/Release/net11.0-windows10.0.18362.0/AllSkil
 ```powershell
 dotnet '<probe-output>/AllSkillsProbe.dll' --discover --nativepath '<probe-output>/TableCloth.exe'
 & ./tools/managed-skill-smoke/native-fixtures/Invoke-NativeSkillSmoke.ps1 -HostExecutable '<probe-output>/TableCloth.exe' -SeedManifest '<probe-output>/evidence/<run>/runtime-seed-manifest.json' -EvidenceDirectory 'D:/Projects/TableCloth/Artifacts/managed-skill-smoke-native'
+& ./tools/managed-skill-smoke/native-fixtures/python-concurrency/Invoke-PythonNetworkConcurrency.ps1 -HostExecutable '<probe-output>/TableCloth.exe' -SeedManifest '<probe-output>/evidence/<run>/runtime-seed-manifest.json' -EvidenceDirectory 'D:/Projects/TableCloth/Artifacts/python-concurrency-positive'
+& ./tools/managed-skill-smoke/native-fixtures/python-concurrency/Invoke-PythonNetworkConcurrency.ps1 -HostExecutable '<probe-output>/TableCloth.exe' -SeedManifest '<probe-output>/evidence/<run>/runtime-seed-manifest.json' -EvidenceDirectory 'D:/Projects/TableCloth/Artifacts/python-concurrency-control' -LegacyControl
+& ./tools/managed-skill-smoke/native-fixtures/Test-ServiceResultValidation.ps1
 ```
 
 예시의 자리표시자는 로컬 절대 경로로 바꾸고 실행마다 별도 증거 디렉터리를 사용합니다. `--direct`, 전체 22개 연산과 `--chat all`도 `--nativepath`를 지정해 반복하면 선택한 제품 호스트와 결과를 연결할 수 있습니다. 독립 스크립트는 실제 `TableCloth.exe --skill-mcp`를 통해 Python 패키지 가져오기, Node CommonJS와 ESM 모듈, 지원하는 공개 GET, 합성 환경 변수 제외, 파일과 직접 네트워크 접근 거부를 확인합니다. 로컬 경로와 seed 런타임 해시를 검사하고 `-KeepFixtures`를 지정하지 않으면 고유하게 만든 fixture를 정리합니다. NativeAOT 실행이라고 설명할 때에는 실제 호스트의 출처와 성공한 실행 결과를 함께 적용합니다.
 
+[Python 동시성 fixture](native-fixtures/python-concurrency/Invoke-PythonNetworkConcurrency.ps1)는 실제 격리 Python 작업자 안에서 동시 응답의 요청별 대응, URL 및 HTTP 오류, 시간 초과 후 처리를 검사합니다. 합성 응답기를 사용하므로 외부 서비스에 요청하지 않습니다. 기본 실행은 현재 전송 구현이 해당 계약을 유지하는지 확인합니다. `-LegacyControl`은 fixture 내부에 이전의 경합 가능 구현을 넣고 응답 혼선과 격리 작업자 실패를 기대하는 음성 대조군을 실행합니다. 대조군 스크립트는 기대한 실패를 재현할 때 성공으로 종료하며 이전 구현의 정상 동작을 뜻하지 않습니다. [Test-ServiceResultValidation.ps1](native-fixtures/Test-ServiceResultValidation.ps1)은 HTTP 200 API 오류를 포함한 합성 KOSIS 응답을 별도로 검사하며 실제 서비스에 접속하지 않습니다.
+
+[독립 Win32 관찰기](ProcessEvidenceObserver.cs)는 실제 probe 대화와 네이티브 중계기 fixture가 실행되는 동안 중계기 외부에서 동작합니다. 예상한 제품과 런타임 경로에 해당하는 자손 프로세스만 관찰합니다. Windows에서 이미지 경로와 생성 시각을 조회하고 이미지 해시를 계산하며 실제 프로세스 토큰의 `TokenIsAppContainer`를 질의합니다. 조회 실패도 불완전한 증거로 남깁니다. 명령줄, 환경 변수와 인증 파일은 읽지 않습니다. 네이티브 fixture는 `processes.json`에 관측을 저장하며 probe 대화는 스킬별 관측 파일을 저장합니다.
+
+## 외부 신뢰 해시를 사용하는 읽기 전용 재검증
+
+저장한 결과의 재검증 절차를 정리하겠습니다. [증거 검증기](EvidenceVerifier.cs)는 원시 provider MCP 이벤트, 런타임 정보와 독립 프로세스 관측으로 판정을 다시 구성합니다. 제품 SHA-256은 검증할 증거 묶음에서 가져오지 않고 별도로 신뢰할 수 있는 빌드나 릴리스 산출물에서 구합니다. 전체 스킬 대화의 증거 묶음을 검사할 때 다음과 같이 해시를 지정합니다.
+
+```powershell
+dotnet '<probe-output>/AllSkillsProbe.dll' --verify '<evidence-directory>' --expected-product-sha256 '<trusted-product-sha256>'
+```
+
+이 모드는 저장한 증거를 읽고 새 검증 보고서를 출력하며 판정을 수락하면 종료 코드 0, 거절하면 1을 반환합니다. 제품 실행, 모델 응답 요청, 런타임 설치나 증거 파일 변경은 수행하지 않습니다. 검증기는 MCP 시작과 완료 이벤트 및 인수, 스크립트 결과, 프로세스 계보와 관측 시각, 제품 및 런타임 이미지의 경로와 해시, AppContainer 작업자를 확인한 커널 토큰 질의를 대조합니다. 기존 요약의 성공 표시, 모델의 설명이나 중계기가 반환한 `wasAppContainer`만으로 수락하지 않습니다. 독립 OS 관측이 없는 과거 증거 묶음은 스크립트 실행 검증에 실패합니다. 사후 검사로 당시 수집하지 않은 측정값을 복원하지 않습니다.
+
+`--expected-product-sha256`를 생략하면 묶음 내부의 일관성만 검사하며 `ProductHashExternallyAnchored=false`를 표시합니다. 신뢰 해시를 제공하면 선택한 제품의 식별 정보를 외부 기준과 연결하지만 악의적인 수집자가 만든 증거 파일을 암호학적으로 입증하지는 않습니다. 실제 작업자가 실행했더라도 관측을 누락하거나 질의에 실패하면 검증 실패로 남습니다. 공공문서, 인증서와 Sandbox의 응답 사례도 응답 범위에 한정합니다. 작성한 초안과 합성 보고서는 실제 호스트 동작을 입증하지 않습니다.
+
 ## 증거 파일과 검증의 적용 범위
 
-여기까지 정리하면 도구는 실행마다 `bin/.../evidence/<UTC 시각>-<접미사>/`에 결과를 기록합니다. `probe.jsonl`은 처음과 마지막 설치 상태 및 선택한 런타임과 호스트 정보를 보존합니다. 스킬별 provider JSONL은 실제 `exec --json` 이벤트를 포함하며 직접 실행과 대화 JSON은 결과 및 판정을 보존합니다. `calculator-cases/`는 사례별 결과, 합계와 입력 데이터셋을 보관합니다. `runtime-seed-manifest.json`은 독립 fixture가 사용할 검증한 런타임 좌표를 기록합니다. probe가 종료하면 호출용 snapshot을 제거할 수 있으므로 seed를 다시 사용할 스킬 등록 파일로 해석하지 않습니다.
+여기까지 정리하면 도구는 실행마다 `bin/.../evidence/<UTC 시각>-<접미사>/`에 결과를 기록합니다. `probe.jsonl`은 처음과 마지막 설치 상태 및 선택한 런타임과 호스트 정보를 보존합니다. 스킬별 provider JSONL은 실제 `exec --json` 이벤트를 포함하고 `<skill-id>.processes.json`은 독립 Win32 관측을 보존합니다. 직접 실행과 대화 JSON은 결과 및 판정을 보존합니다. `calculator-cases/`는 사례별 결과, 합계와 입력 데이터셋을 보관합니다. `runtime-seed-manifest.json`은 독립 fixture가 사용할 검증한 런타임 좌표를 기록합니다. probe가 종료하면 호출용 snapshot을 제거할 수 있으므로 seed를 다시 사용할 스킬 등록 파일로 해석하지 않습니다.
 
 독립 fixture는 지정한 증거 디렉터리에 요청과 응답 JSONL 및 요약을 기록합니다. 작업 프로세스의 실행 성공과 실제 외부 API의 데이터 성공을 구분합니다. 인증정보와 사용자 인증서 자료는 증거 파일에 포함하지 않습니다. 로그, 바이너리, 빌드 출력과 생성한 증거는 도구 소스의 추적 대상에서 제외합니다. 결과는 기록한 호스트와 입력에 적용하며 GUI, 모든 의존성, 호스트의 모든 ACL이나 Windows 아키텍처 전체를 검증하지 않습니다.

@@ -15,9 +15,10 @@ public sealed class SkillExecutionRegistry
     // Python's pinned ._pth file excludes script directories, so add only this registered package.
     internal const string PythonPackageBootstrap = "import os,runpy,sys; p=sys.argv[1]; r=sys.argv[2]; sys.argv=[p,*sys.argv[3:]]; sys.path[:0]=[os.path.dirname(p),r]; runpy.run_path(p,run_name='__main__')";
     internal const string PythonNetworkPackageBootstrap = """
-import base64,email.message,io,json,os,sys,time,urllib.error,urllib.request
+import base64,email.message,io,json,os,sys,threading,time,urllib.error,urllib.request
 _tc_network=sys.argv.pop(3)
 _tc_sequence=0
+_tc_exchange_lock=threading.Lock()
 class _TcResponse(io.BytesIO):
     def __init__(self, reply, url):
         super().__init__(base64.b64decode(reply['body'], validate=True))
@@ -35,27 +36,29 @@ def _tc_urlopen(url, data=None, timeout=30, **kwargs):
     request=url if isinstance(url,urllib.request.Request) else urllib.request.Request(url,data=data)
     if data is not None or request.data is not None or request.get_method()!='GET':
         raise urllib.error.URLError('Only reviewed public GET requests are available')
-    _tc_sequence+=1
-    if _tc_sequence>20: raise urllib.error.URLError('Network request budget exceeded')
-    payload={'id':_tc_sequence,'method':'GET','url':request.full_url,'headers':dict(request.header_items())}
-    encoded=json.dumps(payload,ensure_ascii=False,separators=(',',':'))
-    if len(encoded.encode('utf-8'))>16384: raise urllib.error.URLError('Network request exceeds its budget')
-    with open(os.path.join(_tc_network,'request.json'),'w',encoding='utf-8') as stream:
-        stream.write(encoded)
-        stream.flush()
-    deadline=time.monotonic()+30
-    while time.monotonic()<deadline:
-        try:
-            with open(os.path.join(_tc_network,'response.json'),'r',encoding='utf-8') as stream: reply=json.load(stream)
-            if reply.get('id')==_tc_sequence:
-                if 'error' in reply: raise urllib.error.URLError(reply['error'])
-                response=_TcResponse(reply,request.full_url)
-                if response.status>=400:
-                    raise urllib.error.HTTPError(request.full_url,response.status,'Public API response',response.headers,response)
-                return response
-        except (json.JSONDecodeError,UnicodeDecodeError): pass
-        time.sleep(0.01)
-    raise urllib.error.URLError('Network bridge timeout')
+    with _tc_exchange_lock:
+        _tc_sequence+=1
+        request_id=_tc_sequence
+        if request_id>20: raise urllib.error.URLError('Network request budget exceeded')
+        payload={'id':request_id,'method':'GET','url':request.full_url,'headers':dict(request.header_items())}
+        encoded=json.dumps(payload,ensure_ascii=False,separators=(',',':'))
+        if len(encoded.encode('utf-8'))>16384: raise urllib.error.URLError('Network request exceeds its budget')
+        with open(os.path.join(_tc_network,'request.json'),'w',encoding='utf-8') as stream:
+            stream.write(encoded)
+            stream.flush()
+        deadline=time.monotonic()+30
+        while time.monotonic()<deadline:
+            try:
+                with open(os.path.join(_tc_network,'response.json'),'r',encoding='utf-8') as stream: reply=json.load(stream)
+                if reply.get('id')==request_id:
+                    if 'error' in reply: raise urllib.error.URLError(reply['error'])
+                    response=_TcResponse(reply,request.full_url)
+                    if response.status>=400:
+                        raise urllib.error.HTTPError(request.full_url,response.status,'Public API response',response.headers,response)
+                    return response
+            except (json.JSONDecodeError,UnicodeDecodeError): pass
+            time.sleep(0.01)
+        raise urllib.error.URLError('Network bridge timeout')
 urllib.request.urlopen=_tc_urlopen
 """ + "\n" + PythonPackageBootstrap;
     internal const string NodeNetworkPackageBootstrap = """

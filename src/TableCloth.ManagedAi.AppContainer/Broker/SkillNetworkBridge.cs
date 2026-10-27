@@ -11,7 +11,7 @@ internal sealed class SkillNetworkBridge : IAsyncDisposable
 {
     internal static readonly string[] KnownHosts = ["ecos.bok.or.kr", "k-skill-proxy.nomadamas.org"];
     private const int MaximumResponseBytes = 1048576;
-    private const int MaximumRequestBytes = 16384;
+    internal const int MaximumRequestBytes = 16384;
     private readonly IReadOnlyList<string> _hosts;
     private readonly FileStream _request;
     private readonly FileStream _response;
@@ -58,14 +58,15 @@ internal sealed class SkillNetworkBridge : IAsyncDisposable
     {
         var previousId = 0;
         var requestCount = 0;
+        // The worker can resize the file at any time. Never derive an allocation or a read
+        // budget from Length: one extra byte detects oversized data without parsing a prefix.
+        var bytes = new byte[MaximumRequestBytes + 1];
         while (true)
         {
             token.ThrowIfCancellationRequested();
-            if (_request.Length is > 0 and <= MaximumRequestBytes)
+            var length = await ReadBoundedRequestAsync(_request, bytes, token);
+            if (length is > 0 and <= MaximumRequestBytes)
             {
-                var bytes = new byte[(int)_request.Length];
-                _request.Position = 0;
-                var length = await _request.ReadAsync(bytes, token);
                 JsonDocument? document = null;
                 try { document = JsonDocument.Parse(bytes.AsMemory(0, length), new JsonDocumentOptions { MaxDepth = 8 }); }
                 catch (JsonException) { /* The worker may still be writing its request. */ }
@@ -87,6 +88,23 @@ internal sealed class SkillNetworkBridge : IAsyncDisposable
             }
             await Task.Delay(10, token);
         }
+    }
+
+    // Internal deterministic test seam. The caller owns a fixed-size buffer and keeps its
+    // contents unchanged until the parsed JsonDocument has been disposed.
+    internal static async Task<int> ReadBoundedRequestAsync(Stream request, Memory<byte> buffer, CancellationToken token)
+    {
+        if (buffer.Length != MaximumRequestBytes + 1) throw new ArgumentException("A fixed request buffer is required.", nameof(buffer));
+        token.ThrowIfCancellationRequested();
+        request.Position = 0;
+        var total = 0;
+        while (total < buffer.Length)
+        {
+            var read = await request.ReadAsync(buffer[total..], token);
+            if (read == 0) break;
+            total += read;
+        }
+        return total;
     }
 
     private async Task<RpcResponse> HandleAsync(JsonElement request, int requestCount, CancellationToken token)

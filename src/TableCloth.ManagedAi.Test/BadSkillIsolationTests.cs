@@ -129,6 +129,38 @@ public sealed class BadSkillIsolationTests
     }
 
     [TestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public async Task DependencyDirectoryTraversalBudgetRejectsOnlyTheOversizedPackage(bool badFirst)
+    {
+        using var fixture = new Fixture();
+        var good = fixture.Install("good", new() { ["scripts/run.py"] = "print('good')" });
+        var dependencies = new Dictionary<string, string> { ["scripts/run.py"] = "print('bad')" };
+        // Wide, shallow branches stay below Windows path limits while exceeding 1,024
+        // directories with only 66 files. Entry discovery intentionally skips node_modules.
+        for (var branch = 0; branch < 64; branch++)
+        {
+            var relative = "node_modules/b" + branch.ToString("x2") + "/" +
+                string.Join('/', Enumerable.Repeat("d", 16)) + "/data.txt";
+            dependencies[relative] = "Read-only dependency data.";
+        }
+        var bad = fixture.Install("many-directories", dependencies);
+        var sourceEntryCount = Directory.EnumerateFileSystemEntries(bad.Directory, "*", SearchOption.AllDirectories).Count();
+        Assert.IsGreaterThan(1024, Directory.EnumerateDirectories(bad.Directory, "*", SearchOption.AllDirectories).Count());
+        Assert.IsLessThanOrEqualTo(256, Directory.EnumerateFiles(bad.Directory, "*", SearchOption.AllDirectories).Count());
+
+        using var bridge = await fixture.Execution.PrepareAsync(badFirst ? [bad, good] : [good, bad], fixture.Run, CancellationToken.None);
+
+        Assert.IsNotNull(bridge);
+        CollectionAssert.AreEqual(new[] { "good" }, bridge.SkillIds.ToArray());
+        var registry = await SkillExecutionRegistry.LoadAsync(bridge.Arguments[1], CancellationToken.None);
+        Assert.AreEqual("good", registry.Skills.Single().SkillId);
+        Assert.AreEqual("print('good')", File.ReadAllText(registry.Skills.Single().ScriptPath));
+        Assert.AreEqual(1, fixture.Runtime.EnsureCalls);
+        Assert.HasCount(sourceEntryCount, Directory.EnumerateFileSystemEntries(bad.Directory, "*", SearchOption.AllDirectories));
+    }
+
+    [TestMethod]
     public async Task AReparsePointInOneExecutablePackageDoesNotDisableAnotherPackage()
     {
         using var fixture = new Fixture();

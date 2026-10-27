@@ -221,11 +221,15 @@ public sealed class WindowsManagedAiSkillExecution(ManagedAiPaths paths,
     private static IReadOnlyList<string> EnumerateFiles(string root)
     {
         var result = new List<string>(); var pending = new Stack<string>(); pending.Push(root); long total = 0;
+        var entries = 0;
         while (pending.TryPop(out var directory))
         {
             ManagedAiPaths.RejectReparsePoints(directory);
             foreach (var item in Directory.EnumerateFileSystemEntries(directory))
             {
+                // Match the broker's file-plus-directory traversal budget before accepting
+                // this package. Dependency trees skipped by entry discovery still count here.
+                if (++entries > 1024) throw Blocked();
                 ManagedAiPaths.RejectReparsePoints(item);
                 var name = Path.GetFileName(item);
                 if (ExcludedName(name)) continue;

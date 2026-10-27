@@ -8,6 +8,10 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $utf8 = [System.Text.UTF8Encoding]::new($false)
+. (Join-Path $PSScriptRoot 'ServiceResultValidation.ps1')
+if (-not ('TableCloth.SkillSmokeDiagnostics.ProcessEvidenceObserver' -as [type])) {
+    Add-Type -Path (Join-Path $PSScriptRoot '../ProcessEvidenceObserver.cs')
+}
 
 function Assert-LocalPath([string]$Path) {
     $resolved = [System.IO.Path]::GetFullPath($Path)
@@ -64,6 +68,7 @@ $package = Assert-ChildPath $fixtureDirectory (Join-Path $fixtureDirectory 'pack
 [System.IO.Directory]::CreateDirectory($package) | Out-Null
 $process = $null
 $processStarted = $false
+$processObserver = $null
 
 try {
     Write-Utf8 (Join-Path $package 'local_package\__init__.py') ''
@@ -109,7 +114,7 @@ console.log(JSON.stringify({kind:'node-esm-network',helper:value,checks,serviceO
 '@
     Write-Utf8 (Join-Path $package 'node-kosis.cjs') @'
 const url='https://k-skill-proxy.nomadamas.org/v1/kosis/search?method=getList&format=json&jsonVD=Y&searchNm=%EC%9D%B8%EA%B5%AC&resultCount=1&startCount=1';
-(async()=>{const response=await fetch(url);let data;try{data=JSON.parse(await response.text());}catch{}console.log(JSON.stringify({kind:'node-kosis',status:response.status,json:data!==undefined,serviceOk:response.status===200&&data!==undefined,error:data?.error||data?.err||null}));})().catch(error=>{console.error(error.message);process.exitCode=1;});
+(async()=>{const response=await fetch(url);const responseBody=await response.text();console.log(JSON.stringify({kind:'node-kosis',status:response.status,responseBody}));})().catch(error=>{console.error(error.message);process.exitCode=1;});
 '@
     Write-Utf8 (Join-Path $package 'denied.py') @'
 import json,os,socket,sys
@@ -174,6 +179,8 @@ print(json.dumps({'kind':'denied-probe','fileDenied':file_denied,'networkDenied'
     $start.RedirectStandardInput = $true; $start.RedirectStandardOutput = $true; $start.RedirectStandardError = $true
     $start.StandardInputEncoding = $utf8; $start.StandardOutputEncoding = $utf8; $start.StandardErrorEncoding = $utf8
     $start.Environment['TABLECLOTH_TEST_CANARY'] = 'must-not-be-inherited'
+    $processObserver = [TableCloth.SkillSmokeDiagnostics.ProcessEvidenceObserver]::new($PID, $HostExecutable, $seed.pythonExecutable, $seed.nodeExecutable)
+    $processObserver.Start()
     $process = [System.Diagnostics.Process]::new(); $process.StartInfo = $start
     if (-not $process.Start()) { throw 'Native product broker did not start.' }
     $processStarted = $true
@@ -182,6 +189,8 @@ print(json.dumps({'kind':'denied-probe','fileDenied':file_denied,'networkDenied'
     $process.StandardInput.Close()
     if (-not $process.WaitForExit(480000)) { $process.Kill($true); throw 'Native smoke broker exceeded its deadline.' }
     $stdout = $stdoutTask.GetAwaiter().GetResult(); $stderr = $stderrTask.GetAwaiter().GetResult()
+    $observations = @($processObserver.Stop())
+    Write-Utf8 (Join-Path $EvidenceDirectory 'processes.json') (ConvertTo-Json -InputObject $observations -Depth 8)
     Write-Utf8 (Join-Path $EvidenceDirectory 'responses.jsonl') $stdout
     Write-Utf8 (Join-Path $EvidenceDirectory 'stderr.txt') $stderr
     $responses = @($stdout -split "`r?`n" | Where-Object { $_ } | ForEach-Object { $_ | ConvertFrom-Json })
@@ -203,21 +212,40 @@ print(json.dumps({'kind':'denied-probe','fileDenied':file_denied,'networkDenied'
             if ($cases[$index].Name -eq 'node-cjs-fixture') { $passed = $passed -and $payload.main }
         }
         if ($passed -and $cases[$index].Name -eq 'node-cjs-network-fixture') { $passed = $passed -and $payload.main }
-        $results.Add([ordered]@{name=$cases[$index].Name;passed=[bool]$passed;execution=$execution;payload=$payload})
+        $serviceValidation = $null
+        if ($passed -and $cases[$index].Name -eq 'node-kosis-fixture') {
+            $serviceValidation = Test-KosisSearchResponse -Status $payload.status -ResponseBody $payload.responseBody
+        }
+        $results.Add([ordered]@{name=$cases[$index].Name;passed=[bool]$passed;execution=$execution;payload=$payload;serviceValidation=$serviceValidation})
     }
     $networkCaseCount = @($cases | Where-Object { $_.Network }).Count
-    $verifiedServiceCount = @($results | Where-Object { $_.payload -and $_.payload.PSObject.Properties.Name -contains 'serviceOk' -and $_.payload.serviceOk }).Count
+    $verifiedServiceCount = @($results | Where-Object {
+        if ($_.name -eq 'node-kosis-fixture') { $_.passed -and $_.serviceValidation -and $_.serviceValidation.serviceOk }
+        else { $_.passed -and $_.payload -and $_.payload.PSObject.Properties.Name -contains 'serviceOk' -and $_.payload.serviceOk }
+    }).Count
+    $brokerObservations = @($observations | Where-Object { $_.Kind -eq 'broker' -and $_.ProcessId -eq $process.Id -and
+        $_.ImagePath -ieq $HostExecutable -and $_.Sha256 -eq (Get-Sha256 $HostExecutable) -and $_.TokenQuerySucceeded -and $_.IsAppContainer -eq $false })
+    $workerObservations = @($observations | Where-Object { $_.Kind -eq 'worker' -and $_.ParentProcessId -eq $process.Id -and
+        $_.TokenQuerySucceeded -and $_.IsAppContainer -eq $true -and $null -eq $_.QueryError -and
+        (($_.ImagePath -ieq $seed.pythonExecutable -and $_.Sha256 -eq $seed.pythonSha256) -or
+         ($_.ImagePath -ieq $seed.nodeExecutable -and $_.Sha256 -eq $seed.nodeSha256)) })
+    $independentProcessChecksPassed = $brokerObservations.Count -eq 1 -and $workerObservations.Count -eq $cases.Count -and
+        @($workerObservations | Where-Object ImagePath -IEQ $seed.pythonExecutable).Count -eq 2 -and
+        @($workerObservations | Where-Object ImagePath -IEQ $seed.nodeExecutable).Count -eq 5
     $summary = [ordered]@{recordedUtc=[DateTimeOffset]::UtcNow.ToString('O');host=$HostExecutable;hostSha256=Get-Sha256 $HostExecutable;
         hostProductVersion=(Get-Item -LiteralPath $HostExecutable).VersionInfo.ProductVersion;brokerExitCode=$process.ExitCode;
         allExecutionChecksPassed=(@($results | Where-Object { -not $_.passed }).Count -eq 0);
         allLiveServiceChecksPassed=($verifiedServiceCount -eq $networkCaseCount);
+        independentProcessChecksPassed=[bool]$independentProcessChecksPassed;
         cases=$results}
     Write-Utf8 (Join-Path $EvidenceDirectory 'summary.json') ($summary | ConvertTo-Json -Depth 30)
     if ($process.ExitCode -ne 0 -or -not $summary.allExecutionChecksPassed) { throw 'At least one native AppContainer execution check failed; inspect summary.json and responses.jsonl.' }
     if (-not $summary.allLiveServiceChecksPassed) { throw 'Scripts executed, but at least one live public API check failed; inspect summary.json before making a service-support claim.' }
+    if (-not $summary.independentProcessChecksPassed) { throw 'Independent Win32 process/token observations did not establish every expected AppContainer worker; inspect processes.json.' }
     Write-Output ('Native execution checks passed: ' + $results.Count + '; live public API checks passed.')
 }
 finally {
+    if ($null -ne $processObserver) { $processObserver.Dispose() }
     if ($null -ne $process) {
         if ($processStarted -and -not $process.HasExited) { $process.Kill($true); $process.WaitForExit() }
         $process.Dispose()

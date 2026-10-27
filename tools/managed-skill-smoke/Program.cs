@@ -12,9 +12,19 @@ using TableCloth.Components;
 using TableCloth.ManagedAi;
 using TableCloth.ManagedAi.OpenAi;
 using TableCloth.ManagedAi.Windows;
+using TableCloth.SkillSmokeDiagnostics;
 
 // This managed diagnostic parent uses the product DI composition. MCP children are
 // the actual TableCloth.exe resolved by its real ISharedLocations implementation.
+if (args.Length is 2 or 4 && args[0] == "--verify")
+{
+    if (args.Length == 4 && args[2] != "--expected-product-sha256")
+        throw new ArgumentException("Use --verify <evidence-directory> [--expected-product-sha256 <trusted-sha256>].");
+    var verified = EvidenceVerifier.Verify(args[1], args.Length == 4 ? args[3] : null);
+    Console.WriteLine(JsonSerializer.Serialize(verified, new JsonSerializerOptions { WriteIndented = true }));
+    Environment.ExitCode = verified.Passed ? 0 : 1;
+    return;
+}
 var options = ProbeOptions.Parse(args);
 var evidence = Path.Combine(AppContext.BaseDirectory, "evidence", DateTimeOffset.UtcNow.ToString("yyyyMMddTHHmmssfffZ") + "-" + Guid.NewGuid().ToString("N")[..8]);
 Directory.CreateDirectory(evidence);
@@ -35,6 +45,7 @@ var execution = services.GetRequiredService<IManagedAiSkillExecution>();
 var locations = services.GetRequiredService<ISharedLocations>();
 var stage = "composition";
 var watch = Stopwatch.StartNew();
+var probeCompleted = false;
 try
 {
     log.Record("start", new
@@ -219,6 +230,10 @@ try
         {
             stage = "real-codex-chat:" + id;
             capture.Begin(id);
+            var scriptRuntime = services.GetRequiredService<IManagedAiScriptExecutionRuntime>();
+            using var processObserver = new ProcessEvidenceObserver(Environment.ProcessId,
+                locations.ExecutableFilePath, scriptRuntime.PythonExecutable, scriptRuntime.NodeExecutable);
+            processObserver.Start();
             var request = SkillCases.ChatRequest(id, options.Model);
             log.Record("chat-request", new
             {
@@ -251,12 +266,18 @@ try
                     message = error is InvalidOperationException ? error.Message : null
                 });
             }
-            finally { capture.End(); }
+            finally
+            {
+                var observations = processObserver.Stop();
+                await SaveJsonAsync(Path.Combine(evidence, id + ".processes.json"), observations, token);
+                capture.End();
+            }
         }
         if (chatFailures.Count != 0) throw new InvalidOperationException("The required actual chat evidence failed: " + string.Join(", ", chatFailures));
     }
     WriteSkills(log, "installed-final", await manager.ListAsync(token));
     log.Record("completed", new { passed = true, elapsedMilliseconds = watch.ElapsedMilliseconds, evidenceDirectory = evidence });
+    probeCompleted = true;
 }
 catch (Exception error)
 {
@@ -271,6 +292,17 @@ catch (Exception error)
         evidenceDirectory = evidence
     });
     Environment.ExitCode = 1;
+}
+
+if (probeCompleted && options.ChatSkill == "all")
+{
+    // Close the producer before the independent, read-only reader takes its snapshot.
+    log.Dispose();
+    var independentlyVerified = EvidenceVerifier.Verify(evidence, await HashFileAsync(locations.ExecutableFilePath, token));
+    await SaveJsonAsync(Path.Combine(evidence, "verification.json"), independentlyVerified, token);
+    Console.WriteLine(JsonSerializer.Serialize(new { independentVerificationPassed = independentlyVerified.Passed,
+        independentlyVerified.Failures, evidenceDirectory = evidence }));
+    if (!independentlyVerified.Passed) Environment.ExitCode = 1;
 }
 
 async Task<bool> WithBridgeAsync(IReadOnlyList<AiSkill> available, Func<AiSkillExecutionBridge, Task<bool>> operation)
@@ -517,19 +549,43 @@ sealed class CaptureSession(string directory, EvidenceLog log)
             json = spec.StartInfo.ArgumentList.Contains("--json"),
             readOnlySandbox = spec.StartInfo.ArgumentList.Contains("read-only"),
             rawAuthOutputCaptured = false,
+            arguments = spec.StartInfo.ArgumentList.ToArray(),
             eventPath = CurrentPath
         });
     }
+
+    internal void CopyManifest(ProcessRunSpec spec, ManagedAiPaths paths)
+    {
+        var configuration = spec.StartInfo.ArgumentList.SingleOrDefault(value => value.StartsWith("mcp_servers.tablecloth_skills=", StringComparison.Ordinal));
+        if (configuration is null) return;
+        var match = Regex.Match(configuration, "args=\\[\"--skill-mcp\",(?<path>\"(?:\\\\.|[^\"\\\\])*\")\\]",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking, TimeSpan.FromMilliseconds(100));
+        if (!match.Success) throw new InvalidOperationException("The actual product MCP manifest could not be captured.");
+        using var encodedPath = JsonDocument.Parse(match.Groups["path"].Value);
+        var manifestPath = Path.GetFullPath(encodedPath.RootElement.GetString()!);
+        var expectedDirectory = paths.Under("skill-execution");
+        if (!string.Equals(Path.GetDirectoryName(manifestPath), expectedDirectory, StringComparison.OrdinalIgnoreCase) ||
+            !Path.GetFileName(manifestPath).StartsWith("manifest-", StringComparison.Ordinal) ||
+            new FileInfo(manifestPath).Length is < 1 or > 4194304)
+            throw new InvalidOperationException("The captured MCP manifest is outside the application-owned registration directory.");
+        ManagedAiPaths.RejectReparsePoints(manifestPath);
+        File.Copy(manifestPath, Path.Combine(directory, SkillId + ".manifest.json"), overwrite: false);
+        File.Copy(manifestPath, Path.Combine(directory, "runtime-seed-manifest.json"), overwrite: true);
+    }
 }
 
-sealed class CapturingRunner(CaptureSession session) : IJsonlProcessRunner
+sealed class CapturingRunner(CaptureSession session, ManagedAiPaths paths) : IJsonlProcessRunner
 {
     private readonly JsonlProcessRunner _inner = new();
     public async Task<ProcessOutcome> RunAsync(ProcessRunSpec spec, Action<string> output, Action<string>? error, CancellationToken token)
     {
         var path = session.CurrentPath;
         var capture = path is not null && spec.StartInfo.ArgumentList.Contains("exec") && spec.StartInfo.ArgumentList.Contains("--json");
-        if (capture) session.RecordInvocation(spec);
+        if (capture)
+        {
+            session.CopyManifest(spec, paths);
+            session.RecordInvocation(spec);
+        }
         using var writer = capture ? new StreamWriter(path!, append: true, new UTF8Encoding(false)) { AutoFlush = true } : null;
         return await _inner.RunAsync(spec, line =>
         {
@@ -589,8 +645,7 @@ static class SkillCases
             return id switch
             {
                 "bok-ecos-stats" => root.GetProperty("result").GetString() == "ok" && root.GetProperty("rows").GetArrayLength() == 1,
-                "kosis-stats" => root.ValueKind == JsonValueKind.Array && root.GetArrayLength() == 1 &&
-                    root[0].TryGetProperty("ORG_ID", out _) && root[0].TryGetProperty("TBL_ID", out _),
+                "kosis-stats" => EvidenceVerifier.IsValidKosisSearchData(result.Stdout),
                 "tablecloth-calculators" => root.GetProperty("ok").GetBoolean() && root.GetProperty("operation").GetString() == "bmi" &&
                     root.GetProperty("result").GetProperty("bmi").GetString() == "27.36",
                 _ => false
