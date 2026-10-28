@@ -1,0 +1,54 @@
+{
+  "verificationDate": "2026-10-28",
+  "branch": "fix/managed-ai-prompt-input",
+  "implementation": {
+    "filePicker": true,
+    "clipboardFiles": true,
+    "clipboardBitmap": true,
+    "plainTextPaste": "selection replacement, undo, existing masking",
+    "supportedImages": ["image/png", "image/jpeg"],
+    "textEncodings": ["UTF-8", "UTF-8 BOM", "UTF-16 LE BOM", "UTF-16 BE BOM"],
+    "draftStorage": "bounded immutable memory copies",
+    "draftPresentation": "composer cards disappear when sending starts; errors and cancellation restore the draft",
+    "attachmentLayout": "one row with equal-width columns for one to four files; widths rebalance after removal",
+    "textPreview": "collapsed by default; themed buttons open and close a bounded read-only text view",
+    "imageTransport": "owned request files and separate --image arguments",
+    "textTransport": "quoted untrusted JSON in the request prompt",
+    "history": "attachment names only; no automatic content retransmission"
+  },
+  "liveProviderCheck": {
+    "runtime": "codex-cli 0.156.1",
+    "architecture": "x86_64-pc-windows-msvc",
+    "authentication": "existing TableCloth managed profile; no new login",
+    "modelSelection": "runtime default; no model override or separate model ID capture",
+    "provider": "OpenAiCodexProvider with WindowsManagedAiProfile and JsonlProcessRunner",
+    "fixtures": [
+      "synthetic 32 by 32 blue PNG",
+      "UTF-8 text containing ATTACHMENT-4721"
+    ],
+    "response": "ATTACHMENT-4721/blue",
+    "exitCode": 0,
+    "contentVerified": true,
+    "personalFilesTransmitted": false
+  },
+  "automatedChecks": {
+    "configuration": "Debug",
+    "host": { "passed": 424, "failed": 0, "skipped": 0 },
+    "managedAi": { "passed": 521, "failed": 0, "skipped": 0 },
+    "promptUi": { "passed": 104, "failed": 0, "skipped": 0 },
+    "hostOutputIsolation": "separate artifacts directory; existing debug app remained running",
+    "visualReview": "640 by 540 composer renders with one to four equal-width attachment columns and separate candidate popup renders; both reviewed in light and dark themes",
+    "attachmentLifecycle": "cards clear before the response; request bytes remain stable; errors and cancellation restore the draft; closed windows do not restore cards",
+    "composerButtons": "paperclip icon and plus button on one horizontal row above the editor; accessible name and tooltip retained",
+    "skillKeyboardNavigation": "Up/Down move without committing; Enter chooses; Esc dismisses; accent paint and long-list scrolling verified",
+    "nativeClipboardOwnership": "borrow in-process objects; dispose newly decoded native resources"
+  },
+  "qualificationLimits": [
+    "No native Windows file-dialog interaction was automated.",
+    "Headless clipboard tests do not prove every source application's OLE formats.",
+    "JPEG was validated locally but was not sent in the live provider check.",
+    "No model-by-model image capability comparison was performed.",
+    "The physical Korean keyboard and native Windows IME toggle remain unverified.",
+    "PDF, Office, HWP, ZIP and virtual clipboard files are unsupported."
+  ]
+}

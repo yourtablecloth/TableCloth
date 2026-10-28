@@ -41,7 +41,7 @@ public static class OpenAiCodexInvocationBuilder
     }
 
     public static ProcessRunSpec Chat(ManagedRuntime runtime, string runDirectory, string prompt, ManagedAiOptions options, string? model = null,
-        AiSkillExecutionBridge? skillExecution = null)
+        AiSkillExecutionBridge? skillExecution = null, IReadOnlyList<string>? imagePaths = null)
     {
         var spec = Command(runtime, runDirectory,
             ["--profile", ManagedAiPaths.SkillProfileName, "--search", "--ask-for-approval", "never", "--strict-config", "exec", "--json",
@@ -53,6 +53,26 @@ public static class OpenAiCodexInvocationBuilder
             // Insert before the final stdin prompt marker.
             spec.StartInfo.ArgumentList.Insert(0, model);
             spec.StartInfo.ArgumentList.Insert(0, "--model");
+        }
+        if (imagePaths is { Count: > 0 })
+        {
+            if (imagePaths.Count > 4 || imagePaths.Distinct(StringComparer.OrdinalIgnoreCase).Count() != imagePaths.Count)
+                throw new ManagedAiException(AiFailureCode.InvalidPath);
+            var attachments = Path.GetFullPath(Path.Combine(runDirectory, "attachments"));
+            foreach (var path in imagePaths)
+            {
+                if (!Path.IsPathFullyQualified(path)) throw new ManagedAiException(AiFailureCode.InvalidPath);
+                var full = Path.GetFullPath(path);
+                var name = Path.GetFileName(full);
+                if (full.Contains(',') || !string.Equals(Path.GetDirectoryName(full), attachments, StringComparison.OrdinalIgnoreCase) ||
+                    name.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not ('-' or '.')) ||
+                    Path.GetExtension(full) is not (".png" or ".jpg") || !File.Exists(full))
+                    throw new ManagedAiException(AiFailureCode.InvalidPath);
+                ManagedAiPaths.RejectReparsePoints(full);
+                // Each flag and path is a separate argument; the final '-' still selects stdin for text.
+                spec.StartInfo.ArgumentList.Insert(spec.StartInfo.ArgumentList.Count - 1, "--image");
+                spec.StartInfo.ArgumentList.Insert(spec.StartInfo.ArgumentList.Count - 1, full);
+            }
         }
         if (skillExecution is not null)
         {

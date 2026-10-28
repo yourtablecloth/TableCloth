@@ -67,7 +67,7 @@ public sealed class WindowsManagedAiSkillExecution(ManagedAiPaths paths,
                 catch (ManagedAiException) { /* Offline script packages remain available. */ }
             }
             var registrations = new List<(string Name, string Kind, string Script, string Hash, string Root,
-                IReadOnlyList<ScriptRuntimeFile> Files, string Description, string[] Hosts)>();
+                IReadOnlyList<ScriptRuntimeFile> Files, string Description, string[] Hosts, AiSkillToolRegistration Identity)>();
             var registeredNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var packageIndex = 0;
             var manifestFileCount = 0;
@@ -109,7 +109,10 @@ public sealed class WindowsManagedAiSkillExecution(ManagedAiPaths paths,
                         var kind = Path.GetExtension(relative).Equals(".py", StringComparison.OrdinalIgnoreCase) ? "python-script" : "node-script";
                         var description = "Installed skill " + skill.Id + ", entry point " + relative.Replace('\\', '/') +
                             ". Pass script CLI arguments as arguments[] and optional text input as stdin. No host shell.";
-                        registrations.Add((names[index], kind, script, staged.Single(x => x.Path == script).Sha256, package, staged, description, hosts));
+                        var skillName = SensitiveDataSanitizer.Sanitize(skill.Name);
+                        if (string.IsNullOrWhiteSpace(skillName) || skillName.Length > 128 || skillName.Any(char.IsControl)) skillName = skill.Id;
+                        var identity = new AiSkillToolRegistration(names[index], skill.Id, skillName, relative.Replace('\\', '/'));
+                        registrations.Add((names[index], kind, script, staged.Single(x => x.Path == script).Sha256, package, staged, description, hosts, identity));
                         registeredNames.Add(names[index]);
                     }
                     manifestFileCount += cost;
@@ -152,7 +155,11 @@ public sealed class WindowsManagedAiSkillExecution(ManagedAiPaths paths,
             }
             await SkillExecutionRegistry.LoadAsync(manifest, cancellationToken);
             bridge = new AiSkillExecutionBridge(hostExecutable, ["--skill-mcp", manifest], root,
-                registrations.Select(x => x.Name).ToArray()) { SnapshotDirectory = snapshot };
+                registrations.Select(x => x.Name).ToArray())
+            {
+                SnapshotDirectory = snapshot,
+                Tools = Array.AsReadOnly(registrations.Select(x => x.Identity).ToArray())
+            };
             return bridge;
         }
         catch (OperationCanceledException) { throw; }

@@ -24,7 +24,7 @@ using TableCloth.ViewModels;
 
 namespace TableCloth.ManagedAi;
 
-public sealed class ManagedAiWindow : Window
+public sealed partial class ManagedAiWindow : Window
 {
     private static readonly (string Korean, string English)[] StarterBankExamples =
         [("KB국민은행", "KB Kookmin Bank"), ("신한은행", "Shinhan Bank"),
@@ -54,7 +54,7 @@ public sealed class ManagedAiWindow : Window
     private bool _preferencesLoaded;
     private bool _updatingModelList;
     private bool _sanitizingInput;
-    private readonly TextBox _input = new()
+    private readonly ManagedAiPromptTextBox _input = new()
     {
         Watermark = L("메시지를 입력합니다.", "Type a message."),
         AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MaxLength = 4000, MinHeight = 60, MaxHeight = 180
@@ -150,11 +150,11 @@ public sealed class ManagedAiWindow : Window
         clear.Click += (_, _) =>
         {
             if ((_session.History.Count > 0 || _transcript.Children.Any(child => !ReferenceEquals(child, _starters)) ||
-                 !string.IsNullOrWhiteSpace(_input.Text)) &&
-                _messages.DisplayQuestion(L("새 대화를 시작하면 기존 대화 내용과 작성 중인 메시지가 모두 사라집니다. 계속하시겠습니까?",
-                    "Starting a new chat will erase the conversation and your draft. Continue?"),
+                 !string.IsNullOrWhiteSpace(_input.Text) || HasPromptAttachments) &&
+                _messages.DisplayQuestion(L("새 대화를 시작하면 기존 대화 내용과 작성 중인 메시지 및 첨부 파일이 모두 사라집니다. 계속하시겠습니까?",
+                    "Starting a new chat will erase the conversation, your draft, and its attachments. Continue?"),
                     AppMessageBoxButton.YesNo, AppMessageBoxResult.No) != AppMessageBoxResult.Yes) return;
-            _session.Clear(); _input.Text = string.Empty; _transcript.Children.Clear(); AddWelcome();
+            _session.Clear(); _input.Text = string.Empty; ClearPromptAttachments(); _transcript.Children.Clear(); AddWelcome();
         };
         _actions.Add(clear);
         AutomationProperties.SetAutomationId(clear, "ManagedAiNewChat");
@@ -181,6 +181,18 @@ public sealed class ManagedAiWindow : Window
         composer.Children.Add(_busyBar);
         composer.Children.Add(_status);
         composer.Children.Add(_elapsed);
+        composer.Children.Add(CreatePromptAttachmentControls());
+        composer.Children.Add(CreatePromptSkillPicker());
+        var promptButtons = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 6, HorizontalAlignment = HorizontalAlignment.Left
+        };
+        AutomationProperties.SetAutomationId(promptButtons, "ManagedAiPromptButtons");
+        var addSkill = CreatePromptSkillButton();
+        addSkill.MinHeight = 32;
+        promptButtons.Children.Add(addSkill);
+        promptButtons.Children.Add(CreatePromptAttachmentButton());
+        composer.Children.Add(promptButtons);
         var editor = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 10 };
         ToolTip.SetTip(_input, L("Shift+Enter로 전송합니다.", "Press Shift+Enter to send."));
         editor.Children.Add(_input);
@@ -285,10 +297,12 @@ public sealed class ManagedAiWindow : Window
         _timer.Tick += (_, _) => _elapsed.Text = L($"{(int)_watch.Elapsed.TotalSeconds}초 경과",
             $"{(int)_watch.Elapsed.TotalSeconds}s elapsed");
         _input.TextChanging += (_, _) => SanitizeInput();
+        InitializePromptAttachments();
+        InitializePromptSkillPicker();
         _send.Click += async (_, _) => await SendAsync();
         _input.AddHandler(KeyDownEvent, async (_, e) =>
         {
-            if (e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.Shift)
+            if (!e.Handled && !IsPromptSkillCompositionActive() && e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.Shift)
             { e.Handled = true; await SendAsync(); }
         }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
         _cancel.Click += (_, _) => _operation?.Cancel();
@@ -311,7 +325,7 @@ public sealed class ManagedAiWindow : Window
                 await _modelSaveTask;
                 Close();
             }
-            else { _timer.Stop(); _session.Clear(); _loginUri = null; _loginCode.Text = string.Empty; }
+            else { _timer.Stop(); _session.Clear(); ClearPromptAttachments(); _loginUri = null; _loginCode.Text = string.Empty; }
         };
         AddWelcome();
     }
@@ -372,6 +386,7 @@ public sealed class ManagedAiWindow : Window
     private async Task RefreshSkillsAsync(CancellationToken token)
     {
         var skills = await RunBackendAsync(_skills.ListAsync, token);
+        UpdatePromptSkills(skills);
         _certificateSkillEnabled = skills.Any(skill => skill.Id == "tablecloth-certificate-expiry" && skill.Enabled && skill.IsValid);
         _sandboxSkillEnabled = skills.Any(skill => skill.Id == "tablecloth-windows-sandbox" && skill.Enabled && skill.IsValid);
         _skillCount.Text = L($"활성 스킬 {skills.Count(skill => skill.Enabled && skill.IsValid)}개 (보유 {skills.Count}개)",
@@ -498,8 +513,11 @@ public sealed class ManagedAiWindow : Window
 
     private async Task SendAsync()
     {
-        if (_operation is not null || !_loggedIn || _models.SelectedItem is not AiModel model || string.IsNullOrWhiteSpace(_input.Text)) return;
-        var text = _input.Text.Trim();
+        if (_operation is not null || HasPromptAttachmentOperation || !_loggedIn || _models.SelectedItem is not AiModel model ||
+            (string.IsNullOrWhiteSpace(_input.Text) && !HasPromptAttachments)) return;
+        var draft = _input.Text ?? string.Empty;
+        var text = draft.Trim();
+        var attachments = SnapshotPromptAttachments();
         if (CertificateInputGuard.ContainsProhibitedMaterial(text))
         {
             _input.Text = string.Empty;
@@ -517,6 +535,8 @@ public sealed class ManagedAiWindow : Window
         }
         var certificateLookup = _certificateSkillEnabled && CertificateExpiryIntent.Matches(text);
         var sandboxRequest = _sandboxSkillEnabled ? WindowsSandboxIntent.Parse(text) : null;
+        var messageStarted = false;
+        var messageCompleted = false;
         await RunAsync(async token =>
         {
             if (certificateLookup && _messages.DisplayQuestion(
@@ -532,7 +552,17 @@ public sealed class ManagedAiWindow : Window
             { _status.Text = L("Windows Sandbox 종료를 취소했습니다. 메시지는 입력란에 남아 있습니다.",
                 "Stopping Windows Sandbox was canceled. Your message remains in the input box."); return; }
             _starters.IsVisible = false;
-            AddMessage(L("사용자", "You"), text, user: true);
+            var displayed = text;
+            if (attachments.Count > 0)
+                displayed += (displayed.Length > 0 ? "\n\n" : string.Empty) +
+                    L("첨부 파일 (이 요청에만 전송):\n", "Attachments (sent with this request only):\n") +
+                    string.Join("\n", attachments.Select(attachment =>
+                        $"- {attachment.FileName} ({attachment.MediaType}, {attachment.Length:N0} bytes)"));
+            AddMessage(L("사용자", "You"), displayed, user: true);
+            messageStarted = true;
+            // Hide composer cards immediately; retain their immutable data and
+            // previews until success, or restore the cards after a retryable failure.
+            _promptAttachmentList.Children.Clear();
             _input.Text = string.Empty;
             AddPending(model);
             string? localReport = null;
@@ -551,24 +581,22 @@ public sealed class ManagedAiWindow : Window
                 localSandboxReport = await RunBackendAsync(ct => _sandboxBridge.ExecuteAsync(sandboxRequest, ct), token);
             }
             var progress = Progress();
-            AiChatResponse response;
-            try
-            {
-                response = await SendWithBusyRetryAsync(ct => _session.SendAsync(text, progress, ct,
-                    model.Id, localReport, localSandboxReport, _clientContext), token);
-            }
-            catch (ManagedAiException ex) when (ex.Code == AiFailureCode.RuntimeBusy)
-            {
-                _input.Text = text;
-                throw;
-            }
+            var response = await SendWithBusyRetryAsync(ct => _session.SendAsync(text, progress, ct,
+                model.Id, localReport, localSandboxReport, _clientContext, attachments), token);
+            messageCompleted = true;
+            ClearPromptAttachments();
             RemovePending();
-            AddMessage($"{L("식탁보", "TableCloth")} / {response.Model ?? model.Id}", response.Text);
+            AddChatResponse($"{L("식탁보", "TableCloth")} / {response.Model ?? model.Id}", response);
             _status.Text = response.SearchCalls > 0
                 ? L($"응답을 완료했습니다. 웹 검색 {response.SearchCalls}회", $"Response complete. {response.SearchCalls} web searches.")
                 : L("응답을 완료했습니다.", "Response complete.");
         }, errorInChat: true);
-        _input.Focus();
+        if (messageStarted && !messageCompleted && !_promptAttachmentClosed && IsVisible)
+        {
+            if (string.IsNullOrEmpty(_input.Text)) _input.Text = draft;
+            RefreshPromptAttachmentList();
+        }
+        if (!_promptAttachmentClosed) _input.Focus();
     }
 
     private void SanitizeInput()
@@ -660,25 +688,29 @@ public sealed class ManagedAiWindow : Window
 
     private void UpdateEnabled()
     {
-        foreach (var action in _actions) action.IsEnabled = _operation is null;
-        foreach (var starter in _starterButtons) starter.IsEnabled = _operation is null;
-        _openSkillMarketplace.IsEnabled = _operation is null && _skillMarketplace is not null;
+        var idle = _operation is null && !HasPromptAttachmentOperation;
+        foreach (var action in _actions) action.IsEnabled = idle;
+        foreach (var starter in _starterButtons) starter.IsEnabled = idle;
+        _openSkillMarketplace.IsEnabled = idle && _skillMarketplace is not null;
         _browseSkills.IsEnabled = _openSkillMarketplace.IsEnabled;
         _signIn.IsVisible = !_loggedIn;
         _signIn.Content = _runtimeInstalled ? L("OpenAI 로그인", "Sign in to OpenAI") : L("설치하고 로그인", "Install and sign in");
         _signOut.IsVisible = _loggedIn;
         _reconnect.IsVisible = _loggedIn;
         _connect.IsVisible = !_loggedIn || _models.SelectedItem is null;
-        _connect.IsEnabled = _operation is null;
+        _connect.IsEnabled = idle;
         _connect.Content = !_statusKnown ? L("연결 다시 확인", "Check connection again")
             : !_runtimeInstalled ? L("AI 사용 준비", "Set up AI")
             : !_loggedIn ? L("OpenAI 로그인", "Sign in to OpenAI") : L("모델 목록 다시 불러오기", "Reload models");
-        _models.IsEnabled = _operation is null && _loggedIn;
-        _send.IsEnabled = _operation is null && _loggedIn && _models.SelectedItem is AiModel && !string.IsNullOrWhiteSpace(_input.Text);
+        _models.IsEnabled = idle && _loggedIn;
+        _send.IsEnabled = idle && _loggedIn && _models.SelectedItem is AiModel &&
+            (!string.IsNullOrWhiteSpace(_input.Text) || HasPromptAttachments);
         _cancel.IsVisible = _operation is not null;
         _busyBar.IsVisible = _operation is not null && _pending is null;
         _busyBar.IsActive = _busyBar.IsVisible;
-        _input.IsReadOnly = _operation is not null;
+        _input.IsReadOnly = _operation is not null || HasPromptAttachmentOperation;
+        UpdatePromptAttachmentAvailability();
+        UpdatePromptSkillAvailability();
     }
 
     private void AddPending(AiModel model)
@@ -923,7 +955,7 @@ public sealed class ManagedAiWindow : Window
         return new Progress<AiProgress>(update =>
         {
             if (_operation != operation || operation is null) return;
-            var text = update.Stage switch
+            var text = update.SkillExecution is { } execution ? SkillExecutionProgressText(execution) : update.Stage switch
             {
                 "ResolvingRelease" => L("공식 릴리스를 확인하고 있습니다.", "Checking the official release."),
                 "VerifyingChecksums" => L("체크섬을 검증하고 있습니다.", "Verifying checksums."),
@@ -965,6 +997,12 @@ public sealed class ManagedAiWindow : Window
         AiFailureCode.ProviderTimeout => L("제한 시간을 초과해 요청을 종료했습니다. 메시지를 다시 보내 재시도할 수 있습니다.", "The request timed out. Send the message again to retry."),
         AiFailureCode.NoPreviousVersion => L("복원할 이전 버전이 없습니다.", "No previous runtime version is available."),
         AiFailureCode.InvalidQuery => L("메시지가 비어 있거나 너무 깁니다. 4,000자 이내의 메시지를 입력할 수 있습니다.", "Enter a message of up to 4,000 characters."),
+        AiFailureCode.AttachmentInvalid => L("지원하는 이미지 또는 텍스트 파일을 읽지 못했습니다. 파일 형식과 내용을 확인한 뒤 다시 첨부할 수 있습니다.",
+            "Could not read a supported image or text file. Check its format and contents, then attach it again."),
+        AiFailureCode.AttachmentLimitExceeded => L("첨부 파일의 개수, 크기 또는 내용이 제한을 초과했습니다. 파일을 줄인 뒤 다시 첨부할 수 있습니다.",
+            "The attachments exceed a count, size, or content limit. Attach fewer or smaller files."),
+        AiFailureCode.AttachmentBlocked => L("인증서 또는 개인 키로 보이는 파일 내용을 감지해 첨부하지 않았습니다.",
+            "Certificate or private-key material was detected, so the file was not attached."),
         AiFailureCode.UnsafeUrl => L("공개 웹사이트의 HTTP 또는 HTTPS 링크만 열 수 있습니다. 로컬 주소와 다른 링크 형식은 지원하지 않습니다.",
             "Only public HTTP or HTTPS websites can be opened. Local addresses and other link types are unsupported."),
         AiFailureCode.SubscriptionUnavailable => L("구독 사용량 또는 요청 한도에 도달했습니다. ChatGPT 계정의 사용량을 확인한 후 다시 시도할 수 있습니다.",

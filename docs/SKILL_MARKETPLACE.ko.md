@@ -67,6 +67,10 @@ ZScaler 설정은 샌드박스와 AI 스킬에 서로 다른 경로로 적용합
 
 인증서 만료와 Windows Sandbox 요청은 [기존 호스트 브리지](../src/TableCloth.App/ManagedAi/ManagedAiWindow.cs)가 처리합니다. 인증서 브리지는 사용자 동의를 받고 만료 건수만 전송합니다. Sandbox 브리지는 `list`, `start`, `stop`, `connect`, `ip`를 지원하며 종료 전에 사용자에게 확인합니다. 이 호스트 작업은 스킬 AppContainer에서 실행하지 않습니다. `Network="none"`은 스킬 자체의 데이터 요구 사항을 나타내며 Codex 대화는 온라인 연결을 사용합니다.
 
+2026년 10월 28일의 작업 브랜치는 응답마다 앱이 수집한 스크립트 실행 기록을 표시합니다. [응답 파서](../src/TableCloth.ManagedAi.OpenAi/Parsing/CodexJsonlParser.cs)는 해당 요청에 등록한 도구의 시작과 완료 이벤트를 연결하고 브로커 결과의 실행 상태, AppContainer 여부와 종료 코드를 확인합니다. 도구 이름이 해시를 포함하더라도 앱의 등록 정보를 통해 원래 설치 스킬과 상대 진입점을 표시합니다. 스킬 선택 문구나 모델의 답변만으로 실행 기록을 만들지 않습니다.
+
+이어서 [대화 세션](../src/TableCloth.ManagedAi.Core/ManagedAiChatSession.cs)은 완료한 대화 차례의 실행 메타데이터를 메모리에 보존하고 [후속 프롬프트](../src/TableCloth.ManagedAi.OpenAi/Execution/OpenAiChatPromptFactory.cs)에 전달합니다. 기록은 차례당 최대 16개이며 대화의 기존 길이 예산에 포함합니다. 초과분은 생략 여부를 표시하고 새 대화에서 기록을 지웁니다. 원본 인자, 표준 입력, 스크립트 출력과 호스트 절대 경로는 이 기록에 보존하지 않습니다. 실행 성공 기록은 브로커가 확인한 실행 사실을 나타내며 답변의 모든 수치나 출처를 검증했다는 뜻으로 확대하지 않습니다. 중단되거나 최종 응답을 완료하지 못한 대화 차례는 후속 이력에 추가하지 않습니다. 기존 대화의 실행 기록을 소급해서 복구하지 않습니다. 합성 할인 계산과 후속 스킬 식별의 실제 제공자 검사는 [실행 이력 검증 기록](poc/managed-ai-skill-execution-history-evidence.json)에 보존했습니다.
+
 ## 전용 런타임과 긴 경로 진단
 
 **실행 환경** 탭은 설치한 Python과 Node.js 버전을 표시하며 **실행 환경 설치/복구**와 **설치 및 환경 검사**를 제공합니다. 두 런타임은 식탁보 전용으로 관리하며 대화에 사용하는 네이티브 Codex CLI와 구분합니다. 시스템 인터프리터, 시스템 PATH와 Windows 정책은 변경하지 않습니다. [런타임 관리자](../src/TableCloth.ManagedAi.Windows/ScriptRuntimeManager.cs)와 [실행 환경 뷰 모델](../src/TableCloth.App/ViewModels/SkillMarketplaceWindowViewModel.Runtimes.cs)이 설치와 상태 표시를 담당합니다.
