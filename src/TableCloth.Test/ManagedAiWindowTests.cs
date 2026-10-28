@@ -1279,10 +1279,11 @@ public sealed partial class ManagedAiWindowTests
     {
         public bool Installed = true;
         public int Installs;
+        public Exception? StatusError;
         public bool? GetActiveCalledOnUiThread;
         private readonly ManagedRuntime _runtime = new(new("0.156.1", "fixture", "hash"), "fixture", "fixture", "fixture", DateTimeOffset.UtcNow);
         public Task<ManagedRuntime?> GetActiveAsync(CancellationToken token)
-        { GetActiveCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); return Task.FromResult(Installed ? _runtime : null); }
+        { GetActiveCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); if (Installed && StatusError is not null) throw StatusError; return Task.FromResult(Installed ? _runtime : null); }
         public Task<ManagedRuntime> InstallAsync(string? version, IProgress<AiProgress>? progress, CancellationToken token)
         { Installs++; Installed = true; return Task.FromResult(_runtime); }
         public Task<ManagedRuntime> RollbackAsync(CancellationToken token) => throw new NotSupportedException();

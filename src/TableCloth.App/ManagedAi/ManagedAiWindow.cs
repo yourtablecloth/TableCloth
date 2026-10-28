@@ -785,6 +785,7 @@ public sealed partial class ManagedAiWindow : Window
 
     private async Task RefreshStatusAsync(CancellationToken token)
     {
+        UpdatePromptSkills([]);
         await _modelSaveTask;
         if (!_preferencesLoaded)
         {

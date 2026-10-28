@@ -62,20 +62,25 @@ public sealed partial class ManagedAiWindowTests
         });
 
     [TestMethod]
-    [DataRow(false)]
-    [DataRow(true)]
-    public Task InstalledNativeSkillNamesSurviveAuthenticationStatusFailure(bool canceled)
+    [DataRow(false, false)]
+    [DataRow(true, false)]
+    [DataRow(false, true)]
+    [DataRow(true, true)]
+    public Task InstalledSkillNamesNeverFallBackAfterStatusFailure(bool canceled, bool runtimeFailure)
         => WithPromptSkills(async (window, fixture) =>
         {
-            fixture.Auth.StatusError = canceled ? new OperationCanceledException()
+            var failure = canceled ? (Exception)new OperationCanceledException()
                 : new ManagedAiException(AiFailureCode.ProviderFailed);
+            if (runtimeFailure) fixture.Runtime.StatusError = failure;
+            else fixture.Auth.StatusError = failure;
             Click(window, Find<Button>(window, "ManagedAiManage"));
             Find<Button>(window, "ManagedAiUpdate").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             await Ready(window);
             Assert.AreEqual(1, fixture.Runtime.Installs);
             Click(window, Find<Button>(window, "ManagedAiPromptAddSkill"));
             var picker = Find<ComboBox>(window, "ManagedAiPromptSkills");
-            Assert.AreEqual("alpha-skill", picker.Items.OfType<AiSkill>().Single(skill => skill.Id == "directory-alpha").Name);
+            if (runtimeFailure) Assert.HasCount(0, picker.Items);
+            else Assert.AreEqual("alpha-skill", picker.Items.OfType<AiSkill>().Single(skill => skill.Id == "directory-alpha").Name);
             Assert.HasCount(0, fixture.Chat.Requests);
         }, configure: fixture =>
         {
