@@ -122,6 +122,82 @@ public sealed partial class ManagedAiWindowTests
             finally { foreach (var file in files) DeleteAttachmentFile(file); }
         });
 
+    [TestMethod]
+    [DataRow(false, 640, 540)]
+    [DataRow(true, 640, 540)]
+    [DataRow(false, 840, 640)]
+    [DataRow(true, 840, 640)]
+    public async Task PromptToolsScrollWhileTallDraftAndSendRemainVisible(bool dark, int width, int height)
+    {
+        var screenshot = Path.Combine(AppContext.BaseDirectory, "rendered-test-artifacts",
+            $"prompt-bounded-tools-{width}x{height}-{(dark ? "dark" : "light")}.png");
+        await WithPromptSkills(async (window, fixture) =>
+        {
+            Application.Current!.RequestedThemeVariant = dark ? ThemeVariant.Dark : ThemeVariant.Light;
+            window.Width = width; window.Height = height;
+            var files = CreateAttachmentLayoutFiles();
+            try
+            {
+                await PasteFiles(window, files);
+                Click(window, Find<Button>(window, "ManagedAiAttachmentTextPreview3"));
+                var preview = Find<TextBox>(window, "ManagedAiAttachmentTextContent3");
+                Assert.IsTrue(preview.IsVisible);
+                var input = Find<TextBox>(window, "ManagedAiChatInput");
+                input.Text = string.Join("\n", Enumerable.Repeat("A multiline draft with several visible lines.", 60));
+                input.CaretIndex = input.Text!.Length;
+                Dispatcher.UIThread.RunJobs();
+                Click(window, Find<Button>(window, "ManagedAiPromptAddSkill"));
+                var picker = Find<ComboBox>(window, "ManagedAiPromptSkills");
+                await Until(() => picker.IsDropDownOpen);
+                var status = Find<TextBlock>(window, "ManagedAiStatus");
+                status.Text = "The response is taking longer.\nYou can stop the request.\nYour draft remains available.";
+                var elapsed = Find<TextBlock>(window, "ManagedAiElapsed");
+                elapsed.Text = "180s elapsed"; elapsed.IsVisible = true;
+                var hint = Find<TextBlock>(window, "ManagedAiPromptSkillHint");
+                hint.Text = "Use Up or Down to choose a skill.\nPress Enter to insert it.\nPress Escape to return to the draft.";
+                var stop = Find<Button>(window, "ManagedAiCancel");
+                stop.IsVisible = true;
+                Dispatcher.UIThread.RunJobs();
+                var tools = Find<ScrollViewer>(window, "ManagedAiPromptToolsScroll");
+                Assert.IsGreaterThan(tools.Viewport.Height, tools.Extent.Height, "Combined tools must scroll rather than enlarge the Auto row beyond the window.");
+                Assert.IsLessThanOrEqualTo(1d, Math.Abs(input.Bounds.Height - input.MaxHeight));
+                var editorBounds = VisibleBounds(window, input);
+                var sendBounds = VisibleBounds(window, Find<Button>(window, "ManagedAiChatSend"));
+                VisibleBounds(window, stop);
+                var toolsBounds = VisibleBounds(window, tools);
+                Assert.IsTrue(toolsBounds.Bottom <= editorBounds.Top && toolsBounds.Bottom <= sendBounds.Top);
+                tools.ScrollToEnd();
+                Dispatcher.UIThread.RunJobs();
+                AssertPromptToolInViewport(tools, picker);
+                AssertPromptToolInViewport(tools, hint);
+                Assert.IsTrue(preview.IsVisible, "Scrolling must retain the expanded attachment preview state.");
+                var previewPosition = preview.TranslatePoint(default, tools);
+                Assert.IsNotNull(previewPosition);
+                tools.Offset = new Vector(0, tools.Offset.Y + previewPosition.Value.Y - 4);
+                Dispatcher.UIThread.RunJobs();
+                AssertPromptToolInViewport(tools, preview);
+                VisibleBounds(window, input);
+                VisibleBounds(window, Find<Button>(window, "ManagedAiChatSend"));
+                VisibleBounds(window, stop);
+                SaveFrame(window, screenshot);
+                Assert.HasCount(0, fixture.Chat.Requests);
+                Assert.AreEqual(4, AttachmentCount(window));
+            }
+            finally { foreach (var file in files) DeleteAttachmentFile(file); }
+        });
+        TestContext.AddResultFile(screenshot);
+    }
+
+    private static void AssertPromptToolInViewport(ScrollViewer viewport, Control control)
+    {
+        Assert.IsTrue(control.IsEffectivelyVisible);
+        var position = control.TranslatePoint(default, viewport);
+        Assert.IsNotNull(position);
+        var bounds = new Rect(position.Value, control.Bounds.Size);
+        Assert.IsTrue(bounds.Left >= -1 && bounds.Top >= -1 && bounds.Right <= viewport.Viewport.Width + 1 &&
+            bounds.Bottom <= viewport.Viewport.Height + 1, $"{AutomationProperties.GetAutomationId(control)} must be reachable inside the tools viewport: {bounds}.");
+    }
+
     private static void AssertAttachmentColumnLayout(Window window, int count)
     {
         Dispatcher.UIThread.RunJobs();

@@ -25,7 +25,10 @@ public sealed class AttachmentProviderTests
             var arguments = spec.StartInfo.ArgumentList.ToArray();
             var imageFlag = Array.IndexOf(arguments, "--image");
             Assert.IsGreaterThanOrEqualTo(0, imageFlag);
-            staged = arguments[imageFlag + 1];
+            var imageArgument = arguments[imageFlag + 1];
+            Assert.IsFalse(Path.IsPathFullyQualified(imageArgument));
+            Assert.AreEqual(Path.Combine("attachments", "image-001.png"), imageArgument);
+            staged = Path.GetFullPath(imageArgument, spec.StartInfo.WorkingDirectory);
             Assert.AreEqual(Path.Combine(spec.StartInfo.WorkingDirectory, "attachments"), Path.GetDirectoryName(staged));
             Assert.AreEqual("image-001.png", Path.GetFileName(staged));
             Assert.AreEqual(".png", Path.GetExtension(staged));
@@ -99,7 +102,8 @@ public sealed class AttachmentProviderTests
             Path.Combine(fixture.Paths.Root, "codex.exe"), fixture.Paths.Profile, DateTimeOffset.UtcNow);
         var spec = OpenAiCodexInvocationBuilder.Chat(runtime, directory, "fixture", new(), imagePaths: [valid]);
         Assert.AreEqual("--image", spec.StartInfo.ArgumentList[^3]);
-        Assert.AreEqual(valid, spec.StartInfo.ArgumentList[^2]);
+        Assert.AreEqual(Path.Combine("attachments", "image-001.png"), spec.StartInfo.ArgumentList[^2]);
+        Assert.AreEqual(valid, Path.GetFullPath(spec.StartInfo.ArgumentList[^2], spec.StartInfo.WorkingDirectory));
         Assert.AreEqual("-", spec.StartInfo.ArgumentList[^1]);
         var outside = Path.Combine(directory, "outside.png");
         File.WriteAllBytes(outside, Png);
@@ -111,6 +115,41 @@ public sealed class AttachmentProviderTests
         File.WriteAllBytes(comma, Png);
         foreach (var paths in new[] { new[] { outside }, new[] { nested }, new[] { valid, valid }, new[] { comma }, new[] { "image.png" } })
             Assert.ThrowsExactly<ManagedAiException>(() => OpenAiCodexInvocationBuilder.Chat(runtime, directory, "fixture", new(), imagePaths: paths));
+    }
+
+    [TestMethod]
+    public void ImageInvocationUsesRunRelativeArgumentsWhenAncestorContainsCommaAndSpaces()
+    {
+        using var fixture = new InstallFixture();
+        var directory = fixture.Paths.Under("user, profile", "runs", "invocation-fixture");
+        var attachments = Path.Combine(directory, "attachments");
+        Directory.CreateDirectory(attachments);
+        var first = Path.Combine(attachments, "image-001.png");
+        var second = Path.Combine(attachments, "image-002.png");
+        File.WriteAllBytes(first, Png);
+        File.WriteAllBytes(second, Png);
+        var runtime = new ManagedRuntime(new("1.2.3", "x86_64-pc-windows-msvc", new string('a', 64)), fixture.Paths.Root,
+            Path.Combine(fixture.Paths.Root, "codex.exe"), fixture.Paths.Profile, DateTimeOffset.UtcNow);
+
+        var spec = OpenAiCodexInvocationBuilder.Chat(runtime, directory, "fixture", new(), imagePaths: [first, second]);
+
+        Assert.AreEqual(directory, spec.StartInfo.WorkingDirectory);
+        Assert.Contains(",", spec.StartInfo.WorkingDirectory);
+        var arguments = spec.StartInfo.ArgumentList.ToArray();
+        var flags = Enumerable.Range(0, arguments.Length).Where(index => arguments[index] == "--image").ToArray();
+        Assert.HasCount(2, flags);
+        var expected = new[] { first, second };
+        for (var index = 0; index < flags.Length; index++)
+        {
+            var imageArgument = arguments[flags[index] + 1];
+            Assert.IsFalse(Path.IsPathFullyQualified(imageArgument));
+            Assert.DoesNotContain(",", imageArgument);
+            Assert.AreEqual(Path.Combine("attachments", Path.GetFileName(expected[index])), imageArgument);
+            var resolved = Path.GetFullPath(imageArgument, spec.StartInfo.WorkingDirectory);
+            Assert.AreEqual(expected[index], resolved);
+            CollectionAssert.AreEqual(Png, File.ReadAllBytes(resolved));
+        }
+        Assert.AreEqual("-", arguments[^1]);
     }
 
     [TestMethod]
@@ -142,6 +181,12 @@ public sealed class AttachmentProviderTests
             Assert.AreNotEqual(arguments[flags[0] + 1], arguments[flags[1] + 1]);
             Assert.AreEqual("image-001.png", Path.GetFileName(arguments[flags[0] + 1]));
             Assert.AreEqual("image-002.png", Path.GetFileName(arguments[flags[1] + 1]));
+            foreach (var flag in flags)
+            {
+                var imageArgument = arguments[flag + 1];
+                Assert.IsFalse(Path.IsPathFullyQualified(imageArgument));
+                CollectionAssert.AreEqual(Png, File.ReadAllBytes(Path.GetFullPath(imageArgument, spec.StartInfo.WorkingDirectory)));
+            }
             Assert.Contains("\"fileName\":\"first.png\",\"mediaType\":\"image/png\",\"imageIndex\":1", spec.Input!);
             Assert.Contains("\"fileName\":\"second.png\",\"mediaType\":\"image/png\",\"imageIndex\":2", spec.Input!);
         });

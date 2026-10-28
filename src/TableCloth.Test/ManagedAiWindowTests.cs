@@ -1279,10 +1279,11 @@ public sealed partial class ManagedAiWindowTests
     {
         public bool Installed = true;
         public int Installs;
+        public Exception? StatusError;
         public bool? GetActiveCalledOnUiThread;
         private readonly ManagedRuntime _runtime = new(new("0.156.1", "fixture", "hash"), "fixture", "fixture", "fixture", DateTimeOffset.UtcNow);
         public Task<ManagedRuntime?> GetActiveAsync(CancellationToken token)
-        { GetActiveCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); return Task.FromResult(Installed ? _runtime : null); }
+        { GetActiveCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); if (Installed && StatusError is not null) throw StatusError; return Task.FromResult(Installed ? _runtime : null); }
         public Task<ManagedRuntime> InstallAsync(string? version, IProgress<AiProgress>? progress, CancellationToken token)
         { Installs++; Installed = true; return Task.FromResult(_runtime); }
         public Task<ManagedRuntime> RollbackAsync(CancellationToken token) => throw new NotSupportedException();
@@ -1292,12 +1293,13 @@ public sealed partial class ManagedAiWindowTests
         public bool LoggedIn = true;
         public bool? StatusCalledOnUiThread;
         public bool FailLogout;
+        public Exception? StatusError;
         public List<string> Actions = [];
         public AiLoginMethod? Method;
         public TaskCompletionSource? LoginCompletion;
         public IProgress<AiLoginUpdate>? Progress;
         public Task<bool> IsLoggedInAsync(CancellationToken token)
-        { StatusCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); return Task.FromResult(LoggedIn); }
+        { StatusCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); if (StatusError is not null) throw StatusError; return Task.FromResult(LoggedIn); }
         public Task LoginAsync(CancellationToken token) => throw new NotSupportedException();
         public async Task LoginAsync(AiLoginMethod method, IProgress<AiLoginUpdate>? progress, CancellationToken token)
         {
@@ -1332,6 +1334,7 @@ public sealed partial class ManagedAiWindowTests
     {
         public string StorageDirectory => Path.Combine(Path.GetTempPath(), "tablecloth-managed-ai-test-skills");
         public IReadOnlyList<AiSkill> Items = [];
+        public Func<IReadOnlyList<AiSkill>>? ListItems;
         public bool? ListCalledOnUiThread;
         public int Calls;
         public TaskCompletionSource? ToggleCleanup;
@@ -1341,7 +1344,7 @@ public sealed partial class ManagedAiWindowTests
         {
             ListCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); Calls++;
             if (LeaseHeld) { BusyReads++; throw new ManagedAiException(AiFailureCode.RuntimeBusy); }
-            return Task.FromResult(Items);
+            return Task.FromResult(ListItems?.Invoke() ?? Items);
         }
         public Task<IReadOnlyList<AiSkill>> ImportAsync(string sourceDirectory, CancellationToken token)
             => throw new AssertFailedException("Unexpected skill import");

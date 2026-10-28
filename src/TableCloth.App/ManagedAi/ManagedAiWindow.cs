@@ -178,11 +178,21 @@ public sealed partial class ManagedAiWindow : Window
         _scroll = new ScrollViewer { Content = _transcript, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
         Grid.SetRow(_scroll, 1); root.Children.Add(_scroll);
         var composer = new StackPanel { Spacing = 4, Margin = new Thickness(0, 4, 0, 0) };
-        composer.Children.Add(_busyBar);
-        composer.Children.Add(_status);
-        composer.Children.Add(_elapsed);
-        composer.Children.Add(CreatePromptAttachmentControls());
-        composer.Children.Add(CreatePromptSkillPicker());
+        var promptTools = new StackPanel { Spacing = 4 };
+        promptTools.Children.Add(_busyBar);
+        promptTools.Children.Add(_status);
+        promptTools.Children.Add(_elapsed);
+        promptTools.Children.Add(CreatePromptAttachmentControls());
+        promptTools.Children.Add(CreatePromptSkillPicker());
+        var promptToolsScroll = new ScrollViewer
+        {
+            Content = promptTools, MaxHeight = 150,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+        };
+        AutomationProperties.SetAutomationId(promptToolsScroll, "ManagedAiPromptToolsScroll");
+        AutomationProperties.SetAutomationId(_elapsed, "ManagedAiElapsed");
+        composer.Children.Add(promptToolsScroll);
         var promptButtons = new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 6, HorizontalAlignment = HorizontalAlignment.Left
@@ -202,6 +212,19 @@ public sealed partial class ManagedAiWindow : Window
         Grid.SetColumn(sendButtons, 1); editor.Children.Add(sendButtons);
         composer.Children.Add(editor);
         Grid.SetRow(composer, 2); root.Children.Add(composer);
+        // Auto-sized tools may grow beyond the window when previews, a skill hint and
+        // a tall draft are combined. Scroll only these tools; keep editing and Send visible.
+        void UpdatePromptToolsHeight()
+        {
+            if (root.Bounds.Height <= 0) return;
+            var conversationSpace = Math.Min(48, root.Bounds.Height / 10);
+            promptToolsScroll.MaxHeight = Math.Max(0, root.Bounds.Height - header.Bounds.Height - editor.Bounds.Height -
+                promptButtons.Bounds.Height - composer.Margin.Top - composer.Margin.Bottom - 2 * composer.Spacing - conversationSpace);
+        }
+        root.SizeChanged += (_, _) => UpdatePromptToolsHeight();
+        header.SizeChanged += (_, _) => UpdatePromptToolsHeight();
+        editor.SizeChanged += (_, _) => UpdatePromptToolsHeight();
+        promptButtons.SizeChanged += (_, _) => UpdatePromptToolsHeight();
         // The application's theme has no MenuFlyoutPresenter/MenuItem template.
         // Use the same in-window panel approach as AboutWindow with themed native buttons.
         var dismiss = new Border { Background = Brushes.Transparent };
@@ -311,7 +334,6 @@ public sealed partial class ManagedAiWindow : Window
             if (IsVisible)
                 _ = RunAsync(async token =>
                 {
-                    await RefreshSkillsAsync(token);
                     await RefreshStatusAsync(token);
                 });
         }, DispatcherPriority.Background);
@@ -385,6 +407,8 @@ public sealed partial class ManagedAiWindow : Window
 
     private async Task RefreshSkillsAsync(CancellationToken token)
     {
+        // A failed runtime-backed refresh must not leave stored fallback names selectable.
+        UpdatePromptSkills([]);
         var skills = await RunBackendAsync(_skills.ListAsync, token);
         UpdatePromptSkills(skills);
         _certificateSkillEnabled = skills.Any(skill => skill.Id == "tablecloth-certificate-expiry" && skill.Enabled && skill.IsValid);
@@ -761,6 +785,7 @@ public sealed partial class ManagedAiWindow : Window
 
     private async Task RefreshStatusAsync(CancellationToken token)
     {
+        UpdatePromptSkills([]);
         await _modelSaveTask;
         if (!_preferencesLoaded)
         {
@@ -780,6 +805,7 @@ public sealed partial class ManagedAiWindow : Window
         var runtime = await RunBackendAsync(_runtimes.GetActiveAsync, token);
         _runtimeInstalled = runtime is not null;
         _runtimeVersion = runtime?.Coordinate.Version;
+        await RefreshSkillsAsync(token);
         _loggedIn = runtime is not null && await RunBackendAsync(_authentication.IsLoggedInAsync, token);
         _statusKnown = true;
         UpdateRuntimeStatus();
@@ -898,6 +924,7 @@ public sealed partial class ManagedAiWindow : Window
         _runtimeInstalled = true;
         _runtimeVersion = runtime.Coordinate.Version;
         UpdateRuntimeStatus();
+        await RefreshSkillsAsync(token);
         return true;
     }
     private bool ConfirmInstall() => _messages.DisplayQuestion(L("OpenAI 공식 Codex를 TableCloth 전용 폴더에 설치하거나 업데이트하시겠습니까?",
