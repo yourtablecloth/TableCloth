@@ -1292,12 +1292,13 @@ public sealed partial class ManagedAiWindowTests
         public bool LoggedIn = true;
         public bool? StatusCalledOnUiThread;
         public bool FailLogout;
+        public Exception? StatusError;
         public List<string> Actions = [];
         public AiLoginMethod? Method;
         public TaskCompletionSource? LoginCompletion;
         public IProgress<AiLoginUpdate>? Progress;
         public Task<bool> IsLoggedInAsync(CancellationToken token)
-        { StatusCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); return Task.FromResult(LoggedIn); }
+        { StatusCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); if (StatusError is not null) throw StatusError; return Task.FromResult(LoggedIn); }
         public Task LoginAsync(CancellationToken token) => throw new NotSupportedException();
         public async Task LoginAsync(AiLoginMethod method, IProgress<AiLoginUpdate>? progress, CancellationToken token)
         {

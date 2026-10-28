@@ -804,8 +804,8 @@ public sealed partial class ManagedAiWindow : Window
         var runtime = await RunBackendAsync(_runtimes.GetActiveAsync, token);
         _runtimeInstalled = runtime is not null;
         _runtimeVersion = runtime?.Coordinate.Version;
-        _loggedIn = runtime is not null && await RunBackendAsync(_authentication.IsLoggedInAsync, token);
         await RefreshSkillsAsync(token);
+        _loggedIn = runtime is not null && await RunBackendAsync(_authentication.IsLoggedInAsync, token);
         _statusKnown = true;
         UpdateRuntimeStatus();
         if (!_loggedIn) { _models.ItemsSource = null; _models.SelectedItem = null; return; }
