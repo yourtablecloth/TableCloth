@@ -64,14 +64,16 @@ public static class OpenAiCodexInvocationBuilder
                 if (!Path.IsPathFullyQualified(path)) throw new ManagedAiException(AiFailureCode.InvalidPath);
                 var full = Path.GetFullPath(path);
                 var name = Path.GetFileName(full);
-                if (full.Contains(',') || !string.Equals(Path.GetDirectoryName(full), attachments, StringComparison.OrdinalIgnoreCase) ||
+                if (!string.Equals(Path.GetDirectoryName(full), attachments, StringComparison.OrdinalIgnoreCase) ||
                     name.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not ('-' or '.')) ||
                     Path.GetExtension(full) is not (".png" or ".jpg") || !File.Exists(full))
                     throw new ManagedAiException(AiFailureCode.InvalidPath);
                 ManagedAiPaths.RejectReparsePoints(full);
-                // Each flag and path is a separate argument; the final '-' still selects stdin for text.
+                // Validate the full owned path, then pass only its safe run-relative
+                // spelling. A comma in an ancestor directory must not become a CLI
+                // image-list separator. WorkingDirectory and -C both point at this run.
                 spec.StartInfo.ArgumentList.Insert(spec.StartInfo.ArgumentList.Count - 1, "--image");
-                spec.StartInfo.ArgumentList.Insert(spec.StartInfo.ArgumentList.Count - 1, full);
+                spec.StartInfo.ArgumentList.Insert(spec.StartInfo.ArgumentList.Count - 1, Path.Combine("attachments", name));
             }
         }
         if (skillExecution is not null)

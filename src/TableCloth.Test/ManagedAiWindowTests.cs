@@ -1332,6 +1332,7 @@ public sealed partial class ManagedAiWindowTests
     {
         public string StorageDirectory => Path.Combine(Path.GetTempPath(), "tablecloth-managed-ai-test-skills");
         public IReadOnlyList<AiSkill> Items = [];
+        public Func<IReadOnlyList<AiSkill>>? ListItems;
         public bool? ListCalledOnUiThread;
         public int Calls;
         public TaskCompletionSource? ToggleCleanup;
@@ -1341,7 +1342,7 @@ public sealed partial class ManagedAiWindowTests
         {
             ListCalledOnUiThread ??= Dispatcher.UIThread.CheckAccess(); Calls++;
             if (LeaseHeld) { BusyReads++; throw new ManagedAiException(AiFailureCode.RuntimeBusy); }
-            return Task.FromResult(Items);
+            return Task.FromResult(ListItems?.Invoke() ?? Items);
         }
         public Task<IReadOnlyList<AiSkill>> ImportAsync(string sourceDirectory, CancellationToken token)
             => throw new AssertFailedException("Unexpected skill import");
