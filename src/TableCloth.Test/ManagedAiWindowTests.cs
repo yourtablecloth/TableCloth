@@ -24,7 +24,7 @@ using TableCloth.Pages;
 namespace TableCloth.Test;
 
 [TestClass, DoNotParallelize]
-public sealed class ManagedAiWindowTests
+public sealed partial class ManagedAiWindowTests
 {
     public TestContext TestContext { get; set; } = null!;
 
@@ -463,7 +463,8 @@ public sealed class ManagedAiWindowTests
                 Assert.AreEqual(installed ? "OpenAI 로그인" : "AI 사용 준비", connect.Content);
                 Find<TextBox>(window, "ManagedAiChatInput").Text = "작성하던 메시지";
                 connect.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                await Until(() => !connect.IsVisible);
+                await Ready(window);
+                Assert.IsFalse(connect.IsVisible);
                 Assert.AreEqual(installed ? 0 : 1, fixture.Runtime.Installs);
                 Assert.AreEqual(installed ? 0 : 1, fixture.Messages.Questions);
                 Assert.AreEqual(AiLoginMethod.Browser, fixture.Auth.Method);
@@ -1396,7 +1397,9 @@ public sealed class ManagedAiWindowTests
             _response = new(TaskCreationOptions.RunContinuationsAsynchronously);
             return _response.Task.WaitAsync(token);
         }
-        public void Complete(string message) => _response!.SetResult(new(message, DateTimeOffset.UtcNow, 2, Requests[^1].Model));
+        public void Complete(string message, IReadOnlyList<AiSkillExecutionRecord>? skillExecutions = null,
+            bool skillExecutionsTruncated = false) => _response!.SetResult(new(message, DateTimeOffset.UtcNow, 2, Requests[^1].Model)
+            { SkillExecutions = skillExecutions ?? [], SkillExecutionsTruncated = skillExecutionsTruncated });
         public void Fail(AiFailureCode code) => _response!.SetException(new ManagedAiException(code));
     }
     private sealed class Certificates : IManagedAiCertificateBridge

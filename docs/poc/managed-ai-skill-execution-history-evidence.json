@@ -1,0 +1,56 @@
+{
+  "verificationDate": "2026-10-28",
+  "branch": "fix/managed-ai-prompt-input",
+  "implementation": {
+    "source": "registered MCP started/completed event pairs and the application broker result",
+    "identity": "explicit installed skill ID, name, tool and relative entry-point mapping",
+    "retention": "completed chat turns in bounded in-memory conversation history",
+    "maximumRecordsPerTurn": 16,
+    "historyCharacterBudgetIncludesMetadata": 20000,
+    "rawArgumentsOrScriptOutputRetained": false,
+    "skillMentionAloneProvesExecution": false,
+    "modelClaimAloneProvesExecution": false
+  },
+  "automatedChecks": {
+    "configuration": "Debug; isolated artifacts directory",
+    "host": { "passed": 424, "failed": 0, "skipped": 0 },
+    "managedAi": { "passed": 521, "failed": 0, "skipped": 0 },
+    "promptUi": { "passed": 104, "failed": 0, "skipped": 0 },
+    "visualReview": "paperclip and plus above the editor; separate execution facts in light and dark themes"
+  },
+  "liveProviderCheck": {
+    "provider": "Production DI OpenAiCodexProvider with ManagedAiChatSession",
+    "productHost": "Managed Debug TableCloth.exe",
+    "runtime": "codex-cli 0.156.1",
+    "model": "gpt-6-luna",
+    "authentication": "existing TableCloth managed profile; no new login",
+    "fixture": "discount.single with price 1000 and rate_percent 10",
+    "firstAnswer": { "discountAmount": "100.00", "finalPrice": "900.00" },
+    "execution": {
+      "callId": "item_1",
+      "tool": "tablecloth-calculators",
+      "skillId": "tablecloth-calculators",
+      "entryPoint": "scripts/calculate.py",
+      "status": "Completed",
+      "exitCode": 0,
+      "wasAppContainer": true,
+      "timedOut": false,
+      "outputLimited": false,
+      "failure": null
+    },
+    "followupIdentifiedRecordedSkillAndEntryPoint": true,
+    "followupReportedAppContainerAndExitCode": true,
+    "followupDidNotRerunTool": true,
+    "retainedHistoryMessages": 4,
+    "personalFilesTransmitted": false,
+    "passed": true
+  },
+  "qualificationLimits": [
+    "This check uses broker-reported execution facts, not new independent OS attestation.",
+    "No new NativeAOT package or release qualification was performed.",
+    "KOSIS live-service data and the exact original conversation were not rechecked.",
+    "Execution records do not prove that every number or source in an answer came from the script.",
+    "Interrupted turns without a completed final answer do not enter follow-up history.",
+    "Conversations created before this change have no retroactively recovered execution records."
+  ]
+}

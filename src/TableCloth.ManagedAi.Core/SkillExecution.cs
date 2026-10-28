@@ -5,6 +5,7 @@ public sealed record AiSkillExecutionBridge(string Command, IReadOnlyList<string
     string WorkingDirectory, IReadOnlyList<string> SkillIds) : IDisposable
 {
     public string? SnapshotDirectory { get; init; }
+    public IReadOnlyList<AiSkillToolRegistration> Tools { get; init; } = [];
 
     public void Dispose()
     {

@@ -25,7 +25,7 @@ public enum AiFailureCode
     SubscriptionUnavailable, ProviderNetworkUnavailable, ProviderConfigurationInvalid,
     ProviderRequestRejected, LoginFlowUnavailable, CatalogUnavailable, ModelListUnavailable, InvalidModel,
     SkillInvalid, SkillAlreadyInstalled, SkillIsolationFailed, CertificateScanUnavailable,
-    SkillExecutionHostUnavailable
+    SkillExecutionHostUnavailable, AttachmentInvalid, AttachmentLimitExceeded, AttachmentBlocked
 }
 
 // Only fixed codes cross the diagnostics/UI boundary. Never attach provider output or inner exceptions.
@@ -42,15 +42,26 @@ public sealed record AiSearchResponse(string Answer, IReadOnlyList<AiSearchCandi
     IReadOnlyList<string> Warnings, DateTimeOffset RetrievedAtUtc);
 public sealed record AiSearchCandidate(string Title, Uri TargetUrl, string Description,
     string SourceName, Uri SourceUrl, string Reason);
-public sealed record AiProgress(string Stage, int SearchCalls = 0);
+public sealed record AiProgress(string Stage, int SearchCalls = 0)
+{
+    public AiSkillExecutionRecord? SkillExecution { get; init; }
+}
 public enum AiChatRole { User, Assistant }
-public sealed record AiChatMessage(AiChatRole Role, string Text);
+public sealed record AiChatMessage(AiChatRole Role, string Text)
+{
+    public IReadOnlyList<AiSkillExecutionRecord> SkillExecutions { get; init; } = [];
+    public bool SkillExecutionsTruncated { get; init; }
+}
 public enum AiResponseLanguage { Korean, English }
 public sealed record AiClientContext(Version? InstalledVersion, Uri OfficialHomepage, AiResponseLanguage ResponseLanguage);
 public sealed record AiChatRequest(string Message, IReadOnlyList<AiChatMessage> History, string? Model = null,
     string? LocalCertificateReport = null, string? LocalWindowsSandboxReport = null,
-    AiClientContext? ClientContext = null);
-public sealed record AiChatResponse(string Text, DateTimeOffset RetrievedAtUtc, int SearchCalls, string? Model = null);
+    AiClientContext? ClientContext = null, IReadOnlyList<AiChatAttachment>? Attachments = null);
+public sealed record AiChatResponse(string Text, DateTimeOffset RetrievedAtUtc, int SearchCalls, string? Model = null)
+{
+    public IReadOnlyList<AiSkillExecutionRecord> SkillExecutions { get; init; } = [];
+    public bool SkillExecutionsTruncated { get; init; }
+}
 public sealed record AiModel(string Id, string DisplayName, bool IsDefault = false)
 {
     public AiModelTokenCost? TokenCost { get; init; }
