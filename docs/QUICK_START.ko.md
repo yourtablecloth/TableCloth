@@ -196,7 +196,91 @@ Spork 카탈로그 표시: 성공 / 실패
 
 첫 확인을 통과하면 실제 대상 사이트·인증수단·보안 에이전트·프록시·출력 장치 조합을 별도로 시험합니다. 공유 폴더와 로그 보존 범위, 업데이트·복귀 절차, 카탈로그 유지 책임도 결정해야 합니다. 프로젝트는 AGPL-3.0과 별도 상용 라이선스를 안내하며, 배포·변경·운영 방식에 맞는 조건을 확인합니다. [라이선스](https://github.com/yourtablecloth/TableCloth/blob/v1.22.0-preview.10/README.md#라이선스)
 
-이 가이드의 첫 실행에는 식탁보 AI 로그인이나 스킬 설치가 필요하지 않습니다. AI는 Preview의 별도 기능이며, 일반적인 사이트 설치 경로의 검증과 구분합니다.
+앞 절의 정부24 첫 실행에는 식탁보 AI 로그인이나 스킬 설치가 필요하지 않습니다. 다음 스킬 마켓플레이스 평가는 별도 경로로 진행합니다.
+
+## 7. 선택 기능: 스킬 마켓플레이스 첫 사용
+
+이 절은 `v1.22.0-preview.10`의 **식탁보 AI (베타)** 기능을 평가합니다. 앞 절의 정부24 Sandbox 실행과 별개의 경로이며, Windows Sandbox를 먼저 열 필요는 없습니다. 호스트의 식탁보에서 마켓플레이스를 열고 설치한 스킬을 AI 대화에 제공합니다.
+
+아래 절차는 고정 태그의 화면 문구·관리 명령·실행 코드와 계산기 원본 규약을 대조해 작성했습니다. 이번 자료 작성 과정에서는 사용자의 앱 실행, ChatGPT 로그인, 스킬·런타임 설치 또는 AI 요청을 수행하지 않았습니다. 다음 결과는 대상 PC에서 확인할 **예상 결과와 판정 기준**입니다. [태그의 마켓플레이스 문서](https://github.com/yourtablecloth/TableCloth/blob/v1.22.0-preview.10/docs/SKILL_MARKETPLACE.ko.md)
+
+### 1. 스킬 설치
+
+1. 식탁보의 **옵션... > AI 스킬 > 스킬 마켓플레이스 열기**를 선택합니다.
+2. **카탈로그 탐색**에서 `금융 및 생활 계산기` 또는 ID `tablecloth-calculators`를 검색합니다. 분야 필터로도 좁힐 수 있습니다.
+3. 항목을 선택해 저자, 원본 저장소·경로, 라이선스, **카탈로그 원본 버전**과 사용 조건을 확인합니다. 이 가이드가 확인한 원본은 `yourtablecloth/tablecloth-calculators`, 커밋 `877b58cf0741db21342445f2b3fcb54ad1ada85c`입니다. 실제 원격 카탈로그는 이후 바뀔 수 있으므로 화면의 값을 기록합니다.
+4. **스킬 설치**를 누르고 완료 안내를 기다립니다. 새 프로필은 기본 스킬이 없으므로 이 단계가 필요합니다.
+5. **설치된 스킬**에서 계산기의 설치 상태와 원본 커밋을 확인합니다. 비활성 상태라면 **활성화**합니다. 스킬을 설치한 사실과 해당 응답에서 실행한 사실은 다릅니다.
+
+설치기는 GitHub의 고정 커밋에서 파일과 같은 커밋의 라이선스를 확인하고 원본 라이선스를 `LICENSE.upstream`으로 보존합니다. 식탁보 전용 프로필의 스킬만 관리하며 사용자 전역 Codex 프로필은 관리하지 않습니다. [마켓플레이스 창](https://github.com/yourtablecloth/TableCloth/blob/v1.22.0-preview.10/src/TableCloth.App/Dialogs/SkillMarketplaceWindow.axaml), [설치·관리 명령](https://github.com/yourtablecloth/TableCloth/blob/v1.22.0-preview.10/src/TableCloth.App/ViewModels/SkillMarketplaceWindowViewModel.cs)
+
+선택한 계산기가 목록에 없으면 카탈로그 새로 고침과 연결 상태, 공개 카탈로그의 변경 이력을 확인합니다. 다른 출처의 동명 패키지를 임의로 설치하지 않습니다. 카탈로그 조회에 실패해도 이미 설치한 스킬은 **설치된 스킬** 탭에서 관리할 수 있습니다.
+
+### 2. 전용 실행 환경과 AI 연결 준비
+
+1. 마켓플레이스의 **실행 환경** 탭을 엽니다. **실행 환경 설치/복구**로 식탁보 전용 Python·Node.js를 준비한 뒤 **설치 및 환경 검사**를 선택합니다.
+2. 두 런타임의 설치 버전과 **260자 초과 경로 검사** 결과를 확인합니다. UI는 `검사 통과`, `사용 제한`, `확인 불가`를 구분합니다. 제한·미확인 경고가 있으면 그대로 기록하고 해당 환경의 기능을 검증 완료로 표시하지 않습니다.
+3. 마켓플레이스를 닫고 빠른 시작의 **식탁보 AI (베타)**를 엽니다.
+4. 아직 연결하지 않았다면 **AI 사용 준비** 또는 **설치하고 로그인**으로 식탁보 전용 Codex 설치와 사용자의 ChatGPT 로그인을 진행합니다. 설치 확인에 동의한 뒤 브라우저에서 사용자가 로그인합니다. 기본 로그인이 안 되면 **OpenAI 계정 / 설정 > 기기 코드로 로그인** 경로를 확인할 수 있습니다.
+5. 상단에 **ChatGPT 연결됨**과 사용할 수 있는 대화 모델이 표시되는지 확인합니다. 모델을 고르고 **새 대화**를 시작합니다. 기존 대화가 있으면 새 대화 확인이 현재 대화와 입력 중인 메시지를 지우므로 필요한 내용을 먼저 보존합니다.
+
+전용 Python·Node.js와 대화용 Codex는 서로 다른 런타임입니다. 앱은 시스템 Python·Node.js나 전역 PATH를 바꾸지 않고 전용 환경을 관리합니다. 계산 스크립트는 외부 데이터나 API 키를 요구하지 않지만 **스킬 설치와 AI 대화에는 온라인 연결이 필요하며, AI 대화는 사용자의 OpenAI 이용 한도를 사용합니다**. [실행 환경 UI](https://github.com/yourtablecloth/TableCloth/blob/v1.22.0-preview.10/src/TableCloth.App/ViewModels/SkillMarketplaceWindowViewModel.Runtimes.cs), [AI 연결·새 대화 UI](https://github.com/yourtablecloth/TableCloth/blob/v1.22.0-preview.10/src/TableCloth.App/ManagedAi/ManagedAiWindow.cs)
+
+### 3. 실행: 구매 비용의 단일 할인 계산
+
+새 AI 대화에 다음처럼 요청합니다.
+
+> tablecloth-calculators 스킬을 사용해 1,000,000원에 10% 할인을 적용해 주세요. 설치된 계산기 스크립트로 실행하고 원래 금액, 할인액, 최종 금액과 반올림·세금 가정을 설명해 주세요. 실행하지 못했다면 계산을 실행했다고 말하지 말고 그 이유를 알려 주세요.
+
+이 요청은 사용자 입력만 쓰는 `discount.single` 연산입니다. 계산기는 Python 표준 라이브러리만 사용하며, 금리·시세를 조회하거나 세금·상품별 규칙을 적용하지 않습니다. [계산기 지침](https://github.com/yourtablecloth/tablecloth-calculators/blob/877b58cf0741db21342445f2b3fcb54ad1ada85c/SKILL.md), [연산 규약](https://github.com/yourtablecloth/tablecloth-calculators/blob/877b58cf0741db21342445f2b3fcb54ad1ada85c/references/operations.md)
+
+### 4. 첫 결과 확인
+
+원본 연산 규약과 고정 테스트 입력에 따른 **예상 결과**는 다음과 같습니다.
+
+| 항목 | 예상 결과 |
+| --- | --- |
+| 원래 금액 | 1,000,000원 (`1000000.00`) |
+| 할인액 | 100,000원 (`100000.00`) |
+| 최종 금액 | 900,000원 (`900000.00`) |
+| 기본 표시·반올림 | 소수 2자리, `ROUND_HALF_UP` |
+| 범위 | 세금·서비스별 계산 규칙을 추가하지 않음 |
+
+응답의 금액·단위·가정이 위와 일치하는지 확인하고 오류 또는 실행 불가 안내를 함께 기록합니다. 금액 입력에 원을 지정했기 때문에 여기서는 원 단위로 설명하며, 엔진 자체는 통화나 환율을 추론하지 않습니다. [고정 예상값 데이터](https://github.com/yourtablecloth/TableCloth/blob/v1.22.0-preview.10/tools/managed-skill-smoke/calculator-cases.json)
+
+**정답이나 “스킬을 사용했다”는 모델 문구만으로 실제 스크립트 실행을 입증하지 않습니다.** 상단의 활성 스킬 수도 다음 대화에 제공할 지침 수이며 실행 횟수가 아닙니다. 일반 GUI의 응답·완료 표시는 대화 결과 확인에 사용하고, 실행·격리의 입증은 별도 기준으로 구분합니다.
+
+기업 기술 검증에서는 [제품 스킬 실행 재현 도구](https://github.com/yourtablecloth/TableCloth/blob/v1.22.0-preview.10/tools/managed-skill-smoke/README.ko.md)를 따라 실제 MCP 호출·결과, 선택한 진입점, 제품·런타임 해시, 종료 코드와 독립 Win32 프로세스 관측을 수집합니다. 계산기의 성공 판정에는 완료된 호출, 종료 코드 `0`, 스크립트 `ok=true`와 기대 결과를 대조합니다. 격리 판정은 중계기의 `wasAppContainer` 응답만으로 대신하지 않고 커널 `TokenIsAppContainer` 관측을 함께 확인합니다. 재현 도구의 기본 계산기 대화 예시는 BMI이므로 이 할인 요청과 입력을 혼동하지 않습니다.
+
+```text
+평가 일시 / Windows 빌드·아키텍처:
+식탁보 태그 / 파일 버전:
+스킬 ID / 설치 원본 커밋 / 활성 상태:
+전용 Python / Node.js 버전:
+런타임별 긴 경로 검사:
+AI 연결 / 사용 모델:
+요청한 입력값:
+응답 금액·단위·가정 일치: 확인 / 실패
+실행 불가·오류 안내:
+실제 MCP 및 독립 OS 실행 증거: 수집 / 미수집
+```
+
+### 5. 업데이트·비활성화·제거
+
+- 원본 커밋이 바뀐 카탈로그 항목은 **업데이트** 대상으로 표시됩니다. 카탈로그와 설치된 버전을 비교한 뒤 업데이트합니다. 업데이트는 기존 활성화 설정을 유지하며, 교체 실패나 취소 시 이전 설치본을 보존합니다.
+- **설치된 스킬 > 비활성화**는 파일을 보존하고 다음 대화에서 지침을 제공하지 않도록 합니다. 다시 사용할 때는 **활성화**하고 새 대화에서 확인합니다.
+- **스킬 제거**는 확인 후 선택한 스킬과 전용 폴더 파일을 삭제합니다. 스킬을 제거했다고 공유 실행 환경이나 기존 AI 대화 데이터까지 함께 사라진다고 가정하지 않습니다.
+- 잘못된 `SKILL.md`는 확인·비활성화·제거를 위해 목록에 남을 수 있지만 활성화할 수 없습니다.
+
+스킬과 AI 전용 데이터는 `%LOCALAPPDATA%\TableCloth.Data\ManagedAi` 아래에 보관합니다. 스킬 경로는 `profiles\openai-codex\codex-home\skills`이며 대화 작업 폴더는 `runs\<GUID>`로 분리합니다. [관리 동작과 저장 위치](https://github.com/yourtablecloth/TableCloth/blob/v1.22.0-preview.10/docs/SKILL_MARKETPLACE.ko.md#로컬-설치와-업데이트-및-활성화-설정)
+
+### 지원 범위 구분
+
+확인한 카탈로그에는 한국은행 경제통계, 국가통계 조회, 금융 및 생활 계산기, 공공기관 보고서 작성, 공동인증서 만료 확인, Windows Sandbox 관리의 **활성 항목 6개**가 있습니다. 각 항목의 실행 경로는 다릅니다. 스크립트형은 앱이 관리하는 MCP 중계기와 AppContainer를 거치며 보고서 작성은 지침, 인증서·Sandbox는 기존 호스트 보고서 브리지를 사용합니다. [고정 카탈로그](https://github.com/yourtablecloth/TableClothCatalog/blob/30a8ad90c3557db849ba866c9d3905e5645d286b/docs/SkillCatalog.xml)
+
+이 카탈로그의 공개는 모든 기능·외부 서비스의 동작이나 운영 호환성 통과를 의미하지 않습니다. `Network="none"`도 대화 전체의 오프라인 실행을 뜻하지 않습니다. AppContainer는 호스트 커널과 ACL을 공유하는 경계이므로 Windows Sandbox VM과 같은 수준의 격리라고 설명하지 않습니다. 임의 `pip`·`npm`·`npx` 패키지 설치, 외부 MCP 자동 설정, 사용자 API 키 전달은 이 가이드의 실행 경로에 포함하지 않습니다.
+
+문서의 시점도 구분해야 합니다. 위 카탈로그 커밋의 2026-10-25 README에는 PR #322 전의 “설치 스크립트 자동 실행 미지원” 설명이 남아 있습니다. 이 절은 2026-10-27의 **앱 preview.10 태그 문서와 실제 소스**를 기준으로 Python·Node.js 등록 경로를 설명하며, 과거 문구나 Preview 7의 계산기 전용 검증을 preview.10의 모든 기능에 확대하지 않습니다.
 
 ## 소스와 재현 범위
 
