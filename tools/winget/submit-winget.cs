@@ -2,283 +2,510 @@
 #:sdk Cadenza@1.0.15
 #:property PublishAot=false
 
-// =============================================================================
-// winget-pkgs 자동 제출 스크립트 (TableClothProject.TableCloth)
-//
-// .github/workflows/winget_publish.yml 가 정식 릴리스(released) 게시 시, 또는
-// 수동 dispatch 시 이 .NET 11 file-based app 을 호출한다. 동작 순서:
-//   1) RELEASE_TAG 로 지정된 릴리스를 GitHub API 로 조회 (User-Agent 필수)
-//   2) draft 면 오류, prerelease 면 정상 건너뜀
-//   3) 해당 winget 버전이 이미 등록돼 있으면 멱등적으로 건너뜀
-//   4) 릴리스 자산에서 x64 / arm64 설치 관리자(.exe) URL 을 찾고
-//   5) Microsoft 공식 wingetcreate 로 매니페스트 업데이트 PR 을 제출
-//
-// 참고: 현재 winget 매니페스트는 InstallerType: exe 에 x64 + arm64 두 개의
-// Installer 노드를 가진다. wingetcreate update 는 --urls 개수가 기존 노드 수와
-// 정확히 일치해야 하므로 두 아키텍처 자산이 모두 있어야 한다.
-//
-// 비밀값: GITHUB_PAT 은 winget-pkgs 포크/PR 권한이 있는 *classic* PAT 이어야
-// 하며 public_repo 스코프가 필요하다. fine-grained PAT 은 wingetcreate 가
-// 지원하지 않는다. (자세한 설정은 tools/winget/README.md 참고)
-// =============================================================================
-
+// GITHUB_TOKEN reads this repository's release. GITHUB_PAT authenticates the
+// external winget submission, via an environment variable, never an argument.
+// --self-test exercises the same read-only checks with an in-memory HTTP handler.
 using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Text.RegularExpressions;
 
 const string PackageId = "TableClothProject.TableCloth";
-const string Repo = "yourtablecloth/TableCloth";                 // 릴리스가 게시되는 저장소
+const string Repo = "yourtablecloth/TableCloth";
 const string WingetRepo = "microsoft/winget-pkgs";
 const string ManifestPath = "manifests/t/TableClothProject/TableCloth";
-const string WingetCreateUrl = "https://aka.ms/wingetcreate/latest"; // 단독 exe (.NET 6 런타임 필요)
+const string WingetCreateUrl = "https://aka.ms/wingetcreate/latest";
 
-// --- GitHub Actions 로그/요약 헬퍼 (using static System.Console 의 Error 와 충돌하지 않도록 Log* 로 명명) ---
-void LogError(string m) => WriteLine($"::error::{m}");
-void LogNotice(string m) => WriteLine($"::notice::{m}");
-void Summary(string md)
+if (args is ["--self-test"])
+    return await RunSelfTests();
+
+void Summary(string markdown)
 {
-    var p = Env.Get("GITHUB_STEP_SUMMARY");
-    if (!string.IsNullOrEmpty(p))
-        File.AppendAllText(p, md + Environment.NewLine);
+    var path = Env.Get("GITHUB_STEP_SUMMARY");
+    if (!string.IsNullOrEmpty(path))
+        File.AppendAllText(path, markdown + Environment.NewLine);
 }
 
-// --- 1) 입력 검증 ---
-var tag = (Env.Get("RELEASE_TAG") ?? string.Empty).Trim();
-if (tag.Length == 0)
-{
-    LogError("RELEASE_TAG 환경 변수가 비어 있습니다. (release 이벤트 또는 workflow_dispatch 입력에서 전달돼야 합니다)");
-    return 1;
-}
-// 릴리스 태그는 항상 3-part(vX.Y.Z) 이다(build.yml 이 Directory.Build.Props 와 일치 검증).
-if (!Regex.IsMatch(tag, @"^v\d+\.\d+\.\d+$"))
-{
-    LogError($"릴리스 태그 형식이 올바르지 않습니다: '{tag}' (예상: v1.2.3)");
-    return 1;
-}
-
-var token = Env.Get("GITHUB_PAT");
-if (string.IsNullOrWhiteSpace(token))
-{
-    LogError("GITHUB_PAT 시크릿이 설정되지 않았습니다. (public_repo 스코프를 가진 classic PAT 필요)");
-    return 1;
-}
-
-// winget PackageVersion: 'v' 를 떼어 'X.Y.Z' 로 (NormalizeVersion 참고)
-var version = NormalizeVersion(tag);
-WriteLine($"릴리스 태그 '{tag}' -> winget 버전 '{version}'");
-
-// --- 2) GitHub API 공통 헤더 (User-Agent 없으면 403) ---
-Http.Client.DefaultRequestHeaders.UserAgent.ParseAdd("TableCloth-winget-submitter/1.0");
-Http.Client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
-Http.Client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
-// PAT 로 API 읽기를 인증한다. 인증하면 레이트 리밋이 60→5000/hr 로 올라가, IP 를
-// 공유하는 GitHub 호스티드 러너에서 흔한 비인증 403 을 방지한다. (wingetcreate
-// 다운로드 직전에 다시 제거해 aka.ms 로 토큰이 전송되지 않도록 한다)
-Http.Client.DefaultRequestHeaders.Authorization =
-    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-// --- 3) 릴리스 조회 ---
-GhRelease release;
 try
 {
-    release = await Http.GetJson<GhRelease>(
-        $"https://api.github.com/repos/{Repo}/releases/tags/{tag}", GhJson.Default);
-}
-catch (Exception ex)
-{
-    LogError($"릴리스 '{tag}' 조회에 실패했습니다: {ex.Message}");
-    return 1;
-}
+    var tag = (Env.Get("RELEASE_TAG") ?? string.Empty).Trim();
+    var version = ValidateTag(tag);
+    var verifyOnly = ParseVerifyOnly(Env.Get("VERIFY_ONLY"));
+    var token = (Env.Get("GITHUB_PAT") ?? string.Empty).Trim();
+    if (token.Length == 0)
+        throw new InvalidOperationException("TABLECLOTH_GITHUB_PAT 시크릿이 비어 있습니다. public_repo 권한을 가진 지원 자격 증명을 등록하면 제출할 수 있습니다.");
+    if (token.StartsWith("github_pat_", StringComparison.Ordinal))
+        throw new InvalidOperationException("wingetcreate는 fine-grained PAT을 지원하지 않습니다. TABLECLOTH_GITHUB_PAT에 public_repo 권한을 가진 classic PAT을 등록하면 제출할 수 있습니다.");
 
-if (release.draft)
-{
-    LogError($"릴리스 '{tag}' 가 아직 draft 상태입니다. 게시(publish) 후 다시 시도하세요.");
-    return 1;
-}
-if (release.prerelease)
-{
-    LogNotice($"릴리스 '{tag}' 는 prerelease 입니다. winget 제출을 건너뜁니다.");
-    return 0;
-}
-
-// --- 4) 멱등성: 이미 등록된 버전이면 건너뛰기 (조회 불확실 시 fail-closed) ---
-bool alreadyExists;
-try
-{
-    alreadyExists = await VersionExistsInWinget(version);
-}
-catch (Exception ex)
-{
-    // 404(없음)/200(있음) 외의 응답은 '불확실'로 보고 중복 PR 방지를 위해 중단한다.
-    LogError($"winget 버전 존재 여부 확인 실패(중복 제출 방지를 위해 중단): {ex.Message}");
-    return 1;
-}
-if (alreadyExists)
-{
-    LogNotice($"winget 에 {PackageId} {version} 매니페스트가 이미 존재합니다. 제출을 건너뜁니다.");
-    Summary($"### winget 제출 건너뜀\n\n`{PackageId}` **{version}** 매니페스트가 이미 등록돼 있습니다.");
-    return 0;
-}
-
-// --- 5) 설치 관리자 자산 URL 선택 (x64 / arm64) ---
-var assets = release.assets ?? Array.Empty<GhAsset>();
-var x64Url = FindInstaller(assets, version, "x64");
-var arm64Url = FindInstaller(assets, version, "arm64");
-
-if (x64Url is null || arm64Url is null)
-{
-    LogError($"릴리스 자산에서 TableCloth_{version}.*_<arch>.exe 설치 관리자를 모두 찾지 못했습니다 " +
-             $"(x64={x64Url is not null}, arm64={arm64Url is not null}). " +
-             "기존 winget 매니페스트는 두 아키텍처 노드를 모두 요구합니다.");
-    foreach (var a in assets)
-        WriteLine($"  - 자산: {a.name}");
-    return 1;
-}
-
-WriteLine($"x64   설치 관리자: {x64Url}");
-WriteLine($"arm64 설치 관리자: {arm64Url}");
-
-// --- 5.5) winget-pkgs 포크 동기화 (드리프트 방지) ---
-//   wingetcreate 는 PAT 소유자의 winget-pkgs 포크에 PR 브랜치를 만든다. 포크 master
-//   가 upstream 보다 크게 뒤처지면(winget-pkgs 는 매우 활발해 금세 수십만 커밋 뒤처짐)
-//   제출이 실패할 수 있으므로, 매 제출 전에 merge-upstream 으로 fast-forward 한다.
-//   (인증 헤더가 아직 설정돼 있는 이 시점에서 수행. 실패해도 계속 진행한다.)
-await SyncWingetFork();
-
-// --- 6) wingetcreate 단독 exe 다운로드 ---
-using var tmp = Fs.TempDir();
-var exe = Path.Combine(tmp.Path, "wingetcreate.exe");
-WriteLine("wingetcreate 다운로드 중...");
-// GitHub 토큰을 aka.ms/외부 리다이렉트로 보내지 않도록 인증 헤더 제거.
-Http.Client.DefaultRequestHeaders.Authorization = null;
-try
-{
-    await Http.Download(WingetCreateUrl, exe);
-}
-catch (Exception ex)
-{
-    LogError($"wingetcreate 다운로드 실패: {ex.Message}");
-    return 1;
-}
-
-// --- 7) wingetcreate update 실행 ---
-//   --urls 는 'URL|architecture' 를 설치 관리자마다 별도 인자로 넘겨야 한다
-//   (한 인자에 공백으로 이어붙이면 실패).
-//   토큰은 --token(명령줄) 대신 WINGET_CREATE_GITHUB_TOKEN 환경 변수로 전달한다.
-//   Microsoft 권장 방식이며 토큰이 프로세스 명령줄/로그에 노출되지 않는다.
-//   (Sh.Run 의 자식 프로세스가 현재 프로세스 환경 변수를 그대로 상속한다)
-Environment.SetEnvironmentVariable("WINGET_CREATE_GITHUB_TOKEN", token);
-var cmd =
-    $"\"{exe}\" update {PackageId} --version {version} " +
-    $"--urls \"{x64Url}|x64\" \"{arm64Url}|arm64\" " +
-    $"--submit";
-
-WriteLine($"실행: wingetcreate update {PackageId} --version {version} --urls (x64, arm64) --submit");
-var exit = Sh.Run(cmd);
-if (exit != 0)
-{
-    LogError($"wingetcreate 가 0이 아닌 코드로 종료되었습니다: {exit}");
-    Summary($"### ❌ winget 제출 실패\n\n`{PackageId}` **{version}** — wingetcreate 종료 코드 {exit}");
-    return exit;
-}
-
-LogNotice($"{PackageId} {version} winget 매니페스트 PR 을 제출했습니다.");
-Summary(
-    $"### ✅ winget 제출 완료\n\n" +
-    $"- 패키지: `{PackageId}`\n" +
-    $"- 버전: **{version}** (태그 `{tag}`)\n" +
-    $"- x64: {x64Url}\n" +
-    $"- arm64: {arm64Url}\n\n" +
-    $"[microsoft/winget-pkgs PR 확인](https://github.com/{WingetRepo}/pulls?q=is%3Apr+{Uri.EscapeDataString(PackageId)})");
-return 0;
-
-// =============================================================================
-// 헬퍼
-// =============================================================================
-
-// 'vX.Y.Z' -> winget 3-part 버전 'X.Y.Z' ('v' 제거, 만약을 위해 4번째 이후 컴포넌트는 버림)
-static string NormalizeVersion(string tag)
-{
-    var v = tag.TrimStart('v', 'V');
-    var parts = v.Split('.');
-    return parts.Length > 3 ? string.Join('.', parts[..3]) : v;
-}
-
-// 자산 목록에서 해당 버전·아키텍처의 TableCloth 설치 관리자(.exe, Portable 제외) URL 을 찾는다.
-static string? FindInstaller(GhAsset[] assets, string version, string arch)
-{
-    // 파일명은 4-part FileVersion 을 쓰므로(예: TableCloth_1.20.3.0_Release_x64.exe),
-    // "TableCloth_<version>." 접두사로 패키지 + 버전을 함께 한정한다. 이렇게 하면
-    //   (1) 같은 릴리스에 함께 올라오는 Spork_* 를 잘못 고르는 문제(#395443, #396257)와
-    //   (2) 릴리스에 어쩌다 남은 다른 버전의 TableCloth_* 를 고르는 문제
-    // 를 원천 차단한다.
-    var prefix = $"TableCloth_{version}.";
-    foreach (var a in assets)
+    // Validate the submission credential before every idempotent skip. Successful
+    // repository-token reads must never hide a broken external credential.
+    using var submissionClient = CreateGitHubClient(token);
+    var login = await ValidateSubmissionCredential(submissionClient);
+    WriteLine($"winget 제출 인증 확인: {login}");
+    var readToken = (Env.Get("GITHUB_TOKEN") ?? string.Empty).Trim();
+    using var releaseClient = CreateGitHubClient(readToken.Length == 0 ? token : readToken);
+    var release = await GetJson(releaseClient, $"repos/{Repo}/releases/tags/{tag}",
+        GhJson.Default.GhRelease, $"릴리스 '{tag}' 조회", readToken.Length == 0 ? "TABLECLOTH_GITHUB_PAT" : "GITHUB_TOKEN");
+    if (release.tag_name != tag || release.draft)
+        throw new InvalidOperationException($"릴리스 '{tag}'의 태그 또는 게시 상태가 올바르지 않습니다. draft 릴리스는 제출하지 않습니다.");
+    if (release.prerelease)
     {
-        var n = a.name;
-        if (string.IsNullOrEmpty(n) || string.IsNullOrEmpty(a.browser_download_url)) continue;
-        if (!n.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) continue;
-        if (!n.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) continue;
-        if (n.Contains("Portable", StringComparison.OrdinalIgnoreCase)) continue;
+        WriteLine($"::notice::릴리스 '{tag}'는 prerelease이므로 winget 제출을 건너뜁니다.");
+        return 0;
+    }
 
-        if (arch == "x64")
+    var installers = SelectInstallers(release, version);
+    WriteLine($"x64 설치 관리자: {installers[0].browser_download_url}");
+    WriteLine($"arm64 설치 관리자: {installers[1].browser_download_url}");
+    var existing = await FindExistingSubmission(submissionClient, login, version, installers);
+    if (existing is not null)
+    {
+        WriteLine($"::notice::{PackageId} {version}의 기존 매니페스트와 설치 관리자 정보를 확인했습니다. 제출을 건너뜁니다: {existing}");
+        Summary($"### winget 기존 제출 확인\n\n`{PackageId}` **{version}**의 매니페스트와 설치 관리자 URL을 검증했습니다.\n\n{existing}\n\n제출 인증도 확인했으며 포크 동기화와 PR 제출을 수행하지 않았습니다.");
+        return 0;
+    }
+    if (verifyOnly)
+    {
+        WriteLine($"::notice::{PackageId} {version}의 인증, 릴리스, 두 설치 관리자 및 기존 제출 여부를 확인했습니다. verify_only이므로 외부 변경을 수행하지 않습니다.");
+        Summary($"### winget 읽기 검증 완료\n\n`{PackageId}` **{version}**의 제출 인증, 릴리스, 두 설치 관리자 및 중복 제출 검사를 통과했습니다. 포크 동기화와 PR 제출은 수행하지 않았습니다.");
+        return 0;
+    }
+
+    await SyncWingetFork(submissionClient, login);
+    using var temporary = Fs.TempDir();
+    var executable = Path.Combine(temporary.Path, "wingetcreate.exe");
+    // The Cadenza download client never receives either authorization header.
+    await Http.Download(WingetCreateUrl, executable);
+    var previousToken = Environment.GetEnvironmentVariable("WINGET_CREATE_GITHUB_TOKEN");
+    int exit;
+    try
+    {
+        Environment.SetEnvironmentVariable("WINGET_CREATE_GITHUB_TOKEN", token);
+        WriteLine($"wingetcreate update {PackageId} --version {version} --urls (x64, arm64) --submit --no-open");
+        exit = Sh.Run($"\"{executable}\" update {PackageId} --version {version} " +
+            $"--urls \"{installers[0].browser_download_url}|x64\" \"{installers[1].browser_download_url}|arm64\" --submit --no-open");
+    }
+    finally
+    {
+        Environment.SetEnvironmentVariable("WINGET_CREATE_GITHUB_TOKEN", previousToken);
+    }
+    if (exit != 0)
+        throw new InvalidOperationException($"wingetcreate가 종료 코드 {exit}로 실패했습니다.");
+    WriteLine($"::notice::{PackageId} {version}의 winget 매니페스트 PR을 제출했습니다.");
+    Summary($"### winget 제출 완료\n\n`{PackageId}` **{version}** (태그 `{tag}`)\n\n[제출 PR 확인](https://github.com/{WingetRepo}/pulls?q=is%3Apr+{Uri.EscapeDataString(PackageId)})");
+    return 0;
+}
+catch (Exception exception)
+{
+    WriteLine($"::error::{exception.Message}");
+    return 1;
+}
+
+string ValidateTag(string tag)
+{
+    if (!Regex.IsMatch(tag, @"\Av\d+\.\d+\.\d+\z", RegexOptions.CultureInvariant))
+        throw new InvalidOperationException("RELEASE_TAG는 vX.Y.Z 형식의 정식 릴리스 태그만 허용합니다. Preview와 기타 접미사는 제출하지 않습니다.");
+    return tag[1..];
+}
+
+bool ParseVerifyOnly(string? value)
+{
+    if (string.IsNullOrWhiteSpace(value)) return false;
+    if (bool.TryParse(value, out var result)) return result;
+    throw new InvalidOperationException("VERIFY_ONLY는 true 또는 false만 허용합니다.");
+}
+
+HttpClient CreateGitHubClient(string token, HttpMessageHandler? handler = null)
+{
+    // Header parser exceptions can echo their input. Reject malformed values
+    // without quoting a credential before constructing an authorization header.
+    if (!Regex.IsMatch(token, @"\A[A-Za-z0-9_-]+\z", RegexOptions.CultureInvariant))
+        throw new InvalidOperationException("GitHub 자격 증명 형식이 올바르지 않습니다. 등록값의 공백 또는 잘못된 문자를 확인할 수 있습니다.");
+    var client = handler is null ? new HttpClient() : new HttpClient(handler);
+    client.BaseAddress = new Uri("https://api.github.com/");
+    client.Timeout = TimeSpan.FromSeconds(100);
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("TableCloth-winget-submitter/1.1");
+    client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
+    client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    return client;
+}
+
+void CheckResponse(HttpResponseMessage response, string operation, string credential = "TABLECLOTH_GITHUB_PAT")
+{
+    if (response.IsSuccessStatusCode) return;
+    var detail = response.StatusCode switch
+    {
+        HttpStatusCode.Unauthorized => $"{credential} 인증을 거부했습니다. 자격 증명의 만료, 폐기 또는 등록값을 확인하면 원인을 구분할 수 있습니다.",
+        HttpStatusCode.Forbidden => $"{credential}의 권한, 조직 접근 정책 또는 API 사용 한도로 요청을 거부했습니다.",
+        _ => "API 요청을 완료하지 못했습니다. 중복 제출을 방지하기 위해 중단합니다."
+    };
+    throw new InvalidOperationException($"{operation} 실패 (HTTP {(int)response.StatusCode}): {detail}");
+}
+
+async Task<T> GetJson<T>(HttpClient client, string path, JsonTypeInfo<T> type, string operation,
+    string credential = "TABLECLOTH_GITHUB_PAT")
+{
+    using var response = await client.GetAsync(path);
+    CheckResponse(response, operation, credential);
+    return JsonSerializer.Deserialize(await response.Content.ReadAsStringAsync(), type)
+        ?? throw new InvalidOperationException($"{operation} 응답이 비어 있습니다.");
+}
+
+async Task<string> ValidateSubmissionCredential(HttpClient client)
+{
+    using var response = await client.GetAsync("user");
+    CheckResponse(response, "winget 제출 자격 증명 검증");
+    if (response.Headers.TryGetValues("X-OAuth-Scopes", out var header))
+    {
+        var scopes = string.Join(',', header).Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        if (!scopes.Contains("public_repo", StringComparer.Ordinal) && !scopes.Contains("repo", StringComparer.Ordinal))
+            throw new InvalidOperationException("TABLECLOTH_GITHUB_PAT에 public_repo 또는 repo 권한이 없습니다. public_repo 권한을 가진 classic PAT으로 제출할 수 있습니다.");
+    }
+    else
+    {
+        WriteLine("X-OAuth-Scopes 헤더가 없어 scope를 독립적으로 확인하지 못했습니다. GitHub 사용자 인증은 별도로 검증합니다.");
+    }
+    var user = JsonSerializer.Deserialize(await response.Content.ReadAsStringAsync(), GhJson.Default.GhUser);
+    if (string.IsNullOrWhiteSpace(user?.login))
+        throw new InvalidOperationException("제출 자격 증명의 GitHub 사용자 정보를 확인하지 못했습니다.");
+    return user.login;
+}
+
+GhAsset[] SelectInstallers(GhRelease release, string version)
+{
+    var installers = new List<GhAsset>();
+    foreach (var architecture in new[] { "x64", "arm64" })
+    {
+        var name = $"TableCloth_{version}.0_Release_{architecture}.exe";
+        var matches = (release.assets ?? []).Where(asset => asset.name == name).ToArray();
+        if (matches.Length != 1 || matches[0].size <= 0 || matches[0].browser_download_url !=
+            $"https://github.com/{Repo}/releases/download/{release.tag_name}/{name}")
+            throw new InvalidOperationException($"릴리스에서 {architecture} 설치 관리자 '{name}'의 고유한 공식 URL과 파일 크기를 확인하지 못했습니다.");
+        installers.Add(matches[0]);
+    }
+    return installers.ToArray();
+}
+
+async Task<string?> FindExistingSubmission(HttpClient client, string login, string version, GhAsset[] installers)
+{
+    var directory = $"{ManifestPath}/{version}/";
+    using (var response = await client.GetAsync($"repos/{WingetRepo}/contents/{directory}"))
+    {
+        if (response.StatusCode != HttpStatusCode.NotFound)
         {
-            // x64 매칭 시 arm64 자산을 배제 ("x64" 가 "arm64" 의 부분 문자열은 아니지만 방어적으로)
-            if (n.Contains("x64", StringComparison.OrdinalIgnoreCase) &&
-                !n.Contains("arm64", StringComparison.OrdinalIgnoreCase))
-                return a.browser_download_url;
+            CheckResponse(response, "winget 등록 버전 조회");
+            var files = JsonSerializer.Deserialize(await response.Content.ReadAsStringAsync(), GhJson.Default.GhFileArray) ?? [];
+            await VerifyManifestFiles(client, WingetRepo, files, directory, version, installers);
+            return $"https://github.com/{WingetRepo}/tree/master/{directory.TrimEnd('/')}";
         }
-        else if (n.Contains(arch, StringComparison.OrdinalIgnoreCase))
-        {
-            return a.browser_download_url;
-        }
+    }
+
+    // Partial results or a failed request never count as evidence of no PR.
+    // Exact title boundaries avoid false matches such as version 1.22.0.1.
+    var query = $"repo:{WingetRepo} is:pr is:open in:title {PackageId} {version}";
+    var search = await GetJson(client, $"search/issues?q={Uri.EscapeDataString(query)}&per_page=100",
+        GhJson.Default.GhSearch, "기존 winget PR 검색");
+    if (search.incomplete_results != false || search.total_count is null or < 0 ||
+        search.items is null || search.total_count != search.items.Length)
+        throw new InvalidOperationException("기존 winget PR 검색 결과가 불완전하므로 중복 제출을 방지하기 위해 중단합니다.");
+    var candidates = new List<GhIssue>(search.items);
+    // Search indexing can lag immediately after a successful submission. Read
+    // the submitting user's open PRs independently before concluding absence.
+    for (var page = 1; page <= 10; page++)
+    {
+        var ownIssues = await GetJson(client,
+            $"repos/{WingetRepo}/issues?creator={Uri.EscapeDataString(login)}&state=open&per_page=100&page={page}",
+            GhJson.Default.GhIssueArray, "제출 사용자의 기존 winget PR 목록 조회");
+        if (ownIssues.Length > 100)
+            throw new InvalidOperationException("제출 사용자의 기존 PR 목록 응답이 올바르지 않아 중단합니다.");
+        candidates.AddRange(ownIssues.Where(issue => issue.pull_request.HasValue));
+        if (ownIssues.Length < 100) break;
+        if (page == 10)
+            throw new InvalidOperationException("제출 사용자의 기존 PR 목록이 검증 한도를 넘어 중복 제출을 방지하기 위해 중단합니다.");
+    }
+    foreach (var issue in candidates.DistinctBy(candidate => candidate.number))
+    {
+        if (!MatchesPackageVersion(issue.title, version)) continue;
+        var pull = await GetJson(client, $"repos/{WingetRepo}/pulls/{issue.number}", GhJson.Default.GhPull, "기존 winget PR 조회");
+        if (pull.state != "open" || pull.merged || pull.@base?.repo?.full_name != WingetRepo || pull.@base.@ref != "master" ||
+            !Regex.IsMatch(pull.head?.sha ?? "", "\\A[0-9a-f]{40}\\z") ||
+            !Regex.IsMatch(pull.head?.repo?.full_name ?? "", @"\A[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\z") ||
+            pull.changed_files < 2 || pull.changed_files > 100)
+            throw new InvalidOperationException($"기존 PR #{issue.number}의 대상 저장소, 상태 또는 파일 목록을 확인하지 못했습니다.");
+        var files = await GetJson(client, $"repos/{WingetRepo}/pulls/{issue.number}/files?per_page=100",
+            GhJson.Default.GhFileArray, "기존 winget PR 파일 조회");
+        if (files.Length != pull.changed_files)
+            throw new InvalidOperationException($"기존 PR #{issue.number}의 파일 목록이 불완전합니다.");
+        await VerifyManifestFiles(client, pull.head!.repo!.full_name, files, directory, version, installers);
+        var after = await GetJson(client, $"repos/{WingetRepo}/pulls/{issue.number}", GhJson.Default.GhPull, "기존 winget PR 재확인");
+        if (after.state != "open" || after.head?.sha != pull.head.sha)
+            throw new InvalidOperationException($"검증 중 기존 PR #{issue.number}의 상태 또는 head SHA가 바뀌어 중단합니다.");
+        return $"https://github.com/{WingetRepo}/pull/{issue.number}";
     }
     return null;
 }
 
-// winget-pkgs 에 해당 버전 폴더가 이미 있는지 확인 (멱등성).
-//   404 -> 없음(false), 2xx -> 있음(true), 그 외/예외 -> 불확실 → 호출부에서 fail-closed 처리.
-async Task<bool> VersionExistsInWinget(string version)
+bool MatchesPackageVersion(string title, string version) =>
+    Regex.IsMatch(title, $@"(?<![\w.]){Regex.Escape(PackageId)}(?![\w.])", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase) &&
+    Regex.IsMatch(title, $@"(?<![\w.+-])v?{Regex.Escape(version)}(?![\w.+-])", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+
+async Task VerifyManifestFiles(HttpClient client, string repository, GhFile[] files, string directory,
+    string version, GhAsset[] installers)
 {
-    var url = $"https://api.github.com/repos/{WingetRepo}/contents/{ManifestPath}/{version}";
-    using var resp = await Http.Client.GetAsync(url);
-    if (resp.StatusCode == HttpStatusCode.NotFound) return false;
-    if (resp.IsSuccessStatusCode) return true;
-    throw new InvalidOperationException(
-        $"winget contents API 응답 {(int)resp.StatusCode} {resp.ReasonPhrase}");
+    var versionName = directory + PackageId + ".yaml";
+    var installerName = directory + PackageId + ".installer.yaml";
+    var paths = files.Select(file => file.filename ?? file.path ?? "").ToArray();
+    if (!paths.Contains(versionName) || !paths.Contains(installerName) || paths.Distinct().Count() != paths.Length)
+        throw new InvalidOperationException("기존 제출에서 버전 및 설치 관리자 매니페스트를 확인하지 못했습니다.");
+    for (var index = 0; index < files.Length; index++)
+    {
+        var file = files[index];
+        var path = paths[index];
+        if (!path.StartsWith(directory, StringComparison.Ordinal) || !path.EndsWith(".yaml", StringComparison.Ordinal) ||
+            path[directory.Length..].Contains('/') || file.status is "removed" or "renamed" ||
+            !Regex.IsMatch(file.sha ?? "", "\\A[0-9a-f]{40}\\z"))
+            throw new InvalidOperationException("기존 제출에 다른 버전의 파일 또는 검증할 수 없는 변경이 포함되어 있습니다.");
+        // Immutable blobs avoid mutable/raw download URLs and token forwarding.
+        var blob = await GetJson(client, $"repos/{repository}/git/blobs/{file.sha}", GhJson.Default.GhBlob, "기존 매니페스트 blob 조회");
+        if (blob.encoding != "base64") throw new InvalidOperationException("기존 매니페스트 blob 인코딩을 확인하지 못했습니다.");
+        var yaml = Encoding.UTF8.GetString(Convert.FromBase64String(blob.content));
+        if (YamlScalar(yaml, "PackageIdentifier") != PackageId || YamlScalar(yaml, "PackageVersion") != version)
+            throw new InvalidOperationException("기존 매니페스트의 패키지 ID 또는 버전이 일치하지 않습니다.");
+        if (path == versionName && YamlScalar(yaml, "ManifestType") != "version")
+            throw new InvalidOperationException("기존 버전 매니페스트의 형식이 일치하지 않습니다.");
+        if (path == installerName) VerifyInstallerManifest(yaml, installers);
+    }
 }
 
-// PAT 소유자의 winget-pkgs 포크 master 를 upstream(microsoft/winget-pkgs)과
-// fast-forward 동기화한다. 포크가 없거나 동기화가 실패해도(경고만) 진행을 막지 않는다.
-// (Authorization 헤더가 설정된 상태에서 호출되어야 한다.)
-async Task SyncWingetFork()
+string YamlScalar(string yaml, string key)
 {
+    var matches = Regex.Matches(yaml, $@"(?m)^[ \t]*{Regex.Escape(key)}:[ \t]*(?<value>[^\r\n]+)");
+    if (matches.Count != 1) throw new InvalidOperationException($"매니페스트의 {key} 항목이 없거나 중복되어 있습니다.");
+    return matches[0].Groups["value"].Value.Trim().Trim('\'', '"');
+}
+
+void VerifyInstallerManifest(string yaml, GhAsset[] installers)
+{
+    if (YamlScalar(yaml, "ManifestType") != "installer")
+        throw new InvalidOperationException("기존 설치 관리자 매니페스트의 형식이 일치하지 않습니다.");
+    var blocks = Regex.Matches(yaml, @"(?ms)^[ \t]*- Architecture:[ \t]*(?<arch>[^\r\n]+)\r?\n(?<body>.*?)(?=^[ \t]*- Architecture:|\z)");
+    if (blocks.Count != 2) throw new InvalidOperationException("기존 매니페스트에 두 아키텍처의 설치 관리자가 없습니다.");
+    foreach (var (architecture, asset) in new[] { ("x64", installers[0]), ("arm64", installers[1]) })
+    {
+        var match = blocks.Cast<Match>().Where(block => block.Groups["arch"].Value.Trim().Trim('\'', '"') == architecture).ToArray();
+        if (match.Length != 1 || YamlScalar(match[0].Groups["body"].Value, "InstallerUrl") != asset.browser_download_url)
+            throw new InvalidOperationException($"기존 매니페스트의 {architecture} 설치 관리자 URL이 릴리스와 일치하지 않습니다.");
+        var sha = YamlScalar(match[0].Groups["body"].Value, "InstallerSha256");
+        if (!Regex.IsMatch(sha, "\\A[0-9a-fA-F]{64}\\z") ||
+            (asset.digest?.StartsWith("sha256:", StringComparison.Ordinal) == true &&
+             !sha.Equals(asset.digest[7..], StringComparison.OrdinalIgnoreCase)))
+            throw new InvalidOperationException($"기존 매니페스트의 {architecture} 설치 관리자 SHA-256이 올바르지 않거나 릴리스와 일치하지 않습니다.");
+    }
+}
+
+async Task SyncWingetFork(HttpClient client, string login)
+{
+    using var body = new StringContent("{\"branch\":\"master\"}", Encoding.UTF8, "application/json");
+    using var response = await client.PostAsync($"repos/{login}/winget-pkgs/merge-upstream", body);
+    // A new contributor may not have a fork yet; wingetcreate creates it.
+    if (response.StatusCode == HttpStatusCode.NotFound) return;
+    CheckResponse(response, "winget-pkgs 포크 동기화");
+    WriteLine($"포크 {login}/winget-pkgs의 master를 upstream과 동기화했습니다.");
+}
+
+async Task<int> RunSelfTests()
+{
+    var passed = 0;
+    void Require(bool condition)
+    {
+        if (!condition) throw new InvalidOperationException("Self-test assertion failed.");
+    }
+    void Test(string name, Action action)
+    {
+        action(); WriteLine($"PASS {name}"); passed++;
+    }
+    void Reject(Action action, string expected)
+    {
+        try { action(); }
+        catch (InvalidOperationException exception) when (exception.Message.Contains(expected, StringComparison.Ordinal)) { return; }
+        throw new InvalidOperationException($"Expected rejection containing '{expected}'.");
+    }
+    async Task RejectAsync(Func<Task> action, string expected)
+    {
+        try { await action(); }
+        catch (InvalidOperationException exception) when (exception.Message.Contains(expected, StringComparison.Ordinal)) { return; }
+        throw new InvalidOperationException($"Expected rejection containing '{expected}'.");
+    }
     try
     {
-        var me = await Http.GetJson<GhUser>("https://api.github.com/user", GhJson.Default);
-        var url = $"https://api.github.com/repos/{me.login}/winget-pkgs/merge-upstream";
-        using var body = new StringContent(
-            "{\"branch\":\"master\"}", System.Text.Encoding.UTF8, "application/json");
-        using var resp = await Http.Client.PostAsync(url, body);
-        if (resp.IsSuccessStatusCode)
-            WriteLine($"포크 {me.login}/winget-pkgs master 를 upstream 과 동기화했습니다.");
-        else
-            WriteLine($"::warning::포크 동기화 응답 {(int)resp.StatusCode} {resp.ReasonPhrase} — 계속 진행합니다.");
+        Test("stable tag and Preview exclusion", () =>
+        {
+            Require(ValidateTag("v1.22.0") == "1.22.0");
+            foreach (var tag in new[] { "v1.22.0-preview.12", "v1.22.0-rc.1", "v1.22.0.0", "v1.22.0\n", "" })
+                Reject(() => ValidateTag(tag), "RELEASE_TAG");
+        });
+        Test("verify_only rejects ambiguous input", () =>
+        {
+            Require(ParseVerifyOnly("true") && !ParseVerifyOnly("false") && !ParseVerifyOnly(null));
+            Reject(() => ParseVerifyOnly("yes"), "VERIFY_ONLY");
+        });
+        Test("malformed credentials are never echoed", () =>
+        {
+            const string malformed = "fake-secret\ninvalid";
+            try { using var client = CreateGitHubClient(malformed); }
+            catch (InvalidOperationException exception)
+            {
+                Require(!exception.Message.Contains(malformed, StringComparison.Ordinal));
+                return;
+            }
+            throw new InvalidOperationException("Malformed credential was accepted.");
+        });
+        Test("exact package and version boundaries", () =>
+        {
+            foreach (var title in new[] { "New version: TableClothProject.TableCloth version 1.22.0", "TableClothProject.TableCloth v1.22.0", "tableclothproject.tablecloth V1.22.0" })
+                Require(MatchesPackageVersion(title, "1.22.0"));
+            foreach (var title in new[] { "TableClothProject.TableCloth 1.22.0.1", "TableClothProject.TableCloth 1.22.0-rc.1", "TableClothProject.TableCloth v1.22.0-rc.1", "TableClothProject.TableCloth 1.22.0+meta", "Other.TableClothProject.TableCloth 1.22.0", "TableClothProject.TableCloth 11.22.0" })
+                Require(!MatchesPackageVersion(title, "1.22.0"));
+        });
+        foreach (var status in new[] { HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden })
+        {
+            using var client = CreateGitHubClient("fake-test-token", new StubHandler(_ => new(status)));
+            await RejectAsync(async () => { await ValidateSubmissionCredential(client); }, $"HTTP {(int)status}");
+            WriteLine($"PASS authentication HTTP {(int)status}"); passed++;
+        }
+        foreach (var scopes in new[] { "public_repo", "repo, workflow", "read:user" })
+        {
+            using var client = CreateGitHubClient("fake-test-token", new StubHandler(_ =>
+            {
+                var response = JsonResponse("{\"login\":\"test-user\"}");
+                response.Headers.Add("X-OAuth-Scopes", scopes);
+                return response;
+            }));
+            if (scopes == "read:user")
+                await RejectAsync(async () => { await ValidateSubmissionCredential(client); }, "권한이 없습니다");
+            else Require(await ValidateSubmissionCredential(client) == "test-user");
+            WriteLine($"PASS submission scope {scopes}"); passed++;
+        }
+
+        var assets = new[] { "x64", "arm64" }.Select(architecture =>
+        {
+            var name = $"TableCloth_1.22.0.0_Release_{architecture}.exe";
+            return new GhAsset(name, $"https://github.com/{Repo}/releases/download/v1.22.0/{name}", 123, "sha256:" + new string('a', 64));
+        }).ToArray();
+        Test("installer identity and official URL", () =>
+        {
+            Require(SelectInstallers(new("v1.22.0", false, false, assets), "1.22.0").Length == 2);
+            Reject(() => SelectInstallers(new("v1.22.0", false, false, [assets[0], assets[0], assets[1]]), "1.22.0"), "고유한");
+            Reject(() => SelectInstallers(new("v1.22.0", false, false, [assets[0] with { browser_download_url = "https://example.com/fake.exe" }, assets[1]]), "1.22.0"), "공식 URL");
+        });
+        var versionYaml = $"PackageIdentifier: {PackageId}\nPackageVersion: 1.22.0\nManifestType: version\n";
+        var installerYaml = $"PackageIdentifier: {PackageId}\nPackageVersion: 1.22.0\nManifestType: installer\nInstallers:\n" +
+            string.Join("", assets.Select((asset, index) => $"- Architecture: {(index == 0 ? "x64" : "arm64")}\n  InstallerUrl: {asset.browser_download_url}\n  InstallerSha256: {new string('a', 64)}\n"));
+        Test("existing installer URL and digest verification", () =>
+        {
+            VerifyInstallerManifest(installerYaml, assets);
+            Reject(() => VerifyInstallerManifest(installerYaml.Replace(new string('a', 64), new string('b', 64)), assets), "SHA-256");
+            Reject(() => VerifyInstallerManifest(installerYaml.Replace("Release_x64.exe", "Release_wrong.exe"), assets), "URL");
+        });
+        foreach (var failure in new[] { "http", "incomplete", "truncated", "missing-fields", "rest-http", "rest-limit" })
+        {
+            using var client = CreateGitHubClient("fake-test-token", new StubHandler(request =>
+            {
+                if (request.RequestUri!.AbsolutePath.Contains("/contents/")) return new(HttpStatusCode.NotFound);
+                if (failure == "http" || request.RequestUri!.AbsolutePath.StartsWith("/repos/") &&
+                    request.RequestUri.AbsolutePath.EndsWith("/issues") && failure == "rest-http")
+                    return new(HttpStatusCode.ServiceUnavailable);
+                if (failure == "rest-limit" && request.RequestUri!.AbsolutePath.StartsWith("/repos/"))
+                    return JsonResponse("[" + string.Join(',', Enumerable.Repeat("{\"number\":1,\"title\":\"Other package\",\"pull_request\":{}}", 100)) + "]");
+                if (failure == "missing-fields") return JsonResponse("{}");
+                return JsonResponse(failure == "incomplete"
+                    ? "{\"total_count\":0,\"incomplete_results\":true,\"items\":[]}"
+                    : failure is "rest-http" or "rest-limit" ? "{\"total_count\":0,\"incomplete_results\":false,\"items\":[]}"
+                    : "{\"total_count\":1,\"incomplete_results\":false,\"items\":[]}");
+            }));
+            await RejectAsync(async () => { await FindExistingSubmission(client, "test-user", "1.22.0", assets); },
+                failure is "http" or "rest-http" ? "HTTP 503" : failure == "rest-limit" ? "검증 한도" : "불완전");
+            WriteLine($"PASS search fail-closed {failure}"); passed++;
+        }
+        var directory = ManifestPath + "/1.22.0/";
+        var files = "[{\"filename\":\"" + directory + PackageId + ".yaml\",\"sha\":\"" + new string('1', 40) + "\",\"status\":\"added\"}," +
+            "{\"filename\":\"" + directory + PackageId + ".installer.yaml\",\"sha\":\"" + new string('2', 40) + "\",\"status\":\"added\"}]";
+        foreach (var mode in new[] { "upstream", "open-pr", "search-lag", "search-lag-v-prefix", "changed-head", "wrong-version" })
+        {
+            var reads = 0;
+            var pullReads = 0;
+            using var client = CreateGitHubClient("fake-test-token", new StubHandler(request =>
+            {
+                Require(request.Method == HttpMethod.Get);
+                reads++;
+                var path = request.RequestUri!.AbsolutePath;
+                if (path.Contains("/contents/")) return mode == "upstream" ? JsonResponse(files) : new(HttpStatusCode.NotFound);
+                var issue = mode == "search-lag-v-prefix"
+                    ? "{\"number\":42,\"title\":\"TableClothProject.TableCloth v1.22.0\",\"pull_request\":{}}"
+                    : "{\"number\":42,\"title\":\"New version: TableClothProject.TableCloth version 1.22.0\",\"pull_request\":{}}";
+                if (path == "/search/issues") return JsonResponse(mode.StartsWith("search-lag", StringComparison.Ordinal)
+                    ? "{\"total_count\":0,\"incomplete_results\":false,\"items\":[]}"
+                    : "{\"total_count\":1,\"incomplete_results\":false,\"items\":[" + issue + "]}");
+                if (path.EndsWith("/issues")) return JsonResponse(mode.StartsWith("search-lag", StringComparison.Ordinal) ? "[" + issue + "]" : "[]");
+                if (path.EndsWith("/files")) return JsonResponse(files);
+                if (path.Contains("/pulls/"))
+                {
+                    pullReads++;
+                    var sha = new string(mode == "changed-head" && pullReads > 1 ? 'b' : 'a', 40);
+                    return JsonResponse("{\"state\":\"open\",\"merged\":false,\"changed_files\":2,\"base\":{\"ref\":\"master\",\"repo\":{\"full_name\":\"microsoft/winget-pkgs\"}},\"head\":{\"sha\":\"" + sha + "\",\"repo\":{\"full_name\":\"test-user/winget-pkgs\"}}}");
+                }
+                if (path.Contains("/git/blobs/"))
+                {
+                    var yaml = path.EndsWith(new string('1', 40)) ? versionYaml : installerYaml;
+                    if (mode == "wrong-version") yaml = yaml.Replace("PackageVersion: 1.22.0", "PackageVersion: 1.22.0.1");
+                    return JsonResponse("{\"encoding\":\"base64\",\"content\":\"" + Convert.ToBase64String(Encoding.UTF8.GetBytes(yaml)) + "\"}");
+                }
+                throw new InvalidOperationException("Unexpected self-test request.");
+            }));
+            if (mode is "changed-head" or "wrong-version")
+                await RejectAsync(async () => { await FindExistingSubmission(client, "test-user", "1.22.0", assets); }, mode == "changed-head" ? "head SHA" : "버전이 일치하지");
+            else Require((await FindExistingSubmission(client, "test-user", "1.22.0", assets))?.Contains(mode == "upstream" ? "/tree/master/" : "/pull/42") == true);
+            Require(reads > 0);
+            WriteLine($"PASS existing submission {mode}"); passed++;
+        }
+        WriteLine($"All {passed} offline winget submission tests passed.");
+        return 0;
     }
-    catch (Exception ex)
+    catch (Exception exception)
     {
-        WriteLine($"::warning::포크 동기화 건너뜀: {ex.Message} — 계속 진행합니다.");
+        WriteLine($"FAIL: {exception.Message}");
+        return 1;
     }
 }
 
-// =============================================================================
-// GitHub 릴리스 API 응답 (System.Text.Json source-gen; 필요한 필드만 매핑)
-// =============================================================================
+HttpResponseMessage JsonResponse(string json) => new(HttpStatusCode.OK) { Content = new StringContent(json, Encoding.UTF8, "application/json") };
+
+internal sealed class StubHandler(Func<HttpRequestMessage, HttpResponseMessage> respond) : HttpMessageHandler
+{
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) =>
+        Task.FromResult(respond(request));
+}
 
 internal sealed record GhRelease(string tag_name, bool draft, bool prerelease, GhAsset[] assets);
-internal sealed record GhAsset(string name, string browser_download_url);
+internal sealed record GhAsset(string name, string browser_download_url, long size, string? digest);
 internal sealed record GhUser(string login);
+internal sealed record GhSearch(int? total_count, bool? incomplete_results, GhIssue[]? items);
+internal sealed record GhIssue(int number, string title, JsonElement? pull_request);
+internal sealed record GhFile(string? path, string? filename, string sha, string? status);
+internal sealed record GhBlob(string encoding, string content);
+internal sealed record GhRepository(string full_name);
+internal sealed record GhRef(string @ref, string sha, GhRepository repo);
+internal sealed record GhPull(string state, bool merged, int changed_files, GhRef @base, GhRef head);
 
 [JsonSerializable(typeof(GhRelease))]
 [JsonSerializable(typeof(GhUser))]
+[JsonSerializable(typeof(GhSearch))]
+[JsonSerializable(typeof(GhIssue[]))]
+[JsonSerializable(typeof(GhFile[]))]
+[JsonSerializable(typeof(GhBlob))]
+[JsonSerializable(typeof(GhPull))]
 internal partial class GhJson : JsonSerializerContext;

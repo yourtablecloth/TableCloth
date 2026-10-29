@@ -7,6 +7,11 @@ name: Submit to winget-pkgs repo
 # 실제 로직은 .NET 11 file-based app(tools/winget/submit-winget.cs, Cadenza SDK)에
 # 들어 있고, 이 워크플로는 런타임을 준비하고 그 스크립트를 호출하기만 한다.
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/winget_publish.yml'
+      - 'tools/winget/**'
+      - 'tools/Directory.Packages.props'
   release:
     types: [released]
   workflow_dispatch:
@@ -15,14 +20,37 @@ on:
         description: 'Release tag to publish (e.g., v1.20.0)'
         required: true
         type: string
+      verify_only:
+        description: 'Verify credentials, release assets, and existing submissions without changes'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
 jobs:
+  test:
+    name: Test winget submission checks
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup .NET 11 RC1 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 11.0.100-rc.1.26425.128
+      - name: Run offline regression tests
+        shell: pwsh
+        run: dotnet run --file tools/winget/submit-winget.cs -- --self-test
+
   winget:
     name: Publish winget package
+    needs: test
     runs-on: windows-latest
+    concurrency:
+      group: winget-${{ github.event.release.tag_name || inputs.release_tag }}
+      cancel-in-progress: false
     # released 트리거는 이미 draft/prerelease 를 제외하지만, 향후 published 로 바꾸더라도 안전하도록
     # 방어적으로 한 번 더 가드한다. 이슈 #296: 프리뷰 릴리스(v*-preview.*)는 winget 으로 배포하지 않는다 —
     # 자동(release) 경로는 prerelease 제외로 이미 안전하고, 수동(workflow_dispatch) 재실행도 프리뷰 태그면 건너뛴다.
@@ -36,14 +64,13 @@ jobs:
         uses: actions/checkout@v4
 
       # .NET 11 SDK: Cadenza file-based app 실행용 (dotnet run --file).
-      # .NET 6 런타임: wingetcreate.exe 가 .NET 6 프레임워크 종속인데,
-      #   windows-latest 러너 이미지에서 .NET 6 런타임이 제거(2025-08)되어
-      #   명시 설치가 필요하다. 6.x SDK 설치 시 6.0 런타임이 함께 제공된다.
-      - name: Setup .NET (11 RC1 SDK + 6 runtime)
+      # wingetcreate 1.12의 단독 exe는 net9.0 framework-dependent 배포다.
+      # 9.x SDK 설치에 포함된 .NET 9 런타임으로 실행한다.
+      - name: Setup .NET (11 RC1 SDK + 9 runtime)
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            6.x
+            9.x
             11.0.100-rc.1.26425.128
 
       - name: Submit winget manifest PR
@@ -51,6 +78,9 @@ jobs:
         env:
           # release 이벤트면 release.tag_name, 수동 dispatch 면 inputs.release_tag
           RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+          VERIFY_ONLY: ${{ inputs.verify_only || false }}
+          # 이 저장소의 릴리스 읽기와 외부 winget 제출의 인증을 분리한다.
+          GITHUB_TOKEN: ${{ github.token }}
           # winget-pkgs 포크/PR 권한이 있는 classic PAT (public_repo 스코프)
           GITHUB_PAT: ${{ secrets.TABLECLOTH_GITHUB_PAT }}
         run: dotnet run --file tools/winget/submit-winget.cs
