@@ -26,6 +26,28 @@ public sealed class QuickStartInputRouterTests
     }
 
     [TestMethod]
+    [DataRow("이 페이지 https://example.com/ 내용을 요약해 주세요.", QuickStartRouteKind.AiQuestion)]
+    [DataRow("https://example.com/ 페이지 내용을 요약해 주세요.", QuickStartRouteKind.AiQuestion)]
+    [DataRow("Compare https://example.com/ and http://example.net/", QuickStartRouteKind.AiQuestion)]
+    [DataRow("https://example.com/\n설명해 주세요.", QuickStartRouteKind.AiQuestion)]
+    [DataRow("이 주소 https://localhost/ 를 설명해 주세요.", QuickStartRouteKind.AiQuestion)]
+    [DataRow("https://example.com/", QuickStartRouteKind.WebAddress)]
+    [DataRow("http://example.com/", QuickStartRouteKind.WebAddress)]
+    [DataRow("https://", QuickStartRouteKind.WebAddress)]
+    [DataRow("https://[invalid", QuickStartRouteKind.WebAddress)]
+    [DataRow("ftp://example.com/", QuickStartRouteKind.WebAddress)]
+    [DataRow("https://localhost/", QuickStartRouteKind.WebAddress)]
+    [DataRow("https://192.168.1.2/", QuickStartRouteKind.WebAddress)]
+    [DataRow("https://user:synthetic@example.com/", QuickStartRouteKind.WebAddress)]
+    public void SeparatesUrlQuestionsFromStandaloneAddressAttempts(string input, QuickStartRouteKind expectedKind)
+    {
+        var route = QuickStartInputRouter.Classify(input, Services);
+
+        Assert.AreEqual(expectedKind, route.Kind);
+        Assert.AreEqual(input, route.Value);
+    }
+
+    [TestMethod]
     public void CatalogSearchMatchesDisplayNamesOnly()
     {
         Assert.IsTrue(QuickStartInputRouter.MatchesCatalogName(Services[0], "국민"));

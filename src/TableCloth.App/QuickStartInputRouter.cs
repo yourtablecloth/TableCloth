@@ -31,9 +31,9 @@ public static class QuickStartInputRouter
         if (PublicWebUrl.TryParse(text, out _))
             return new(QuickStartRouteKind.WebAddress, text);
 
-        // Keep malformed or blocked URL attempts in the address path so the existing
-        // launcher can explain why they cannot be opened.
-        if (text.Contains("://", StringComparison.Ordinal))
+        // Keep standalone malformed or blocked URL attempts in the address path so
+        // the launcher can explain the rejection. Questions containing URLs remain drafts.
+        if (!text.Any(char.IsWhiteSpace) && text.Contains("://", StringComparison.Ordinal))
             return new(QuickStartRouteKind.WebAddress, text);
 
         if (!text.Any(char.IsWhiteSpace) && text.Contains('.')

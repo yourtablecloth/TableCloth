@@ -16,6 +16,9 @@ public static class CertificateInputGuard
     private static readonly Regex CertificatePath = new(
         @"(?:[A-Za-z]:\\|\\\\|/)\S*(?:NPKI|signCert\.der|signPri\.key)|NPKI[\\/]\S+",
         RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
+    private static readonly Regex PrivateKeyHeader = new(
+        @"-----BEGIN (?:(?!-----)[^\r\n])*PRIVATE KEY-----",
+        RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
     public static bool ContainsProhibitedMaterial(string text)
     {
@@ -35,9 +38,7 @@ public static class CertificateInputGuard
              text.Contains("https://", StringComparison.OrdinalIgnoreCase) ||
              text.Contains("file://", StringComparison.OrdinalIgnoreCase))) return true;
         if (text.Contains("-----BEGIN CERTIFICATE-----", StringComparison.OrdinalIgnoreCase) ||
-            text.Contains("-----BEGIN PRIVATE KEY-----", StringComparison.OrdinalIgnoreCase) ||
-            text.Contains("-----BEGIN ENCRYPTED PRIVATE KEY-----", StringComparison.OrdinalIgnoreCase) ||
-            text.Contains("-----BEGIN RSA PRIVATE KEY-----", StringComparison.OrdinalIgnoreCase) ||
+            PrivateKeyHeader.IsMatch(text) ||
             CertificatePath.IsMatch(text) ||
             DistinguishedName.IsMatch(text)) return true;
 
