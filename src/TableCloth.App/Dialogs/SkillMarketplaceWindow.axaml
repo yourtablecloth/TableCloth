@@ -206,7 +206,15 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button Grid.Row="2" Content="{x:Static ai:ManagedAiText.MarketplaceClose}" Click="CloseButton_Click"
-                HorizontalAlignment="Right" IsCancel="True" Margin="0" />
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <StackPanel Spacing="3">
+                <TextBlock x:Name="MarketplaceContributionNotice" Text="{x:Static ai:ManagedAiText.MarketplaceContributionNotice}"
+                           TextWrapping="Wrap" FontSize="12" />
+                <Button x:Name="MarketplaceContributionLink" Classes="link" Content="https://catalog.yourtablecloth.app/skills/"
+                        Command="{Binding OpenContributionPageCommand}" HorizontalAlignment="Left" Padding="0" Margin="0" />
+            </StackPanel>
+            <Button Grid.Column="1" Content="{x:Static ai:ManagedAiText.MarketplaceClose}" Click="CloseButton_Click"
+                    VerticalAlignment="Bottom" IsCancel="True" Margin="0" />
+        </Grid>
     </Grid>
 </Window>

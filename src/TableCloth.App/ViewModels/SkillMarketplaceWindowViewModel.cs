@@ -350,6 +350,14 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
 
     private static bool Matches(string search, params string[] values) => search.Length == 0 || values.Any(x => x.Contains(search, StringComparison.OrdinalIgnoreCase));
 
+    [RelayCommand]
+    private void OpenContributionPage()
+    {
+        if (_disposed) return;
+        try { Process.Start(new ProcessStartInfo("https://catalog.yourtablecloth.app/skills/") { UseShellExecute = true })?.Dispose(); }
+        catch { _messages.DisplayError(ManagedAiText.Select("스킬 카탈로그 페이지를 열지 못했습니다.", "Could not open the skill catalog page."), false); }
+    }
+
     [RelayCommand(CanExecute = nameof(CanOpenSource))]
     private void OpenSource()
     {

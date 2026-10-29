@@ -30,23 +30,27 @@ Windows Sandbox에서 인터넷 뱅킹과 전자정부 사이트를 사용할 �
 
 빠른 시작 화면의 통합 입력란에 기관 이름, 웹 주소 또는 질문을 입력하고 `시작`을 누를 수 있습니다. 입력 중에는 카탈로그의 서비스 이름 또는 웹 주소와 일치하는 항목을 입력란 아래에 제안합니다. 제안을 선택하면 입력란을 채우며 `시작`을 눌러 실행할 수 있습니다. 입력란이 비어 있으면 빈 샌드박스를 시작합니다. 한두 단어가 카탈로그의 서비스 이름과 일치하면 검색 결과 목록을 열어 사이트를 선택합니다. 선택한 서비스의 소프트웨어 설치와 사이트 접속은 샌드박스 안의 Spork가 처리합니다. 전체 목록은 `카탈로그에서 사이트 선택`으로 열 수 있습니다.
 
-입력한 공개 웹 주소가 Catalog 서비스의 도메인과 일치하면 QuickStart 설정을 적용하고 Spork가 해당 서비스의 소프트웨어를 설치한 뒤 입력한 페이지를 엽니다. 같은 도메인의 후보가 많으면 서비스를 선택하는 창이 열립니다. 일치 항목이 없으면 폴더와 인증서를 공유하지 않는 브라우저 전용 샌드박스에서 페이지를 엽니다. 로컬 및 사설 주소, 로그인 정보가 포함된 URL과 웹 이외의 스킴은 받지 않습니다. `#debug`는 로컬 진단 경로를 표시합니다. 그 밖의 `#` 명령은 향후 진단 기능을 위해 예약했습니다. 다른 문장은 AI Preview 대화창의 입력란에 초안으로 전달합니다.
+입력한 공개 웹 주소가 Catalog 서비스의 도메인과 일치하면 QuickStart 설정을 적용하고 Spork가 해당 서비스의 소프트웨어를 설치한 뒤 입력한 페이지를 엽니다. 같은 도메인의 후보가 많으면 서비스를 선택하는 창이 열립니다. 일치 항목이 없으면 폴더와 인증서를 공유하지 않는 브라우저 전용 샌드박스에서 페이지를 엽니다. 로컬 및 사설 주소, 로그인 정보가 포함된 URL과 웹 이외의 스킴은 받지 않습니다. `#debug`는 로컬 진단 경로를 표시합니다. 그 밖의 `#` 명령은 향후 진단 기능을 위해 예약했습니다. 다른 문장은 식탁보 AI 대화창의 입력란에 초안으로 전달합니다.
 
-v1.21.0은 WPF UI를 Avalonia로 이관하고 TableCloth와 Spork 배포본을 Native AOT로 전환했습니다. 현재 정식 버전인 [v1.21.1](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.21.1)은 첫 실행 데이터 디렉터리 처리 문제인 [#308](https://github.com/yourtablecloth/TableCloth/issues/308)을 수정한 긴급 업데이트입니다.
+v1.21.0은 WPF UI를 Avalonia로 이관하고 TableCloth와 Spork 배포본을 Native AOT로 전환했습니다. 현재 정식 버전인 [v1.22.0](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.22.0)은 식탁보 AI, 스킬 마켓플레이스와 파일 첨부 기능을 제공하며 Safe Mode 실행을 지원합니다.
 
 ## 식탁보 AI (베타)
 
-빠른 시작 화면에서 `식탁보 AI (베타)`를 열 수 있습니다. 2026년 10월 24일 기준 [v1.22.0-preview.6](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.22.0-preview.6)에서 AI 창은 메인 창보다 조금 큰 840×640의 초기 크기로 열립니다. 창 안의 큰 제목을 제거하고 Codex 버전, 연결 상태, 대화 모델과 100만 토큰당 입력 및 출력 크레딧 단가를 상단 한 줄에 표시합니다. 이 기능은 TableCloth 전용 위치에 OpenAI Codex 런타임을 설치하고 사용자의 ChatGPT 로그인으로 대화를 처리합니다. 선택한 모델은 기존 애플리케이션 설정에 저장합니다. 응답의 웹 링크를 누르면 Windows Sandbox 또는 현재 Windows 브라우저를 선택할 수 있습니다. Sandbox 경로는 TableCloth Catalog를 확인하고 Spork로 필요한 소프트웨어를 설치한 뒤 페이지를 엽니다.
+빠른 시작 화면에서 `식탁보 AI (베타)`를 열 수 있습니다. AI 창은 메인 창보다 조금 큰 840×640의 초기 크기로 열립니다. Codex 버전, 연결 상태, 대화 모델과 100만 토큰당 입력 및 출력 크레딧 단가를 상단 한 줄에 표시합니다. 이 기능은 TableCloth 전용 위치에 OpenAI Codex 런타임을 설치하고 사용자의 ChatGPT 로그인으로 대화를 처리합니다. 선택한 모델은 기존 애플리케이션 설정에 저장합니다. 응답의 웹 링크를 누르면 Windows Sandbox 또는 현재 Windows 브라우저를 선택할 수 있습니다. Sandbox 경로는 TableCloth Catalog를 확인하고 Spork로 필요한 소프트웨어를 설치한 뒤 페이지를 엽니다.
 
 AI 대화에는 실행 중인 식탁보의 버전, 공식 홈페이지, Windows Sandbox와 Spork의 역할을 기본 문맥으로 전달합니다. 답변 언어는 AI 창의 표시 언어를 따르며, 외부 사이트의 최신 절차는 웹 검색 결과에 근거합니다.
 
-일반 설정 창의 `AI 스킬` 탭에서 전용 Codex 스킬을 조회하고 추가, 활성화, 비활성화, 제거할 수 있습니다. AI 대화 창에도 활성 스킬 수를 표시하고 스킬 관리 기능을 제공합니다. TableCloth는 전용 프로필 밖에서 Codex가 찾은 사용자 및 프로젝트 스킬을 대화 실행 전에 끕니다. 스킬 파일과 사용 설정은 Codex 런타임 릴리스 폴더와 분리하므로 런타임 업데이트나 재설치 후에도 유지합니다.
+일반 설정 창의 `AI 스킬` 탭이나 AI 대화 창에서 스킬 마켓플레이스를 열 수 있습니다. 마켓플레이스에서는 원격 스킬을 탐색하고 설치, 업데이트, 활성화, 비활성화, 제거하거나 로컬 스킬 폴더를 가져올 수 있습니다. [스킬 카탈로그 페이지](https://catalog.yourtablecloth.app/skills/)에서는 새 스킬의 마켓플레이스 등재를 제안할 수 있습니다. AI 입력창 위의 `+` 버튼이나 `@` 입력으로 설치된 스킬 목록을 열고 위아래 방향키와 Enter로 선택할 수 있습니다. 현재 선택 후보는 강조색으로 표시합니다. TableCloth는 전용 프로필 밖에서 Codex가 찾은 사용자 및 프로젝트 스킬을 대화 실행 전에 끕니다. 스킬 파일과 사용 설정은 Codex 런타임 릴리스 폴더와 분리하므로 런타임 업데이트나 재설치 후에도 유지합니다.
+
+스킬 스크립트 실행은 AppContainer 브로커를 거칩니다. 대화창의 `앱 실행 기록`에는 브로커가 확인한 스킬, 도구, 실행 결과와 종료 코드를 표시하고 후속 질문에도 실행 기록을 전달합니다. 이 기록이 답변에 포함된 모든 수치의 정확성을 검증하지는 않습니다.
 
 [tablecloth-certificate-expiry](https://github.com/yourtablecloth/tablecloth-certificate-expiry) 스킬은 공동인증서 만료일 질문을 처리하며 스킬 마켓플레이스에서 선택해 설치합니다. 새 전용 프로필에는 스킬을 자동 설치하지 않습니다. 사용자가 조회에 동의하면 호스트의 `TableClothCli.exe`가 기본 NPKI 폴더에서 공개 인증서의 만료 여부를 확인합니다. AI에는 만료된 인증서 수, 향후 30일 안에 만료되는 인증서 수와 조회 완료 여부만 전달합니다. 인증서 이름, 발급자, 일련번호, 파일 경로, 공개 인증서의 내용, 개인키와 Catalog 정보는 전달하지 않습니다. 식탁보 AI는 개별 인증서의 세부 정보나 스크린샷을 직접 확인할 수 없습니다.
 
-AI 창은 민감 개인정보, 공동인증서 파일과 스크린샷을 입력하거나 링크로 공유하지 말라는 안내를 새 대화의 시작 화면에만 표시합니다. 텍스트 입력에서는 일부 국내 전화번호, 주민등록번호와 주소 형식을 자동으로 가립니다. 정규표현식 기반 필터가 모든 개인정보를 찾아내지는 못합니다. 인식 가능한 인증서 세부 정보와 인증서 스크린샷 링크는 전송 전에 거부합니다. AI 창에는 파일 첨부 기능이 없습니다. 자세한 사용 범위는 [홈페이지의 식탁보 AI 안내](https://yourtablecloth.app/docs/managed-ai)와 [개인정보 처리방침](https://yourtablecloth.app/docs/privacy)에서 확인할 수 있습니다.
+AI 창은 민감 개인정보, 공동인증서 파일과 스크린샷을 입력하거나 링크로 공유하지 말라는 안내를 새 대화의 시작 화면에만 표시합니다. 텍스트 입력과 첨부 텍스트에서는 일부 국내 전화번호, 주민등록번호와 주소 형식을 자동으로 가립니다. 정규표현식 기반 필터가 모든 개인정보를 찾아내지는 못합니다. 인식 가능한 인증서 세부 정보와 인증서 스크린샷 링크는 전송 전에 거부합니다. 자세한 사용 범위는 [홈페이지의 식탁보 AI 안내](https://yourtablecloth.app/docs/managed-ai)와 [개인정보 처리방침](https://yourtablecloth.app/docs/privacy)에서 확인할 수 있습니다.
 
-AI Preview 메시지를 전송하면 사용자의 OpenAI 구독 사용량을 소비합니다. 기능의 구현 상태, 보안 경계와 아직 실행하지 않은 실기기 검증은 [AI Preview 구현 및 검증 보고서](docs/poc/managed-ai-runtime.md)에 기록했습니다. [최초 PoC 설계](docs/poc/managed-ai-runtime-design.ko.md)는 구현 전 기준과 의사결정 이력을 보존합니다.
+입력창 위의 클립 버튼으로 PNG, JPEG와 텍스트 파일을 최대 4개 첨부할 수 있습니다. Ctrl+V는 클립보드의 파일과 비트맵을 첨부로 추가하고 일반 텍스트는 입력창에 붙여넣습니다. 여러 첨부 파일은 한 행에 나란히 표시합니다. 메시지를 보내면 입력창의 첨부 카드를 바로 비우고 전송 실패나 중지 시에는 초안을 복원합니다. 첨부 파일은 메시지와 함께 OpenAI로 전송하며 이미지에는 자동 가림을 적용하지 않습니다.
+
+식탁보 AI 메시지를 전송하면 사용자의 OpenAI 구독 사용량을 소비합니다. 기능의 구현 상태, 보안 경계와 검증 이력은 [AI Preview 구현 및 검증 보고서](docs/poc/managed-ai-runtime.md)에 기록했습니다. [최초 PoC 설계](docs/poc/managed-ai-runtime-design.ko.md)는 구현 전 기준과 의사결정 이력을 보존합니다.
 
 정식 릴리스는 다음 네 가지 앱 조합을 제공합니다.
 
@@ -78,7 +82,7 @@ WinGet 등록소 반영에는 GitHub Release 게시 이후 시간이 더 걸릴 
 
 ## 무설치 Express 실행
 
-공유 폴더를 사용하는 실행에서 PC에 블루스크린이 발생하면 빠른 시작의 **샌드박스를 시작하는데 문제가 있으신가요?** 링크를 눌러 Safe Mode 실행을 비교할 수 있습니다. Safe Mode는 호스트 폴더와 클립보드 및 장치 공유를 제외하고 네트워크를 유지합니다. 일반 실행 옵션과 조합하지 않으며 입력란과 호스트에서 선택한 기관을 전달하지 않습니다. 기관은 Sandbox 안의 Spork에서 선택합니다. 2026년 10월 24일 기준 [v1.22.0-preview.6](https://github.com/yourtablecloth/TableCloth/releases/tag/v1.22.0-preview.6)에서 사용할 수 있습니다. 프리뷰 동작은 정식 출시 전에 달라질 수 있습니다. 제한 기능과 비교 절차는 [Safe Mode 및 중지 오류 가이드](docs/SAFE_MODE.ko.md)에 설명했습니다. [English guide](docs/SAFE_MODE.md)
+공유 폴더를 사용하는 실행에서 PC에 블루스크린이 발생하면 빠른 시작의 **샌드박스를 시작하는데 문제가 있으신가요?** 링크를 눌러 Safe Mode 실행을 비교할 수 있습니다. Safe Mode는 호스트 폴더와 클립보드 및 장치 공유를 제외하고 네트워크를 유지합니다. 일반 실행 옵션과 조합하지 않으며 입력란과 호스트에서 선택한 기관을 전달하지 않습니다. 기관은 Sandbox 안의 Spork에서 선택합니다. v1.22.0부터 사용할 수 있습니다. 제한 기능과 비교 절차는 [Safe Mode 및 중지 오류 가이드](docs/SAFE_MODE.ko.md)에 설명했습니다. [English guide](docs/SAFE_MODE.md)
 
 호스트에 TableCloth를 설치하지 않고 Windows Sandbox 안에서 Spork만 실행할 수도 있습니다.
 
@@ -112,7 +116,7 @@ WinGet 등록소 반영에는 GitHub Release 게시 이후 시간이 더 걸릴 
 - [Windows Sandbox 내부 Codex CLI와 Computer Use 탐색 기록](docs/poc/codex-sandbox-computer-use.ko.md), [English](docs/poc/codex-sandbox-computer-use.md)
 - [Windows Sandbox RDP 호스팅 실험과 검증 기록](docs/poc/rdp-sandbox.ko.md), [English](docs/poc/rdp-sandbox.md)
 
-현재 정식 v1.21.1은 .NET 10을 사용합니다. `develop`의 v1.22.0 Preview는 `global.json`에 고정한 .NET 11 RC1 SDK `11.0.100-rc.1.26425.128`로 빌드합니다. 개발 환경은 Visual Studio 2026 Insiders 또는 C# Dev Kit을 사용합니다. Native AOT 게시에는 MSVC C++ 빌드 도구가 필요하며 ARM64를 로컬에서 게시하려면 ARM64용 C++ 빌드 도구도 설치해야 합니다. CI는 x64와 ARM64 네이티브 Windows 러너에서 각 아키텍처를 빌드합니다.
+v1.22.0은 `global.json`에 고정한 .NET 11 RC1 SDK `11.0.100-rc.1.26425.128`로 빌드합니다. 제품의 정식 릴리스와 별개로 빌드 SDK는 RC 버전을 사용합니다. `develop`은 다음 Minor 개발을 시작하기 전까지 `1.22.0`을 유지합니다. 개발 환경은 Visual Studio 2026 Insiders 또는 C# Dev Kit을 사용합니다. Native AOT 게시에는 MSVC C++ 빌드 도구가 필요하며 ARM64를 로컬에서 게시하려면 ARM64용 C++ 빌드 도구도 설치해야 합니다. CI는 x64와 ARM64 네이티브 Windows 러너에서 각 아키텍처를 빌드합니다.
 
 ## 후원과 수상
 
