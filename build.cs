@@ -38,7 +38,7 @@ var previewNumber = GetArgValue("--preview-number") ?? "1";
 if (showHelp)
 {
     Console.WriteLine("""
-        TableCloth Build Script (.NET 10)
+        TableCloth Build Script (.NET 11 RC1)
         
         Usage: dotnet run --file build.cs [options]
         
@@ -213,6 +213,7 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
                 "--icon", iconPath,
                 // 채널로 아키텍처(+링)를 분리해 Setup/Portable/메타데이터 이름 충돌을 막는다.
                 "--channel", tcChannel,
+                "--runtime", $"win-{platform}",
             };
             // 코드 서명(--sign): Release 패키지에 한해 Velopack 이 pack 시점에
             // 앱 바이너리 + Update.exe + Setup.exe 를 한 번에 서명한다. signtool 은
@@ -239,6 +240,7 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             RenameRelease(
                 Path.Combine(releasesDir, $"TableCloth-{tcChannel}-Portable.zip"),
                 Path.Combine(releasesDir, $"{assetPrefix}_Portable.zip"));
+            await SyncReleaseAssetIndexAsync(releasesDir, tcChannel, assetPrefix);
 
             // === Spork 단독 배포/재사용 아티팩트 (TableCloth 와 동일한 Velopack 형태) ===
             // Spork.csproj 의 조건부 PropertyGroup 이 TableCloth 와 동일하게 단일 파일
@@ -327,6 +329,7 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
                 "--icon", sporkIcon,
                 // 채널을 'spork(-preview)-<arch>' 로 두어 TableCloth 및 정식/프리뷰 메타데이터 이름 충돌을 막는다.
                 "--channel", sporkChannel,
+                "--runtime", $"win-{platform}",
             };
             if (doSign && config == "Release")
             {
@@ -348,6 +351,7 @@ async Task RunBuildAsync(string[] configs, string[] plats, bool skip)
             RenameRelease(
                 Path.Combine(sporkReleasesDir, $"Spork-{sporkChannel}-Portable.zip"),
                 Path.Combine(sporkReleasesDir, $"{sporkPrefix}_Portable.zip"));
+            await SyncReleaseAssetIndexAsync(sporkReleasesDir, sporkChannel, sporkPrefix);
 
             // 버전프리 별칭(고정 URL): github.com/.../releases/latest/download/Spork_<arch>_Portable.zip
             // 런처가 무인자로 항상 최신을 받는 baked default 가 이 이름에 의존한다. Release 만.
@@ -496,6 +500,15 @@ void RenameRelease(string src, string dst)
         throw new FileNotFoundException($"Expected Velopack output not found: {src}");
     File.Move(src, dst, overwrite: true);
     Console.WriteLine($"Renamed -> {Path.GetFileName(dst)}");
+}
+
+async Task SyncReleaseAssetIndexAsync(string directory, string channel, string prefix)
+{
+    await RunCommandArgsAsync("pwsh", [
+        "-NoLogo", "-NoProfile", "-NonInteractive", "-File", "tools/Sync-ReleaseAssetIndex.ps1",
+        "-AssetDirectory", directory, "-Channel", channel,
+        "-InstallerName", $"{prefix}.exe", "-PortableName", $"{prefix}_Portable.zip",
+    ], throwOnFailure: true);
 }
 
 // 단일 문자열 인자 오버로드 (기존 호출부 호환).

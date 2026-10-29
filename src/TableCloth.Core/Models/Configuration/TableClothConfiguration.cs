@@ -10,6 +10,9 @@ namespace TableCloth.Models.Configuration
     [Serializable]
     public sealed class TableClothConfiguration
     {
+        /// <summary>이번 실행에만 공유 없는 Safe Mode를 요청합니다. 저장된 일반 실행 옵션은 적용하지 않습니다.</summary>
+        public bool EnableSafeMode { get; set; }
+
         /// <summary>
         /// 선택한 X.509 인증서 정보입니다.
         /// </summary>
@@ -50,6 +53,12 @@ namespace TableCloth.Models.Configuration
         public string TargetUrl { get; set; } = null;
 
         /// <summary>
+        /// 카탈로그에 없는 공개 웹 주소를 호스트 폴더 매핑 없이 브라우저 전용 샌드박스로 엽니다.
+        /// SandboxBuilder가 공개 웹 URL 정책을 다시 검사합니다.
+        /// </summary>
+        public string BrowserOnlyUrl { get; set; } = null;
+
+        /// <summary>
         /// 샌드박스 명세 파일 (WSB) 및 데이터 파일을 저장할 디렉터리 경로입니다.
         /// </summary>
         public string AssetsDirectoryPath { get; set; } = null;
@@ -75,7 +84,7 @@ namespace TableCloth.Models.Configuration
         public bool EnableSandboxGpuAcceleration { get; set; }
 
         /// <summary>
-        /// [미리 보기] 유휴 자동 종료 사용 여부(이슈 #197). true이면 StartupScript가 별도의 idle-guard
+        /// 유휴 자동 종료 사용 여부(이슈 #197). true이면 StartupScript가 별도의 idle-guard
         /// 프로세스를 함께 기동한다(자세한 유휴 시간은 SporkAnswers로 전달). 기본값은 꺼짐.
         /// </summary>
         public bool EnableIdleAutoLogout { get; set; }

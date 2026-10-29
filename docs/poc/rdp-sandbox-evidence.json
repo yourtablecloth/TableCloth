@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-10-23",
+  "status": "retired-research-documentation-only",
+  "provenance": {
+    "sourceBranch": "poc/rdp-activex-host",
+    "sourceHead": "dcf8cef35d1a8708e1dc8251ae4a08ada7458afd",
+    "includesUncommittedExperiments": true,
+    "destinationBranch": "poc/managed-ai-runtime",
+    "destinationBase": "b403591ccebc3d6e27ef4bc937592e3539e5bc17",
+    "testRunsRepeatedForRetirement": false,
+    "vmOperationsPerformedForRetirement": false,
+    "sourceFilesVerifiedBeforeRetirement": 497,
+    "sourceFilesMissing": 0,
+    "sourceHashDrift": 0
+  },
+  "retention": {
+    "committed": [
+      "English research archive",
+      "Korean research archive",
+      "sanitized evidence summary"
+    ],
+    "originalArtifacts": "Local ignored Artifacts tree only; unavailable in fresh checkouts.",
+    "caution": "Digests identify retained local files; they do not reproduce execution or preserve the originals.",
+    "excluded": [
+      "implementation",
+      "raw logs",
+      "screenshots",
+      "binaries",
+      "session GUIDs",
+      "credentials",
+      "configuration XML"
+    ]
+  },
+  "environment": {
+    "operatingSystem": "Windows 11",
+    "architecture": "x64",
+    "sandboxPackage": "MicrosoftWindows.WindowsSandbox_0.8.107.0_x64__cw5n1h2txyewy",
+    "privateContract": true
+  },
+  "historicalTestReports": [
+    {
+      "path": "Artifacts/rdp-sandbox/tests/rdp-sandbox-final-verified.trx",
+      "sha256": "B271397FEF4959EB94743A06110EDFA43748348AF6DC6FB26DFF9BBA53E83762",
+      "bytes": 65011,
+      "originalCommitted": false,
+      "stage": "initial-rdp-hosting",
+      "total": 47,
+      "passed": 47,
+      "failed": 0,
+      "scope": "historical stage run"
+    },
+    {
+      "path": "Artifacts/rdp-sandbox-api/tests/internal-api-final-verified.trx",
+      "sha256": "E796B92C4E63F08312F60115C385948E56D22319E22F92B561C252170F9591FA",
+      "bytes": 144129,
+      "originalCommitted": false,
+      "stage": "internal-lifecycle-focused",
+      "total": 107,
+      "passed": 107,
+      "failed": 0,
+      "scope": "focused historical run"
+    },
+    {
+      "path": "Artifacts/sandbox-integration/tests/post-replacement-all-tests.trx",
+      "sha256": "8C97AAAEF849BA58F530A33D253877A17468BC045C0EFE35C44F47C8F2406278",
+      "bytes": 587347,
+      "originalCommitted": false,
+      "stage": "activex-teardown",
+      "total": 447,
+      "passed": 447,
+      "failed": 0,
+      "scope": "historical stage run"
+    },
+    {
+      "path": "Artifacts/sandbox-viewer-ui/tests/all-tests-final.trx",
+      "sha256": "4E07B8DFE84F7DEB6C67F4DBCC229F480B6651FEA40D6AB506BDB5A1B95CDF93",
+      "bytes": 604676,
+      "originalCommitted": false,
+      "stage": "viewer-option-and-layout",
+      "total": 459,
+      "passed": 459,
+      "failed": 0,
+      "scope": "historical stage run"
+    },
+    {
+      "path": "Artifacts/sandbox-session-toolbar/tests/all-tests-final.trx",
+      "sha256": "07397C721330A3397839F61009E7575D355F6A6F503414FF65BA4899D8F97DA5",
+      "bytes": 696710,
+      "originalCommitted": false,
+      "stage": "icon-controls-and-close",
+      "total": 527,
+      "passed": 527,
+      "failed": 0,
+      "scope": "historical stage run"
+    },
+    {
+      "path": "Artifacts/sandbox-single-session/tests/all-tests.trx",
+      "sha256": "78E3F64510FFF6A4444FF42D701E7397A263AB185FBFAE7BCC1F7066EBF0775E",
+      "bytes": 804460,
+      "originalCommitted": false,
+      "stage": "single-session-confirmation",
+      "total": 605,
+      "passed": 605,
+      "failed": 0,
+      "scope": "historical stage run"
+    },
+    {
+      "path": "Artifacts/sandbox-display-resize/tests/all-tests.trx",
+      "sha256": "7AF88754C0A0B42BE9758396075A97BB5E7760D34C68B1033F134DA39BF1CDA3",
+      "bytes": 893514,
+      "originalCommitted": false,
+      "stage": "dynamic-resolution",
+      "total": 671,
+      "passed": 671,
+      "failed": 0,
+      "scope": "historical stage run"
+    },
+    {
+      "path": "Artifacts/sandbox-toolbar-keyboard/tests/all-tests.trx",
+      "sha256": "5B346538F2E59113B4CB9B934D87D1D69C02E864091DCF6530E8803947B92B2F",
+      "bytes": 914366,
+      "originalCommitted": false,
+      "stage": "compact-toolbar-and-keyboard",
+      "total": 685,
+      "passed": 685,
+      "failed": 0,
+      "scope": "historical stage run"
+    }
+  ],
+  "localArtifactIdentities": [
+    {
+      "path": "Artifacts/rdp-activex-host/avalonia-aot-smoke/result.json",
+      "sha256": "EFD979231B2210D9EFA2168A2F9AC2C9D5092E564540E648B3B0C4481D37C460",
+      "bytes": 1599,
+      "originalCommitted": false
+    },
+    {
+      "path": "Artifacts/rdp-sandbox-api/approved-replacement.log",
+      "sha256": "134B7798796FC96C570C9FFF1DDC771E479101FB8E4112983ED588D315A5FB8D",
+      "bytes": 567,
+      "originalCommitted": false
+    },
+    {
+      "path": "Artifacts/rdp-sandbox-api/new-with-existing.log",
+      "sha256": "89F42C227D7CF1176754D9D910F0AF74AFC81D65887538993B173E011445791C",
+      "bytes": 133,
+      "originalCommitted": false
+    },
+    {
+      "path": "Artifacts/sandbox-display-resize/evidence.json",
+      "sha256": "23A5D0F244FFF7021AEB7F0D399A01230C638D62C7FB9816DC1EA15EEAC2323B",
+      "bytes": 3401,
+      "originalCommitted": false
+    },
+    {
+      "path": "Artifacts/sandbox-toolbar-keyboard/evidence.json",
+      "sha256": "3EDFD06945A015A340FE156EC9EB7C5BDC8717E493D477D8AC912870B029A498",
+      "bytes": 2273,
+      "originalCommitted": false
+    },
+    {
+      "path": "Artifacts/sandbox-toolbar-keyboard/resumed/evidence.json",
+      "sha256": "0169651C68D34963511862B991441AA5A62D8F814ED35060BF9BA9EDC3D7CDC3",
+      "bytes": 878,
+      "originalCommitted": false
+    },
+    {
+      "path": "Artifacts/sandbox-toolbar-keyboard/source-hashes.json",
+      "sha256": "14A3DF72BBF6BEAA936EE2BBF30B9EBCBD71771AFC4333CED687C0DFDC853D9C",
+      "bytes": 81661,
+      "originalCommitted": false
+    },
+    {
+      "path": "Artifacts/sandbox-toolbar-keyboard/resumed/stdout.txt",
+      "sha256": "C7A1526A900895CAAF9A2A74E71DFE2F1A3AB045239672C48670172749ACDF57",
+      "bytes": 1032,
+      "originalCommitted": false
+    },
+    {
+      "path": "Artifacts/sandbox-toolbar-keyboard/resumed/exit-code.txt",
+      "sha256": "13BF7B3039C63BF5A50491FA3CFD8EB4E699D1BA1436315AEF9CBE5711530354",
+      "bytes": 3,
+      "originalCommitted": false
+    }
+  ],
+  "binaryIdentities": [
+    {
+      "path": "Artifacts/sandbox-toolbar-keyboard/native-observed/TableCloth.exe",
+      "sha256": "5B13EB0D6AAFC45105353E95704A3B1511D93B61A51602192917AF0171AE845A",
+      "bytes": 37878272,
+      "originalCommitted": false
+    },
+    {
+      "path": "Artifacts/sandbox-toolbar-keyboard/publish/TableCloth.exe",
+      "sha256": "44818723C4D584AE56DEB91BCD2481D9BD332AB9552DF8B8BAF2FFADA8D07B2F",
+      "bytes": 37877248,
+      "originalCommitted": false
+    }
+  ],
+  "selectedFindings": {
+    "initialAvaloniaHost": {
+      "nativeAotRequired": true,
+      "coreClrLoaded": false,
+      "activeXInterface": "IMsRdpClient10",
+      "childOfAvaloniaWindow": true,
+      "rootIsAvaloniaWindow": true,
+      "exactLayoutSamples": 4,
+      "activeXWindowAliveAfterClose": false,
+      "exitCode": 0,
+      "selectedModules": [
+        "libSkiaSharp.DLL",
+        "av_libGLESv2.dll",
+        "libHarfBuzzSharp.DLL",
+        "atl.dll",
+        "mstscax.dll"
+      ]
+    },
+    "lifecycle": {
+      "replacementLog": "Old session stop and absence preceded fresh-ID start, valid RDP settings, and final new-session enumeration.",
+      "newStartWithSurvivingSession": "0x800401F6 / CO_E_APPSINGLEUSE",
+      "multipleSimultaneousSessionsQualified": false,
+      "coldBrokerActivationQualified": false
+    },
+    "dynamicDisplay": {
+      "connectedMeasurements": [
+        {
+          "width": 1120,
+          "height": 751
+        },
+        {
+          "width": 1470,
+          "height": 803
+        },
+        {
+          "width": 1120,
+          "height": 751
+        },
+        {
+          "width": 920,
+          "height": 751
+        },
+        {
+          "width": 920,
+          "height": 571
+        }
+      ],
+      "connectAttempts": 1,
+      "successfulDisplayUpdates": 5,
+      "desktopScalePercent": 100,
+      "transientError": "0x80020009 before successful bounded retry",
+      "closingSampleExcluded": "640x480 during viewer closure; not a successful connected display request",
+      "hwndDestroyed": true,
+      "viewerExitCode": 0,
+      "ownedDiagnosticSessionCleanupRecorded": true
+    },
+    "keyboardInitial": {
+      "propertyReadback": {
+        "hookMode": 1,
+        "acceleratorPassthrough": 1,
+        "windowsKey": 1
+      },
+      "liveInputExercised": false,
+      "desktopAccessUnavailable": true,
+      "sourceChangesAfterInitiallyObservedBinary": [
+        "src\\TableCloth.App\\Sandbox\\CompatibleSandboxLaunchTransport.cs",
+        "src\\TableCloth.Test\\SandboxLaunchTransportTests.cs"
+      ],
+      "viewerCleanup": "forced process termination; not graceful teardown evidence",
+      "ownedProbeSessionCleanupRecorded": true
+    },
+    "keyboardResumed": {
+      "binaryFileDigestMatchesRecord": true,
+      "independentRunningImageDigestProvided": false,
+      "sourceChangedAsReported": false,
+      "plug": {
+        "visible": true,
+        "disconnectClick": true,
+        "sameSessionSurvives": true,
+        "reconnectClick": true,
+        "sameSessionReconnected": true
+      },
+      "ordinaryGuestKey": "a observed in guest Search",
+      "hostAltF4WhenDisconnected": "Alt_L+F4 opened host close confirmation; Cancel retained viewer",
+      "altTabGenericAlias": "Guest probe activation changed from A to B",
+      "altTabLeftAlias": "No guest activation change observed",
+      "altF4BothAliases": "No guest close or host confirmation observed",
+      "physicalAltF4Qualified": false,
+      "clientDisplayLog": "1680x1144 at 150 percent; no independent guest-resolution measurement",
+      "hwndDestructionRecorded": true,
+      "viewerExitCode": 0,
+      "cleanupCompleteAsRecorded": false,
+      "finalVmCleanupConfirmed": false
+    }
+  },
+  "unresolved": [
+    "ARM64 and other Sandbox package versions",
+    "Mixed-DPI monitor transfers and live unsupported-display fallback",
+    "Cold broker activation and live shell fallback",
+    "All product launch and close choices against real VMs",
+    "General accelerators and physical Alt+F4",
+    "Staging reclamation and pending-state persistence across process restarts",
+    "Final VM cleanup after resumed keyboard experiment"
+  ]
+}

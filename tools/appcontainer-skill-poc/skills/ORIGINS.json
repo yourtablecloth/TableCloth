@@ -1,0 +1,253 @@
+{
+  "purpose": "Pinned upstream evaluation fixtures only; not production skill qualification.",
+  "files": [
+    {
+      "localPath": "bok-ecos-stats/LICENSE",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "LICENSE",
+      "gitBlobSha1": "14fac913ccf80234b1848540089a3bbcb6e5283d",
+      "bytes": 1056
+    },
+    {
+      "localPath": "kosis-stats/LICENSE",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "LICENSE",
+      "gitBlobSha1": "14fac913ccf80234b1848540089a3bbcb6e5283d",
+      "bytes": 1056
+    },
+    {
+      "localPath": "bok-ecos-stats/SKILL.md",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "bok-ecos-stats/SKILL.md",
+      "gitBlobSha1": "2901c3094d889fe33b2cc13720df34c680c46282",
+      "bytes": 1797
+    },
+    {
+      "localPath": "bok-ecos-stats/instruction.md",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "bok-ecos-stats/instruction.md",
+      "gitBlobSha1": "79e6732f9c8167a5cfc1dc8ccf339898d5a19630",
+      "bytes": 4350
+    },
+    {
+      "localPath": "bok-ecos-stats/scripts/bok_ecos.py",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "bok-ecos-stats/scripts/bok_ecos.py",
+      "gitBlobSha1": "17d905311fed3c45e9d15cf0f6a66370b7a8c0f6",
+      "bytes": 11947
+    },
+    {
+      "localPath": "bok-ecos-stats/skill.json",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "bok-ecos-stats/skill.json",
+      "gitBlobSha1": "5b186e4ff8e5d3b30efdf59ce7e0b2e9f3563609",
+      "bytes": 934
+    },
+    {
+      "localPath": "bok-ecos-stats/tests/test_bok_ecos.py",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "bok-ecos-stats/tests/test_bok_ecos.py",
+      "gitBlobSha1": "d604c7617215d0f0f55bd52a26be65d524c02e4c",
+      "bytes": 9947
+    },
+    {
+      "localPath": "kosis-stats/SKILL.md",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "kosis-stats/SKILL.md",
+      "gitBlobSha1": "0baded64556065a17265c16e28433aa6a3fad4b7",
+      "bytes": 1748
+    },
+    {
+      "localPath": "kosis-stats/instruction.md",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "kosis-stats/instruction.md",
+      "gitBlobSha1": "03a0444ddc8079fc34e13c162b244dd77e07f14f",
+      "bytes": 15829
+    },
+    {
+      "localPath": "kosis-stats/references/kosis-openapi-guide.md",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "kosis-stats/references/kosis-openapi-guide.md",
+      "gitBlobSha1": "9ccf827fbebf401ca01dad5371b531db46eec9e0",
+      "bytes": 8589
+    },
+    {
+      "localPath": "kosis-stats/scripts/run_kosis_stats.py",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "kosis-stats/scripts/run_kosis_stats.py",
+      "gitBlobSha1": "470a7acf73af09cf2739d547bfc71685930f8c66",
+      "bytes": 32991
+    },
+    {
+      "localPath": "kosis-stats/skill.json",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "kosis-stats/skill.json",
+      "gitBlobSha1": "c64a425c8e21d9731199b5f182c19e52a2afb3f5",
+      "bytes": 860
+    },
+    {
+      "localPath": "kosis-stats/tests/__init__.py",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "kosis-stats/tests/__init__.py",
+      "gitBlobSha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0
+    },
+    {
+      "localPath": "kosis-stats/tests/fixtures/data_response.json",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "kosis-stats/tests/fixtures/data_response.json",
+      "gitBlobSha1": "6f18c79d8a5d078ee0afb11e05ea30ef74ced1c4",
+      "bytes": 541
+    },
+    {
+      "localPath": "kosis-stats/tests/fixtures/meta_response.json",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "kosis-stats/tests/fixtures/meta_response.json",
+      "gitBlobSha1": "15f013c63daa22d204184f90f160ba276fbd39b6",
+      "bytes": 98
+    },
+    {
+      "localPath": "kosis-stats/tests/fixtures/search_response.json",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "kosis-stats/tests/fixtures/search_response.json",
+      "gitBlobSha1": "45015ddc5ff4aaafd1c6853ec3591133849d3732",
+      "bytes": 517
+    },
+    {
+      "localPath": "kosis-stats/tests/test_run_kosis_stats.py",
+      "repository": "https://github.com/NomaDamas/k-skill",
+      "ref": "0102e5133865f00886e37ac8cf39a49e2c7a3d39",
+      "sourcePath": "kosis-stats/tests/test_run_kosis_stats.py",
+      "gitBlobSha1": "c5f024b726cca4a48918858cc216ff4dfe1f8a43",
+      "bytes": 24783
+    },
+    {
+      "localPath": "tablecloth-calculators/.github/workflows/test.yml",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": ".github/workflows/test.yml",
+      "gitBlobSha1": "cc941e41b00a4bb45d4c4837412c5faf222a1043",
+      "bytes": 676
+    },
+    {
+      "localPath": "tablecloth-calculators/.gitignore",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": ".gitignore",
+      "gitBlobSha1": "85f112e3278ef6dab385a998719686b453e0614b",
+      "bytes": 102
+    },
+    {
+      "localPath": "tablecloth-calculators/CONTRIBUTING.ko.md",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "CONTRIBUTING.ko.md",
+      "gitBlobSha1": "587209bc9dcd234da770a64935d647eb9d60e715",
+      "bytes": 3721
+    },
+    {
+      "localPath": "tablecloth-calculators/CONTRIBUTING.md",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "CONTRIBUTING.md",
+      "gitBlobSha1": "988a0310210fc5bd381a15b02bcb25776a5ab66e",
+      "bytes": 3399
+    },
+    {
+      "localPath": "tablecloth-calculators/LICENSE-AGPL",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "LICENSE-AGPL",
+      "gitBlobSha1": "0ad25db4bd1d86c452db3f9602ccdbe172438f52",
+      "bytes": 34523
+    },
+    {
+      "localPath": "tablecloth-calculators/LICENSE-COMMERCIAL",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "LICENSE-COMMERCIAL",
+      "gitBlobSha1": "5ce945d9042f858e4afddd81eadffcd18ae813b1",
+      "bytes": 234
+    },
+    {
+      "localPath": "tablecloth-calculators/README.ko.md",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "README.ko.md",
+      "gitBlobSha1": "73ce476226e8edf2289a996051ff3640f4aa4f56",
+      "bytes": 5495
+    },
+    {
+      "localPath": "tablecloth-calculators/README.md",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "README.md",
+      "gitBlobSha1": "cb69223f909b8007329be7cb8d68fd1542803b75",
+      "bytes": 4731
+    },
+    {
+      "localPath": "tablecloth-calculators/SKILL.md",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "SKILL.md",
+      "gitBlobSha1": "154938b1f2863cbc2ab1b25c6379d487e4049dae",
+      "bytes": 2595
+    },
+    {
+      "localPath": "tablecloth-calculators/docs/COPYRIGHT.ko.md",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "docs/COPYRIGHT.ko.md",
+      "gitBlobSha1": "281fb3f47ffb19231d02033e4353777fceec64dc",
+      "bytes": 4407
+    },
+    {
+      "localPath": "tablecloth-calculators/docs/COPYRIGHT.md",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "docs/COPYRIGHT.md",
+      "gitBlobSha1": "3e022c10a5bef00b632aec4695ed28c1f9f6968a",
+      "bytes": 3928
+    },
+    {
+      "localPath": "tablecloth-calculators/references/operations.md",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "references/operations.md",
+      "gitBlobSha1": "e44f09af7ed44cbc249cb40c30c36e6441a44fdc",
+      "bytes": 18333
+    },
+    {
+      "localPath": "tablecloth-calculators/scripts/calculate.py",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "scripts/calculate.py",
+      "gitBlobSha1": "7cbb8ad3ff6ddc0686b4e7a66d253f93ac86a193",
+      "bytes": 25571
+    },
+    {
+      "localPath": "tablecloth-calculators/tests/test_calculate.py",
+      "repository": "https://github.com/yourtablecloth/tablecloth-calculators",
+      "ref": "877b58cf0741db21342445f2b3fcb54ad1ada85c",
+      "sourcePath": "tests/test_calculate.py",
+      "gitBlobSha1": "a86b5d850d6372caca5bfe9cff2245cde1215ccf",
+      "bytes": 19784
+    }
+  ]
+}

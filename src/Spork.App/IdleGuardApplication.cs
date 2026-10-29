@@ -17,7 +17,7 @@ using TableCloth.Serialization;
 namespace Spork
 {
     /// <summary>
-    /// [미리 보기] 유휴 자동 종료 전용 헤드리스 Avalonia 애플리케이션(이슈 #197, #296). <c>TableCloth.exe idle-guard</c>
+    /// 유휴 자동 종료 전용 헤드리스 Avalonia 애플리케이션(이슈 #197, #296). <c>TableCloth.exe idle-guard</c>
     /// verb 로 부팅 시 Spork 런처와 독립된 별도 프로세스로 기동된다. 메인 창이 없고
     /// (<see cref="ShutdownMode.OnExplicitShutdown"/>) 필요할 때만 경고 창을 띄우므로, 사용자가 Spork 창을
     /// 닫아도(또는 아예 열지 않아도) 유휴 보호가 계속 유지된다. 정책이 꺼져 있으면 즉시 종료한다.

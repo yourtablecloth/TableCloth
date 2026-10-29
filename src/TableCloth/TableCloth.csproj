@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
+		<TargetFramework>net11.0-windows10.0.18362.0</TargetFramework>
 		<StartupObject>TableCloth.Program</StartupObject>
 		<ApplicationIcon>App.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -25,6 +25,17 @@
 		-->
 		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
 	</PropertyGroup>
+
+	<!-- .NET 11 RC1 does not pass the referenced Core project's Korean satellite to ILC by default. -->
+	<Target Name="IncludeCoreKoreanResourcesInNativeAot" BeforeTargets="WriteIlcRspFileForCompilation"
+	        Condition="'$(PublishAot)' == 'true'">
+		<ItemGroup>
+			<_CoreKoreanResources Include="@(ResolvedFileToPublish)"
+			                      Condition="'%(ResolvedFileToPublish.RelativePath)' == 'ko\TableCloth.Core.resources.dll'" />
+			<IlcSatelliteAssembly Include="@(_CoreKoreanResources)" />
+		</ItemGroup>
+		<Error Condition="'@(_CoreKoreanResources)' == ''" Text="Korean TableCloth.Core resources are missing from the NativeAOT inputs." />
+	</Target>
 
 	<!--
 		Phase 5 — 게시 정책. RuntimeIdentifier가 명시된 경우(=실제 publish 호출)에만 활성화되어
@@ -120,7 +131,46 @@
 	  <ProjectReference Include="..\Spork.Sandbox\Spork.Sandbox.csproj" />
 	  <ProjectReference Include="..\TableCloth.App\TableCloth.App.csproj" />
 	  <ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+	  <ProjectReference Include="..\TableCloth.ManagedAi.AppContainer\TableCloth.ManagedAi.AppContainer.csproj" />
+	  <ProjectReference Include="..\TableCloth.Cli\TableCloth.Cli.csproj" ReferenceOutputAssembly="false"
+	                    Condition="'$(RuntimeIdentifier)' == ''" />
 	</ItemGroup>
+	<Target Name="CopyTableClothCliForDevelopment" AfterTargets="Build"
+	        Condition="'$(RuntimeIdentifier)' == ''">
+		<MSBuild Projects="..\TableCloth.Cli\TableCloth.Cli.csproj" Targets="GetTargetPath"
+		         Properties="Configuration=$(Configuration);Platform=$(Platform)">
+			<Output TaskParameter="TargetOutputs" ItemName="_TableClothCliDevTarget" />
+		</MSBuild>
+		<PropertyGroup>
+			<_TableClothCliDevOutputDir>@(_TableClothCliDevTarget->'%(RootDir)%(Directory)')</_TableClothCliDevOutputDir>
+		</PropertyGroup>
+		<ItemGroup>
+			<_TableClothCliDevFiles Include="$(_TableClothCliDevOutputDir)TableClothCli.*" />
+		</ItemGroup>
+		<Error Condition="'@(_TableClothCliDevFiles)' == ''"
+		       Text="TableClothCli development output was not found at '$(_TableClothCliDevOutputDir)'." />
+		<Copy SourceFiles="@(_TableClothCliDevFiles)" DestinationFolder="$(TargetDir)"
+		      SkipUnchangedFiles="true" />
+	</Target>
+	<Target Name="PublishTableClothCliSidecar" AfterTargets="Publish"
+	        Condition="'$(RuntimeIdentifier)' != ''">
+		<PropertyGroup>
+			<_TableClothCliPublishDir>$(IntermediateOutputPath)TableClothCliPublish\</_TableClothCliPublishDir>
+		</PropertyGroup>
+		<Exec Command="dotnet publish &quot;$(MSBuildProjectDirectory)\..\TableCloth.Cli\TableCloth.Cli.csproj&quot; -c $(Configuration) -r $(RuntimeIdentifier) -o &quot;$(_TableClothCliPublishDir)&quot;" />
+		<Copy SourceFiles="$(_TableClothCliPublishDir)TableClothCli.exe"
+		      DestinationFiles="$(PublishDir)TableClothCli.exe" />
+		<Copy SourceFiles="$(_TableClothCliPublishDir)TableClothCli.pdb"
+		      DestinationFiles="$(PublishDir)TableClothCli.pdb"
+		      Condition="Exists('$(_TableClothCliPublishDir)TableClothCli.pdb')" />
+		<!-- Incremental AOT publish may omit the already built native entrypoint from a reused output directory. -->
+		<Copy SourceFiles="$(OutputPath)native\$(TargetName).exe"
+		      DestinationFiles="$(PublishDir)$(TargetName).exe"
+		      SkipUnchangedFiles="true"
+		      Condition="'$(PublishAot)' == 'true' And Exists('$(OutputPath)native\$(TargetName).exe')" />
+		<Error Condition="!Exists('$(PublishDir)$(TargetName).exe')"
+		       Text="TableCloth entrypoint is missing from the publish directory." />
+	</Target>
 	<!--
 		Phase 4에서 'PreBuild'라는 이름의 사용자 타깃(Spork.zip 복사)을 삭제했기 때문에,
 		종전대로 BeforeTargets="PreBuild"를 쓰면 hook할 대상이 없어 본 타깃이 실행되지 않는다.

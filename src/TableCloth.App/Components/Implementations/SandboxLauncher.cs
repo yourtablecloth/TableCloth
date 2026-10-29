@@ -56,7 +56,24 @@ public sealed class SandboxLauncher(
         if (Helpers.IsSandboxCpuLikelyThrottled() == true)
             appUserInterface.ShowDialog(appUserInterface.CreatePowerSchemeGuideWindow());
 
-        if (config.CertPair != null)
+        var tempPath = sharedLocations.GetTempPath();
+        var excludedFolderList = new List<SandboxMappedFolder>();
+
+        var wsbFilePath = await sandboxBuilder.GenerateSandboxConfigurationAsync(
+            tempPath, config, excludedFolderList, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (config.EnableSafeMode && appMessageBox.DisplayQuestion(
+            config.BrowserOnlyUrl is null ? SafeModeText.Confirmation : SafeModeText.BrowserConfirmation,
+            Models.AppMessageBoxButton.YesNo, Models.AppMessageBoxResult.No) != Models.AppMessageBoxResult.Yes)
+            return false;
+
+        _logger.LogInformation("Sandbox run mode: {Mode}; guest source: {Source}",
+            config.EnableSafeMode ? "SafeMode" : "Normal",
+            config.BrowserOnlyUrl is not null ? "Guest Edge" :
+                config.EnableSafeMode ? SafeModeSandboxSpec.GuestReleaseUrl : "Host installation");
+
+        if (!config.EnableSafeMode && config.CertPair != null)
         {
             var now = DateTime.Now;
             var expireWindow = StringResources.Cert_ExpireWindow;
@@ -69,13 +86,6 @@ public sealed class SandboxLauncher(
             else if (now > config.CertPair.NotAfter.Add(expireWindow))
                 appMessageBox.DisplayInfo(StringResources.Error_Cert_ExpireSoon(now, config.CertPair.NotAfter, expireWindow));
         }
-
-        var tempPath = sharedLocations.GetTempPath();
-        var excludedFolderList = new List<SandboxMappedFolder>();
-
-        var wsbFilePath = await sandboxBuilder.GenerateSandboxConfigurationAsync(
-            tempPath, config, excludedFolderList, cancellationToken)
-            .ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(wsbFilePath))
         {

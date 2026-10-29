@@ -1326,6 +1326,18 @@ namespace TableCloth.Resources {
             }
         }
 
+        public static string Options_Section_Session {
+            get {
+                return ResourceManager.GetString("Options_Section_Session", resourceCulture);
+            }
+        }
+
+        public static string Options_Section_Session_Description {
+            get {
+                return ResourceManager.GetString("Options_Section_Session_Description", resourceCulture);
+            }
+        }
+
         public static string Options_Section_Preview {
             get {
                 return ResourceManager.GetString("Options_Section_Preview", resourceCulture);
@@ -2378,6 +2390,67 @@ namespace TableCloth.Resources {
             get {
                 return ResourceManager.GetString("SporkCatalog_Certificates_Empty", resourceCulture);
             }
+        }
+        public static string QuickStart_OpenCatalogButton {
+            get { return ResourceManager.GetString("QuickStart_OpenCatalogButton", resourceCulture); }
+        }
+
+        public static string CatalogWindow_Title {
+            get { return ResourceManager.GetString("CatalogWindow_Title", resourceCulture); }
+        }
+
+        public static string CatalogWindow_Instruction {
+            get { return ResourceManager.GetString("CatalogWindow_Instruction", resourceCulture); }
+        }
+
+        public static string CatalogWindow_LaunchButton {
+            get { return ResourceManager.GetString("CatalogWindow_LaunchButton", resourceCulture); }
+        }
+
+        public static string CatalogWindow_ResultCount {
+            get { return ResourceManager.GetString("CatalogWindow_ResultCount", resourceCulture); }
+        }
+        public static string QuickStart_WebAddress_Title {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_Title", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_Instruction {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_Instruction", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_LaunchButton {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_LaunchButton", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_Checking {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_Checking", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_Invalid {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_Invalid", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_CatalogUnavailable {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_CatalogUnavailable", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_LaunchFailed {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_LaunchFailed", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_CatalogLaunched {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_CatalogLaunched", resourceCulture); }
+        }
+
+        public static string QuickStart_WebAddress_BrowserLaunched {
+            get { return ResourceManager.GetString("QuickStart_WebAddress_BrowserLaunched", resourceCulture); }
+        }
+        public static string QuickStart_InputWatermark {
+            get { return ResourceManager.GetString("QuickStart_InputWatermark", resourceCulture); }
+        }
+
+        public static string QuickStart_SpecialCommand_Help {
+            get { return ResourceManager.GetString("QuickStart_SpecialCommand_Help", resourceCulture); }
         }
     }
 }

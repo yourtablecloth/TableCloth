@@ -46,6 +46,23 @@
         <Style Selector="Button.link:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="Transparent" />
         </Style>
+        <Style Selector="Button.start-suggestion">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Button.start-suggestion:focus">
+            <Setter Property="Background" Value="#FF0067B8" />
+            <Setter Property="BorderBrush" Value="#FF005A9E" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.start-suggestion:focus /template/ ContentPresenter">
+            <Setter Property="Background" Value="#FF0067B8" />
+            <Setter Property="BorderBrush" Value="#FF005A9E" />
+        </Style>
+        <Style Selector="Button.start-suggestion:focus TextBlock.suggestion-url">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
         <Style Selector="ToggleButton.fav">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />

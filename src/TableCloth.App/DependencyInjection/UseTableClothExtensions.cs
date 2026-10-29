@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -9,6 +10,8 @@ using TableCloth.Dialogs;
 using TableCloth.Pages;
 using TableCloth.Resources;
 using TableCloth.ViewModels;
+using TableCloth.ManagedAi;
+using TableCloth.ManagedAi.OpenAi;
 
 namespace TableCloth.App.DependencyInjection;
 
@@ -29,6 +32,20 @@ public static class UseTableClothExtensions
             .AddConsole();
 
         builder.Services.AddLogging();
+
+        builder.Services.AddManagedOpenAi();
+        builder.Services.Replace(ServiceDescriptor.Singleton<IManagedAiNetworkSettings, ManagedAiNetworkSettings>());
+        builder.Services.AddManagedAiWindows();
+        builder.Services.AddTransient<ITableClothBrowser, TableClothBrowserAdapter>();
+        builder.Services.AddTransient<IManagedAiCatalogLauncher, ManagedAiCatalogLauncher>();
+        builder.Services.AddTransient<IManagedAiCatalogChoice, ManagedAiCatalogChoice>();
+        builder.Services.AddTransient<ICatalogServiceChoice, ManagedAiCatalogChoice>();
+        builder.Services.AddTransient<ICatalogServiceLauncher, CatalogServiceLauncher>();
+        builder.Services.AddTransient<IInternetAddressSandboxLauncher, InternetAddressSandboxLauncher>();
+        builder.Services.AddTransient<IManagedAiLinkOpenChoice, ManagedAiLinkOpenChoice>();
+        builder.Services.AddTransient<IManagedAiHostBrowser, ManagedAiHostBrowser>();
+        builder.Services.AddSingleton<IManagedAiCertificateBridge, ManagedAiCertificateBridge>();
+        builder.Services.AddTransient<ManagedAiWindow>();
 
         builder.Services.AddHttpClient(
             nameof(ConstantStrings.UserAgentText),
@@ -77,6 +94,7 @@ public static class UseTableClothExtensions
             .AddWindow<PowerSchemeGuideWindow, PowerSchemeGuideWindowViewModel>()
             .AddWindow<CertSelectWindow, CertSelectWindowViewModel>()
             .AddWindow<MainWindow, MainWindowViewModel>()
+            .AddWindow<CatalogWindow, CatalogWindowViewModel>()
             .AddPage<CatalogPage, CatalogPageViewModel>(addPageAsSingleton: true)
             .AddPage<DetailPage, DetailPageViewModel>()
             .AddPage<QuickStartPage, QuickStartPageViewModel>()

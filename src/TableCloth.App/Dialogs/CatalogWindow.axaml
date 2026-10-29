@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TableCloth.ViewModels"
+        xmlns:catalog="using:TableCloth.Models.Catalog"
+        xmlns:res="using:TableCloth.Resources"
+        x:Class="TableCloth.Dialogs.CatalogWindow"
+        x:DataType="vm:CatalogWindowViewModel"
+        Title="{x:Static res:UIStringResources.CatalogWindow_Title}"
+        Width="800" Height="600" MinWidth="600" MinHeight="400"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Grid Margin="16" RowDefinitions="Auto,Auto,*,Auto">
+        <TextBlock Grid.Row="0" Text="{x:Static res:UIStringResources.CatalogWindow_Instruction}"
+                   TextWrapping="Wrap" Margin="0 0 0 12" />
+        <TextBox Grid.Row="1" Watermark="{x:Static res:UIStringResources.SearchFilter_Watermark}"
+                 Text="{Binding SearchKeyword, Mode=TwoWay}" Margin="0 0 0 8" />
+        <ListBox Grid.Row="2" ItemsSource="{Binding FilteredServices}"
+                 SelectedItem="{Binding SelectedService, Mode=TwoWay}"
+                 DoubleTapped="ServiceList_DoubleTapped">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="catalog:CatalogInternetService">
+                    <Grid ColumnDefinitions="48,180,120,*" MinHeight="48" Margin="2 4">
+                        <Image Grid.Column="0" Source="{Binding Id, Converter={StaticResource ServiceLogoConverter}}"
+                               Width="36" Height="36" Stretch="Uniform" />
+                        <TextBlock Grid.Column="1" Text="{Binding DisplayName}" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="8 0" />
+                        <TextBlock Grid.Column="2" Text="{Binding CategoryDisplayName}"
+                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="8 0" />
+                        <TextBlock Grid.Column="3" Text="{Binding Url}"
+                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="8 0" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Margin="0 12 0 0">
+            <TextBlock Grid.Column="0" Text="{Binding ResultCountText}" VerticalAlignment="Center" />
+            <Button Grid.Column="1" Content="{x:Static res:UIStringResources.CatalogWindow_LaunchButton}"
+                    Command="{Binding LaunchSelectedCommand}"
+                    IsEnabled="{Binding SelectedService, Converter={StaticResource NullToBooleanConverter}}"
+                    MinWidth="150" />
+        </Grid>
+    </Grid>
+</Window>

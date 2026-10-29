@@ -4,7 +4,7 @@ name: Submit to winget-pkgs repo
 # PR 을 자동으로 microsoft/winget-pkgs 에 제출한다. 수동 재제출을 위해
 # workflow_dispatch(release_tag 입력)도 함께 지원한다.
 #
-# 실제 로직은 .NET 10 file-based app(tools/winget/submit-winget.cs, Cadenza SDK)에
+# 실제 로직은 .NET 11 file-based app(tools/winget/submit-winget.cs, Cadenza SDK)에
 # 들어 있고, 이 워크플로는 런타임을 준비하고 그 스크립트를 호출하기만 한다.
 on:
   release:
@@ -35,16 +35,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # .NET 10 SDK: Cadenza file-based app 실행용 (dotnet run --file).
+      # .NET 11 SDK: Cadenza file-based app 실행용 (dotnet run --file).
       # .NET 6 런타임: wingetcreate.exe 가 .NET 6 프레임워크 종속인데,
       #   windows-latest 러너 이미지에서 .NET 6 런타임이 제거(2025-08)되어
       #   명시 설치가 필요하다. 6.x SDK 설치 시 6.0 런타임이 함께 제공된다.
-      - name: Setup .NET (10 SDK + 6 runtime)
+      - name: Setup .NET (11 RC1 SDK + 6 runtime)
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             6.x
-            10.0.x
+            11.0.100-rc.1.26425.128
 
       - name: Submit winget manifest PR
         shell: pwsh

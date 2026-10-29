@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
+		<TargetFramework>net11.0-windows10.0.18362.0</TargetFramework>
 		<!-- 이슈 #296: WPF → Avalonia. UseWPF 제거. -->
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<!-- 이슈 #296 Stage 2(M5): dev 빌드에서 트림/AOT/단일파일 분석기를 상시 켜 회귀를 조기 차단.
@@ -48,6 +48,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\TableCloth.Core\TableCloth.Core.csproj" />
+		<ProjectReference Include="..\TableCloth.ManagedAi.OpenAi\TableCloth.ManagedAi.OpenAi.csproj" />
+		<ProjectReference Include="..\TableCloth.ManagedAi.Windows\TableCloth.ManagedAi.Windows.csproj" />
 		<!-- 이슈 #296: VNext 벤더링 공용 테마(Fluentv2). App.axaml 이 FluentTheme 대신 이 테마를 적용. -->
 		<ProjectReference Include="..\TableCloth.Theme\TableCloth.Theme.csproj" />
 	</ItemGroup>
@@ -75,11 +77,14 @@
 	<ItemGroup>
 		<!-- 이슈 #296: 스플래시가 avares://TableCloth.App/Resources/SandboxIcon.png 로 로드(WPF Resource → AvaloniaResource). -->
 		<AvaloniaResource Include="Resources\SandboxIcon.png" />
+		<AvaloniaResource Include="Resources\TableClothLogo.png" />
 		<!-- 이슈 #296(AOT): 바로가기 아이콘 폴백용 원본 .ico 를 원시 바이트로 임베드(LogicalName 고정).
 		     resx System.Drawing.Icon(SandboxIconWin32) 역직렬화(AOT 실패)를 우회해 GetManifestResourceStream 으로 직접 읽는다. -->
 		<EmbeddedResource Include="Resources\SandboxIcon.ico">
 			<LogicalName>SandboxIcon.ico</LogicalName>
 		</EmbeddedResource>
+
+		<EmbeddedResource Include="Resources\SafeModeStartup.ps1" LogicalName="SafeModeStartup.ps1" />
 	</ItemGroup>
 
 	<ItemGroup>

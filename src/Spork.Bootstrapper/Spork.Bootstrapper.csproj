@@ -11,7 +11,7 @@
 	-->
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFramework>net11.0</TargetFramework>
 		<RootNamespace>Spork.Bootstrapper</RootNamespace>
 		<AssemblyName>Spork.Bootstrapper</AssemblyName>
 		<Nullable>enable</Nullable>

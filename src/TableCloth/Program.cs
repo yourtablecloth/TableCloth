@@ -19,7 +19,7 @@ internal static class Program
 {
     private const string SporkVerb = "spork";
 
-    // [미리 보기] 유휴 자동 종료(이슈 #197) 전용 헤드리스 프로세스. StartupScript가 Spork 런처와 별개로
+    // 유휴 자동 종료(이슈 #197) 전용 헤드리스 프로세스. StartupScript가 Spork 런처와 별개로
     // 기동하여, 창을 닫아도 유휴 보호가 유지되게 한다.
     private const string IdleGuardVerb = "idle-guard";
 
@@ -37,6 +37,19 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        // The app-owned MCP subprocess must not initialize the GUI, updater or application logging.
+        // Script isolation and registration validation are enforced by the shared native broker.
+        if (args is ["--skill-mcp", var manifest])
+        {
+            try
+            {
+                return TableCloth.AppContainerPoc.SkillMcpBroker.RunAsync(manifest,
+                    System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+            }
+            catch { return 2; }
+        }
+        if (args is ["--skill-mcp", ..]) return 2;
+
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             ShowFatalError(e.ExceptionObject?.ToString() ?? "Unknown Error");
 
@@ -55,7 +68,7 @@ internal static class Program
         return RunTableCloth(args);
     }
 
-    // [미리 보기] 유휴 자동 종료 가드(이슈 #197, #296). 메인 창 없는 최소 Avalonia 앱을 띄워 유휴 모니터만 돌린다.
+    // 유휴 자동 종료 가드(이슈 #197, #296). 메인 창 없는 최소 Avalonia 앱을 띄워 유휴 모니터만 돌린다.
     // 헤드리스 헬퍼이므로 실패해도 대화상자를 띄우지 않고 조용히 종료한다.
     private static int RunIdleGuard(string[] args)
     {

@@ -73,7 +73,7 @@ try {
     # real, user-facing progress UX (the ~90 MB TableCloth download) is owned by
     # the launcher GUI this script starts.
     $ProgressPreference = 'SilentlyContinue'
-    Invoke-WebRequest "https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_$arch.exe" -OutFile $launcherPath
+    Invoke-WebRequest -UseBasicParsing "https://github.com/yourtablecloth/TableCloth/releases/latest/download/SporkBootstrap_$arch.exe" -OutFile $launcherPath
 
     Write-Host '  [2/2] Done. Starting TableCloth...' -ForegroundColor Green
     # Unsubstituted placeholders (__SPORK_...) count as 'not supplied' - the launcher
@@ -86,7 +86,12 @@ try {
         $launcherArgs += @('--target-url', $TargetUrl)
     }
     if ($launcherArgs.Count -gt 0) {
-        Start-Process $launcherPath -ArgumentList $launcherArgs
+        # Start-Process joins the array into a command line. Quote each native argument
+        # so multiple site IDs remain one --site-ids value, and URL data stays literal.
+        $quotedArgs = @($launcherArgs | ForEach-Object {
+            '"' + ($_ -replace '(\\*)"', '$1$1\"' -replace '(\\+)$', '$1$1') + '"'
+        })
+        Start-Process $launcherPath -ArgumentList $quotedArgs
     }
     else {
         Start-Process $launcherPath

@@ -4,7 +4,7 @@ TableCloth는 2026년 8월 23일에 게시한 v1.21.0부터 정식 버전과 다
 
 이 문서는 브랜치의 역할, 버전 증가 기준, 핫픽스 전파 방식과 정식 승격 조건을 다룹니다. 채널별 배포 계약은 [RELEASE_CHANNELS.md](RELEASE_CHANNELS.md), 실제 게시 명령은 [RELEASING.md](RELEASING.md)에서 이어집니다.
 
-> 기준일: 2026년 8월 26일. 현재 Retail은 v1.21.1입니다. 아직 다음 Minor 개발 주기를 시작하지 않아 원격 `develop` 브랜치는 만들지 않았습니다. 다음 버전을 시작할 때 이 문서와 `tablecloth-start-next-version` 스킬에 따라 생성합니다.
+> 기준일: 2026년 10월 29일. v1.22.0을 Retail로 정식 승격합니다. `develop`은 다음 Minor 개발을 시작하기 전까지 `1.22.0`을 유지하며 이번 승격에서는 `1.23.0` 개발을 시작하지 않습니다. 빌드에는 `global.json`에 고정한 .NET 11 RC1 SDK를 사용합니다.
 
 ## 정식 버전과 다음 버전의 병행 개발
 
@@ -95,7 +95,7 @@ GitHub의 [보호된 브랜치](https://docs.github.com/repositories/configuring
 - 병합 전 최신 대상 브랜치 반영
 - 강제 Push와 태그 이동 차단
 
-현재 릴리스 워크플로는 태그와 `Directory.Build.Props`의 버전 일치 여부를 확인하지만 태그의 브랜치 소속까지 강제하지 않습니다. 자동 검증을 추가하기 전까지 릴리스 담당자와 저장소 스킬이 다음 조건을 검사합니다.
+현재 릴리스 워크플로는 태그와 `Directory.Build.Props`의 버전 일치 여부를 확인합니다. Preview 워크플로는 태그 형식과 태그 커밋의 `origin/develop` 포함 여부도 검사합니다. Retail 태그와 `origin/main` HEAD의 일치는 릴리스 담당자와 저장소 스킬이 별도로 확인합니다. 릴리스 전에는 다음 조건을 대조합니다.
 
 - Retail 태그 커밋과 `origin/main` HEAD의 일치
 - Preview 태그 커밋의 `origin/develop` 포함 여부

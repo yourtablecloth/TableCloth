@@ -21,7 +21,7 @@ Draft 게시 전과 Release 게시 후에 소스, 자산, 서명, 채널과 후�
 
 x64와 arm64에서 TableCloth 및 Spork 설치 관리자, Portable ZIP, Velopack 패키지와 채널 메타데이터, 심볼과 SBOM을 확인합니다. Retail에서는 무설치 고정 URL 자산과 Bootstrapper도 확인하고 Preview에서는 해당 별칭이 없는지 확인합니다.
 
-Release의 모든 `.exe`를 새 임시 디렉터리에 내려받아 Authenticode 상태를 확인합니다. Portable ZIP을 풀어 내부의 `TableCloth.exe`와 `Spork.exe`도 검사합니다. 파일 이름만으로 서명 완료를 판단하지 않습니다.
+Release의 모든 `.exe`를 새 임시 디렉터리에 내려받아 Authenticode 상태를 확인합니다. Portable ZIP을 풀어 내부의 `TableCloth.exe`, `TableClothCli.exe`, `Spork.exe`도 검사합니다. 파일 이름만으로 서명 완료를 판단하지 않습니다.
 
 Velopack 메타데이터는 다음 채널과 일치해야 합니다.
 

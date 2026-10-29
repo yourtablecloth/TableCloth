@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -33,7 +34,9 @@ public partial class QuickStartPageViewModel : ObservableObject
         ISharedLocations sharedLocations,
         ISandboxLauncher sandboxLauncher,
         IAppMessageBox appMessageBox,
-        TaskFactory taskFactory)
+        TaskFactory taskFactory,
+        IInternetAddressSandboxLauncher internetAddressLauncher,
+        IResourceCacheManager resourceCacheManager)
     {
         _preferencesManager = preferencesManager;
         _appUserInterface = appUserInterface;
@@ -41,6 +44,8 @@ public partial class QuickStartPageViewModel : ObservableObject
         _sandboxLauncher = sandboxLauncher;
         _appMessageBox = appMessageBox;
         _taskFactory = taskFactory;
+        _internetAddressLauncher = internetAddressLauncher;
+        _resourceCacheManager = resourceCacheManager;
     }
 
     public event EventHandler? CloseRequested;
@@ -158,8 +163,139 @@ public partial class QuickStartPageViewModel : ObservableObject
     private async Task LaunchSandbox()
         => await LaunchSandboxAsync();
 
+    [RelayCommand]
+    private async Task LaunchSafeMode(CancellationToken cancellationToken)
+    {
+        if (!CanStart)
+            return;
+
+        IsStarting = true;
+        try
+        {
+            await _sandboxLauncher.RunSandboxAsync(new TableClothConfiguration { EnableSafeMode = true }, cancellationToken);
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex) { _appMessageBox.DisplayError(ex, false); }
+        finally { IsStarting = false; }
+    }
+
+    [ObservableProperty]
+    private string _startInput = string.Empty;
+
+    public ObservableCollection<QuickStartSuggestion> Suggestions { get; } = new();
+
+    public bool HasSuggestions => Suggestions.Count > 0;
+
+    partial void OnStartInputChanged(string value)
+    {
+        RefreshSuggestions(value);
+    }
+
+    public void AcceptSuggestion(QuickStartSuggestion suggestion)
+    {
+        StartInput = suggestion.Completion;
+        DismissSuggestions();
+    }
+
+    public void DismissSuggestions()
+    {
+        Suggestions.Clear();
+        OnPropertyChanged(nameof(HasSuggestions));
+    }
+
+    private void RefreshSuggestions(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input) || input.TrimStart().StartsWith('#'))
+        {
+            DismissSuggestions();
+            return;
+        }
+
+        IReadOnlyList<QuickStartSuggestion> matches;
+        try { matches = QuickStartSuggestionSearch.Find(input, _resourceCacheManager.CatalogDocument.Services); }
+        catch { matches = Array.Empty<QuickStartSuggestion>(); }
+
+        Suggestions.Clear();
+        foreach (var match in matches)
+            Suggestions.Add(match);
+        OnPropertyChanged(nameof(HasSuggestions));
+    }
+
+    public QuickStartRoute ClassifyStart()
+    {
+        var route = QuickStartInputRouter.Classify(StartInput, Array.Empty<CatalogInternetService>());
+        if (route.Kind != QuickStartRouteKind.AiQuestion)
+            return route;
+
+        // Splash normally loads the Catalog before this page appears. If it is
+        // unavailable, a short question still has the AI path available.
+        IEnumerable<CatalogInternetService> services;
+        try { services = _resourceCacheManager.CatalogDocument.Services; }
+        catch { services = Array.Empty<CatalogInternetService>(); }
+        return QuickStartInputRouter.Classify(StartInput, services);
+    }
+
+    public void ShowSpecialCommandResult(string command)
+    {
+        if (string.Equals(command, "#debug", StringComparison.OrdinalIgnoreCase))
+        {
+            ShowDebugInfoCommand.Execute(null);
+            return;
+        }
+
+        _appMessageBox.DisplayInfo(UIStringResources.QuickStart_SpecialCommand_Help);
+    }
+
+    [ObservableProperty]
+    private string _webAddress = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanStart))]
+    private bool _isOpeningWebAddress;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanStart))]
+    private bool _isStarting;
+
+    public bool CanStart => !IsStarting && !IsOpeningWebAddress;
+
+    [RelayCommand]
+    private async Task OpenWebAddress()
+    {
+        if (IsOpeningWebAddress)
+            return;
+
+        IsOpeningWebAddress = true;
+        try
+        {
+            var result = await _internetAddressLauncher.LaunchAsync(WebAddress);
+            var error = result switch
+            {
+                InternetAddressLaunchResult.InvalidAddress => UIStringResources.QuickStart_WebAddress_Invalid,
+                InternetAddressLaunchResult.CatalogUnavailable => UIStringResources.QuickStart_WebAddress_CatalogUnavailable,
+                InternetAddressLaunchResult.LaunchFailed => UIStringResources.QuickStart_WebAddress_LaunchFailed,
+                _ => null,
+            };
+            if (error is not null)
+                _appMessageBox.DisplayError(error, false);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception ex)
+        {
+            _appMessageBox.DisplayError(ex, false);
+        }
+        finally
+        {
+            IsOpeningWebAddress = false;
+        }
+    }
+
     private async Task<bool> LaunchSandboxAsync(CancellationToken cancellationToken = default)
     {
+        var currentConfig = await _preferencesManager.LoadPreferencesAsync(cancellationToken);
+        currentConfig ??= _preferencesManager.GetDefaultPreferences();
         // 데이터 폴더가 로컬 고정 디스크가 아니면(네트워크/클라우드/이동식 드라이브, UNC) Windows
         // 샌드박스가 마운트하지 못한다. 클라우드 동기화 폴더 등은 폴더 생성 자체는 성공할 수 있으므로,
         // 생성을 유도하기 전에 먼저 검사해 옵션의 데이터 디렉터리 탭으로 안내하고 실행을 멈춘다. (이슈 #282)
@@ -172,9 +308,6 @@ public partial class QuickStartPageViewModel : ObservableObject
 
         if (!await EnsureDataDirectoryAsync())
             return false;
-
-        var currentConfig = await _preferencesManager.LoadPreferencesAsync();
-        currentConfig ??= _preferencesManager.GetDefaultPreferences();
 
         await MigrateUserDataIfNeededAsync(currentConfig);
 
@@ -387,6 +520,8 @@ public partial class QuickStartPageViewModel : ObservableObject
     private readonly IAppUserInterface _appUserInterface = default!;
     private readonly ISharedLocations _sharedLocations = default!;
     private readonly ISandboxLauncher _sandboxLauncher = default!;
+    private readonly IInternetAddressSandboxLauncher _internetAddressLauncher = default!;
+    private readonly IResourceCacheManager _resourceCacheManager = default!;
     private readonly IAppMessageBox _appMessageBox = default!;
     private readonly TaskFactory _taskFactory = default!;
 }

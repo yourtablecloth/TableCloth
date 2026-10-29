@@ -30,12 +30,12 @@ CI가 만든 x64와 arm64 게시 산출물을 로컬 SimplySign 인증서로 전
 
 Retail은 `build.cmd --skip-build --sign`을 사용합니다. Preview는 `--preview --preview-number N`을 추가하며 `N`을 태그에서 추출합니다. 수동 기본값에 의존하지 않습니다.
 
-패키징 로그에서 TableCloth와 Spork의 앱 바이너리, `Update.exe`, `Setup.exe` 서명을 확인합니다. 로컬에서 빌드할 수 없는 arm64 Native AOT 코드는 CI 페이로드를 사용하고 x64 호스트에서는 패키징과 서명만 수행합니다.
+패키징 로그에서 TableCloth, TableClothCli, Spork의 앱 바이너리와 `Update.exe`, `Setup.exe` 서명을 확인합니다. 로컬에서 빌드할 수 없는 arm64 Native AOT 코드는 CI 페이로드를 사용하고 x64 호스트에서는 패키징과 서명만 수행합니다.
 
 ## 업로드와 검증
 
 자산을 파일별로 `gh release upload --clobber`하여 부분 실패를 식별합니다. 각 파일을 최대 세 번 재시도하고 계속 실패하면 Draft를 유지합니다.
 
-원격 자산 이름과 크기를 로컬 결과와 비교합니다. 모든 `.exe` 자산과 Portable ZIP 내부 앱 바이너리의 Authenticode 상태가 `Valid`인지 확인합니다. 한 항목이라도 누락되거나 서명이 유효하지 않으면 `UNSIGNED` 경고를 제거하거나 Release를 게시하지 않습니다.
+원격 자산 이름과 크기를 로컬 결과와 비교합니다. 모든 `.exe` 자산과 Portable ZIP 내부의 `TableCloth.exe`, `TableClothCli.exe`, `Spork.exe`의 Authenticode 상태가 `Valid`인지 확인합니다. 한 항목이라도 누락되거나 서명이 유효하지 않으면 `UNSIGNED` 경고를 제거하거나 Release를 게시하지 않습니다.
 
 완료 보고에는 사용한 CI 실행, 두 아키텍처의 산출물 수, 서명 검증 결과와 업로드 대조 결과를 포함합니다. 인증서의 민감한 정보는 출력하지 않습니다.

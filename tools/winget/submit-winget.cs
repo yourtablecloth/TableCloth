@@ -6,7 +6,7 @@
 // winget-pkgs 자동 제출 스크립트 (TableClothProject.TableCloth)
 //
 // .github/workflows/winget_publish.yml 가 정식 릴리스(released) 게시 시, 또는
-// 수동 dispatch 시 이 .NET 10 file-based app 을 호출한다. 동작 순서:
+// 수동 dispatch 시 이 .NET 11 file-based app 을 호출한다. 동작 순서:
 //   1) RELEASE_TAG 로 지정된 릴리스를 GitHub API 로 조회 (User-Agent 필수)
 //   2) draft 면 오류, prerelease 면 정상 건너뜀
 //   3) 해당 winget 버전이 이미 등록돼 있으면 멱등적으로 건너뜀
