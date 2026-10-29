@@ -192,7 +192,7 @@ gh release edit v1.22.0-preview.1 --draft=false --prerelease
 Retail은 Prerelease가 아닌 정식 Release로 게시하고 최신 정식 버전으로 지정합니다.
 
 ```powershell
-gh release edit v1.21.1 --draft=false --latest
+gh release edit v1.22.0 --draft=false --latest
 ```
 
 게시 명령은 외부 사용자에게 자산을 노출합니다. 사용자가 릴리스 게시를 요청한 범위에서만 실행합니다. Draft 생성이나 서명까지만 요청한 경우에는 검증 결과와 남은 단계를 보고하고 Draft를 유지합니다.

@@ -355,7 +355,7 @@ public partial class SkillMarketplaceWindowViewModel : ObservableObject, IDispos
     {
         if (_disposed) return;
         try { Process.Start(new ProcessStartInfo("https://catalog.yourtablecloth.app/skills/") { UseShellExecute = true })?.Dispose(); }
-        catch { CatalogNotice = ManagedAiText.Select("스킬 카탈로그 페이지를 열지 못했습니다.", "Could not open the skill catalog page."); }
+        catch { _messages.DisplayError(ManagedAiText.Select("스킬 카탈로그 페이지를 열지 못했습니다.", "Could not open the skill catalog page."), false); }
     }
 
     [RelayCommand(CanExecute = nameof(CanOpenSource))]
