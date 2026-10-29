@@ -228,4 +228,6 @@ CI 빌드가 실패하면 같은 태그를 이동하지 않고 수정 커밋 뒤
 
 자산 업로드가 부분 실패하면 Draft를 유지하고 로컬 파일 목록과 원격 자산을 다시 대조합니다. `--clobber`가 기존 자산을 먼저 제거할 수 있으므로 실패한 파일만 다시 올린 뒤 전체 목록을 검증합니다.
 
-WinGet 자동 제출이 실패하면 Actions의 `Submit to winget-pkgs repo` 워크플로를 `release_tag` 입력과 함께 수동 실행할 수 있습니다. 기존 Pull Request가 아직 병합되지 않았다면 중복 제출 여부를 먼저 확인합니다.
+WinGet 자동 제출이 실패하면 Actions의 `Submit to winget-pkgs repo` 워크플로에 `release_tag`를 입력하고 `verify_only`를 선택하여 인증, 정식 릴리스 자산과 기존 제출을 읽기 전용으로 검사할 수 있습니다. 이 모드에서는 포크 동기화와 새 Pull Request 제출을 실행하지 않습니다. 검증을 마친 뒤 `verify_only`를 해제하면 이미 등록된 버전이나 검증한 기존 Pull Request를 중복 제출 없이 건너뜁니다.
+
+제출용 `TABLECLOTH_GITHUB_PAT`가 HTTP 401을 반환하면 토큰의 만료, 폐기와 등록 값을 확인할 수 있습니다. [Microsoft의 토큰 설정 안내](https://github.com/microsoft/winget-create/blob/main/doc/token.md)에 따라 `public_repo` 권한을 가진 전용 classic PAT로 시크릿을 갱신할 수 있습니다. 릴리스 조회용 `GITHUB_TOKEN`과 외부 저장소 제출용 자격 증명을 구분하며 토큰 값을 로그나 명령줄에 기록하지 않습니다. 자세한 설정과 검증 명령은 [WinGet 자동 제출 안내](../tools/winget/README.md)에서 다룹니다.
