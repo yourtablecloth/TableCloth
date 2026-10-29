@@ -25,6 +25,9 @@ public static class ManagedAiText
         "원격 카탈로그의 후보를 살펴보고 식탁보 AI 전용 Codex 스킬을 관리합니다. 활성 스킬은 다음 대화부터 사용합니다.",
         "Browse remote candidates and manage Codex skills dedicated to TableCloth AI. Enabled skills are available in the next chat.");
     public static string MarketplaceScope => Select("관리 범위: 식탁보 전용 스킬 폴더", "Scope: TableCloth dedicated skill folder");
+    public static string MarketplaceContributionNotice => Select(
+        "스킬 카탈로그 페이지에서 새 스킬의 마켓플레이스 등재를 제안할 수 있습니다.",
+        "You can propose new skills for the marketplace on the skill catalog page.");
     public static string MarketplaceBrowse => Select("카탈로그 탐색", "Browse catalog");
     public static string MarketplaceInstalled => Select("설치된 스킬", "Installed skills");
     public static string MarketplaceRuntimes => Select("실행 환경", "Runtimes");
