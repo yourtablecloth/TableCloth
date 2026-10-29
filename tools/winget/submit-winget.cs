@@ -250,8 +250,8 @@ async Task<string?> FindExistingSubmission(HttpClient client, string login, stri
 }
 
 bool MatchesPackageVersion(string title, string version) =>
-    Regex.IsMatch(title, $@"(?<![\w.]){Regex.Escape(PackageId)}(?![\w.])", RegexOptions.CultureInvariant) &&
-    Regex.IsMatch(title, $@"(?<![\w.+-]){Regex.Escape(version)}(?![\w.+-])", RegexOptions.CultureInvariant);
+    Regex.IsMatch(title, $@"(?<![\w.]){Regex.Escape(PackageId)}(?![\w.])", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase) &&
+    Regex.IsMatch(title, $@"(?<![\w.+-])v?{Regex.Escape(version)}(?![\w.+-])", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
 async Task VerifyManifestFiles(HttpClient client, string repository, GhFile[] files, string directory,
     string version, GhAsset[] installers)
@@ -366,8 +366,9 @@ async Task<int> RunSelfTests()
         });
         Test("exact package and version boundaries", () =>
         {
-            Require(MatchesPackageVersion("New version: TableClothProject.TableCloth version 1.22.0", "1.22.0"));
-            foreach (var title in new[] { "TableClothProject.TableCloth 1.22.0.1", "TableClothProject.TableCloth 1.22.0-rc.1", "TableClothProject.TableCloth 1.22.0+meta", "Other.TableClothProject.TableCloth 1.22.0", "TableClothProject.TableCloth 11.22.0" })
+            foreach (var title in new[] { "New version: TableClothProject.TableCloth version 1.22.0", "TableClothProject.TableCloth v1.22.0", "tableclothproject.tablecloth V1.22.0" })
+                Require(MatchesPackageVersion(title, "1.22.0"));
+            foreach (var title in new[] { "TableClothProject.TableCloth 1.22.0.1", "TableClothProject.TableCloth 1.22.0-rc.1", "TableClothProject.TableCloth v1.22.0-rc.1", "TableClothProject.TableCloth 1.22.0+meta", "Other.TableClothProject.TableCloth 1.22.0", "TableClothProject.TableCloth 11.22.0" })
                 Require(!MatchesPackageVersion(title, "1.22.0"));
         });
         foreach (var status in new[] { HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden })
@@ -433,7 +434,7 @@ async Task<int> RunSelfTests()
         var directory = ManifestPath + "/1.22.0/";
         var files = "[{\"filename\":\"" + directory + PackageId + ".yaml\",\"sha\":\"" + new string('1', 40) + "\",\"status\":\"added\"}," +
             "{\"filename\":\"" + directory + PackageId + ".installer.yaml\",\"sha\":\"" + new string('2', 40) + "\",\"status\":\"added\"}]";
-        foreach (var mode in new[] { "upstream", "open-pr", "search-lag", "changed-head", "wrong-version" })
+        foreach (var mode in new[] { "upstream", "open-pr", "search-lag", "search-lag-v-prefix", "changed-head", "wrong-version" })
         {
             var reads = 0;
             var pullReads = 0;
@@ -443,11 +444,13 @@ async Task<int> RunSelfTests()
                 reads++;
                 var path = request.RequestUri!.AbsolutePath;
                 if (path.Contains("/contents/")) return mode == "upstream" ? JsonResponse(files) : new(HttpStatusCode.NotFound);
-                const string issue = "{\"number\":42,\"title\":\"New version: TableClothProject.TableCloth version 1.22.0\",\"pull_request\":{}}";
-                if (path == "/search/issues") return JsonResponse(mode == "search-lag"
+                var issue = mode == "search-lag-v-prefix"
+                    ? "{\"number\":42,\"title\":\"TableClothProject.TableCloth v1.22.0\",\"pull_request\":{}}"
+                    : "{\"number\":42,\"title\":\"New version: TableClothProject.TableCloth version 1.22.0\",\"pull_request\":{}}";
+                if (path == "/search/issues") return JsonResponse(mode.StartsWith("search-lag", StringComparison.Ordinal)
                     ? "{\"total_count\":0,\"incomplete_results\":false,\"items\":[]}"
                     : "{\"total_count\":1,\"incomplete_results\":false,\"items\":[" + issue + "]}");
-                if (path.EndsWith("/issues")) return JsonResponse(mode == "search-lag" ? "[" + issue + "]" : "[]");
+                if (path.EndsWith("/issues")) return JsonResponse(mode.StartsWith("search-lag", StringComparison.Ordinal) ? "[" + issue + "]" : "[]");
                 if (path.EndsWith("/files")) return JsonResponse(files);
                 if (path.Contains("/pulls/"))
                 {
