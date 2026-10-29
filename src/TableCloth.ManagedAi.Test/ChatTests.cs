@@ -152,6 +152,39 @@ public sealed class ChatTests
     }
 
     [TestMethod]
+    [DataRow("-----BEGIN PRIVATE KEY-----\nsynthetic key body")]
+    [DataRow("-----BEGIN ENCRYPTED PRIVATE KEY-----\nsynthetic key body")]
+    [DataRow("-----BEGIN RSA PRIVATE KEY-----\nsynthetic key body")]
+    [DataRow("-----BEGIN EC PRIVATE KEY-----\nsynthetic key body")]
+    [DataRow("-----BEGIN DSA PRIVATE KEY-----\nsynthetic key body")]
+    [DataRow("-----BEGIN OPENSSH PRIVATE KEY-----\nsynthetic key body")]
+    [DataRow("-----BEGIN CUSTOM-ALGORITHM PRIVATE KEY-----\nsynthetic key body")]
+    [DataRow("-----BEGIN X9.42 DH PRIVATE KEY-----\nsynthetic key body")]
+    [DataRow("-----BEGIN CUSTOM_KEY PRIVATE KEY-----\nsynthetic key body")]
+    [DataRow("-----begin ec private key-----\nsynthetic key body")]
+    [DataRow("-----BEGIN CERTIFICATE-----\nsynthetic certificate body")]
+    public void PrivateKeyAndCertificateHeadersAreRejectedInCurrentAndPriorUserMessages(string text)
+    {
+        Assert.IsTrue(CertificateInputGuard.ContainsProhibitedMaterial(text));
+        var current = Assert.ThrowsExactly<ManagedAiException>(() => OpenAiChatPromptFactory.Create(new(text, [])));
+        Assert.AreEqual(AiFailureCode.InvalidQuery, current.Code);
+        var prior = Assert.ThrowsExactly<ManagedAiException>(() => OpenAiChatPromptFactory.Create(
+            new("Explain the prior message", [new(AiChatRole.User, text), new(AiChatRole.Assistant, "Prior reply")])));
+        Assert.AreEqual(AiFailureCode.InvalidQuery, prior.Code);
+    }
+
+    [TestMethod]
+    [DataRow("-----BEGIN PUBLIC KEY-----\nsynthetic public key body")]
+    [DataRow("-----BEGIN RSA PUBLIC KEY-----\nsynthetic public key body")]
+    [DataRow("Explain the difference between EC PRIVATE KEY and OPENSSH PRIVATE KEY formats.")]
+    [DataRow("-----BEGIN PUBLIC KEY-----\nExplain how PRIVATE KEY headers differ.")]
+    public void PublicKeyHeadersAndPrivateKeyFormatQuestionsRemainAllowed(string text)
+    {
+        Assert.IsFalse(CertificateInputGuard.ContainsProhibitedMaterial(text));
+        Assert.Contains("CURRENT USER:", OpenAiChatPromptFactory.Create(new(text, [])));
+    }
+
+    [TestMethod]
     public void ChatPromptUsesInstalledProductContextAndUiLanguage()
     {
         var context = new AiClientContext(new Version(1, 22, 0, 0), new Uri("https://yourtablecloth.app/"),
