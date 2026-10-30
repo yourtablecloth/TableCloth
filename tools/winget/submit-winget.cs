@@ -34,7 +34,7 @@ try
     var tag = (Env.Get("RELEASE_TAG") ?? string.Empty).Trim();
     var version = ValidateTag(tag);
     var verifyOnly = ParseVerifyOnly(Env.Get("VERIFY_ONLY"));
-    var token = (Env.Get("GITHUB_PAT") ?? string.Empty).Trim();
+    var token = Env.Get("GITHUB_PAT") ?? string.Empty;
     if (token.Length == 0)
         throw new InvalidOperationException("TABLECLOTH_GITHUB_PAT 시크릿이 비어 있습니다. public_repo 권한을 가진 지원 자격 증명을 등록하면 제출할 수 있습니다.");
     if (token.StartsWith("github_pat_", StringComparison.Ordinal))
@@ -45,8 +45,9 @@ try
     using var submissionClient = CreateGitHubClient(token);
     var login = await ValidateSubmissionCredential(submissionClient);
     WriteLine($"winget 제출 인증 확인: {login}");
-    var readToken = (Env.Get("GITHUB_TOKEN") ?? string.Empty).Trim();
-    using var releaseClient = CreateGitHubClient(readToken.Length == 0 ? token : readToken);
+    var readToken = Env.Get("GITHUB_TOKEN") ?? string.Empty;
+    using var releaseClient = CreateGitHubClient(readToken.Length == 0 ? token : readToken,
+        credential: readToken.Length == 0 ? GitHubCredential.Submission : GitHubCredential.Repository);
     var release = await GetJson(releaseClient, $"repos/{Repo}/releases/tags/{tag}",
         GhJson.Default.GhRelease, $"릴리스 '{tag}' 조회", readToken.Length == 0 ? "TABLECLOTH_GITHUB_PAT" : "GITHUB_TOKEN");
     if (release.tag_name != tag || release.draft)
@@ -118,12 +119,17 @@ bool ParseVerifyOnly(string? value)
     throw new InvalidOperationException("VERIFY_ONLY는 true 또는 false만 허용합니다.");
 }
 
-HttpClient CreateGitHubClient(string token, HttpMessageHandler? handler = null)
+HttpClient CreateGitHubClient(string token, HttpMessageHandler? handler = null,
+    GitHubCredential credential = GitHubCredential.Submission)
 {
     // Header parser exceptions can echo their input. Reject malformed values
     // without quoting a credential before constructing an authorization header.
-    if (!Regex.IsMatch(token, @"\A[A-Za-z0-9_-]+\z", RegexOptions.CultureInvariant))
-        throw new InvalidOperationException("GitHub 자격 증명 형식이 올바르지 않습니다. 등록값의 공백 또는 잘못된 문자를 확인할 수 있습니다.");
+    // RFC 6750 section 2.1 b64token includes JWT dots and trailing '=' padding.
+    if (!Regex.IsMatch(token, @"\A[A-Za-z0-9\-._~+/]+=*\z", RegexOptions.CultureInvariant))
+    {
+        var name = credential == GitHubCredential.Repository ? "GITHUB_TOKEN" : "TABLECLOTH_GITHUB_PAT";
+        throw new InvalidOperationException($"{name} 자격 증명 형식이 올바르지 않습니다. 등록값의 공백 또는 잘못된 문자를 확인할 수 있습니다.");
+    }
     var client = handler is null ? new HttpClient() : new HttpClient(handler);
     client.BaseAddress = new Uri("https://api.github.com/");
     client.Timeout = TimeSpan.FromSeconds(100);
@@ -353,16 +359,35 @@ async Task<int> RunSelfTests()
             Require(ParseVerifyOnly("true") && !ParseVerifyOnly("false") && !ParseVerifyOnly(null));
             Reject(() => ParseVerifyOnly("yes"), "VERIFY_ONLY");
         });
+        Test("RFC 6750 bearer credentials preserve PAT, JWT, and padding", () =>
+        {
+            foreach (var value in new[] { "ghp_fakePAT_123", "gho_fakeOAuth_123", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmYWtlIn0.fake_signature-123", "fake-token._~+/ABC123==", "A=" })
+            {
+                using var client = CreateGitHubClient(value);
+                Require(client.DefaultRequestHeaders.Authorization?.Scheme == "Bearer" &&
+                    client.DefaultRequestHeaders.Authorization.Parameter == value);
+            }
+        });
         Test("malformed credentials are never echoed", () =>
         {
-            const string malformed = "fake-secret\ninvalid";
-            try { using var client = CreateGitHubClient(malformed); }
-            catch (InvalidOperationException exception)
+            foreach (var value in new[] { "", " fake-secret", "fake-secret ", "fake-secret\tinvalid", "fake-secret\rinvalid", "fake-secret\ninvalid", "fake-secret\r\ninvalid", "fake-secret\0invalid", "fake-secret\u007finvalid", "fake-secret\u0085invalid", "fake-secret\u00a0invalid", "fake-secret가", "fake=secret", "=", "Bearer fake-secret", "fake\"secret" })
             {
-                Require(!exception.Message.Contains(malformed, StringComparison.Ordinal));
-                return;
+                try { using var client = CreateGitHubClient(value); }
+                catch (InvalidOperationException exception)
+                {
+                    Require(!exception.Message.Contains("fake", StringComparison.Ordinal));
+                    continue;
+                }
+                throw new InvalidOperationException("Malformed credential was accepted.");
             }
-            throw new InvalidOperationException("Malformed credential was accepted.");
+        });
+        Test("credential format errors identify the fixed authentication role", () =>
+        {
+            foreach (var role in new[] { GitHubCredential.Submission, GitHubCredential.Repository })
+            {
+                var expected = role == GitHubCredential.Repository ? "GITHUB_TOKEN" : "TABLECLOTH_GITHUB_PAT";
+                Reject(() => { using var client = CreateGitHubClient("fake\nsecret", credential: role); }, expected);
+            }
         });
         Test("exact package and version boundaries", () =>
         {
@@ -483,6 +508,8 @@ async Task<int> RunSelfTests()
 }
 
 HttpResponseMessage JsonResponse(string json) => new(HttpStatusCode.OK) { Content = new StringContent(json, Encoding.UTF8, "application/json") };
+
+internal enum GitHubCredential { Submission, Repository }
 
 internal sealed class StubHandler(Func<HttpRequestMessage, HttpResponseMessage> respond) : HttpMessageHandler
 {
