@@ -24,11 +24,18 @@ Windows Sandbox에서 인터넷 뱅킹과 전자정부 사이트를 사용할 �
 
 ![Windows Sandbox에서 실행한 Spork 화면](docs/images/Spork-Windows-Sandbox.png)
 
+## 빠른 시작 가이드
+
+처음 사용하는 경우 Quick Start Guide에서 Windows Sandbox의 지원 OS와 가상화 조건, 설치, 실행과 첫 결과 확인 절차를 따라 진행할 수 있습니다. Apple Silicon Mac에서 macSandbox로 무설치 `.wsb` 파일을 실행하는 방법도 안내합니다.
+
+- [한국어 Quick Start Guide](docs/QUICK_START.ko.md)
+- [English Quick Start Guide](docs/QUICK_START.md)
+
 ## 프로젝트 개요
 
 식탁보는 호스트 Windows에서 Windows Sandbox를 시작하고 필요한 폴더와 설정만 게스트에 전달합니다. 샌드박스 안에서는 Spork가 사이트 카탈로그를 표시하고 선택한 사이트에 필요한 보안 프로그램을 설치합니다. 샌드박스를 닫으면 게스트에 설치한 프로그램과 변경 사항이 함께 폐기됩니다.
 
-빠른 시작 화면의 통합 입력란에 기관 이름, 웹 주소 또는 질문을 입력하고 `시작`을 누를 수 있습니다. 입력 중에는 카탈로그의 서비스 이름 또는 웹 주소와 일치하는 항목을 입력란 아래에 제안합니다. 제안을 선택하면 입력란을 채우며 `시작`을 눌러 실행할 수 있습니다. 입력란이 비어 있으면 빈 샌드박스를 시작합니다. 한두 단어가 카탈로그의 서비스 이름과 일치하면 검색 결과 목록을 열어 사이트를 선택합니다. 선택한 서비스의 소프트웨어 설치와 사이트 접속은 샌드박스 안의 Spork가 처리합니다. 전체 목록은 `카탈로그에서 사이트 선택`으로 열 수 있습니다.
+빠른 시작 화면의 통합 입력란에 기관 이름, 웹 주소 또는 질문을 입력하고 `시작`을 누를 수 있습니다. 입력 중에는 카탈로그의 서비스 이름 또는 웹 주소와 일치하는 항목을 입력란 아래에 제안합니다. 제안을 선택하면 입력란을 채우며 `시작`을 눌러 실행할 수 있습니다. 입력란이 비어 있으면 빈 샌드박스를 시작합니다. 한두 단어가 카탈로그의 서비스 이름과 일치하면 검색 결과 목록을 열어 사이트를 선택합니다. 선택한 서비스의 소프트웨어 설치와 사이트 접속은 샌드박스 안의 Spork가 처리합니다. 전체 목록은 `접속할 사이트 선택`으로 열 수 있습니다.
 
 입력한 공개 웹 주소가 Catalog 서비스의 도메인과 일치하면 QuickStart 설정을 적용하고 Spork가 해당 서비스의 소프트웨어를 설치한 뒤 입력한 페이지를 엽니다. 같은 도메인의 후보가 많으면 서비스를 선택하는 창이 열립니다. 일치 항목이 없으면 폴더와 인증서를 공유하지 않는 브라우저 전용 샌드박스에서 페이지를 엽니다. 로컬 및 사설 주소, 로그인 정보가 포함된 URL과 웹 이외의 스킴은 받지 않습니다. `#debug`는 로컬 진단 경로를 표시합니다. 그 밖의 `#` 명령은 향후 진단 기능을 위해 예약했습니다. 다른 문장은 식탁보 AI 대화창의 입력란에 초안으로 전달합니다.
 
@@ -68,6 +75,8 @@ AI 창은 민감 개인정보, 공동인증서 파일과 스크린샷을 입력�
 
 Windows Sandbox를 제공하지 않는 Windows Home은 현재 지원 대상에 포함하지 않습니다. 조직에서 Windows Sandbox, 가상화 또는 GitHub 다운로드를 차단했다면 시스템 관리자 정책이 우선합니다.
 
+macOS에서는 Apple Silicon용 [macSandbox](https://github.com/yourtablecloth/macSandbox)로 무설치 `.wsb`를 열어 Windows 게스트 안에서 Spork를 실행할 수 있습니다. Mac의 지원 환경과 기본 이미지 준비 절차는 [Quick Start Guide](docs/QUICK_START.ko.md#macos-설치와-wsb-실행)에서 안내합니다.
+
 ## 설치와 실행
 
 WinGet을 사용할 수 있다면 다음 명령으로 설치합니다.
@@ -78,7 +87,7 @@ winget install --exact --id TableClothProject.TableCloth
 
 WinGet 등록소 반영에는 GitHub Release 게시 이후 시간이 더 걸릴 수 있습니다. WinGet에서 최신 버전을 찾지 못하면 [GitHub Releases](https://github.com/yourtablecloth/TableCloth/releases)에서 아키텍처에 맞는 설치 관리자를 내려받을 수 있습니다. GUI 패키지 관리가 편하다면 [UniGetUI 공유 링크](https://marticliment.com/unigetui/share/?name=TableCloth&id=TableClothProject.TableCloth&sourceName=winget&managerName=WinGet)를 사용할 수 있습니다.
 
-설치 후 TableCloth에서 공유할 데이터와 장치 옵션을 선택하고 `샌드박스 시작`을 누릅니다. 사이트 선택과 보안 프로그램 설치는 Windows Sandbox 안의 Spork에서 진행합니다.
+설치 후 TableCloth에서 공유할 데이터와 장치 옵션을 선택하고 빠른 시작의 `시작`을 누릅니다. 사이트 선택과 보안 프로그램 설치는 Windows Sandbox 안의 Spork에서 진행합니다. 처음 설치하는 경우 [Quick Start Guide의 Windows 설치와 실행](docs/QUICK_START.ko.md#windows-설치와-실행)에서 첫 실행 순서와 결과 확인 방법을 볼 수 있습니다.
 
 ## 무설치 Express 실행
 
